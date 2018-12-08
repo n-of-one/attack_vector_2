@@ -1,8 +1,10 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal, notify_neutral} from "../common/Notification";
-import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "./EditorActions";
+import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_SITE_FULL} from "./EditorActions";
 
 let initWebSocket = (store, siteId, callback) => {
+
+    let siteInitializedFromServer = false;
 
     let port = window.location.port;
     let hostName = window.location.hostname;
@@ -16,7 +18,6 @@ let initWebSocket = (store, siteId, callback) => {
     let onWsOpen = (event) => {
         let userName = event.headers["user-name"];
         notify_neutral('Status','Connection with Mainframe established (' + userName + ")");
-
 
         client.subscribe('/topic/site/' + siteId, handleSiteEvent);
         client.subscribe('/user/reply', handleUserMessge );
@@ -50,6 +51,16 @@ let initWebSocket = (store, siteId, callback) => {
         if (body.type === SERVER_FORCE_DISCONNECT) {
             notify(body.data);
             callback(false);
+        }
+
+        if (!siteInitializedFromServer) {
+            if (body.type === SERVER_SITE_FULL) {
+                siteInitializedFromServer = true;
+            }
+            else {
+                console.log("Ignored event occurring before site initialization: " + body.type);
+                return;
+            }
         }
 
         console.log(new Date().getMilliseconds());
