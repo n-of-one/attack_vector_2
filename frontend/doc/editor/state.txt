@@ -1,0 +1,61 @@
+
+// means this still needs to be implemented.
+
+state = {
+    site: (site)
+    nodes: [ (node) ]
+    connections: [ (connection) ]
+    services: [ (service) ]
+    dragAndDrop: { type: "DATA_STORE", dx: -4, dy: 12, ice: false }
+    theme: "frontier"
+    currentNode: 3384
+    currentService: 39932
+}
+
+theme: for different larps/events we can have different themes.
+
+site = {
+    id: "site-83e8-d83a"
+    link: "tutorial.nfo:pra"
+    name: "Tutorial"
+    description: "practice site for new players"
+    gm: null
+    timer: 39:00
+    startNode: "00"
+    hackable: false
+}
+
+node = {
+    id: "node-1111-3fd8"
+    x: 393
+    y: 10
+    type: "TRANSIT_1"
+    services: [ (service-dbId) ]
+}
+
+connection = {
+    id: "con-0000-2995"
+    from: "node-1111-3fd8"    // node dbId
+    to:   "node-2222-4ae2"      // node dbId
+    type: "DEFAULT"
+}
+
+
+service = {
+  id: "svc-3393-9939"
+  type: "OS"
+  layer: 0
+  config: {...}
+  state: {...}
+}
+
+// OS
+config = {
+    networkId: "00"
+    name: "OS"
+    GmNote: "blah blah"
+}
+
+//static = {
+
+}

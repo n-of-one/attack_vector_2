@@ -1,0 +1,15 @@
+The following commands were used to set up the development environment:
+
+npx create-react-app frontend
+npm install --save redux
+npm install --save react-redux
+npm install --save react-router-dom
+npm install --save fabric
+npm install --save redux-saga
+npm install --save izitoast
+npm install --save webstomp-client
+
+
+add the line
+  ,"proxy": "http://localhost:8080"
+to package.json

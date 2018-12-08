@@ -1,0 +1,34 @@
+File for jotting down useful docker commands.
+
+docker-machine start
+
+docker ps -a
+
+docker start mongodb
+
+// Find the IP address of the docker-machine
+
+docker-machine ip
+
+
+
+// Find the IP address of the mongodb machine
+docker inspect mongodb | grep IPAddress
+
+
+--> connectie naar mongodb via "local/av" en dan kijken in de local database.
+
+
+
+---------
+- Start mongodb docker:
+
+docker run --name mongo -p 27017:27017 mongo:3.4.9
+
+
+---------
+- Download mongodb first time if not installer:
+
+docker pull mongo:3.4
+
+

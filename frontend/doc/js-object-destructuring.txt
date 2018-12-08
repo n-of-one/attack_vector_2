@@ -1,0 +1,53 @@
+let erik = { "name": "Erik", age: 42 };
+
+let { erikName, erikAge } = erik // erikName = "Erik"; erikAge = 42;
+let { name } = person; // name = "Erik"
+
+let match = { 
+	params: {page: "main"} 
+};
+
+
+
+//var o = {p: 42, q: true};
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+
+
+
+var {p: foo, q: bar} = {p: 42, q: true};
+ 
+console.log(foo); // 42 
+console.log(bar); // true
+
+
+
+ { match: { params } }
+
+ let person = { "name": "Erik", "age": 42 };
+let erik = { name: "Erik", age: 42 };
+
+let {name} = person;
+
+console.log(name);
+
+let matchParams = { page: "main" };
+let match = { params: matchParams };
+
+console.log(match);
+
+let { params } = match;
+
+console.log(params.page);
+
+let run = ({params}) => {
+  console.log("before");
+  console.log(params);
+  console.log("after");
+}
+
+run(match);
+  
+  let { params: params2 } = match;
+
+console.log(params2.page);

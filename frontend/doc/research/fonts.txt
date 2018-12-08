@@ -1,0 +1,10 @@
+
+
+Google fonts: mono and at least two types (regular, bold)
+
+https://fonts.google.com/?category=Monospace&stylecount=2
+
+
+Monospaced fonts:
+
+https://www.fontsquirrel.com/fonts/list/classification/monospaced

@@ -1,0 +1,35 @@
+There is a the module: stomp-client
+
+https://github.com/easternbloc/node-stomp-client -- source & docs
+https://www.npmjs.com/package/stomp-client       -- docs & example
+
+it only supports stomp 1.0, but it does support automatic reconnect.
+It has little development since early 2017)
+
+---
+
+If you search for stomp javascript, you find the module: stompjs
+
+https://github.com/jmesnil/stomp-websocket  -- source
+http://jmesnil.net/stomp-websocket/doc/     -- doc
+
+it supports stomp 1.1
+
+it is abandoned.
+
+---
+
+>>> This is the one that is currently used in Attack Vector:
+
+There is a fork of stompjs, module: webstomp-client
+
+https://www.npmjs.com/package/webstomp-client  -- npm
+https://github.com/JSteunou/webstomp-client    -- source
+
+
+it supports up to stomp 1.2
+
+
+
+
+

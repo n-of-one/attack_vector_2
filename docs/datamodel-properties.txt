@@ -1,0 +1,3 @@
+The data model is a draw.io image. The model can be imported from the xml file.
+
+The image is a screenshot, because it looks better than a png export from draw.io.
