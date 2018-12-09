@@ -2,11 +2,19 @@ package org.n1.mainframe.backend.util
 
 import java.util.*
 
-fun createId(prefix: String, findExisting: (String)-> Any? ): String {
+fun createId(prefix: String, findExisting: (String)-> Any?): String {
+    return createId(prefix, findExisting, 9, 18)
+}
+
+fun createServiceId(siteId: String, findExisting: (String)-> Any?): String {
+    return createId("$siteId-serv", findExisting, 9, 13)
+}
+
+fun createId(prefix: String, findExisting: (String)-> Any?, start: Int, end: Int): String {
     var count = 0
     var id: String
     do {
-        val uuidPart = UUID.randomUUID().toString().substring(9, 18)
+        val uuidPart = UUID.randomUUID().toString().substring(start, end)
         id = "$prefix-$uuidPart"
         val existing = findExisting(id)
         count ++
@@ -18,3 +26,4 @@ fun createId(prefix: String, findExisting: (String)-> Any? ): String {
     }
     return id
 }
+

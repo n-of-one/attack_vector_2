@@ -19,43 +19,43 @@ class EditorController(
     companion object : KLogging()
 
     @MessageMapping("/siteFull")
-    fun siteFull(siteId: String) {
-        executor.run{ editorService.sendSiteFull(siteId) }
+    fun siteFull(siteId: String, principal: Principal) {
+        executor.run(principal) { editorService.sendSiteFull(siteId) }
     }
 
     @MessageMapping("/addNode")
-    fun addNode(command: AddNode) {
-        executor.run{ editorService.addNode(command) }
+    fun addNode(command: AddNode, principal: Principal) {
+        executor.run(principal) { editorService.addNode(command) }
     }
 
     @MessageMapping("/moveNode")
-    fun moveNode(command: MoveNode) {
-        executor.run{ editorService.moveNode(command) }
+    fun moveNode(command: MoveNode, principal: Principal) {
+        executor.run(principal) { editorService.moveNode(command) }
     }
 
     @MessageMapping("/addConnection")
-    fun addConnection(command: AddConnection) {
-        executor.run{ editorService.addConnection(command) }
+    fun addConnection(command: AddConnection, principal: Principal) {
+        executor.run(principal) { editorService.addConnection(command) }
     }
 
     @MessageMapping("/editSiteData")
     fun editSiteData(command: EditSiteData, principal: Principal) {
-        executor.run{ editorService.update(command, principal) }
+        executor.run(principal) { editorService.update(command, principal) }
     }
 
     @MessageMapping("/deleteConnections")
-    fun deleteConnections(command: DeleteNodeCommand) {
-        executor.run{ editorService.deleteConnections(command) }
+    fun deleteConnections(command: DeleteNodeCommand, principal: Principal) {
+        executor.run(principal) { editorService.deleteConnections(command) }
     }
 
     @MessageMapping("/deleteNode")
-    fun deleteNode(command: DeleteNodeCommand) {
-        executor.run{ editorService.deleteNode(command) }
+    fun deleteNode(command: DeleteNodeCommand, principal: Principal) {
+        executor.run(principal) { editorService.deleteNode(command) }
     }
 
     @MessageMapping("/snap")
-    fun snap(command: SiteCommand) {
-        executor.run{ editorService.snap(command) }
+    fun snap(command: SiteCommand, principal: Principal) {
+        executor.run(principal) { editorService.snap(command) }
     }
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -67,6 +67,6 @@ class EditorController(
             return exception.getNoty()
         }
         logger.error(exception.message, exception)
-        return NotyMessage("fatal", "Server error", exception.message ?: "" )
+        return NotyMessage("fatal", "Server error", exception.message ?: "")
     }
 }

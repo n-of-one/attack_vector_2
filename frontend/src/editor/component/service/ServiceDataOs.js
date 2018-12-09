@@ -13,25 +13,32 @@ const mapDispatchToProps = (dispatch) => {
 let mapStateToProps = (state) => {
 
     return {
-        currentNode: state.currentNode,
+        currentNodeId: state.currentNodeId,
+        currentNode: state.nodes.find((node) => { return node.id === state.currentNodeId})
+
     };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({currentNode}) => {
+    ({currentNodeId, currentNode}) => {
 
-        let nodeId = (currentNode) ? currentNode : 12;
-
-        return (
-            <div className="tab-content" id="node-services-tab-content">
-                <div className="tab-pane active">
-                    <ServiceName name="Node OS"/>
-                    <ServiceLayer layer={0} layourCount={1}/>
-                    <ServiceField type="small" name="Node id" value={nodeId} readOnly={true}/>
-                    <ServiceField type="small" name="Network ▣"/>
-                    <ServiceField type="large" name="Node name"/>
-                    <ServiceField type="large" name="Gm Note"/>
+        if (currentNodeId) {
+            return (
+                <div className="tab-content" id="node-services-tab-content ">
+                    <div className="tab-pane active">
+                        <ServiceName name="Node OS"/>
+                        <ServiceLayer layer={0} layourCount={1}/>
+                        <ServiceField type="small" name="Node id" value={currentNodeId} readOnly={true}/>
+                        <ServiceField type="small" name="Network ▣" value={currentNode.services[0].data["networkId"]}/>
+                        <ServiceField type="large" name="Node name"/>
+                        <ServiceField type="large" name="Gm Note"/>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
+        else {
+            return (<div />);
+        }
+
+
     });

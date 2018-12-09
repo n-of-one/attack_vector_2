@@ -31,9 +31,8 @@ class StompService(
         stompTemplate.convertAndSendToUser(principal.name, "/reply", message)
     }
 
-//    fun errorToUser(text: String) {
-//        simulateNonLocalhost()
-//        val user = webSocketUserService.getCurrentUser()
-//        stompTemplate.convertAndSendToUser(user, "/error", text)
-//    }
+    fun errorToUser(principal: Principal, message: NotyMessage) {
+        simulateNonLocalhost()
+        stompTemplate.convertAndSendToUser(principal.name, "/error", message)
+    }
 }

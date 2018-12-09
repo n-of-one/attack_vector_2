@@ -1,6 +1,11 @@
 package org.n1.mainframe.backend.engine
 
+import org.n1.mainframe.backend.model.ui.NotyMessage
+import org.n1.mainframe.backend.model.ui.ValidationException
+import org.n1.mainframe.backend.service.StompService
+import org.n1.mainframe.backend.web.ws.EditorController
 import org.springframework.stereotype.Component
+import java.security.Principal
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import javax.annotation.PostConstruct
@@ -11,11 +16,11 @@ import javax.annotation.PreDestroy
  * in order to get Serializable isolation.
  */
 @Component
-class SerializingExecutor  {
+class SerializingExecutor(stompService: StompService)  {
 
-    private val queue = LinkedBlockingQueue<() -> Unit>()
+    private val queue = LinkedBlockingQueue<Task>()
     val executorService = Executors.newSingleThreadExecutor()!!
-    val runner = Runner(queue)
+    val runner = Runner(queue, stompService)
 
     @PostConstruct
     fun init() {
@@ -28,16 +33,17 @@ class SerializingExecutor  {
         executorService.shutdownNow()
     }
 
-    fun run(task: () -> Unit) {
+    fun run(principal: Principal, action: () -> Unit) {
+        val task = Task(action, principal)
         queue.put(task)
     }
 
-    class Runner(val queue: LinkedBlockingQueue<() -> Unit>): Runnable {
+    class Runner(val queue: LinkedBlockingQueue<Task>,
+                 val stompService: StompService): Runnable {
         override fun run() {
             try {
                 while (true) {
-                    val task = queue.take()
-                    task()
+                    runTask()
                 }
             } catch (e: InterruptedException) {
                 // we were interrupted by shutdownNow(), restore interrupted status and exit
@@ -45,6 +51,26 @@ class SerializingExecutor  {
             }
 
         }
+
+        private fun runTask() {
+            val task = queue.take()
+            try {
+                task.action()
+            }
+            catch (exception: Exception) {
+                if (exception is InterruptedException) {
+                    throw exception
+                }
+                if (exception is ValidationException) {
+                    stompService.notyToUser(task.principal, exception.getNoty())
+                    return
+                }
+                EditorController.logger.error(exception.message, exception)
+                val noty = NotyMessage("fatal", "Server error", exception.message ?: "")
+                stompService.errorToUser(task.principal, noty)
+            }
+        }
+
     }
 
 }

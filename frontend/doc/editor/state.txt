@@ -30,7 +30,7 @@ node = {
     x: 393
     y: 10
     type: "TRANSIT_1"
-    services: [ (service-dbId) ]
+    services: [ (service)* ]
 }
 
 connection = {
@@ -42,11 +42,10 @@ connection = {
 
 
 service = {
-  id: "svc-3393-9939"
+  id: "site-83e8-d83a-serv-3393"
   type: "OS"
   layer: 0
-  config: {...}
-  state: {...}
+  data: { "networkId": "00", ...}
 }
 
 // OS

@@ -10,7 +10,7 @@ let assertFail = (debugInfo) => {
     let stack = new Error().stack;
     let debugString = JSON.stringify(debugInfo);
     console.error("Assert failed: value was null or undefined. Debug info: " + debugString, stack);
-    notify_fatal('Internal error, please refresh browser.');
+    notify_fatal('Internal error, please refresh browser.\n(see browser log for details)');
 };
 
 export { assertNotNullUndef, assertFail }

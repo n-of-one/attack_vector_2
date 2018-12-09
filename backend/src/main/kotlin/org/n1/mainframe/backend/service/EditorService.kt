@@ -24,7 +24,6 @@ class EditorService(
     fun addNode(command: AddNode) {
         val site = siteService.getById(command.siteId)
         val node = nodeService.createNode(command)
-//        val os = serviceService.createService()
         siteService.addNode(site, node)
         stompService.toSite(command.siteId, "SERVER_ADD_NODE", node)
     }

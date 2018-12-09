@@ -7,5 +7,6 @@ data class Node(
         val type: NodeType,
         var x: Int,
         var y: Int,
-        val ice: Boolean
+        val ice: Boolean,
+        val services: List<Service>
 )

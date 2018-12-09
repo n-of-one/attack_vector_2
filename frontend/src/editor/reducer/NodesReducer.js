@@ -17,7 +17,7 @@ let addNode = (data, nodeList) => {
         y: data.y,
         type: data.type,
         connections: [ ],
-        services: [  ],
+        services: data.services,
         ice: data.ice,
     };
     return [ ...nodeList, node ];

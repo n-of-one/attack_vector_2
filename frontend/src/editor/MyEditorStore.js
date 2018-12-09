@@ -4,7 +4,7 @@ import DragAndDropReducer from "./reducer/DragAndDropReducer";
 import ThemeReducer from "./reducer/ThemeReducer";
 import NodesReducer from "./reducer/NodesReducer";
 import ConnectionsReducer from "./reducer/ConnectionsReducer";
-import CurrentNodeReducer from "./reducer/CurrentNodeReducer";
+import CurrentNodeIdReducer from "./reducer/CurrentNodeIdReducer";
 
 const editorReducer = combineReducers({
     site: siteReducer,
@@ -12,7 +12,7 @@ const editorReducer = combineReducers({
     theme: ThemeReducer,
     nodes: NodesReducer,
     connections: ConnectionsReducer,
-    currentNode: CurrentNodeReducer,
+    currentNodeId: CurrentNodeIdReducer,
 });
 
 export default editorReducer;
