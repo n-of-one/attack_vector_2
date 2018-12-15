@@ -19,27 +19,17 @@ let initWebSocket = (store, siteId, callback) => {
         let userName = event.headers["user-name"];
         notify_neutral('Status','Connection with Mainframe established (' + userName + ")");
 
+        setupHeartbeat(developmentServer, client);
         client.subscribe('/topic/site/' + siteId, handleSiteEvent);
         client.subscribe('/user/reply', handleUserMessge );
         client.subscribe('/user/error', handleServerError );
         callback(true);
-
-        // don't set up heartbeat for development server, as it will not disconnect,
-        // and heartbeat messages wil clutter other messages.
-        if (!developmentServer) {
-
-            // Server side heartbeat not supported (Simple Broker, not full blown RabitMQ or the like)
-            setInterval(() => {
-                client.send("/hb", "");
-            }, 1000 * 15);
-        }
     };
 
     const onWsConnectError = () => {
         notify_fatal('Connection with mainframe lost. Please refresh browser.');
         callback(false);
     };
-
 
     const handleSiteEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
@@ -77,6 +67,20 @@ let initWebSocket = (store, siteId, callback) => {
         let body = JSON.parse(wsMessage.body);
         notify(body);
     };
+
+    const setupHeartbeat = (developmentServer, client) => {
+        // don't set up heartbeat for development server, as the server will not disconnect anyway,
+        // and heartbeat messages wil clutter other messages.
+        if (!developmentServer) {
+            // Our Server does not support server side heartbeats
+            // because we are using Simple Broker, not full blown RabitMQ or the like.
+            // so we use this home brew alternative
+            setInterval(() => {
+                client.send("/hb", "");
+            }, 1000 * 15);
+        }
+    }
+
 
     client.connect({}, onWsOpen, onWsConnectError);
 

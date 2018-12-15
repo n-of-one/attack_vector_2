@@ -7,19 +7,20 @@ import createSagaMiddleware from 'redux-saga'
 import editorReducer from "./MyEditorStore";
 import {applyMiddleware, createStore} from "redux";
 import { REQUEST_SITE_FULL} from "./EditorActions";
+import RequiresRole from "../app/auth/component/RequiresRole";
 
 class EditorRoot extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { initSuccess: null };
+        this.state = { initSuccess: null, loginToken: null };
         this.errorMessage = null;
-        this.init(props, props.match.params.siteId);
+        this.siteIdentifier = props.match.params.siteId;
     }
 
-    init(props, siteIdentifier) {
-        if (!siteIdentifier.startsWith("site-")) {
-            fetch("/api/site/" + siteIdentifier)
+    init() {
+        if (!this.siteIdentifier.startsWith("site-")) {
+            fetch("/api/site/" + this.siteIdentifier)
                 .then( response => {
                     if (response.ok) {
                         response.text().then(siteId => {
@@ -33,14 +34,14 @@ class EditorRoot extends Component {
                 });
             return;
         }
-
+        let siteId = this.siteIdentifier;
         let wsInit = (result) => { this.setState( { initSuccess: result }); };
         wsInit.bind(this);
 
         fetch("/api/health/")
             .then( response => {
                 if (response.ok) {
-                    this.initServerState(siteIdentifier);
+                    this.initServerState(siteId);
                 }
                 else {
                     this.errorMessage = "Connection to server failed, unable to continue.";
@@ -69,9 +70,9 @@ class EditorRoot extends Component {
 
         this.store = store;
     }
-
-    render() {
+    renderIfAuthenticated() {
         if (this.state.initSuccess === null){
+            this.init();
             return <h1>Loading...</h1>;
         }
         if (this.state.initSuccess === false) {
@@ -82,6 +83,14 @@ class EditorRoot extends Component {
                 <EditorHome />
             </Provider>
         );
+    }
+
+    render() {
+        return(
+            <RequiresRole role={[]}>
+                {this.renderIfAuthenticated()}
+            </RequiresRole>
+        )
     }
 }
 
