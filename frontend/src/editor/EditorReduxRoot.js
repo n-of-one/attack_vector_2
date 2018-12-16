@@ -9,7 +9,7 @@ import {applyMiddleware, createStore} from "redux";
 import { REQUEST_SITE_FULL} from "./EditorActions";
 import RequiresRole from "../app/auth/component/RequiresRole";
 
-class EditorRoot extends Component {
+class EditorReduxRoot extends Component {
 
     constructor(props) {
         super(props);
@@ -63,8 +63,8 @@ class EditorRoot extends Component {
             store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
         };
         webSocketInitialized.bind(this);
-
-        let stompClient = initWebSocket(store, siteId, webSocketInitialized);
+        const token = localStorage.getItem('token');
+        let stompClient = initWebSocket(store, siteId, webSocketInitialized, token);
         let editorRootSaga = createSagas(stompClient, siteId);
         sagaMiddleware.run(editorRootSaga);
 
@@ -95,5 +95,5 @@ class EditorRoot extends Component {
 }
 
 
-export default EditorRoot
+export default EditorReduxRoot
 

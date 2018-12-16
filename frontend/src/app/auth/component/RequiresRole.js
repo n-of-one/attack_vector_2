@@ -1,49 +1,13 @@
 import React, {Component} from 'react';
-import Login from "./Login";
 
 class RequiresRole extends Component {
 
     constructor(props) {
         super(props);
         this.props = props;
-        const token = localStorage.getItem('token');
-        this.state = {
-            message: "hello",
-            authenticated: (token != null),
-        };
+        const authenticated = localStorage.getItem('token') != null;
+        this.state = {authenticated: authenticated};
     }
-
-    login(name, password) {
-        const loginInput = {name: name, password: password};
-        this.setState({message: "Logging in"});
-        fetch("/api/login/", {
-            method: "POST",
-            body: JSON.stringify(loginInput),
-            headers: {"Content-Type": "application/json; charset=utf-8",}
-        })
-            .then(response => {
-                if (response.ok) {
-                    response.text().then(data => {
-                        const {token, message, role} = JSON.parse(data);
-                        if (token) {
-                            localStorage.setItem("token", token);
-                            localStorage.setItem("role", role);
-                            this.setState({authenticated: true})
-                        }
-                        else {
-                            this.setState({message: message})
-                        }
-                    });
-                }
-                else {
-                    this.setState({message: "Connection to server failed, unable to continue."});
-                }
-            });
-
-
-        // this.loginFunction(this.name, this.password);
-    }
-
 
     logout() {
         localStorage.removeItem("token");
@@ -53,8 +17,7 @@ class RequiresRole extends Component {
 
     render() {
         if (!this.state.authenticated) {
-            return (
-                <Login loginFunction={(name, password) => this.login(name, password)} message={this.state.message}/>);
+            document.location.href = `/login?next=${document.location.href}`;
         }
         else {
             return (

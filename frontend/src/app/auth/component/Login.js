@@ -6,12 +6,11 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.loginFunction = props.loginFunction;
-        this.message = props.message;
+        this.state = {message: this.props.message};
 
         this.name = "";
         this.password = "";
     }
-
 
     onNameChange(value) {
         this.name = value;
@@ -23,11 +22,39 @@ class Login extends Component {
 
     login(event) {
         event.preventDefault();
-        this.loginFunction(this.name, this.password);
+        const loginInput = {name: this.name, password: this.password};
+        this.setState({message: "Logging in"});
+        // const oldCookie = document.cookie;
+        // document.cookie = "token=token-123";
+
+        fetch("/api/login/", {
+                method: "POST",
+                body: JSON.stringify(loginInput),
+                headers: {"Content-Type": "application/json; charset=utf-8",}
+            }
+        ).then(response => {
+            if (response.ok) {
+                response.text().then(data => {
+                    const {token, message, role} = JSON.parse(data);
+                    if (token) {
+                        localStorage.setItem("token", token);
+                        localStorage.setItem("role", role);
+                        const search = document.location.search;
+                        const next = search.substring(search.indexOf('=') + 1);
+                        document.location.href = next;
+                    }
+                    else {
+                        this.setState({message: message})
+                    }
+                });
+            }
+            else {
+                this.setState({message: "Connection to server failed, unable to continue."});
+            }
+        });
     }
 
     render() {
-
         return (
             <div className="container">
                 <br/>
@@ -40,7 +67,7 @@ class Login extends Component {
                         <form className="form-horizontal" onSubmit={(event) => this.login(event)}>
                             <div className="form-group">
                                 <div className="col-sm-offset-2 col-sm-10">
-                                    <p>&nbsp;{this.props.message}</p>
+                                    <p>&nbsp;{this.state.message}</p>
                                 </div>
                             </div>
                             <div className="form-group">

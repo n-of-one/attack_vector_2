@@ -18,10 +18,10 @@ class LoginController {
     @PostMapping("/")
     fun login(@RequestBody input: LoginInput): LoginResponse {
         return when (input.name) {
-            "admin" -> LoginResponse("token:3923-32424-23423", LoginRole.ADMIN )
-            "user" -> LoginResponse("token:3923-32424-23423", LoginRole.USER )
-            "gm" -> LoginResponse("token:3923-32424-23423", LoginRole.GM )
-            "superuser" -> LoginResponse("token:3923-32424-23423", LoginRole.SUPER_USER )
+            "admin" -> LoginResponse("token-3923-32424-23423", LoginRole.ADMIN )
+            "user" -> LoginResponse("token-3923-32424-23423", LoginRole.USER )
+            "gm" -> LoginResponse("token-3923-32424-23423", LoginRole.GM )
+            "superuser" -> LoginResponse("token-3923-32424-23423", LoginRole.SUPER_USER )
             "" -> LoginResponse(null, null, "No input specified")
             else -> LoginResponse(null, null, input.name)
         }
