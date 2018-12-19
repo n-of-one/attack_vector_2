@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller
 import java.security.Principal
 import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
+import javax.annotation.security.RolesAllowed
 
 
 @Controller
@@ -23,6 +24,7 @@ class EditorController(
         executor.run(principal) { editorService.sendSiteFull(siteId) }
     }
 
+    @RolesAllowed()
     @MessageMapping("/addNode")
     fun addNode(command: AddNode, principal: Principal) {
         executor.run(principal) { editorService.addNode(command) }
@@ -55,7 +57,8 @@ class EditorController(
 
     @MessageMapping("/snap")
     fun snap(command: SiteCommand, principal: Principal) {
-        executor.run(principal) { editorService.snap(command) }
+//        executor.run(principal) { editorService.snap(command) }
+        executor.run(principal) { error("not implemented") }
     }
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

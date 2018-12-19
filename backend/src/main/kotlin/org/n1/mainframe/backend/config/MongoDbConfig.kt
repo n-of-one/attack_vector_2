@@ -35,9 +35,7 @@ class MongoDbConfig : AbstractMongoConfiguration() {
         return dbName
     }
 
-    @Throws(Exception::class)
-    override fun mongo(): Mongo {
-        //        MongoClientURI uri = new MongoClientURI("mongodb://av2:***@192.168.99.100/av?authMechanism=SCRAM-SHA-1");
+    override fun mongoClient(): MongoClient {
         return MongoClient(clientUri)
     }
 

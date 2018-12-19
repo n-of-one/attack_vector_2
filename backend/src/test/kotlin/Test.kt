@@ -39,7 +39,7 @@ class Test {
 
     @Test
     fun addNode() {
-        val site = siteRepo.findOne("1")
+        val site = siteRepo.findById("1").get()
         assertThat(site.nodes.size, IsEqual(0))
 
         val principal = Principal { "10" }
@@ -49,7 +49,7 @@ class Test {
 
         assertThat(site.nodes.size, IsEqual(1))
 
-        val node = nodeRepo.findOne(site.nodes[0])
+        val node = nodeRepo.findById(site.nodes[0]).get()
         assertThat(node.x, IsEqual(10))
         assertThat(node.y, IsEqual(20))
         assertThat(node.type, IsEqual(NodeType.PASSCODE_STORE))

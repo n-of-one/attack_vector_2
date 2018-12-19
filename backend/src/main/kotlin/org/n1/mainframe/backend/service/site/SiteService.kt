@@ -15,7 +15,7 @@ class SiteService(
 ) {
 
     fun getById(id: String): Site {
-        return siteRepo.findOne(id)  ?: throw IllegalArgumentException("No site found for id: ${id}")
+        return siteRepo.findById(id).orElseThrow { throw IllegalArgumentException("No site found for id: ${id}") }
     }
 
     fun findByLink(link: String): Site? {
@@ -23,7 +23,7 @@ class SiteService(
     }
 
     fun createSite(link: String): Site {
-        val id = createId("site", siteRepo::findOne)
+        val id = createId("site", siteRepo::findById)
         val site = Site(id = id, link = link, name = link, hackTime = "15:00", startNode = "00")
         siteRepo.save(site)
         return site

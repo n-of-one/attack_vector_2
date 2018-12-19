@@ -1,10 +1,13 @@
 package org.n1.mainframe.backend.config
 
-import org.n1.mainframe.backend.model.UserRole
+import org.n1.mainframe.backend.model.user.UserRole
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.userdetails.UserDetailsService
 
 /**
  * Security config for the application
@@ -25,43 +28,23 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/print/**").hasAnyRole(UserRole.HACKER, UserRole.GM)
                 .antMatchers("/admin/**").hasRole(UserRole.ADMIN)
                 .antMatchers("/**").hasRole(UserRole.HACKER)
-                .and()
+//
+            .and()
                 .formLogin()
                 .loginPage("/login")
                 .permitAll()
-                .and()
+//
+            .and()
                 .logout()
                 .permitAll()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
-                .and()
+//
+            .and()
                 .csrf()
                 .disable()
     }
-    //
-    //    class MyAuthenticationProvider implements AuthenticationProvider {
-    //        @Override
-    //        public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    //            return null;
-    //        }
-    //
-    //        @Override
-    //        public boolean supports(Class<?> aClass) {
-    //            return true;
-    //        }
-    //    }
 
-    //    @Autowired
-    //    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    //        auth
-    //                .inMemoryAuthentication()
-    //                .withUser("user").password("user").roles("gm");
-    //    }
 
-    //
-    //    @Bean
-    //    public MyAuthenticationProvider configureAuthentication(){
-    //        return new MyAuthenticationProvider();
-    //    }
 }

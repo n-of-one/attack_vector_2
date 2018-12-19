@@ -27,7 +27,8 @@ class Login extends Component {
         // const oldCookie = document.cookie;
         // document.cookie = "token=token-123";
 
-        fetch("/api/login/", {
+        fetch("/api/login", {
+                credentials: 'include',
                 method: "POST",
                 body: JSON.stringify(loginInput),
                 headers: {"Content-Type": "application/json; charset=utf-8",}

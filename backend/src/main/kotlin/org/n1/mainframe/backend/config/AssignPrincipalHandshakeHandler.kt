@@ -1,14 +1,14 @@
 package org.n1.mainframe.backend.config
 
-import org.apache.catalina.connector.CoyoteInputStream
+import org.n1.mainframe.backend.model.user.ClientPrincipal
+import org.n1.mainframe.backend.model.user.UserAuthentication
 import org.n1.mainframe.backend.util.createId
 import org.springframework.http.server.ServerHttpRequest
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.lang.RuntimeException
 import java.security.Principal
-import kotlin.text.Charsets.UTF_8
 
 class AssignPrincipalHandshakeHandler : DefaultHandshakeHandler() {
 
@@ -19,15 +19,10 @@ class AssignPrincipalHandshakeHandler : DefaultHandshakeHandler() {
     override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler?,
                                attributes: Map<String, Any>?): Principal {
 
-        val bodyInputStream: InputStream = request.body as InputStream
-        val bodyReader = InputStreamReader(bodyInputStream, UTF_8)
-        val lines = bodyReader.readLines()
-        val cookie = request.headers["cookie"]!!.first()
-        val a = 1 + 2
+        val authentication = SecurityContextHolder.getContext().authentication as? UserAuthentication ?: throw RuntimeException("Login please")
 
-
-        val name = createId("client", ::rnull )
-        return Principal { name }
+        val clientId = createId("client", ::rnull )
+        return ClientPrincipal(authentication.user, clientId)
     }
 
 }

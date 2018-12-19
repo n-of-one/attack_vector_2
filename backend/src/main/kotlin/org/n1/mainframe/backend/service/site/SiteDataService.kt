@@ -16,7 +16,7 @@ class SiteDataService(
 ) {
 
     fun update(command: EditSiteData, principal: Principal) {
-        val site = siteRepo.findOne(command.siteId) ?: throw IllegalStateException("Site ${command.siteId} not found")
+        val site = siteRepo.findById(command.siteId).orElseThrow { throw IllegalStateException("Site ${command.siteId} not found") }
         val value = command.value
 
         try {

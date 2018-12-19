@@ -87,7 +87,7 @@ class EditorReduxRoot extends Component {
 
     render() {
         return(
-            <RequiresRole role={[]}>
+            <RequiresRole>
                 {this.renderIfAuthenticated()}
             </RequiresRole>
         )
