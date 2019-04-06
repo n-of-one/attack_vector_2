@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "create-react-app": "^2.1.8",
-    "fabric": "^2.7.0",
+    "fabric": "^1.7.22",
     "izitoast": "^1.4.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
