@@ -1,6 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
 
+/* eslint jsx-a11y/anchor-is-valid: 0*/
+
 const mapDispatchToProps = (dispatch) => {
     return {
     }
@@ -18,7 +20,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         let downHtml = downClickable ? (<a className="textLink">◀</a>) : (<span>◀</span>);
         let upHtml = upClickable ? (<a className="textLink">▶</a>) : (<span>▶</span>);
-
 
         return (
             <div className="row form-group serviceFieldRow">

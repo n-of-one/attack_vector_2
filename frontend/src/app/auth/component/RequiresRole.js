@@ -1,17 +1,18 @@
 import React, {Component} from 'react';
+import Cookies from 'js-cookie'
 
 class RequiresRole extends Component {
 
     constructor(props) {
         super(props);
         this.props = props;
-        const authenticated = localStorage.getItem('token') != null;
+        let jwt = Cookies.get("jwt");
+        const authenticated = jwt !== undefined;
         this.state = {authenticated: authenticated};
     }
 
     logout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
+        Cookies.remove("jwt");
         this.setState({authenticated: false});
     }
 
@@ -29,5 +30,6 @@ class RequiresRole extends Component {
         }
     }
 }
+
 
 export default RequiresRole;

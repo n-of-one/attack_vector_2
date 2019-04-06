@@ -24,21 +24,18 @@ class Login extends Component {
         event.preventDefault();
         const loginInput = {name: this.name, password: this.password};
         this.setState({message: "Logging in"});
-        // const oldCookie = document.cookie;
-        // document.cookie = "token=token-123";
 
         fetch("/api/login", {
                 credentials: 'include',
                 method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(loginInput),
-                headers: {"Content-Type": "application/json; charset=utf-8",}
             }
         ).then(response => {
             if (response.ok) {
                 response.text().then(data => {
-                    const {token, message, role} = JSON.parse(data);
-                    if (token) {
-                        localStorage.setItem("token", token);
+                    const {success, role, message} = JSON.parse(data);
+                    if (success) {
                         localStorage.setItem("role", role);
                         const search = document.location.search;
                         const next = search.substring(search.indexOf('=') + 1);
@@ -52,6 +49,9 @@ class Login extends Component {
             else {
                 this.setState({message: "Connection to server failed, unable to continue."});
             }
+        }
+        ).catch(error => {
+            console.log(error);
         });
     }
 

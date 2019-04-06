@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 0*/
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -95,14 +96,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                         sites.map((site) => {
                                             return (
                                                 <tr>
-                                                    <td className="table-very-condensed"><a target="_blank"
+                                                    <td className="table-very-condensed"><a target="_blank" rel="noopener noreferrer"
                                                                                             href={"/gm/editor/" + site.id + "/"}>{site.id}</a>
                                                     </td>
                                                     <td className="table-very-condensed">{site.hackable}</td>
                                                     <td className="table-very-condensed">
-                                                        <a className="aimage" target="_blank"
+                                                        <a className="aimage" target="_blank" rel="noopener noreferrer"
                                                            href={"/gm/print/" + site.id + "/"} title="Print">🌐</a>
-                                                        <a className="aimage" target="_blank"
+                                                        <a className="aimage" target="_blank" rel="noopener noreferrer"
                                                            href={"/gm/print-solution/" + site.id + "/"}
                                                            title="Print solution">💠</a>
                                                         <a className="aimage">🞮</a>
@@ -117,7 +118,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     </div>
                 </div>
             </div>
-            
+
             <div className="navbar navbar-inverse navbar-fixed-bottom">
                 <div className="container">
                     <div className="navbar-header">

@@ -63,8 +63,7 @@ class EditorReduxRoot extends Component {
             store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
         };
         webSocketInitialized.bind(this);
-        const token = localStorage.getItem('token');
-        let stompClient = initWebSocket(store, siteId, webSocketInitialized, token);
+        let stompClient = initWebSocket(store, siteId, webSocketInitialized);
         let editorRootSaga = createSagas(stompClient, siteId);
         sagaMiddleware.run(editorRootSaga);
 

@@ -8,7 +8,7 @@ npm install --save fabric
 npm install --save redux-saga
 npm install --save izitoast
 npm install --save webstomp-client
-
+npm install --save js-cookie
 
 add the line
   ,"proxy": "http://localhost:8080"

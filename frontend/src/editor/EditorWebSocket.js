@@ -2,7 +2,7 @@ import webstomp from 'webstomp-client';
 import {notify, notify_fatal, notify_neutral} from "../common/Notification";
 import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_SITE_FULL} from "./EditorActions";
 
-let initWebSocket = (store, siteId, callback, token) => {
+let initWebSocket = (store, siteId, callback) => {
 
     let siteInitializedFromServer = false;
 
@@ -13,8 +13,8 @@ let initWebSocket = (store, siteId, callback, token) => {
     port = developmentServer ? "80" : port;
     let protocol = (window.location.protocol === "http:") ? "ws" : "wss";
     let url = protocol + "://" + hostName + ":" + port + "/ws";
-    const oldCookie = document.cookie;
-    document.cookie = "token=token-123aa";
+
+
     let client = webstomp.client(url, {debug:false, heartbeat: {incoming: 0, outgoing: 0}});
 
     let onWsOpen = (event) => {

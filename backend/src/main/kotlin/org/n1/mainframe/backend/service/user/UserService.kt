@@ -14,15 +14,13 @@ class UserService(
 ) {
 
     val passwordEncoder = BCryptPasswordEncoder(4)
-//    : UserDetailsService {
 
-//    override fun loadUserByUsername(userName: String?): UserDetails {
-//        val user = userRepo.findById(userName).orElseThrow { throw UsernameNotFoundException("Invalid username or password.") }
-//        return UserPrincipal(user)
-//    }
+    fun getUserByUserName(userName: String): User {
+        return userRepo.findByUserName(userName).orElseThrow { throw UsernameNotFoundException("Invalid username or password.") }
+    }
 
     fun login(userName: String, password: String): User {
-        val user = userRepo.findByHandle(userName).orElseThrow { throw UsernameNotFoundException("Invalid username or password.") }
+        val user = getUserByUserName(userName.toLowerCase())
         if (passwordEncoder.matches(password, user.encodedPasscoded)) {
             return user
         }
@@ -39,13 +37,12 @@ class UserService(
 
     @PostConstruct
     fun init() {
-        val admin = userRepo.findByHandle("admin")
+        val admin = userRepo.findByUserName("admin")
         if (!admin.isPresent) {
             val adminUser = User(
-                    handle = "admin",
+                    userName = "admin",
                     type = UserType.ADMIN,
-                    id = "-1",
-                    ocName = "Default Admin"
+                    id = "-1"
             )
             createUser(adminUser, "77aa44")
         }

@@ -5,6 +5,6 @@ import java.security.Principal
 class ClientPrincipal(val user: User, val clientId: String): Principal {
 
     override fun getName(): String {
-        return clientId + ":" + user.handle
+        return clientId + ":" + user.userName
     }
 }

@@ -13,7 +13,7 @@ class UserAuthentication(val user: User): Authentication {
     }
 
     override fun getName(): String {
-        return user.handle
+        return user.userName
     }
 
     override fun getCredentials(): Any {
