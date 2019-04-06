@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.config
 
-import com.mongodb.Mongo
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
 import org.n1.mainframe.backend.AttackVector
@@ -18,21 +17,19 @@ class MongoDbConfig : AbstractMongoConfiguration() {
     private val clientUri: MongoClientURI
 
     init {
-        val url = System.getenv("MONGODB_URI")
-        if (url == null || url.trim { it <= ' ' }.isEmpty()) {
-            throw RuntimeException("No mongo db URL set, check env variable: MONGODB_URI")
-        }
+        val envUrl = System.getenv("MONGODB_URI")
+        val url =
+                if (envUrl != null && !envUrl.trim().isEmpty()) envUrl
+                else "mongodb://av2:av2@localhost/admin?authMechanism=SCRAM-SHA-1"
         clientUri = MongoClientURI(url)
     }
 
 
     override fun getDatabaseName(): String {
-        var dbName: String? = System.getenv("MONGODB_NAME")
-        if (dbName == null || dbName.trim { it <= ' ' }.isEmpty()) {
-            dbName = clientUri.database
-        }
-        println("Using database: " + dbName!!)
-        return dbName
+        val envName: String? = System.getenv("MONGODB_NAME")
+
+        return if (envName != null && !envName.trim().isEmpty()) envName
+        else "av2"
     }
 
     override fun mongoClient(): MongoClient {

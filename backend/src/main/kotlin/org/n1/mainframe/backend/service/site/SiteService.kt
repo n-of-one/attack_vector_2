@@ -19,7 +19,9 @@ class SiteService(
     }
 
     fun findByLink(link: String): Site? {
-        return siteRepo.findByLink(link)
+        val all = siteRepo.findAllByLink(link)
+        return if (all.size == 1) all.first()
+        else null
     }
 
     fun createSite(link: String): Site {
@@ -52,7 +54,7 @@ class SiteService(
     }
 
     fun deleteConnections(site: Site, connections: Collection<Connection>) {
-        connections.forEach { site.connections.remove( it.id ) }
+        connections.forEach { site.connections.remove(it.id) }
         siteRepo.save(site)
     }
 
@@ -61,7 +63,6 @@ class SiteService(
         site.nodes.remove(command.nodeId)
         siteRepo.save(site)
     }
-
 
 
 }

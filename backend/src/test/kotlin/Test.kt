@@ -9,6 +9,7 @@ import org.n1.mainframe.backend.model.site.enums.NodeType
 import org.n1.mainframe.backend.model.ui.AddNode
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.repo.SiteRepo
+import org.n1.mainframe.backend.service.EditorService
 import org.n1.mainframe.backend.web.ws.EditorController
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -23,7 +24,7 @@ import java.security.Principal
 class Test {
 
     @Autowired
-    lateinit var editorController: EditorController
+    lateinit var editorService: EditorService
     @Autowired
     lateinit var siteRepo: SiteRepo
     @Autowired
@@ -39,17 +40,16 @@ class Test {
 
     @Test
     fun addNode() {
-        val site = siteRepo.findById("1").get()
-        assertThat(site.nodes.size, IsEqual(0))
-
-        val principal = Principal { "10" }
+        val siteBefore = siteRepo.findById("1").get()
+        assertThat(siteBefore.nodes.size, IsEqual(0))
 
         val command = AddNode("1", 10, 20, NodeType.PASSCODE_STORE)
-        editorController.addNode(command, principal)
+        editorService.addNode(command)
 
-        assertThat(site.nodes.size, IsEqual(1))
+        val siteAfter = siteRepo.findById("1").get()
+        assertThat(siteAfter.nodes.size, IsEqual(1))
 
-        val node = nodeRepo.findById(site.nodes[0]).get()
+        val node = nodeRepo.findById(siteAfter.nodes[0]).get()
         assertThat(node.x, IsEqual(10))
         assertThat(node.y, IsEqual(20))
         assertThat(node.type, IsEqual(NodeType.PASSCODE_STORE))

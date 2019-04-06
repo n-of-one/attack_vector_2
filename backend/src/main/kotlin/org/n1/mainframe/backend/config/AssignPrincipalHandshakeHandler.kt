@@ -12,16 +12,12 @@ import java.security.Principal
 
 class AssignPrincipalHandshakeHandler : DefaultHandshakeHandler() {
 
-    fun rnull(ignore: String): Any? {
-        return null
-    }
-
     override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler?,
                                attributes: Map<String, Any>?): Principal {
 
         val authentication = SecurityContextHolder.getContext().authentication as? UserAuthentication ?: throw RuntimeException("Login please")
 
-        val clientId = createId("client", ::rnull )
+        val clientId = createId("client" )
         return ClientPrincipal(authentication.user, clientId)
     }
 

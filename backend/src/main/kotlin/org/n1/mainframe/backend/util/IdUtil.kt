@@ -3,7 +3,13 @@ package org.n1.mainframe.backend.util
 import org.apache.naming.SelectorContext.prefix
 import java.util.*
 
-fun createId(prefix: String, findExisting: (String)-> Any?): String {
+
+fun neverFindExisting(ignore: String): Any? {
+    return null
+}
+
+
+fun createId(prefix: String, findExisting: (String)-> Any? = ::neverFindExisting): String {
     return createId(prefix, findExisting, 9, 18)
 }
 

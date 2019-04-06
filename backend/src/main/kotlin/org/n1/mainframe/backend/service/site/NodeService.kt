@@ -10,7 +10,7 @@ import org.n1.mainframe.backend.model.ui.MoveNode
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.util.createId
 import org.n1.mainframe.backend.util.createServiceId
-import sun.plugin.dom.exception.InvalidStateException
+
 
 @org.springframework.stereotype.Service
 class NodeService(
@@ -46,7 +46,7 @@ class NodeService(
     }
 
     private fun nextFreeNetworkId(site: Site, nodes: List<Node>): String {
-        val usedNetworkIds : Set<String> = HashSet(nodes.map{ node:Node -> node.services[0]!!.data[NETWORK_ID]!!  })
+        val usedNetworkIds : Set<String> = HashSet(nodes.map{ node:Node -> node.services[0].data[NETWORK_ID]!!  })
 
         for (i in 0 .. usedNetworkIds.size+1 ) {
             val candidate = String.format("%02d", i)
@@ -54,7 +54,7 @@ class NodeService(
                 return candidate
             }
         }
-        throw InvalidStateException("Failed to find a free network ID for site: ${site.id}")
+        throw IllegalStateException("Failed to find a free network ID for site: ${site.id}")
     }
 
     fun getAll(nodeIds: List<String>): List<Node> {
