@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SiteRepo : PagingAndSortingRepository<Site, String> {
-    fun findByLink(link: String): Site
-    fun findAllByLink(link: String): Collection<Site>
+    fun findByName(name: String): Site
+    fun findAllByName(name: String): Collection<Site>
 
 //    val sites = ArrayList<Site>()
 //

@@ -21,7 +21,6 @@ class SiteDataService(
 
         try {
             when (command.field) {
-                "link" -> updateLink(site, value, principal)
                 "name" -> updateName(site, value)
                 "description" -> site.description = value
                 "gm" -> site.creator = value
@@ -54,40 +53,6 @@ class SiteDataService(
         site.hackTime = input
     }
 
-    fun updateLink(site: Site, input: String, principal: Principal) {
-        if (input.isEmpty()) {
-            throw ValidationException("Site link cannot be empty.")
-        }
-
-        val properUrl = checkLink(input)
-
-        if (!properUrl) {
-            val message = NotyMessage("advice_right", "advice",
-                    "The standard format for a link is:<br>" +
-                            "(url):(planet)<br>" +
-                            "<br>" +
-                            "(url) = normal url.<br>" +
-                            "(planet) = three letter planet abbreviation,<br>" +
-                            "which is just the first three letters of the<br>" +
-                            "planet name.<br>")
-            stompService.notyToUser(principal, message)
-        }
-
-        site.link = input
-    }
-
-    fun checkLink(link: String): Boolean {
-        if (link.length < 5) {
-            return false
-        }
-        val colonIndex = link.lastIndexOf(':')
-        if (colonIndex != link.length - 4) {
-            return false
-        }
-
-        val planet = link.substringAfterLast(":")
-        return true
-    }
 
     fun updateHackable(site: Site, input: Boolean) {
         site.hackable = input
@@ -98,6 +63,7 @@ class SiteDataService(
 
     fun updateName(site: Site, input: String) {
         if (input.isEmpty()) throw ValidationException("Name cannot be empty")
+        if (input.contains(" ")) throw ValidationException("Site name cannot contain a space")
         site.name = input
     }
 

@@ -29,7 +29,7 @@ let initWebSocket = (store, siteId, callback, token) => {
         // document.cookie = oldCookie;
     };
 
-    const onWsConnectError = () => {
+    const onWsConnectError = (event) => {
         notify_fatal('Connection with mainframe lost. Please refresh browser.');
         callback(false);
     };

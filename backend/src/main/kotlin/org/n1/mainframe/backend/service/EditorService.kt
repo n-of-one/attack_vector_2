@@ -17,8 +17,8 @@ class EditorService(
         val connectionService: ConnectionService,
         val stompService: StompService) {
 
-    fun getByLinkOrCreate(link: String): Site {
-        return siteService.findByLink(link) ?: siteService.createSite(link)
+    fun getByNameOrCreate(name: String): Site {
+        return siteService.findByName(name) ?: siteService.createSite(name)
     }
 
     fun addNode(command: AddNode) {

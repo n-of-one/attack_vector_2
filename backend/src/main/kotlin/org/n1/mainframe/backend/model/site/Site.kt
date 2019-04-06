@@ -2,8 +2,7 @@ package org.n1.mainframe.backend.model.site
 
 data class Site(
         val id: String,
-        var link: String,
-        var name: String? = null,
+        var name: String,
         var description: String? = null,
         var creator: String? = null,
         var hackTime: String? = null,

@@ -3,9 +3,8 @@ package org.n1.mainframe.backend.service.site
 import org.n1.mainframe.backend.model.site.Connection
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Site
-import org.n1.mainframe.backend.model.ui.*
+import org.n1.mainframe.backend.model.ui.DeleteNodeCommand
 import org.n1.mainframe.backend.repo.SiteRepo
-import org.n1.mainframe.backend.service.StompService
 import org.n1.mainframe.backend.util.createId
 import org.springframework.stereotype.Service
 
@@ -18,15 +17,15 @@ class SiteService(
         return siteRepo.findById(id).orElseThrow { throw IllegalArgumentException("No site found for id: ${id}") }
     }
 
-    fun findByLink(link: String): Site? {
-        val all = siteRepo.findAllByLink(link)
+    fun findByName(name: String): Site? {
+        val all = siteRepo.findAllByName(name)
         return if (all.size == 1) all.first()
         else null
     }
 
-    fun createSite(link: String): Site {
+    fun createSite(name: String): Site {
         val id = createId("site", siteRepo::findById)
-        val site = Site(id = id, link = link, name = link, hackTime = "15:00", startNode = "00")
+        val site = Site(id = id, name = name, hackTime = "15:00", startNode = "00")
         siteRepo.save(site)
         return site
     }
