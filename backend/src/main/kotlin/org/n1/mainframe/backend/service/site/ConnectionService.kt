@@ -16,7 +16,7 @@ class ConnectionService(
     }
 
     fun createConnection(command: AddConnection): Connection {
-        val id = createId("con", connectionRepo::findOne)
+        val id = createId("con", connectionRepo::findById)
         val connection = Connection(id, command.from, command.to, command.connectionType)
         connectionRepo.save(connection)
 
@@ -38,7 +38,7 @@ class ConnectionService(
     }
 
     fun deleteAll(connections: Collection<Connection>) {
-        connectionRepo.delete(connections)
+        connectionRepo.deleteAll(connections)
     }
 
 

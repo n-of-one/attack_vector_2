@@ -19,7 +19,7 @@ class NodeService(
 ) {
 
     fun createNode(command: AddNode): Node {
-        val id = createId("node", nodeRepo::findOne)
+        val id = createId("node", nodeRepo::findById)
         val services = listOf( createOsService(command.siteId) )
 
         val node = Node(id, command.type, command.x, command.y, command.type.ice, services )
@@ -62,7 +62,7 @@ class NodeService(
     }
 
     fun getById(nodeId: String) : Node {
-        return nodeRepo.findOne(nodeId) ?: throw IllegalStateException("Node not found with id: ${nodeId}")
+        return nodeRepo.findById(nodeId).orElseThrow { throw IllegalStateException("Node not found with id: ${nodeId}") }
     }
 
     fun moveNode(command: MoveNode) {

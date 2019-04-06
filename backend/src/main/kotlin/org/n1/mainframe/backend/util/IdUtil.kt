@@ -1,5 +1,6 @@
 package org.n1.mainframe.backend.util
 
+import org.apache.naming.SelectorContext.prefix
 import java.util.*
 
 fun createId(prefix: String, findExisting: (String)-> Any?): String {
@@ -16,7 +17,10 @@ fun createId(prefix: String, findExisting: (String)-> Any?, start: Int, end: Int
     do {
         val uuidPart = UUID.randomUUID().toString().substring(start, end)
         id = "$prefix-$uuidPart"
-        val existing = findExisting(id)
+        var existing = findExisting(id)
+        if (existing is Optional<*> && !existing.isPresent) {
+            existing = null
+        }
         count ++
     }
     while (existing != null && count < 10)

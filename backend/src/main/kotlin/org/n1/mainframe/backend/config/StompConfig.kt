@@ -11,9 +11,8 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent
 import org.springframework.web.socket.messaging.SessionConnectEvent
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
 import org.springframework.messaging.simp.config.ChannelRegistration
-
-
-
+import org.springframework.security.messaging.web.socket.server.CsrfTokenHandshakeInterceptor
+import org.springframework.web.socket.server.HandshakeInterceptor
 
 
 @Configuration
@@ -28,6 +27,7 @@ class StompConfig() : AbstractWebSocketMessageBrokerConfigurer() {
                 .addEndpoint("/ws")
                 .setAllowedOrigins("*")
                 .setHandshakeHandler(AssignPrincipalHandshakeHandler())
+                .addInterceptors(CsrfTokenHandshakeInterceptor())
     }
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
