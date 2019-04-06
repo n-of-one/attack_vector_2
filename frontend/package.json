@@ -3,22 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "fabric": "^1.7.22",
-    "izitoast": "^1.2.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-redux": "^5.0.7",
-    "react-router-dom": "^4.2.2",
-    "react-scripts": "1.1.0",
-    "redux": "^3.7.2",
-    "redux-saga": "^0.16.0",
-    "webstomp-client": "^1.2.0"
+    "create-react-app": "^2.1.8",
+    "fabric": "^2.7.0",
+    "izitoast": "^1.4.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^6.0.1",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "2.1.8",
+    "redux": "^4.0.1",
+    "redux-saga": "^1.0.2",
+    "webstomp-client": "^1.2.6"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "proxy": "http://localhost:80"
 }
