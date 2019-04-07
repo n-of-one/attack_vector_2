@@ -1,0 +1,6 @@
+const NAVIGATE_PAGE = "NAVIGATE_PAGE";
+
+
+export {
+    NAVIGATE_PAGE
+}

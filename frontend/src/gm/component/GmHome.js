@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
+import MenuBar from "../../common/component/MenuBar";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -24,7 +25,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         {id: "tutorial-site", hackable: false}
     ];
 
-    let myUser = {loginName: "Admin"};
 
     return (
         <span>
@@ -64,7 +64,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             💫 - reactivate site<br/>
                         </div>
                         <div id="actions">
-                            <p className="text">
+                            <div className="text">
                                 <div className="form-inline">
                                     <div className="form-group">
                                         <input type="text" className="form-control" id="siteName"
@@ -72,9 +72,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                     </div>
                                     <button type="button" className="btn btn-info" id="btn_edit">Create or edit</button>
                                 </div>
-                            </p>
+                            </div>
                             <p>
-                                <NavLink to="edit/tutorial.nfo:pra" target="_blank" >Edit</NavLink>
+                                <NavLink to="/edit/tutorial.nfo:pra" target="_blank" >Edit</NavLink>
                             </p>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                     {
                                         sites.map((site) => {
                                             return (
-                                                <tr>
+                                                <tr key="1">
                                                     <td className="table-very-condensed"><a target="_blank" rel="noopener noreferrer"
                                                                                             href={"/gm/editor/" + site.id + "/"}>{site.id}</a>
                                                     </td>
@@ -119,37 +119,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
             </div>
 
-            <div className="navbar navbar-inverse navbar-fixed-bottom">
-                <div className="container">
-                    <div className="navbar-header">
-                        <button type="button" className="navbar-toggle" data-toggle="collapse"
-                                data-target=".nav-collapse">
-                            <span className="icon-bar"/>
-                            <span className="icon-bar"/>
-                            <span className="icon-bar"/>
-                        </button>
-                        <a className="navbar-brand">↼ Attack Vector ⇁</a>
-                    </div>
-                    <div className="navbar-collapse collapse">
-                        <ul className="nav navbar-nav">
-                            <li className="active"><a>Sites</a></li>
-                            <li><a href="/gm/user/">Users</a></li>
-                            <li><a href="/gm/logs/">Logs</a></li>
-                        </ul>
-                        <ul className="nav navbar-nav navbar-right">
-                            <li>
-                                <a href="/manual" target="_blank">Manual</a>
-                            </li>
-                            <li>
-                                <a href="/me/">ꕺ {myUser.loginName} </a>
-                            </li>
-                            <li>
-                                <a href="/logout">ꕻ Logout</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <MenuBar />
+
         </span>
     );
 });

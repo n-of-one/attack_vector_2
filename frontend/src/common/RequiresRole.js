@@ -11,19 +11,13 @@ class RequiresRole extends Component {
         this.state = {authenticated: authenticated};
     }
 
-    logout() {
-        Cookies.remove("jwt");
-        this.setState({authenticated: false});
-    }
-
     render() {
         if (!this.state.authenticated) {
             document.location.href = `/login?next=${document.location.href}`;
         }
         else {
             return (
-                <div style={{backgroundColor: "#FFFFFF"}}>
-                    <button onClick={() => this.logout()}>Logout</button>
+                <div>
                     {this.props.children}
                 </div>
             )

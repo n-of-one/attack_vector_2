@@ -7,12 +7,16 @@ import org.springframework.stereotype.Component
 import java.security.SignatureException
 import java.util.*
 
-
 @Component
 class JwtTokenProvider {
 
     private val jwtSecret: String = "SuperSecretKeyForHS512NeedsToBeLongEnoughToContainAtLeast512BitsOfEntropySoThisShouldDoIt"
-    private val jwtExpirationInMs: Int = 1000 * 60 * 60 * 5 // 5 hours
+
+
+    val jwtEpirationInS: Int = 60 * 60 * 5 // 5 hours
+    private val jwtExpirationInMs: Int = 1000 * jwtEpirationInS
+
+
 
     companion object : KLogging()
 
@@ -57,4 +61,5 @@ class JwtTokenProvider {
 
         return false
     }
+
 }

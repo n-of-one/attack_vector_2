@@ -4,12 +4,12 @@ import { Provider} from "react-redux";
 import EditorHome from "./component/EditorHome";
 import createSagas from "./saga/EditorRootSaga";
 import createSagaMiddleware from 'redux-saga'
-import editorReducer from "./MyEditorStore";
+import editorReducer from "./EditorReducer";
 import {applyMiddleware, createStore} from "redux";
 import { REQUEST_SITE_FULL} from "./EditorActions";
-import RequiresRole from "../app/auth/component/RequiresRole";
+import RequiresRole from "../common/RequiresRole";
 
-class EditorReduxRoot extends Component {
+class EditorRoot extends Component {
 
     constructor(props) {
         super(props);
@@ -94,5 +94,5 @@ class EditorReduxRoot extends Component {
 }
 
 
-export default EditorReduxRoot
+export default EditorRoot
 

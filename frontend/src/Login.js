@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 
-
 class Login extends Component {
 
     constructor(props) {
@@ -34,12 +33,17 @@ class Login extends Component {
         ).then(response => {
             if (response.ok) {
                 response.text().then(data => {
-                    const {success, role, message} = JSON.parse(data);
+                    const {success, message} = JSON.parse(data);
                     if (success) {
-                        localStorage.setItem("role", role);
                         const search = document.location.search;
-                        const next = search.substring(search.indexOf('=') + 1);
-                        document.location.href = next;
+                        if (search.length <= 5) {
+                            document.location.href = "/";
+                        }
+                        else {
+                            const next = search.substring(search.indexOf('=') + 1);
+                            document.location.href = next;
+                        }
+
                     }
                     else {
                         this.setState({message: message})
@@ -74,7 +78,7 @@ class Login extends Component {
                             <div className="form-group">
                                 <label htmlFor="inputEmail3" className="col-sm-2 control-label">Handle</label>
                                 <div className="col-sm-10">
-                                    <input type="text" className="form-control" id="handle" placeholder=""
+                                    <input type="text" className="form-control" id="handle" placeholder="" autofocus="true"
                                            onChange={(event) => {
                                                this.onNameChange(event.target.value)
                                            }}/>

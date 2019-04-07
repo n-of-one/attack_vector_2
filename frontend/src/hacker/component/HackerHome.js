@@ -1,0 +1,103 @@
+import React from 'react';
+import {connect} from "react-redux";
+import {NavLink} from "react-router-dom";
+import MenuBar from "../../common/component/MenuBar";
+
+/* eslint jsx-a11y/accessible-emoji: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 0*/
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+    }
+};
+let mapStateToProps = (state) => {
+    return {
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+    () => {
+
+        document.body.style.backgroundColor = "#222222";
+
+
+    let sites = [
+        {id: "tutorial-site", hackable: false}
+    ];
+
+    return (
+        <span>
+            
+            <div className="container">
+                <div className="row">
+                    <div className="col-lg-2">
+                        <span className="text">&nbsp;</span>
+                    </div>
+                    <div className="col-lg-5 backgroundLight">
+                        <span className="text">&nbsp;</span>
+                    </div>
+                    <div className="col-lg-5 backgroundDark">
+                        <span className="text">Scans</span>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-5">
+                        <div className="term terminal">
+                            <strong>🜁 Verdant OS. 🜃</strong><br/>
+                            <br/>
+                            Choose site to investigate or attack<br/>
+                        </div>
+                        <div id="actions">
+                            <p className="text">
+                                <div className="form-inline">
+                                    <div className="form-group">
+                                        <input type="text" className="form-control" id="siteName"
+                                               placeholder="Site link"/>
+                                    </div>
+                                    <button type="button" className="btn btn-info" id="btn_edit">Scan</button>
+                                </div>
+                            </p>
+                            <p>
+                                <NavLink to="/scan/site-123" target="_blank" >Edit</NavLink>
+                            </p>
+                        </div>
+                    </div>
+                    <div className="col-lg-5 backgroundDark rightPane">
+                        <div className="dark_well rightPaneDimensions">
+                            <div>&nbsp;</div>
+                            <div className="rightPanePadLeftRight">
+                                <table className="table table-condensed text-muted text" id="sitesTable">
+                                    <thead>
+                                    <tr>
+                                        <td className="text-strong">Name</td>
+                                        <td className="text-strong">Action</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        sites.map((site) => {
+                                            return (
+                                                <tr>
+                                                    <td className="table-very-condensed">
+                                                        <a target="_blank" rel="noopener noreferrer"
+                                                           href={"/scan/" + site.id + "/"}>{site.name}</a>
+                                                    </td>
+                                                </tr>);
+                                        })
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> {/* container*/}
+            <MenuBar />
+        </span>
+
+    );
+});

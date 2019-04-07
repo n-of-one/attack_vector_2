@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority
 
 class UserAuthentication(val user: User): Authentication {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return user.type.authorities
+        return user.type.authorities.toMutableList()
     }
 
     override fun setAuthenticated(p0: Boolean) {

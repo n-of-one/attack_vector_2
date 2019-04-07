@@ -3,9 +3,11 @@ package org.n1.mainframe.backend.service.user
 import org.n1.mainframe.backend.model.user.User
 import org.n1.mainframe.backend.model.user.enums.UserType
 import org.n1.mainframe.backend.repo.UserRepo
+import org.n1.mainframe.backend.util.createId
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
+import java.util.*
 import javax.annotation.PostConstruct
 
 @Component
@@ -37,14 +39,29 @@ class UserService(
 
     @PostConstruct
     fun init() {
-        val admin = userRepo.findByUserName("admin")
-        if (!admin.isPresent) {
-            val adminUser = User(
-                    userName = "admin",
-                    type = UserType.ADMIN,
-                    id = "-1"
+        mandatoryUser("admin", "admin", UserType.ADMIN)
+        mandatoryUser("gm", "gm", UserType.GM)
+        mandatoryUser("hacker", "hacker", UserType.HACKER)
+    }
+
+    fun mandatoryUser(userName: String, password: String, type: UserType) {
+        val user = userRepo.findByUserName(userName)
+        if (!user.isPresent) {
+            val newUser = User(
+                    userName = userName,
+                    type = type,
+                    id = createUserId()
             )
-            createUser(adminUser, "77aa44")
+            createUser(newUser, password)
         }
     }
+
+    fun createUserId(): String {
+        fun findExisting(candidate: String): Optional<User> {
+            return userRepo.findById(candidate)
+        }
+
+        return createId("user-", ::findExisting, 9, 13)
+    }
+
 }
