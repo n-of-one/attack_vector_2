@@ -8,8 +8,11 @@ class RequiresRole extends Component {
         this.props = props;
         let jwt = Cookies.get("jwt");
         const authenticated = jwt !== undefined;
-
-        const roles = Cookies.get("roles").split("|");
+        let roles = [];
+        const cookieRoles = Cookies.get("roles");
+        if (cookieRoles) {
+            roles = cookieRoles.split("|");
+        }
         this.state = {
             authenticated: authenticated,
             roles: roles

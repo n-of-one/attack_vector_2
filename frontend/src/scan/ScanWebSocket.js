@@ -19,7 +19,7 @@ let initWebSocket = (store, siteId, callback) => {
 
     let onWsOpen = (event) => {
         let userName = event.headers["user-name"];
-        notify_neutral('Status','Connection with server established (' + userName + ")");
+        // notify_neutral('Status','Connection with server established (' + userName + ")");
 
         setupHeartbeat(developmentServer, client);
         client.subscribe('/topic/site/' + siteId, handleSiteEvent);

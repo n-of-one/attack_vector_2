@@ -1,0 +1,10 @@
+{
+    lines: [(line)]
+    readonly: false
+    prompt: ">"
+}
+
+line {
+    type: "text" | "richtext" | "..."
+    data: "this is regular text"
+}

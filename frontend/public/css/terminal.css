@@ -1,0 +1,26 @@
+.terminalPanel {
+    background-color: #222222;
+    height: 780px;
+}
+
+.terminalLine {
+    font-family: monospace;
+    /*font-family: FreeMono, monospace; this don't work on Android */
+    color: #aaa;
+    background-color: #222222;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.terminalInput {
+    border: none;
+    background-color: #222222;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.terminalCaret {
+    display: inline-block;
+    background-color: #2e6da4;
+    width: 7px;
+}

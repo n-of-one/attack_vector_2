@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import MenuBar from "../../common/component/MenuBar";
 import {SCAN} from "../ScanActions";
-import Terminal from "../../editor/component/Terminal";
+import Terminal from "../../common/component/terminal/Terminal";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -15,11 +15,13 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 let mapStateToProps = (state) => {
-    return {state,};
+    return {
+        terminal: state.terminal,
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({scan}) => {
+    ({terminal}) => {
 
         document.body.style.backgroundColor = "#222222";
 
@@ -43,9 +45,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="col-lg-2">
                     </div>
                     <div className="col-lg-5">
-                        <div className="term terminal">
-                            hello
-                        </div>
+                        <Terminal terminal={terminal}/>
                     </div>
                     <div className="col-lg-5 rightPane">
                         <div className="">
