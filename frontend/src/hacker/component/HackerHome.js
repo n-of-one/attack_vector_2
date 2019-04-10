@@ -2,31 +2,33 @@ import React from 'react';
 import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 import MenuBar from "../../common/component/MenuBar";
+import TextInput from "../../common/TextInput";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        scan: (value) => {
+            alert(value);
+        }
     }
 };
 let mapStateToProps = (state) => {
-    return {
-    };
+    return { state, };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    () => {
+    ({scan}) => {
 
         document.body.style.backgroundColor = "#222222";
 
+        let sites = [
+            {id: "tutorial-site", name: "Tutorial"}
+        ];
 
-    let sites = [
-        {id: "tutorial-site", hackable: false}
-    ];
-
-    return (
-        <span>
+        return (
+            <span>
             
             <div className="container">
                 <div className="row">
@@ -51,18 +53,17 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             Choose site to investigate or attack<br/>
                         </div>
                         <div id="actions">
-                            <p className="text">
-                                <div className="form-inline">
-                                    <div className="form-group">
-                                        <input type="text" className="form-control" id="siteName"
-                                               placeholder="Site link"/>
-                                    </div>
-                                    <button type="button" className="btn btn-info" id="btn_edit">Scan</button>
-                                </div>
-                            </p>
-                            <p>
-                                <NavLink to="/scan/site-123" target="_blank" >Edit</NavLink>
-                            </p>
+                            <div className="text">
+                                <TextInput placeholder="Site name"
+                                           buttonLabel="Scan"
+                                           buttonClass="btn-info"
+                                           save={(siteName) => scan(siteName)}
+                                           clearAfterSubmit="true"/>
+
+                            </div>
+                            <div>
+                                <NavLink to="/scan/site-123" target="_blank">Edit</NavLink>
+                            </div>
                         </div>
                     </div>
                     <div className="col-lg-5 backgroundDark rightPane">
@@ -80,10 +81,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                     {
                                         sites.map((site) => {
                                             return (
-                                                <tr>
+                                                <tr key="1">
                                                     <td className="table-very-condensed">
                                                         <a target="_blank" rel="noopener noreferrer"
                                                            href={"/scan/" + site.id + "/"}>{site.name}</a>
+                                                    </td>
+                                                    <td className="table-very-condensed">act
                                                     </td>
                                                 </tr>);
                                         })
@@ -95,9 +98,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     </div>
                 </div>
 
-            </div> {/* container*/}
-            <MenuBar />
+            </div>
+                {/* container*/}
+                <MenuBar/>
         </span>
 
-    );
-});
+        );
+    });
