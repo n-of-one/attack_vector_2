@@ -75,12 +75,16 @@ body {
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
 }
 
-.dark_well {
+.siteMap {
     background-color: #333333;
-    border-radius: 3px 3px 3px 3px
+    border-radius: 3px 3px 3px 3px;
+    height: 815px;
+    width: 607px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.backgroundDark {
+.rightPane {
     background-color: #111111;
 }
 

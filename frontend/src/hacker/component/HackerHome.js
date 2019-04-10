@@ -61,7 +61,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="col-lg-5 backgroundLight">
                         <span className="text">&nbsp;</span>
                     </div>
-                    <div className="col-lg-5 backgroundDark">
+                    <div className="col-lg-5 rightPane">
                         <span className="text">Scans</span>
                     </div>
                 </div>
@@ -89,8 +89,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             </div>
                         </div>
                     </div>
-                    <div className="col-lg-5 backgroundDark rightPane">
-                        <div className="dark_well rightPaneDimensions">
+                    <div className="col-lg-5 rightPane rightPane">
+                        <div className="siteMap rightPaneDimensions">
                             <div>&nbsp;</div>
                             <div className="rightPanePadLeftRight">
                                 <table className="table table-condensed text-muted text" id="sitesTable">

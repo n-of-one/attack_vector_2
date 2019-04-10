@@ -19,7 +19,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({site, save}) => {
     return (
     <div className="row">
-        <div className="col-lg-11 dark_well">
+        <div className="col-lg-11 siteMap">
             <br />
             <div className="row">
                 <div className="col-lg-6">

@@ -18,7 +18,7 @@ export default class TextSaveInput extends Component {
 
     handleKeyDown(event) {
         if (event.keyCode === ENTER_KEY) {
-            this.props.save();
+            this.props.save(this.state.value);
         }
     }
 
