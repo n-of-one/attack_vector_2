@@ -23,7 +23,7 @@ class GmRoot extends Component {
 
     render() {
         return(
-            <RequiresRole>
+            <RequiresRole requires="ROLE_SITE_MANAGER">
                 {this.renderIfAuthenticated()}
             </RequiresRole>
         )

@@ -23,7 +23,7 @@ class HackerRoot extends Component {
 
     render() {
         return(
-            <RequiresRole>
+            <RequiresRole requires="ROLE_HACKER">
                 {this.renderIfAuthenticated()}
             </RequiresRole>
         )

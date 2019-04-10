@@ -7,6 +7,7 @@ import Login from "./Login";
 import RunRoot from "./run/RunRoot";
 import HackerRoot from "./hacker/HackerRoot";
 import Cookies from "js-cookie";
+import ScanRoot from "./scan/ScanRoot";
 
 
 
@@ -36,6 +37,7 @@ render(
     <BrowserRouter>
         <Switch>
             <Route path="/login" component={Login} />
+            <Route path="/hacker/scan/:siteId?" component={ScanRoot} />
             <Route path="/hacker" component={HackerRoot} />
             <Route path="/gm" component={GmRoot} />
             <Route path="/edit/:siteId?" component={EditorRoot} />

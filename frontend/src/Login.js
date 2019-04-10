@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {post} from "./common/RestClient";
 
 class Login extends Component {
 
@@ -24,39 +25,62 @@ class Login extends Component {
         const loginInput = {name: this.name, password: this.password};
         this.setState({message: "Logging in"});
 
-        fetch("/api/login", {
-                credentials: 'include',
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(loginInput),
-            }
-        ).then(response => {
-            if (response.ok) {
-                response.text().then(data => {
-                    const {success, message} = JSON.parse(data);
-                    if (success) {
-                        const search = document.location.search;
-                        if (search.length <= 5) {
-                            document.location.href = "/";
-                        }
-                        else {
-                            const next = search.substring(search.indexOf('=') + 1);
-                            document.location.href = next;
-                        }
-
+        post({
+            url: "/api/login",
+            body: loginInput,
+            ok: ({success, message}) => {
+                if (success) {
+                    const search = document.location.search;
+                    if (search.length <= 5) {
+                        document.location.href = "/";
                     }
                     else {
-                        this.setState({message: message})
+                        const next = search.substring(search.indexOf('=') + 1);
+                        document.location.href = next;
                     }
-                });
-            }
-            else {
+                }
+                else {
+                    this.setState({message: message});
+                }
+            },
+            notok: () => {
                 this.setState({message: "Connection to server failed, unable to continue."});
             }
-        }
-        ).catch(error => {
-            console.log(error);
         });
+
+
+        // fetch("/api/login", {
+        //         credentials: 'include',
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify(loginInput),
+        //     }
+        // ).then(response => {
+        //     if (response.ok) {
+        //         response.text().then(data => {
+        //             const {success, message} = JSON.parse(data);
+        //             if (success) {
+        //                 const search = document.location.search;
+        //                 if (search.length <= 5) {
+        //                     document.location.href = "/";
+        //                 }
+        //                 else {
+        //                     const next = search.substring(search.indexOf('=') + 1);
+        //                     document.location.href = next;
+        //                 }
+        //             }
+        //             else {
+        //                 this.setState({message: message})
+        //             }
+        //         });
+        //     }
+        //     else {
+        //
+        //     }
+        // }
+        // ).catch(error => {
+        //     console.log(error);
+        // });
     }
 
     render() {

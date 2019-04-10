@@ -69,6 +69,7 @@ class EditorRoot extends Component {
 
         this.store = store;
     }
+
     renderIfAuthenticated() {
         if (this.state.initSuccess === null){
             this.init();
@@ -86,13 +87,11 @@ class EditorRoot extends Component {
 
     render() {
         return(
-            <RequiresRole>
+            <RequiresRole requires="ROLE_SITE_MANAGER">
                 {this.renderIfAuthenticated()}
             </RequiresRole>
         )
     }
 }
 
-
 export default EditorRoot
-

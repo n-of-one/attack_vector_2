@@ -3,42 +3,19 @@ import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 import MenuBar from "../../common/component/MenuBar";
 import TextInput from "../../common/TextInput";
-import {SCAN} from "../HackerActions";
-import {post} from "../../common/RestClient";
-import {notify, notify_fatal} from "../../common/Notification";
+import {SCAN} from "../ScanActions";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
-
-let scan = (siteName) => {
-    post({
-        url: "/api/scan/site",
-        body: {siteName: siteName},
-        ok: ({scanId, message}) => {
-            if (scanId) {
-                document.location.href = "/hacker/scan/" + scanId;
-            }
-            else {
-                notify(message);
-            }
-        },
-        notok: () => {
-            notify_fatal("Connection to server failed, unable to continue.");
-        }
-    });
-
-
-};
-
 const mapDispatchToProps = (dispatch) => {
     return {
-        scan: scan
-    };
+        scan: (siteName) => { dispatch({action: SCAN, siteName: siteName})
+        }
+    }
 };
-
 let mapStateToProps = (state) => {
-    return {state,};
+    return { state, };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(

@@ -40,7 +40,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             }
         }
         else {
-            return <span >not showing {label} </span>
+            return <span >{label} </span>
         }
 
     });
