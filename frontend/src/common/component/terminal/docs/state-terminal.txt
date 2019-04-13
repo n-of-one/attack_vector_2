@@ -2,9 +2,19 @@
     lines: [(line)]
     readonly: false
     prompt: ">"
+    buffer: [(buffered line)]
+    current_rendering: { line: (line), position: 12 }
 }
 
 line {
     type: "text" | "richtext" | "..."
     data: "this is regular text"
 }
+
+buffered line {
+    type: "text" | "rich text" | ...
+    data: "this is the text"
+    wait: millis to wait before rendering
+}
+
+

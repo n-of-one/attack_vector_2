@@ -1,77 +1,45 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
 
-const ENTER_KEY = 13;
-const BACKSPACE = 8;
-const TAB = 9;
+let terminalIntervalId = null;
 
-export default class Terminal extends Component {
+class Terminal extends Component {
 
     state = {};
+    dispatch = null;
 
     constructor(props) {
         super(props);
-        this.state = {
-            value: "",
-            lines: props.terminal.lines,
-            prompt: props.terminal.prompt,
-            readonly: props.terminal.readonly,
+        this.state = { ...props.terminal };
+        this.dispatch = props.dispatch;
+
+        if (!terminalIntervalId) {
+            terminalIntervalId = setInterval(() => {
+                this.dispatch({type: TERMINAL_TICK});
+            }, 100)
         }
     }
 
     componentWillReceiveProps(props) {
-        let {lines, prompt, readonly} = props.terminal;
-        this.setState({
-            lines: lines,
-            prompt: prompt,
-            readonly: readonly
-        });
+        this.setState({ ...props.terminal });
     }
 
     handleKeyDown(event) {
         let {keyCode, key} = event;
-        if (keyCode === ENTER_KEY) {
-            let line = this.state.value;
-            let lines = [ ...this.state.lines, {type: "text", data: line} ];
-            this.setState({
-                lines: lines,
-                value: "",
-            });
-            // this.props.submit(this.state.value);
-            return
-        }
-        let value = this.state.value;
-        if (keyCode === BACKSPACE && value.length > 0) {
-            let newValue = value.substr(0, value.length-1);
-            this.setState({value: newValue});
-            return;
-        }
-        if (keyCode === TAB ) {
-            this.setState({value: this.state.value + "[t]"});
-            event.preventDefault();
-            return;
-        }
-        if (key.length === 1) {
-            this.setState({value: this.state.value + event.key});
-        }
-        else {
-            // ignore other keys for now.
-            // this.setState({value: this.state.value + "[" + keyCode + "] "});
-        }
-
+        event.preventDefault();
+        this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode});
     }
 
-    submit() {
-        this.props.save(this.state.value);
-        this.setState({value: ""});
+    renderLine(line, index) {
+        return (<div className="terminalLine" key={index} >{line.data}&nbsp;</div>)
     }
-
-    renderLine(line) {
-        return (<div className="terminalLine" >{line.data}&nbsp;</div>)
-    }
-
     renderInput() {
+        if (this.readonly) {
+            return <div />
+        }
         return (
-            <div className="terminalLine">{prompt} {this.state.value}<span className="terminalCaret">&nbsp;</span></div>
+            <div className="terminalLine">{this.state.prompt} {this.state.input}<span className="terminalCaret">&nbsp;</span></div>
         )
     }
 
@@ -80,9 +48,23 @@ export default class Terminal extends Component {
         let lines = this.state.lines;
         return (
             <div className="terminalPanel" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
-                {lines.map((line) => this.renderLine(line))}
+                {lines.map((line, index) => this.renderLine(line, index))}
                 {this.renderInput()}
         </div>
         );
     }
 }
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatch: dispatch
+    };
+};
+
+let mapStateToProps = (state) => {
+    return {
+        terminal: state.terminal,
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Terminal);

@@ -10,8 +10,9 @@ import Terminal from "../../common/component/terminal/Terminal";
 const mapDispatchToProps = (dispatch) => {
     return {
         scan: (siteName) => {
-            dispatch({action: SCAN, siteName: siteName})
-        }
+            dispatch({type: SCAN, siteName: siteName})
+        },
+        addLine: () => {  dispatch({type: "ADD_LINE"}) }
     }
 };
 let mapStateToProps = (state) => {
@@ -21,7 +22,7 @@ let mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({terminal}) => {
+    ({terminal, addLine}) => {
 
         document.body.style.backgroundColor = "#222222";
 
@@ -43,6 +44,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
                 <div className="row">
                     <div className="col-lg-2">
+                        <button onClick={() => {addLine()}}>Add line</button>
                     </div>
                     <div className="col-lg-5">
                         <Terminal terminal={terminal}/>
