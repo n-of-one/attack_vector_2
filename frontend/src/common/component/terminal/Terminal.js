@@ -8,6 +8,7 @@ class Terminal extends Component {
 
     state = {};
     dispatch = null;
+    bottomRef = React.createRef();
 
     constructor(props) {
         super(props);
@@ -16,14 +17,31 @@ class Terminal extends Component {
 
         if (!terminalIntervalId) {
             terminalIntervalId = setInterval(() => {
+
+
                 this.dispatch({type: TERMINAL_TICK});
-            }, 100)
+            }, 10)
         }
     }
 
     componentWillReceiveProps(props) {
         this.setState({ ...props.terminal });
     }
+
+    componentDidMount() {
+        this.scrollToBottom();
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
+    }
+
+    scrollToBottom() {
+        this.bottomRef.current.scrollIntoView();
+    }
+
+
+
 
     handleKeyDown(event) {
         let {keyCode, key} = event;
@@ -100,9 +118,10 @@ class Terminal extends Component {
     render() {
         let lines = this.state.lines;
         return (
-            <div className="terminalPanel" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
+            <div className="terminalPanel scrollbar" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
                 {lines.map((line, index) => this.renderLine(line, index))}
                 {this.renderInput()}
+                <div ref={this.bottomRef} />
         </div>
         );
     }

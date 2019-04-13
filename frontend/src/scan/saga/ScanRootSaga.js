@@ -1,4 +1,4 @@
-import { takeEvery, all } from 'redux-saga/effects'
+import { all } from 'redux-saga/effects'
 
 const createScanSagas = (stompClient, siteId) => {
 

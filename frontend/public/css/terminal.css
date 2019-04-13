@@ -52,3 +52,23 @@
 .terminal_style_u {
     text-decoration: underline;
 }
+
+.scrollbar {
+    overflow-y : auto;
+    scrollbar-width: thin;
+    scrollbar-color: #666 #444;
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    background: #444;
+    border-radius: 5px;
+}

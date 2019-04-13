@@ -1,19 +1,32 @@
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
 
+const LINE_LIMIT = 100;
+
 const ENTER_KEY = 13;
 const BACKSPACE = 8;
 const TAB = 9;
 
+
 const defaultState = {
-    lines: [{type: "text", data: "line1 with a [[text]", class:""}, {type: "text", data: "line2 [b i ok]With some red[/] and [u warn]some[/] normal [info]and some note[/]", class:["input"]}],
+    lines: [{type: "text", data: "line1 with a [[text]", class:""}, {type: "text", data: "line2 [b i ok]With some red[/] and [u warn]some[/] normal [info]and some note[/]"}],
     prompt: "⇋ ",
     readonly: false,
     input: "",
-    receiveInput: {type: "text", data: "Helllo this is slowly received"}, // The current receiveing line
+    receiveInput: {type: "text", data: "line2 [b i ok]With some red[/] and [u warn]some[/] normal [info]and some note[/]"}, // The current receiveing line
     receiveBuffer: [{type: "text", data: "mooore data to receive"}, {type: "text", data: "and even more!!"}],
     receiveLineIndex: null,
     receiving: true
 };
+
+
+export default (terminal = defaultState, action) => {
+    switch(action.type) {
+        case TERMINAL_TICK: return processTick(processTick(processTick(processTick(terminal))));
+        case "ADD_LINE": return addLine(terminal, action);
+        case TERMINAL_KEY_PRESS: return handleKeyDown(terminal, action);
+        default: return terminal;
+    }
+}
 
 function processTick(terminal) {
     if (!terminal.receiving) {
@@ -22,7 +35,7 @@ function processTick(terminal) {
     
     if (terminal.receiveLineIndex === null) {
         let receiveLine = { type: "text", data: ""};
-        let lines = [ ...terminal.lines, receiveLine ];
+        let lines = limitLines([ ...terminal.lines, receiveLine ]);
         let receiveLineIndex = lines.length -1;
         return { ...terminal, lines: lines, receiveLineIndex: receiveLineIndex };
     }
@@ -53,7 +66,7 @@ function processTick(terminal) {
         }
     }
 
-    let nextState = { ... terminal,
+    let nextState = { ...terminal,
         receiveInput: nextReceiveInput,
         lines: clonedLines,
         receiving: nextReceiving,
@@ -63,19 +76,11 @@ function processTick(terminal) {
     return nextState;
 }
 
-export default (terminal = defaultState, action) => {
-    switch(action.type) {
-        case TERMINAL_TICK: return processTick(terminal);
-        case "ADD_LINE": return addLine(terminal, action);
-        case TERMINAL_KEY_PRESS: return handleKeyDown(terminal, action);
-        default: return terminal;
-    }
-}
 
 let addLine = (terminal, action) => {
     return {
         ...terminal,
-        lines: [... terminal.lines, {type: "text", data: "bonus line "}],
+        lines: limitLines([ ...terminal.lines, {type: "text", data: "bonus line "}]),
     };
 };
 
@@ -84,8 +89,10 @@ let handleKeyDown = (terminal, action) => {
     let {keyCode, key} = action;
     if (keyCode === ENTER_KEY) {
         let line = terminal.prompt + terminal.input;
-        let lines = [ ...terminal.lines, {type: "text", data: line, class: ["input"]} ];
-        return { ...terminal, lines: lines, input: "" }
+        let lines = limitLines([ ...terminal.lines, {type: "text", data: line, class: ["input"]} ]);
+        let receiveBuffer = [ ...terminal.receiveBuffer, {type:"text", data: "the answer to your action is the following :"}, {type:"text", data: "..... drummdrummdrummdrummdrummdrummdrummdrummdrumm roll.. 42."}];
+
+        return { ...terminal, lines: lines, input: "", receiveBuffer: receiveBuffer, receiving: true };
     }
 
     let newInput = determineInput(terminal.input, keyCode, key);
@@ -106,4 +113,12 @@ let determineInput = (input, keyCode, key) => {
     else {
         return input;
     }
+};
+
+/* Only call on mutable array */
+let limitLines = (lines) => {
+    while (lines.length > LINE_LIMIT) {
+        lines.shift();
+    }
+    return lines;
 };
