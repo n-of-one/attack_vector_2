@@ -16,7 +16,8 @@ const mapDispatchToProps = (dispatch) => {
 let mapStateToProps = (state) => {
 
     let userName = Cookies.get("userName");
-    let roles = Cookies.get("roles").split("|");
+    let rolesValue = Cookies.get("roles");
+    let roles = (rolesValue) ? rolesValue.split("|") : [];
 
     return {
         roles: roles,

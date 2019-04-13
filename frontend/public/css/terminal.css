@@ -24,3 +24,31 @@
     background-color: #2e6da4;
     width: 7px;
 }
+
+.terminal_input {
+    text-shadow: 0 0 3px rgba(0, 53, 187);
+}
+
+.terminal_style_ok {
+    color: #3c763d;
+}
+
+.terminal_style_info {
+    color: #31708f;
+}
+
+.terminal_style_warn {
+    color: #a9443b;
+}
+
+.terminal_style_b {
+    font-weight: bold;
+}
+
+.terminal_style_i {
+    font-style: italic;
+}
+
+.terminal_style_u {
+    text-decoration: underline;
+}

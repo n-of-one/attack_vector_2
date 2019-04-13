@@ -5,8 +5,8 @@ const BACKSPACE = 8;
 const TAB = 9;
 
 const defaultState = {
-    lines: [{type: "text", data: "line1"}, {type: "text", data: "line2"}],
-    prompt: "> ",
+    lines: [{type: "text", data: "line1 with a [[text]", class:""}, {type: "text", data: "line2 [b i ok]With some red[/] and [u warn]some[/] normal [info]and some note[/]", class:["input"]}],
+    prompt: "⇋ ",
     readonly: false,
     input: "",
     receiveInput: {type: "text", data: "Helllo this is slowly received"}, // The current receiveing line
@@ -84,7 +84,7 @@ let handleKeyDown = (terminal, action) => {
     let {keyCode, key} = action;
     if (keyCode === ENTER_KEY) {
         let line = terminal.prompt + terminal.input;
-        let lines = [ ...terminal.lines, {type: "text", data: line} ];
+        let lines = [ ...terminal.lines, {type: "text", data: line, class: ["input"]} ];
         return { ...terminal, lines: lines, input: "" }
     }
 

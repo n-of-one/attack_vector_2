@@ -1,14 +1,18 @@
 {
     lines: [(line)]
     readonly: false
-    prompt: ">"
-    buffer: [(buffered line)]
-    current_rendering: { line: (line), position: 12 }
+    prompt: "> "
+    input: "What is currently typed by the user",
+    receiveInput: (line)
+    receiveBuffer: [(line)]
+    receiveLineIndex: null | 0-len(lines)-1
+    receiving: true
 }
 
 line {
     type: "text" | "richtext" | "..."
     data: "this is regular text"
+    class: ["input", "warning"]    // this will result to the classNames "terminal_input terminal_warning" added to this line.
 }
 
 buffered line {

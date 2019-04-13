@@ -32,14 +32,67 @@ class Terminal extends Component {
     }
 
     renderLine(line, index) {
-        return (<div className="terminalLine" key={index} >{line.data}&nbsp;</div>)
+        let lineClasses = (line.class) ? line.class : [];
+        let classNames = "terminalLine";
+        lineClasses.forEach( name => { classNames += " terminal_" + name } );
+
+        let blocks = this.parseLine(line);
+        return (
+            <div className={classNames} key={index} >{blocks.map((block, index) => this.renderBlock(block, index))}
+            &nbsp;
+            </div>)
     }
+
+    renderBlock(block, index) {
+        return <span className={block.className} key={index}>{block.text}</span>
+    }
+
+    parseLine(line) {
+        let blocks = [];
+
+        let mode = "text";
+        const templateBlock = {text: "", className: ""};
+        let block = {...templateBlock};
+        for (let i = 0; i < line.data.length; i++) {
+            let c = line.data.charAt(i);
+
+            if (c === "[") {
+                if (mode === "text") {
+                    mode = "style";
+                    blocks.push(block);
+                    block = {...templateBlock};
+                    continue;
+                }
+                else {
+                    // escaped '[' character
+                    mode = "text";
+                    block.text += c;
+                    continue;
+                }
+            }
+            if (c === "]" && mode === "style") {
+                mode = "text";
+                let style = block.text === "/" ? "" : block.text;
+                let styleParts = style.split(" ");
+                let className = styleParts.map(it => "terminal_style_" + it).join(" ");
+                block.className = className;
+                block.text = "";
+                continue;
+            }
+            block.text += c;
+        }
+        blocks.push(block);
+
+        return blocks;
+    }
+
+
     renderInput() {
         if (this.readonly) {
             return <div />
         }
         return (
-            <div className="terminalLine">{this.state.prompt} {this.state.input}<span className="terminalCaret">&nbsp;</span></div>
+            <div className="terminalLine terminal_input">{this.state.prompt} {this.state.input}<span className="terminalCaret">&nbsp;</span></div>
         )
     }
 
