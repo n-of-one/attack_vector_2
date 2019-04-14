@@ -29,7 +29,7 @@ class NodeService(
 
     private fun createOsService(siteId: String): Service {
         val site = siteService.getById(siteId)
-        val nodes = getAll(site.nodes)
+        val nodes = getAll(site.nodeIds)
         val id = createServiceId(nodes, siteId)
         val networkId = nextFreeNetworkId( site, nodes )
         val data = mapOf(NETWORK_ID to networkId)

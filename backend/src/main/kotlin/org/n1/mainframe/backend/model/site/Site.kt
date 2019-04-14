@@ -6,8 +6,8 @@ data class Site(
         var description: String? = null,
         var creator: String? = null,
         var hackTime: String? = null,
-        var startNode: String? = null,
+        var startNodeId: String? = null,
         var hackable: Boolean? = false,
-        val nodes: MutableList<String> = ArrayList(),
-        val connections: MutableList<String> = ArrayList()
+        val nodeIds: MutableList<String> = ArrayList(),
+        val connectionIds: MutableList<String> = ArrayList()
 )

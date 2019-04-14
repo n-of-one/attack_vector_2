@@ -1,16 +1,21 @@
-
 let post = ({url, body, ok, notok, error}) => {
 
     fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body),
         }
     ).then(response => {
             if (response.ok) {
                 response.text().then(data => {
-                    const responseData = JSON.parse(data);
-                    ok(responseData);
+                    if (data && data.startsWith("{")) {
+                        const responseData = JSON.parse(data);
+                        ok(responseData);
+                    }
+                    else {
+                        console.log("Response was empty or not a JSON object: '" + data + "'");
+                        notok(response);
+                    }
                 });
             }
             else {

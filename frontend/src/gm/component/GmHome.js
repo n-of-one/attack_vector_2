@@ -2,6 +2,9 @@ import React from 'react';
 import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 import MenuBar from "../../common/component/MenuBar";
+import TextInput from "../../common/TextInput";
+import {post} from "../../common/RestClient";
+import {notify, notify_fatal} from "../../common/Notification";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -15,6 +18,19 @@ let mapStateToProps = (state) => {
     };
 };
 
+let edit = (siteName) => {
+    post({
+        url: "/api/site/edit",
+        body: {siteName: siteName},
+        ok: ({id}) => {
+            window.open("/edit/" + id);
+        },
+        notok: () => {
+            notify_fatal("Connection to server failed, unable to continue.");
+        }
+    });
+
+};
 export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
 
@@ -22,7 +38,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
 
     let sites = [
-        {id: "tutorial-site", hackable: false}
+        // {id: "tutorial-site", hackable: false}
     ];
 
 
@@ -35,7 +51,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <span className="text">&nbsp;</span>
                     </div>
                     <div className="col-lg-5 backgroundLight">
-                        <span className="text">Cluster 16|20 &nbsp; Mem 1|10 &nbsp;</span>
+                        <span className="text">&nbsp;</span>
                     </div>
                     <div className="col-lg-5 rightPane">
                         <span className="text">Site map</span>
@@ -48,10 +64,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="col-lg-2">
                     </div>
                     <div className="col-lg-5">
-                        <div className="term terminal">
+                        <div className="text">
                             <strong>🜁ttack 🜃ector</strong><br/>
                             <br/>
-                            Frontier Hacking SL Interface<br/>
+                            Frontier Hacking GM Interface<br/>
                             <br/>
                             Enter a site name and click one of the buttons.<br/>
                             The site does not have to exist yet.<br/>
@@ -65,17 +81,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         </div>
                         <div id="actions">
                             <div className="text">
-                                <div className="form-inline">
-                                    <div className="form-group">
-                                        <input type="text" className="form-control" id="siteName"
-                                               placeholder="Site link"/>
-                                    </div>
-                                    <button type="button" className="btn btn-info" id="btn_edit">Create or edit</button>
-                                </div>
+                                <TextInput placeholder="Site name"
+                                           buttonLabel="Create or edit"
+                                           buttonClass="btn-info"
+                                           save={(siteName) => edit(siteName)}
+                                           clearAfterSubmit="true"/>
+
                             </div>
-                            <p>
-                                <NavLink to="/edit/tutorial.nfo:pra" target="_blank" >Edit</NavLink>
-                            </p>
                         </div>
                     </div>
                     <div className="col-lg-5 rightPane rightPane">

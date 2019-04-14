@@ -20,18 +20,8 @@ class EditorRoot extends Component {
 
     init() {
         if (!this.siteIdentifier.startsWith("site-")) {
-            fetch("/api/site/" + this.siteIdentifier)
-                .then( response => {
-                    if (response.ok) {
-                        response.text().then(siteId => {
-                            document.location.href = siteId;
-                        });
-                    }
-                    else {
-                        this.errorMessage = "Connection to server failed, unable to continue.";
-                        this.setState({ initSuccess: false });
-                    }
-                });
+            this.errorMessage = "Cannot enter site name directly in URL";
+            this.setState({ initSuccess: false });
             return;
         }
         let siteId = this.siteIdentifier;

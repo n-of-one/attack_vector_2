@@ -42,7 +42,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
             </div>
             <div className="row">
-                <div className="col-lg-12 siteMap">
+                <div className="col-lg-12 darkWell">
                     <br/>
                     <div>
                         <div className="btn btn-info btn-spaced" onClick={() => deleteConnections()}>Delete Lines</div>

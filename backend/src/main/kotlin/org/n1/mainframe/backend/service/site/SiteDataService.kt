@@ -40,7 +40,7 @@ class SiteDataService(
     }
 
     private fun updateStartNode(site: Site, input: String) {
-        site.startNode = input
+        site.startNodeId = input
     }
 
     private fun updateHackTime(site: Site, input: String) {

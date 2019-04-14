@@ -1,5 +1,6 @@
 package org.n1.mainframe.backend.service
 
+import org.n1.mainframe.backend.model.scan.NodeStatus
 import org.n1.mainframe.backend.model.scan.Scan
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.repo.ScanRepo
@@ -18,9 +19,14 @@ class ScanService(val scanRepo: ScanRepo,
 
 
         val id = createId("scan") { candidate: String -> scanRepo.findById(candidate) }
+
+        val nodeStatusById = site.nodeIds.map { it to NodeStatus.UNDISCOVERED }.toMap().toMutableMap()
+        nodeStatusById[site.startNodeId!!] = NodeStatus.DISCOVERED
         val scan = Scan(
                 id = id,
-                siteId = site.id
+                siteId = site.id,
+                complete = false,
+                nodeStatusById = nodeStatusById
         )
         scanRepo.save(scan)
 

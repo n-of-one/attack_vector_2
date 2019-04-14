@@ -19,17 +19,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({site, save}) => {
     return (
     <div className="row">
-        <div className="col-lg-11 siteMap">
+        <div className="col-lg-11 darkWell">
             <br />
             <div className="row">
                 <div className="col-lg-6">
                     <div className="row form-horizontal" >
-                        <div className="form-group has-feedback">
-                            <label htmlFor="site_link" className="col-lg-3 control-label text-muted">Site link</label>
-                            <div className="col-lg-8">
-                                <TextSaveInput id="site_link" className="form-control" placeholder="link" value={site.link} save={ (value) => save("link", value) }/>
-                            </div>
-                        </div>
                         <div className="form-group has-feedback">
                             <label htmlFor="site_name" className="col-lg-3 control-label text-muted">Name</label>
                             <div className="col-lg-8">
@@ -42,18 +36,16 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                 <TextSaveInput type="textArea" id="site_description" rows="2" className="form-control" placeholder="For GM only" value={site.description} save={ (value) => save("description", value) } />
                             </div>
                         </div>
-                        <div className="form-group">
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-6">
-                    <div className="row form-horizontal" >
                         <div className="form-group has-feedback">
                             <label htmlFor="gm_name" className="col-lg-3 control-label text-muted">Creator</label>
                             <div className="col-lg-8">
                                 <TextSaveInput id="gm_name" className="form-control" placeholder="" value={site.creator} save={ (value) => save("creator", value) }/>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div className="col-lg-6">
+                    <div className="row form-horizontal" >
                         <div className="form-group has-feedback">
                             <label htmlFor="hack_time" className="col-lg-3 control-label text-muted">Hack time</label>
                             <div className="col-lg-3">
@@ -63,7 +55,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <div className="form-group has-feedback">
                             <label htmlFor="start_node" className="col-lg-3 control-label text-muted">Start node</label>
                             <div className="col-lg-3">
-                                <TextSaveInput id="start_node" className="form-control" placeholder="Network Id" value={site.startNode} save={ (value) => save("startNode", value) } />
+                                <TextSaveInput id="start_node" className="form-control" placeholder="Network Id" value={site.startNodeId} save={ (value) => save("startNode", value) } />
                             </div>
                         </div>
                         <div className="form-group has-feedback">

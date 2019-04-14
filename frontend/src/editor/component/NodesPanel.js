@@ -27,7 +27,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-lg-12 siteMap node_panel_no_right_padding" id="node-library">
+                    <div className="col-lg-12 darkWell node_panel_no_right_padding" id="node-library">
                         <br/>
                         <p className="text-muted">Content nodes</p>
                         <NodeImage type={SYSCON} ice={false} title="Syscon"/>

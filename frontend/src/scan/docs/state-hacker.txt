@@ -3,7 +3,31 @@ Redux state
 {
     currentPage: "HACKER"   // see HackerPages.js
     scanning: (site)
-
+    site: (site)
+    nodes: [ (node) ]
+    connections: [ (connection) ]
+    services: [ (service) ]
 }
 
+node = {
+    id: "node-1111-3fd8"
+    x: 393
+    y: 10
+    type: "TRANSIT_1"
+}
+
+connection = {
+    id: "con-0000-2995"
+    from: "node-1111-3fd8"    // node dbId
+    to:   "node-2222-4ae2"      // node dbId
+    type: "DEFAULT"
+}
+
+
+service = {
+  id: "site-83e8-d83a-serv-3393"
+  type: "OS"
+  layer: 0
+  data: { "networkId": "00", ...}
+}
 

@@ -76,6 +76,11 @@ body {
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
 }
 
+.darkWell {
+    background-color: #333333;
+    border-radius: 3px 3px 3px 3px;
+}
+
 .siteMap {
     background-color: #333333;
     border-radius: 3px 3px 3px 3px;

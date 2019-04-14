@@ -71,8 +71,8 @@ class EditorService(
 
     fun sendSiteFull(siteId: String) {
         val site = siteService.getById(siteId)
-        val nodes = nodeService.getAll(site.nodes)
-        val connections = connectionService.getAll(site.connections)
+        val nodes = nodeService.getAll(site.nodeIds)
+        val connections = connectionService.getAll(site.connectionIds)
 
         val siteState = SiteState(site, nodes, connections)
         stompService.toSite(siteId, "SERVER_SITE_FULL", siteState)
@@ -88,7 +88,7 @@ class EditorService(
 
     fun snap(command: SiteCommand) {
         val site = siteService.getById(command.siteId)
-        nodeService.snap(site.nodes)
+        nodeService.snap(site.nodeIds)
         sendSiteFull(command.siteId)
     }
 

@@ -14,7 +14,7 @@ let mapStateToProps = (state) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
-            <div className="row form-horizontal siteMap serviceLayerPanel">
+            <div className="row form-horizontal darkWell serviceLayerPanel">
                 <div className="row">&nbsp;</div>
 
                 <div className="col-lg-12">

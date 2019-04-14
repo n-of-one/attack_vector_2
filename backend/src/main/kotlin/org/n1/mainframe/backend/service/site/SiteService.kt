@@ -25,7 +25,7 @@ class SiteService(
 
     fun createSite(name: String): Site {
         val id = createId("site", siteRepo::findById)
-        val site = Site(id = id, name = name, hackTime = "15:00", startNode = "00")
+        val site = Site(id = id, name = name, hackTime = "15:00", startNodeId = "00")
         siteRepo.save(site)
         return site
     }
@@ -39,12 +39,12 @@ class SiteService(
     }
 
     fun addNode(site: Site, node: Node) {
-        site.nodes.add(node.id)
+        site.nodeIds.add(node.id)
         save(site)
     }
 
     fun addConnection(site: Site, connection: Connection) {
-        site.connections.add(connection.id)
+        site.connectionIds.add(connection.id)
         save(site)
     }
 
@@ -53,13 +53,13 @@ class SiteService(
     }
 
     fun deleteConnections(site: Site, connections: Collection<Connection>) {
-        connections.forEach { site.connections.remove(it.id) }
+        connections.forEach { site.connectionIds.remove(it.id) }
         siteRepo.save(site)
     }
 
     fun deleteNode(command: DeleteNodeCommand) {
         val site = getById(command.siteId)
-        site.nodes.remove(command.nodeId)
+        site.nodeIds.remove(command.nodeId)
         siteRepo.save(site)
     }
 
