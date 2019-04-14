@@ -4,7 +4,7 @@
 }
 
 .terminalLine {
-    font-family: monospace;
+    /*font-family: monospace;*/
     /*font-family: FreeMono, monospace; this don't work on Android */
     color: #aaa;
     background-color: #222222;

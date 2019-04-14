@@ -102,7 +102,7 @@ class Login extends Component {
                             <div className="form-group">
                                 <label htmlFor="inputEmail3" className="col-sm-2 control-label">Handle</label>
                                 <div className="col-sm-10">
-                                    <input type="text" className="form-control" id="handle" placeholder="" autoFocus="true"
+                                    <input type="text" className="form-control" id="handle" placeholder="" autoFocus={true}
                                            onChange={(event) => {
                                                this.onNameChange(event.target.value)
                                            }}/>

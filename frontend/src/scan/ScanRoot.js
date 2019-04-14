@@ -29,10 +29,10 @@ class ScanRoot extends Component {
 
         let webSocketInitialized = (success) => {
             this.setState( { initSuccess: success });
-            store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
+            // store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
         };
         webSocketInitialized.bind(this);
-        let stompClient = initWebSocket(store, siteId, webSocketInitialized);
+        let stompClient = initWebSocket(store, siteId, webSocketInitialized, store.dispatch);
         let editorRootSaga = createScanSagas(stompClient, siteId);
         sagaMiddleware.run(editorRootSaga);
 

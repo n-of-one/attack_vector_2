@@ -1,8 +1,9 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal} from "../common/Notification";
 import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_SITE_FULL} from "../editor/EditorActions";
+import {TERMINAL_RECEIVE} from "../common/component/terminal/TerminalActions";
 
-let initWebSocket = (store, siteId, callback) => {
+let initWebSocket = (store, siteId, callback, dispatch) => {
 
     let siteInitializedFromServer = false;
 
@@ -18,8 +19,9 @@ let initWebSocket = (store, siteId, callback) => {
     let client = webstomp.client(url, {debug:false, heartbeat: {incoming: 0, outgoing: 0}});
 
     let onWsOpen = (event) => {
-        // let userName = event.headers["user-name"];
+        let userName = event.headers["user-name"];
         // notify_neutral('Status','Connection with server established (' + userName + ")");
+        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userName });
 
         setupHeartbeat(developmentServer, client);
         client.subscribe('/topic/site/' + siteId, handleSiteEvent);
@@ -30,7 +32,8 @@ let initWebSocket = (store, siteId, callback) => {
 
     const onWsConnectError = (event) => {
         notify_fatal('Connection with server lost. Please refresh browser.');
-        callback(false);
+        dispatch({type: TERMINAL_RECEIVE, data: "[b warn]Connection with server lost. Please refresh browser." });
+        // callback(false);
     };
 
     const handleSiteEvent = (wsMessage) => {

@@ -68,10 +68,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="col-lg-2">
                     </div>
                     <div className="col-lg-5">
-                        <div className="term terminal">
+                        <div className="text">
                             <strong>🜁 Verdant OS. 🜃</strong><br/>
                             <br/>
                             Choose site to investigate or attack<br/>
+                            <br/>
+                            <br/>
                         </div>
                         <div id="actions">
                             <div className="text">

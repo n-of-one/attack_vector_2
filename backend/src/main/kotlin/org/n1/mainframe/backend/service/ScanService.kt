@@ -26,5 +26,4 @@ class ScanService(val scanRepo: ScanRepo,
 
         return ScanResponse(id, null)
     }
-
 }

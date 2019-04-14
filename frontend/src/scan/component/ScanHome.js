@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import MenuBar from "../../common/component/MenuBar";
 import {SCAN} from "../ScanActions";
 import Terminal from "../../common/component/terminal/Terminal";
+import {TERMINAL_RECEIVE} from "../../common/component/terminal/TerminalActions";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -12,7 +13,7 @@ const mapDispatchToProps = (dispatch) => {
         scan: (siteName) => {
             dispatch({type: SCAN, siteName: siteName})
         },
-        addLine: () => {  dispatch({type: "ADD_LINE"}) }
+        addLine: () => {  dispatch({type: TERMINAL_RECEIVE, data: "hello receving this line [warn]red"}) }
     }
 };
 let mapStateToProps = (state) => {
