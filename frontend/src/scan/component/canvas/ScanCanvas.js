@@ -1,11 +1,11 @@
 import {fabric} from "fabric";
-import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../EditorActions";
+import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../../editor/EditorActions";
 import {assertNotNullUndef} from "../../../common/Assert";
 
 /**
  * This class renders the scan map on the JFabric Canvas
  */
-class CanvasMap {
+class ScanCanvas {
 
     constructor() {
         this.nodesById = {};
@@ -17,7 +17,7 @@ class CanvasMap {
     init(dispatch) {
         this.dispatch = dispatch;
 
-        this.canvas = new fabric.StaticCanvas('canvas', {
+        this.canvas = new fabric.StaticCanvas('scanCanvas', {
             width: 607,
             height: 815,
             backgroundColor: "#333333",
@@ -30,7 +30,9 @@ class CanvasMap {
         this.canvas.selection = false;
     }
 
-    loadScan(scan) {
+    loadScan(data) {
+        alert('load');
+        let {scan, site} = data;
         let allObjectsArray = this.canvas.getObjects();
         while(allObjectsArray.length !== 0){
             allObjectsArray[0].remove();
@@ -40,7 +42,7 @@ class CanvasMap {
         this.connections = [];
         this.nodeSelected = null;
 
-        let { nodes, connections } = scan.site;
+        let { nodes, connections } = site;
 
         nodes.forEach( node => {
             this.addNodeWithoutRender(node);
@@ -190,5 +192,5 @@ class CanvasMap {
 
 }
 
-const canvasMap = new CanvasMap();
-export default canvasMap
+const scanCanvas = new ScanCanvas();
+export default scanCanvas

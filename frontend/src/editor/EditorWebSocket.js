@@ -22,8 +22,8 @@ let initWebSocket = (store, siteId, callback) => {
         notify_neutral('Status','Connection with Mainframe established (' + userName + ")");
 
         setupHeartbeat(developmentServer, client);
-        client.subscribe('/topic/site/' + siteId, handleSiteEvent);
-        client.subscribe('/user/reply', handleUserMessge );
+        client.subscribe('/topic/site/' + siteId, handleEvent);
+        client.subscribe('/user/reply', handleEvent );
         client.subscribe('/user/error', handleServerError );
         callback(true);
         // document.cookie = oldCookie;
@@ -34,7 +34,7 @@ let initWebSocket = (store, siteId, callback) => {
         callback(false);
     };
 
-    const handleSiteEvent = (wsMessage) => {
+    const handleEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
         if (body.type === SERVER_NOTIFICATION) {
             notify(body.data);
@@ -62,11 +62,6 @@ let initWebSocket = (store, siteId, callback) => {
     };
 
     const handleServerError = (wsMessage) => {
-        let body = JSON.parse(wsMessage.body);
-        notify(body);
-    };
-
-    const handleUserMessge = (wsMessage) => {
         let body = JSON.parse(wsMessage.body);
         notify(body);
     };

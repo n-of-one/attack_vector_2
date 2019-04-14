@@ -20,15 +20,28 @@ class StompService(
         }
     }
 
-    fun toSite(siteId: String, actionType: String, data: Any? = null) {
+    fun toSite(siteId: String, actionType: ReduxActions, data: Any? = null) {
         simulateNonLocalhost()
         val event = ReduxEvent(actionType, data)
         stompTemplate.convertAndSend("/topic/site/${siteId}", event)
     }
 
-    fun notyToUser(principal: Principal, message: NotyMessage) {
+    fun toScan(scanId: String, actionType: ReduxActions, data: Any? = null) {
         simulateNonLocalhost()
-        stompTemplate.convertAndSendToUser(principal.name, "/reply", message)
+        val event = ReduxEvent(actionType, data)
+        stompTemplate.convertAndSend("/topic/scan/${scanId}", event)
+    }
+
+    fun toUser(principal: Principal, actionType: ReduxActions, data: Any) {
+        simulateNonLocalhost()
+        val event = ReduxEvent(actionType, data)
+        stompTemplate.convertAndSendToUser(principal.name, "/reply", event)
+    }
+
+    fun toUser(principal: Principal, message: NotyMessage) {
+        simulateNonLocalhost()
+        val event = ReduxEvent(ReduxActions.SERVER_NOTIFICATION, message)
+        stompTemplate.convertAndSendToUser(principal.name, "/reply", event)
     }
 
     fun errorToUser(principal: Principal, message: NotyMessage) {

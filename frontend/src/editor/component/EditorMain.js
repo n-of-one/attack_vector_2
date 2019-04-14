@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import NodesPanel from "./NodesPanel";
-import CanvasPanel from "./CanvasPanel";
+import EditCanvasPanel from "./EditCanvasPanel";
 import DetailPanel from "./DetailPanel";
 
 let mapStateToProps = (state) => {
@@ -22,7 +22,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         <span>
             <div className="row">
                 <NodesPanel />
-                <CanvasPanel dragAndDropState={dragAndDropState} dispatch={dispatch} />
+                <EditCanvasPanel dragAndDropState={dragAndDropState} dispatch={dispatch} />
                 <DetailPanel/>
             </div>
         </span>

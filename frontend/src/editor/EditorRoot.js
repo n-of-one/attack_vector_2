@@ -48,9 +48,11 @@ class EditorRoot extends Component {
         let sagaMiddleware = createSagaMiddleware();
         let store = createStore(editorReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
-        let webSocketInitialized = (success) => {
-            this.setState( { initSuccess: success });
-            store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
+        let webSocketInitialized = (successState) => {
+            this.setState( { initSuccess: successState });
+            if (successState) {
+                store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
+            }
         };
         webSocketInitialized.bind(this);
         let stompClient = initWebSocket(store, siteId, webSocketInitialized);

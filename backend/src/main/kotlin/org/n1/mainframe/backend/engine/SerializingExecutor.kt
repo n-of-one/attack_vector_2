@@ -62,7 +62,7 @@ class SerializingExecutor(stompService: StompService)  {
                     throw exception
                 }
                 if (exception is ValidationException) {
-                    stompService.notyToUser(task.principal, exception.getNoty())
+                    stompService.toUser(task.principal, exception.getNoty())
                     return
                 }
                 EditorController.logger.error(exception.message, exception)

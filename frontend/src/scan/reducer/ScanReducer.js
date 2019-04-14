@@ -1,0 +1,12 @@
+import {SERVER_SCAN_FULL} from "../ScanActions";
+
+const defaultState = {
+
+};
+
+export default (state = defaultState, action) => {
+    switch(action.type) {
+        case SERVER_SCAN_FULL: return action.data.site;
+        default: return state;
+    }
+}

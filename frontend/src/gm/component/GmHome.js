@@ -1,10 +1,9 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {NavLink} from "react-router-dom";
 import MenuBar from "../../common/component/MenuBar";
 import TextInput from "../../common/TextInput";
 import {post} from "../../common/RestClient";
-import {notify, notify_fatal} from "../../common/Notification";
+import {notify_fatal} from "../../common/Notification";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/

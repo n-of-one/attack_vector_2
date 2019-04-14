@@ -37,7 +37,7 @@ render(
     <BrowserRouter>
         <Switch>
             <Route path="/login" component={Login} />
-            <Route path="/hacker/scan/:siteId?" component={ScanRoot} />
+            <Route path="/hacker/scan/:scanId?" component={ScanRoot} />
             <Route path="/hacker" component={HackerRoot} />
             <Route path="/gm" component={GmRoot} />
             <Route path="/edit/:siteId?" component={EditorRoot} />

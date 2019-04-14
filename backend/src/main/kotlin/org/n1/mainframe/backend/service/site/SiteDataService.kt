@@ -5,6 +5,7 @@ import org.n1.mainframe.backend.model.ui.EditSiteData
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.repo.SiteRepo
+import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.springframework.stereotype.Service
 import java.security.Principal
@@ -31,10 +32,10 @@ class SiteDataService(
             }
 
             siteRepo.save(site)
-            stompService.toSite(site.id, "SERVER_UPDATE_SITE_DATA", site)
+            stompService.toSite(site.id, ReduxActions.SERVER_UPDATE_SITE_DATA, site)
         }
         catch (validationException: ValidationException) {
-            stompService.toSite(site.id, "SERVER_UPDATE_SITE_DATA", site)
+            stompService.toSite(site.id, ReduxActions.SERVER_UPDATE_SITE_DATA, site)
             throw validationException
         }
     }
@@ -58,7 +59,7 @@ class SiteDataService(
         site.hackable = input
         val text = if (input) "Site is now hackable" else "Site no longer hackable"
         val message = NotyMessage("ok_right", "Notification", text)
-        stompService.toSite(site.id, "SERVER_NOTIFICATION", message)
+        stompService.toSite(site.id, ReduxActions.SERVER_NOTIFICATION, message)
     }
 
     fun updateName(site: Site, input: String) {

@@ -25,7 +25,7 @@ class EditorService(
         val site = siteService.getById(command.siteId)
         val node = nodeService.createNode(command)
         siteService.addNode(site, node)
-        stompService.toSite(command.siteId, "SERVER_ADD_NODE", node)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_NODE, node)
     }
 
     fun addConnection(command: AddConnection) {
@@ -38,12 +38,12 @@ class EditorService(
         val connection = connectionService.createConnection(command)
 
         siteService.addConnection(site, connection)
-        stompService.toSite(command.siteId, "SERVER_ADD_CONNECTION", connection)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_CONNECTION, connection)
     }
 
     fun purgeAll() {
         siteService.findAll().forEach{ site ->
-            stompService.toSite(site.id, "SERVER_FORCE_DISCONNECT", NotyMessage("fatal", "Admin action", "Purging all sites."))
+            stompService.toSite(site.id, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage("fatal", "Admin action", "Purging all sites."))
         }
 
         siteService.purgeAll()
@@ -66,7 +66,7 @@ class EditorService(
 
     fun moveNode(command: MoveNode) {
         nodeService.moveNode(command)
-        stompService.toSite(command.siteId, "SERVER_MOVE_NODE", command)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_MOVE_NODE, command)
     }
 
     fun sendSiteFull(siteId: String) {
@@ -75,7 +75,7 @@ class EditorService(
         val connections = connectionService.getAll(site.connectionIds)
 
         val siteState = SiteState(site, nodes, connections)
-        stompService.toSite(siteId, "SERVER_SITE_FULL", siteState)
+        stompService.toSite(siteId, ReduxActions.SERVER_SITE_FULL, siteState)
     }
 
     fun deleteNode(command: DeleteNodeCommand) {

@@ -6,35 +6,49 @@ import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";
 import ScanHome from "./component/ScanHome";
-import scanReducer from "./ScanReducer";
+import scanReducer from "./ScanRootReducer";
 import {SCAN} from "./ScanPages";
-import {REQUEST_SITE_FULL} from "../editor/EditorActions";
+import {post} from "../common/RestClient";
+import {notify, notify_fatal} from "../common/Notification";
+import {REQUEST_SCAN_FULL} from "./ScanActions";
 
 class ScanRoot extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { initSuccess: null, loginToken: null };
+        this.state = {initSuccess: null, loginToken: null};
         this.errorMessage = null;
-        let siteId = props.match.params.siteId;
+        let scanId = props.match.params.scanId;
 
-        if (!siteId || !siteId.startsWith("scan-")) {
+        if (!scanId || !scanId.startsWith("scan-")) {
             this.state.initSuccess = false;
-            this.errorMessage = "No scan ID present in URL. Found: '" + siteId + "'.";
+            this.errorMessage = "No scan ID present in URL. Found: '" + scanId + "'.";
             return;
         }
+
+        post({
+            url: "/api/scan/",
+            body: {id: scanId},
+            ok: ({siteId}) => { this.init(scanId, siteId) },
+            notok: () => { notify_fatal("Connection to server failed, unable to continue."); }
+        });
+    }
+
+    init(scanId, siteId) {
         let preLoadedState = {currentPage: SCAN};
         let sagaMiddleware = createSagaMiddleware();
         let store = createStore(scanReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         let webSocketInitialized = (success) => {
             this.setState( { initSuccess: success });
-            // store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
+            if (success) {
+                store.dispatch({type: REQUEST_SCAN_FULL, scanId: scanId});
+            }
         };
         webSocketInitialized.bind(this);
-        let stompClient = initWebSocket(store, siteId, webSocketInitialized, store.dispatch);
-        let editorRootSaga = createScanSagas(stompClient, siteId);
-        sagaMiddleware.run(editorRootSaga);
+        let stompClient = initWebSocket(store, scanId, siteId, webSocketInitialized, store.dispatch);
+        let scanRootSaga = createScanSagas(stompClient, scanId, siteId);
+        sagaMiddleware.run(scanRootSaga);
 
         this.store = store;
     }

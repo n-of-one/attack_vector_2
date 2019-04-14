@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import canvasMap from "./canvas/CanvasMap";
 import { DRAG_DROP_END } from "../EditorActions"
 
-export default class CanvasPanel extends Component {
+export default class EditCanvasPanel extends Component {
 
     componentWillMount() {
         // dispatch some actions if you use Redux

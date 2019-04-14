@@ -3,7 +3,7 @@ import {notify, notify_fatal} from "../common/Notification";
 import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_SITE_FULL} from "../editor/EditorActions";
 import {TERMINAL_RECEIVE} from "../common/component/terminal/TerminalActions";
 
-let initWebSocket = (store, siteId, callback, dispatch) => {
+let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
 
     let siteInitializedFromServer = false;
 
@@ -24,8 +24,9 @@ let initWebSocket = (store, siteId, callback, dispatch) => {
         dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userName });
 
         setupHeartbeat(developmentServer, client);
-        client.subscribe('/topic/site/' + siteId, handleSiteEvent);
-        client.subscribe('/user/reply', handleUserMessge );
+        client.subscribe('/topic/scan/' + scanId, handleEvent);
+        client.subscribe('/topic/site/' + siteId, handleEvent);
+        client.subscribe('/user/reply', handleEvent );
         client.subscribe('/user/error', handleServerError );
         callback(true);
     };
@@ -36,7 +37,7 @@ let initWebSocket = (store, siteId, callback, dispatch) => {
         // callback(false);
     };
 
-    const handleSiteEvent = (wsMessage) => {
+    const handleEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
         if (body.type === SERVER_NOTIFICATION) {
             notify(body.data);
@@ -58,17 +59,11 @@ let initWebSocket = (store, siteId, callback, dispatch) => {
             }
         }
 
-        console.log(new Date().getMilliseconds());
         let event = {...body, globalState: store.getState()};
         store.dispatch(event);
     };
 
     const handleServerError = (wsMessage) => {
-        let body = JSON.parse(wsMessage.body);
-        notify(body);
-    };
-
-    const handleUserMessge = (wsMessage) => {
         let body = JSON.parse(wsMessage.body);
         notify(body);
     };

@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from "react-redux";
 import MenuBar from "../../common/component/MenuBar";
-import {SCAN} from "../ScanActions";
 import Terminal from "../../common/component/terminal/Terminal";
 import {TERMINAL_RECEIVE} from "../../common/component/terminal/TerminalActions";
+import ScanCanvasPanel from "./ScanCanvasPanel";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -11,7 +11,7 @@ import {TERMINAL_RECEIVE} from "../../common/component/terminal/TerminalActions"
 const mapDispatchToProps = (dispatch) => {
     return {
         scan: (siteName) => {
-            dispatch({type: SCAN, siteName: siteName})
+            // dispatch({type: SCAN, siteName: siteName})
         },
         addLine: () => {  dispatch({type: TERMINAL_RECEIVE, data: "hello receving this line [warn]red"}) }
     }
@@ -51,9 +51,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <Terminal terminal={terminal}/>
                     </div>
                     <div className="col-lg-5 rightPane">
-                        <div className="">
-                            <canvas id="canvas" className="siteMap"/>
-                        </div>
+                        <ScanCanvasPanel />
                     </div>
                 </div>
 
