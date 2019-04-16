@@ -3,12 +3,13 @@ import scanCanvas from "../component/canvas/ScanCanvas"
 
 const createScanSagas = (stompClient, scanId) => {
     function* requestScanFullSaga() {
-        stompClient.send("/app/scan/sendScan", scanId);
+        stompClient.send("/av/scan/sendScan", scanId);
         yield
     }
 
     function* serverScanFullSaga(action) {
-        yield scanCanvas.loadSite(action.data);
+        scanCanvas.loadScan(action.data);
+        yield
     }
 
     return [

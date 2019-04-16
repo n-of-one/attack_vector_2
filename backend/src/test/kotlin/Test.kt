@@ -4,12 +4,15 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.n1.mainframe.backend.AttackVector
-import org.n1.mainframe.backend.model.site.Site
+import org.n1.mainframe.backend.model.site.Layout
+import org.n1.mainframe.backend.model.site.SiteData
 import org.n1.mainframe.backend.model.site.enums.NodeType
-import org.n1.mainframe.backend.model.ui.AddNode
+import org.n1.mainframe.backend.model.ui.site.command.AddNode
+import org.n1.mainframe.backend.repo.LayoutRepo
 import org.n1.mainframe.backend.repo.NodeRepo
-import org.n1.mainframe.backend.repo.SiteRepo
+import org.n1.mainframe.backend.repo.SiteDataRepo
 import org.n1.mainframe.backend.service.EditorService
+import org.n1.mainframe.backend.service.site.SiteService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
@@ -24,30 +27,35 @@ class Test {
     @Autowired
     lateinit var editorService: EditorService
     @Autowired
-    lateinit var siteRepo: SiteRepo
+    lateinit var siteDataRepo: SiteDataRepo
     @Autowired
     lateinit var nodeRepo: NodeRepo
+    @Autowired
+    lateinit var layoutRepo: LayoutRepo
+    @Autowired
+    lateinit var siteRepo: SiteService
+
+    var siteId: String = ""
 
     @Before
     fun reset() {
-        siteRepo.deleteAll()
+        siteDataRepo.deleteAll()
         nodeRepo.deleteAll()
-        siteRepo.save(Site("1", "siteId"))
-
+        siteId = siteRepo.createSite("siteId")
     }
 
     @Test
     fun addNode() {
-        val siteBefore = siteRepo.findById("1").get()
-        assertThat(siteBefore.nodeIds.size, IsEqual(0))
+        val layoutBefore = layoutRepo.findById(siteId).get()
+        assertThat(layoutBefore.nodeIds.size, IsEqual(0))
 
         val command = AddNode("1", 10, 20, NodeType.PASSCODE_STORE)
         editorService.addNode(command)
 
-        val siteAfter = siteRepo.findById("1").get()
-        assertThat(siteAfter.nodeIds.size, IsEqual(1))
+        val layoutAfter = layoutRepo.findById(siteId).get()
+        assertThat(layoutAfter.nodeIds.size, IsEqual(1))
 
-        val node = nodeRepo.findById(siteAfter.nodeIds[0]).get()
+        val node = nodeRepo.findById(layoutAfter.nodeIds[0]).get()
         assertThat(node.x, IsEqual(10))
         assertThat(node.y, IsEqual(20))
         assertThat(node.type, IsEqual(NodeType.PASSCODE_STORE))

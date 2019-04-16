@@ -1,13 +1,15 @@
 import {combineReducers} from 'redux'
-import SiteReducer from "./reducer/SiteReducer";
+import SiteDataReducer from "./reducer/SiteDataReducer";
 import DragAndDropReducer from "./reducer/DragAndDropReducer";
 import ThemeReducer from "./reducer/ThemeReducer";
 import NodesReducer from "./reducer/NodesReducer";
 import ConnectionsReducer from "./reducer/ConnectionsReducer";
 import CurrentNodeIdReducer from "./reducer/CurrentNodeIdReducer";
+import LayoutReducer from "./reducer/LayoutReducer";
 
 const editorReducer = combineReducers({
-    site: SiteReducer,
+    siteData: SiteDataReducer,
+    layout: LayoutReducer,
     dragAndDrop: DragAndDropReducer,
     theme: ThemeReducer,
     nodes: NodesReducer,

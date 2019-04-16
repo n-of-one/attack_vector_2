@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.config
 
 import org.n1.mainframe.backend.config.security.JwtAuthenticationFilter
 import org.n1.mainframe.backend.model.user.UserRole
+import org.n1.mainframe.backend.model.user.enums.ROLE_USER
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -32,9 +33,10 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter)
             .and()
                 .authorizeRequests()
                 .antMatchers("/", "/health",
-                        "/edit/**", "/api/**", "/ws", "/js/**", "/css/**", "/img/**",
+                        "/edit/**", "/api/**", "/js/**", "/css/**", "/img/**",
                         "/about", "/resources/**", "/error", "/favicon.ico", "/loginSubmit",
                         "/notChrome", "/login/*", "/manual/**", "/keepAlive", "/signUp", "/ice/magiceye-generator").permitAll()
+                .antMatchers("/attack_vector_websocket").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
                 .antMatchers("/me/**").hasAnyRole(UserRole.HACKER, UserRole.GM, UserRole.ADMIN)
                 .antMatchers("/gm/**").hasRole(UserRole.GM)
                 .antMatchers("/print/**").hasAnyRole(UserRole.HACKER, UserRole.GM)

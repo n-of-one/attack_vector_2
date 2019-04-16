@@ -22,16 +22,15 @@ class StompConfig() : AbstractWebSocketMessageBrokerConfigurer() {
     companion object: KLogging()
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-//        registry.addEndpoint("/ws")
         registry
-                .addEndpoint("/ws")
+                .addEndpoint("/attack_vector_websocket")
                 .setAllowedOrigins("*")
                 .setHandshakeHandler(AssignPrincipalHandshakeHandler())
                 .addInterceptors(CsrfTokenHandshakeInterceptor())
     }
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
-        registry.setApplicationDestinationPrefixes("/app")
+        registry.setApplicationDestinationPrefixes("/av")
         registry.enableSimpleBroker("/topic", "/reply", "/error")
         registry.setUserDestinationPrefix("/user")
     }

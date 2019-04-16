@@ -3,6 +3,10 @@ package org.n1.mainframe.backend.web.ws
 import mu.KLogging
 import org.n1.mainframe.backend.engine.SerializingExecutor
 import org.n1.mainframe.backend.model.ui.*
+import org.n1.mainframe.backend.model.ui.site.command.AddConnection
+import org.n1.mainframe.backend.model.ui.site.command.AddNode
+import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
+import org.n1.mainframe.backend.model.ui.site.command.MoveNode
 import org.n1.mainframe.backend.service.*
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
@@ -45,20 +49,21 @@ class EditorController(
         executor.run(principal) { editorService.update(command, principal) }
     }
 
+    data class DeleteCommand(val siteId: String = "", val nodeId: String = "" )
     @MessageMapping("/deleteConnections")
-    fun deleteConnections(command: DeleteNodeCommand, principal: Principal) {
-        executor.run(principal) { editorService.deleteConnections(command) }
+    fun deleteConnections(command: DeleteCommand, principal: Principal) {
+        executor.run(principal) { editorService.deleteConnections(command.siteId, command.nodeId) }
     }
 
     @MessageMapping("/deleteNode")
-    fun deleteNode(command: DeleteNodeCommand, principal: Principal) {
-        executor.run(principal) { editorService.deleteNode(command) }
+    fun deleteNode(command: DeleteCommand, principal: Principal) {
+        executor.run(principal) { editorService.deleteNode(command.siteId, command.nodeId) }
     }
 
+    data class SnapCommand(val siteId: String = "")
     @MessageMapping("/snap")
-    fun snap(command: SiteCommand, principal: Principal) {
-//        executor.run(principal) { editorService.snap(command) }
-        executor.run(principal) { error("not implemented") }
+    fun snap(command: SnapCommand, principal: Principal) {
+        executor.run(principal) { editorService.snap(command.siteId) }
     }
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

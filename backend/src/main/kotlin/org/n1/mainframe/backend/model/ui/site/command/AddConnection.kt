@@ -1,4 +1,4 @@
-package org.n1.mainframe.backend.model.ui
+package org.n1.mainframe.backend.model.ui.site.command
 
 import org.n1.mainframe.backend.model.site.enums.ConnectionType
 

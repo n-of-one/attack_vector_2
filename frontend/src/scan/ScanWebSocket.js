@@ -1,7 +1,8 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal} from "../common/Notification";
-import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_SITE_FULL} from "../editor/EditorActions";
 import {TERMINAL_RECEIVE} from "../common/component/terminal/TerminalActions";
+import {SERVER_SCAN_FULL} from "./ScanActions";
+import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
 
 let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
 
@@ -13,7 +14,7 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
     // During development connect directly to backend, websocket proxying does not work with create-react-app.
     port = developmentServer ? "80" : port;
     let protocol = (window.location.protocol === "http:") ? "ws" : "wss";
-    let url = protocol + "://" + hostName + ":" + port + "/ws";
+    let url = protocol + "://" + hostName + ":" + port + "/attack_vector_websocket";
 
 
     let client = webstomp.client(url, {debug:false, heartbeat: {incoming: 0, outgoing: 0}});
@@ -50,7 +51,7 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
         }
 
         if (!siteInitializedFromServer) {
-            if (body.type === SERVER_SITE_FULL) {
+            if (body.type === SERVER_SCAN_FULL) {
                 siteInitializedFromServer = true;
             }
             else {

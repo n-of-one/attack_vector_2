@@ -4,7 +4,7 @@ const createNodeSagas = (stompClient, siteId) => {
 
 
     function* requestSiteFullSaga(action) {
-        stompClient.send("/app/siteFull", siteId);
+        stompClient.send("/av/siteFull", siteId);
         yield
     }
 
@@ -23,7 +23,7 @@ const createNodeSagas = (stompClient, siteId) => {
 
         let payload = { siteId: siteId, x, y, type: nodeType };
         let body = JSON.stringify(payload);
-        stompClient.send("/app/addNode", body);
+        stompClient.send("/av/addNode", body);
         yield
     }
 
@@ -36,7 +36,7 @@ const createNodeSagas = (stompClient, siteId) => {
     function* moveNodeSaga(action) {
         let payload = { siteId: siteId, nodeId: action.id, x: action.x, y: action.y };
         let body = JSON.stringify(payload);
-        stompClient.send("/app/moveNode", body);
+        stompClient.send("/av/moveNode", body);
         yield
     }
 
@@ -47,7 +47,7 @@ const createNodeSagas = (stompClient, siteId) => {
     function* addConnectionSaga(action) {
         let payload = { siteId: siteId, from: action.from, to: action.to, connectionType: "DEFAULT" };
         let body = JSON.stringify(payload);
-        stompClient.send("/app/addConnection", body);
+        stompClient.send("/av/addConnection", body);
         yield
     }
 
@@ -58,21 +58,21 @@ const createNodeSagas = (stompClient, siteId) => {
     function* deleteConnections(action) {
         let payload = { siteId: siteId, nodeId: action.nodeId };
         let body = JSON.stringify(payload);
-        stompClient.send("/app/deleteConnections", body);
+        stompClient.send("/av/deleteConnections", body);
         yield
     }
 
     function* deleteNode(action) {
         let payload = { siteId: siteId, nodeId: action.nodeId };
         let body = JSON.stringify(payload);
-        stompClient.send("/app/deleteNode", body);
+        stompClient.send("/av/deleteNode", body);
         yield
     }
 
     function* snap(action) {
         let payload = { siteId: siteId };
         let body = JSON.stringify(payload);
-        stompClient.send("/app/snap", body);
+        stompClient.send("/av/snap", body);
         yield
     }
 

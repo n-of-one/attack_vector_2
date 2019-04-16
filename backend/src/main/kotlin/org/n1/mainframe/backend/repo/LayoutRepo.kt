@@ -1,13 +1,11 @@
 package org.n1.mainframe.backend.repo
 
-import org.n1.mainframe.backend.model.site.Site
+import org.n1.mainframe.backend.model.site.Layout
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface SiteRepo : PagingAndSortingRepository<Site, String> {
-    fun findByName(name: String): Site
-    fun findAllByName(name: String): Collection<Site>
+interface LayoutRepo : PagingAndSortingRepository<Layout, String> {
 
 //    val sites = ArrayList<Site>()
 //

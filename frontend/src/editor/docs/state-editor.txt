@@ -2,7 +2,8 @@
 // means this still needs to be implemented.
 
 state = {
-    site: (site)
+    siteData: (site)
+    layout: (layout)
     nodes: [ (node) ]
     connections: [ (connection) ]
     services: [ (service) ]
@@ -14,7 +15,7 @@ state = {
 
 theme: for different larps/events we can have different themes.
 
-site = {
+siteData = {
     id: "site-83e8-d83a"
     name: "tutorial.nfo:pra"
     description: "practice site for new players"
@@ -22,6 +23,10 @@ site = {
     hackTime: "39:00"
     startNodeId: "00"
     hackable: false
+}
+
+layout = {
+    id: "site-83e8-d83a"
     nodeIds: [ "node-0000-1111", "node-0000-2222", ... ]
     connectionIds: [ "con-0000-1111", "con-0000-2222", ....]
 }

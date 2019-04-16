@@ -31,7 +31,6 @@ class ScanCanvas {
     }
 
     loadScan(data) {
-        alert('load');
         let {scan, site} = data;
         let allObjectsArray = this.canvas.getObjects();
         while(allObjectsArray.length !== 0){

@@ -1,6 +1,7 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal, notify_neutral} from "../common/Notification";
-import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_SITE_FULL} from "./EditorActions";
+import {SERVER_SITE_FULL} from "./EditorActions";
+import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
 
 let initWebSocket = (store, siteId, callback) => {
 
@@ -12,7 +13,7 @@ let initWebSocket = (store, siteId, callback) => {
     // During development connect directly to backend, websocket proxying does not work with create-react-app.
     port = developmentServer ? "80" : port;
     let protocol = (window.location.protocol === "http:") ? "ws" : "wss";
-    let url = protocol + "://" + hostName + ":" + port + "/ws";
+    let url = protocol + "://" + hostName + ":" + port + "/attack_vector_websocket";
 
 
     let client = webstomp.client(url, {debug:false, heartbeat: {incoming: 0, outgoing: 0}});
