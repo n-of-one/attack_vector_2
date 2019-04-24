@@ -1,6 +1,7 @@
 import {fabric} from "fabric";
 import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../../editor/EditorActions";
 import {assertNotNullUndef} from "../../../common/Assert";
+import {toType} from "../../../common/NodeTypesNames";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -31,7 +32,8 @@ class ScanCanvas {
     }
 
     loadScan(data) {
-        let {scan, site} = data;
+        let {site} = data;
+        // let {scan, site} = data;
         let allObjectsArray = this.canvas.getObjects();
         while(allObjectsArray.length !== 0){
             allObjectsArray[0].remove();
@@ -55,10 +57,11 @@ class ScanCanvas {
     }
 
     addNodeWithoutRender(action) {
-        console.log(new Date().getMilliseconds());
-        let imageName = action.type + (action.ice ? "_ICE" : "_REGULAR");
+        const status = (action.ice ? "_PROTECTED" : "_FREE");
+        const type = toType(action.type);
+        const imageId = type.name + status;
 
-        let image = document.querySelector("img[name='" + imageName + "']");
+        let image = document.getElementById(imageId);
 
         let nodeData = {
             id: action.id,
@@ -70,24 +73,12 @@ class ScanCanvas {
             top: action.y,
             height: image.height,
             width: image.width,
-            lockRotation: true,
-            lockScalingX: true,
-            lockScalingY: true,
 
             data: nodeData,
         });
 
-        node.setControlsVisibility({
-            mt: false,
-            mb: false,
-            ml: false,
-            mr: false,
-            mtr: false
-        });
-
         this.canvas.add(node);
         this.nodesById[action.id] = node;
-        this.canvas.deactivateAll();
     }
 
     addNodeWithRender(action) {
@@ -171,8 +162,8 @@ class ScanCanvas {
         let line = new fabric.Line(
             [fromNode.left, fromNode.top, toNode.left, toNode.top], {
                 stroke: "#cccccc",
-                strokeWidth: 4,
-                strokeDashArray: [5, 5],
+                strokeWidth: 2,
+                strokeDashArray: [3, 3],
                 selectable: false,
                 hoverCursor: 'default',
             });

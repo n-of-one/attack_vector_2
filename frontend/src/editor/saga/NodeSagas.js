@@ -1,4 +1,4 @@
-import canvasMap from "../component/canvas/CanvasMap";
+import editorCanvas from "../component/canvas/EditorCanvas";
 
 const createNodeSagas = (stompClient, siteId) => {
 
@@ -9,7 +9,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverSiteFullSaga(action) {
-        yield canvasMap.loadSite(action.data);
+        yield editorCanvas.loadSite(action.data);
     }
 
 
@@ -17,7 +17,7 @@ const createNodeSagas = (stompClient, siteId) => {
     function* dropNodeSaga(action) {
         let x = action.x - action.dragAndDropState.dx;
         let y = action.y - action.dragAndDropState.dy;
-        let nodeType = action.dragAndDropState.type;
+        let nodeType = action.dragAndDropState.type.name.toUpperCase();
 
         console.log(new Date().getMilliseconds());
 
@@ -28,7 +28,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverNodeAddedSaga(action) {
-        yield canvasMap.addNodeWithRender(action.data);
+        yield editorCanvas.addNodeWithRender(action.data);
     }
 
 
@@ -41,7 +41,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverMoveNodeSaga(action) {
-        yield canvasMap.moveNode(action.data);
+        yield editorCanvas.moveNode(action.data);
     }
 
     function* addConnectionSaga(action) {
@@ -52,7 +52,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverAddConnectionSaga(action) {
-        yield canvasMap.addConnectionWithRender(action.data);
+        yield editorCanvas.addConnectionWithRender(action.data);
     }
 
     function* deleteConnections(action) {

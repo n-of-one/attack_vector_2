@@ -9,7 +9,7 @@ import ScanHome from "./component/ScanHome";
 import scanReducer from "./ScanRootReducer";
 import {SCAN} from "./ScanPages";
 import {post} from "../common/RestClient";
-import {notify, notify_fatal} from "../common/Notification";
+import {notify_fatal} from "../common/Notification";
 import {REQUEST_SCAN_FULL} from "./ScanActions";
 
 class ScanRoot extends Component {

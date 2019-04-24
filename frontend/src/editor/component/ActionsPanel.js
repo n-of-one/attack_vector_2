@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {DELETE_CONNECTIONS, DELETE_NODE, SNAP} from "../EditorActions";
-import canvasMap from "./canvas/CanvasMap";
+import editorCanvas from "./canvas/EditorCanvas";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -17,14 +17,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({dispatch}) => {
 
         let deleteConnections = () => {
-            let nodeId = canvasMap.getNodeSelectedId();
+            let nodeId = editorCanvas.getNodeSelectedId();
             if (nodeId) {
                 dispatch({type: DELETE_CONNECTIONS, nodeId: nodeId});
             }
         };
 
         let deleteNode = () => {
-            let nodeId = canvasMap.getNodeSelectedId();
+            let nodeId = editorCanvas.getNodeSelectedId();
             if (nodeId) {
                 dispatch({type: DELETE_NODE, nodeId: nodeId});
             }

@@ -182,6 +182,10 @@ a.textLink {
     height: 38em;
 }
 
+.dontDisplay {
+    display: none;
+}
+
 
 /*.rightPane {*/
 /*padding-top: 10px;*/

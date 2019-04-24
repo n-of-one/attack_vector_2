@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {DRAG_DROP_START} from "../EditorActions";
-import canvasMap from "../component/canvas/CanvasMap";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -17,11 +16,8 @@ let mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({dispatch, theme, type, ice, title}) => {
-
-        let onLoad = () => {
-            canvasMap.render();
-        };
+    (inp) => {
+        let {dispatch, theme, type, ice, title, onLoad} = inp;
 
         let dragStart = (syntheticEvent) => {
             let event = syntheticEvent.nativeEvent;
@@ -36,16 +32,20 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             dispatch({type: DRAG_DROP_START, data: {type: type, dx: dx, dy: dy, ice: ice}});
         };
 
-        let nameRegular = type + "_REGULAR";
-        let nameIce = type + "_ICE";
-        let pathRegular = "/img/nodes/" + theme + "/" + nameRegular + ".png";
-        let pathIce = "/img/nodes/" + theme + "/" + nameIce + ".png";
+        const dirAndName = type.dir + "/" + type.name + ".png";
+
+        const root = "/img/" + theme + "/nodes/run/";
+        const pathRegular =  root + "free/" + dirAndName;
+        const pathIce =  root + "protected/" + dirAndName;
+
+        const idFree = type.name + "_FREE";
+        const idProtected = type.name + "_PROTECTED";
 
         if (ice) {
             return (
             <span>
-                <img style={{display: 'none'}} src={pathRegular} height="80" width="80" name={nameRegular} />
-                <img style={{display: 'inline'}} src={pathIce} height="80" width="80" name={nameIce} title={title} onDragStart={ (event) => dragStart(event) }
+                <img style={{display: 'none'}} src={pathRegular} height="80" width="80" id={idFree} />
+                <img style={{display: 'inline'}} src={pathIce} height="80" width="80" id={idProtected} title={title} onDragStart={ (event) => dragStart(event) }
                      onLoad={() => onLoad()}/>
             </span>
             )
@@ -55,9 +55,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         else {
             return (
                 <span>
-                <img style={{display: 'inline'}} src={pathRegular} height="80" width="80" name={nameRegular} title={title} onDragStart={ (event) => dragStart(event) }
+                <img style={{display: 'inline'}} src={pathRegular} height="80" width="80" id={idFree} title={title} onDragStart={ (event) => dragStart(event) }
                      onLoad={() => onLoad()} />
-                <img style={{display: 'none'}} src={pathIce} height="80" width="80" name={nameIce} />
+                <img style={{display: 'none'}} src={pathIce} height="80" width="80" id={idProtected} />
             </span>
             );
 

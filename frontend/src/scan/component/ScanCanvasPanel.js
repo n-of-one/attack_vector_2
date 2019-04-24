@@ -1,18 +1,10 @@
 import React, {Component} from 'react';
 import scanCanvas from "./canvas/ScanCanvas";
-import NodeImage from "../../editor/component/NodeImage";
 import {
-    DATA_STORE,
-    MAGIC_EYE, MANUAL_1, MANUAL_2, MANUAL_3,
-    PASSCODE_STORE, PASSWORD_GUESS,
-    RESOURCE_STORE,
-    SYSCON,
-    TRANSIT_1,
-    TRANSIT_2,
-    TRANSIT_3,
-    TRANSIT_4, UNHACKABLE,
-    WORD_SEARCH
+    DATA_STORE, MANUAL_1, MANUAL_2, MANUAL_3, PASSCODE_STORE, RESOURCE_STORE, SYSCON,
+    ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
 } from "../../common/NodeTypesNames";
+import ScanNodeImage from "./ScanNodeImage";
 
 export default class ScanCanvasPanel extends Component {
 
@@ -29,24 +21,30 @@ export default class ScanCanvasPanel extends Component {
     }
 
     render() {
+        const onLoad = () => {
+            scanCanvas.render();
+        };
+
         return (
             <div id="canvas-container">
                 <canvas id="scanCanvas" className="siteMap"/>
-                <NodeImage type={SYSCON} />
-                <NodeImage type={DATA_STORE} />
-                <NodeImage type={PASSCODE_STORE} />
-                <NodeImage type={RESOURCE_STORE} />
-                <NodeImage type={TRANSIT_1} />
-                <NodeImage type={TRANSIT_2} />
-                <NodeImage type={TRANSIT_3} />
-                <NodeImage type={TRANSIT_4} />
-                <NodeImage type={WORD_SEARCH} />
-                <NodeImage type={MAGIC_EYE} />
-                <NodeImage type={PASSWORD_GUESS} />
-                <NodeImage type={UNHACKABLE} />
-                <NodeImage type={MANUAL_1} ice={true}/>
-                <NodeImage type={MANUAL_2} ice={true}/>
-                <NodeImage type={MANUAL_3} ice={true}/>
+                <div className="dontDisplay">
+                <ScanNodeImage type={SYSCON} onLoad={onLoad}/>
+                <ScanNodeImage type={DATA_STORE} onLoad={onLoad}/>
+                <ScanNodeImage type={PASSCODE_STORE} onLoad={onLoad}/>
+                <ScanNodeImage type={RESOURCE_STORE} onLoad={onLoad}/>
+                <ScanNodeImage type={TRANSIT_1} onLoad={onLoad}/>
+                <ScanNodeImage type={TRANSIT_2} onLoad={onLoad}/>
+                <ScanNodeImage type={TRANSIT_3} onLoad={onLoad}/>
+                <ScanNodeImage type={TRANSIT_4} onLoad={onLoad}/>
+                <ScanNodeImage type={ICE_1} onLoad={onLoad}/>
+                <ScanNodeImage type={ICE_2} onLoad={onLoad}/>
+                <ScanNodeImage type={ICE_3} onLoad={onLoad}/>
+                <ScanNodeImage type={UNHACKABLE} onLoad={onLoad}/>
+                <ScanNodeImage type={MANUAL_1} ice={true} onLoad={onLoad}/>
+                <ScanNodeImage type={MANUAL_2} ice={true} onLoad={onLoad}/>
+                <ScanNodeImage type={MANUAL_3} ice={true} onLoad={onLoad}/>
+                </div>
             </div>
         );
     }

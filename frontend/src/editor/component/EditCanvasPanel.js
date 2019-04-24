@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import canvasMap from "./canvas/CanvasMap";
+import EditorCanvas from "./canvas/EditorCanvas";
 import { DRAG_DROP_END } from "../EditorActions"
 
 export default class EditCanvasPanel extends Component {
@@ -9,7 +9,7 @@ export default class EditCanvasPanel extends Component {
     }
 
     componentDidMount() {
-        canvasMap.init(this.props.dispatch);
+        EditorCanvas.init(this.props.dispatch);
     }
 
     allowDrop(event) {

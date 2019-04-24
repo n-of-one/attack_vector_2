@@ -1,11 +1,12 @@
 import {fabric} from "fabric";
 import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../EditorActions";
 import {assertNotNullUndef} from "../../../common/Assert";
+import {toType} from "../../../common/NodeTypesNames";
 
 /**
  * This class provides editor map like actions to the fabric canvas.
  */
-class CanvasMap {
+class EditorCanvas {
 
     constructor() {
         this.nodesById = {};
@@ -59,10 +60,11 @@ class CanvasMap {
     }
 
     addNodeWithoutRender(action) {
-        console.log(new Date().getMilliseconds());
-        let imageName = action.type + (action.ice ? "_ICE" : "_REGULAR");
+        const status = (action.ice ? "_PROTECTED" : "_FREE");
+        const type = toType(action.type);
+        const imageId = type.name + status;
 
-        let image = document.querySelector("img[name='" + imageName + "']");
+        let image = document.getElementById(imageId);
 
         let nodeData = {
             id: action.id,
@@ -195,5 +197,5 @@ class CanvasMap {
 
 }
 
-const canvasMap = new CanvasMap();
-export default canvasMap
+const editorCanvas = new EditorCanvas();
+export default editorCanvas
