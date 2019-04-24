@@ -18,14 +18,16 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         const root = "/img/" + theme + "/nodes/scan/";
         const dirAndName = type.dir + "/" + type.name + ".png";
 
-        const pathProbed = root + "probed/" + dirAndName;
+        const pathDiscovered = root + "empty.png";
+        const pathTypeKnown = root + "type/" + dirAndName;
         const pathFree = root + "free/" + dirAndName;
         const pathProtected = root + "protected/" + dirAndName;
         const pathHacked = root + "hacked/" + dirAndName;
 
         return (
             <span>
-                <img src={pathProbed} height="80" width="80" id={type.name + "_PROBED"} onLoad={onLoad}/>
+                <img src={pathDiscovered} height="80" width="80" id={type.name + "_DISCOVERED"} onLoad={onLoad}/>
+                <img src={pathTypeKnown} height="80" width="80" id={type.name + "_TYPE"} onLoad={onLoad}/>
                 <img src={pathFree} height="80" width="80" id={type.name + "_FREE"} onLoad={onLoad}/>
                 <img src={pathProtected} height="80" width="80" id={type.name + "_PROTECTED"} onLoad={onLoad}/>
                 <img src={pathHacked} height="80" width="80" id={type.name + "_HACKED"} onLoad={onLoad}/>

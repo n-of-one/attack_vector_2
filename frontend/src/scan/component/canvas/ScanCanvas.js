@@ -1,5 +1,4 @@
 import {fabric} from "fabric";
-import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../../editor/EditorActions";
 import {assertNotNullUndef} from "../../../common/Assert";
 import {toType} from "../../../common/NodeTypesNames";
 import Thread from "../../../common/Thread";
@@ -10,6 +9,8 @@ import Thread from "../../../common/Thread";
 class ScanCanvas {
 
 
+    scan = null;
+    nodeStatusById = null;
 
     nodesById = {};
     connections = [];
@@ -28,47 +29,43 @@ class ScanCanvas {
         fabric.Object.prototype.originX = "center";
         fabric.Object.prototype.originY = 'center';
 
-        // this.canvas.on('object:moving', (event) => { this.movingNode(event.target.data.id); });
         this.canvas.selection = false;
     }
 
     loadScan(data) {
-        let {site} = data;
-        // let {scan, site} = data;
-        let allObjectsArray = this.canvas.getObjects();
-        while(allObjectsArray.length !== 0){
-            allObjectsArray[0].remove();
-        }
+        const {scan, site} = data;
+        const {nodes, connections} = site;
+        this.nodeStatusById = scan.nodeStatusById;
+        this.scan = scan;
 
-        this.nodesById = {};
-        this.connections = [];
-
-        let { nodes, connections } = site;
-
-        nodes.forEach( node => {
-            this.addNodeWithAnimation(node);
+        nodes.forEach(node => {
+            const status = scan.nodeStatusById[node.id];
+            this.addNodeWithAnimation(node, status);
         });
 
-        connections.forEach( connection => {
+        connections.forEach(connection => {
             this.addConnectionWithAnimation(connection);
         });
     }
 
-    addNodeWithoutRender(action) {
-        const status = (action.ice ? "_PROTECTED" : "_FREE");
-        const type = toType(action.type);
-        const imageId = type.name + status;
+    addNodeWithoutRender(node, status) {
+        if (!status || status === "UNDISCOVERED") {
+            return null;
+        }
+        const imageStatus = this.determineImageStatus(node, status);
+        const type = toType(node.type);
+        const imageId = type.name + "_" + imageStatus;
 
         let image = document.getElementById(imageId);
 
         let nodeData = {
-            id: action.id,
-            type: action.type
+            id: node.id,
+            type: node.type
         };
 
-        let node = new fabric.Image(image, {
-            left: action.x,
-            top: action.y,
+        let nodeImage = new fabric.Image(image, {
+            left: node.x,
+            top: node.y,
             height: image.height,
             width: image.width,
             opacity: 0,
@@ -76,47 +73,36 @@ class ScanCanvas {
             data: nodeData,
         });
 
-        this.canvas.add(node);
-        this.nodesById[action.id] = node;
+        this.canvas.add(nodeImage);
+        this.nodesById[node.id] = nodeImage;
 
-        return node;
+        return nodeImage;
+    }
+
+    determineImageStatus(node, status) {
+        if (status === "DISCOVERED" || status === "TYPE") {
+            return status;
+        }
+        if (status === "CONNECTIONS") {
+            return "TYPE";
+        }
+        if (status === "SERVICES") {
+            // TODO implement determining status based on status of node services.
+            return "FREE";
+        }
     }
 
     render() {
         this.canvas.renderAll();
     }
 
-    moveNode(action) {
-        let nodeId = action.nodeId;
-        let node = this.nodesById[nodeId];
-        assertNotNullUndef(node, action);
-
-        node.set({ left: action.x, top: action.y});
-        node.setCoords();
-
-        this.movingNode(nodeId);
-    }
-
-    movingNode(nodeId) {
-        let node = this.nodesById[nodeId];
-
-        this.connections.forEach( connection => {
-            if (connection.data.from === nodeId) {
-                connection.set({x1: node.left, y1: node.top});
-                connection.setCoords();
-            }
-            if (connection.data.to === nodeId) {
-                connection.set({x2: node.left, y2: node.top});
-                connection.setCoords();
-            }
-        });
-
-        this.render();
-   }
-
     addConnectionWithoutRender(connectionData) {
         let fromNode = this.nodesById[connectionData.from];
         let toNode = this.nodesById[connectionData.to];
+
+        if (!fromNode || !toNode) {
+            return null;
+        }
 
         let line = new fabric.Line(
             [fromNode.left, fromNode.top, toNode.left, toNode.top], {
@@ -137,20 +123,33 @@ class ScanCanvas {
         return line;
     }
 
-    addNodeWithAnimation(action) {
-        const node = this.addNodeWithoutRender(action);
-        const displayNode = () =>  { this.animate(node, "opacity", 0.5, 2000); };
-        this.thread.run(1, displayNode);
+    addNodeWithAnimation(node, status) {
+        const nodeImage = this.addNodeWithoutRender(node, status);
+        if (nodeImage) {
+            this.thread.run(1, () => this.animate(nodeImage, "opacity", 0.5, 2000));
+        }
     }
 
     addConnectionWithAnimation(connectionData) {
-        const line = this.addConnectionWithoutRender(connectionData);
-        const displayLine = () =>  { this.animate(line, "opacity", 0.5, 2000); };
-        this.thread.run(1, displayLine);
+        const lineImage = this.addConnectionWithoutRender(connectionData);
+        if (lineImage) {
+            this.thread.run(1, () => this.animate(lineImage, "opacity", 0.5, 2000));
+        }
     }
 
 
-     animate(toAnimate, attribute, value, duration) {
+    moveNode(action) {
+        let nodeId = action.nodeId;
+        let node = this.nodesById[nodeId];
+        assertNotNullUndef(node, action);
+
+        node.set({left: action.x, top: action.y});
+        node.setCoords();
+
+        this.movingNode(nodeId);
+    }
+
+    animate(toAnimate, attribute, value, duration) {
         toAnimate.animate(attribute, value, {
             onChange: this.canvas.renderAll.bind(this.canvas),
             duration: duration,

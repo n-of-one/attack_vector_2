@@ -11,6 +11,7 @@ import org.n1.mainframe.backend.service.site.SiteService
 import org.n1.mainframe.backend.util.createId
 import org.springframework.stereotype.Service
 import java.security.Principal
+import java.util.*
 
 @Service
 class ScanService(val scanRepo: ScanRepo,
@@ -41,10 +42,25 @@ class ScanService(val scanRepo: ScanRepo,
         return ScanResponse(id, null)
     }
 
+    val rand = Random()
+
+    fun randomStatus(): NodeStatus {
+        val s = rand.nextInt(5)
+        when(s) {
+            0 -> return NodeStatus.UNDISCOVERED
+            1 -> return NodeStatus.DISCOVERED
+            2 -> return NodeStatus.TYPE
+            3 -> return NodeStatus.CONNECTIONS
+            4 -> return NodeStatus.SERVICES
+        }
+        return NodeStatus.UNDISCOVERED
+    }
+
     data class ScanAndSite(val scan: Scan, val site: SiteFull)
     fun sendScanToUser(scanId: String, principal: Principal) {
         val scan = scanRepo.findById(scanId).get()
         val siteFull = siteService.getSiteFull(scan.siteId)
+        siteFull.nodes.forEach { node -> scan.nodeStatusById[node.id] = randomStatus() }
 
         val scanAndSite = ScanAndSite(scan, siteFull)
         stompService.toUser(principal, ReduxActions.SERVER_SCAN_FULL, scanAndSite)

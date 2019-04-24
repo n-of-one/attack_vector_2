@@ -21,11 +21,10 @@ const all = {
 
 const toType = (name) => {
     const match = Object.entries(all).find(
-        ([key, value]) => { return key === name }
+        ([key, _]) => { return key === name }
     );
     if (match) {
-       const [key, value] = match;
-       return value;
+       return match[1];
     }
     return null;
 };
