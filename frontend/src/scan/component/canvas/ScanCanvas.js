@@ -2,18 +2,19 @@ import {fabric} from "fabric";
 import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../../editor/EditorActions";
 import {assertNotNullUndef} from "../../../common/Assert";
 import {toType} from "../../../common/NodeTypesNames";
+import Thread from "../../../common/Thread";
 
 /**
  * This class renders the scan map on the JFabric Canvas
  */
 class ScanCanvas {
 
-    constructor() {
-        this.nodesById = {};
-        this.connections = [];
-        this.dispatch = null;
-        this.nodeSelected = null;
-    }
+
+
+    nodesById = {};
+    connections = [];
+    dispatch = null;
+    thread = new Thread();
 
     init(dispatch) {
         this.dispatch = dispatch;
@@ -41,19 +42,16 @@ class ScanCanvas {
 
         this.nodesById = {};
         this.connections = [];
-        this.nodeSelected = null;
 
         let { nodes, connections } = site;
 
         nodes.forEach( node => {
-            this.addNodeWithoutRender(node);
+            this.addNodeWithAnimation(node);
         });
 
         connections.forEach( connection => {
-            this.addConnectionWithoutRender(connection);
+            this.addConnectionWithAnimation(connection);
         });
-
-        this.render();
     }
 
     addNodeWithoutRender(action) {
@@ -73,31 +71,19 @@ class ScanCanvas {
             top: action.y,
             height: image.height,
             width: image.width,
+            opacity: 0,
 
             data: nodeData,
         });
 
         this.canvas.add(node);
         this.nodesById[action.id] = node;
-    }
 
-    addNodeWithRender(action) {
-        this.addNodeWithoutRender(action);
-        this.render();
+        return node;
     }
 
     render() {
         this.canvas.renderAll();
-    }
-
-    canvasObjectModified(event) {
-        this.dispatch({type: MOVE_NODE,
-            id: event.target.data.id,
-            x: event.target.left,
-            y: event.target.top
-        });
-
-        // leads to moveNode
     }
 
     moveNode(action) {
@@ -128,36 +114,9 @@ class ScanCanvas {
         this.render();
    }
 
-   getNodeSelectedId() {
-        let selectedObject = this.canvas.getActiveObject();
-        if (selectedObject && selectedObject.data && selectedObject.get("type") === "image") {
-            return selectedObject.data.id;
-        }
-        return null;
-   }
-
-    canvasObjectSelected(event) {
-        let selectedObject  =  event.target;
-        if (this.nodeSelected && event.e && event.e.ctrlKey) {
-            this.dispatch({type: ADD_CONNECTION, from: this.nodeSelected.data.id, to: selectedObject.data.id });
-            this.nodeSelected = selectedObject;
-        }
-        else {
-            this.nodeSelected = selectedObject;
-        }
-
-        this.dispatch({type: SELECT_NODE, data: selectedObject.data.id});
-    }
-
-    canvasObjectDeSelected(event) {
-        this.nodeSelected = null;
-        this.dispatch({type: SELECT_NODE, data: null});
-    }
-
     addConnectionWithoutRender(connectionData) {
         let fromNode = this.nodesById[connectionData.from];
         let toNode = this.nodesById[connectionData.to];
-
 
         let line = new fabric.Line(
             [fromNode.left, fromNode.top, toNode.left, toNode.top], {
@@ -166,6 +125,7 @@ class ScanCanvas {
                 strokeDashArray: [3, 3],
                 selectable: false,
                 hoverCursor: 'default',
+                opacity: 0
             });
 
         line.data = connectionData;
@@ -173,11 +133,29 @@ class ScanCanvas {
         this.canvas.add(line);
         this.connections.push(line);
         this.canvas.sendToBack(line);
+
+        return line;
     }
 
-    addConnectionWithRender(connectionData) {
-        this.addConnectionWithoutRender(connectionData);
-        this.render();
+    addNodeWithAnimation(action) {
+        const node = this.addNodeWithoutRender(action);
+        const displayNode = () =>  { this.animate(node, "opacity", 0.5, 2000); };
+        this.thread.run(1, displayNode);
+    }
+
+    addConnectionWithAnimation(connectionData) {
+        const line = this.addConnectionWithoutRender(connectionData);
+        const displayLine = () =>  { this.animate(line, "opacity", 0.5, 2000); };
+        this.thread.run(1, displayLine);
+    }
+
+
+     animate(toAnimate, attribute, value, duration) {
+        toAnimate.animate(attribute, value, {
+            onChange: this.canvas.renderAll.bind(this.canvas),
+            duration: duration,
+            easing: fabric.util.ease.easeInOutSine
+        });
     }
 
 }
