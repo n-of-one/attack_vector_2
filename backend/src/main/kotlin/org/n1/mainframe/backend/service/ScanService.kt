@@ -6,31 +6,37 @@ import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.site.SiteFull
 import org.n1.mainframe.backend.repo.ScanRepo
 import org.n1.mainframe.backend.service.site.LayoutService
+import org.n1.mainframe.backend.service.site.NodeService
 import org.n1.mainframe.backend.service.site.SiteDataService
 import org.n1.mainframe.backend.service.site.SiteService
 import org.n1.mainframe.backend.util.createId
 import org.springframework.stereotype.Service
 import java.security.Principal
-import java.util.*
 
 @Service
 class ScanService(val scanRepo: ScanRepo,
                   val layoutService: LayoutService,
                   val siteDataService: SiteDataService,
                   val siteService: SiteService,
-                  val stompService: StompService) {
+                  val stompService: StompService,
+                  val nodeService: NodeService) {
 
     data class ScanResponse(val scanId: String?, val message: NotyMessage?)
 
     fun scanSite(siteName: String): ScanResponse {
         val siteData = siteDataService.findByName(siteName) ?: return ScanResponse(null, NotyMessage("error", "Error", "Site '${siteName}' not found"))
         val layout = layoutService.findById(siteData.id)
+        if (layout.nodeIds.isEmpty()) {
+            throw java.lang.IllegalStateException("Site does not have nodes.")
+        }
+        val nodes = nodeService.getAll(layout.nodeIds)
 
+        val startNode = siteService.findStartNode(siteData.startNodeNetworkId, nodes) ?:
+                throw java.lang.IllegalStateException("Start node invalid. NetworkID: ${siteData.startNodeNetworkId} for ${siteName}")
+        val nodeStatusById = layout.nodeIds.map { it to NodeStatus.UNDISCOVERED }.toMap().toMutableMap()
+        nodeStatusById[startNode.id] = NodeStatus.DISCOVERED
 
         val id = createId("scan") { candidate: String -> scanRepo.findById(candidate) }
-
-        val nodeStatusById = layout.nodeIds.map { it to NodeStatus.UNDISCOVERED }.toMap().toMutableMap()
-        nodeStatusById[siteData.startNodeId] = NodeStatus.DISCOVERED
         val scan = Scan(
                 id = id,
                 siteId = siteData.id,
@@ -42,25 +48,12 @@ class ScanService(val scanRepo: ScanRepo,
         return ScanResponse(id, null)
     }
 
-    val rand = Random()
-
-    fun randomStatus(): NodeStatus {
-        val s = rand.nextInt(5)
-        when(s) {
-            0 -> return NodeStatus.UNDISCOVERED
-            1 -> return NodeStatus.DISCOVERED
-            2 -> return NodeStatus.TYPE
-            3 -> return NodeStatus.CONNECTIONS
-            4 -> return NodeStatus.SERVICES
-        }
-        return NodeStatus.UNDISCOVERED
-    }
-
     data class ScanAndSite(val scan: Scan, val site: SiteFull)
     fun sendScanToUser(scanId: String, principal: Principal) {
         val scan = scanRepo.findById(scanId).get()
         val siteFull = siteService.getSiteFull(scan.siteId)
-        siteFull.nodes.forEach { node -> scan.nodeStatusById[node.id] = randomStatus() }
+
+//        siteFull.nodes.forEach { node -> scan.nodeStatusById[node.id] = NodeStatus.CONNECTIONS }
 
         val scanAndSite = ScanAndSite(scan, siteFull)
         stompService.toUser(principal, ReduxActions.SERVER_SCAN_FULL, scanAndSite)

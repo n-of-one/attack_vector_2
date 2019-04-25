@@ -30,7 +30,8 @@ class ScanRoot extends Component {
             url: "/api/scan/",
             body: {id: scanId},
             ok: ({siteId}) => { this.init(scanId, siteId) },
-            notok: () => { notify_fatal("Connection to server failed, unable to continue."); }
+            notok: () => { notify_fatal("There was a server problem, please try again."); },
+            error: () => { notify_fatal("Connection to server failed, unable to continue."); }
         });
     }
 

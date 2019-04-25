@@ -1,5 +1,7 @@
 package org.n1.mainframe.backend.service.site
 
+import org.n1.mainframe.backend.model.site.NETWORK_ID
+import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.site.SiteFull
 import org.n1.mainframe.backend.service.ReduxActions
@@ -27,9 +29,14 @@ class SiteService(
         val siteData = siteDataService.getById(siteId)
         val layout = layoutService.getById(siteId)
         val nodes = nodeService.getAll(layout.nodeIds)
+        val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
         val connections = connectionService.getAll(layout.connectionIds)
 
-        return SiteFull(siteData, layout, nodes, connections)
+        return SiteFull(siteData, layout, nodes, connections, startNodeId)
+    }
+
+    fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
+        return nodes.find{ node -> node.services[0].data[NETWORK_ID] == startNodeNetworkId }
     }
 
     fun purgeAll() {
@@ -42,6 +49,8 @@ class SiteService(
         nodeService.purgeAll()
         connectionService.purgeAll()
     }
+
+
 
 
 

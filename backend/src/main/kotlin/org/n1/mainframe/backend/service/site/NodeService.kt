@@ -1,10 +1,10 @@
 package org.n1.mainframe.backend.service.site
 
+import org.n1.mainframe.backend.model.site.Layout
+import org.n1.mainframe.backend.model.site.NETWORK_ID
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
-import org.n1.mainframe.backend.model.site.Layout
 import org.n1.mainframe.backend.model.site.enums.ServiceType
-import org.n1.mainframe.backend.model.site.NETWORK_ID
 import org.n1.mainframe.backend.model.ui.site.command.AddNode
 import org.n1.mainframe.backend.model.ui.site.command.MoveNode
 import org.n1.mainframe.backend.repo.NodeRepo
@@ -88,6 +88,7 @@ class NodeService(
             nodeRepo.save(node)
         }
     }
+
 
 
 }

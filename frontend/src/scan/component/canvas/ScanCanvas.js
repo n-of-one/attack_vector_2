@@ -1,5 +1,4 @@
 import {fabric} from "fabric";
-import {assertNotNullUndef} from "../../../common/Assert";
 import {toType} from "../../../common/NodeTypesNames";
 import Thread from "../../../common/Thread";
 
@@ -97,8 +96,8 @@ class ScanCanvas {
     }
 
     addConnectionWithoutRender(connectionData) {
-        let fromNode = this.nodesById[connectionData.from];
-        let toNode = this.nodesById[connectionData.to];
+        let fromNode = this.nodesById[connectionData.fromId];
+        let toNode = this.nodesById[connectionData.toId];
 
         if (!fromNode || !toNode) {
             return null;
@@ -126,27 +125,15 @@ class ScanCanvas {
     addNodeWithAnimation(node, status) {
         const nodeImage = this.addNodeWithoutRender(node, status);
         if (nodeImage) {
-            this.thread.run(1, () => this.animate(nodeImage, "opacity", 0.5, 2000));
+            this.thread.run(3, () => this.animate(nodeImage, "opacity", 0.5, 2000));
         }
     }
 
     addConnectionWithAnimation(connectionData) {
         const lineImage = this.addConnectionWithoutRender(connectionData);
         if (lineImage) {
-            this.thread.run(1, () => this.animate(lineImage, "opacity", 0.5, 2000));
+            this.thread.run(3, () => this.animate(lineImage, "opacity", 0.5, 2000));
         }
-    }
-
-
-    moveNode(action) {
-        let nodeId = action.nodeId;
-        let node = this.nodesById[nodeId];
-        assertNotNullUndef(node, action);
-
-        node.set({left: action.x, top: action.y});
-        node.setCoords();
-
-        this.movingNode(nodeId);
     }
 
     animate(toAnimate, attribute, value, duration) {

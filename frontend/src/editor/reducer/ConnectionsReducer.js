@@ -5,16 +5,11 @@ export default (state = [], action) => {
         case SERVER_SITE_FULL: return action.data.connections;
         case SERVER_ADD_CONNECTION: return addConnection(action.data, state);
         default: return state;
+// TODO: implement remove connection ;)
     }
 }
 
 let addConnection = (data, connections) => {
-        let connection = {
-        id: data.id,
-        from: data.from,
-        to: data.to,
-        type: data.type
-    };
-
+    let connection = { ...data };
     return [ ...connections, connection ];
 };

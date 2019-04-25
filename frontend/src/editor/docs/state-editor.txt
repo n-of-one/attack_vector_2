@@ -21,7 +21,7 @@ siteData = {
     description: "practice site for new players"
     creator: null
     hackTime: "39:00"
-    startNodeId: "00"
+    startNodeNetworkId: "00"
     hackable: false
 }
 
@@ -41,9 +41,8 @@ node = {
 
 connection = {
     id: "con-0000-2995"
-    from: "node-1111-3fd8"    // node dbId
-    to:   "node-2222-4ae2"      // node dbId
-    type: "DEFAULT"
+    fromId: "node-1111-3fd8"    // node dbId
+    toId:   "node-2222-4ae2"      // node dbId
 }
 
 

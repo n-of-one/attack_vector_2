@@ -12,12 +12,12 @@ class ConnectionService(
 
     fun findConnection(startId: String, endId: String ): Connection? {
         val startConnections = findByNodeId(startId);
-        return startConnections.find {it.from == endId || it.to == endId }
+        return startConnections.find {it.fromId == endId || it.toId == endId }
     }
 
     fun createConnection(command: AddConnection): Connection {
         val id = createId("con", connectionRepo::findById)
-        val connection = Connection(id, command.from, command.to, command.connectionType)
+        val connection = Connection(id, command.fromId, command.toId)
         connectionRepo.save(connection)
 
         return connection
@@ -32,8 +32,8 @@ class ConnectionService(
     }
 
     fun findByNodeId(nodeId: String): Set<Connection> {
-        val froms = connectionRepo.findAllByFrom(nodeId)
-        val tos = connectionRepo.findAllByTo(nodeId)
+        val froms = connectionRepo.findAllByFromId(nodeId)
+        val tos = connectionRepo.findAllByToId(nodeId)
         return froms.union(tos)
     }
 

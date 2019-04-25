@@ -6,6 +6,6 @@ data class SiteData (
         var description: String = "",
         var creator: String = "",
         var hackTime: String = "15:00",
-        var startNodeId: String = "00",
+        var startNodeNetworkId: String = "00",
         var hackable: Boolean = true
 )

@@ -45,7 +45,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* addConnectionSaga(action) {
-        let payload = { siteId: siteId, from: action.from, to: action.to, connectionType: "DEFAULT" };
+        let payload = { siteId: siteId, fromId: action.fromId, toId: action.toId };
         let body = JSON.stringify(payload);
         stompClient.send("/av/addConnection", body);
         yield

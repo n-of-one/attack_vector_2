@@ -55,7 +55,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <div className="form-group has-feedback">
                             <label htmlFor="start_node" className="col-lg-3 control-label text-muted">Start node</label>
                             <div className="col-lg-3">
-                                <TextSaveInput id="start_node" className="form-control" placeholder="Network Id" value={siteData.startNodeId} save={ (value) => save("startNode", value) } />
+                                <TextSaveInput id="start_node" className="form-control" placeholder="Network Id" value={siteData.startNodeNetworkId} save={ (value) => save("startNode", value) } />
                             </div>
                         </div>
                         <div className="form-group has-feedback">

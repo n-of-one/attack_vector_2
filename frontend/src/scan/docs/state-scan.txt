@@ -34,13 +34,17 @@ node = {
     x: 393
     y: 10
     type: "TRANSIT_1"
+
+    // Synthetic fields: derived when data is combined
+
+    connections: ["node-1111-3232", "node-2344-3442"]
+    distance: 2  // the start node has distance 0. Unconnected nodes have distance = null
 }
 
 connection = {
     id: "con-0000-2995"
-    from: "node-1111-3fd8"    // node dbId
-    to:   "node-2222-4ae2"      // node dbId
-    type: "DEFAULT"
+    fromId: "node-1111-3fd8"
+    toId:   "node-2222-4ae2"
 }
 
 

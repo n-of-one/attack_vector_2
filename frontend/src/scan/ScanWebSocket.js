@@ -3,6 +3,7 @@ import {notify, notify_fatal} from "../common/Notification";
 import {TERMINAL_RECEIVE} from "../common/component/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./ScanActions";
 import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
+import {orderByDistance} from "./lib/NodeDistance";
 
 let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
 
@@ -58,6 +59,10 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
                 console.log("Ignored event occurring before site initialization: " + body.type);
                 return;
             }
+        }
+
+        if (body.type === SERVER_SCAN_FULL) {
+            orderByDistance(body.data.site);
         }
 
         let event = {...body, globalState: store.getState()};

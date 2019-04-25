@@ -9,5 +9,6 @@ data class SiteFull (
         val siteData: SiteData,
         val layout: Layout,
         val nodes: List<Node>,
-        val connections: List<Connection>
+        val connections: List<Connection>,
+        val startNodeId: String?
 )

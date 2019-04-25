@@ -1,6 +1,6 @@
 package org.n1.mainframe.backend.service
 
-import org.n1.mainframe.backend.model.ui.*
+import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.model.ui.site.command.AddConnection
 import org.n1.mainframe.backend.model.ui.site.command.AddNode
 import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
@@ -31,7 +31,7 @@ class EditorService(
 
     fun addConnection(command: AddConnection) {
         val site = layoutService.getById(command.siteId)
-        val existing = connectionService.findConnection(command.from, command.to)
+        val existing = connectionService.findConnection(command.fromId, command.toId)
         if (existing != null) {
             throw ValidationException("Connection already exists there")
         }

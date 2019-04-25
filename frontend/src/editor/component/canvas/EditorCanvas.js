@@ -130,11 +130,11 @@ class EditorCanvas {
         let node = this.nodesById[nodeId];
 
         this.connections.forEach( connection => {
-            if (connection.data.from === nodeId) {
+            if (connection.data.fromId === nodeId) {
                 connection.set({x1: node.left, y1: node.top});
                 connection.setCoords();
             }
-            if (connection.data.to === nodeId) {
+            if (connection.data.toId === nodeId) {
                 connection.set({x2: node.left, y2: node.top});
                 connection.setCoords();
             }
@@ -154,7 +154,7 @@ class EditorCanvas {
     canvasObjectSelected(event) {
         let selectedObject  =  event.target;
         if (this.nodeSelected && event.e && event.e.ctrlKey) {
-            this.dispatch({type: ADD_CONNECTION, from: this.nodeSelected.data.id, to: selectedObject.data.id });
+            this.dispatch({type: ADD_CONNECTION, fromId: this.nodeSelected.data.id, toId: selectedObject.data.id });
             this.nodeSelected = selectedObject;
         }
         else {
@@ -170,8 +170,8 @@ class EditorCanvas {
     }
 
     addConnectionWithoutRender(connectionData) {
-        let fromNode = this.nodesById[connectionData.from];
-        let toNode = this.nodesById[connectionData.to];
+        let fromNode = this.nodesById[connectionData.fromId];
+        let toNode = this.nodesById[connectionData.toId];
 
 
         let line = new fabric.Line(

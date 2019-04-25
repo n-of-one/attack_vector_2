@@ -1,10 +1,9 @@
 package org.n1.mainframe.backend.service.site
 
-import org.n1.mainframe.backend.model.site.Layout
 import org.n1.mainframe.backend.model.site.SiteData
-import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.ValidationException
+import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
 import org.n1.mainframe.backend.repo.SiteDataRepo
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
@@ -53,7 +52,7 @@ class SiteDataService(
     }
 
     private fun updateStartNode(data: SiteData, input: String) {
-        data.startNodeId = input
+        data.startNodeNetworkId = input
     }
 
     private fun updateHackTime(data: SiteData, input: String) {
@@ -93,7 +92,7 @@ class SiteDataService(
     }
 
     fun create(id: String, name: String): SiteData {
-        val data = SiteData(id = id, name = name, hackTime = "15:00", startNodeId = "00")
+        val data = SiteData(id = id, name = name, hackTime = "15:00", startNodeNetworkId = "00")
         siteDataRepo.save(data)
         return data
     }

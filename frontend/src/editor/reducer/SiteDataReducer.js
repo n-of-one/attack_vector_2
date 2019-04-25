@@ -6,7 +6,7 @@ let defaultSiteData = {
     description: "",
     creator: null,
     hackTime: "-",
-    startNodeId: "-",
+    startNodeNetworkId: "00",
     hackable: false
 };
 
