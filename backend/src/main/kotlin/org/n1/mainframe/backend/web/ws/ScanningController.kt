@@ -3,7 +3,6 @@ package org.n1.mainframe.backend.web.ws
 import org.n1.mainframe.backend.engine.SerializingExecutor
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.ValidationException
-import org.n1.mainframe.backend.service.scan.ScanService
 import org.n1.mainframe.backend.service.scan.ScanningService
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -14,13 +13,12 @@ import java.security.Principal
 @Controller
 class ScanningController(
         val executor: SerializingExecutor,
-        val scanService: ScanService,
         val scanningService: ScanningService
 ) {
 
     @MessageMapping("/scan/sendScan")
     fun siteFull(siteId: String, principal: Principal) {
-        executor.run(principal) { scanService.sendScanToUser(siteId, principal) }
+        executor.run(principal) { scanningService.sendScanToUser(siteId, principal) }
     }
 
     data class TerminalCommand(val scanId: String, val command: String)
