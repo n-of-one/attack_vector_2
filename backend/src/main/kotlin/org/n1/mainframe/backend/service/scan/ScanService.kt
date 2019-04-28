@@ -27,15 +27,14 @@ class ScanService(val scanRepo: ScanRepo,
 
     fun scanSite(siteName: String): ScanResponse {
         val siteData = siteDataService.findByName(siteName) ?: return ScanResponse(null, NotyMessage("error", "Error", "Site '${siteName}' not found"))
-        val layout = layoutService.findById(siteData.id)
-        if (layout.nodeIds.isEmpty()) {
+        val nodes = nodeService.getAll(siteData.id)
+        if (nodes.isEmpty()) {
             throw java.lang.IllegalStateException("Site does not have nodes.")
         }
-        val nodes = nodeService.getAll(layout.nodeIds)
 
         val startNode = siteService.findStartNode(siteData.startNodeNetworkId, nodes) ?:
                 throw java.lang.IllegalStateException("Start node invalid. NetworkID: ${siteData.startNodeNetworkId} for ${siteName}")
-        val nodeStatusById = layout.nodeIds.map { it to NodeStatus.UNDISCOVERED }.toMap().toMutableMap()
+        val nodeStatusById = nodes.map { it.id to NodeStatus.UNDISCOVERED }.toMap().toMutableMap()
         nodeStatusById[startNode.id] = NodeStatus.DISCOVERED
 
         val id = createId("scan") { candidate: String -> scanRepo.findById(candidate) }

@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.service.site
 
-import org.n1.mainframe.backend.model.site.Layout
 import org.n1.mainframe.backend.model.site.NETWORK_ID
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
@@ -22,16 +21,23 @@ class NodeService(
         val id = createId("node", nodeRepo::findById)
         val services = listOf( createOsService(command.siteId) )
 
-        val node = Node(id, command.type, command.x, command.y, command.type.ice, services )
+        val node = Node(
+                id = id,
+                siteId = command.siteId,
+                type = command.type,
+                x = command.x,
+                y = command.y,
+                ice = command.type.ice,
+                distance = null,
+                services = services )
         nodeRepo.save(node)
         return node
     }
 
     private fun createOsService(siteId: String): Service {
-        val layout = layoutService.getById(siteId)
-        val nodes = getAll(layout.nodeIds)
+        val nodes = getAll(siteId)
         val id = createServiceId(nodes, siteId)
-        val networkId = nextFreeNetworkId( layout, nodes )
+        val networkId = nextFreeNetworkId( siteId, nodes )
         val data = mapOf(NETWORK_ID to networkId)
 
         return Service(id, ServiceType.OS, 0, data)
@@ -45,7 +51,7 @@ class NodeService(
         return createServiceId(siteId, findExisting)
     }
 
-    private fun nextFreeNetworkId(site: Layout, nodes: List<Node>): String {
+    private fun nextFreeNetworkId(siteId: String, nodes: List<Node>): String {
         val usedNetworkIds : Set<String> = HashSet(nodes.map{ node:Node -> node.services[0].data[NETWORK_ID]!!  })
 
         for (i in 0 .. usedNetworkIds.size+1 ) {
@@ -54,11 +60,11 @@ class NodeService(
                 return candidate
             }
         }
-        throw IllegalStateException("Failed to find a free network ID for site: ${site.id}")
+        throw IllegalStateException("Failed to find a free network ID for site: ${siteId}")
     }
 
-    fun getAll(nodeIds: List<String>): List<Node> {
-        return nodeRepo.findByIdIn(nodeIds)
+    fun getAll(siteId: String): List<Node> {
+        return nodeRepo.findBySiteId(siteId)
     }
 
     fun getById(nodeId: String) : Node {
@@ -89,6 +95,9 @@ class NodeService(
         }
     }
 
+    fun updateNodes(nodes: List<Node>) {
+        nodes.forEach { nodeRepo.save(it) }
+    }
 
 
 }

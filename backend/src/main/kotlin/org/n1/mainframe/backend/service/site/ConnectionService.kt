@@ -10,21 +10,24 @@ import org.springframework.stereotype.Service
 class ConnectionService(
         val connectionRepo: ConnectionRepo) {
 
-    fun findConnection(startId: String, endId: String ): Connection? {
+    fun findConnection(startId: String, endId: String): Connection? {
         val startConnections = findByNodeId(startId);
-        return startConnections.find {it.fromId == endId || it.toId == endId }
+        return startConnections.find { it.fromId == endId || it.toId == endId }
     }
 
     fun createConnection(command: AddConnection): Connection {
-        val id = createId("con", connectionRepo::findById)
-        val connection = Connection(id, command.fromId, command.toId)
+        val connection = Connection(
+                id = createId("con", connectionRepo::findById),
+                siteId = command.siteId,
+                fromId = command.fromId,
+                toId = command.toId)
         connectionRepo.save(connection)
 
         return connection
     }
 
-    fun getAll(connectionIds: MutableList<String>): List<Connection> {
-        return connectionRepo.findByIdIn(connectionIds)
+    fun getAll(siteId: String): List<Connection> {
+        return connectionRepo.findBySiteId(siteId)
     }
 
     fun purgeAll() {

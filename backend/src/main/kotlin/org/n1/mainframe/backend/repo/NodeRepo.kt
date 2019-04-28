@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface NodeRepo : PagingAndSortingRepository<Node, String> {
 
-    fun findByIdIn(list: List<String>): List<Node>
+    fun findBySiteId(siteId: String): List<Node>
 }

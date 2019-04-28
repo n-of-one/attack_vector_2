@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ConnectionRepo : PagingAndSortingRepository<Connection, String> {
 
-    fun findByIdIn(list: List<String>): List<Connection>
+    fun findBySiteId(siteId: String): List<Connection>
     fun findAllByFromId(from: String): List<Connection>
     fun findAllByToId(from: String): List<Connection>
 

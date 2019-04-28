@@ -5,11 +5,10 @@ import org.n1.mainframe.backend.model.site.Layout
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.repo.LayoutRepo
 import org.springframework.stereotype.Service
-import java.lang.IllegalStateException
 
 @Service
 class LayoutService(
-        val layoutRepo: LayoutRepo ) {
+        val layoutRepo: LayoutRepo) {
 
 
     fun getById(id: String): Layout {

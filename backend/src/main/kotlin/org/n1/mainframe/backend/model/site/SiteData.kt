@@ -1,7 +1,7 @@
 package org.n1.mainframe.backend.model.site
 
 data class SiteData (
-        val id: String,
+        val id: String, // this is the site-id
         var name: String,
         var description: String = "",
         var creator: String = "",

@@ -30,7 +30,7 @@ class EditorService(
     }
 
     fun addConnection(command: AddConnection) {
-        val site = layoutService.getById(command.siteId)
+        val layout = layoutService.getById(command.siteId)
         val existing = connectionService.findConnection(command.fromId, command.toId)
         if (existing != null) {
             throw ValidationException("Connection already exists there")
@@ -38,7 +38,8 @@ class EditorService(
 
         val connection = connectionService.createConnection(command)
 
-        layoutService.addConnection(site, connection)
+        layoutService.addConnection(layout, connection)
+        siteService.updateDistances(command.siteId)
         stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_CONNECTION, connection)
     }
 
@@ -47,6 +48,7 @@ class EditorService(
         val connections = connectionService.findByNodeId(nodeId)
         connectionService.deleteAll(connections)
         layoutService.deleteConnections(layout, connections)
+        siteService.updateDistances(siteId)
 
         sendSiteFull(layout.id)
     }

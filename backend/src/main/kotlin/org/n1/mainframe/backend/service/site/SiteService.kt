@@ -15,7 +15,7 @@ class SiteService(
         val siteDataService: SiteDataService,
         val nodeService: NodeService,
         val connectionService: ConnectionService
-        ) {
+) {
 
     fun createSite(name: String): String {
         val id = siteDataService.createId()
@@ -28,19 +28,19 @@ class SiteService(
     fun getSiteFull(siteId: String): SiteFull {
         val siteData = siteDataService.getById(siteId)
         val layout = layoutService.getById(siteId)
-        val nodes = nodeService.getAll(layout.nodeIds)
+        val nodes = nodeService.getAll(siteId)
         val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
-        val connections = connectionService.getAll(layout.connectionIds)
+        val connections = connectionService.getAll(siteId)
 
         return SiteFull(siteData, layout, nodes, connections, startNodeId)
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
-        return nodes.find{ node -> node.services[0].data[NETWORK_ID] == startNodeNetworkId }
+        return nodes.find { node -> node.services[0].data[NETWORK_ID] == startNodeNetworkId }
     }
 
     fun purgeAll() {
-        siteDataService.findAll().forEach{ siteData ->
+        siteDataService.findAll().forEach { siteData ->
             stompService.toSite(siteData.id, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage("fatal", "Admin action", "Purging all sites."))
         }
 
@@ -51,7 +51,47 @@ class SiteService(
     }
 
 
+    // --- --- --- //
 
+    data class TraverseNode(val id: String,
+                            var distance: Int? = null,
+                            val connections: MutableSet<TraverseNode> = HashSet()) {
+
+        override fun equals(other: Any?): Boolean {
+            if (other is TraverseNode) { return other.id == this.id }
+            return false
+        }
+
+        override fun hashCode(): Int { return this.id.hashCode() }
+    }
+
+    fun updateDistances(siteId: String) {
+        val siteData = siteDataService.getById(siteId)
+        val nodes = nodeService.getAll(siteId)
+        val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
+        val connections = connectionService.getAll(siteId)
+
+        val traverseNodes = nodes.map { TraverseNode(id = it.id) }
+        val traverseNodesById = traverseNodes.map { it.id to it }.toMap()
+        connections.forEach {
+            val from = traverseNodesById[it.fromId] ?: throw IllegalStateException("Node ${it.fromId} not found in ${siteId} in ${it.id}")
+            val to = traverseNodesById[it.toId] ?: throw IllegalStateException("Node ${it.toId} not found in ${siteId} in ${it.id}")
+            from.connections.add(to)
+            to.connections.add(from)
+        }
+
+        val startTraverseNode = traverseNodesById[startNodeId]!!
+        setDistances(startTraverseNode, 0)
+        nodes.forEach { it.distance = traverseNodesById[it.id]!!.distance }
+        nodeService.updateNodes(nodes)
+    }
+
+    fun setDistances(node: TraverseNode, distance: Int) {
+        node.distance = distance
+        node.connections
+                .filter { it.distance == null }
+                .forEach { setDistances(it, distance + 1) }
+    }
 
 
 }
