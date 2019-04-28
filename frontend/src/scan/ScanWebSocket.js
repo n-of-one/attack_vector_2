@@ -62,7 +62,7 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
         }
 
         if (body.type === SERVER_SCAN_FULL) {
-            orderByDistance(body.data.site);
+            orderByDistance(body.data);
         }
 
         let event = {...body, globalState: store.getState()};

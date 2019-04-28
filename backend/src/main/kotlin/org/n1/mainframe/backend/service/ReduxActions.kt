@@ -14,5 +14,8 @@ enum class ReduxActions {
 
     SERVER_SCAN_FULL,
 
+    SERVER_TERMINAL_RECEIVE,
+    SERVER_PROBE_ACTION
+
 
 }

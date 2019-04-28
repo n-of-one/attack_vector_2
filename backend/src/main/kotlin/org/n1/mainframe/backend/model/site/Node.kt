@@ -9,6 +9,5 @@ data class Node(
         var x: Int,
         var y: Int,
         val ice: Boolean,
-        var distance: Int?,
         val services: List<Service>
 )

@@ -9,7 +9,7 @@ class ScanCanvas {
 
 
     scan = null;
-    nodeStatusById = null;
+    nodeScanById = null;
 
     nodesById = {};
     connections = [];
@@ -34,11 +34,11 @@ class ScanCanvas {
     loadScan(data) {
         const {scan, site} = data;
         const {nodes, connections} = site;
-        this.nodeStatusById = scan.nodeStatusById;
+        this.nodeScanById = scan.nodeScanById;
         this.scan = scan;
 
         nodes.forEach(node => {
-            const status = scan.nodeStatusById[node.id];
+            const status = scan.nodeScanById[node.id].status;
             this.addNodeWithAnimation(node, status);
         });
 

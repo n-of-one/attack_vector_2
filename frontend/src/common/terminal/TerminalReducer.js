@@ -1,4 +1,4 @@
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT} from "./TerminalActions";
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE} from "./TerminalActions";
 
 const LINE_LIMIT = 100;
 
@@ -24,6 +24,8 @@ export default (terminal = defaultState, action) => {
             return processTick(processTick(processTick(processTick(terminal))));
         case TERMINAL_RECEIVE:
             return receive(terminal, action);
+        case SERVER_TERMINAL_RECEIVE:
+            return receiveFromServer(terminal, action);
         case TERMINAL_KEY_PRESS:
             return handlePressKey(terminal, action);
         case TERMINAL_SUBMIT:
@@ -99,6 +101,13 @@ let receive = (terminal, action) => {
             receiveInput: {type: "text", data: action.data},
         };
     }
+};
+
+let receiveFromServer = (terminal, action) => {
+    const internalAction = {
+        data: action.data.line
+    };
+    return receive(terminal, internalAction);
 };
 
 

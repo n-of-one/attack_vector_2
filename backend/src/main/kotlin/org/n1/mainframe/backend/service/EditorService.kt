@@ -39,7 +39,6 @@ class EditorService(
         val connection = connectionService.createConnection(command)
 
         layoutService.addConnection(layout, connection)
-        siteService.updateDistances(command.siteId)
         stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_CONNECTION, connection)
     }
 
@@ -48,7 +47,6 @@ class EditorService(
         val connections = connectionService.findByNodeId(nodeId)
         connectionService.deleteAll(connections)
         layoutService.deleteConnections(layout, connections)
-        siteService.updateDistances(siteId)
 
         sendSiteFull(layout.id)
     }

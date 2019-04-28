@@ -28,7 +28,6 @@ class NodeService(
                 x = command.x,
                 y = command.y,
                 ice = command.type.ice,
-                distance = null,
                 services = services )
         nodeRepo.save(node)
         return node
@@ -94,10 +93,5 @@ class NodeService(
             nodeRepo.save(node)
         }
     }
-
-    fun updateNodes(nodes: List<Node>) {
-        nodes.forEach { nodeRepo.save(it) }
-    }
-
 
 }

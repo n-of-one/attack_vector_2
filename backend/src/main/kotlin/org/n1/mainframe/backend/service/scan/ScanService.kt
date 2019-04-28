@@ -1,6 +1,6 @@
 package org.n1.mainframe.backend.service.scan
 
-import org.n1.mainframe.backend.model.scan.NodeStatus
+import org.n1.mainframe.backend.model.scan.NodeScan
 import org.n1.mainframe.backend.model.scan.Scan
 import org.n1.mainframe.backend.model.site.SiteData
 import org.n1.mainframe.backend.repo.ScanRepo
@@ -13,13 +13,13 @@ class ScanService(val scanRepo: ScanRepo) {
         return scanRepo.findById(scanId).orElseGet { throw IllegalArgumentException("${scanId} not found") }
     }
 
-    fun createScan(siteData: SiteData, nodeStatusById: MutableMap<String, NodeStatus>): String {
+    fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>): String {
         val id = createId("scan") { candidate: String -> scanRepo.findById(candidate) }
         val scan = Scan(
                 id = id,
                 siteId = siteData.id,
                 complete = false,
-                nodeStatusById = nodeStatusById
+                nodeScanById = nodeScanById
         )
         scanRepo.save(scan)
         return id
