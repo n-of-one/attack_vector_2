@@ -1,8 +1,7 @@
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE} from "./TerminalActions";
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT} from "./TerminalActions";
 
 const LINE_LIMIT = 100;
 
-const ENTER_KEY = 13;
 const BACKSPACE = 8;
 const TAB = 9;
 
@@ -26,7 +25,9 @@ export default (terminal = defaultState, action) => {
         case TERMINAL_RECEIVE:
             return receive(terminal, action);
         case TERMINAL_KEY_PRESS:
-            return handleKeyDown(terminal, action);
+            return handlePressKey(terminal, action);
+        case TERMINAL_SUBMIT:
+            return handlePressEnter(terminal, action);
         default:
             return terminal;
     }
@@ -101,23 +102,11 @@ let receive = (terminal, action) => {
 };
 
 
-let handleKeyDown = (terminal, action) => {
+let handlePressKey = (terminal, action) => {
     let {keyCode, key} = action;
-    if (keyCode === ENTER_KEY) {
-        let line = terminal.prompt + terminal.input;
-        let lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
-        let receiveBuffer = [...terminal.receiveBuffer, {type: "text", data: "the answer to your action is the following :"}, {
-            type: "text",
-            data: "..... drummdrummdrummdrummdrummdrummdrummdrummdrumm roll.. 42."
-        }];
-
-        return {...terminal, lines: lines, input: "", receiveBuffer: receiveBuffer, receiving: true};
-    }
-
     let newInput = determineInput(terminal.input, keyCode, key);
     return {...terminal, input: newInput}
 };
-
 
 let determineInput = (input, keyCode, key) => {
     if (keyCode === BACKSPACE && input.length > 0) {
@@ -132,6 +121,12 @@ let determineInput = (input, keyCode, key) => {
     else {
         return input;
     }
+};
+
+let handlePressEnter = (terminal, action) => {
+    let line = terminal.prompt + action.command;
+    let lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
+    return {...terminal, lines: lines, input: "", receiving: true};
 };
 
 /* Only call on mutable array */

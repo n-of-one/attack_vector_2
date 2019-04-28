@@ -12,8 +12,15 @@ const createScanSagas = (stompClient, scanId) => {
         yield
     }
 
+    function* terminalSubmitSaga(action) {
+        const payload = {scanId: scanId, command: action.command};
+        let body = JSON.stringify(payload);
+        stompClient.send("/av/scan/terminal", body);
+        yield
+    }
+
     return [
-        requestScanFullSaga, serverScanFullSaga
+        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga
     ];
 
 };

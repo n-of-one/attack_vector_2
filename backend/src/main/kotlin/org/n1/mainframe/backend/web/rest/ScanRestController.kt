@@ -1,6 +1,6 @@
 package org.n1.mainframe.backend.web.rest
 
-import org.n1.mainframe.backend.service.ScanService
+import org.n1.mainframe.backend.service.scan.ScanService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping

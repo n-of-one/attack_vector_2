@@ -1,6 +1,6 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal} from "../common/Notification";
-import {TERMINAL_RECEIVE} from "../common/component/terminal/TerminalActions";
+import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./ScanActions";
 import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
 import {orderByDistance} from "./lib/NodeDistance";

@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
+import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "./TerminalActions";
+
+const ENTER_KEY = 13;
 
 let terminalIntervalId = null;
 
@@ -46,7 +48,12 @@ class Terminal extends Component {
     handleKeyDown(event) {
         let {keyCode, key} = event;
         event.preventDefault();
-        this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode});
+        if (keyCode !== ENTER_KEY) {
+            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode});
+        }
+        else {
+            this.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.state.input});
+        }
     }
 
     renderLine(line, index) {
