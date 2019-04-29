@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.service.scan
 
 import org.n1.mainframe.backend.model.scan.NodeScan
 import org.n1.mainframe.backend.model.scan.NodeStatus
+import org.n1.mainframe.backend.model.scan.ProbeScanAction
 import org.n1.mainframe.backend.model.scan.Scan
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.site.SiteFull
@@ -119,7 +120,7 @@ class ScanningService(val scanService: ScanService,
         stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_ACTION, probeAction)
     }
 
-    data class ProbeAction(val path: List<String>, val type: String, val value: String)
+    data class ProbeAction(val path: List<String>, val type: ProbeScanAction, val value: String)
 
     fun determineNextScanTarget(scan: Scan): ProbeAction {
         val traverseNodeValues = createTraverseNodes(scan.siteId).values
@@ -136,7 +137,7 @@ class ScanningService(val scanService: ScanService,
             currentNode = currentNode.connections.find { it.distance == (currentNode.distance!! - 1) }!!
             path.add(0, currentNode.id)
         }
-        val action = ProbeAction(path = path, type = "terminal", value = "burp")
+        val action = ProbeAction(path = path, type = ProbeScanAction.SCAN_CONNECTIONS, value = "burp")
         return action
     }
 }

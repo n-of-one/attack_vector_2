@@ -72,6 +72,7 @@ export default class Thread {
         else {
             /* Thread cleans up interval if there is no more event in the queue. */
             clearInterval(this.intervalId);
+            this.intervalId = null;
         }
     }
 }

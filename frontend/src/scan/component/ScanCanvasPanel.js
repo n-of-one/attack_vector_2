@@ -6,8 +6,10 @@ import {
 } from "../../common/NodeTypesNames";
 import ScanNodeImage from "./ScanNodeImage";
 import HackerImage from "../../common/component/HackerImage";
+import ScanProbeImages from "./ScanProbeImages";
+import connect from "react-redux/es/connect/connect";
 
-export default class ScanCanvasPanel extends Component {
+class ScanCanvasPanel extends Component {
 
     componentWillMount() {
         // dispatch some actions if you use Redux
@@ -46,8 +48,21 @@ export default class ScanCanvasPanel extends Component {
                     <ScanNodeImage type={MANUAL_2} ice={true} onLoad={onLoad}/>
                     <ScanNodeImage type={MANUAL_3} ice={true} onLoad={onLoad}/>
                     <HackerImage type="SCORPION" fileName="astrology1-scorpion-sc37.png" onLoad={onLoad}/>
+                    <ScanProbeImages />
                 </div>
             </div>
         );
     }
 }
+
+let mapStateToProps = (state) => {
+    return {};
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatch: dispatch
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ScanCanvasPanel);

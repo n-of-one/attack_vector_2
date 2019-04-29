@@ -1,6 +1,7 @@
 import {fabric} from "fabric";
 import {toType} from "../../../common/NodeTypesNames";
 import Thread from "../../../common/Thread";
+import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -9,6 +10,7 @@ class ScanCanvas {
 
 
     scan = null;
+    nodes = null;
     nodeScanById = null;
 
     nodesById = {};
@@ -36,6 +38,7 @@ class ScanCanvas {
         const {scan, site} = data;
         const {nodes, connections} = site;
         this.nodeScanById = scan.nodeScanById;
+        this.nodes = nodes;
         this.scan = scan;
 
 
@@ -130,7 +133,7 @@ class ScanCanvas {
         let image = document.getElementById("SCORPION");
 
         this.hackerImage = new fabric.Image(image, {
-            left: 607/2,
+            left: 607 / 2,
             top: 810,
             height: 40,
             width: 40,
@@ -151,7 +154,7 @@ class ScanCanvas {
             });
         this.canvas.add(line);
         this.canvas.sendToBack(line);
-        this.thread.run(3, () => this.animate(line, "opacity", 0.5, 5000));
+        this.thread.run(3, () => this.animate(line, "opacity", 0.5, 100));
     }
 
     render() {
@@ -188,25 +191,92 @@ class ScanCanvas {
     addNodeWithAnimation(node, status) {
         const nodeImage = this.addNodeWithoutRender(node, status);
         if (nodeImage) {
-            this.thread.run(0, () => { this.animate(nodeImage.label, "opacity", 0.5, 2000) });
-            this.thread.run(0, () => { this.animate(nodeImage.labelBackground, "opacity", 0.8, 2000) });
-            this.thread.run(3, () => this.animate(nodeImage, "opacity", 0.5, 2000));
+            this.thread.run(0, () => {
+                this.animate(nodeImage.label, "opacity", 0.5, 40)
+            });
+            this.thread.run(0, () => {
+                this.animate(nodeImage.labelBackground, "opacity", 0.8, 40)
+            });
+            this.thread.run(3, () => this.animate(nodeImage, "opacity", 0.5, 40));
         }
     }
 
     addConnectionWithAnimation(connectionData) {
         const lineImage = this.addConnectionWithoutRender(connectionData);
         if (lineImage) {
-            this.thread.run(3, () => this.animate(lineImage, "opacity", 0.5, 2000));
+            this.thread.run(3, () => this.animate(lineImage, "opacity", 0.5, 40));
         }
     }
 
     animate(toAnimate, attribute, value, duration) {
         toAnimate.animate(attribute, value, {
             onChange: this.canvas.renderAll.bind(this.canvas),
-            duration: duration,
+            duration: duration * 50,
             easing: fabric.util.ease.easeInOutSine
         });
+    }
+
+    // -- //
+
+
+    /**
+     * "data":{"path":["node-42f2-4f99"],"type":"terminal","value":"burp"}
+     */
+    launchProbe({path, type, value}) {
+        const probeImageNumber = Math.floor(Math.random() * 10) + 1;
+        const probeImageElement = document.getElementById("PROBE_" + probeImageNumber);
+
+        let probeImage = new fabric.Image(probeImageElement, {
+            left: this.hackerImage.left,
+            top: this.hackerImage.top,
+            height: 40,
+            width: 40,
+            opacity: 0,
+        });
+
+        this.canvas.add(probeImage);
+        this.canvas.bringToFront(probeImage);
+
+        this.animate(probeImage, "opacity", 0.4, 40);
+
+        path.forEach((nodeId) => {
+            const nextNodeImage = this.nodesById[nodeId];
+            this.thread.run(50, () => this.moveStep(probeImage, nextNodeImage, 50, 5, 5));
+        });
+        this.thread.run(0, () => {
+            this.processProbeArrive(probeImage, type, value);
+        });
+    }
+
+
+    moveStep(avatar, node, time, leftDelta, topDelta) {
+        this.animate(avatar, 'left', node.left + leftDelta, time );
+        this.animate(avatar, 'top', node.top + topDelta, time );
+    }
+
+    processProbeArrive(probeImage, type, value) {
+        switch(type) {
+            case "SCAN_CONNECTIONS": return this.scanConnections(probeImage, value);
+            default: return this.probeError(probeImage, type, value);
+        }
+    }
+
+    scanConnections(probeImage, value) {
+        this.thread.run(50, () => {
+            this.animate(probeImage, 'width', "100", 50);
+            this.animate(probeImage, 'height', "100", 50);
+            this.animate(probeImage, 'opacity', "0.2", 50);
+        });
+        this.thread.run(20, () => {
+            this.animate(probeImage, 'width', "40", 50);
+            this.animate(probeImage, 'height', "40", 50);
+            this.animate(probeImage, 'opacity', "0.4", 50);
+        });
+    }
+
+    probeError(probeImage, type, value) {
+        this.thread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
+        this.thread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + type + "[/] unknown. Value: [info]" + value}) });
     }
 
 }
