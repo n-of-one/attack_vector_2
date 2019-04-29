@@ -13,6 +13,7 @@ class ScanCanvas {
 
     nodesById = {};
     connections = [];
+    hackerImage = null;
     dispatch = null;
     thread = new Thread();
 
@@ -37,6 +38,9 @@ class ScanCanvas {
         this.nodeScanById = scan.nodeScanById;
         this.scan = scan;
 
+
+        this.addHackerImage(nodes[0]);
+
         nodes.forEach(node => {
             const status = scan.nodeScanById[node.id].status;
             this.addNodeWithAnimation(node, status);
@@ -45,6 +49,7 @@ class ScanCanvas {
         connections.forEach(connection => {
             this.addConnectionWithAnimation(connection);
         });
+
     }
 
     addNodeWithoutRender(node, status) {
@@ -75,6 +80,36 @@ class ScanCanvas {
         this.canvas.add(nodeImage);
         this.nodesById[node.id] = nodeImage;
 
+        let networkId = node.services[0].data["networkId"];
+
+        let nodeLabel = new fabric.Text(networkId, {
+            fill: "#ccc",
+            fontFamily: "courier",
+            fontSize: 12,
+            fontStyle: "normal", // "", "normal", "italic" or "oblique".
+            left: node.x - 20,
+            top: node.y + 35,
+            textAlign: "left", // "center", "right" or "justify".
+            opacity: 0
+        });
+        this.canvas.add(nodeLabel);
+        nodeImage.label = nodeLabel;
+
+        let nodeLabelBackground = new fabric.Rect({
+            width: 20,
+            height: 20,
+            fill: "#333333",
+            left: node.x - 20,
+            top: node.y + 35,
+            opacity: 0
+        });
+        this.canvas.add(nodeLabelBackground);
+        nodeImage.labelBackground = nodeLabelBackground;
+
+        this.canvas.sendToBack(nodeLabelBackground);
+        this.canvas.bringToFront(nodeLabel);
+
+
         return nodeImage;
     }
 
@@ -89,6 +124,34 @@ class ScanCanvas {
             // TODO implement determining status based on status of node services.
             return "FREE";
         }
+    }
+
+    addHackerImage(startNode) {
+        let image = document.getElementById("SCORPION");
+
+        this.hackerImage = new fabric.Image(image, {
+            left: 607/2,
+            top: 810,
+            height: 40,
+            width: 40,
+            opacity: 1,
+
+        });
+
+        this.canvas.add(this.hackerImage);
+
+        let line = new fabric.Line(
+            [this.hackerImage.left, this.hackerImage.top, startNode.x, startNode.y], {
+                stroke: "#bb8",
+                strokeWidth: 2,
+                strokeDashArray: [4, 4],
+                selectable: false,
+                hoverCursor: 'default',
+                opacity: 0
+            });
+        this.canvas.add(line);
+        this.canvas.sendToBack(line);
+        this.thread.run(3, () => this.animate(line, "opacity", 0.5, 5000));
     }
 
     render() {
@@ -125,6 +188,8 @@ class ScanCanvas {
     addNodeWithAnimation(node, status) {
         const nodeImage = this.addNodeWithoutRender(node, status);
         if (nodeImage) {
+            this.thread.run(0, () => { this.animate(nodeImage.label, "opacity", 0.5, 2000) });
+            this.thread.run(0, () => { this.animate(nodeImage.labelBackground, "opacity", 0.8, 2000) });
             this.thread.run(3, () => this.animate(nodeImage, "opacity", 0.5, 2000));
         }
     }
