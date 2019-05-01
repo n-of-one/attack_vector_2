@@ -5,12 +5,15 @@ import createScanSagas from "./saga/ScanRootSaga";
 import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";
-import ScanHome from "./component/ScanHome";
+import ScanHome, {homeRender} from "./component/ScanHome";
 import scanReducer from "./ScanRootReducer";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
 import {REQUEST_SCAN_FULL} from "./ScanActions";
 import {SCAN} from "../hacker/HackerPages";
+import Terminal from "../common/terminal/Terminal";
+import ScanCanvasPanel from "./component/ScanCanvasPanel";
+import MenuBar from "../common/component/MenuBar";
 
 class ScanRoot extends Component {
 
@@ -59,7 +62,7 @@ class ScanRoot extends Component {
 
         if (this.state.initSuccess === null){
             // this.init();
-            return <h1 className="text">Loading...</h1>;
+            return this.renderFake();
         }
         if (this.state.initSuccess === false) {
             return <h1 className="text">{ this.errorMessage }</h1>;
@@ -76,6 +79,41 @@ class ScanRoot extends Component {
             <RequiresRole requires="ROLE_HACKER">
                 {this.renderIfAuthenticated()}
             </RequiresRole>
+        )
+    }
+
+    renderFake() {
+        return (
+            <span>
+
+            <div className="container">
+                <div className="row">
+                    <div className="col-lg-2">
+                        <span className="text">&nbsp;</span>
+                    </div>
+                    <div className="col-lg-5 backgroundLight">
+                        <span className="text">&nbsp;</span>
+                    </div>
+                    <div className="col-lg-5 rightPane">
+                        <span className="text">Site: </span>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-lg-2">&nbsp;
+                    </div>
+                    <div className="col-lg-5">&nbsp;
+                    </div>
+                    <div className="col-lg-5 rightPane">
+                        <div id="canvas-container">
+                            <div id="scanCanvas" className="siteMap"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {/*<MenuBar/>*/}
+        </span>
         )
     }
 }

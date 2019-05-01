@@ -5,6 +5,7 @@ import MenuBar from "../../common/component/MenuBar";
 import TextInput from "../../common/TextInput";
 import {post} from "../../common/RestClient";
 import {notify, notify_fatal} from "../../common/Notification";
+import SilentLink from "../../common/component/SilentLink";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -103,7 +104,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                             return (
                                                 <tr key={scanLine.scanId}>
                                                     <td className="table-very-condensed">
-                                                        <a href={"/hacker/scan/" + scanLine.scanId + "/"}>{scanLine.siteName}</a>
+                                                        <SilentLink href={"/hacker/scan/" + scanLine.scanId + "/"}>{scanLine.siteName}</SilentLink>
                                                     </td>
                                                     <td className="table-very-condensed">{(scanLine.complete) ? "yes": "no"}</td>
                                                     <td className="table-very-condensed">{scanLine.scanId}</td>

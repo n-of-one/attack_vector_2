@@ -10,10 +10,6 @@ import ScanCanvasPanel from "./ScanCanvasPanel";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        scan: (siteName) => {
-            // dispatch({type: SCAN, siteName: siteName})
-        },
-        addLine: () => {  dispatch({type: TERMINAL_RECEIVE, data: "hello receving this line [warn]red"}) }
     }
 };
 let mapStateToProps = (state) => {
@@ -22,14 +18,14 @@ let mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-    ({terminal, addLine}) => {
 
-        document.body.style.backgroundColor = "#222222";
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+    ({terminal}) => {
 
         return (
             <span>
-            
+
             <div className="container">
                 <div className="row">
                     <div className="col-lg-2">
@@ -44,8 +40,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
 
                 <div className="row">
-                    <div className="col-lg-2">
-                        <button onClick={() => {addLine()}}>Add line</button>
+                    <div className="col-lg-2">&nbsp;
                     </div>
                     <div className="col-lg-5">
                         <Terminal terminal={terminal}/>

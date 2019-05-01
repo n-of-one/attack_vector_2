@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import Cookies from "js-cookie";
 import {NAVIGATE_PAGE} from "../CommonActions";
+import SilentLink from "./SilentLink";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -34,10 +35,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         if (roles.includes(requriesRole)) {
             if (currentPage === targetPage) {
-                return <li className="active"><a className="menuItem" onClick={(e) => { e.preventDefault();}}>{label}</a></li>
+                return <li className="active"><SilentLink onClick={(e) => { e.preventDefault();}}>{label}</SilentLink></li>
             }
             else {
-                return <li><a  className="menuItem" onClick={(e) => navigateTo(e, targetPage)}>{label}</a></li>
+                return <li><SilentLink onClick={(e) => navigateTo(e, targetPage)}>{label}</SilentLink></li>
             }
         }
         else {
