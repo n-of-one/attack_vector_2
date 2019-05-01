@@ -3,26 +3,24 @@ import scanCanvas from "../component/canvas/ScanCanvas"
 
 const createProbeSagas = (stompClient, scanId) => {
 
-    function* serverProbeActionSaga(action) {
+    function* serverProbeLaunchSaga(action) {
         scanCanvas.launchProbe(action.data);
         yield
     }
 
     function* probeArriveSaga(action) {
-        const payload = {scanId: scanId, nodeId: action.nodeId, type: action.type};
+        const payload = {scanId: scanId, nodeId: action.nodeId, action: action.action};
         let body = JSON.stringify(payload);
         stompClient.send("/av/scan/probeArrive", body);
         yield
     }
 
-    function* probeSuccessSaga(action) {
-        const {nodeId, newStatus} = action.data;
-        scanCanvas.probeSuccess(nodeId, newStatus);
-        yield
+    function* autoScanSaga() {
+        stompClient.send("/av/scan/autoScan", scanId);
     }
 
     return [
-        serverProbeActionSaga, probeArriveSaga, probeSuccessSaga
+        serverProbeLaunchSaga, probeArriveSaga, autoScanSaga
     ];
 
 };

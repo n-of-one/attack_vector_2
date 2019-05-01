@@ -1,5 +1,13 @@
 import { takeEvery, all } from 'redux-saga/effects'
-import {PROBE_SCAN_NODE, REQUEST_SCAN_FULL, SERVER_PROBE_LAUNCH, SERVER_PROBE_SCAN_SUCCESS, SERVER_SCAN_FULL} from "../ScanActions";
+import {
+    AUTO_SCAN,
+    PROBE_SCAN_NODE,
+    REQUEST_SCAN_FULL,
+    SERVER_DISCOVER_NODES,
+    SERVER_PROBE_LAUNCH,
+    SERVER_SCAN_FULL,
+    SERVER_UPDATE_NODE_STATUS
+} from "../ScanActions";
 import createScanSagas from "./ScanFullSaga";
 import {TERMINAL_SUBMIT} from "../../common/terminal/TerminalActions";
 import createProbeSagas from "./ScanProbeSaga";
@@ -7,10 +15,11 @@ import createProbeSagas from "./ScanProbeSaga";
 const createScanRootSaga = (stompClient, scanId, siteId) => {
 
     const [
-        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga
+        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga,
+        updateNodeStatusSaga, discoverNodesSaga
     ] = createScanSagas(stompClient, scanId);
 
-    const [serverProbeActionSaga, probeArriveSaga, probeSuccessSaga,
+    const [serverProbeLaunchSaga, probeArriveSaga, autoScanSaga,
     ] = createProbeSagas(stompClient, scanId);
 
 
@@ -18,9 +27,13 @@ const createScanRootSaga = (stompClient, scanId, siteId) => {
         yield takeEvery(REQUEST_SCAN_FULL, requestScanFullSaga);
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
         yield takeEvery(TERMINAL_SUBMIT, terminalSubmitSaga);
-        yield takeEvery(SERVER_PROBE_LAUNCH, serverProbeActionSaga);
+
+        yield takeEvery(SERVER_UPDATE_NODE_STATUS, updateNodeStatusSaga);
+        yield takeEvery(SERVER_DISCOVER_NODES, discoverNodesSaga);
+
+        yield takeEvery(SERVER_PROBE_LAUNCH, serverProbeLaunchSaga);
         yield takeEvery(PROBE_SCAN_NODE, probeArriveSaga);
-        yield takeEvery(SERVER_PROBE_SCAN_SUCCESS, probeSuccessSaga);
+        yield takeEvery(AUTO_SCAN, autoScanSaga);
     }
 
     function* scanRootSaga() {

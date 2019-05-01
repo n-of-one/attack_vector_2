@@ -2,19 +2,20 @@ import {fabric} from "fabric";
 import {toType} from "../../../common/NodeTypesNames";
 import Thread from "../../../common/Thread";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
-import {PROBE_SCAN_NODE} from "../../ScanActions";
+import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../ScanActions";
+import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../NodeScanTypes";
+import {CONNECTIONS, DISCOVERED, FREE, SERVICES, TYPE, UNDISCOVERED} from "../../../common/enums/NodeStatus";
 
 /**
  * This class renders the scan map on the JFabric Canvas
  */
 class ScanCanvas {
 
-
     nodes = null;
     nodeScanById = null;
 
     iconsById = {};
-    connections = [];
+    connectionsById = {};
     hackerIcon = null;
     dispatch = null;
     iconThread = new Thread();
@@ -39,35 +40,41 @@ class ScanCanvas {
         const {scan, site} = data;
         const {nodes, connections} = site;
         this.nodeScanById = scan.nodeScanById;
-        this.nodes = nodes;
-        this.scan = scan;
-
+        this.nodesById = {};
+        nodes.forEach( (node) => { this.nodesById[node.id] = node; });
+        this.connectionsById = {};
+        connections.forEach( (connection) => { this.connectionsById[connection.id] = connection; });
 
         this.addHackerIcon(nodes[0]);
 
         nodes.forEach(node => {
-            this.addNodeIconWithAnimation(node);
+            const status = this.nodeScanById[node.id];
+            if (status && status.status !== UNDISCOVERED) {
+                this.addNodeIconWithAnimation(node);
+            }
+
         });
 
         connections.forEach(connection => {
-            this.addConnectionWithAnimation(connection);
+            const fromIcon = this.iconsById[connection.fromId];
+            const toIcon = this.iconsById[connection.toId];
+
+            if (fromIcon &&  toIcon) {
+                this.addConnectionIconWithAnimation(fromIcon, toIcon);
+            }
         });
 
     }
 
-    addNode(node) {
-        const status = this.nodeScanById[node.id];
-        if (!status || status.status === "UNDISCOVERED") {
-            return null;
-        }
-        let nodeData = {
+    addNodeIcon(node) {
+        const nodeData = {
             id: node.id,
             type: node.type
         };
 
-        let image = this.getNodeIconImage(node.id, nodeData);
+        const image = this.getNodeIconImage(node.id, nodeData);
 
-        let nodeIcon = new fabric.Image(image, {
+        const nodeIcon = new fabric.Image(image, {
             left: node.x,
             top: node.y,
             height: image.height,
@@ -80,7 +87,7 @@ class ScanCanvas {
         this.canvas.add(nodeIcon);
         this.iconsById[node.id] = nodeIcon;
 
-        let iconLabel = new fabric.Text(node.networkId, {
+        const iconLabel = new fabric.Text(node.networkId, {
             fill: "#ccc",
             fontFamily: "courier",
             fontSize: 12,
@@ -93,7 +100,7 @@ class ScanCanvas {
         this.canvas.add(iconLabel);
         nodeIcon.label = iconLabel;
 
-        let labelBackground = new fabric.Rect({
+        const labelBackground = new fabric.Rect({
             width: 20,
             height: 20,
             fill: "#333333",
@@ -116,25 +123,25 @@ class ScanCanvas {
         const imageStatus = this.determineStatusForIcon(status);
         const type = toType(nodeData.type);
         const imageId = type.name + "_" + imageStatus;
-        let image = document.getElementById(imageId);
+        const image = document.getElementById(imageId);
         return image;
     }
 
     determineStatusForIcon(status) {
-        if (status === "DISCOVERED" || status === "TYPE") {
+        if (status === DISCOVERED || status === TYPE) {
             return status;
         }
-        if (status === "CONNECTIONS") {
-            return "TYPE";
+        if (status === CONNECTIONS) {
+            return TYPE;
         }
-        if (status === "SERVICES") {
+        if (status === SERVICES) {
             // TODO implement determining status based on status of node services.
-            return "FREE";
+            return FREE;
         }
     }
 
     addHackerIcon(startNode) {
-        let image = document.getElementById("SCORPION");
+        const image = document.getElementById("SCORPION");
 
         this.hackerIcon = new fabric.Image(image, {
             left: 607 / 2,
@@ -147,7 +154,7 @@ class ScanCanvas {
 
         this.canvas.add(this.hackerIcon);
 
-        let line = new fabric.Line(
+        const line = new fabric.Line(
             [this.hackerIcon.left, this.hackerIcon.top, startNode.x, startNode.y], {
                 stroke: "#bb8",
                 strokeWidth: 2,
@@ -165,15 +172,8 @@ class ScanCanvas {
         this.canvas.renderAll();
     }
 
-    addConnection(connectionData) {
-        let fromIcon = this.iconsById[connectionData.fromId];
-        let toIcon = this.iconsById[connectionData.toId];
-
-        if (!fromIcon || !toIcon) {
-            return null;
-        }
-
-        let line = new fabric.Line(
+    addConnectionIcon(fromIcon, toIcon) {
+        const line = new fabric.Line(
             [fromIcon.left, fromIcon.top, toIcon.left, toIcon.top], {
                 stroke: "#cccccc",
                 strokeWidth: 2,
@@ -183,29 +183,22 @@ class ScanCanvas {
                 opacity: 0
             });
 
-        line.data = connectionData;
-
         this.canvas.add(line);
-        this.connections.push(line);
         this.canvas.sendToBack(line);
 
         return line;
     }
 
     addNodeIconWithAnimation(node) {
-        const nodeIcon = this.addNode(node);
-        if (nodeIcon) {
-            this.iconThread.run(0, () => { this.animate(nodeIcon.label, "opacity", 0.4, 40) });
-            this.iconThread.run(0, () => { this.animate(nodeIcon.labelBackground, "opacity", 0.8, 40) });
-            this.iconThread.run(3, () => { this.animate(nodeIcon, "opacity", 0.4, 40)} );
-        }
+        const nodeIcon = this.addNodeIcon(node);
+        this.iconThread.run(0, () => { this.animate(nodeIcon.label, "opacity", 0.4, 40) });
+        this.iconThread.run(0, () => { this.animate(nodeIcon.labelBackground, "opacity", 0.8, 40) });
+        this.iconThread.run(3, () => { this.animate(nodeIcon, "opacity", 0.4, 40)} );
     }
 
-    addConnectionWithAnimation(connectionData) {
-        const lineImage = this.addConnection(connectionData);
-        if (lineImage) {
-            this.iconThread.run(3, () => this.animate(lineImage, "opacity", 0.5, 40));
-        }
+    addConnectionIconWithAnimation(fromIcon, toIcon) {
+        const lineIcon = this.addConnectionIcon(fromIcon, toIcon);
+        this.iconThread.run(3, () => this.animate(lineIcon, "opacity", 0.5, 40));
     }
 
     animate(toAnimate, attribute, value, duration, easing) {
@@ -217,17 +210,11 @@ class ScanCanvas {
         });
     }
 
-    // -- //
-
-
-    /**
-     * "data":{"path":["node-42f2-4f99"],"type":"terminal","value":"burp"}
-     */
-    launchProbe({path, type, value}) {
+    launchProbe({path, scanType, autoScan}) {
         const probeImageNumber = Math.floor(Math.random() * 10) + 1;
         const probeImageElement = document.getElementById("PROBE_" + probeImageNumber);
 
-        let probeIcon = new fabric.Image(probeImageElement, {
+        const probeIcon = new fabric.Image(probeImageElement, {
             left: this.hackerIcon.left,
             top: this.hackerIcon.top,
             height: 40,
@@ -242,11 +229,11 @@ class ScanCanvas {
 
         path.forEach((nodeId) => {
             const nextIcon = this.iconsById[nodeId];
-            this.probeThread.run(50, () => this.moveStep(probeIcon, nextIcon, 50, 5, 5));
+            this.probeThread.run(20, () => this.moveStep(probeIcon, nextIcon, 20, 5, 5));
         });
         const lastNodeId = path.pop();
         this.probeThread.run(0, () => {
-            this.processProbeArrive(probeIcon, type, lastNodeId);
+            this.processProbeArrive(probeIcon, scanType, lastNodeId, autoScan);
         });
     }
 
@@ -256,15 +243,16 @@ class ScanCanvas {
         this.animate(avatar, 'top', icon.top + topDelta, time );
     }
 
-    processProbeArrive(probeImage, type, nodeId) {
-        switch(type) {
-            case "SCAN_CONNECTIONS": return this.scanConnections(probeImage, nodeId);
-            case "SCAN_NODE_INITIAL": return this.scanInitial(probeImage, nodeId);
-            default: return this.probeError(probeImage, type, nodeId);
+    processProbeArrive(probeImage, scanType, nodeId, autoScan) {
+        switch(scanType) {
+            case SCAN_NODE_INITIAL: return this.scanInside(probeImage, nodeId, SCAN_NODE_INITIAL, autoScan);
+            case SCAN_CONNECTIONS: return this.scanOutside(probeImage, nodeId, autoScan);
+            case SCAN_NODE_DEEP: return this.scanInside(probeImage, nodeId, SCAN_NODE_DEEP, autoScan);
+            default: return this.probeError(probeImage, scanType, nodeId);
         }
     }
 
-    scanInitial(probeImage, nodeId) {
+    scanInside(probeImage, nodeId, action, autoScan) {
         this.probeThread.run(50, () => {
             this.animate(probeImage, 'width', "20", 50);
             this.animate(probeImage, 'height', "20", 50);
@@ -276,39 +264,54 @@ class ScanCanvas {
             this.animate(probeImage, 'opacity', "0.6", 25);
         });
         this.probeThread.run(10, () => {
-            this.dispatch({type:PROBE_SCAN_NODE, nodeId: nodeId});
+            this.dispatch({type:PROBE_SCAN_NODE, nodeId: nodeId, action: action});
             this.animate(probeImage, 'opacity', "0", 10);
         });
         this.probeThread.run(10, () => {
             this.canvas.remove(probeImage);
-            // TODO: start next scan
+            if (autoScan) {
+                this.autoScan();
+            }
         });
-
-
     }
 
-    scanConnections(probeImage) {
+    scanOutside(probeImage, nodeId, autoScan) {
         this.probeThread.run(50, () => {
             this.animate(probeImage, 'width', "100", 50);
             this.animate(probeImage, 'height', "100", 50);
             this.animate(probeImage, 'opacity', "0.2", 50);
         });
-        this.probeThread.run(20, () => {
+        this.probeThread.run(25, () => {
             this.animate(probeImage, 'width', "40", 50);
             this.animate(probeImage, 'height', "40", 50);
-            this.animate(probeImage, 'opacity', "0.4", 50);
+            this.animate(probeImage, 'opacity', "0.3", 25);
+        });
+        this.probeThread.run(10, () => {
+            this.dispatch({type:PROBE_SCAN_NODE, nodeId: nodeId, action: SCAN_CONNECTIONS});
+            this.animate(probeImage, 'opacity', "0", 10);
+        });
+        this.probeThread.run(10, () => {
+            this.canvas.remove(probeImage);
+            if (autoScan) {
+                this.autoScan();
+            }
         });
     }
 
-
-    probeError(probeImage, type, nodeId) {
-        this.probeThread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
-        this.probeThread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + type + "[/] unknown. nodeId: [info]" + nodeId}) });
+    autoScan() {
+        this.dispatch({type: AUTO_SCAN});
     }
 
-    probeSuccess(nodeId, newStatus) {
+    probeError(probeImage, scanType, nodeId) {
+        this.probeThread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
+        this.probeThread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + scanType + "[/] unknown. nodeId: [info]" + nodeId}) });
+    }
+
+    updateNodeStatus(nodeId, newStatus) {
         this.nodeScanById[nodeId].status = newStatus;
-        this.updateNodeIcon(nodeId, true);
+        if (newStatus !== CONNECTIONS) {
+            this.updateNodeIcon(nodeId, true);
+        }
     }
 
     updateNodeIcon = (nodeId, fadeOut) => {
@@ -334,6 +337,20 @@ class ScanCanvas {
         });
     };
 
+    discoverNodes(nodeIds, connectionIds) {
+        nodeIds.forEach((id) => {
+            const node = this.nodesById[id];
+            this.nodeScanById[id].status = DISCOVERED;
+            this.addNodeIconWithAnimation(node);
+        });
+
+        connectionIds.forEach((id) => {
+            const connection = this.connectionsById[id];
+            const fromIcon = this.iconsById[connection.fromId];
+            const toIcon = this.iconsById[connection.toId];
+            this.addConnectionIconWithAnimation(fromIcon, toIcon)
+        });
+    }
 }
 
 const scanCanvas = new ScanCanvas();

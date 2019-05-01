@@ -19,8 +19,20 @@ const createScanSagas = (stompClient, scanId) => {
         yield
     }
 
+    function* updateNodeStatusSaga(action) {
+        const {nodeId, newStatus} = action.data;
+        scanCanvas.updateNodeStatus(nodeId, newStatus);
+        yield
+    }
+
+    function* discoverNodesSaga(action) {
+        const {nodeIds, connectionIds} = action.data;
+        scanCanvas.discoverNodes(nodeIds, connectionIds);
+        yield
+    }
+
     return [
-        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga
+        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga, updateNodeStatusSaga, discoverNodesSaga
     ];
 
 };

@@ -1,0 +1,15 @@
+const UNDISCOVERED = "UNDISCOVERED";
+const DISCOVERED = "DISCOVERED";
+const TYPE = "TYPE";
+const CONNECTIONS = "CONNECTIONS";
+const SERVICES = "SERVICES";
+const FREE = "FREE";
+
+export {
+    UNDISCOVERED,
+    DISCOVERED,
+    TYPE,
+    CONNECTIONS,
+    SERVICES,
+    FREE,
+}

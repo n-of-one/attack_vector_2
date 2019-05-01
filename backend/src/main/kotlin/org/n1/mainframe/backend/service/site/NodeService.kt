@@ -95,4 +95,8 @@ class NodeService(
         }
     }
 
+    fun getAllById(nodeIds: Collection<String>): List<Node> {
+        return nodeRepo.findAllById(nodeIds).map { it }
+    }
+
 }

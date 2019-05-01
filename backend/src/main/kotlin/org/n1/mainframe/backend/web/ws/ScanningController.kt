@@ -1,6 +1,7 @@
 package org.n1.mainframe.backend.web.ws
 
 import org.n1.mainframe.backend.engine.SerializingExecutor
+import org.n1.mainframe.backend.model.scan.NodeScanType
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.service.scan.ScanningService
@@ -27,10 +28,16 @@ class ScanningController(
         executor.run(principal) { scanningService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
     }
 
-    data class ProbeScanAction(val scanId: String, val nodeId: String, val type: String)
+    @MessageMapping("/scan/autoScan")
+    fun autoScan(scanId: String, principal: Principal) {
+        executor.run(principal) { scanningService.autoScan(scanId, principal) }
+    }
+
+
+    data class ProbeScanActionInput(val scanId: String, val nodeId: String, val action: NodeScanType)
     @MessageMapping("/scan/probeArrive")
-    fun probeArrive(action: ProbeScanAction, principal: Principal) {
-        executor.run(principal) { scanningService.probeArrive(action.scanId, action.nodeId, action.type, principal) }
+    fun probeArrive(input: ProbeScanActionInput, principal: Principal) {
+        executor.run(principal) { scanningService.probeArrive(input.scanId, input.nodeId, input.action, principal) }
     }
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
