@@ -116,9 +116,15 @@ class ScanningService(val scanService: ScanService,
         if (command == "help") {
             stompService.terminalReceive(principal,
                     "Command options:",
-                    " scan",
                     " autoscan",
-                    " scan [info i]<network id>[/]   -- for example: scan 00")
+                    " scan",
+                    " scan [info i]<network id>[/]   -- for example: scan 00",
+                    " dc")
+            return
+        }
+        if (command == "dc") {
+            data class Navigate(val target: String)
+            stompService.toUser(principal, ReduxActions.NAVIGATE_PAGE, Navigate("HACKER_HOME"))
             return
         }
         if (command == "autoscan") {

@@ -17,6 +17,7 @@ const createProbeSagas = (stompClient, scanId) => {
 
     function* autoScanSaga() {
         stompClient.send("/av/scan/autoScan", scanId);
+        yield
     }
 
     return [

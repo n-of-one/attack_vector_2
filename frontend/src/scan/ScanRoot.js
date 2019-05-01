@@ -7,10 +7,10 @@ import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";
 import ScanHome from "./component/ScanHome";
 import scanReducer from "./ScanRootReducer";
-import {SCAN} from "./ScanPages";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
 import {REQUEST_SCAN_FULL} from "./ScanActions";
+import {SCAN} from "../hacker/HackerPages";
 
 class ScanRoot extends Component {
 

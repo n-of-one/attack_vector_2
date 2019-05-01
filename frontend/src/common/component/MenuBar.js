@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import Cookies from "js-cookie";
 import MenuItem from "./MenuItem";
 import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../../gm/GmPages";
-import {HACKER_COMMUNITY, HACKER_HOME, SCRIPTS} from "../../hacker/HackerPages";
+import {HACKER_COMMUNITY, HACKER_HOME, SCAN, SCRIPTS} from "../../hacker/HackerPages";
 import {ME} from "../CommonPages";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -30,8 +30,20 @@ let logout = (event) => {
     document.location.href = "/login";
 };
 
+const scanItem = (currentPage) => {
+    if (currentPage === SCAN) {
+        return (
+            <MenuItem requriesRole="ROLE_HACKER" targetPage={SCAN} label="Scan"/>
+            )
+    }
+    else {
+        return <span />
+    }
+
+};
+
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({userName}) => {
+    ({userName, currentPage}) => {
 
         return (
             <div className="navbar navbar-inverse navbar-fixed-bottom">
@@ -49,6 +61,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <ul className="nav navbar-nav">
                             <MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />
                             <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
+                            {scanItem(currentPage)}
                             <MenuItem requriesRole="ROLE_SITE_MANAGER" targetPage={GM_SITES} label="Sites" />
                             <MenuItem requriesRole="ROLE_LOGS" targetPage={LOGS} label="Logs" />
                             <MenuItem requriesRole="ROLE_MISSION_MANAGER" targetPage={MISSIONS} label="Missions" />

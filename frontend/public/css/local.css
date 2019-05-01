@@ -186,6 +186,9 @@ a.textLink {
     display: none;
 }
 
+.menuItem {
+    cursor: pointer;
+}
 
 /*.rightPane {*/
 /*padding-top: 10px;*/

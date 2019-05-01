@@ -2,6 +2,13 @@ import scanCanvas from "../component/canvas/ScanCanvas"
 
 
 const createScanSagas = (stompClient, scanId) => {
+
+    function* navigatePage(action) {
+        window.location="/hacker";
+        yield
+    }
+
+
     function* requestScanFullSaga() {
         stompClient.send("/av/scan/sendScan", scanId);
         yield
@@ -32,6 +39,7 @@ const createScanSagas = (stompClient, scanId) => {
     }
 
     return [
+        navigatePage,
         requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga, updateNodeStatusSaga, discoverNodesSaga
     ];
 

@@ -34,10 +34,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         if (roles.includes(requriesRole)) {
             if (currentPage === targetPage) {
-                return <li className="active"><a href="#" onClick={(e) => { e.preventDefault();}}>{label}</a></li>
+                return <li className="active"><a className="menuItem" onClick={(e) => { e.preventDefault();}}>{label}</a></li>
             }
             else {
-                return <li><a href="#" onClick={(e) => navigateTo(e, targetPage)}>{label}</a></li>
+                return <li><a  className="menuItem" onClick={(e) => navigateTo(e, targetPage)}>{label}</a></li>
             }
         }
         else {

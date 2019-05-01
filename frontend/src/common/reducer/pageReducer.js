@@ -1,8 +1,10 @@
 import {NAVIGATE_PAGE} from "../CommonActions";
 
-export default (state = "loading", action) => {
+const defaultState = "No page yet.";
+
+export default (state = defaultState, action) => {
     switch(action.type) {
-        case NAVIGATE_PAGE : return action.target;
+        case NAVIGATE_PAGE : return action.data.target;
         default: return state;
     }
 }
