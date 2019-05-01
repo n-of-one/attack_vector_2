@@ -116,7 +116,7 @@ class ScanningService(val scanService: ScanService,
         }
         val scan = scanService.getById(scanId)
         val probeAction = createProbeAction(scan)
-        stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_ACTION, probeAction)
+        stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 
     data class ProbeAction(val path: List<String>, val type: ProbeScanAction, val value: String)
@@ -153,9 +153,18 @@ class ScanningService(val scanService: ScanService,
 
     fun probeArrive(scanId: String, nodeId: String, type: String, principal: Principal) {
         val scan = scanService.getById(scanId)
-        val node = scan.nodeScanById[nodeId] ?: throw IllegalStateException("Node to scan ${nodeId} not part of ${scan.siteId}")
-        if (node.status != NodeStatus.DISCOVERED) {
-            stompService.terminalReceive(principal, "Scanned node. ${nodeId}")
+        val nodeScan = scan.nodeScanById[nodeId] ?: throw IllegalStateException("Node to scan ${nodeId} not part of ${scan.siteId}")
+        val node = nodeService.getById(nodeId)
+        if (nodeScan.status != NodeStatus.DISCOVERED) {
+            stompService.terminalReceive(principal, "Scanning node ${node.networkId} did not find anything new.")
+            return
         }
+        nodeScan.status = NodeStatus.TYPE
+        scanService.save(scan)
+        val message = if (node.ice) "ice detected." else "no ice detected."
+        stompService.terminalReceive(principal, "Scanning node ${node.networkId} - ${message}")
+
+        data class ProbeResult(val nodeId: String, val newStatus: NodeStatus)
+        stompService.toScan(scanId, ReduxActions.SERVER_PROBE_SCAN_SUCCESS, ProbeResult(nodeId, nodeScan.status))
     }
 }

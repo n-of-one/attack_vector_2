@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.service.site
 
-import org.n1.mainframe.backend.model.site.NETWORK_ID
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.site.SiteFull
@@ -36,7 +35,7 @@ class SiteService(
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
-        return nodes.find { node -> node.services[0].data[NETWORK_ID] == startNodeNetworkId }
+        return nodes.find { node -> node.networkId == startNodeNetworkId }
     }
 
     fun purgeAll() {

@@ -9,5 +9,6 @@ data class Node(
         var x: Int,
         var y: Int,
         val ice: Boolean,
-        val services: List<Service>
+        val services: List<Service>,
+        val networkId: String
 )

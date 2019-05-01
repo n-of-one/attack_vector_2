@@ -28,7 +28,8 @@ class NodeService(
                 x = command.x,
                 y = command.y,
                 ice = command.type.ice,
-                services = services )
+                services = services,
+                networkId = services[0].data[NETWORK_ID]!!)
         nodeRepo.save(node)
         return node
     }
@@ -51,7 +52,7 @@ class NodeService(
     }
 
     private fun nextFreeNetworkId(siteId: String, nodes: List<Node>): String {
-        val usedNetworkIds : Set<String> = HashSet(nodes.map{ node:Node -> node.services[0].data[NETWORK_ID]!!  })
+        val usedNetworkIds : Set<String> = HashSet(nodes.map{ node:Node -> node.networkId  })
 
         for (i in 0 .. usedNetworkIds.size+1 ) {
             val candidate = String.format("%02d", i)

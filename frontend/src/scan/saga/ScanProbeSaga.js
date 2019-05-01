@@ -15,8 +15,14 @@ const createProbeSagas = (stompClient, scanId) => {
         yield
     }
 
+    function* probeSuccessSaga(action) {
+        const {nodeId, newStatus} = action.data;
+        scanCanvas.probeSuccess(nodeId, newStatus);
+        yield
+    }
+
     return [
-        serverProbeActionSaga, probeArriveSaga
+        serverProbeActionSaga, probeArriveSaga, probeSuccessSaga
     ];
 
 };

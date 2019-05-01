@@ -24,5 +24,9 @@ class ScanService(val scanRepo: ScanRepo) {
         scanRepo.save(scan)
         return id
     }
+
+    fun save(scan: Scan) {
+        scanRepo.save(scan)
+    }
 }
 

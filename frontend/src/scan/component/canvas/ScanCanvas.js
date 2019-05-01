@@ -2,7 +2,7 @@ import {fabric} from "fabric";
 import {toType} from "../../../common/NodeTypesNames";
 import Thread from "../../../common/Thread";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
-import {PROBE_SCAN_NODE_INITIAL} from "../../ScanActions";
+import {PROBE_SCAN_NODE} from "../../ScanActions";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -10,15 +10,15 @@ import {PROBE_SCAN_NODE_INITIAL} from "../../ScanActions";
 class ScanCanvas {
 
 
-    scan = null;
     nodes = null;
     nodeScanById = null;
 
-    nodesById = {};
+    iconsById = {};
     connections = [];
-    hackerImage = null;
+    hackerIcon = null;
     dispatch = null;
-    thread = new Thread();
+    iconThread = new Thread();
+    probeThread = new Thread();
 
     init(dispatch) {
         this.dispatch = dispatch;
@@ -43,11 +43,10 @@ class ScanCanvas {
         this.scan = scan;
 
 
-        this.addHackerImage(nodes[0]);
+        this.addHackerIcon(nodes[0]);
 
         nodes.forEach(node => {
-            const status = scan.nodeScanById[node.id].status;
-            this.addNodeWithAnimation(node, status);
+            this.addNodeIconWithAnimation(node);
         });
 
         connections.forEach(connection => {
@@ -56,37 +55,32 @@ class ScanCanvas {
 
     }
 
-    addNodeWithoutRender(node, status) {
-        if (!status || status === "UNDISCOVERED") {
+    addNode(node) {
+        const status = this.nodeScanById[node.id];
+        if (!status || status.status === "UNDISCOVERED") {
             return null;
         }
-        const imageStatus = this.determineImageStatus(node, status);
-        const type = toType(node.type);
-        const imageId = type.name + "_" + imageStatus;
-
-        let image = document.getElementById(imageId);
-
         let nodeData = {
             id: node.id,
             type: node.type
         };
 
-        let nodeImage = new fabric.Image(image, {
+        let image = this.getNodeIconImage(node.id, nodeData);
+
+        let nodeIcon = new fabric.Image(image, {
             left: node.x,
             top: node.y,
             height: image.height,
             width: image.width,
             opacity: 0,
 
-            data: nodeData,
+            nodeData: nodeData,
         });
 
-        this.canvas.add(nodeImage);
-        this.nodesById[node.id] = nodeImage;
+        this.canvas.add(nodeIcon);
+        this.iconsById[node.id] = nodeIcon;
 
-        let networkId = node.services[0].data["networkId"];
-
-        let nodeLabel = new fabric.Text(networkId, {
+        let iconLabel = new fabric.Text(node.networkId, {
             fill: "#ccc",
             fontFamily: "courier",
             fontSize: 12,
@@ -96,10 +90,10 @@ class ScanCanvas {
             textAlign: "left", // "center", "right" or "justify".
             opacity: 0
         });
-        this.canvas.add(nodeLabel);
-        nodeImage.label = nodeLabel;
+        this.canvas.add(iconLabel);
+        nodeIcon.label = iconLabel;
 
-        let nodeLabelBackground = new fabric.Rect({
+        let labelBackground = new fabric.Rect({
             width: 20,
             height: 20,
             fill: "#333333",
@@ -107,17 +101,26 @@ class ScanCanvas {
             top: node.y + 35,
             opacity: 0
         });
-        this.canvas.add(nodeLabelBackground);
-        nodeImage.labelBackground = nodeLabelBackground;
+        this.canvas.add(labelBackground);
+        nodeIcon.labelBackground = labelBackground;
 
-        this.canvas.sendToBack(nodeLabelBackground);
-        this.canvas.bringToFront(nodeLabel);
+        this.canvas.sendToBack(labelBackground);
+        this.canvas.bringToFront(iconLabel);
 
 
-        return nodeImage;
+        return nodeIcon;
     }
 
-    determineImageStatus(node, status) {
+    getNodeIconImage(nodeId, nodeData) {
+        const status = this.nodeScanById[nodeId].status;
+        const imageStatus = this.determineStatusForIcon(status);
+        const type = toType(nodeData.type);
+        const imageId = type.name + "_" + imageStatus;
+        let image = document.getElementById(imageId);
+        return image;
+    }
+
+    determineStatusForIcon(status) {
         if (status === "DISCOVERED" || status === "TYPE") {
             return status;
         }
@@ -130,10 +133,10 @@ class ScanCanvas {
         }
     }
 
-    addHackerImage(startNode) {
+    addHackerIcon(startNode) {
         let image = document.getElementById("SCORPION");
 
-        this.hackerImage = new fabric.Image(image, {
+        this.hackerIcon = new fabric.Image(image, {
             left: 607 / 2,
             top: 810,
             height: 40,
@@ -142,10 +145,10 @@ class ScanCanvas {
 
         });
 
-        this.canvas.add(this.hackerImage);
+        this.canvas.add(this.hackerIcon);
 
         let line = new fabric.Line(
-            [this.hackerImage.left, this.hackerImage.top, startNode.x, startNode.y], {
+            [this.hackerIcon.left, this.hackerIcon.top, startNode.x, startNode.y], {
                 stroke: "#bb8",
                 strokeWidth: 2,
                 strokeDashArray: [4, 4],
@@ -155,23 +158,23 @@ class ScanCanvas {
             });
         this.canvas.add(line);
         this.canvas.sendToBack(line);
-        this.thread.run(3, () => this.animate(line, "opacity", 0.5, 100));
+        this.iconThread.run(3, () => this.animate(line, "opacity", 0.5, 100));
     }
 
     render() {
         this.canvas.renderAll();
     }
 
-    addConnectionWithoutRender(connectionData) {
-        let fromNode = this.nodesById[connectionData.fromId];
-        let toNode = this.nodesById[connectionData.toId];
+    addConnection(connectionData) {
+        let fromIcon = this.iconsById[connectionData.fromId];
+        let toIcon = this.iconsById[connectionData.toId];
 
-        if (!fromNode || !toNode) {
+        if (!fromIcon || !toIcon) {
             return null;
         }
 
         let line = new fabric.Line(
-            [fromNode.left, fromNode.top, toNode.left, toNode.top], {
+            [fromIcon.left, fromIcon.top, toIcon.left, toIcon.top], {
                 stroke: "#cccccc",
                 strokeWidth: 2,
                 strokeDashArray: [3, 3],
@@ -189,31 +192,28 @@ class ScanCanvas {
         return line;
     }
 
-    addNodeWithAnimation(node, status) {
-        const nodeImage = this.addNodeWithoutRender(node, status);
-        if (nodeImage) {
-            this.thread.run(0, () => {
-                this.animate(nodeImage.label, "opacity", 0.5, 40)
-            });
-            this.thread.run(0, () => {
-                this.animate(nodeImage.labelBackground, "opacity", 0.8, 40)
-            });
-            this.thread.run(3, () => this.animate(nodeImage, "opacity", 0.5, 40));
+    addNodeIconWithAnimation(node) {
+        const nodeIcon = this.addNode(node);
+        if (nodeIcon) {
+            this.iconThread.run(0, () => { this.animate(nodeIcon.label, "opacity", 0.4, 40) });
+            this.iconThread.run(0, () => { this.animate(nodeIcon.labelBackground, "opacity", 0.8, 40) });
+            this.iconThread.run(3, () => { this.animate(nodeIcon, "opacity", 0.4, 40)} );
         }
     }
 
     addConnectionWithAnimation(connectionData) {
-        const lineImage = this.addConnectionWithoutRender(connectionData);
+        const lineImage = this.addConnection(connectionData);
         if (lineImage) {
-            this.thread.run(3, () => this.animate(lineImage, "opacity", 0.5, 40));
+            this.iconThread.run(3, () => this.animate(lineImage, "opacity", 0.5, 40));
         }
     }
 
-    animate(toAnimate, attribute, value, duration) {
+    animate(toAnimate, attribute, value, duration, easing) {
+        const easingFunction = (easing) ? easing: fabric.util.ease.easeInOutSine;
         toAnimate.animate(attribute, value, {
             onChange: this.canvas.renderAll.bind(this.canvas),
             duration: duration * 50,
-            easing: fabric.util.ease.easeInOutSine
+            easing: easingFunction
         });
     }
 
@@ -227,33 +227,33 @@ class ScanCanvas {
         const probeImageNumber = Math.floor(Math.random() * 10) + 1;
         const probeImageElement = document.getElementById("PROBE_" + probeImageNumber);
 
-        let probeImage = new fabric.Image(probeImageElement, {
-            left: this.hackerImage.left,
-            top: this.hackerImage.top,
+        let probeIcon = new fabric.Image(probeImageElement, {
+            left: this.hackerIcon.left,
+            top: this.hackerIcon.top,
             height: 40,
             width: 40,
             opacity: 0,
         });
 
-        this.canvas.add(probeImage);
-        this.canvas.bringToFront(probeImage);
+        this.canvas.add(probeIcon);
+        this.canvas.bringToFront(probeIcon);
 
-        this.animate(probeImage, "opacity", 0.4, 40);
+        this.animate(probeIcon, "opacity", 0.4, 40);
 
         path.forEach((nodeId) => {
-            const nextNodeImage = this.nodesById[nodeId];
-            this.thread.run(50, () => this.moveStep(probeImage, nextNodeImage, 50, 5, 5));
+            const nextIcon = this.iconsById[nodeId];
+            this.probeThread.run(50, () => this.moveStep(probeIcon, nextIcon, 50, 5, 5));
         });
         const lastNodeId = path.pop();
-        this.thread.run(0, () => {
-            this.processProbeArrive(probeImage, type, lastNodeId);
+        this.probeThread.run(0, () => {
+            this.processProbeArrive(probeIcon, type, lastNodeId);
         });
     }
 
 
-    moveStep(avatar, node, time, leftDelta, topDelta) {
-        this.animate(avatar, 'left', node.left + leftDelta, time );
-        this.animate(avatar, 'top', node.top + topDelta, time );
+    moveStep(avatar, icon, time, leftDelta, topDelta) {
+        this.animate(avatar, 'left', icon.left + leftDelta, time );
+        this.animate(avatar, 'top', icon.top + topDelta, time );
     }
 
     processProbeArrive(probeImage, type, nodeId) {
@@ -265,21 +265,21 @@ class ScanCanvas {
     }
 
     scanInitial(probeImage, nodeId) {
-        this.thread.run(50, () => {
+        this.probeThread.run(50, () => {
             this.animate(probeImage, 'width', "20", 50);
             this.animate(probeImage, 'height', "20", 50);
             this.animate(probeImage, 'opacity', "0.8", 50);
         });
-        this.thread.run(20, () => {
+        this.probeThread.run(25, () => {
             this.animate(probeImage, 'width', "40", 50);
             this.animate(probeImage, 'height', "40", 50);
-            this.animate(probeImage, 'opacity', "0.4", 50);
+            this.animate(probeImage, 'opacity', "0.6", 25);
         });
-        this.thread.run(10, () => {
-            this.dispatch({type:PROBE_SCAN_NODE_INITIAL, nodeId: nodeId});
+        this.probeThread.run(10, () => {
+            this.dispatch({type:PROBE_SCAN_NODE, nodeId: nodeId});
             this.animate(probeImage, 'opacity', "0", 10);
         });
-        this.thread.run(10, () => {
+        this.probeThread.run(10, () => {
             this.canvas.remove(probeImage);
             // TODO: start next scan
         });
@@ -288,12 +288,12 @@ class ScanCanvas {
     }
 
     scanConnections(probeImage) {
-        this.thread.run(50, () => {
+        this.probeThread.run(50, () => {
             this.animate(probeImage, 'width', "100", 50);
             this.animate(probeImage, 'height', "100", 50);
             this.animate(probeImage, 'opacity', "0.2", 50);
         });
-        this.thread.run(20, () => {
+        this.probeThread.run(20, () => {
             this.animate(probeImage, 'width', "40", 50);
             this.animate(probeImage, 'height', "40", 50);
             this.animate(probeImage, 'opacity', "0.4", 50);
@@ -302,9 +302,37 @@ class ScanCanvas {
 
 
     probeError(probeImage, type, nodeId) {
-        this.thread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
-        this.thread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + type + "[/] unknown. nodeId: [info]" + nodeId}) });
+        this.probeThread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
+        this.probeThread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + type + "[/] unknown. nodeId: [info]" + nodeId}) });
     }
+
+    probeSuccess(nodeId, newStatus) {
+        this.nodeScanById[nodeId].status = newStatus;
+        this.updateNodeIcon(nodeId, true);
+    }
+
+    updateNodeIcon = (nodeId, fadeOut) => {
+        const icon = this.iconsById[nodeId];
+        if (fadeOut) {
+            this.iconThread.run(8, () => {
+                this.animate(icon, 'opacity', 0.05, 8, fabric.util.ease.easeOutSine);
+                this.animate(icon, 'left', "-=10", 8, fabric.util.ease.easeOutSine);
+            });
+        }
+
+        const newIconImage = this.getNodeIconImage(nodeId, icon.nodeData);
+
+        this.iconThread.run(0, () => {
+            icon.setElement(newIconImage);
+            this.canvas.renderAll();
+            const newOpacity = 0.4;
+            // const newOpacity = nodeOpacityByStatus[node.status];
+            this.animate(icon, 'opacity', newOpacity, 8);
+            if (fadeOut) {
+                this.animate(icon, 'left', "+=10", 8, fabric.util.ease.easeInSine);
+            }
+        });
+    };
 
 }
 
