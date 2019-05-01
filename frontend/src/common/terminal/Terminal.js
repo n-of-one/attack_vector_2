@@ -69,23 +69,33 @@ class Terminal extends Component {
     }
 
     renderBlock(block, index) {
-        return <span className={block.className} key={index}>{block.text}</span>
+        if (block.type === "text") {
+            return <span className={block.className} key={index}>{block.text}</span>
+        }
+        else {
+            return <span key={index}>&nbsp;</span>
+        }
     }
 
     parseLine(line) {
         let blocks = [];
 
         let mode = "text";
-        const templateBlock = {text: "", className: ""};
-        let block = {...templateBlock};
+        const spaceBlock = {text: "", className: "", type: "space"};
+        const textBlockTemplate = {text: "", className: "", type: "text"};
+        let block = {...textBlockTemplate};
+        let currentClassName = "";
         for (let i = 0; i < line.data.length; i++) {
             let c = line.data.charAt(i);
 
             if (c === "[") {
                 if (mode === "text") {
                     mode = "style";
-                    blocks.push(block);
-                    block = {...templateBlock};
+                    if (block.text) {
+                        block.className = currentClassName;
+                        blocks.push(block);
+                    }
+                    block = {...textBlockTemplate};
                     continue;
                 }
                 else {
@@ -95,12 +105,21 @@ class Terminal extends Component {
                     continue;
                 }
             }
+            if (c === " " && mode === "text") {
+                if (block.text) {
+                    block.className = currentClassName;
+                    blocks.push(block);
+                }
+                blocks.push(spaceBlock);
+                block = {...textBlockTemplate};
+                continue;
+
+            }
             if (c === "]" && mode === "style") {
                 mode = "text";
                 let style = block.text === "/" ? "" : block.text;
                 let styleParts = style.split(" ");
-                let className = styleParts.map(it => "terminal_style_" + it).join(" ");
-                block.className = className;
+                currentClassName = styleParts.map(it => "terminal_style_" + it).join(" ");
                 block.text = "";
                 continue;
             }
