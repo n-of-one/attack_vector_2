@@ -88,10 +88,11 @@ class ScanCanvas {
         this.iconsById[node.id] = nodeIcon;
 
         const iconLabel = new fabric.Text(node.networkId, {
-            fill: "#ccc",
+            fill: "#bbbbbb",
             fontFamily: "courier",
             fontSize: 12,
             fontStyle: "normal", // "", "normal", "italic" or "oblique".
+            // fontWeight: 10,
             left: node.x - 20,
             top: node.y + 35,
             textAlign: "left", // "center", "right" or "justify".
@@ -191,7 +192,7 @@ class ScanCanvas {
 
     addNodeIconWithAnimation(node) {
         const nodeIcon = this.addNodeIcon(node);
-        this.iconThread.run(0, () => { this.animate(nodeIcon.label, "opacity", 0.4, 40) });
+        this.iconThread.run(0, () => { this.animate(nodeIcon.label, "opacity", 1, 40) });
         this.iconThread.run(0, () => { this.animate(nodeIcon.labelBackground, "opacity", 0.8, 40) });
         this.iconThread.run(3, () => { this.animate(nodeIcon, "opacity", 0.4, 40)} );
     }

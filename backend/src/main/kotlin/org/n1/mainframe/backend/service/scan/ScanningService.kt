@@ -10,6 +10,7 @@ import org.n1.mainframe.backend.model.ui.site.SiteFull
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.n1.mainframe.backend.service.site.*
+import org.n1.mainframe.backend.util.s
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
@@ -202,7 +203,7 @@ class ScanningService(val scanService: ScanService,
             stompService.terminalReceive(principal, "Scanning node ${node.networkId} did not find anything new.")
             return
         }
-        stompService.terminalReceive(principal, "Scanned node ${node.networkId}")
+        stompService.terminalReceive(principal, "Scanned node ${node.networkId} - discovered type")
 
         nodeScan.status = NodeStatus.TYPE
         scanService.save(scan)
@@ -249,7 +250,7 @@ class ScanningService(val scanService: ScanService,
         data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
         stompService.toScan(scan.id, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
 
-        stompService.terminalReceive(principal, "Scanned node ${node.networkId} discovered ${discoveredNodeIds.size} new nodes.")
+        stompService.terminalReceive(principal, "Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"node".s(discoveredNodeIds.size)}")
 
     }
 
@@ -260,8 +261,7 @@ class ScanningService(val scanService: ScanService,
         }
 
         val iceMessage = if (node.ice) " ! Ice detected" else ""
-        val servicesS = if (node.services.size == 1) "" else "s"
-        stompService.terminalReceive(principal, "Scanned node ${node.networkId} - discovered ${node.services.size} service${servicesS}${iceMessage}")
+        stompService.terminalReceive(principal, "Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}${iceMessage}")
 
         nodeScan.status = NodeStatus.SERVICES
         scanService.save(scan)
