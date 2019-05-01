@@ -8,8 +8,15 @@ const createProbeSagas = (stompClient, scanId) => {
         yield
     }
 
+    function* probeArriveSaga(action) {
+        const payload = {scanId: scanId, nodeId: action.nodeId, type: action.type};
+        let body = JSON.stringify(payload);
+        stompClient.send("/av/scan/probeArrive", body);
+        yield
+    }
+
     return [
-        serverProbeActionSaga
+        serverProbeActionSaga, probeArriveSaga
     ];
 
 };

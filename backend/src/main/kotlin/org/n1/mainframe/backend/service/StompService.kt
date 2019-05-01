@@ -48,4 +48,9 @@ class StompService(
         simulateNonLocalhost()
         stompTemplate.convertAndSendToUser(principal.name, "/error", message)
     }
+
+    fun terminalReceive(principal: Principal, line: String) {
+        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, line)
+    }
+
 }

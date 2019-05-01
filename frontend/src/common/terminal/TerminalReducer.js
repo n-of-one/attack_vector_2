@@ -23,9 +23,8 @@ export default (terminal = defaultState, action) => {
         case TERMINAL_TICK:
             return processTick(processTick(processTick(processTick(terminal))));
         case TERMINAL_RECEIVE:
-            return receive(terminal, action);
         case SERVER_TERMINAL_RECEIVE:
-            return receiveFromServer(terminal, action);
+            return receive(terminal, action);
         case TERMINAL_KEY_PRESS:
             return handlePressKey(terminal, action);
         case TERMINAL_SUBMIT:
@@ -102,14 +101,6 @@ let receive = (terminal, action) => {
         };
     }
 };
-
-let receiveFromServer = (terminal, action) => {
-    const internalAction = {
-        data: action.data.line
-    };
-    return receive(terminal, internalAction);
-};
-
 
 let handlePressKey = (terminal, action) => {
     let {keyCode, key} = action;

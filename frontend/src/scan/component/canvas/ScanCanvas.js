@@ -2,6 +2,7 @@ import {fabric} from "fabric";
 import {toType} from "../../../common/NodeTypesNames";
 import Thread from "../../../common/Thread";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
+import {PROBE_SCAN_NODE_INITIAL} from "../../ScanActions";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -243,8 +244,9 @@ class ScanCanvas {
             const nextNodeImage = this.nodesById[nodeId];
             this.thread.run(50, () => this.moveStep(probeImage, nextNodeImage, 50, 5, 5));
         });
+        const lastNodeId = path.pop();
         this.thread.run(0, () => {
-            this.processProbeArrive(probeImage, type, value);
+            this.processProbeArrive(probeImage, type, lastNodeId);
         });
     }
 
@@ -254,14 +256,38 @@ class ScanCanvas {
         this.animate(avatar, 'top', node.top + topDelta, time );
     }
 
-    processProbeArrive(probeImage, type, value) {
+    processProbeArrive(probeImage, type, nodeId) {
         switch(type) {
-            case "SCAN_CONNECTIONS": return this.scanConnections(probeImage, value);
-            default: return this.probeError(probeImage, type, value);
+            case "SCAN_CONNECTIONS": return this.scanConnections(probeImage, nodeId);
+            case "SCAN_NODE_INITIAL": return this.scanInitial(probeImage, nodeId);
+            default: return this.probeError(probeImage, type, nodeId);
         }
     }
 
-    scanConnections(probeImage, value) {
+    scanInitial(probeImage, nodeId) {
+        this.thread.run(50, () => {
+            this.animate(probeImage, 'width', "20", 50);
+            this.animate(probeImage, 'height', "20", 50);
+            this.animate(probeImage, 'opacity', "0.8", 50);
+        });
+        this.thread.run(20, () => {
+            this.animate(probeImage, 'width', "40", 50);
+            this.animate(probeImage, 'height', "40", 50);
+            this.animate(probeImage, 'opacity', "0.4", 50);
+        });
+        this.thread.run(10, () => {
+            this.dispatch({type:PROBE_SCAN_NODE_INITIAL, nodeId: nodeId});
+            this.animate(probeImage, 'opacity', "0", 10);
+        });
+        this.thread.run(10, () => {
+            this.canvas.remove(probeImage);
+            // TODO: start next scan
+        });
+
+
+    }
+
+    scanConnections(probeImage) {
         this.thread.run(50, () => {
             this.animate(probeImage, 'width', "100", 50);
             this.animate(probeImage, 'height', "100", 50);
@@ -274,9 +300,10 @@ class ScanCanvas {
         });
     }
 
-    probeError(probeImage, type, value) {
+
+    probeError(probeImage, type, nodeId) {
         this.thread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
-        this.thread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + type + "[/] unknown. Value: [info]" + value}) });
+        this.thread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + type + "[/] unknown. nodeId: [info]" + nodeId}) });
     }
 
 }

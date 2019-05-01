@@ -26,6 +26,12 @@ class ScanningController(
     fun terminal(terminalCommand: TerminalCommand, principal: Principal) {
         executor.run(principal) { scanningService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
     }
+
+    data class ProbeScanAction(val scanId: String, val nodeId: String, val type: String)
+    @MessageMapping("/scan/probeArrive")
+    fun probeArrive(action: ProbeScanAction, principal: Principal) {
+        executor.run(principal) { scanningService.probeArrive(action.scanId, action.nodeId, action.type, principal) }
+    }
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
     @MessageExceptionHandler

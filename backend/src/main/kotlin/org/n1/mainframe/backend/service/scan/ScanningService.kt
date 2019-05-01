@@ -37,7 +37,7 @@ class ScanningService(val scanService: ScanService,
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
                 0 -> NodeStatus.DISCOVERED
-                else -> NodeStatus.CONNECTIONS
+                else -> NodeStatus.UNDISCOVERED
             }
             it.key to NodeScan(status = nodeStatus, distance = it.value.distance)
         }.toMap().toMutableMap()
@@ -111,24 +111,18 @@ class ScanningService(val scanService: ScanService,
 
     fun processCommand(scanId: String, command: String, principal: Principal) {
         if (command != "scan") {
-            data class TerminalLine(val line: String)
-            stompService.toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalLine("Unknown command, try [i]scan[/]."))
+            stompService.terminalReceive(principal, "Unknown command, try [i]scan[/].")
             return
         }
         val scan = scanService.getById(scanId)
-        val probeAction = determineNextScanTarget(scan)
+        val probeAction = createProbeAction(scan)
         stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_ACTION, probeAction)
     }
 
     data class ProbeAction(val path: List<String>, val type: ProbeScanAction, val value: String)
 
-    fun determineNextScanTarget(scan: Scan): ProbeAction {
-        val traverseNodeValues = createTraverseNodes(scan.siteId).values
-        traverseNodeValues.forEach { it.distance =  scan.nodeScanById[it.id]!!.distance }
-        val traverseNodes = traverseNodeValues.filter { it.distance != null }
-        val targetNode = traverseNodes.minBy {
-            scan.nodeScanById[it.id]!!.status.level
-        }!!
+    fun createProbeAction(scan: Scan): ProbeAction {
+        val targetNode = findProbeTarget(scan)
 
         val path = LinkedList<String>()
         path.add(targetNode.id)
@@ -137,7 +131,31 @@ class ScanningService(val scanService: ScanService,
             currentNode = currentNode.connections.find { it.distance == (currentNode.distance!! - 1) }!!
             path.add(0, currentNode.id)
         }
-        val action = ProbeAction(path = path, type = ProbeScanAction.SCAN_CONNECTIONS, value = "burp")
+        val action = ProbeAction(path = path, type = ProbeScanAction.SCAN_NODE_INITIAL, value = "burp")
         return action
+    }
+
+    /**
+     * Of all nodes that are know to the players, find the one of which the least is known (lowest scan status level).
+     */
+    private fun findProbeTarget(scan: Scan): TraverseNode {
+        val traverseNodeValues = createTraverseNodes(scan.siteId).values
+        traverseNodeValues.forEach { it.distance = scan.nodeScanById[it.id]!!.distance }
+        val traverseNodes = traverseNodeValues.filter { scan.nodeScanById[it.id]!!.status != NodeStatus.UNDISCOVERED }
+        val distanceSortedNodes = traverseNodes.sortedBy { it.distance }
+        val targetNode = distanceSortedNodes.minBy {
+            scan.nodeScanById[it.id]!!.status.level
+        }!!
+        return targetNode
+    }
+
+    //---//
+
+    fun probeArrive(scanId: String, nodeId: String, type: String, principal: Principal) {
+        val scan = scanService.getById(scanId)
+        val node = scan.nodeScanById[nodeId] ?: throw IllegalStateException("Node to scan ${nodeId} not part of ${scan.siteId}")
+        if (node.status != NodeStatus.DISCOVERED) {
+            stompService.terminalReceive(principal, "Scanned node. ${nodeId}")
+        }
     }
 }
