@@ -8,7 +8,7 @@ let post = ({url, body, ok, notok, error}) => {
     ).then(response => {
             if (response.ok) {
                 response.text().then(data => {
-                    if (data && data.startsWith("{")) {
+                    if (data && (data.startsWith("{") || data.startsWith("["))) {
                         const responseData = JSON.parse(data);
                         ok(responseData);
                     }

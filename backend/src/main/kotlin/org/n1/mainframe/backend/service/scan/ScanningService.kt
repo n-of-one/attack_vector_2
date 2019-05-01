@@ -124,7 +124,7 @@ class ScanningService(val scanService: ScanService,
         }
         if (command == "dc") {
             data class Navigate(val target: String)
-            stompService.toUser(principal, ReduxActions.NAVIGATE_PAGE, Navigate("HACKER_HOME"))
+            stompService.toUser(principal, ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
             return
         }
         if (command == "autoscan") {
@@ -309,6 +309,16 @@ class ScanningService(val scanService: ScanService,
         nodeScan.status = NodeStatus.SERVICES
         scanService.save(scan)
         stompService.toScan(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+    }
+
+    data class ScanOverViewLine(val scanId: String, val siteName: String, val complete: Boolean)
+    fun scansOfPlayer(principal: Principal): Collection<ScanOverViewLine> {
+        val scans = scanService.getAll()
+        return scans.map {
+            val site = siteDataService.getById(it.siteId)
+            val complete = (it.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
+            ScanOverViewLine(it.id, site.name, complete)
+        }
     }
 
 

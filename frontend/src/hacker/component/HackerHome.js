@@ -31,22 +31,18 @@ let scan = (siteName) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        scan: scan
+        scanSite: scan
     };
 };
 
 let mapStateToProps = (state) => {
-    return {state,};
+    return {
+        scans: state.scans
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({scan}) => {
-
-        document.body.style.backgroundColor = "#222222";
-
-        let sites = [
-            {id: "tutorial-site", name: "Tutorial"}
-        ];
+    ({scanSite, scans}) => {
 
         return (
             <span>
@@ -80,7 +76,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                 <TextInput placeholder="Site name"
                                            buttonLabel="Scan"
                                            buttonClass="btn-info"
-                                           save={(siteName) => scan(siteName)}
+                                           save={(siteName) => scanSite(siteName)}
                                            clearAfterSubmit="true"/>
 
                             </div>
@@ -96,21 +92,21 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                 <table className="table table-condensed text-muted text" id="sitesTable">
                                     <thead>
                                     <tr>
-                                        <td className="text-strong">Name</td>
-                                        <td className="text-strong">Action</td>
+                                        <td className="strong">Site Name</td>
+                                        <td className="strong">Complete</td>
+                                        <td className="strong">Scan ID</td>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {
-                                        sites.map((site) => {
+                                        scans.map((scanLine) => {
                                             return (
-                                                <tr key="1">
+                                                <tr key={scanLine.scanId}>
                                                     <td className="table-very-condensed">
-                                                        <a target="_blank" rel="noopener noreferrer"
-                                                           href={"/scan/" + site.id + "/"}>{site.name}</a>
+                                                        <a href={"/hacker/scan/" + scanLine.scanId + "/"}>{scanLine.siteName}</a>
                                                     </td>
-                                                    <td className="table-very-condensed">act
-                                                    </td>
+                                                    <td className="table-very-condensed">{(scanLine.complete) ? "yes": "no"}</td>
+                                                    <td className="table-very-condensed">{scanLine.scanId}</td>
                                                 </tr>);
                                         })
                                     }

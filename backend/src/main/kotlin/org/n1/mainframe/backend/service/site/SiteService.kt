@@ -44,7 +44,7 @@ class SiteService(
         }
 
         siteDataService.purgeAll()
-        layoutService.purgeAll();
+        layoutService.purgeAll()
         nodeService.purgeAll()
         connectionService.purgeAll()
     }

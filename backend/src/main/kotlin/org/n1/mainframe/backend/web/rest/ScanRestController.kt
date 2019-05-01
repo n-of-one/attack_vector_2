@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/scan/")
@@ -25,6 +26,11 @@ class ScanRestController(val scanningService: ScanningService,
     @RequestMapping("/site")
     fun scanSiteName(@RequestBody body: ScanSiteData): ScanningService.ScanResponse {
         return scanningService.scanSite(body.siteName)
+    }
+
+    @RequestMapping("/scansOfPlayer")
+    fun scansOfPlayer(principal: Principal): Collection<ScanningService.ScanOverViewLine> {
+        return scanningService.scansOfPlayer(principal)
     }
 
 }

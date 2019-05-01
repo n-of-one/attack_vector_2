@@ -28,5 +28,13 @@ class ScanService(val scanRepo: ScanRepo) {
     fun save(scan: Scan) {
         scanRepo.save(scan)
     }
+
+    fun getAll(): List<Scan> {
+        return scanRepo.findAll().toList()
+    }
+
+    fun purgeAll() {
+        scanRepo.deleteAll()
+    }
 }
 

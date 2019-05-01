@@ -1,5 +1,7 @@
 const SCAN = "SCAN";
+const RECEIVE_SCANS = "RECEIVE_SCANS";
 
 export {
-    SCAN
+    SCAN,
+    RECEIVE_SCANS
 }

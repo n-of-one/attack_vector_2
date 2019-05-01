@@ -65,4 +65,9 @@ class UserService(
         return createId("user-", ::findExisting, 9, 13)
     }
 
+    fun purgeAll() {
+        userRepo.deleteAll()
+        init()
+    }
+
 }

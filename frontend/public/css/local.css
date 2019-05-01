@@ -33,7 +33,9 @@
     /*font-style: normal;*/
 /*}*/
 
-
+body {
+    background-color: #222222;
+}
 
 @font-face {
     font-family: 'SpaceMono';
@@ -188,6 +190,15 @@ a.textLink {
 
 .menuItem {
     cursor: pointer;
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    border-top: 1px solid #444;
 }
 
 /*.rightPane {*/
