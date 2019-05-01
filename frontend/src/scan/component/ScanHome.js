@@ -2,7 +2,6 @@ import React from 'react';
 import {connect} from "react-redux";
 import MenuBar from "../../common/component/MenuBar";
 import Terminal from "../../common/terminal/Terminal";
-import {TERMINAL_RECEIVE} from "../../common/terminal/TerminalActions";
 import ScanCanvasPanel from "./ScanCanvasPanel";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */

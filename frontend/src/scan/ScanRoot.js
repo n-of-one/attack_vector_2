@@ -5,15 +5,12 @@ import createScanSagas from "./saga/ScanRootSaga";
 import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";
-import ScanHome, {homeRender} from "./component/ScanHome";
+import ScanHome from "./component/ScanHome";
 import scanReducer from "./ScanRootReducer";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
 import {REQUEST_SCAN_FULL} from "./ScanActions";
 import {SCAN} from "../hacker/HackerPages";
-import Terminal from "../common/terminal/Terminal";
-import ScanCanvasPanel from "./component/ScanCanvasPanel";
-import MenuBar from "../common/component/MenuBar";
 
 class ScanRoot extends Component {
 
