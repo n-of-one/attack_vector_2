@@ -114,10 +114,11 @@ class ScanningService(val scanService: ScanService,
 
     fun processCommand(scanId: String, command: String, principal: Principal) {
         if (command == "help") {
-            stompService.terminalReceive(principal, "Command options:")
-            stompService.terminalReceive(principal, " scan")
-            stompService.terminalReceive(principal, " autoscan")
-            stompService.terminalReceive(principal, " scan [info i]<network id>[/]   -- for example: scan 00")
+            stompService.terminalReceive(principal,
+                    "Command options:",
+                    " scan",
+                    " autoscan",
+                    " scan [info i]<network id>[/]   -- for example: scan 00")
             return
         }
         if (command == "autoscan") {

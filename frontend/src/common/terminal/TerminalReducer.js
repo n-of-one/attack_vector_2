@@ -23,8 +23,9 @@ export default (terminal = defaultState, action) => {
         case TERMINAL_TICK:
             return processTick(processTick(processTick(processTick(terminal))));
         case TERMINAL_RECEIVE:
-        case SERVER_TERMINAL_RECEIVE:
             return receive(terminal, action);
+        case SERVER_TERMINAL_RECEIVE:
+            return receiveFromServer(terminal, action);
         case TERMINAL_KEY_PRESS:
             return handlePressKey(terminal, action);
         case TERMINAL_SUBMIT:
@@ -85,20 +86,27 @@ function processTick(terminal) {
 
 
 let receive = (terminal, action) => {
+    const buffer = (terminal.receiveBuffer) ? terminal.receiveBuffer : [];
 
-    if (terminal.receiveInput) {
-        return {
-            ...terminal,
-            receiving: true,
-            receiveBuffer: [...terminal.receiveBuffer, {type: "text", data: action.data}],
-        };
-    }
-    else {
-        return {
-            ...terminal,
-            receiving: true,
-            receiveInput: {type: "text", data: action.data},
-        };
+    const line = {type: "text", data: action.data};
+
+    return {
+        ...terminal,
+        receiving: true,
+        receiveBuffer: [...buffer, line],
+    };
+};
+
+let receiveFromServer = (terminal, action) => {
+    const lines = action.data.map((line) => {
+        return {type: "text", data: line}
+    });
+
+    const buffer = (terminal.receiveBuffer) ? terminal.receiveBuffer : [];
+    return {
+        ...terminal,
+        receiving: true,
+        receiveBuffer: [...buffer, ...lines],
     }
 };
 

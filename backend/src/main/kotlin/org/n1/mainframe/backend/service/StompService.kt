@@ -49,8 +49,8 @@ class StompService(
         stompTemplate.convertAndSendToUser(principal.name, "/error", message)
     }
 
-    fun terminalReceive(principal: Principal, line: String) {
-        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, line)
+    fun terminalReceive(principal: Principal, vararg lines: String) {
+        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, lines)
     }
 
 }
