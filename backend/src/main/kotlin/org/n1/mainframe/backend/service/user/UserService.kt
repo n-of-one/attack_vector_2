@@ -39,9 +39,10 @@ class UserService(
 
     @PostConstruct
     fun init() {
-        mandatoryUser("admin", "admin", UserType.ADMIN)
-        mandatoryUser("gm", "gm", UserType.GM)
-        mandatoryUser("hacker", "hacker", UserType.HACKER)
+        mandatoryUser("admin", "", UserType.ADMIN)
+        mandatoryUser("gm", "", UserType.GM)
+        mandatoryUser("hacker", "", UserType.HACKER)
+        mandatoryUser("h", "", UserType.HACKER)
     }
 
     fun mandatoryUser(userName: String, password: String, type: UserType) {

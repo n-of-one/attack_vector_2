@@ -5,6 +5,7 @@ import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../NodeScanTypes";
 import {CONNECTIONS, DISCOVERED, FREE, SERVICES, TYPE, UNDISCOVERED} from "../../../common/enums/NodeStatus";
+import Threads from "../../../common/Threads";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -19,9 +20,12 @@ class ScanCanvas {
     hackerIcon = null;
     dispatch = null;
     iconThread = new Thread();
-    probeThread = new Thread();
+    probeThreads = new Threads();
 
-    init(dispatch) {
+    userId = null;
+
+    init(userId, dispatch) {
+        this.userId = userId;
         this.dispatch = dispatch;
 
         this.canvas = new fabric.StaticCanvas('scanCanvas', {
@@ -41,9 +45,13 @@ class ScanCanvas {
         const {nodes, connections} = site;
         this.nodeScanById = scan.nodeScanById;
         this.nodesById = {};
-        nodes.forEach( (node) => { this.nodesById[node.id] = node; });
+        nodes.forEach((node) => {
+            this.nodesById[node.id] = node;
+        });
         this.connectionsById = {};
-        connections.forEach( (connection) => { this.connectionsById[connection.id] = connection; });
+        connections.forEach((connection) => {
+            this.connectionsById[connection.id] = connection;
+        });
 
         this.addHackerIcon(nodes[0]);
 
@@ -59,7 +67,7 @@ class ScanCanvas {
             const fromIcon = this.iconsById[connection.fromId];
             const toIcon = this.iconsById[connection.toId];
 
-            if (fromIcon &&  toIcon) {
+            if (fromIcon && toIcon) {
                 this.addConnectionIconWithAnimation(fromIcon, toIcon);
             }
         });
@@ -192,9 +200,15 @@ class ScanCanvas {
 
     addNodeIconWithAnimation(node) {
         const nodeIcon = this.addNodeIcon(node);
-        this.iconThread.run(0, () => { this.animate(nodeIcon.label, "opacity", 1, 40) });
-        this.iconThread.run(0, () => { this.animate(nodeIcon.labelBackground, "opacity", 0.8, 40) });
-        this.iconThread.run(3, () => { this.animate(nodeIcon, "opacity", 0.4, 40)} );
+        this.iconThread.run(0, () => {
+            this.animate(nodeIcon.label, "opacity", 1, 40)
+        });
+        this.iconThread.run(0, () => {
+            this.animate(nodeIcon.labelBackground, "opacity", 0.8, 40)
+        });
+        this.iconThread.run(3, () => {
+            this.animate(nodeIcon, "opacity", 0.4, 40)
+        });
     }
 
     addConnectionIconWithAnimation(fromIcon, toIcon) {
@@ -203,7 +217,7 @@ class ScanCanvas {
     }
 
     animate(toAnimate, attribute, value, duration, easing) {
-        const easingFunction = (easing) ? easing: fabric.util.ease.easeInOutSine;
+        const easingFunction = (easing) ? easing : fabric.util.ease.easeInOutSine;
         toAnimate.animate(attribute, value, {
             onChange: this.canvas.renderAll.bind(this.canvas),
             duration: duration * 50,
@@ -211,7 +225,8 @@ class ScanCanvas {
         });
     }
 
-    launchProbe({path, scanType, autoScan}) {
+    launchProbe({userId, path, scanType, autoScan}) {
+        const probeUserId = userId;
         const probeImageNumber = Math.floor(Math.random() * 10) + 1;
         const probeImageElement = document.getElementById("PROBE_" + probeImageNumber);
 
@@ -230,82 +245,94 @@ class ScanCanvas {
 
         path.forEach((nodeId) => {
             const nextIcon = this.iconsById[nodeId];
-            this.probeThread.run(20, () => this.moveStep(probeIcon, nextIcon, 20, 5, 5));
+            this.probeThreads.run(probeUserId, 20, () => this.moveStep(probeIcon, nextIcon, 20, 5, 5));
         });
         const lastNodeId = path.pop();
-        this.probeThread.run(0, () => {
-            this.processProbeArrive(probeIcon, scanType, lastNodeId, autoScan);
+        this.probeThreads.run(userId, 0, () => {
+            this.processProbeArrive(probeUserId, probeIcon, scanType, lastNodeId, autoScan);
         });
     }
 
 
     moveStep(avatar, icon, time, leftDelta, topDelta) {
-        this.animate(avatar, 'left', icon.left + leftDelta, time );
-        this.animate(avatar, 'top', icon.top + topDelta, time );
+        this.animate(avatar, 'left', icon.left + leftDelta, time);
+        this.animate(avatar, 'top', icon.top + topDelta, time);
     }
 
-    processProbeArrive(probeImage, scanType, nodeId, autoScan) {
-        switch(scanType) {
-            case SCAN_NODE_INITIAL: return this.scanInside(probeImage, nodeId, SCAN_NODE_INITIAL, autoScan);
-            case SCAN_CONNECTIONS: return this.scanOutside(probeImage, nodeId, autoScan);
-            case SCAN_NODE_DEEP: return this.scanInside(probeImage, nodeId, SCAN_NODE_DEEP, autoScan);
-            default: return this.probeError(probeImage, scanType, nodeId);
+    processProbeArrive(probeUserId, probeImage, scanType, nodeId, autoScan) {
+        switch (scanType) {
+            case SCAN_NODE_INITIAL:
+                return this.scanInside(probeUserId, probeImage, nodeId, SCAN_NODE_INITIAL, autoScan);
+            case SCAN_CONNECTIONS:
+                return this.scanOutside(probeUserId, probeImage, nodeId, autoScan);
+            case SCAN_NODE_DEEP:
+                return this.scanInside(probeUserId, probeImage, nodeId, SCAN_NODE_DEEP, autoScan);
+            default:
+                return this.probeError(probeUserId, probeImage, scanType, nodeId);
         }
     }
 
-    scanInside(probeImage, nodeId, action, autoScan) {
-        this.probeThread.run(50, () => {
+    scanInside(probeUserId, probeImage, nodeId, action, autoScan) {
+        this.probeThreads.run(probeUserId, 50, () => {
             this.animate(probeImage, 'width', "20", 50);
             this.animate(probeImage, 'height', "20", 50);
             this.animate(probeImage, 'opacity', "0.8", 50);
         });
-        this.probeThread.run(25, () => {
+        this.probeThreads.run(probeUserId, 25, () => {
             this.animate(probeImage, 'width', "40", 50);
             this.animate(probeImage, 'height', "40", 50);
             this.animate(probeImage, 'opacity', "0.6", 25);
         });
-        this.probeThread.run(10, () => {
-            this.dispatch({type:PROBE_SCAN_NODE, nodeId: nodeId, action: action});
+        this.probeThreads.run(probeUserId, 10, () => {
             this.animate(probeImage, 'opacity', "0", 10);
-        });
-        this.probeThread.run(10, () => {
-            this.canvas.remove(probeImage);
-            if (autoScan) {
-                this.autoScan();
+            if (this.userId === probeUserId) {
+                this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: action});
             }
+        });
+
+        this.probeThreads.run(probeUserId, 10, () => {
+            this.canvas.remove(probeImage);
+            this.autoScan(probeUserId, autoScan);
         });
     }
 
-    scanOutside(probeImage, nodeId, autoScan) {
-        this.probeThread.run(50, () => {
+    scanOutside(probeUserId, probeImage, nodeId, autoScan) {
+        this.probeThreads.run(probeUserId, 50, () => {
             this.animate(probeImage, 'width', "100", 50);
             this.animate(probeImage, 'height', "100", 50);
             this.animate(probeImage, 'opacity', "0.2", 50);
         });
-        this.probeThread.run(25, () => {
+        this.probeThreads.run(probeUserId, 25, () => {
             this.animate(probeImage, 'width', "40", 50);
             this.animate(probeImage, 'height', "40", 50);
             this.animate(probeImage, 'opacity', "0.3", 25);
         });
-        this.probeThread.run(10, () => {
-            this.dispatch({type:PROBE_SCAN_NODE, nodeId: nodeId, action: SCAN_CONNECTIONS});
+        this.probeThreads.run(probeUserId, 10, () => {
             this.animate(probeImage, 'opacity', "0", 10);
-        });
-        this.probeThread.run(10, () => {
-            this.canvas.remove(probeImage);
-            if (autoScan) {
-                this.autoScan();
+            if (this.userId === probeUserId) {
+                this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: SCAN_CONNECTIONS});
             }
         });
+        this.probeThreads.run(probeUserId, 10, () => {
+            this.canvas.remove(probeImage);
+            this.autoScan(probeUserId, autoScan);
+        });
     }
 
-    autoScan() {
-        this.dispatch({type: AUTO_SCAN});
+    autoScan(probeUserId, autoScan) {
+        if (autoScan && probeUserId === this.userId) {
+            this.dispatch({type: AUTO_SCAN});
+        }
+
     }
 
-    probeError(probeImage, scanType, nodeId) {
-        this.probeThread.run(30, () => { this.animate(probeImage, "height", 0, 30) });
-        this.probeThread.run(0, () => { this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + scanType + "[/] unknown. nodeId: [info]" + nodeId}) });
+    probeError(probeUserId, probeImage, scanType, nodeId) {
+        this.probeThreads.run(probeUserId, 30, () => {
+            this.animate(probeImage, "height", 0, 30)
+        });
+        this.probeThreads.run(probeUserId, 0, () => {
+            this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + scanType + "[/] unknown. nodeId: [info]" + nodeId})
+        });
     }
 
     updateNodeStatus(nodeId, newStatus) {

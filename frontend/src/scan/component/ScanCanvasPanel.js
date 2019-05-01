@@ -16,7 +16,7 @@ class ScanCanvasPanel extends Component {
     }
 
     componentDidMount() {
-        scanCanvas.init(this.props.dispatch);
+        scanCanvas.init(this.props.userId, this.props.dispatch);
     }
 
     allowDrop(event) {
@@ -56,7 +56,9 @@ class ScanCanvasPanel extends Component {
 }
 
 let mapStateToProps = (state) => {
-    return {};
+    return {
+        userId: state.user.id
+    };
 };
 
 const mapDispatchToProps = (dispatch) => {

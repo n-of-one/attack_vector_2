@@ -2,7 +2,7 @@ import webstomp from 'webstomp-client';
 import {notify, notify_fatal} from "../common/Notification";
 import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./ScanActions";
-import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
+import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/CommonActions";
 import {orderByDistance} from "./lib/NodeDistance";
 
 let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
@@ -21,9 +21,10 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
     let client = webstomp.client(url, {debug:false, heartbeat: {incoming: 0, outgoing: 0}});
 
     let onWsOpen = (event) => {
-        let userName = event.headers["user-name"];
+        let userId = event.headers["user-name"];
         // notify_neutral('Status','Connection with server established (' + userName + ")");
-        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userName });
+        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId });
+        dispatch({type: SET_USER_ID, userId: userId});
 
         setupHeartbeat(developmentServer, client);
         client.subscribe('/topic/scan/' + scanId, handleEvent);

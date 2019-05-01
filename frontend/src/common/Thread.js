@@ -30,14 +30,6 @@ export default class Thread {
         });
     }
 
-    runWithThis(wait, functionToRun, withThis) {
-        let that = this;
-        this._schedule( () => {
-            functionToRun.bind(withThis)();
-            that._setWait(wait);
-        });
-    }
-
     wait(wait) {
         this.run(wait, function () {
         });

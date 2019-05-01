@@ -113,12 +113,44 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun processCommand(scanId: String, command: String, principal: Principal) {
-        if (command != "scan" && command != "autoscan") {
-            stompService.terminalReceive(principal, "Unknown command, try [i]scan[/] or [i]autoscan[/].")
+        if (command == "help") {
+            stompService.terminalReceive(principal, "Command options:")
+            stompService.terminalReceive(principal, " scan")
+            stompService.terminalReceive(principal, " autoscan")
+            stompService.terminalReceive(principal, " scan [info i]<network id>[/]   -- for example: scan 00")
             return
         }
-        val autoScan = (command == "autoscan")
-        launchProbe(scanId, autoScan, principal)
+        if (command == "autoscan") {
+            launchProbe(scanId, true, principal)
+            return
+        }
+        if (command == "scan") {
+            launchProbe(scanId, false, principal)
+            return
+        }
+        if (command.startsWith("scan") && command.substring(4).length > 1) {
+            val networkId = command.substring(4).trim()
+            launchProbeAtNode(scanId, networkId, principal)
+            return
+        }
+        stompService.terminalReceive(principal, "Unknown command, try [i]help[/].")
+    }
+
+    private fun launchProbeAtNode(scanId: String, networkId: String, principal: Principal) {
+        val scan = scanService.getById(scanId)
+        val node = nodeService.findByNetworkId(scan.siteId, networkId)
+        if (node == null) {
+            stompService.terminalReceive(principal, "Node [info]${networkId}[/] not found.")
+            return
+        }
+
+        val traverseNodesById = createTraverseNodesWithDistance(scan)
+
+        val targetNode = traverseNodesById[node.id]!!
+        val scanType = determineNodeScanType(targetNode, scan) ?: NodeScanType.SCAN_NODE_DEEP
+        val path = createNodePath(targetNode)
+        val probeAction = ProbeAction(userId = principal.name, path = path, scanType = scanType, autoScan = false)
+        stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 
 
@@ -128,7 +160,7 @@ class ScanningService(val scanService: ScanService,
 
     fun launchProbe(scanId: String, autoScan: Boolean, principal: Principal) {
         val scan = scanService.getById(scanId)
-        val probeAction = createProbeAction(scan, autoScan)
+        val probeAction = createProbeAction(scan, autoScan, principal)
         if (probeAction != null) {
             stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
         } else {
@@ -136,14 +168,13 @@ class ScanningService(val scanService: ScanService,
         }
     }
 
-    data class ProbeAction(val path: List<String>, val scanType: NodeScanType, val autoScan: Boolean)
+    data class ProbeAction(val userId: String, val path: List<String>, val scanType: NodeScanType, val autoScan: Boolean)
 
-    fun createProbeAction(scan: Scan, autoScan: Boolean): ProbeAction? {
+    fun createProbeAction(scan: Scan, autoScan: Boolean, principal: Principal): ProbeAction? {
         val targetNode = findProbeTarget(scan)
         val scanType = determineNodeScanType(targetNode, scan) ?: return null
         val path = createNodePath(targetNode)
-        val probeAction = ProbeAction(path = path, scanType = scanType, autoScan = autoScan)
-        return probeAction
+        return ProbeAction(userId = principal.name, path = path, scanType = scanType, autoScan = autoScan)
     }
 
     private fun determineNodeScanType(node: TraverseNode, scan: Scan): NodeScanType? {
@@ -172,14 +203,19 @@ class ScanningService(val scanService: ScanService,
      * Of all nodes that are know to the players, find the one of which the least is known (lowest scan status level).
      */
     private fun findProbeTarget(scan: Scan): TraverseNode {
-        val traverseNodeValues = createTraverseNodes(scan.siteId).values
-        traverseNodeValues.forEach { it.distance = scan.nodeScanById[it.id]!!.distance }
+        val traverseNodeValues = createTraverseNodesWithDistance(scan).values
         val traverseNodes = traverseNodeValues.filter { scan.nodeScanById[it.id]!!.status != NodeStatus.UNDISCOVERED }
         val distanceSortedNodes = traverseNodes.sortedBy { it.distance }
         val targetNode = distanceSortedNodes.minBy {
             scan.nodeScanById[it.id]!!.status.level
         }!!
         return targetNode
+    }
+
+    private fun createTraverseNodesWithDistance(scan: Scan): Map<String, TraverseNode> {
+        val traverseNodeById = createTraverseNodes(scan.siteId)
+        traverseNodeById.values.forEach { it.distance = scan.nodeScanById[it.id]!!.distance }
+        return traverseNodeById
     }
 
     //---//

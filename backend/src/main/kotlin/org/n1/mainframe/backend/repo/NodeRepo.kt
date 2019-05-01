@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface NodeRepo : PagingAndSortingRepository<Node, String> {
 
     fun findBySiteId(siteId: String): List<Node>
+    fun findBySiteIdAndNetworkId(siteId: String, networkId: String): List<Node>
 }

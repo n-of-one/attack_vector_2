@@ -99,4 +99,14 @@ class NodeService(
         return nodeRepo.findAllById(nodeIds).map { it }
     }
 
+    fun findByNetworkId(siteId: String, networkId: String): Node? {
+        val nodes = nodeRepo.findBySiteIdAndNetworkId(siteId, networkId)
+        if (nodes.isNotEmpty()) {
+            return nodes[0]
+        }
+        else {
+            return null
+        }
+    }
+
 }
