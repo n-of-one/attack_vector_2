@@ -1,4 +1,5 @@
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE} from "./TerminalActions";
+import {SERVER_FATAL} from "../CommonActions";
 
 const LINE_LIMIT = 100;
 
@@ -9,16 +10,18 @@ const TAB = 9;
 const defaultState = {
     lines: [],
     prompt: "⇋ ",
-    readonly: false,
+    readonly: false, // only allow user input if true
     input: "",
     receiveInput: {type: "text", data: " "},
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}],
     receiveLineIndex: null,
-    receiving: true
+    receiving: true,   // true if there is data incoming that is not yet rendered. Effectively this means that there is data in receiveInput and/or receiveBuffer.
+
 };
 
 
 export default (terminal = defaultState, action) => {
+
     switch (action.type) {
         case TERMINAL_TICK:
             return processTick(processTick(processTick(processTick(terminal))));
@@ -30,6 +33,8 @@ export default (terminal = defaultState, action) => {
             return handlePressKey(terminal, action);
         case TERMINAL_SUBMIT:
             return handlePressEnter(terminal, action);
+        case SERVER_FATAL:
+            return handleServerFatal(terminal, action);
         default:
             return terminal;
     }
@@ -143,4 +148,18 @@ let limitLines = (lines) => {
         lines.shift();
     }
     return lines;
+};
+
+let handleServerFatal = (terminal, action) => {
+    let a = {
+        ...terminal,
+        lines: [...terminal.lines, ...terminal.receiveBuffer,  {type: "text", data: "[warn b]" + action.data}],
+        input: "",
+        receiveInput: [],
+        receiveBuffer: [],
+        receiving: false,
+        readonly: true
+    };
+    return a;
+
 };

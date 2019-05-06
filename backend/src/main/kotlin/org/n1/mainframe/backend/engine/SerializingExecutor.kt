@@ -2,7 +2,9 @@ package org.n1.mainframe.backend.engine
 
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.ValidationException
+import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
+import org.n1.mainframe.backend.util.FatalException
 import org.n1.mainframe.backend.web.ws.EditorController
 import org.springframework.stereotype.Component
 import java.security.Principal
@@ -65,8 +67,12 @@ class SerializingExecutor(stompService: StompService)  {
                     stompService.toUser(task.principal, exception.getNoty())
                     return
                 }
+                if (exception is FatalException) {
+                    stompService.toUser(task.principal, ReduxActions.SERVER_FATAL, exception.message!!)
+                    return
+                }
                 EditorController.logger.error(exception.message, exception)
-                val noty = NotyMessage("fatal", "Server error", exception.message ?: "")
+                val noty = NotyMessage("Problem", "Error:", exception.message ?: "")
                 stompService.errorToUser(task.principal, noty)
             }
         }

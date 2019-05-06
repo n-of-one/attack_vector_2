@@ -2,17 +2,14 @@ package org.n1.mainframe.backend.web.ws
 
 import mu.KLogging
 import org.n1.mainframe.backend.engine.SerializingExecutor
-import org.n1.mainframe.backend.model.ui.*
 import org.n1.mainframe.backend.model.ui.site.command.AddConnection
 import org.n1.mainframe.backend.model.ui.site.command.AddNode
 import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
 import org.n1.mainframe.backend.model.ui.site.command.MoveNode
-import org.n1.mainframe.backend.service.*
+import org.n1.mainframe.backend.service.EditorService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
 import java.security.Principal
-import org.springframework.messaging.simp.annotation.SendToUser
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import javax.annotation.security.RolesAllowed
 
 
@@ -68,13 +65,13 @@ class EditorController(
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-    @MessageExceptionHandler
-    @SendToUser("/error")
-    fun handleException(exception: Exception): NotyMessage {
-        if (exception is ValidationException) {
-            return exception.getNoty()
-        }
-        logger.error(exception.message, exception)
-        return NotyMessage("fatal", "Server error", exception.message ?: "")
-    }
+//    @MessageExceptionHandler
+//    @SendToUser("/error")
+//    fun handleException(exception: Exception): NotyMessage {
+//        if (exception is ValidationException) {
+//            return exception.getNoty()
+//        }
+//        logger.error(exception.message, exception)
+//        return createNoty(exception)
+//    }
 }

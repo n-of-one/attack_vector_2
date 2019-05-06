@@ -1,13 +1,10 @@
 package org.n1.mainframe.backend.web.ws
 
+import mu.KLogging
 import org.n1.mainframe.backend.engine.SerializingExecutor
 import org.n1.mainframe.backend.model.scan.NodeScanType
-import org.n1.mainframe.backend.model.ui.NotyMessage
-import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.service.scan.ScanningService
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.stereotype.Controller
 import java.security.Principal
 
@@ -17,9 +14,12 @@ class ScanningController(
         val scanningService: ScanningService
 ) {
 
-    @MessageMapping("/scan/sendScan")
+    companion object: KLogging()
+
+
+    @MessageMapping("/scan/enterScan")
     fun siteFull(siteId: String, principal: Principal) {
-        executor.run(principal) { scanningService.sendScanToUser(siteId, principal) }
+        executor.run(principal) { scanningService.enterScan(siteId, principal) }
     }
 
     data class TerminalCommand(val scanId: String, val command: String)
@@ -40,14 +40,14 @@ class ScanningController(
         executor.run(principal) { scanningService.probeArrive(input.scanId, input.nodeId, input.action, principal) }
     }
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-
-    @MessageExceptionHandler
-    @SendToUser("/error")
-    fun handleException(exception: Exception): NotyMessage {
-        if (exception is ValidationException) {
-            return exception.getNoty()
-        }
-        EditorController.logger.error(exception.message, exception)
-        return NotyMessage("fatal", "Server error", exception.message ?: "")
-    }
+//
+//    @MessageExceptionHandler
+//    @SendToUser("/error")
+//    fun handleException(exception: Exception): NotyMessage {
+//        if (exception is ValidationException) {
+//            return exception.getNoty()
+//        }
+//        logger.error(exception.message, exception)
+//        return NotyMessage("fatal", "Server error", exception.message ?: "")
+//    }
 }

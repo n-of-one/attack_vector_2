@@ -9,7 +9,11 @@ import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.site.SiteFull
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
-import org.n1.mainframe.backend.service.site.*
+import org.n1.mainframe.backend.service.site.ConnectionService
+import org.n1.mainframe.backend.service.site.NodeService
+import org.n1.mainframe.backend.service.site.SiteDataService
+import org.n1.mainframe.backend.service.site.SiteService
+import org.n1.mainframe.backend.service.user.HackerActivityService
 import org.n1.mainframe.backend.util.s
 import org.springframework.stereotype.Service
 import java.security.Principal
@@ -24,7 +28,7 @@ class ScanningService(val scanService: ScanService,
                       val stompService: StompService,
                       val nodeService: NodeService,
                       val connectionService: ConnectionService,
-                      val layoutService: LayoutService) {
+                      val hackerActivityService: HackerActivityService) {
 
     data class ScanResponse(val scanId: String?, val message: NotyMessage?)
 
@@ -103,13 +107,14 @@ class ScanningService(val scanService: ScanService,
 
     data class ScanAndSite(val scan: Scan, val site: SiteFull)
 
-    fun sendScanToUser(scanId: String, principal: Principal) {
+    fun enterScan(scanId: String, principal: Principal) {
+        hackerActivityService.startActivityScanning(principal, scanId)
+
         val scan = scanService.getById(scanId)
         val siteFull = siteService.getSiteFull(scan.siteId)
 
         val scanAndSite = ScanAndSite(scan, siteFull)
         stompService.toUser(principal, ReduxActions.SERVER_SCAN_FULL, scanAndSite)
-
     }
 
     fun processCommand(scanId: String, command: String, principal: Principal) {
@@ -275,7 +280,7 @@ class ScanningService(val scanService: ScanService,
         }
 
         val allDiscoveredNodes = scan.nodeScanById
-                .filter { (nodeId, nodeScan) -> nodeScan.status != NodeStatus.UNDISCOVERED }
+                .filter { (_, nodeScan) -> nodeScan.status != NodeStatus.UNDISCOVERED }
                 .keys
 
         val connectionsFromDiscoveredNodes = discoveredNodeIds.flatMap{connectionService.findByNodeId(it)  }
@@ -320,6 +325,7 @@ class ScanningService(val scanService: ScanService,
             ScanOverViewLine(it.id, site.name, complete)
         }
     }
+
 
 
 }

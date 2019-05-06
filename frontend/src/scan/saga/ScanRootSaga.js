@@ -2,7 +2,7 @@ import { takeEvery, all } from 'redux-saga/effects'
 import {
     AUTO_SCAN,
     PROBE_SCAN_NODE,
-    REQUEST_SCAN_FULL,
+    ENTER_SCAN,
     SERVER_DISCOVER_NODES,
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
@@ -17,7 +17,7 @@ const createScanRootSaga = (stompClient, scanId, siteId) => {
 
     const [
         navigatePage,
-        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga,
+        enterScanSaga, serverScanFullSaga, terminalSubmitSaga,
         updateNodeStatusSaga, discoverNodesSaga
     ] = createScanSagas(stompClient, scanId);
 
@@ -27,7 +27,7 @@ const createScanRootSaga = (stompClient, scanId, siteId) => {
 
     function* allSagas() {
         yield takeEvery(NAVIGATE_PAGE, navigatePage);
-        yield takeEvery(REQUEST_SCAN_FULL, requestScanFullSaga);
+        yield takeEvery(ENTER_SCAN, enterScanSaga);
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
         yield takeEvery(TERMINAL_SUBMIT, terminalSubmitSaga);
 

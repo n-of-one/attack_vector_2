@@ -1,23 +1,27 @@
 package org.n1.mainframe.backend.config
 
 import mu.KLogging
+import org.n1.mainframe.backend.service.user.HackerActivityService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
+import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer
+import org.springframework.security.messaging.web.socket.server.CsrfTokenHandshakeInterceptor
+import org.springframework.stereotype.Component
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
-import org.springframework.web.socket.messaging.SessionDisconnectEvent
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.messaging.SessionConnectEvent
+import org.springframework.web.socket.messaging.SessionDisconnectEvent
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
-import org.springframework.messaging.simp.config.ChannelRegistration
-import org.springframework.security.messaging.web.socket.server.CsrfTokenHandshakeInterceptor
-import org.springframework.web.socket.server.HandshakeInterceptor
 
 
 @Configuration
 @EnableWebSocketMessageBroker
-class StompConfig() : AbstractWebSocketMessageBrokerConfigurer() {
+@Component
+class StompConfig(
+        val hackerActivityService: HackerActivityService
+) : WebSocketMessageBrokerConfigurer {
 
     companion object: KLogging()
 
@@ -36,21 +40,23 @@ class StompConfig() : AbstractWebSocketMessageBrokerConfigurer() {
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration?) {
-        registration!!.interceptors(StompMessageLogInterceptor())
+        registration!!.interceptors(StompMessageLogInterceptor(hackerActivityService))
     }
 
     @EventListener
     fun handleSubscribeEvent(event: SessionSubscribeEvent) {
-        logger.info{ "<==> handleSubscribeEvent: username=" + event.user.name + ", event=" + event }
+        logger.info{ "<==> handleSubscribeEvent: username=" + event.user!!.name + ", event=" + event }
     }
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
-        logger.info{ "===> handleConnectEvent: username=" + event.user.name + ", event=" + event }
+        hackerActivityService.startActivityOnline(event.user!!)
+        logger.info{ "===> handleConnectEvent: username=" + event.user!!.name + ", event=" + event }
     }
 
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
-        logger.info{ "<=== handleDisconnectEvent: username=" + event.user.name + ", event=" + event }
+        hackerActivityService.endActivity(event.user!!)
+        logger.info{ "<=== handleDisconnectEvent: username=" + event.user!!.name + ", event=" + event }
     }
 }

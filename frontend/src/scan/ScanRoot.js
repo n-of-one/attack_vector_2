@@ -9,7 +9,7 @@ import ScanHome from "./component/ScanHome";
 import scanReducer from "./ScanRootReducer";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
-import {REQUEST_SCAN_FULL} from "./ScanActions";
+import {ENTER_SCAN} from "./ScanActions";
 import {SCAN} from "../hacker/HackerPages";
 
 class ScanRoot extends Component {
@@ -43,7 +43,7 @@ class ScanRoot extends Component {
         let webSocketInitialized = (success) => {
             this.setState( { initSuccess: success });
             if (success) {
-                store.dispatch({type: REQUEST_SCAN_FULL, scanId: scanId});
+                store.dispatch({type: ENTER_SCAN, scanId: scanId});
             }
         };
         webSocketInitialized.bind(this);

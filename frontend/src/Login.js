@@ -100,7 +100,7 @@ class Login extends Component {
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="inputEmail3" className="col-sm-2 control-label">Handle</label>
+                                <label htmlFor="inputEmail3" className="col-sm-2 control-label text">Handle</label>
                                 <div className="col-sm-10">
                                     <input type="text" className="form-control" id="handle" placeholder="" autoFocus={true}
                                            onChange={(event) => {
@@ -109,7 +109,7 @@ class Login extends Component {
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="inputPassword3" className="col-sm-2 control-label">Password</label>
+                                <label htmlFor="inputPassword3" className="col-sm-2 control-label text">Password</label>
                                 <div className="col-sm-10">
                                     <input type="password" className="form-control" id="password" placeholder="Password"
                                            onChange={(event) => {

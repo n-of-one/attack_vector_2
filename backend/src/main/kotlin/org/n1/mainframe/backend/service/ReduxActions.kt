@@ -3,6 +3,7 @@ package org.n1.mainframe.backend.service
 enum class ReduxActions {
 
     SERVER_NOTIFICATION,
+    SERVER_FATAL,
 
     SERVER_ADD_NODE,
     SERVER_ADD_CONNECTION,

@@ -9,8 +9,8 @@ const createScanSagas = (stompClient, scanId) => {
     }
 
 
-    function* requestScanFullSaga() {
-        stompClient.send("/av/scan/sendScan", scanId);
+    function* enterScanSaga() {
+        stompClient.send("/av/scan/enterScan", scanId);
         yield
     }
 
@@ -40,7 +40,7 @@ const createScanSagas = (stompClient, scanId) => {
 
     return [
         navigatePage,
-        requestScanFullSaga, serverScanFullSaga, terminalSubmitSaga, updateNodeStatusSaga, discoverNodesSaga
+        enterScanSaga, serverScanFullSaga, terminalSubmitSaga, updateNodeStatusSaga, discoverNodesSaga
     ];
 
 };

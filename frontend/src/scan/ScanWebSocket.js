@@ -2,7 +2,7 @@ import webstomp from 'webstomp-client';
 import {notify, notify_fatal} from "../common/Notification";
 import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./ScanActions";
-import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/CommonActions";
+import {SERVER_FATAL, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/CommonActions";
 import {orderByDistance} from "./lib/NodeDistance";
 
 let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
@@ -42,6 +42,14 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
 
     const handleEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
+
+        if ( body.type === SERVER_FATAL) {
+            notify_fatal(body.data);
+            let event = {...body, globalState: store.getState()};
+            store.dispatch(event);
+            return;
+        }
+
         if (body.type === SERVER_NOTIFICATION) {
             notify(body.data);
             return;

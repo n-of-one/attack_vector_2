@@ -1,15 +1,20 @@
 package org.n1.mainframe.backend.config
 
 import mu.KLogging
+import org.n1.mainframe.backend.service.user.HackerActivityService
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.stomp.StompCommand
-import org.springframework.messaging.support.ChannelInterceptorAdapter
+import org.springframework.messaging.support.ChannelInterceptor
+import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.Principal
 
 
-class StompMessageLogInterceptor : ChannelInterceptorAdapter() {
+@Component
+class StompMessageLogInterceptor(
+        val hackerActivityService: HackerActivityService
+) : ChannelInterceptor {
 
     companion object : KLogging()
 
@@ -26,6 +31,7 @@ class StompMessageLogInterceptor : ChannelInterceptorAdapter() {
                 "no name"
             }
             logger.info("${user} ${destination} : ${payloadString}")
+            hackerActivityService.display()
         }
         return message
     }
