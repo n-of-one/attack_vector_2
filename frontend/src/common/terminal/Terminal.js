@@ -134,6 +134,13 @@ class Terminal extends Component {
         return blocks;
     }
 
+    /** The line that is being displayed one character at a time */
+    renderRenderingLine() {
+        if (!this.state.renderingLine) {
+            return <div/>
+        }
+        return this.renderLine(this.state.renderingLine, "renderingLine");
+    }
 
     renderInput() {
         if (this.state.readonly) {
@@ -146,10 +153,10 @@ class Terminal extends Component {
 
 
     render() {
-        let lines = this.state.lines;
         return (
             <div className="terminalPanel scrollbar" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
-                {lines.map((line, index) => this.renderLine(line, index))}
+                {this.state.lines.map((line, index) => this.renderLine(line, index))}
+                {this.renderRenderingLine()}
                 {this.renderInput()}
                 <div ref={this.bottomRef}/>
             </div>

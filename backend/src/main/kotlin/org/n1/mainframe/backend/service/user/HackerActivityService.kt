@@ -32,7 +32,7 @@ class HackerActivityService {
     private fun checkOneActivity(userId: String, clientId: String) {
         val existingAction = hackerActivitiesById[userId]
         if (existingAction != null && existingAction.clientId != clientId) {
-            throw FatalException("Please close this browser tab: can only run one activity at a time.")
+            throw FatalException("Please close this browser tab: hackers can only perform one activity at a time.")
         }
     }
 

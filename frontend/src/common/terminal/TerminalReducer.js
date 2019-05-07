@@ -8,14 +8,14 @@ const TAB = 9;
 
 
 const defaultState = {
-    lines: [],
+    lines: [], // lines that are fully shown
     prompt: "⇋ ",
     readonly: false, // only allow user input if true
-    input: "",
-    receiveInput: {type: "text", data: " "},
-    receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}],
-    receiveLineIndex: null,
-    receiving: true,   // true if there is data incoming that is not yet rendered. Effectively this means that there is data in receiveInput and/or receiveBuffer.
+    input: "", // user input
+    renderingLine: null, // part of the current rendering line that is being shown
+    receivingLine: null, // part of the current rendering line that is waiting to be shown
+    receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
+    receiving: true,   // true if there are lines waiting to be shown, or in the process of being shown.
 
 };
 
@@ -44,47 +44,49 @@ function processTick(terminal) {
     if (!terminal.receiving) {
         return terminal;
     }
-
-    if (terminal.receiveLineIndex === null) {
-        let receiveLine = {type: "text", data: ""};
-        let lines = limitLines([...terminal.lines, receiveLine]);
-        let receiveLineIndex = lines.length - 1;
-        return {...terminal, lines: lines, receiveLineIndex: receiveLineIndex};
+    if (terminal.receivingLine === null && terminal.receiveBuffer.length === 0 ) {
+        return { ...terminal, receiving: false };
     }
 
-    let input = terminal.receiveInput.data;
+    let renderingLine = (terminal.renderingLine) ? terminal.renderingLine : {type: "text", data: ""};
+
+    let receivingLine = terminal.receivingLine;
+    let receiveBuffer = terminal.receiveBuffer;
+    if (receivingLine === null) {
+        receivingLine = receiveBuffer[0];
+        receiveBuffer = [...terminal.receiveBuffer].splice(1);
+    }
+
+    let input = receivingLine.data;
 
     let nextChar = input.substr(0, 1);
     let nextData = input.substr(1);
 
-    let nextReceiveInput = {...terminal.receiveInput, data: nextData};
-
-    let clonedLines = [...terminal.lines];
-    let receiveLine = clonedLines[terminal.receiveLineIndex];
-    receiveLine.data = receiveLine.data + nextChar;
+    receivingLine.data = nextData;
+    renderingLine.data += nextChar;
 
 
-    let nextReceiving = true;
-    let nextReceiveBuffer = terminal.receiveBuffer;
-    let nextReceiveLineIndex = terminal.receiveLineIndex;
-    if (nextReceiveInput.data.length === 0) {
-        if (terminal.receiveBuffer.length === 0) {
-            nextReceiving = false;
-        }
-        else {
-            nextReceiveLineIndex = null;
-            nextReceiveInput = terminal.receiveBuffer[0];
-            nextReceiveBuffer = [...terminal.receiveBuffer].splice(1);
+    let lines = terminal.lines;
+
+
+    let receiving = true;
+    if (receivingLine.data.length === 0) {
+        // finish rendering this line
+        lines = limitLines([...terminal.lines, renderingLine]);
+        renderingLine = null;
+        receivingLine = null;
+        if (receiveBuffer.length === 0) {
+            receiving = false;
         }
     }
 
     let nextState = {
         ...terminal,
-        receiveInput: nextReceiveInput,
-        lines: clonedLines,
-        receiving: nextReceiving,
-        receiveBuffer: nextReceiveBuffer,
-        receiveLineIndex: nextReceiveLineIndex
+        renderingLine: renderingLine,
+        receivingLine: receivingLine,
+        lines: lines,
+        receiving: receiving,
+        receiveBuffer: receiveBuffer,
     };
     return nextState;
 }
@@ -151,15 +153,12 @@ let limitLines = (lines) => {
 };
 
 let handleServerFatal = (terminal, action) => {
-    let a = {
+    return {
         ...terminal,
-        lines: [...terminal.lines, ...terminal.receiveBuffer,  {type: "text", data: "[warn b]" + action.data}],
         input: "",
-        receiveInput: [],
-        receiveBuffer: [],
-        receiving: false,
+        receiveInput: null,
+        receiveBuffer: [...terminal.receiveBuffer, {type: "text", data: " "}, {type: "text", data: "[warn b]" + action.data}],
+        receiving: true,
         readonly: true
     };
-    return a;
-
 };
