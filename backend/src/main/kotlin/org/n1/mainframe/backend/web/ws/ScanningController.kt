@@ -29,8 +29,7 @@ class ScanningController(
     data class TerminalCommand(val scanId: String, val command: String)
     @MessageMapping("/scan/terminal")
     fun terminal(terminalCommand: TerminalCommand, principal: Principal) {
-        error("hello exception")
-//        executor.run(principal) { scanningService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
+        executor.run(principal) { scanningService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
     }
 
     @MessageMapping("/scan/autoScan")

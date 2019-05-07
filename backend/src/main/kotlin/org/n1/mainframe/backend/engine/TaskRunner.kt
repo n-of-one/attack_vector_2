@@ -39,12 +39,12 @@ class TaskRunner(val queue: LinkedBlockingQueue<Task>,
                 return
             }
             if (exception is FatalException) {
-                val event = ServerFatal(false, exception.message!!)
+                val event = ServerFatal(false, exception.message ?: "-")
                 stompService.toUser(task.principal, ReduxActions.SERVER_ERROR, event)
                 logger.warn("${task.principal.name}: ${exception}")
                 return
             }
-            val event = ServerFatal(true, exception.message!!)
+            val event = ServerFatal(true, exception.message ?: "-")
             stompService.toUser(task.principal, ReduxActions.SERVER_ERROR, event)
             logger.info("${task.principal.name} - task triggered exception. ", exception)
         }
