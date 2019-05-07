@@ -70,4 +70,8 @@ class UserService(
         init()
     }
 
+    fun getById(userId: String): User {
+        return userRepo.findById(userId).orElseGet { error("${userId} not found") }
+    }
+
 }

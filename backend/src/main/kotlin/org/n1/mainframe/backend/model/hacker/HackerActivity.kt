@@ -8,7 +8,7 @@ enum class HackerActivityType {
 
 class HackerActivity(
         val clientId: String,
-        val userId: String,
+        val userName: String,
         val type: HackerActivityType,
         val id: String
 )

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class ScanService(val scanRepo: ScanRepo) {
     fun getById(scanId: String): Scan {
-        return scanRepo.findById(scanId).orElseGet { throw IllegalArgumentException("${scanId} not found") }
+        return scanRepo.findById(scanId).orElseGet { error("${scanId} not found") }
     }
 
     fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>): String {

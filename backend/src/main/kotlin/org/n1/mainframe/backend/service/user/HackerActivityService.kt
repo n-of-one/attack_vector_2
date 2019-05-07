@@ -13,19 +13,15 @@ class HackerActivityService {
 
     val hackerActivitiesById = HashMap<String, HackerActivity>()
 
-    fun getActivityByUserId(userId: String): HackerActivity? {
-        return hackerActivitiesById[userId]
-    }
-
-    fun getAllForScan(scanId: String): Collection<HackerActivity> {
-        return hackerActivitiesById.values.filter { it.type == HackerActivityType.SCANNING && it.id == scanId }
+    fun getAll(type: HackerActivityType, id: String): Collection<HackerActivity> {
+        return hackerActivitiesById.values.filter { it.type == HackerActivityType.SCANNING && it.id == id }
     }
 
     fun startActivityOnline(principal: Principal) {
         val clientId = toClientId(principal)
-        val userId = toUserId(principal)
-        checkOneActivity(userId, clientId)
-        hackerActivitiesById[userId] = HackerActivity(userId = userId, type = HackerActivityType.ONLINE, id = "-", clientId = clientId)
+        val userName = toUserName(principal)
+        checkOneActivity(userName, clientId)
+        hackerActivitiesById[userName] = HackerActivity(userName = userName, type = HackerActivityType.ONLINE, id = "-", clientId = clientId)
     }
 
     private fun checkOneActivity(userId: String, clientId: String) {
@@ -37,16 +33,16 @@ class HackerActivityService {
 
     fun startActivityScanning(principal: Principal, scanId: String) {
         val clientId = toClientId(principal)
-        val userId = toUserId(principal)
-        checkOneActivity(userId, clientId)
-        hackerActivitiesById[userId] = HackerActivity(userId = userId, type = HackerActivityType.SCANNING, id = scanId, clientId = clientId)
+        val userName = toUserName(principal)
+        checkOneActivity(userName, clientId)
+        hackerActivitiesById[userName] = HackerActivity(userName = userName, type = HackerActivityType.SCANNING, id = scanId, clientId = clientId)
     }
 
     fun toClientId(principal: Principal): String {
         return split(principal)[0]
     }
 
-    fun toUserId(principal: Principal): String {
+    fun toUserName(principal: Principal): String {
         return split(principal)[1]
     }
 
@@ -58,10 +54,10 @@ class HackerActivityService {
 
     fun endActivity(principal: Principal) {
         val clientId = toClientId(principal)
-        val userId = toUserId(principal)
-        val toRemove = hackerActivitiesById[userId] ?: return
+        val userName = toUserName(principal)
+        val toRemove = hackerActivitiesById[userName] ?: return
         if (toRemove.clientId == clientId) {
-            hackerActivitiesById.remove(userId)
+            hackerActivitiesById.remove(userName)
         }
     }
 }

@@ -1,5 +1,8 @@
 package org.n1.mainframe.backend.service.scan
 
+import org.n1.mainframe.backend.model.hacker.HackerActivity
+import org.n1.mainframe.backend.model.hacker.HackerActivityType
+import org.n1.mainframe.backend.model.hacker.HackerPresence
 import org.n1.mainframe.backend.model.scan.NodeScan
 import org.n1.mainframe.backend.model.scan.NodeScanType
 import org.n1.mainframe.backend.model.scan.NodeStatus
@@ -14,6 +17,7 @@ import org.n1.mainframe.backend.service.site.NodeService
 import org.n1.mainframe.backend.service.site.SiteDataService
 import org.n1.mainframe.backend.service.site.SiteService
 import org.n1.mainframe.backend.service.user.HackerActivityService
+import org.n1.mainframe.backend.service.user.HackerService
 import org.n1.mainframe.backend.util.s
 import org.springframework.stereotype.Service
 import java.security.Principal
@@ -28,7 +32,8 @@ class ScanningService(val scanService: ScanService,
                       val stompService: StompService,
                       val nodeService: NodeService,
                       val connectionService: ConnectionService,
-                      val hackerActivityService: HackerActivityService) {
+                      val hackerActivityService: HackerActivityService,
+                      val hackerService: HackerService) {
 
     data class ScanResponse(val scanId: String?, val message: NotyMessage?)
 
@@ -103,17 +108,17 @@ class ScanningService(val scanService: ScanService,
     }
 
 
-    // --- //
-
-    data class ScanAndSite(val scan: Scan, val site: SiteFull)
+    data class ScanAndSite(val scan: Scan, val site: SiteFull, val users: List<HackerPresence>)
 
     fun enterScan(scanId: String, principal: Principal) {
         hackerActivityService.startActivityScanning(principal, scanId)
 
         val scan = scanService.getById(scanId)
         val siteFull = siteService.getSiteFull(scan.siteId)
+        val userPresence = hackerService.getUserPresence(HackerActivityType.SCANNING, scan.id)
 
-        val scanAndSite = ScanAndSite(scan, siteFull)
+
+        val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
         stompService.toUser(principal, ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 

@@ -1,5 +1,5 @@
 import webstomp from 'webstomp-client';
-import {notify, notify_fatal, notify_server_error} from "../common/Notification";
+import {notify, notify_fatal} from "../common/Notification";
 import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./ScanActions";
 import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/CommonActions";
@@ -18,32 +18,32 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
     let url = protocol + "://" + hostName + ":" + port + "/attack_vector_websocket";
 
 
-    let client = webstomp.client(url, {debug:false, heartbeat: {incoming: 0, outgoing: 0}});
+    let client = webstomp.client(url, {debug: false, heartbeat: {incoming: 0, outgoing: 0}});
 
     let onWsOpen = (event) => {
         let userId = event.headers["user-name"];
         // notify_neutral('Status','Connection with server established (' + userName + ")");
-        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId });
+        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId});
         dispatch({type: SET_USER_ID, userId: userId});
 
         setupHeartbeat(developmentServer, client);
         client.subscribe('/topic/scan/' + scanId, handleEvent);
         client.subscribe('/topic/site/' + siteId, handleEvent);
-        client.subscribe('/user/reply', handleEvent );
-        client.subscribe('/user/noty', handleServerNoty );
+        client.subscribe('/user/reply', handleEvent);
+        client.subscribe('/user/noty', handleServerNoty);
         callback(true);
     };
 
     const onWsConnectError = (event) => {
         notify_fatal('Connection with server lost. Please refresh browser.');
-        dispatch({type: TERMINAL_RECEIVE, data: "[b warn]Connection with server lost. Please refresh browser." });
+        dispatch({type: TERMINAL_RECEIVE, data: "[b warn]Connection with server lost. Please refresh browser."});
         // callback(false);
     };
 
     const handleEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
 
-        if ( body.type === SERVER_ERROR) {
+        if (body.type === SERVER_ERROR) {
             let event = {...body, globalState: store.getState()};
             store.dispatch(event);
             notify_fatal(body.data.message);
