@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.web.rest
 
-import org.n1.mainframe.backend.model.site.SiteData
 import org.n1.mainframe.backend.service.EditorService
 import org.n1.mainframe.backend.service.site.SiteDataService
 import org.springframework.web.bind.annotation.*

@@ -1,5 +1,5 @@
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE} from "./TerminalActions";
-import {SERVER_FATAL} from "../CommonActions";
+import {SERVER_ERROR} from "../CommonActions";
 
 const LINE_LIMIT = 100;
 
@@ -33,8 +33,8 @@ export default (terminal = defaultState, action) => {
             return handlePressKey(terminal, action);
         case TERMINAL_SUBMIT:
             return handlePressEnter(terminal, action);
-        case SERVER_FATAL:
-            return handleServerFatal(terminal, action);
+        case SERVER_ERROR:
+            return handleServerError(terminal, action);
         default:
             return terminal;
     }
@@ -44,8 +44,8 @@ function processTick(terminal) {
     if (!terminal.receiving) {
         return terminal;
     }
-    if (terminal.receivingLine === null && terminal.receiveBuffer.length === 0 ) {
-        return { ...terminal, receiving: false };
+    if (terminal.receivingLine === null && terminal.receiveBuffer.length === 0) {
+        return {...terminal, receiving: false};
     }
 
     let renderingLine = (terminal.renderingLine) ? terminal.renderingLine : {type: "text", data: ""};
@@ -152,12 +152,24 @@ let limitLines = (lines) => {
     return lines;
 };
 
-let handleServerFatal = (terminal, action) => {
+let handleServerError = (terminal, action) => {
+    const retryLines = (action.data.recoverable) ? [
+            {type: "text", data: " "},
+            {type: "text", data: "[warn b]A server error occurred. Please refresh browser."}]
+        : [
+            {type: "text", data: " "},
+            {type: "text", data: "[warn b]A fatal server error occurred."}];
+
+
+    const errorLines = [
+        {type: "text", data: " "},
+        {type: "text", data: "Details: " + action.data.message}
+    ];
     return {
         ...terminal,
         input: "",
         receiveInput: null,
-        receiveBuffer: [...terminal.receiveBuffer, {type: "text", data: " "}, {type: "text", data: "[warn b]" + action.data}],
+        receiveBuffer: [...terminal.receiveBuffer, ...retryLines, ...errorLines],
         receiving: true,
         readonly: true
     };

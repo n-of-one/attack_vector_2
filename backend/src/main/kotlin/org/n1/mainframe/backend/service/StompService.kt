@@ -40,13 +40,7 @@ class StompService(
 
     fun toUser(principal: Principal, message: NotyMessage) {
         simulateNonLocalhost()
-        val event = ReduxEvent(ReduxActions.SERVER_NOTIFICATION, message)
-        stompTemplate.convertAndSendToUser(principal.name, "/reply", event)
-    }
-
-    fun errorToUser(principal: Principal, message: NotyMessage) {
-        simulateNonLocalhost()
-        stompTemplate.convertAndSendToUser(principal.name, "/error", message)
+        stompTemplate.convertAndSendToUser(principal.name, "/noty", message)
     }
 
     fun terminalReceive(principal: Principal, vararg lines: String) {

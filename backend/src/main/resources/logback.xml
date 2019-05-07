@@ -7,13 +7,10 @@
             <pattern>
                 %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %cyan(%logger{16}) - %m%n%rEx{full,
                 java.lang.reflect.Method,
+                jdk.internal.reflect,
                 org.apache.catalina,
                 org.eclipse.jetty,
-                org.springframework.aop,
-                org.springframework.security,
-                org.springframework.transaction,
-                org.springframework.web,
-                org.springframework.beans,
+                org.springframework,
                 org.apache.tomcat,
                 org.apache.coyote,
                 javax.servlet,
@@ -22,7 +19,8 @@
                 sun.reflect,
                 net.sf.cglib,
                 java.lang.Thread,
-                ByCGLIB
+                ByCGLIB,
+                java.util.concurrent.ThreadPoolExecutor
                 }
             </pattern>
         </encoder>

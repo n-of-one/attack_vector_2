@@ -154,7 +154,7 @@ class Terminal extends Component {
 
     render() {
         return (
-            <div className="terminalPanel scrollbar" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
+            <div className="terminalPanel terminal_scrollbar" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
                 {this.state.lines.map((line, index) => this.renderLine(line, index))}
                 {this.renderRenderingLine()}
                 {this.renderInput()}

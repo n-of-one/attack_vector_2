@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.service.user
 
-import mu.KLogging
 import org.n1.mainframe.backend.model.hacker.HackerActivity
 import org.n1.mainframe.backend.model.hacker.HackerActivityType
 import org.n1.mainframe.backend.util.FatalException
@@ -10,7 +9,7 @@ import java.security.Principal
 @Service
 class HackerActivityService {
 
-    companion object: KLogging()
+//    companion object: KLogging()
 
     val hackerActivitiesById = HashMap<String, HackerActivity>()
 
@@ -32,7 +31,7 @@ class HackerActivityService {
     private fun checkOneActivity(userId: String, clientId: String) {
         val existingAction = hackerActivitiesById[userId]
         if (existingAction != null && existingAction.clientId != clientId) {
-            throw FatalException("Please close this browser tab: hackers can only perform one activity at a time.")
+            throw FatalException("Please close this browser tab, hackers can only perform one activity at a time.")
         }
     }
 
@@ -64,11 +63,5 @@ class HackerActivityService {
         if (toRemove.clientId == clientId) {
             hackerActivitiesById.remove(userId)
         }
-    }
-
-    fun display() {
-        hackerActivitiesById.values
-                .sortedBy { it.clientId }
-                .forEach { logger.debug { "${it.clientId}:${it.userId} - ${it.type} ${it.id}" } }
     }
 }

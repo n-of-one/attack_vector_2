@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.config
 
 import mu.KLogging
 import org.n1.mainframe.backend.service.user.HackerActivityService
+import org.n1.mainframe.backend.util.FatalException
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.config.ChannelRegistration
@@ -40,23 +41,28 @@ class StompConfig(
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration?) {
-        registration!!.interceptors(StompMessageLogInterceptor(hackerActivityService))
+        registration!!.interceptors(StompMessageLogInterceptor())
     }
 
     @EventListener
     fun handleSubscribeEvent(event: SessionSubscribeEvent) {
-        logger.info{ "<==> handleSubscribeEvent: username=" + event.user!!.name + ", event=" + event }
+        logger.debug{ "<==> handleSubscribeEvent: connection=${event.user!!.name} ${event.message.headers["nativeHeaders"]}" }
     }
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
-        hackerActivityService.startActivityOnline(event.user!!)
-        logger.info{ "===> handleConnectEvent: username=" + event.user!!.name + ", event=" + event }
+        try {
+            hackerActivityService.startActivityOnline(event.user!!)
+            logger.debug{ "===> handleConnectEvent: connection=${event.user!!.name}" }
+        }
+        catch(ignore: FatalException) {
+            logger.info("=!=> handleConnectEvent: username=${event.user!!.name} - duplicate session detected for user, will close momentarily.")
+        }
     }
 
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
         hackerActivityService.endActivity(event.user!!)
-        logger.info{ "<=== handleDisconnectEvent: username=" + event.user!!.name + ", event=" + event }
+        logger.debug{ "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
     }
 }

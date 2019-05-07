@@ -1,8 +1,8 @@
 import webstomp from 'webstomp-client';
-import {notify, notify_fatal} from "../common/Notification";
+import {notify, notify_fatal, notify_server_error} from "../common/Notification";
 import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./ScanActions";
-import {SERVER_FATAL, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/CommonActions";
+import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/CommonActions";
 import {orderByDistance} from "./lib/NodeDistance";
 
 let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
@@ -30,7 +30,7 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
         client.subscribe('/topic/scan/' + scanId, handleEvent);
         client.subscribe('/topic/site/' + siteId, handleEvent);
         client.subscribe('/user/reply', handleEvent );
-        client.subscribe('/user/error', handleServerError );
+        client.subscribe('/user/noty', handleServerNoty );
         callback(true);
     };
 
@@ -43,10 +43,11 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
     const handleEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
 
-        if ( body.type === SERVER_FATAL) {
-            notify_fatal(body.data);
+        if ( body.type === SERVER_ERROR) {
             let event = {...body, globalState: store.getState()};
             store.dispatch(event);
+            notify_fatal(body.data.message);
+            client.disconnect();
             return;
         }
 
@@ -78,7 +79,7 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
         store.dispatch(event);
     };
 
-    const handleServerError = (wsMessage) => {
+    const handleServerNoty = (wsMessage) => {
         let body = JSON.parse(wsMessage.body);
         notify(body);
     };

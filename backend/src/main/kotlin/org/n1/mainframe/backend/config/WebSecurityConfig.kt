@@ -2,7 +2,6 @@ package org.n1.mainframe.backend.config
 
 import org.n1.mainframe.backend.config.security.JwtAuthenticationFilter
 import org.n1.mainframe.backend.model.user.UserRole
-import org.n1.mainframe.backend.model.user.enums.ROLE_USER
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity

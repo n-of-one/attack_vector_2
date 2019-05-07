@@ -1,7 +1,7 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal, notify_neutral} from "../common/Notification";
 import {SERVER_SITE_FULL} from "./EditorActions";
-import {SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
+import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
 
 let initWebSocket = (store, siteId, callback) => {
 
@@ -25,7 +25,7 @@ let initWebSocket = (store, siteId, callback) => {
         setupHeartbeat(developmentServer, client);
         client.subscribe('/topic/site/' + siteId, handleEvent);
         client.subscribe('/user/reply', handleEvent );
-        client.subscribe('/user/error', handleServerError );
+        client.subscribe('/user/noty', handleServerNoty );
         callback(true);
         // document.cookie = oldCookie;
     };
@@ -37,6 +37,16 @@ let initWebSocket = (store, siteId, callback) => {
 
     const handleEvent = (wsMessage) => {
         const body = JSON.parse(wsMessage.body);
+
+        if ( body.type === SERVER_ERROR) {
+            let event = {...body, globalState: store.getState()};
+            store.dispatch(event);
+            notify_fatal(body.data.message);
+            client.disconnect();
+            callback(false);
+            return;
+        }
+
         if (body.type === SERVER_NOTIFICATION) {
             notify(body.data);
             return;
@@ -62,7 +72,7 @@ let initWebSocket = (store, siteId, callback) => {
         store.dispatch(event);
     };
 
-    const handleServerError = (wsMessage) => {
+    const handleServerNoty = (wsMessage) => {
         let body = JSON.parse(wsMessage.body);
         notify(body);
     };
