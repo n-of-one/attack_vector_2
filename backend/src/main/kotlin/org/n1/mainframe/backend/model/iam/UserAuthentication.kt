@@ -1,10 +1,15 @@
-package org.n1.mainframe.backend.model.user
+package org.n1.mainframe.backend.model.iam
 
+import org.n1.mainframe.backend.model.user.User
+import org.n1.mainframe.backend.util.createId
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
 class UserAuthentication(val user: User): Authentication {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+
+    var clientId: String? = null
+
+    override fun getAuthorities(): MutableCollection<GrantedAuthority> {
         return user.type.authorities.toMutableList()
     }
 
@@ -13,7 +18,7 @@ class UserAuthentication(val user: User): Authentication {
     }
 
     override fun getName(): String {
-        return user.userName
+        return if (clientId != null) "${clientId}:${user.userName}" else user.userName
     }
 
     override fun getCredentials(): Any {
@@ -30,5 +35,12 @@ class UserAuthentication(val user: User): Authentication {
 
     override fun getDetails(): Any {
         return user
+    }
+
+    fun generateClientId() {
+        if (this.clientId != null) {
+            error("Client ID already set, cannot overwrite. Current value: ${this.clientId}")
+        }
+        this.clientId = createId("client" )
     }
 }

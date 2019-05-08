@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.service.user
 
 import org.n1.mainframe.backend.model.hacker.HackerActivityType
 import org.n1.mainframe.backend.model.hacker.HackerPresence
+import org.n1.mainframe.backend.model.user.User
 import org.springframework.stereotype.Service
 
 @Service
@@ -10,12 +11,11 @@ class HackerService(val userService: UserService,
 
     fun getUserPresence(type: HackerActivityType, id: String): List<HackerPresence> {
         return hackerActivityService.getAll(type, id)
-                .map{ activity -> createPresence(activity.userName)}
+                .map{ activity -> createPresence(activity.authentication.user)}
 
     }
 
-    private fun createPresence(userName: String): HackerPresence {
-        val user = userService.getUserByUserName(userName)
-        return HackerPresence(user.id, userName, "SCORPION")
+    private fun createPresence(user: User): HackerPresence {
+        return HackerPresence(user.id, user.userName, "SCORPION")
     }
 }

@@ -1,7 +1,7 @@
 package org.n1.mainframe.backend.config.security
 
 import mu.KLogging
-import org.n1.mainframe.backend.model.user.UserAuthentication
+import org.n1.mainframe.backend.model.iam.UserAuthentication
 import org.n1.mainframe.backend.service.user.UserService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component

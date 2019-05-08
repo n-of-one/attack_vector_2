@@ -1,4 +1,4 @@
-package org.n1.mainframe.backend.model.user
+package org.n1.mainframe.backend.model.iam
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
