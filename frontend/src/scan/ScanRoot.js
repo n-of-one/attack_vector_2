@@ -12,7 +12,7 @@ import {notify_fatal} from "../common/Notification";
 import {ENTER_SCAN} from "./ScanActions";
 import {SCAN} from "../hacker/HackerPages";
 import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "../common/terminal/TerminalActions";
-import {ENTER_KEY, F12_KEY} from "../KeyCodes";
+import {ENTER_KEY, F12_KEY, F2_KEY} from "../KeyCodes";
 
 class ScanRoot extends Component {
 
@@ -45,9 +45,11 @@ class ScanRoot extends Component {
 
     handleKeyDown(event) {
         let {keyCode, key} = event;
-        if (keyCode !== F12_KEY) {
-            event.preventDefault();
+        if (keyCode >= F2_KEY && keyCode <= F12_KEY) {
+            return;
         }
+
+        event.preventDefault();
         if (keyCode === ENTER_KEY) {
             this.store.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.store.getState().terminal.input, terminalId: "main"});
         }
