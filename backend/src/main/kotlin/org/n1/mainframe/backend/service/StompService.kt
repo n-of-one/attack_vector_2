@@ -43,8 +43,13 @@ class StompService(
         stompTemplate.convertAndSendToUser(principal.name, "/noty", message)
     }
 
+    data class TerminalReceive(val terminalId: String, val lines: Array<out String>)
     fun terminalReceive(principal: Principal, vararg lines: String) {
-        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, lines)
+        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
+    }
+
+    fun terminalReceive(terminalId: String, principal: Principal, vararg lines: String) {
+        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }
 
 }

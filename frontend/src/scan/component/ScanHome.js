@@ -9,18 +9,21 @@ import ScanCanvasPanel from "./ScanCanvasPanel";
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        dispatch: dispatch,
     }
 };
 let mapStateToProps = (state) => {
     return {
         terminal: state.terminal,
+        messageTerminal: state.messageTerminal,
     };
 };
 
 
 
+
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({terminal}) => {
+    ({terminal, messageTerminal, dispatch}) => {
 
         return (
             <span>
@@ -39,10 +42,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
 
                 <div className="row">
-                    <div className="col-lg-2">&nbsp;
+                    <div className="col-lg-2">
+                        <Terminal terminal={messageTerminal} dispatch={dispatch} height="300px" />
                     </div>
                     <div className="col-lg-5">
-                        <Terminal terminal={terminal}/>
+                        <Terminal terminal={terminal} dispatch={dispatch} height="780px"/>
                     </div>
                     <div className="col-lg-5 rightPane">
                         <ScanCanvasPanel />

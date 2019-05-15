@@ -7,7 +7,7 @@ const BACKSPACE = 8;
 const TAB = 9;
 
 
-const defaultState = {
+const defaultStateTemplate = {
     lines: [], // lines that are fully shown
     prompt: "⇋ ",
     readonly: false, // only allow user input if true
@@ -16,29 +16,32 @@ const defaultState = {
     receivingLine: null, // part of the current rendering line that is waiting to be shown
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
     receiving: true,   // true if there are lines waiting to be shown, or in the process of being shown.
-
+//
 };
 
 
-export default (terminal = defaultState, action) => {
+const createTerminalReducer = (id, config) => {
+    let defaultState = { ...defaultStateTemplate, ...config, id: id};
 
-    switch (action.type) {
-        case TERMINAL_TICK:
-            return processTick(processTick(processTick(processTick(terminal))));
-        case TERMINAL_RECEIVE:
-            return receive(terminal, action);
-        case SERVER_TERMINAL_RECEIVE:
-            return receiveFromServer(terminal, action);
-        case TERMINAL_KEY_PRESS:
-            return handlePressKey(terminal, action);
-        case TERMINAL_SUBMIT:
-            return handlePressEnter(terminal, action);
-        case SERVER_ERROR:
-            return handleServerError(terminal, action);
-        default:
-            return terminal;
-    }
-}
+    return (terminal = defaultState, action) => {
+        switch (action.type) {
+            case TERMINAL_TICK:
+                return processTick(processTick(processTick(processTick(terminal))));
+            case TERMINAL_RECEIVE:
+                return receive(terminal, action);
+            case SERVER_TERMINAL_RECEIVE:
+                return receiveFromServer(terminal, action);
+            case TERMINAL_KEY_PRESS:
+                return handlePressKey(terminal, action);
+            case TERMINAL_SUBMIT:
+                return handlePressEnter(terminal, action);
+            case SERVER_ERROR:
+                return handleServerError(terminal, action);
+            default:
+                return terminal;
+        }
+    };
+};
 
 function processTick(terminal) {
     if (!terminal.receiving) {
@@ -93,6 +96,10 @@ function processTick(terminal) {
 
 
 let receive = (terminal, action) => {
+    if (action.terminalId !== terminal.id) {
+        return terminal
+    }
+
     const buffer = (terminal.receiveBuffer) ? terminal.receiveBuffer : [];
 
     const line = {type: "text", data: action.data};
@@ -105,7 +112,11 @@ let receive = (terminal, action) => {
 };
 
 let receiveFromServer = (terminal, action) => {
-    const lines = action.data.map((line) => {
+    if (action.data.terminalId !== terminal.id) {
+        return terminal;
+    }
+
+    const lines = action.data.lines.map((line) => {
         return {type: "text", data: line}
     });
 
@@ -139,6 +150,10 @@ let determineInput = (input, keyCode, key) => {
 };
 
 let handlePressEnter = (terminal, action) => {
+    if (action.terminalId !== terminal.id) {
+        return terminal;
+    }
+
     let line = terminal.prompt + action.command;
     let lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
     return {...terminal, lines: lines, input: "", receiving: true};
@@ -174,3 +189,5 @@ let handleServerError = (terminal, action) => {
         readonly: true
     };
 };
+
+export default createTerminalReducer;

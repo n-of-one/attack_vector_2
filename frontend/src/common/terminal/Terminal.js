@@ -1,29 +1,18 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "./TerminalActions";
-
-const ENTER_KEY = 13;
-
-let terminalIntervalId = null;
 
 class Terminal extends Component {
 
     state = {};
     dispatch = null;
     bottomRef = React.createRef();
+    height = "200px";
 
     constructor(props) {
         super(props);
         this.state = {...props.terminal};
+        this.height = props.height;
         this.dispatch = props.dispatch;
-
-        if (!terminalIntervalId) {
-            terminalIntervalId = setInterval(() => {
-
-
-                this.dispatch({type: TERMINAL_TICK});
-            }, 10)
-        }
+        this.id = props.id;
     }
 
     componentWillReceiveProps(props) {
@@ -43,16 +32,7 @@ class Terminal extends Component {
     }
 
 
-    handleKeyDown(event) {
-        let {keyCode, key} = event;
-        event.preventDefault();
-        if (keyCode !== ENTER_KEY) {
-            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode});
-        }
-        else {
-            this.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.state.input});
-        }
-    }
+
 
     renderLine(line, index) {
         let lineClasses = (line.class) ? line.class : [];
@@ -154,7 +134,7 @@ class Terminal extends Component {
 
     render() {
         return (
-            <div className="terminalPanel terminal_scrollbar" onKeyDown={event => this.handleKeyDown(event)} tabIndex="0">
+            <div className="terminalPanel terminal_scrollbar" style={{height: this.height}} >
                 {this.state.lines.map((line, index) => this.renderLine(line, index))}
                 {this.renderRenderingLine()}
                 {this.renderInput()}
@@ -164,16 +144,18 @@ class Terminal extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        dispatch: dispatch
-    };
-};
+export default Terminal;
 
-let mapStateToProps = (state) => {
-    return {
-        terminal: state.terminal,
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Terminal);
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//         dispatch: dispatch
+//     };
+// };
+//
+// let mapStateToProps = (state) => {
+//     return {
+//         terminal: state.terminal,
+//     };
+// };
+//
+// export default connect(mapStateToProps, mapDispatchToProps)(Terminal);

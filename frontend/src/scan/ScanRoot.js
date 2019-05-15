@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Provider } from 'react-redux'
+import React, {Component} from 'react'
+import {Provider} from 'react-redux'
 import initWebSocket from "./ScanWebSocket"
 import createScanSagas from "./saga/ScanRootSaga";
 import createSagaMiddleware from 'redux-saga'
@@ -11,6 +11,8 @@ import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
 import {ENTER_SCAN} from "./ScanActions";
 import {SCAN} from "../hacker/HackerPages";
+import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "../common/terminal/TerminalActions";
+import {ENTER_KEY, F12_KEY} from "../KeyCodes";
 
 class ScanRoot extends Component {
 
@@ -29,10 +31,29 @@ class ScanRoot extends Component {
         post({
             url: "/api/scan/",
             body: {id: scanId},
-            ok: ({siteId}) => { this.init(scanId, siteId) },
-            notok: () => { notify_fatal("There was a server problem, please try again."); },
-            error: () => { notify_fatal("Connection to server failed, unable to continue."); }
+            ok: ({siteId}) => {
+                this.init(scanId, siteId)
+            },
+            notok: () => {
+                notify_fatal("There was a server problem, please try again.");
+            },
+            error: () => {
+                notify_fatal("Connection to server failed, unable to continue.");
+            }
         });
+    }
+
+    handleKeyDown(event) {
+        let {keyCode, key} = event;
+        if (keyCode !== F12_KEY) {
+            event.preventDefault();
+        }
+        if (keyCode === ENTER_KEY) {
+            this.store.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.store.getState().terminal.input, terminalId: "main"});
+        }
+        else {
+            this.store.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: "main"});
+        }
     }
 
     init(scanId, siteId) {
@@ -41,10 +62,19 @@ class ScanRoot extends Component {
         let store = createStore(scanReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         let webSocketInitialized = (success) => {
-            this.setState( { initSuccess: success });
+            this.setState({initSuccess: success});
             if (success) {
                 store.dispatch({type: ENTER_SCAN, scanId: scanId});
             }
+
+            setInterval(() => {
+                this.store.dispatch({type: TERMINAL_TICK});
+            }, 10);
+
+            window.onkeydown= (event) => {
+                this.handleKeyDown(event);
+            }
+
         };
         webSocketInitialized.bind(this);
         let stompClient = initWebSocket(store, scanId, siteId, webSocketInitialized, store.dispatch);
@@ -57,22 +87,22 @@ class ScanRoot extends Component {
     renderIfAuthenticated() {
         document.body.style.backgroundColor = "#222222";
 
-        if (this.state.initSuccess === null){
+        if (this.state.initSuccess === null) {
             // this.init();
             return this.renderFake();
         }
         if (this.state.initSuccess === false) {
-            return <h1 className="text">{ this.errorMessage }</h1>;
+            return <h1 className="text">{this.errorMessage}</h1>;
         }
         return (
             <Provider store={this.store}>
-                <ScanHome />
+                <ScanHome/>
             </Provider>
         );
     }
 
     render() {
-        return(
+        return (
             <RequiresRole requires="ROLE_HACKER">
                 {this.renderIfAuthenticated()}
             </RequiresRole>
@@ -109,7 +139,7 @@ class ScanRoot extends Component {
                 </div>
 
             </div>
-            {/*<MenuBar/>*/}
+                {/*<MenuBar/>*/}
         </span>
         )
     }
