@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.service.scan
 
-import org.n1.mainframe.backend.model.hacker.HackerActivity
 import org.n1.mainframe.backend.model.hacker.HackerActivityType
 import org.n1.mainframe.backend.model.hacker.HackerPresence
 import org.n1.mainframe.backend.model.scan.NodeScan
@@ -153,18 +152,26 @@ class ScanningService(val scanService: ScanService,
         stompService.terminalReceive(principal, "Unknown command, try [i]help[/].")
     }
 
+    private fun reportNodeNotFound(networkId: String, principal: Principal) {
+        stompService.terminalReceive(principal, "Node [info]${networkId}[/] not found.")
+    }
+
     private fun launchProbeAtNode(scanId: String, networkId: String, principal: Principal) {
         val scan = scanService.getById(scanId)
         val node = nodeService.findByNetworkId(scan.siteId, networkId)
         if (node == null) {
-            stompService.terminalReceive(principal, "Node [info]${networkId}[/] not found.")
+            reportNodeNotFound(networkId, principal)
             return
         }
 
         val traverseNodesById = createTraverseNodesWithDistance(scan)
-
         val targetNode = traverseNodesById[node.id]!!
-        val scanType = determineNodeScanType(targetNode, scan) ?: NodeScanType.SCAN_NODE_DEEP
+        val status = scan.nodeScanById[targetNode.id]!!.status
+        if (status == NodeStatus.UNDISCOVERED) {
+            reportNodeNotFound(networkId, principal)
+            return
+        }
+        val scanType = determineNodeScanType(status) ?: NodeScanType.SCAN_NODE_DEEP
         val path = createNodePath(targetNode)
         val probeAction = ProbeAction(userId = principal.name, path = path, scanType = scanType, autoScan = false)
         stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
@@ -189,19 +196,19 @@ class ScanningService(val scanService: ScanService,
 
     fun createProbeAction(scan: Scan, autoScan: Boolean, principal: Principal): ProbeAction? {
         val targetNode = findProbeTarget(scan)
-        val scanType = determineNodeScanType(targetNode, scan) ?: return null
+        val status = scan.nodeScanById[targetNode.id]!!.status
+        val scanType = determineNodeScanType(status) ?: return null
         val path = createNodePath(targetNode)
         return ProbeAction(userId = principal.name, path = path, scanType = scanType, autoScan = autoScan)
     }
 
-    private fun determineNodeScanType(node: TraverseNode, scan: Scan): NodeScanType? {
-        val status = scan.nodeScanById[node.id]!!.status
+    private fun determineNodeScanType(status: NodeStatus): NodeScanType? {
         return when (status) {
             NodeStatus.DISCOVERED -> NodeScanType.SCAN_NODE_INITIAL
             NodeStatus.TYPE -> NodeScanType.SCAN_CONNECTIONS
             NodeStatus.CONNECTIONS -> NodeScanType.SCAN_NODE_DEEP
             NodeStatus.SERVICES -> null
-            NodeStatus.UNDISCOVERED -> error("Cannot scan a node that has not yet been discovered. ${node.id}")
+            NodeStatus.UNDISCOVERED -> error("Cannot scan a node that has not yet been discovered.")
         }
     }
 
