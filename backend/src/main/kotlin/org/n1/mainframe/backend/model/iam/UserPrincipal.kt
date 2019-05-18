@@ -5,9 +5,12 @@ import org.n1.mainframe.backend.util.createId
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
-class UserAuthentication(val user: User): Authentication {
+class UserPrincipal(val user: User): Authentication {
 
     var clientId: String? = null
+
+    val userId: String
+        get() = user.id
 
     override fun getAuthorities(): MutableCollection<GrantedAuthority> {
         return user.type.authorities.toMutableList()
@@ -18,8 +21,9 @@ class UserAuthentication(val user: User): Authentication {
     }
 
     override fun getName(): String {
-        return if (clientId != null) "${clientId}:${user.userName}" else user.userName
+        return user.id
     }
+
 
     override fun getCredentials(): Any {
         error("not supported")

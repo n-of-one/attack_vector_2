@@ -1,6 +1,7 @@
 package org.n1.mainframe.backend.config
 
 import mu.KLogging
+import org.n1.mainframe.backend.model.iam.UserPrincipal
 import org.n1.mainframe.backend.service.user.HackerActivityService
 import org.n1.mainframe.backend.util.FatalException
 import org.springframework.context.annotation.Configuration
@@ -52,7 +53,7 @@ class StompConfig(
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
         try {
-            hackerActivityService.startActivityOnline(event.user!!)
+            hackerActivityService.startActivityOnline(event.user!! as UserPrincipal)
             logger.debug{ "===> handleConnectEvent: connection=${event.user!!.name}" }
         }
         catch(ignore: FatalException) {
@@ -62,7 +63,7 @@ class StompConfig(
 
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
-        hackerActivityService.endActivity(event.user!!)
+        hackerActivityService.endActivity(event.user!! as UserPrincipal)
         logger.debug{ "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
     }
 }

@@ -47,7 +47,7 @@ class EditorController(
 
     @MessageMapping("/editSiteData")
     fun editSiteData(command: EditSiteData, principal: Principal) {
-        executor.run(principal) { editorService.update(command, principal) }
+        executor.run(principal) { editorService.update(command) }
     }
 
     data class DeleteCommand(val siteId: String = "", val nodeId: String = "" )

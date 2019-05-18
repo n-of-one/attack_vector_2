@@ -7,7 +7,6 @@ import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
 import org.n1.mainframe.backend.model.ui.site.command.MoveNode
 import org.n1.mainframe.backend.service.site.*
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 @Service
 class EditorService(
@@ -52,8 +51,8 @@ class EditorService(
     }
 
 
-    fun update(command: EditSiteData, principal: Principal) {
-        siteDataService.update(command, principal)
+    fun update(command: EditSiteData) {
+        siteDataService.update(command)
     }
 
     fun moveNode(command: MoveNode) {

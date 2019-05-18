@@ -5,11 +5,11 @@ import org.n1.mainframe.backend.model.ui.ReduxEvent
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 @Service
 class StompService(
-        val stompTemplate: SimpMessageSendingOperations) {
+        val stompTemplate: SimpMessageSendingOperations,
+        val principalService: PrincipalService) {
 
     @Value("\${ENVIRONMENT ?: default}")
     lateinit var environment: String
@@ -32,24 +32,26 @@ class StompService(
         stompTemplate.convertAndSend("/topic/scan/${scanId}", event)
     }
 
-    fun toUser(principal: Principal, actionType: ReduxActions, data: Any) {
+    fun toUser(actionType: ReduxActions, data: Any) {
         simulateNonLocalhost()
         val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSendToUser(principal.name, "/reply", event)
+        val userId = principalService.get().userId
+        stompTemplate.convertAndSendToUser(userId, "/reply", event)
     }
 
-    fun toUser(principal: Principal, message: NotyMessage) {
+    fun toUser(message: NotyMessage) {
         simulateNonLocalhost()
-        stompTemplate.convertAndSendToUser(principal.name, "/noty", message)
+        val userId = principalService.get().userId
+        stompTemplate.convertAndSendToUser(userId, "/noty", message)
     }
 
     data class TerminalReceive(val terminalId: String, val lines: Array<out String>)
-    fun terminalReceive(principal: Principal, vararg lines: String) {
-        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
+    fun terminalReceive(vararg lines: String) {
+        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
     }
 
-    fun terminalReceive(terminalId: String, principal: Principal, vararg lines: String) {
-        toUser(principal, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
+    fun terminalReceiveForId(terminalId: String, vararg lines: String) {
+        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }
 
 }

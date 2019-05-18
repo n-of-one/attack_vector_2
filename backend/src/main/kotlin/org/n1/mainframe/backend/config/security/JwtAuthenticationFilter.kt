@@ -1,7 +1,7 @@
 package org.n1.mainframe.backend.config.security
 
 import mu.KLogging
-import org.n1.mainframe.backend.model.iam.UserAuthentication
+import org.n1.mainframe.backend.model.iam.UserPrincipal
 import org.n1.mainframe.backend.service.user.UserService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -30,7 +30,7 @@ class JwtAuthenticationFilter(
                     val userName = tokenProvider.getUserNameFromJWT(jwt)
 
                     val user = userService.getUserByUserName(userName)
-                    val authentication = UserAuthentication(user)
+                    val authentication = UserPrincipal(user)
                     SecurityContextHolder.getContext().authentication = authentication
                 }
             }

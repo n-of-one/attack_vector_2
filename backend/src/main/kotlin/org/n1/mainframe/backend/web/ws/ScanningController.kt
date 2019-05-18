@@ -25,25 +25,25 @@ class ScanningController(
 
     @MessageMapping("/scan/enterScan")
     fun siteFull(siteId: String, principal: Principal) {
-        executor.run(principal) { scanningService.enterScan(siteId, principal) }
+        executor.run(principal) { scanningService.enterScan(siteId) }
     }
 
     data class TerminalCommand(val scanId: String, val command: String)
     @MessageMapping("/scan/terminal")
     fun terminal(terminalCommand: TerminalCommand, principal: Principal) {
-        executor.run(principal) { scanTerminalService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
+        executor.run(principal) { scanTerminalService.processCommand(terminalCommand.scanId, terminalCommand.command) }
     }
 
     @MessageMapping("/scan/autoScan")
     fun autoScan(scanId: String, principal: Principal) {
-        executor.run(principal) { scanningService.autoScan(scanId, principal) }
+        executor.run(principal) { scanningService.autoScan(scanId) }
     }
 
 
     data class ProbeScanActionInput(val scanId: String, val nodeId: String, val action: NodeScanType)
     @MessageMapping("/scan/probeArrive")
     fun probeArrive(input: ProbeScanActionInput, principal: Principal) {
-        executor.run(principal) { scanningService.probeArrive(input.scanId, input.nodeId, input.action, principal) }
+        executor.run(principal) { scanningService.probeArrive(input.scanId, input.nodeId, input.action) }
     }
 //     --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 

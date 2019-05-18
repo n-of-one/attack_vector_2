@@ -1,5 +1,6 @@
 package org.n1.mainframe.backend.engine
 
+import org.n1.mainframe.backend.service.PrincipalService
 import org.n1.mainframe.backend.service.StompService
 import org.springframework.stereotype.Component
 import java.security.Principal
@@ -13,11 +14,11 @@ import javax.annotation.PreDestroy
  * in order to get Serializable isolation.
  */
 @Component
-class SerializingExecutor(stompService: StompService)  {
+class SerializingExecutor(stompService: StompService, principalService: PrincipalService)  {
 
     private val queue = LinkedBlockingQueue<Task>()
     val executorService = Executors.newSingleThreadExecutor()!!
-    val runner = TaskRunner(queue, stompService)
+    val runner = TaskRunner(queue, stompService, principalService)
 
     @PostConstruct
     fun init() {

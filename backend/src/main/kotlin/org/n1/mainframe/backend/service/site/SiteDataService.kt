@@ -9,7 +9,6 @@ import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.n1.mainframe.backend.util.createId
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 @Service
 class SiteDataService(
@@ -27,7 +26,7 @@ class SiteDataService(
     }
 
 
-    fun update(command: EditSiteData, principal: Principal) {
+    fun update(command: EditSiteData) {
         val data = siteDataRepo.findById(command.siteId).orElseThrow { throw IllegalStateException("Site ${command.siteId} not found") }
         val value = command.value
 

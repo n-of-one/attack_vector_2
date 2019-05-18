@@ -62,7 +62,7 @@ class UserService(
             return userRepo.findById(candidate)
         }
 
-        return createId("user-", ::findExisting, 9, 13)
+        return createId("user", ::findExisting)
     }
 
     fun purgeAll() {

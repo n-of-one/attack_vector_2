@@ -3,20 +3,19 @@ package org.n1.mainframe.backend.service.scan
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 @Service
 class ScanTerminalService(val scanningService: ScanningService,
                           val stompService: StompService) {
 
-    fun processCommand(scanId: String, command: String, principal: Principal) {
+    fun processCommand(scanId: String, command: String) {
         val tokens = command.split(" ")
-        processCommand(scanId, tokens, principal)
+        processCommand(scanId, tokens)
     }
 
-    fun processCommand(scanId: String, tokens: List<String>, principal: Principal) {
+    fun processCommand(scanId: String, tokens: List<String>) {
         if (tokens[0] == "help") {
-            stompService.terminalReceive(principal,
+            stompService.terminalReceive(
                     "Command options:",
                     " autoscan",
                     " scan",
@@ -26,31 +25,31 @@ class ScanTerminalService(val scanningService: ScanningService,
         }
         if (tokens[0] == "dc") {
             data class Navigate(val target: String)
-            stompService.toUser(principal, ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
+            stompService.toUser(ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
             return
         }
         if (tokens[0] == "autoscan") {
-            scanningService.launchProbe(scanId, true, principal)
+            scanningService.launchProbe(scanId, true)
             return
         }
         if (tokens[0] == "scan") {
-            processCommandScan(scanId, tokens, principal)
-            scanningService.launchProbe(scanId, false, principal)
+            processCommandScan(scanId, tokens)
             return
         }
-        stompService.terminalReceive(principal, "Unknown command, try [i]help[/].")
+        stompService.terminalReceive("Unknown command, try [i]help[/].")
     }
 
-    fun processCommandScan(scanId: String, tokens: List<String>, principal: Principal) {
+    fun processCommandScan(scanId: String, tokens: List<String>) {
         if (tokens.size == 1) {
-            scanningService.launchProbe(scanId, false, principal)
+            scanningService.launchProbe(scanId, false)
+            return
         }
         if (tokens.size == 2) {
             val networkId = tokens[1]
-            scanningService.launchProbeAtNode(scanId, networkId, principal)
+            scanningService.launchProbeAtNode(scanId, networkId)
             return
         }
-        stompService.terminalReceive(principal, "scan takes 0 or 1 arguments.")
+        stompService.terminalReceive("scan takes 0 or 1 arguments.")
     }
 
 }
