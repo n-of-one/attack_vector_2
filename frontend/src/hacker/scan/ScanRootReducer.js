@@ -1,11 +1,11 @@
 import {combineReducers} from 'redux'
-import pageReducer from "../common/menu/pageReducer";
+import pageReducer from "../../common/menu/pageReducer";
 
-import SiteReducer from "../editor/reducer/SiteDataReducer";
+import SiteReducer from "../../editor/reducer/SiteDataReducer";
 import ScanReducer from "./reducer/ScanReducer";
-import ThemeReducer from "../common/reducer/ThemeReducer";
-import UserReducer from "../common/reducer/UserReducer";
-import createTerminalReducer from "../common/terminal/TerminalReducer";
+import ThemeReducer from "../../common/reducer/ThemeReducer";
+import UserReducer from "../../common/reducer/UserReducer";
+import createTerminalReducer from "../../common/terminal/TerminalReducer";
 
 const hackerReducer = combineReducers({
     currentPage: pageReducer,

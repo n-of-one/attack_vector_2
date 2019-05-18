@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
-import MenuBar from "../../common/menu/MenuBar";
-import Terminal from "../../common/terminal/Terminal";
+import MenuBar from "../../../common/menu/MenuBar";
+import Terminal from "../../../common/terminal/Terminal";
 import ScanCanvasPanel from "./ScanCanvasPanel";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */

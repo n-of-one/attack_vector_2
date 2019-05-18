@@ -1,15 +1,15 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import initWebSocket from "./ScanWebSocket"
-import createScanSagas from "./saga/ScanRootSaga";
+import initWebSocket from "../hacker/scan/ScanWebSocket"
+import createScanSagas from "../hacker/scan/saga/ScanRootSaga";
 import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";
-import ScanHome from "./component/ScanHome";
-import scanReducer from "./ScanRootReducer";
+import ScanHome from "../hacker/scan/component/ScanHome";
+import scanReducer from "../hacker/scan/ScanRootReducer";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
-import {ENTER_SCAN} from "./ScanActions";
+import {ENTER_SCAN} from "../hacker/scan/model/ScanActions";
 import {SCAN} from "../hacker/HackerPages";
 import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "../common/terminal/TerminalActions";
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../KeyCodes";

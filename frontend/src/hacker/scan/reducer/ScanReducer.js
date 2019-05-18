@@ -1,4 +1,4 @@
-import {SERVER_SCAN_FULL} from "../ScanActions";
+import {SERVER_SCAN_FULL} from "../model/ScanActions";
 
 const defaultState = {
 

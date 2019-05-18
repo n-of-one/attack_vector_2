@@ -2,8 +2,8 @@ import {fabric} from "fabric";
 import {toType} from "../../../common/enums/NodeTypesNames";
 import Thread from "../../../common/Thread";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
-import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../ScanActions";
-import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../NodeScanTypes";
+import {AUTO_SCAN, PROBE_SCAN_NODE} from "../model/ScanActions";
+import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../model/NodeScanTypes";
 import {CONNECTIONS, DISCOVERED, FREE, SERVICES, TYPE, UNDISCOVERED} from "../../../common/enums/NodeStatus";
 import Threads from "../../../common/Threads";
 

@@ -1,4 +1,4 @@
-import scanCanvas from "../component/canvas/ScanCanvas"
+import scanCanvas from "../component/ScanCanvas"
 
 
 const createProbeSagas = (stompClient, scanId) => {

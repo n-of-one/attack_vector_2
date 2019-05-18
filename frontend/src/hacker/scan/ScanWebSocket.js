@@ -1,8 +1,8 @@
 import webstomp from 'webstomp-client';
-import {notify, notify_fatal} from "../common/Notification";
-import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
-import {SERVER_SCAN_FULL} from "./ScanActions";
-import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/enums/CommonActions";
+import {notify, notify_fatal} from "../../common/Notification";
+import {TERMINAL_RECEIVE} from "../../common/terminal/TerminalActions";
+import {SERVER_SCAN_FULL} from "./model/ScanActions";
+import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../../common/enums/CommonActions";
 import {orderByDistance} from "./lib/NodeDistance";
 
 let initWebSocket = (store, scanId, siteId, callback, dispatch) => {

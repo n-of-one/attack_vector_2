@@ -7,11 +7,11 @@ import {
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
     SERVER_UPDATE_NODE_STATUS
-} from "../ScanActions";
+} from "../model/ScanActions";
 import createScanSagas from "./ScanFullSaga";
-import {TERMINAL_SUBMIT} from "../../common/terminal/TerminalActions";
+import {TERMINAL_SUBMIT} from "../../../common/terminal/TerminalActions";
 import createProbeSagas from "./ScanProbeSaga";
-import {NAVIGATE_PAGE, SERVER_NAVIGATE_PAGE} from "../../common/enums/CommonActions";
+import {NAVIGATE_PAGE, SERVER_NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 
 const createScanRootSaga = (stompClient, scanId, siteId) => {
 
