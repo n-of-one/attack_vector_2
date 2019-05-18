@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ScanRepo : PagingAndSortingRepository<Scan, String> {
     fun findBySiteId(siteId:String ): Scan
+    fun findByIdIn(siteIds: List<String>): List<Scan>
 }

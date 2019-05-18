@@ -1,7 +1,5 @@
 package org.n1.mainframe.backend.service.scan
 
-import org.n1.mainframe.backend.model.ui.NotyMessage
-import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.n1.mainframe.backend.service.user.UserService
@@ -64,9 +62,7 @@ class ScanTerminalService(val scanningService: ScanningService,
             stompService.terminalReceive("user [info]${userName}[/] not found.")
             return
         }
-        stompService.terminalReceive("Shared scan with [info]${userName}[/].")
-        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, "From me:", "ScanShare!"))
-        stompService.toUser(NotyMessage(NotyType.NEUTRAL, "From me:", "ScanShare!"))
+        scanningService.shareScan(scanId, user)
 
     }
 

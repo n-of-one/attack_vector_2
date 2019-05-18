@@ -10,6 +10,7 @@ import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.model.ui.site.SiteFull
+import org.n1.mainframe.backend.model.user.User
 import org.n1.mainframe.backend.service.PrincipalService
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
@@ -42,8 +43,8 @@ class ScanningService(val scanService: ScanService,
     fun scanSite(siteName: String): ScanResponse {
         val siteData = siteDataService.findByName(siteName) ?: return ScanResponse(null, NotyMessage(NotyType.ERROR, "Error", "Site '${siteName}' not found"))
         val nodeScans = createNodeScans(siteData.id)
-        val id = scanService.createScan(siteData, nodeScans)
-        return ScanResponse(id, null)
+        val scanId = scanService.createScan(siteData, nodeScans)
+        return ScanResponse(scanId, null)
     }
 
     fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
@@ -312,7 +313,7 @@ class ScanningService(val scanService: ScanService,
 
     data class ScanOverViewLine(val scanId: String, val siteName: String, val complete: Boolean)
     fun scansOfPlayer(principal: Principal): Collection<ScanOverViewLine> {
-        val scans = scanService.getAll()
+        val scans = scanService.getAll(principal)
         return scans.map {
             val site = siteDataService.getById(it.siteId)
             val complete = (it.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
@@ -320,6 +321,21 @@ class ScanningService(val scanService: ScanService,
         }
     }
 
+    fun shareScan(scanId: String, user: User) {
+        if (scanService.hasUserScan(user, scanId)) {
+            stompService.terminalReceive("[info]${user.name}[/] already has this scan.")
+            return
+        }
+        scanService.createUserScan(scanId, user)
+        stompService.terminalReceive("Shared scan with [info]${user.name}[/].")
+
+        val myUserName = principalService.get().user.name
+
+        val scan = scanService.getById(scanId)
+        val siteData = siteDataService.getById(scan.siteId)
+
+        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
+    }
 
 
 }

@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.config.security
 
 import mu.KLogging
 import org.n1.mainframe.backend.model.iam.UserPrincipal
+import org.n1.mainframe.backend.service.PrincipalService
 import org.n1.mainframe.backend.service.user.UserService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -15,7 +16,8 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class JwtAuthenticationFilter(
         private val tokenProvider: JwtTokenProvider,
-        private val userService: UserService
+        private val userService: UserService,
+        private val principalService: PrincipalService
 ): OncePerRequestFilter() {
 
     companion object : KLogging()
@@ -32,6 +34,7 @@ class JwtAuthenticationFilter(
                     val user = userService.getByName(userName)
                     val authentication = UserPrincipal(user)
                     SecurityContextHolder.getContext().authentication = authentication
+                    principalService.set(authentication)
                 }
             }
         } catch (exception: Exception) {
@@ -39,6 +42,8 @@ class JwtAuthenticationFilter(
         }
 
         filterChain.doFilter(request, response)
+
+        principalService.remove()
     }
 
     private fun getJwtFromRequest(request: HttpServletRequest): String? {
