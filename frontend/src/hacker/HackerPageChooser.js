@@ -1,6 +1,6 @@
 import connect from "react-redux/es/connect/connect";
 import {MAIL} from "./HackerPages";
-import MailHome from "./mail/component/MailHome";
+import MailHome from "./mail/MailHome";
 import HackerHome from "./component/HackerHome";
 import React from "react";
 

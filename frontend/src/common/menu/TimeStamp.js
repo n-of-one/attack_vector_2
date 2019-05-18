@@ -24,9 +24,9 @@ const renderDate = (timestamp) => {
 
 export default ({timestamp}) => {
 
-    const now = new Date();
-    const diffMs = (now - timestamp);
-    const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+    // const now = new Date();
+    // const diffMs = (now - timestamp);
+    // const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
     // if (diffMins < 60) {
     //     return <span>{diffMins + " minutes ago"}</span>
     // }
