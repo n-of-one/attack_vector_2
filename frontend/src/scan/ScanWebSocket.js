@@ -23,7 +23,7 @@ let initWebSocket = (store, scanId, siteId, callback, dispatch) => {
     let onWsOpen = (event) => {
         let userId = event.headers["user-name"];
         // notify_neutral('Status','Connection with server established (' + userName + ")");
-        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId});
+        dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"});
         dispatch({type: SET_USER_ID, userId: userId});
 
         setupHeartbeat(developmentServer, client);
