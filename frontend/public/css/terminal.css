@@ -26,19 +26,30 @@
 }
 
 .terminal_input {
-    text-shadow: 0 0 3px rgba(0, 53, 187);
+    text-shadow: 0 0 3px rgb(0, 53, 187);
+}
+
+.terminal_style_primary {
+    color: #337ab7;
 }
 
 .terminal_style_ok {
-    color: #3c763d;
+    /*color: #3c763d;*/
+    color: #5cb85c
 }
 
 .terminal_style_info {
-    color: #31708f;
+    /*color: #31708f;*/
+    color: #5bc0de;
 }
 
 .terminal_style_warn {
-    color: #a9443b;
+    /*color: #a9443b;*/
+    color: #f0ad4e;
+}
+
+.terminal_style_error {
+    color: #d9534f;
 }
 
 .terminal_style_b {

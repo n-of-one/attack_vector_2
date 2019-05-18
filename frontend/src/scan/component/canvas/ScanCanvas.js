@@ -96,7 +96,9 @@ class ScanCanvas {
         this.iconsById[node.id] = nodeIcon;
 
         const iconLabel = new fabric.Text(node.networkId, {
-            fill: "#bbbbbb",
+            // fill: "#bbbbbb", // just simple grey
+            fill: "#5cb85c",    // color-ok
+            // fill: "#8cad8c", // color-ok muted (more grey)
             fontFamily: "courier",
             fontSize: 12,
             fontStyle: "normal", // "", "normal", "italic" or "oblique".
