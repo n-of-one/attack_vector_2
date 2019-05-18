@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import pageReducer from "../common/reducer/pageReducer";
+import pageReducer from "../common/menu/pageReducer";
 
 import SiteReducer from "../editor/reducer/SiteDataReducer";
 import ScanReducer from "./reducer/ScanReducer";

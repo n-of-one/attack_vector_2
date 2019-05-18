@@ -1,4 +1,4 @@
-import {NAVIGATE_PAGE, SERVER_NAVIGATE_PAGE} from "../CommonActions";
+import {NAVIGATE_PAGE, SERVER_NAVIGATE_PAGE} from "../enums/CommonActions";
 
 const defaultState = "No page yet.";
 

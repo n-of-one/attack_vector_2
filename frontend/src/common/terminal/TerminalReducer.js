@@ -1,5 +1,5 @@
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE} from "./TerminalActions";
-import {SERVER_ERROR} from "../CommonActions";
+import {SERVER_ERROR} from "../enums/CommonActions";
 
 const LINE_LIMIT = 100;
 

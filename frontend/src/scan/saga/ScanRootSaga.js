@@ -11,7 +11,7 @@ import {
 import createScanSagas from "./ScanFullSaga";
 import {TERMINAL_SUBMIT} from "../../common/terminal/TerminalActions";
 import createProbeSagas from "./ScanProbeSaga";
-import {NAVIGATE_PAGE} from "../../common/CommonActions";
+import {NAVIGATE_PAGE} from "../../common/enums/CommonActions";
 
 const createScanRootSaga = (stompClient, scanId, siteId) => {
 

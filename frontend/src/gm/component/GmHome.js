@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
-import MenuBar from "../../common/component/MenuBar";
-import TextInput from "../../common/TextInput";
+import MenuBar from "../../common/menu/MenuBar";
+import TextInput from "../../common/component/TextInput";
 import {post} from "../../common/RestClient";
 import {notify_fatal} from "../../common/Notification";
 

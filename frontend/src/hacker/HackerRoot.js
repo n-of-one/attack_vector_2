@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import RequiresRole from "../common/RequiresRole";
-import HackerHome from "./component/HackerHome";
 import hackerReducer from "./HackerReducer";
 import {createStore} from "redux";
 import {HACKER_HOME} from "./HackerPages";
 import {RECEIVE_SCANS} from "./HackerActions";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
+import HackerPageChooser from "./HackerPageChooser";
 
 class HackerRoot extends Component {
 
@@ -30,7 +30,7 @@ class HackerRoot extends Component {
     renderIfAuthenticated() {
         return (
             <Provider store={this.store}>
-                <HackerHome />
+                <HackerPageChooser />
             </Provider>
         );
     }

@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../EditorActions";
 import {assertNotNullUndef} from "../../../common/Assert";
-import {toType} from "../../../common/NodeTypesNames";
+import {toType} from "../../../common/enums/NodeTypesNames";
 
 /**
  * This class provides editor map like actions to the fabric canvas.

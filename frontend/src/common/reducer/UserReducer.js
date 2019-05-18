@@ -1,4 +1,4 @@
-import {SET_USER_ID} from "../CommonActions";
+import {SET_USER_ID} from "../enums/CommonActions";
 
 
 const defaultState = {

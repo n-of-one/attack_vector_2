@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
-import MenuBar from "../../common/component/MenuBar";
-import TextInput from "../../common/TextInput";
+import MenuBar from "../../common/menu/MenuBar";
+import TextInput from "../../common/component/TextInput";
 import {post} from "../../common/RestClient";
 import {notify, notify_fatal} from "../../common/Notification";
 import SilentLink from "../../common/component/SilentLink";

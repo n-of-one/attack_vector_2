@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import pageReducer from "../common/reducer/pageReducer";
+import pageReducer from "../common/menu/pageReducer";
 
 const gmReducer = combineReducers({
     currentPage: pageReducer,

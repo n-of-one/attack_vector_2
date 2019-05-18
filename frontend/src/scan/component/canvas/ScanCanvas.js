@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {toType} from "../../../common/NodeTypesNames";
+import {toType} from "../../../common/enums/NodeTypesNames";
 import Thread from "../../../common/Thread";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalActions";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../ScanActions";

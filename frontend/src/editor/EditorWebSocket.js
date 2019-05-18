@@ -1,7 +1,7 @@
 import webstomp from 'webstomp-client';
 import {notify, notify_fatal, notify_neutral} from "../common/Notification";
 import {SERVER_SITE_FULL} from "./EditorActions";
-import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/CommonActions";
+import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
 
 let initWebSocket = (store, siteId, callback) => {
 

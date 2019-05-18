@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {EDIT_SITE_DATA} from "../EditorActions";
-import TextSaveInput from "../../common/TextSaveInput";
-import CheckboxSaveInput from "../../common/CheckBoxSaveInput";
+import TextSaveInput from "../../common/component/TextSaveInput";
+import CheckboxSaveInput from "../../common/component/CheckBoxSaveInput";
 
 const mapDispatchToProps = (dispatch) => {
     return {

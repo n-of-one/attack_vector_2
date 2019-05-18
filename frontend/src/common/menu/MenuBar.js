@@ -3,8 +3,8 @@ import {connect} from "react-redux";
 import Cookies from "js-cookie";
 import MenuItem from "./MenuItem";
 import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../../gm/GmPages";
-import {HACKER_COMMUNITY, HACKER_HOME, SCAN, SCRIPTS} from "../../hacker/HackerPages";
-import {ME} from "../CommonPages";
+import {HACKER_COMMUNITY, HACKER_HOME, MAIL, SCAN, SCRIPTS} from "../../hacker/HackerPages";
+import {ME} from "./CommonPages";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -70,6 +70,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             <MenuItem requriesRole="ROLE_HACKER_MANAGER" targetPage={HACKER_COMMUNITY} label="Hacker Community" />
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
+                            <MenuItem requriesRole="ROLE_USER" targetPage={MAIL} label="Mail"/>
                             <MenuItem requriesRole="ROLE_USER" targetPage={ME} label={ "{" + userName + "}"}/>
                             <li>
                                 <a href="/manual" target="_blank">Manual</a>
