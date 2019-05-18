@@ -3,15 +3,15 @@ import React from "react";
 const HIGHLIGHT_MAP = {
     "help": {
         main: ["u"],
-        rest: "error"
+        rest: "error s"
     },
     "autoscan": {
         main: [ "u"],
-        rest: "error"
+        rest: "error s"
     },
     "scan": {
         main: [ "u", "ok"],
-        rest: "error"
+        rest: "error s"
     },
     "hack": {
         main: [ "us", "primary s"],

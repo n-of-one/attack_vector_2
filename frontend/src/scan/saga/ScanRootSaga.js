@@ -11,12 +11,12 @@ import {
 import createScanSagas from "./ScanFullSaga";
 import {TERMINAL_SUBMIT} from "../../common/terminal/TerminalActions";
 import createProbeSagas from "./ScanProbeSaga";
-import {NAVIGATE_PAGE} from "../../common/enums/CommonActions";
+import {NAVIGATE_PAGE, SERVER_NAVIGATE_PAGE} from "../../common/enums/CommonActions";
 
 const createScanRootSaga = (stompClient, scanId, siteId) => {
 
     const [
-        navigatePage,
+        navigatePage, serverNavigatePage,
         enterScanSaga, serverScanFullSaga, terminalSubmitSaga,
         updateNodeStatusSaga, discoverNodesSaga
     ] = createScanSagas(stompClient, scanId);
@@ -27,6 +27,7 @@ const createScanRootSaga = (stompClient, scanId, siteId) => {
 
     function* allSagas() {
         yield takeEvery(NAVIGATE_PAGE, navigatePage);
+        yield takeEvery(SERVER_NAVIGATE_PAGE, serverNavigatePage);
         yield takeEvery(ENTER_SCAN, enterScanSaga);
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
         yield takeEvery(TERMINAL_SUBMIT, terminalSubmitSaga);

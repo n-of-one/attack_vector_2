@@ -10,34 +10,33 @@ class ScanTerminalService(val scanningService: ScanningService,
 
     fun processCommand(scanId: String, command: String) {
         val tokens = command.split(" ")
-        processCommand(scanId, tokens)
+        when (tokens[0]) {
+            "help" -> processHelp()
+            "dc" -> processDisconnect()
+            "autoscan" -> processAutoScan(scanId)
+            "scan" -> processCommandScan(scanId, tokens)
+            else -> stompService.terminalReceive("Unknown command, try [i]help[/].")
+        }
     }
 
-    fun processCommand(scanId: String, tokens: List<String>) {
-        if (tokens[0] == "help") {
-            stompService.terminalReceive(
-                    "Command options:",
-                    " autoscan",
-                    " scan",
-                    " scan [ok]<network id>[/]   -- for example: scan 00",
-                    " dc")
-            return
-        }
-        if (tokens[0] == "dc") {
-            data class Navigate(val target: String)
-            stompService.toUser(ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
-            return
-        }
-        if (tokens[0] == "autoscan") {
-            scanningService.launchProbe(scanId, true)
-            return
-        }
-        if (tokens[0] == "scan") {
-            processCommandScan(scanId, tokens)
-            return
-        }
-        stompService.terminalReceive("Unknown command, try [i]help[/].")
+    private fun processAutoScan(scanId: String) {
+        scanningService.launchProbe(scanId, true)
     }
+
+    private fun processDisconnect() {
+        data class Navigate(val target: String)
+        stompService.toUser(ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
+    }
+
+    private fun processHelp() {
+        stompService.terminalReceive(
+                "Command options:",
+                " [u]autoscan",
+                " [u]scan",
+                " [u]scan [ok]<network id>[/]   -- for example: [u]scan [ok]00",
+                " [u]dc")
+    }
+
 
     fun processCommandScan(scanId: String, tokens: List<String>) {
         if (tokens.size == 1) {

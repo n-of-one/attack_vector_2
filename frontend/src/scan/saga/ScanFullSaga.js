@@ -8,6 +8,10 @@ const createScanSagas = (stompClient, scanId) => {
         yield
     }
 
+    function* serverNavigatePage(action) {
+        window.location="/hacker";
+        yield
+    }
 
     function* enterScanSaga() {
         stompClient.send("/av/scan/enterScan", scanId);
@@ -39,7 +43,7 @@ const createScanSagas = (stompClient, scanId) => {
     }
 
     return [
-        navigatePage,
+        navigatePage, serverNavigatePage,
         enterScanSaga, serverScanFullSaga, terminalSubmitSaga, updateNodeStatusSaga, discoverNodesSaga
     ];
 

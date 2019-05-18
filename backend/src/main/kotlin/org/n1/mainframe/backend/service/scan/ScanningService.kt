@@ -125,7 +125,14 @@ class ScanningService(val scanService: ScanService,
 
 
     private fun reportNodeNotFound(networkId: String) {
-        stompService.terminalReceive("Node [ok]${networkId}[/] not found.")
+        if (networkId.length == 1) {
+            stompService.terminalReceive("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
+
+        }
+        else {
+            stompService.terminalReceive("Node [ok]${networkId}[/] not found.")
+        }
+
     }
 
     fun launchProbeAtNode(scanId: String, networkId: String) {
