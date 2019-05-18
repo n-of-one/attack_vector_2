@@ -16,6 +16,6 @@ class HackerService(val userService: UserService,
     }
 
     private fun createPresence(user: User): HackerPresence {
-        return HackerPresence(user.id, user.userName, "SCORPION")
+        return HackerPresence(user.id, user.name, "SCORPION")
     }
 }

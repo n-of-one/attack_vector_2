@@ -17,12 +17,16 @@ class UserService(
 
     val passwordEncoder = BCryptPasswordEncoder(4)
 
-    fun getUserByUserName(userName: String): User {
-        return userRepo.findByUserName(userName).orElseThrow { throw UsernameNotFoundException("Invalid username or password.") }
+    fun findByName(userName: String): User? {
+        return userRepo.findByName(userName).orElseGet { null }
+    }
+
+    fun getByName(userName: String): User {
+        return findByName(userName) ?: throw UsernameNotFoundException("Invalid username or password.")
     }
 
     fun login(userName: String, password: String): User {
-        val user = getUserByUserName(userName.toLowerCase())
+        val user = getByName(userName.toLowerCase())
         if (passwordEncoder.matches(password, user.encodedPasscoded)) {
             return user
         }
@@ -46,10 +50,10 @@ class UserService(
     }
 
     fun mandatoryUser(userName: String, password: String, type: UserType) {
-        val user = userRepo.findByUserName(userName)
-        if (!user.isPresent) {
+        val user = findByName(userName)
+        if (user == null) {
             val newUser = User(
-                    userName = userName,
+                    name = userName,
                     type = type,
                     id = createUserId()
             )
@@ -73,5 +77,6 @@ class UserService(
     fun getById(userId: String): User {
         return userRepo.findById(userId).orElseGet { error("${userId} not found") }
     }
+
 
 }

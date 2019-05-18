@@ -8,6 +8,7 @@ import org.n1.mainframe.backend.model.scan.NodeStatus
 import org.n1.mainframe.backend.model.scan.Scan
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.ui.NotyMessage
+import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.model.ui.site.SiteFull
 import org.n1.mainframe.backend.service.PrincipalService
 import org.n1.mainframe.backend.service.ReduxActions
@@ -39,7 +40,7 @@ class ScanningService(val scanService: ScanService,
     data class ScanResponse(val scanId: String?, val message: NotyMessage?)
 
     fun scanSite(siteName: String): ScanResponse {
-        val siteData = siteDataService.findByName(siteName) ?: return ScanResponse(null, NotyMessage("error", "Error", "Site '${siteName}' not found"))
+        val siteData = siteDataService.findByName(siteName) ?: return ScanResponse(null, NotyMessage(NotyType.ERROR, "Error", "Site '${siteName}' not found"))
         val nodeScans = createNodeScans(siteData.id)
         val id = scanService.createScan(siteData, nodeScans)
         return ScanResponse(id, null)

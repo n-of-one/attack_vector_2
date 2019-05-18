@@ -1,12 +1,17 @@
 package org.n1.mainframe.backend.service.scan
 
+import org.n1.mainframe.backend.model.ui.NotyMessage
+import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
+import org.n1.mainframe.backend.service.user.UserService
 import org.springframework.stereotype.Service
+import java.util.stream.Collectors
 
 @Service
 class ScanTerminalService(val scanningService: ScanningService,
-                          val stompService: StompService) {
+                          val stompService: StompService,
+                          val userService: UserService) {
 
     fun processCommand(scanId: String, command: String) {
         val tokens = command.split(" ")
@@ -14,8 +19,10 @@ class ScanTerminalService(val scanningService: ScanningService,
             "help" -> processHelp()
             "dc" -> processDisconnect()
             "autoscan" -> processAutoScan(scanId)
-            "scan" -> processCommandScan(scanId, tokens)
-            else -> stompService.terminalReceive("Unknown command, try [i]help[/].")
+            "scan" -> processScan(scanId, tokens)
+            "/share" -> processShare(scanId, tokens)
+            "servererror" -> error("gah")
+            else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
     }
 
@@ -37,18 +44,30 @@ class ScanTerminalService(val scanningService: ScanningService,
                 " [u]dc")
     }
 
-
-    fun processCommandScan(scanId: String, tokens: List<String>) {
+    fun processScan(scanId: String, tokens: List<String>) {
         if (tokens.size == 1) {
             scanningService.launchProbe(scanId, false)
             return
         }
-        if (tokens.size == 2) {
-            val networkId = tokens[1]
-            scanningService.launchProbeAtNode(scanId, networkId)
+        val networkId = tokens[1]
+        scanningService.launchProbeAtNode(scanId, networkId)
+    }
+
+    fun processShare(scanId: String, tokens: List<String>) {
+        if (tokens.size == 1) {
+            stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
             return
         }
-        stompService.terminalReceive("scan takes 0 or 1 arguments.")
+        val userName = tokens.stream().skip(1).collect( Collectors.joining(" ") )
+        val user = userService.findByName(userName)
+        if (user == null) {
+            stompService.terminalReceive("user [info]${userName}[/] not found.")
+            return
+        }
+        stompService.terminalReceive("Shared scan with [info]${userName}[/].")
+        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, "From me:", "ScanShare!"))
+        stompService.toUser(NotyMessage(NotyType.NEUTRAL, "From me:", "ScanShare!"))
+
     }
 
 }

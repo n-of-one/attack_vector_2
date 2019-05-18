@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.service.site
 
 import org.n1.mainframe.backend.model.site.SiteData
 import org.n1.mainframe.backend.model.ui.NotyMessage
+import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
 import org.n1.mainframe.backend.repo.SiteDataRepo
@@ -68,7 +69,7 @@ class SiteDataService(
     fun updateHackable(data: SiteData, input: Boolean) {
         data.hackable = input
         val text = if (input) "Site is now hackable" else "Site no longer hackable"
-        val message = NotyMessage("ok_right", "Notification", text)
+        val message = NotyMessage(NotyType.OK, "Notification", text)
         stompService.toSite(data.id, ReduxActions.SERVER_NOTIFICATION, message)
     }
 

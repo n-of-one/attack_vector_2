@@ -29,7 +29,7 @@ class JwtAuthenticationFilter(
                 if (tokenProvider.validateToken(jwt)) {
                     val userName = tokenProvider.getUserNameFromJWT(jwt)
 
-                    val user = userService.getUserByUserName(userName)
+                    val user = userService.getByName(userName)
                     val authentication = UserPrincipal(user)
                     SecurityContextHolder.getContext().authentication = authentication
                 }

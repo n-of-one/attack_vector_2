@@ -38,7 +38,7 @@ class LoginController(
     }
 
     private fun generateUserNameCookie(user: User, response: HttpServletResponse) {
-        addCookie("userName", user.userName, response)
+        addCookie("userName", user.name, response)
     }
 
     fun generateJwtCookie(user: User, response: HttpServletResponse) {

@@ -33,16 +33,23 @@ class StompService(
     }
 
     fun toUser(actionType: ReduxActions, data: Any) {
+        val userId = principalService.get().userId
+        toUser(userId, actionType, data)
+    }
+
+    fun toUser(userId: String, actionType: ReduxActions, data: Any) {
         simulateNonLocalhost()
         val event = ReduxEvent(actionType, data)
-        val userId = principalService.get().userId
         stompTemplate.convertAndSendToUser(userId, "/reply", event)
     }
 
     fun toUser(message: NotyMessage) {
-        simulateNonLocalhost()
         val userId = principalService.get().userId
-        stompTemplate.convertAndSendToUser(userId, "/noty", message)
+        toUser(userId, message)
+    }
+
+    fun toUser(userId: String, message: NotyMessage) {
+        toUser(userId, ReduxActions.SERVER_NOTIFICATION, message)
     }
 
     data class TerminalReceive(val terminalId: String, val lines: Array<out String>)

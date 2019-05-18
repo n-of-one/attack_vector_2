@@ -13,6 +13,15 @@ const HIGHLIGHT_MAP = {
         main: [ "u", "ok"],
         rest: "error s"
     },
+    "dc": {
+        main: [ "u"],
+        rest: "error s"
+    },
+    "/share": {
+        main: [ "u warn", "info"],
+        rest: "info"
+    },
+
     "hack": {
         main: [ "us", "primary s"],
         rest: "error s"
@@ -26,11 +35,13 @@ const HIGHLIGHT_MAP = {
 const renderLine = (input) => {
     const parts = input.split(" ");
 
-    const mapping=HIGHLIGHT_MAP[parts[0]];
-    if (!mapping) {
-        return <span key="1">{input}</span>;
-    }
+    let mapping=HIGHLIGHT_MAP[parts[0]];
 
+    if (!mapping) {
+        if (!mapping) {
+            return <span key="1">{input}</span>;
+        }
+    }
 
     const blocks = parts.map( (part, i) => renderPart(part, i, mapping));
     const renderBlocks = [];

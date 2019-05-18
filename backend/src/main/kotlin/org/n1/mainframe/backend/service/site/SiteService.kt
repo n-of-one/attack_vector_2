@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.service.site
 
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.ui.NotyMessage
+import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.model.ui.site.SiteFull
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
@@ -40,7 +41,7 @@ class SiteService(
 
     fun purgeAll() {
         siteDataService.findAll().forEach { siteData ->
-            stompService.toSite(siteData.id, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage("fatal", "Admin action", "Purging all sites."))
+            stompService.toSite(siteData.id, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
         }
 
         siteDataService.purgeAll()

@@ -27,7 +27,7 @@ class JwtTokenProvider {
         val expiryDate = Date(now.time + jwtExpirationInMs)
 
         return Jwts.builder()
-                .setSubject(user.userName)
+                .setSubject(user.name)
                 .setIssuedAt(Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
