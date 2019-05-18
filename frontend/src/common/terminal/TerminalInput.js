@@ -1,6 +1,10 @@
 import React from "react";
 
 const HIGHLIGHT_MAP = {
+    "help": {
+        main: ["u"],
+        rest: "error"
+    },
     "autoscan": {
         main: [ "u"],
         rest: "error"

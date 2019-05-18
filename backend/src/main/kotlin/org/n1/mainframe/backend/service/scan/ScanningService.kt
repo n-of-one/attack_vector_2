@@ -121,42 +121,12 @@ class ScanningService(val scanService: ScanService,
         stompService.toUser(principal, ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 
-    fun processCommand(scanId: String, command: String, principal: Principal) {
-        if (command == "help") {
-            stompService.terminalReceive(principal,
-                    "Command options:",
-                    " autoscan",
-                    " scan",
-                    " scan [info i]<network id>[/]   -- for example: scan 00",
-                    " dc")
-            return
-        }
-        if (command == "dc") {
-            data class Navigate(val target: String)
-            stompService.toUser(principal, ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
-            return
-        }
-        if (command == "autoscan") {
-            launchProbe(scanId, true, principal)
-            return
-        }
-        if (command == "scan") {
-            launchProbe(scanId, false, principal)
-            return
-        }
-        if (command.startsWith("scan") && command.substring(4).length > 1) {
-            val networkId = command.substring(4).trim()
-            launchProbeAtNode(scanId, networkId, principal)
-            return
-        }
-        stompService.terminalReceive(principal, "Unknown command, try [i]help[/].")
-    }
 
     private fun reportNodeNotFound(networkId: String, principal: Principal) {
         stompService.terminalReceive(principal, "Node [info]${networkId}[/] not found.")
     }
 
-    private fun launchProbeAtNode(scanId: String, networkId: String, principal: Principal) {
+    fun launchProbeAtNode(scanId: String, networkId: String, principal: Principal) {
         val scan = scanService.getById(scanId)
         val node = nodeService.findByNetworkId(scan.siteId, networkId)
         if (node == null) {

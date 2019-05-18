@@ -4,6 +4,7 @@ import mu.KLogging
 import org.n1.mainframe.backend.engine.SerializingExecutor
 import org.n1.mainframe.backend.model.scan.NodeScanType
 import org.n1.mainframe.backend.model.ui.ReduxEvent
+import org.n1.mainframe.backend.service.scan.ScanTerminalService
 import org.n1.mainframe.backend.service.scan.ScanningService
 import org.n1.mainframe.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
@@ -15,7 +16,8 @@ import java.security.Principal
 @Controller
 class ScanningController(
         val executor: SerializingExecutor,
-        val scanningService: ScanningService
+        val scanningService: ScanningService,
+        val scanTerminalService: ScanTerminalService
 ) {
 
     companion object: KLogging()
@@ -29,7 +31,7 @@ class ScanningController(
     data class TerminalCommand(val scanId: String, val command: String)
     @MessageMapping("/scan/terminal")
     fun terminal(terminalCommand: TerminalCommand, principal: Principal) {
-        executor.run(principal) { scanningService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
+        executor.run(principal) { scanTerminalService.processCommand(terminalCommand.scanId, terminalCommand.command, principal) }
     }
 
     @MessageMapping("/scan/autoScan")
