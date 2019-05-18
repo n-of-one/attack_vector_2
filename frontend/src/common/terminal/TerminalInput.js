@@ -10,12 +10,12 @@ const HIGHLIGHT_MAP = {
         rest: "error"
     },
     "hack": {
-        main: [ "u", "primary"],
-        rest: "error"
+        main: [ "us", "primary s"],
+        rest: "error s"
     },
     "passcode": {
-        main: [ "u", "primary", "warn"],
-        rest: "error"
+        main: [ "us", "primary s", "warn s"],
+        rest: "error s"
     },
 };
 
@@ -46,13 +46,18 @@ const renderLine = (input) => {
 
 };
 
+const gatherStyles = (styleInput) => {
+    let styleParts = styleInput.split(" ");
+    return styleParts.map(it => "terminal_style_" + it).join(" ");
+};
+
 const renderPart = (part, i, mapping) => {
     let style;
     if (i >= mapping["main"].length) {
-        style = "terminal_style_" + mapping["rest"] ;
+        style = gatherStyles(mapping["rest"]);
     }
     else {
-        style = "terminal_style_" + mapping["main"][i] ;
+        style = gatherStyles(mapping["main"][i]);
     }
     return <span className={style} key={i}>{part}</span>
 };
