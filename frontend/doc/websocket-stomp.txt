@@ -1,3 +1,23 @@
+>>> This is the one that is currently used in Attack Vector:
+
+There is a fork of stompjs, module: webstomp-client
+
+https://www.npmjs.com/package/webstomp-client  -- npm
+https://github.com/JSteunou/webstomp-client    -- source
+
+
+it supports up to stomp 1.2
+
+
+
+---
+
+
+
+
+
+
+
 There is a the module: stomp-client
 
 https://github.com/easternbloc/node-stomp-client -- source & docs
@@ -18,18 +38,5 @@ it supports stomp 1.1
 it is abandoned.
 
 ---
-
->>> This is the one that is currently used in Attack Vector:
-
-There is a fork of stompjs, module: webstomp-client
-
-https://www.npmjs.com/package/webstomp-client  -- npm
-https://github.com/JSteunou/webstomp-client    -- source
-
-
-it supports up to stomp 1.2
-
-
-
 
 

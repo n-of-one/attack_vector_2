@@ -29,18 +29,9 @@ function* serverScanFullSaga(action) {
 
 function* navigatePageSaga(action) {
     if (action.from === SCAN && action.to !== SCAN) {
-        const state = yield select(getState);
-        debug(state);
+        webSocketConnection.unsubscribe();
     }
     yield
 }
-
-const debug= (state)=> {
-    const debug = 1;
-    const scanId = state.scan.scan.id;
-    const siteId = state.scan.site.id;
-    webSocketConnection.unsubscribeForScan(scanId, siteId);
-};
-
 
 export { enterScanSaga, serverScanFullSaga, navigatePageSaga };

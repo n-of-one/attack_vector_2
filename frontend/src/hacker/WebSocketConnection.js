@@ -15,6 +15,8 @@ class WebSocketConnection {
     waitingForType = null;
     waitingIgnoreList = [];
 
+    subscriptions = [];
+
     constructor() {
         let port = window.location.port;
         let hostName = window.location.hostname;
@@ -43,7 +45,7 @@ class WebSocketConnection {
         this.dispatch({type: SET_USER_ID, userId: userId});
 
         this.setupHeartbeat();
-        this.subscribe('/user/reply');
+        this.subscribe('/user/reply', false);
     }
 
 
@@ -65,10 +67,13 @@ class WebSocketConnection {
     }
 
 
-    subscribe(path) {
-        this.client.subscribe(path, (wsMessage) => {
+    subscribe(path, canUnsubscribe) {
+        const subscription = this.client.subscribe(path, (wsMessage) => {
             this.handleEvent(wsMessage);
         });
+        if (canUnsubscribe) {
+            this.subscriptions.push(subscription);
+        }
     }
 
     handleEvent(wsMessage) {
@@ -79,9 +84,9 @@ class WebSocketConnection {
             this.client.disconnect();
         }
 
-        if (this.waitForType) {
-            if (action.type === this.waitForType) {
-                this.waitForType = null;
+        if (this.waitingForType) {
+            if (action.type === this.waitingForType) {
+                this.waitingForType = null;
                 this.waitingIgnoreList = [];
             }
             else {
@@ -97,6 +102,9 @@ class WebSocketConnection {
         }
 
         this.store.dispatch(action);
+
+        /* Our server (Spring simple broker) does not support ACK , so we keep our network logs clean */
+        // wsMessage.ack();
     };
 
     dispatch(body) {
@@ -105,8 +113,8 @@ class WebSocketConnection {
     }
 
     subscribeForScan(scanId, siteId) {
-        this.subscribe('/topic/scan/' + scanId);
-        this.subscribe('/topic/site/' + siteId);
+        this.subscribe('/topic/scan/' + scanId, true);
+        this.subscribe('/topic/site/' + siteId, true);
     }
 
     send(path, data) {
@@ -116,13 +124,15 @@ class WebSocketConnection {
     /** Ignore certain actions until an action with a specific type is received.
      * Make sure we get the init scan event before we start parsing changes to the site */
     waitFor(type, ignoreList) {
-        this.waitForType = type;
+        this.waitingForType = type;
         this.waitingIgnoreList = ignoreList;
     }
 
-    unsubscribeForScan(scanId, siteId) {
-        this.client.unsubscribe('/topic/scan/' + scanId);
-        this.client.unsubscribe('/topic/site/' + siteId);
+    unsubscribe() {
+        this.subscriptions.forEach(subscription => {
+            subscription.unsubscribe();
+        });
+        this.subscriptions = [];
     }
 }
 
