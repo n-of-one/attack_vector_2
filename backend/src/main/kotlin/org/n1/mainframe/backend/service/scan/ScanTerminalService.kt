@@ -29,8 +29,7 @@ class ScanTerminalService(val scanningService: ScanningService,
     }
 
     private fun processDisconnect() {
-        data class Navigate(val target: String)
-        stompService.toUser(ReduxActions.SERVER_NAVIGATE_PAGE, Navigate("HACKER_HOME"))
+        stompService.toUser(ReduxActions.SERVER_USER_DC, "-")
     }
 
     private fun processHelp() {

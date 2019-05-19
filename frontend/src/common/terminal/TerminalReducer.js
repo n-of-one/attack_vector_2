@@ -1,4 +1,4 @@
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE} from "./TerminalActions";
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR} from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
 
 const LINE_LIMIT = 100;
@@ -12,8 +12,8 @@ const defaultStateTemplate = {
     prompt: "⇋ ",
     readonly: false, // only allow user input if true
     input: "", // user input
-    renderingLine: null, // part of the current rendering line that is being shown
-    receivingLine: null, // part of the current rendering line that is waiting to be shown
+    renderingLine: null, // String - part of the current rendering line that is being shown
+    receivingLine: null, // String - part of the current rendering line that is waiting to be shown
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
     receiving: true,   // true if there are lines waiting to be shown, or in the process of being shown.
 //
@@ -21,7 +21,7 @@ const defaultStateTemplate = {
 
 
 const createTerminalReducer = (id, config) => {
-    let defaultState = { ...defaultStateTemplate, ...config, id: id};
+    const defaultState = {...defaultStateTemplate, ...config, id: id};
 
     return (terminal = defaultState, action) => {
         switch (action.type) {
@@ -37,6 +37,8 @@ const createTerminalReducer = (id, config) => {
                 return handlePressEnter(terminal, action);
             case SERVER_ERROR:
                 return handleServerError(terminal, action);
+            case TERMINAL_CLEAR:
+                return handleTerminalClear(terminal, action, defaultState);
             default:
                 return terminal;
         }
@@ -51,51 +53,54 @@ function processTick(terminal) {
         return {...terminal, receiving: false};
     }
 
-    let renderingLine = (terminal.renderingLine) ? terminal.renderingLine : {type: "text", data: ""};
+    let nextReceiveBuffer = [...terminal.receiveBuffer];
+    let nextLines = [...terminal.lines];
+    let nextRenderingLine = (terminal.renderingLine) ? {...terminal.renderingLine} : {type: "text", data: ""};
 
-    let receivingLine = terminal.receivingLine;
-    let receiveBuffer = terminal.receiveBuffer;
-    if (receivingLine === null) {
-        receivingLine = receiveBuffer[0];
-        receiveBuffer = [...terminal.receiveBuffer].splice(1);
+    let nextReceivingLine;
+    if (terminal.receivingLine !== null) {
+        nextReceivingLine = {...terminal.receivingLine };
+    }
+    else {
+        nextReceivingLine = { ...nextReceiveBuffer[0] };
+        nextReceiveBuffer = [...terminal.receiveBuffer].splice(1);
     }
 
-    let input = receivingLine.data;
+    let input = nextReceivingLine.data;
 
-    let nextChar = input.substr(0, 1);
-    let nextData = input.substr(1);
+    const nextChar = input.substr(0, 1);
+    const nextData = input.substr(1);
 
-    receivingLine.data = nextData;
-    renderingLine.data += nextChar;
-
-
-    let lines = terminal.lines;
+    nextReceivingLine.data = nextData;
+    nextRenderingLine.data += nextChar;
 
 
-    let receiving = true;
-    if (receivingLine.data.length === 0) {
+
+
+    let nextReceiving = true;
+    if (nextReceivingLine.data.length === 0) {
         // finish rendering this line
-        lines = limitLines([...terminal.lines, renderingLine]);
-        renderingLine = null;
-        receivingLine = null;
-        if (receiveBuffer.length === 0) {
-            receiving = false;
+        nextLines = limitLines([...terminal.lines, nextRenderingLine]);
+        nextRenderingLine = null;
+        nextReceivingLine = null;
+        if (nextReceiveBuffer.length === 0) {
+            nextReceiving = false;
         }
     }
 
-    let nextState = {
+    const nextState = {
         ...terminal,
-        renderingLine: renderingLine,
-        receivingLine: receivingLine,
-        lines: lines,
-        receiving: receiving,
-        receiveBuffer: receiveBuffer,
+        renderingLine: nextRenderingLine,
+        receivingLine: nextReceivingLine,
+        lines: nextLines,
+        receiving: nextReceiving,
+        receiveBuffer: nextReceiveBuffer,
     };
     return nextState;
 }
 
 
-let receive = (terminal, action) => {
+const receive = (terminal, action) => {
     if (action.terminalId !== terminal.id) {
         return terminal
     }
@@ -111,7 +116,7 @@ let receive = (terminal, action) => {
     };
 };
 
-let receiveFromServer = (terminal, action) => {
+const receiveFromServer = (terminal, action) => {
     if (action.data.terminalId !== terminal.id) {
         return terminal;
     }
@@ -128,13 +133,13 @@ let receiveFromServer = (terminal, action) => {
     }
 };
 
-let handlePressKey = (terminal, action) => {
-    let {keyCode, key} = action;
-    let newInput = determineInput(terminal.input, keyCode, key);
+const handlePressKey = (terminal, action) => {
+    const {keyCode, key} = action;
+    const newInput = determineInput(terminal.input, keyCode, key);
     return {...terminal, input: newInput}
 };
 
-let determineInput = (input, keyCode, key) => {
+const determineInput = (input, keyCode, key) => {
     if (keyCode === BACKSPACE && input.length > 0) {
         return input.substr(0, input.length - 1);
     }
@@ -149,25 +154,25 @@ let determineInput = (input, keyCode, key) => {
     }
 };
 
-let handlePressEnter = (terminal, action) => {
+const handlePressEnter = (terminal, action) => {
     if (action.terminalId !== terminal.id) {
         return terminal;
     }
 
-    let line = terminal.prompt + action.command;
-    let lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
+    const line = terminal.prompt + action.command;
+    const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
     return {...terminal, lines: lines, input: "", receiving: true};
 };
 
 /* Only call on mutable array */
-let limitLines = (lines) => {
+const limitLines = (lines) => {
     while (lines.length > LINE_LIMIT) {
         lines.shift();
     }
     return lines;
 };
 
-let handleServerError = (terminal, action) => {
+const handleServerError = (terminal, action) => {
     const retryLines = (action.data.recoverable) ? [
             {type: "text", data: " "},
             {type: "text", data: "[warn b]A server error occurred. Please refresh browser."}]
@@ -190,4 +195,10 @@ let handleServerError = (terminal, action) => {
     };
 };
 
+function handleTerminalClear(terminal, action, defaultState) {
+    if (action.terminalId === terminal.id) {
+        return defaultState;
+    }
+    return terminal;
+}
 export default createTerminalReducer;

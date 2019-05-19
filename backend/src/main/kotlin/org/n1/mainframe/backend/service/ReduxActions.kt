@@ -21,7 +21,7 @@ enum class ReduxActions {
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
 
-    SERVER_NAVIGATE_PAGE,
+    SERVER_USER_DC,
 
 
 }

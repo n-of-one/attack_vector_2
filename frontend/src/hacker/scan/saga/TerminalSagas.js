@@ -1,7 +1,10 @@
 import webSocketConnection from "../../WebSocketConnection";
-import {select} from 'redux-saga/effects'
+import {select, put} from 'redux-saga/effects'
+import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
+import {HACKER_HOME} from "../../HackerPages";
 
 const getScanId = (state) => state.scan.scan.id;
+const getCurrentPage = (state) => state.currentPage;
 
 
 function* terminalSubmitSaga(action) {
@@ -12,4 +15,10 @@ function* terminalSubmitSaga(action) {
     yield
 }
 
-export {terminalSubmitSaga};
+function* serverUserDcSaga() {
+    const currentPage = yield select(getCurrentPage);
+    yield put({ type: NAVIGATE_PAGE, to: HACKER_HOME, from: currentPage });
+
+}
+
+export {terminalSubmitSaga, serverUserDcSaga};

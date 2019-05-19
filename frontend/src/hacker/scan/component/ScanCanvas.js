@@ -24,6 +24,8 @@ class ScanCanvas {
 
     userId = null;
 
+    canvas = null;
+
     init(userId, dispatch) {
         this.userId = userId;
         this.dispatch = dispatch;
@@ -38,6 +40,30 @@ class ScanCanvas {
         fabric.Object.prototype.originY = 'center';
 
         this.canvas.selection = false;
+    }
+
+    reset() {
+        if (this.canvas === null) {
+            return;
+        }
+
+        Object.keys(this.iconsById).forEach((id) => {
+            const icon = this.iconsById[id];
+
+            this.canvas.remove(icon);
+        });
+
+        this.nodes = null;
+        this.nodeScanById = null;
+        this.connections = [];
+
+        this.iconsById = {};
+        this.connectionsById = {};
+        this.hackerIcon = null;
+        this.iconThread = new Thread();
+        this.probeThreads = new Threads();
+
+        this.render();
     }
 
     loadScan(data) {
@@ -68,7 +94,7 @@ class ScanCanvas {
             const toIcon = this.iconsById[connection.toId];
 
             if (fromIcon && toIcon) {
-                this.addConnectionIconWithAnimation(fromIcon, toIcon);
+                this.addConnectionIconWithAnimation(connection.id, fromIcon, toIcon);
             }
         });
 
@@ -164,6 +190,8 @@ class ScanCanvas {
         });
 
         this.canvas.add(this.hackerIcon);
+        //FIXME: use actual user id
+        this.iconsById["user-fixme-123"] = this.hackerIcon;
 
         const line = new fabric.Line(
             [this.hackerIcon.left, this.hackerIcon.top, startNode.x, startNode.y], {
@@ -177,13 +205,15 @@ class ScanCanvas {
         this.canvas.add(line);
         this.canvas.sendToBack(line);
         this.iconThread.run(3, () => this.animate(line, "opacity", 0.5, 100));
+
+        this.iconsById["line-user-fixme-123"] = line;
     }
 
     render() {
         this.canvas.renderAll();
     }
 
-    addConnectionIcon(fromIcon, toIcon) {
+    addConnectionIcon(id, fromIcon, toIcon) {
         const line = new fabric.Line(
             [fromIcon.left, fromIcon.top, toIcon.left, toIcon.top], {
                 stroke: "#cccccc",
@@ -196,7 +226,7 @@ class ScanCanvas {
 
         this.canvas.add(line);
         this.canvas.sendToBack(line);
-
+        this.iconsById[id] = line;
         return line;
     }
 
@@ -213,8 +243,8 @@ class ScanCanvas {
         });
     }
 
-    addConnectionIconWithAnimation(fromIcon, toIcon) {
-        const lineIcon = this.addConnectionIcon(fromIcon, toIcon);
+    addConnectionIconWithAnimation(id, fromIcon, toIcon) {
+        const lineIcon = this.addConnectionIcon(id, fromIcon, toIcon);
         this.iconThread.run(3, () => this.animate(lineIcon, "opacity", 0.5, 40));
     }
 
@@ -378,7 +408,7 @@ class ScanCanvas {
             const connection = this.connectionsById[id];
             const fromIcon = this.iconsById[connection.fromId];
             const toIcon = this.iconsById[connection.toId];
-            this.addConnectionIconWithAnimation(fromIcon, toIcon)
+            this.addConnectionIconWithAnimation(connection.id, fromIcon, toIcon)
         });
     }
 }

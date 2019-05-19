@@ -32,7 +32,7 @@ class SiteService(
         val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
         val connections = connectionService.getAll(siteId)
 
-        return SiteFull(siteData, layout, nodes, connections, startNodeId)
+        return SiteFull(siteId, siteData, layout, nodes, connections, startNodeId)
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {

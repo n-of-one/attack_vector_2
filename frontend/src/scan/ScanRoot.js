@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
 import initWebSocket from "../hacker/WebSocketConnection"
-import createScanSagas from "../hacker/CreateHackerRootSaga";
+import createScanSagas from "../hacker/HackerRootSaga";
 import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";

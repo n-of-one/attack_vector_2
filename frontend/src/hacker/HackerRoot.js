@@ -5,7 +5,7 @@ import {applyMiddleware, createStore} from "redux";
 import {HACKER_HOME} from "./HackerPages";
 import HackerPageChooser from "./HackerPageChooser";
 import createSagaMiddleware from 'redux-saga'
-import createHackerRootSaga from "./CreateHackerRootSaga";
+import createHackerRootSaga from "./HackerRootSaga";
 import hackerRootReducer from "./HackerRootReducer";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";

@@ -8,10 +8,10 @@ import SilentLink from "../component/SilentLink";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        navigateTo: (event, targetPage) => {
+        navigateTo: (event, targetPage, currentPage) => {
             event.preventDefault();
             console.log("Navigating to page: " + targetPage);
-            dispatch({type: NAVIGATE_PAGE, target: targetPage }); return false; }
+            dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage }); return false; }
     }
 };
 let mapStateToProps = (state) => {
@@ -38,7 +38,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 return <li className="active"><SilentLink onClick={(e) => { e.preventDefault();}}>{label}</SilentLink></li>
             }
             else {
-                return <li><SilentLink onClick={(e) => navigateTo(e, targetPage)}>{label}</SilentLink></li>
+                return <li><SilentLink onClick={(e) => navigateTo(e, targetPage, currentPage)}>{label}</SilentLink></li>
             }
         }
         else {
