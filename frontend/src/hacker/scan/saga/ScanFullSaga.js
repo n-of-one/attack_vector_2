@@ -1,52 +1,21 @@
 import scanCanvas from "../component/ScanCanvas"
+import webSocketConnection from "../../WebSocketConnection";
+import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
+import {SCAN} from "../../HackerPages";
+import { put } from 'redux-saga/effects'
 
+function* enterScanSaga(action) {
+    const {scanId, siteId} = action;
+    webSocketConnection.subScribeForScan(scanId, siteId);
+    webSocketConnection.send("/av/scan/enterScan", scanId);
+    yield put({ type: NAVIGATE_PAGE, target: SCAN });
+    yield
+}
 
-const createScanSagas = (stompClient, scanId) => {
+function* serverScanFullSaga(action) {
+    scanCanvas.loadScan(action.data);
+    alert('serverScanFullSaga');
+    yield
+}
 
-    function* navigatePage(action) {
-        window.location="/hacker";
-        yield
-    }
-
-    function* serverNavigatePage(action) {
-        window.location="/hacker";
-        yield
-    }
-
-    function* enterScanSaga() {
-        stompClient.send("/av/scan/enterScan", scanId);
-        yield
-    }
-
-    function* serverScanFullSaga(action) {
-        scanCanvas.loadScan(action.data);
-        yield
-    }
-
-    function* terminalSubmitSaga(action) {
-        const payload = {scanId: scanId, command: action.command};
-        let body = JSON.stringify(payload);
-        stompClient.send("/av/scan/terminal", body);
-        yield
-    }
-
-    function* updateNodeStatusSaga(action) {
-        const {nodeId, newStatus} = action.data;
-        scanCanvas.updateNodeStatus(nodeId, newStatus);
-        yield
-    }
-
-    function* discoverNodesSaga(action) {
-        const {nodeIds, connectionIds} = action.data;
-        scanCanvas.discoverNodes(nodeIds, connectionIds);
-        yield
-    }
-
-    return [
-        navigatePage, serverNavigatePage,
-        enterScanSaga, serverScanFullSaga, terminalSubmitSaga, updateNodeStatusSaga, discoverNodesSaga
-    ];
-
-};
-
-export default createScanSagas;
+export { enterScanSaga, serverScanFullSaga };

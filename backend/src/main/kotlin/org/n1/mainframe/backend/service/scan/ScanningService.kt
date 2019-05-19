@@ -311,13 +311,13 @@ class ScanningService(val scanService: ScanService,
         stompService.toScan(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
     }
 
-    data class ScanOverViewLine(val scanId: String, val siteName: String, val complete: Boolean)
+    data class ScanOverViewLine(val scanId: String, val siteName: String, val complete: Boolean, val siteId: String)
     fun scansOfPlayer(principal: Principal): Collection<ScanOverViewLine> {
         val scans = scanService.getAll(principal)
-        return scans.map {
-            val site = siteDataService.getById(it.siteId)
-            val complete = (it.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
-            ScanOverViewLine(it.id, site.name, complete)
+        return scans.map {scan ->
+            val site = siteDataService.getById(scan.siteId)
+            val complete = (scan.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
+            ScanOverViewLine(scan.id, site.name, complete, site.id)
         }
     }
 

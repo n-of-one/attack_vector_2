@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import initWebSocket from "../hacker/scan/ScanWebSocket"
-import createScanSagas from "../hacker/scan/saga/ScanRootSaga";
+import initWebSocket from "../hacker/WebSocketConnection"
+import createScanSagas from "../hacker/CreateHackerRootSaga";
 import createSagaMiddleware from 'redux-saga'
 import {applyMiddleware, createStore} from "redux";
 import RequiresRole from "../common/RequiresRole";
@@ -11,8 +11,6 @@ import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
 import {ENTER_SCAN} from "../hacker/scan/model/ScanActions";
 import {SCAN} from "../hacker/HackerPages";
-import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "../common/terminal/TerminalActions";
-import {ENTER_KEY, F12_KEY, F2_KEY} from "../KeyCodes";
 
 class ScanRoot extends Component {
 
@@ -43,20 +41,6 @@ class ScanRoot extends Component {
         });
     }
 
-    handleKeyDown(event) {
-        let {keyCode, key} = event;
-        if (keyCode >= F2_KEY && keyCode <= F12_KEY) {
-            return;
-        }
-
-        event.preventDefault();
-        if (keyCode === ENTER_KEY) {
-            this.store.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.store.getState().terminal.input, terminalId: "main"});
-        }
-        else {
-            this.store.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: "main"});
-        }
-    }
 
     init(scanId, siteId) {
         let preLoadedState = {currentPage: SCAN};
@@ -67,14 +51,6 @@ class ScanRoot extends Component {
             this.setState({initSuccess: success});
             if (success) {
                 store.dispatch({type: ENTER_SCAN, scanId: scanId});
-            }
-
-            setInterval(() => {
-                this.store.dispatch({type: TERMINAL_TICK});
-            }, 10);
-
-            window.onkeydown= (event) => {
-                this.handleKeyDown(event);
             }
 
         };

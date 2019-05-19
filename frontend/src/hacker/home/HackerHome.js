@@ -6,6 +6,7 @@ import TextInput from "../../common/component/TextInput";
 import {post} from "../../common/RestClient";
 import {notify, notify_fatal} from "../../common/Notification";
 import SilentLink from "../../common/component/SilentLink";
+import {ENTER_SCAN} from "./HomeActions";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -26,24 +27,25 @@ let scan = (siteName) => {
             notify_fatal("Connection to server failed, unable to continue.");
         }
     });
-
-
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        scanSite: scan
+        scanSite: scan,
+        enterScan: (scanInfo) => {
+            dispatch({type: ENTER_SCAN, scanId: scanInfo.scanId, siteId: scanInfo.siteId});
+        }
     };
 };
 
 let mapStateToProps = (state) => {
     return {
-        scans: state.scans
+        scans: state.home.scans
     };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({scanSite, scans}) => {
+    ({scanSite, scans, enterScan}) => {
 
         return (
             <span>
@@ -100,14 +102,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                     </thead>
                                     <tbody>
                                     {
-                                        scans.map((scanLine) => {
+                                        scans.map((scanInfo) => {
                                             return (
-                                                <tr key={scanLine.scanId}>
+                                                <tr key={scanInfo.scanId}>
                                                     <td className="table-very-condensed">
-                                                        <SilentLink href={"/hacker/scan/" + scanLine.scanId + "/"}>{scanLine.siteName}</SilentLink>
+                                                        <SilentLink onClick={() => { enterScan(scanInfo) } }>{scanInfo.siteName}</SilentLink>
                                                     </td>
-                                                    <td className="table-very-condensed">{(scanLine.complete) ? "yes": "no"}</td>
-                                                    <td className="table-very-condensed">{scanLine.scanId}</td>
+                                                    <td className="table-very-condensed">{(scanInfo.complete) ? "yes": "no"}</td>
+                                                    <td className="table-very-condensed">{scanInfo.scanId}</td>
                                                 </tr>);
                                         })
                                     }

@@ -1,4 +1,4 @@
-import {RECEIVE_SCANS} from "../HackerActions";
+import {RECEIVE_SCANS} from "./HomeActions";
 
 const defaultState = [];
 

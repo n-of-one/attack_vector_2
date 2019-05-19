@@ -15,7 +15,7 @@ const mapDispatchToProps = (dispatch) => {
 let mapStateToProps = (state) => {
     return {
         terminal: state.terminal,
-        messageTerminal: state.messageTerminal,
+        messageTerminal: state.scan.messageTerminal,
     };
 };
 
