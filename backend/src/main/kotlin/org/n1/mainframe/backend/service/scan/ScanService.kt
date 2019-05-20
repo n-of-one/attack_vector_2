@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.service.scan
 
-import org.n1.mainframe.backend.model.iam.UserPrincipal
 import org.n1.mainframe.backend.model.scan.NodeScan
 import org.n1.mainframe.backend.model.scan.Scan
 import org.n1.mainframe.backend.model.scan.UserScan
@@ -11,7 +10,6 @@ import org.n1.mainframe.backend.repo.UserScanRepo
 import org.n1.mainframe.backend.service.PrincipalService
 import org.n1.mainframe.backend.util.createId
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 @Service
 class ScanService(val scanRepo: ScanRepo,
@@ -42,8 +40,7 @@ class ScanService(val scanRepo: ScanRepo,
         scanRepo.save(scan)
     }
 
-    fun getAll(principal: Principal): List<Scan> {
-        val userId = (principal as UserPrincipal).userId
+    fun getAll(userId: String): List<Scan> {
         val userScans = userScanRepo.findAllByUserId(userId)
         val scanIds = userScans.map { it.scanId }
         return scanRepo.findByIdIn(scanIds)

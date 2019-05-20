@@ -1,10 +1,10 @@
-import {RECEIVE_SCANS} from "./HomeActions";
+import {SERVER_RECEIVE_USER_SCANS} from "./HomeActions";
 
 const defaultState = [];
 
 export default (state = defaultState, action) => {
     switch(action.type) {
-        case RECEIVE_SCANS : return action.data;
+        case SERVER_RECEIVE_USER_SCANS : return action.data;
         default: return state;
     }
 }

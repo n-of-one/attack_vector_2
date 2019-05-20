@@ -10,8 +10,8 @@ import hackerRootReducer from "./HackerRootReducer";
 import {post} from "../common/RestClient";
 import {notify_fatal} from "../common/Notification";
 import webSocketConnection from "./WebSocketConnection";
-import TerminalManager from "../common/terminal/TerminalManager";
-import {RECEIVE_SCANS} from "./home/HomeActions";
+import terminalManager from "../common/terminal/TerminalManager";
+import {RETRIEVE_USER_SCANS, SERVER_RECEIVE_USER_SCANS} from "./home/HomeActions";
 
 class HackerRoot extends Component {
 
@@ -26,24 +26,14 @@ class HackerRoot extends Component {
         const sagaMiddleware = createSagaMiddleware();
 
         this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
-        webSocketConnection.create(this.store);
+        webSocketConnection.create(this.store, () => {
+            this.store.dispatch({type: RETRIEVE_USER_SCANS});
+        });
 
         let scanRootSaga = createHackerRootSaga();
         sagaMiddleware.run(scanRootSaga);
 
-        new TerminalManager(this.store).start();
-
-        post({
-            url: "/api/scan/scansOfPlayer",
-            body: {},
-            ok: (scans) => {
-                this.store.dispatch({type: RECEIVE_SCANS, data: scans});
-            },
-            notok: () => {
-                notify_fatal("Failed to retreive scans.");
-            }
-        });
-
+        terminalManager.init(this.store);
     }
 
     renderIfAuthenticated() {

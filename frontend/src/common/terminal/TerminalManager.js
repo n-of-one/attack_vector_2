@@ -1,25 +1,43 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "./TerminalActions";
 
-export default class TerminalManager {
+class TerminalManager {
 
     store = null;
     dispatch = null;
+    terminalTickIntervalId = null;
+    running = false;
 
-    constructor(store) {
+    constructor() {
+    }
+
+    init(store) {
         this.store = store;
         this.dispatch = store.dispatch;
+        this.terminalTickIntervalId = setInterval(() => {
+            if (this.running) {
+                this.dispatch({type: TERMINAL_TICK});
+            }
+        }, 10);
+
+        window.onkeydown = (event) => {
+            if (this.running) {
+                this.handleKeyDown(event);
+            }
+        }
     }
 
     start() {
-        setInterval(() => {
-            this.dispatch({type: TERMINAL_TICK});
-        }, 10);
-
-        window.onkeydown= (event) => {
-            this.handleKeyDown(event);
-        }
+        this.running = true;
     }
+
+    stop() {
+        this.running = false;
+    }
+
+
+
+
 
     handleKeyDown(event) {
         let {keyCode, key} = event;
@@ -36,3 +54,7 @@ export default class TerminalManager {
         }
     }
 }
+
+const terminalManager = new TerminalManager();
+
+export default terminalManager;

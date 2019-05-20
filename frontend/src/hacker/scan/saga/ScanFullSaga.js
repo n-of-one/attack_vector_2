@@ -5,9 +5,16 @@ import {SCAN} from "../../HackerPages";
 import { select, put } from 'redux-saga/effects'
 import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../model/ScanActions";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalActions";
+import terminalManager from "../../../common/terminal/TerminalManager";
 
 const getState = (state) => state;
 const getCurrentPage = (state) => state.currentPage;
+
+
+function* retrieveUserScans(action) {
+    webSocketConnection.send("/av/scan/scansOfPlayer", "");
+}
+
 
 function* enterScanSaga(action) {
     const {scanId, siteId} = action;
@@ -19,6 +26,7 @@ function* enterScanSaga(action) {
     yield put({ type: TERMINAL_CLEAR, terminalId: "main"});
     yield put({ type: NAVIGATE_PAGE, to: SCAN, from: currentPage });
     webSocketConnection.send("/av/scan/enterScan", scanId);
+    terminalManager.start();
     yield
 }
 
@@ -30,8 +38,9 @@ function* serverScanFullSaga(action) {
 function* navigatePageSaga(action) {
     if (action.from === SCAN && action.to !== SCAN) {
         webSocketConnection.unsubscribe();
+        terminalManager.stop();
     }
     yield
 }
 
-export { enterScanSaga, serverScanFullSaga, navigatePageSaga };
+export { enterScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScans };

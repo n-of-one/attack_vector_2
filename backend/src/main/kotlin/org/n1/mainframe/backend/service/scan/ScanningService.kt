@@ -22,7 +22,6 @@ import org.n1.mainframe.backend.service.user.HackerActivityService
 import org.n1.mainframe.backend.service.user.HackerService
 import org.n1.mainframe.backend.util.s
 import org.springframework.stereotype.Service
-import java.security.Principal
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -311,14 +310,20 @@ class ScanningService(val scanService: ScanService,
         stompService.toScan(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
     }
 
+    fun scansOfPlayer() {
+        val userId = principalService.get().userId
+        scansOfPlayer(userId)
+    }
+
     data class ScanOverViewLine(val scanId: String, val siteName: String, val complete: Boolean, val siteId: String)
-    fun scansOfPlayer(principal: Principal): Collection<ScanOverViewLine> {
-        val scans = scanService.getAll(principal)
-        return scans.map {scan ->
+    fun scansOfPlayer(userId: String) {
+        val scans = scanService.getAll(userId)
+        val scanItems = scans.map {scan ->
             val site = siteDataService.getById(scan.siteId)
             val complete = (scan.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
             ScanOverViewLine(scan.id, site.name, complete, site.id)
         }
+        stompService.toUser(userId, ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
     }
 
     fun shareScan(scanId: String, user: User) {
@@ -335,6 +340,7 @@ class ScanningService(val scanService: ScanService,
         val siteData = siteDataService.getById(scan.siteId)
 
         stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
+        scansOfPlayer(user.id)
     }
 
 

@@ -1,8 +1,7 @@
 import webstomp from 'webstomp-client';
-import {notify, notify_fatal} from "../common/Notification";
 import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./scan/model/ScanActions";
-import {NAVIGATE_PAGE, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SET_USER_ID} from "../common/enums/CommonActions";
+import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "../common/enums/CommonActions";
 import {orderByDistance} from "./scan/lib/NodeDistance";
 
 class WebSocketConnection {
@@ -28,17 +27,17 @@ class WebSocketConnection {
 
     }
 
-    create(store) {
+    create(store, additionalOnWsOpen) {
         this.store = store;
         this.client = webstomp.client(this.url, {debug: false, heartbeat: {incoming: 0, outgoing: 0}});
         this.client.connect({}, (event) => {
-            this.onWsOpen(event);
+            this.onWsOpen(event, additionalOnWsOpen);
         }, () => {
             this.onWsConnectError();
         });
     }
 
-    onWsOpen(event) {
+    onWsOpen(event, additionalOnWsOpen) {
         let userId = event.headers["user-name"];
         // notify_neutral('Status','Connection with server established (' + userName + ")");
         this.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"});
@@ -46,6 +45,7 @@ class WebSocketConnection {
 
         this.setupHeartbeat();
         this.subscribe('/user/reply', false);
+        additionalOnWsOpen();
     }
 
 
