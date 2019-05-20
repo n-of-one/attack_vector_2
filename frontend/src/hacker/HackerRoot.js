@@ -7,11 +7,9 @@ import HackerPageChooser from "./HackerPageChooser";
 import createSagaMiddleware from 'redux-saga'
 import createHackerRootSaga from "./HackerRootSaga";
 import hackerRootReducer from "./HackerRootReducer";
-import {post} from "../common/RestClient";
-import {notify_fatal} from "../common/Notification";
 import webSocketConnection from "./WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
-import {RETRIEVE_USER_SCANS, SERVER_RECEIVE_USER_SCANS} from "./home/HomeActions";
+import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 
 class HackerRoot extends Component {
 

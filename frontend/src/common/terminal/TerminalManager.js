@@ -8,9 +8,6 @@ class TerminalManager {
     terminalTickIntervalId = null;
     running = false;
 
-    constructor() {
-    }
-
     init(store) {
         this.store = store;
         this.dispatch = store.dispatch;
@@ -34,10 +31,6 @@ class TerminalManager {
     stop() {
         this.running = false;
     }
-
-
-
-
 
     handleKeyDown(event) {
         let {keyCode, key} = event;

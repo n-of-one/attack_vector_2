@@ -7,14 +7,13 @@ import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../model/ScanActio
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalActions";
 import terminalManager from "../../../common/terminal/TerminalManager";
 
-const getState = (state) => state;
 const getCurrentPage = (state) => state.currentPage;
 
 
-function* retrieveUserScans(action) {
+function* retrieveUserScans() {
     webSocketConnection.send("/av/scan/scansOfPlayer", "");
+    yield
 }
-
 
 function* enterScanSaga(action) {
     const {scanId, siteId} = action;
