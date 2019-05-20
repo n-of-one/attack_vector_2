@@ -14,6 +14,7 @@ enum class ReduxActions {
 
 
     SERVER_RECEIVE_USER_SCANS,
+    SERVER_SITE_DISCOVERED,
     SERVER_SCAN_FULL,
 
     SERVER_TERMINAL_RECEIVE,
@@ -23,6 +24,7 @@ enum class ReduxActions {
     SERVER_DISCOVER_NODES,
 
     SERVER_USER_DC,
+
 
 
 }

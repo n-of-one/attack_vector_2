@@ -28,6 +28,11 @@ class ScanningController(
         executor.run(principal) { scanningService.scansOfPlayer() }
     }
 
+    @MessageMapping("/scan/scanForName")
+    fun scanForName(siteName: String, principal: Principal) {
+        executor.run(principal) { scanningService.scanSite(siteName) }
+    }
+
     @MessageMapping("/scan/enterScan")
     fun siteFull(siteId: String, principal: Principal) {
         executor.run(principal) { scanningService.enterScan(siteId) }

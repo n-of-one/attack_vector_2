@@ -1,7 +1,7 @@
 import webstomp from 'webstomp-client';
 import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "./scan/model/ScanActions";
-import {SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "../common/enums/CommonActions";
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "../common/enums/CommonActions";
 import {orderByDistance} from "./scan/lib/NodeDistance";
 
 class WebSocketConnection {
@@ -50,7 +50,7 @@ class WebSocketConnection {
 
 
     onWsConnectError(event) {
-        this.dispatch({type: SERVER_FORCE_DISCONNECT});
+        this.dispatch({type: SERVER_DISCONNECT});
     }
 
     setupHeartbeat() {

@@ -37,13 +37,19 @@ class ScanningService(val scanService: ScanService,
                       val hackerService: HackerService,
                       val principalService: PrincipalService) {
 
-    data class ScanResponse(val scanId: String?, val message: NotyMessage?)
 
-    fun scanSite(siteName: String): ScanResponse {
-        val siteData = siteDataService.findByName(siteName) ?: return ScanResponse(null, NotyMessage(NotyType.ERROR, "Error", "Site '${siteName}' not found"))
+    data class ScanSiteResponse(val scanId: String, val siteId: String)
+    fun scanSite(siteName: String) {
+        val siteData = siteDataService.findByName(siteName)
+        if (siteData == null) {
+            stompService.toUser(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+            return
+        }
+
         val nodeScans = createNodeScans(siteData.id)
         val scanId = scanService.createScan(siteData, nodeScans)
-        return ScanResponse(scanId, null)
+        val response = ScanSiteResponse(scanId, siteData.id)
+        stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
     }
 
     fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {

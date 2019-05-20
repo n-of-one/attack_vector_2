@@ -10,13 +10,18 @@ import terminalManager from "../../../common/terminal/TerminalManager";
 const getCurrentPage = (state) => state.currentPage;
 
 
-function* retrieveUserScans() {
+function* retrieveUserScansSaga() {
     webSocketConnection.send("/av/scan/scansOfPlayer", "");
     yield
 }
 
+function* scanForNameSaga(action) {
+    webSocketConnection.send("/av/scan/scanForName", action.siteName);
+    yield
+}
+
 function* enterScanSaga(action) {
-    const {scanId, siteId} = action;
+    const {scanId, siteId} = action.data;
     const currentPage = yield select(getCurrentPage);
 
     webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST);
@@ -42,4 +47,4 @@ function* navigatePageSaga(action) {
     yield
 }
 
-export { enterScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScans };
+export { enterScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScansSaga, scanForNameSaga };

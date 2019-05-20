@@ -3,37 +3,20 @@ import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 import MenuBar from "../../common/menu/MenuBar";
 import TextInput from "../../common/component/TextInput";
-import {post} from "../../common/RestClient";
-import {notify, notify_fatal} from "../../common/Notification";
 import SilentLink from "../../common/component/SilentLink";
-import {ENTER_SCAN} from "./HomeActions";
+import {ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
-let scan = (siteName) => {
-    post({
-        url: "/api/scan/site",
-        body: {siteName: siteName},
-        ok: ({scanId, message}) => {
-            if (scanId) {
-                document.location.href = "/hacker/scan/" + scanId;
-            }
-            else {
-                notify(message);
-            }
-        },
-        notok: () => {
-            notify_fatal("Connection to server failed, unable to continue.");
-        }
-    });
-};
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        scanSite: scan,
+        scanSite: (siteName) => {
+            dispatch({type: SCAN_FOR_NAME, siteName: siteName});
+        },
         enterScan: (scanInfo) => {
-            dispatch({type: ENTER_SCAN, scanId: scanInfo.scanId, siteId: scanInfo.siteId});
+            dispatch({type: ENTER_SCAN, data: {scanId: scanInfo.scanId, siteId: scanInfo.siteId}});
         }
     };
 };
@@ -106,9 +89,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                             return (
                                                 <tr key={scanInfo.scanId}>
                                                     <td className="table-very-condensed">
-                                                        <SilentLink onClick={() => { enterScan(scanInfo) } }>{scanInfo.siteName}</SilentLink>
+                                                        <SilentLink onClick={() => {
+                                                            enterScan(scanInfo)
+                                                        }}>{scanInfo.siteName}</SilentLink>
                                                     </td>
-                                                    <td className="table-very-condensed">{(scanInfo.complete) ? "yes": "no"}</td>
+                                                    <td className="table-very-condensed">{(scanInfo.complete) ? "yes" : "no"}</td>
                                                     <td className="table-very-condensed">{scanInfo.scanId}</td>
                                                 </tr>);
                                         })

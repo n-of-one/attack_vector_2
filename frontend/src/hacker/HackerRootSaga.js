@@ -1,12 +1,12 @@
 import {takeEvery, all} from 'redux-saga/effects'
 import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
 import {AUTO_SCAN, PROBE_SCAN_NODE, SERVER_DISCOVER_NODES, SERVER_PROBE_LAUNCH, SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "./scan/model/ScanActions";
-import {ENTER_SCAN, RETRIEVE_USER_SCANS} from "./home/HomeActions";
+import {ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./scan/saga/ScanProbeSaga";
 import {discoverNodesSaga, updateNodeStatusSaga} from "./scan/saga/NodeSagas";
 import {serverUserDcSaga, terminalSubmitSaga} from "./scan/saga/TerminalSagas";
 import {SERVER_USER_DC, TERMINAL_SUBMIT} from "../common/terminal/TerminalActions";
-import {enterScanSaga, navigatePageSaga, retrieveUserScans, serverScanFullSaga} from "./scan/saga/ScanFullSaga";
+import {enterScanSaga, navigatePageSaga, retrieveUserScansSaga, serverScanFullSaga, scanForNameSaga} from "./scan/saga/ScanSaga";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
 
 const createHackerRootSaga = () => {
@@ -21,8 +21,11 @@ const createHackerRootSaga = () => {
         yield takeEvery(NAVIGATE_PAGE, navigatePageSaga);
         yield takeEvery(SERVER_USER_DC, serverUserDcSaga);
 
-        yield takeEvery(RETRIEVE_USER_SCANS, retrieveUserScans);
+        yield takeEvery(RETRIEVE_USER_SCANS, retrieveUserScansSaga);
+        yield takeEvery(SCAN_FOR_NAME, scanForNameSaga);
         yield takeEvery(ENTER_SCAN, enterScanSaga);
+        yield takeEvery(SERVER_SITE_DISCOVERED, enterScanSaga);
+
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
         yield takeEvery(TERMINAL_SUBMIT, terminalSubmitSaga);
         //
