@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
-import MenuBar from "../../common/menu/MenuBar";
 import TextInput from "../../common/component/TextInput";
 import SilentLink from "../../common/component/SilentLink";
 import {ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
@@ -31,27 +30,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({scanSite, scans, enterScan}) => {
 
         return (
-            <span>
-            
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-2">
-                        <span className="text">&nbsp;</span>
+            <div className="row">
+                <div className="col-lg-6">
+                    <div className="row backgroundLight">
+                        &nbsp;
                     </div>
-                    <div className="col-lg-5 backgroundLight">
-                        <span className="text">&nbsp;</span>
-                    </div>
-                    <div className="col-lg-5 rightPane">
-                        <span className="text">Scans</span>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col-lg-2">
-                    </div>
-                    <div className="col-lg-5">
+                    <div className="row">
                         <div className="text">
-                            <strong>🜁 Verdant OS. 🜃</strong><br/>
+                            <strong>🜁 Verdant OS 🜃</strong><br/>
                             <br/>
                             Choose site to investigate or attack<br/>
                             <br/>
@@ -71,44 +57,63 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             </div>
                         </div>
                     </div>
-                    <div className="col-lg-5 rightPane rightPane">
-                        <div className="siteMap rightPaneDimensions">
-                            <div>&nbsp;</div>
-                            <div className="rightPanePadLeftRight">
-                                <table className="table table-condensed text-muted text" id="sitesTable">
-                                    <thead>
-                                    <tr>
-                                        <td className="strong">Site Name</td>
-                                        <td className="strong">Complete</td>
-                                        <td className="strong">Scan ID</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        scans.map((scanInfo) => {
-                                            return (
-                                                <tr key={scanInfo.scanId}>
-                                                    <td className="table-very-condensed">
-                                                        <SilentLink onClick={() => {
-                                                            enterScan(scanInfo)
-                                                        }}>{scanInfo.siteName}</SilentLink>
-                                                    </td>
-                                                    <td className="table-very-condensed">{(scanInfo.complete) ? "yes" : "no"}</td>
-                                                    <td className="table-very-condensed">{scanInfo.scanId}</td>
-                                                </tr>);
-                                        })
-                                    }
-                                    </tbody>
-                                </table>
+                </div>
+                <div className="col-lg-6 rightPane">
+
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <span className="text">Scans</span>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <div className="siteMap rightPaneDimensions">
+                                <div>&nbsp;</div>
+                                <div className="rightPanePadLeftRight">
+                                    <table className="table table-condensed text-muted text" id="sitesTable">
+                                        <thead>
+                                        <tr>
+                                            <td className="strong">Site Name</td>
+                                            <td className="strong">Complete</td>
+                                            <td className="strong">Scan ID</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {
+                                            scans.map((scanInfo) => {
+                                                return (
+                                                    <tr key={scanInfo.scanId}>
+                                                        <td className="table-very-condensed">
+                                                            <SilentLink onClick={() => {
+                                                                enterScan(scanInfo)
+                                                            }}>{scanInfo.siteName}</SilentLink>
+                                                        </td>
+                                                        <td className="table-very-condensed">{(scanInfo.complete) ? "yes" : "no"}</td>
+                                                        <td className="table-very-condensed">{scanInfo.scanId}</td>
+                                                    </tr>);
+                                            })
+                                        }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-                {/* container*/}
-                <MenuBar/>
-        </span>
+
 
         );
     });
+
+{/*<div className="row">*/}
+{/*<div className="col-lg-2">*/}
+{/*<span className="text">&nbsp;</span>*/}
+{/*</div>*/}
+{/*<div className="col-lg-5 backgroundLight">*/}
+{/*<span className="text">&nbsp;</span>*/}
+{/*</div>*/}
+{/*<div className="col-lg-5 rightPane">*/}
+{/*<span className="text">Scans</span>*/}
+{/*</div>*/}
+{/*</div>*/}

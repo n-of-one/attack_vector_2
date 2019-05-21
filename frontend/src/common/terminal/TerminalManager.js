@@ -12,9 +12,7 @@ class TerminalManager {
         this.store = store;
         this.dispatch = store.dispatch;
         this.terminalTickIntervalId = setInterval(() => {
-            if (this.running) {
-                this.dispatch({type: TERMINAL_TICK});
-            }
+            this.dispatch({type: TERMINAL_TICK});
         }, 10);
 
         window.onkeydown = (event) => {

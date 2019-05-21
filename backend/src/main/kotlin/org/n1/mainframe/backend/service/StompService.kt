@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.service
 
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.ReduxEvent
+import org.n1.mainframe.backend.model.user.User
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.stereotype.Service
@@ -59,6 +60,9 @@ class StompService(
 
     fun terminalReceiveForId(terminalId: String, vararg lines: String) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
+    }
+    fun terminalReceiveForId(user: User, terminalId: String, vararg lines: String) {
+        toUser(user.id, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }
 
 }

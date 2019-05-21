@@ -26,36 +26,28 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({terminal, messageTerminal, dispatch}) => {
 
         return (
-            <span>
-
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-2">
-                        <span className="text">&nbsp;</span>
+            <div className="row">
+                <div className="col-lg-6">
+                    <div className="row backgroundLight">
+                        &nbsp;
                     </div>
-                    <div className="col-lg-5 backgroundLight">
-                        <span className="text">&nbsp;</span>
-                    </div>
-                    <div className="col-lg-5 rightPane">
-                        <span className="text">Site: </span>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col-lg-2">
-                        <Terminal terminal={messageTerminal} dispatch={dispatch} height="300px" />
-                    </div>
-                    <div className="col-lg-5">
+                    <div className="row">
                         <Terminal terminal={terminal} dispatch={dispatch} height="780px"/>
                     </div>
-                    <div className="col-lg-5 rightPane">
-                        <ScanCanvasPanel />
+                </div>
+                <div className="col-lg-6 rightPane">
+
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <span className="text">Scans</span>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <ScanCanvasPanel />
+                        </div>
                     </div>
                 </div>
-
             </div>
-            <MenuBar/>
-        </span>
-
         );
     });

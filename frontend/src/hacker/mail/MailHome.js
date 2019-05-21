@@ -13,9 +13,38 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
+const defaultState = {
+    "mail-1234-2144":
+        {
+            id: "mail-1234-2144",
+            timestamp: new Date(),
+            read: false,
+            from: "overlord12",
+            title: "scan for hiveboats-pradza.edu.gov",
+            lines: [
+                {type: "text", data: "Welcome to verdant technologies."},
+                {type: "text", data: "This is your first email."},
+                {type: "text", data: "Sure is exciting!."},
+            ]
+        },
+    "mail-2233-fd99":
+        {
+            id: "mail-2233-fd99",
+            timestamp: new Date(),
+            read: false,
+            from: "system",
+            title: "hardware error detected",
+            lines: [
+                {type: "text", data: "Welcome to verdant technologies."},
+                {type: "text", data: "This is your second mail."},
+                {type: "text", data: "The thrill of it ;)"},
+            ]
+        }
+};
+
 let mapStateToProps = (state) => {
     return {
-        mails: state.mails,
+        mails: defaultState,
         currentMail: state.currentMail,
     };
 };
@@ -81,7 +110,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="col-lg-5 rightPane rightPane">
                         <div className="row">
                             <div className="col-lg-12">
-                                <span className="text">&nbsp;</span>
+                                <span className="text">Mails</span>
                             </div>
                         </div>
                         <div className="row">
