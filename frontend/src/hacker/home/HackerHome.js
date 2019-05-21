@@ -105,15 +105,3 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         );
     });
-
-{/*<div className="row">*/}
-{/*<div className="col-lg-2">*/}
-{/*<span className="text">&nbsp;</span>*/}
-{/*</div>*/}
-{/*<div className="col-lg-5 backgroundLight">*/}
-{/*<span className="text">&nbsp;</span>*/}
-{/*</div>*/}
-{/*<div className="col-lg-5 rightPane">*/}
-{/*<span className="text">Scans</span>*/}
-{/*</div>*/}
-{/*</div>*/}
