@@ -12,7 +12,7 @@ export default class HackerDisplay {
     y = null;
     x = null;
 
-    constructor(canvas, thread, startNode, iconThread) {
+    constructor(canvas, thread, startDisplay, iconThread) {
         this.canvas = canvas;
         this.thread = thread;
 
@@ -32,7 +32,7 @@ export default class HackerDisplay {
 
         this.canvas.add(this.hackerIcon);
 
-        const lineData = calcLine(this, startNode, 20, 20);
+        const lineData = calcLine(this, startDisplay);
 
         const lineIcon = new fabric.Line(
             lineData.asArray(), {
@@ -46,5 +46,9 @@ export default class HackerDisplay {
         this.canvas.add(lineIcon);
         this.canvas.sendToBack(lineIcon);
         this.thread.run(3, () => animate(this.canvas, lineIcon, "opacity", 0.5, 100));
+    }
+
+    size() {
+        return 30;
     }
 }

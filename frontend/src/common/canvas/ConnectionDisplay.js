@@ -6,21 +6,21 @@ export default class ConnectionDisplay {
     canvas = null;
     thread = null;
 
-    id = null;
-    fromIcon = null;
-    toIcon = null;
-
     connectionIcon = null;
 
-    constructor(canvas, thread, id, fromIcon, toIcon) {
+    connectionData = null;
+    fromDisplay= null;
+    toDisplay = null;
+
+    constructor(canvas, thread, connectionData, fromDisplay, toDisplay) {
         this.canvas = canvas;
         this.thread = thread;
 
-        this.id = id;
-        this.fromIcon = fromIcon;
-        this.toIcon = toIcon;
+        this.connectionData = connectionData;
+        this.fromDisplay = fromDisplay;
+        this.toDisplay = toDisplay;
 
-        const lineData = calcLine(fromIcon, toIcon, 22, 22);
+        const lineData = calcLine(fromDisplay, toDisplay);
 
         this.connectionIcon = new fabric.Line(
             lineData.asArray(), {
@@ -41,4 +41,26 @@ export default class ConnectionDisplay {
             animate(this.canvas, this.connectionIcon, "opacity", 0.5, 40);
         });
     }
+
+    show() {
+        this.connectionIcon.opacity = 1;
+    }
+    //
+    // moveFrom(newFromDisplay) {
+    //     this.fromDisplay = newFromDisplay;
+    //     this.move();
+    // }
+    //
+    // moveTo(newToDisplay) {
+    //     this.toDisplay = newToDisplay;
+    //     this.move();
+    // }
+
+    endPointsMoved() {
+        const lineData = calcLine(this.fromDisplay, this.toDisplay);
+
+        this.connectionIcon.set(lineData.asCoordinates());
+        this.connectionIcon.setCoords();
+    }
+
 }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import EditorCanvas from "./canvas/EditorCanvas";
+import EditorCanvas from "./EditorCanvas";
 import { DRAG_DROP_END } from "../EditorActions"
 
 export default class EditCanvasPanel extends Component {

@@ -1,7 +1,8 @@
 import {fabric} from "fabric";
-import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../EditorActions";
-import {assertNotNullUndef} from "../../../common/Assert";
-import {toType} from "../../../common/enums/NodeTypesNames";
+import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../EditorActions";
+import {assertNotNullUndef} from "../../common/Assert";
+import NodeDisplay from "../../common/canvas/NodeDisplay";
+import ConnectionDisplay from "../../common/canvas/ConnectionDisplay";
 
 /**
  * This class provides editor map like actions to the fabric canvas.
@@ -9,7 +10,7 @@ import {toType} from "../../../common/enums/NodeTypesNames";
 class EditorCanvas {
 
     constructor() {
-        this.nodesById = {};
+        this.nodeDisplayById = {};
         this.connections = [];
         this.dispatch = null;
         this.nodeSelected = null;
@@ -42,62 +43,40 @@ class EditorCanvas {
             allObjectsArray[0].remove();
         }
 
-        this.nodesById = {};
+        this.nodeDisplayById = {};
         this.connections = [];
         this.nodeSelected = null;
 
         let { nodes, connections } = siteState;
 
         nodes.forEach( node => {
-            this.addNodeWithoutRender(node);
+            this.addNode(node);
         });
 
         connections.forEach( connection => {
-            this.addConnectionWithoutRender(connection);
+            this.addConnection(connection);
         });
 
         this.render();
     }
 
-    addNodeWithoutRender(action) {
-        const status = (action.ice ? "_PROTECTED" : "_FREE");
-        const type = toType(action.type);
-        const imageId = type.name + status;
+    addNode(nodeData) {
+        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData);
+        nodeDisplay.show();
 
-        let image = document.getElementById(imageId);
-
-        let nodeData = {
-            id: action.id,
-            type: action.type
-        };
-
-        let node = new fabric.Image(image, {
-            left: action.x,
-            top: action.y,
-            height: image.height,
-            width: image.width,
-            lockRotation: true,
-            lockScalingX: true,
-            lockScalingY: true,
-
-            data: nodeData,
-        });
-
-        node.setControlsVisibility({
-            mt: false,
-            mb: false,
-            ml: false,
-            mr: false,
-            mtr: false
-        });
-
-        this.canvas.add(node);
-        this.nodesById[action.id] = node;
+        this.nodeDisplayById[nodeData.id] = nodeDisplay;
         this.canvas.deactivateAll();
+        this.render();
     }
 
-    addNodeWithRender(action) {
-        this.addNodeWithoutRender(action);
+    addConnection(connectionData) {
+        let fromDisplay = this.nodeDisplayById[connectionData.fromId];
+        let toDisplay = this.nodeDisplayById[connectionData.toId];
+
+        let connectionDisplay = new ConnectionDisplay(this.canvas, null, connectionData, fromDisplay, toDisplay);
+        connectionDisplay.show();
+
+        this.connections.push(connectionDisplay);
         this.render();
     }
 
@@ -111,32 +90,26 @@ class EditorCanvas {
             x: event.target.left,
             y: event.target.top
         });
-
         // leads to moveNode
     }
 
     moveNode(action) {
         let nodeId = action.nodeId;
-        let node = this.nodesById[nodeId];
-        assertNotNullUndef(node, action);
+        let nodeDisplay = this.nodeDisplayById[nodeId];
+        assertNotNullUndef(nodeDisplay, action);
 
-        node.set({ left: action.x, top: action.y});
-        node.setCoords();
+        nodeDisplay.move(action);
 
         this.movingNode(nodeId);
     }
 
     movingNode(nodeId) {
-        let node = this.nodesById[nodeId];
+        const nodeDisplay = this.nodeDisplayById[nodeId];
+        nodeDisplay.moving();
 
         this.connections.forEach( connection => {
-            if (connection.data.fromId === nodeId) {
-                connection.set({x1: node.left, y1: node.top});
-                connection.setCoords();
-            }
-            if (connection.data.toId === nodeId) {
-                connection.set({x2: node.left, y2: node.top});
-                connection.setCoords();
+            if (connection.connectionData.fromId === nodeId || connection.connectionData.toId === nodeId) {
+                connection.endPointsMoved();
             }
         });
 
@@ -153,6 +126,12 @@ class EditorCanvas {
 
     canvasObjectSelected(event) {
         let selectedObject  =  event.target;
+
+        if (!selectedObject.data || !selectedObject.data.id) {
+            console.log("somehow selected a non-node: " + selectedObject);
+            return;
+        }
+
         if (this.nodeSelected && event.e && event.e.ctrlKey) {
             this.dispatch({type: ADD_CONNECTION, fromId: this.nodeSelected.data.id, toId: selectedObject.data.id });
             this.nodeSelected = selectedObject;
@@ -167,32 +146,6 @@ class EditorCanvas {
     canvasObjectDeSelected(event) {
         this.nodeSelected = null;
         this.dispatch({type: SELECT_NODE, data: null});
-    }
-
-    addConnectionWithoutRender(connectionData) {
-        let fromNode = this.nodesById[connectionData.fromId];
-        let toNode = this.nodesById[connectionData.toId];
-
-
-        let line = new fabric.Line(
-            [fromNode.left, fromNode.top, toNode.left, toNode.top], {
-                stroke: "#cccccc",
-                strokeWidth: 4,
-                strokeDashArray: [5, 5],
-                selectable: false,
-                hoverCursor: 'default',
-            });
-
-        line.data = connectionData;
-
-        this.canvas.add(line);
-        this.connections.push(line);
-        this.canvas.sendToBack(line);
-    }
-
-    addConnectionWithRender(connectionData) {
-        this.addConnectionWithoutRender(connectionData);
-        this.render();
     }
 
 }

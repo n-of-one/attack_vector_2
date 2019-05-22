@@ -67,7 +67,6 @@ let initWebSocket = (store, siteId, callback) => {
             }
         }
 
-        console.log(new Date().getMilliseconds());
         let event = {...body, globalState: store.getState()};
         store.dispatch(event);
     };

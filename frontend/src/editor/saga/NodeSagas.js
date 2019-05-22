@@ -1,4 +1,4 @@
-import editorCanvas from "../component/canvas/EditorCanvas";
+import editorCanvas from "../component/EditorCanvas";
 
 const createNodeSagas = (stompClient, siteId) => {
 
@@ -28,7 +28,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverNodeAddedSaga(action) {
-        yield editorCanvas.addNodeWithRender(action.data);
+        yield editorCanvas.addNode(action.data);
     }
 
 
@@ -52,7 +52,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverAddConnectionSaga(action) {
-        yield editorCanvas.addConnectionWithRender(action.data);
+        yield editorCanvas.addConnection(action.data);
     }
 
     function* deleteConnections(action) {

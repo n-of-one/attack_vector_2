@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {DELETE_CONNECTIONS, DELETE_NODE, SNAP} from "../EditorActions";
-import editorCanvas from "./canvas/EditorCanvas";
+import editorCanvas from "./EditorCanvas";
 
 const mapDispatchToProps = (dispatch) => {
     return {

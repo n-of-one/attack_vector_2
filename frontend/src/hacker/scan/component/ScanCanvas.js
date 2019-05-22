@@ -89,28 +89,31 @@ class ScanCanvas {
             this.connectionDataById[connectionData.id] = connectionData;
         });
 
-        this.addHackerDisplay(nodes[0]);
-
         nodes.forEach(node => {
+
             if (node.status !== UNDISCOVERED) {
                 this.addNodeDisplay(node);
             }
         });
-
         connections.forEach(connection => {
-            const fromIcon = this.displayById[connection.fromId];
-            const toIcon = this.displayById[connection.toId];
 
-            if (fromIcon && toIcon) {
-                this.addConnectionDisplay(connection.id, fromIcon, toIcon);
+            const fromDisplay = this.displayById[connection.fromId];
+            const toDisplay = this.displayById[connection.toId];
+            if (fromDisplay && toDisplay) {
+
+                this.addConnectionDisplay(connection.id, fromDisplay, toDisplay);
             }
         });
+
+        const startDisplay = this.displayById[nodes[0].id];
+
+        this.addHackerDisplay(startDisplay);
 
     }
 
 
-    addHackerDisplay(startNode) {
-        this.hackerDisplay = new HackerIcon(this.canvas, this.iconThread, startNode, this.iconThread);
+    addHackerDisplay(startDisplay) {
+        this.hackerDisplay = new HackerIcon(this.canvas, this.iconThread, startDisplay, this.iconThread);
         this.displayById["user-fixme-123"] = this.hackerDisplay;
     }
 
@@ -120,8 +123,8 @@ class ScanCanvas {
         nodeDisplay.appear();
     }
 
-    addConnectionDisplay(id, fromIcon, toIcon) {
-        const connectionDisplay = new ConnectionIcon(this.canvas, this.iconThread, id, fromIcon, toIcon);
+    addConnectionDisplay(id, fromDisplay, toDisplay) {
+        const connectionDisplay = new ConnectionIcon(this.canvas, this.iconThread, id, fromDisplay, toDisplay);
         this.displayById[id] = connectionDisplay;
         connectionDisplay.appear();
     }

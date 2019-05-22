@@ -39,8 +39,14 @@ const calcDistance = (from, to) => {
     return {xSpan: xSpan, ySpan: ySpan, distance: distance};
 };
 
-const calcLine = (from, to, fromOffset, toOffset, delta) => {
+const calcLine = (from, to, delta) => {
+    const fromOffset = from.size();
+    const toOffset = to.size();
 
+    return calcLineWithOffset(from, to, fromOffset, toOffset, delta);
+};
+
+const calcLineWithOffset = (from, to, fromOffset, toOffset, delta) => {
     const {xSpan, ySpan, distance} = calcDistance(from, to);
 
     const [xDelta, yDelta] = determineDelta(xSpan, ySpan, delta);
@@ -83,7 +89,7 @@ const determineDelta = (xSpan, ySpan, delta) => {
 const calcLineStart = (from, to, fromOffset, delta) => {
     const {distance} = calcDistance(from, to);
     const toOffset = distance - fromOffset;
-    return calcLine(from, to, fromOffset, toOffset, delta);
+    return calcLineWithOffset(from, to, fromOffset, toOffset, delta);
 };
 
 function easeLinear (t, b, c, d) {

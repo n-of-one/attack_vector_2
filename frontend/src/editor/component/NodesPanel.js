@@ -5,7 +5,7 @@ import {
     ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
 } from "../../common/enums/NodeTypesNames";
 import NodeImage from "./EditorNodeImage";
-import editorCanvas from "./canvas/EditorCanvas";
+import editorCanvas from "./EditorCanvas";
 
 /* eslint jsx-a11y/alt-text: 0*/
 

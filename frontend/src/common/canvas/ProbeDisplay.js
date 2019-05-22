@@ -67,7 +67,7 @@ export default class ConnectionDisplay {
 
         const lineIcon = this.createProbeLine(currentDisplay, nextDisplay);
         this.lineIcons.push(lineIcon);
-        const lineData = calcLine(currentDisplay, nextDisplay, 22, 22, 3);
+        const lineData = calcLine(currentDisplay, nextDisplay, 3);
         lineIcon.animate(lineData.asCoordinates(), {
             onChange: this.canvas.renderAll.bind(this.canvas),
             duration: time * 50,

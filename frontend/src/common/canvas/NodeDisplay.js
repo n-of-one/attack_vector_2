@@ -21,7 +21,7 @@ export default class NodeDisplay {
         this.thread = thread;
         this.nodeData = nodeData;
 
-        const image = this.getNodeIconImage(nodeData.id, nodeData);
+        const image = this.getNodeIconImage();
 
         this.x = nodeData.x;
         this.y = nodeData.y;
@@ -32,8 +32,17 @@ export default class NodeDisplay {
             height: image.height,
             width: image.width,
             opacity: 0,
-
+            data: nodeData,
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
         });
+        this.nodeIcon.setControlsVisibility({
+            ml: false,
+            mt: false,
+            mr: false,
+            mb: false,
+            mtr: false});
 
         this.canvas.add(this.nodeIcon);
 
@@ -48,7 +57,8 @@ export default class NodeDisplay {
             left: nodeData.x - 20,
             top: nodeData.y + 35,
             textAlign: "left", // "center", "right" or "justify".
-            opacity: 0
+            opacity: 0,
+            selectable: false,
         });
         this.canvas.add(this.labelIcon);
         this.nodeIcon.label = this.labelIcon;
@@ -59,7 +69,8 @@ export default class NodeDisplay {
             fill: "#333333",
             left: nodeData.x - 20,
             top: nodeData.y + 35,
-            opacity: 0
+            opacity: 0,
+            selectable: false,
         });
         this.canvas.add(this.labelBackgroundIcon);
         this.nodeIcon.labelBackgroundIcon = this.labelBackgroundIcon;
@@ -136,5 +147,36 @@ export default class NodeDisplay {
             }
         });
     };
+
+    size() {
+        return 22;
+        // 22
+        // 32
+    }
+
+
+    // Methods used by editor
+
+    show() {
+        this.nodeIcon.opacity = 0.5;
+        this.labelIcon.opacity = 1;
+        this.labelBackgroundIcon.opacity = 1;
+        this.canvas.renderAll();
+    }
+
+    move(action) {
+        this.nodeIcon.set({ left: action.x, top: action.y});
+        this.nodeIcon.setCoords();
+    }
+
+    moving() {
+        this.x = this.nodeIcon.left;
+        this.y = this.nodeIcon.top;
+        this.labelIcon.left = this.nodeIcon.left - 20;
+        this.labelIcon.top = this.nodeIcon.top + 35;
+        this.labelBackgroundIcon.left = this.nodeIcon.left - 20;
+        this.labelBackgroundIcon.top = this.nodeIcon.top + 35;
+    }
+
 
 };

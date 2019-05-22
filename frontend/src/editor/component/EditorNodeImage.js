@@ -16,8 +16,7 @@ let mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    (inp) => {
-        let {dispatch, theme, type, ice, title, onLoad} = inp;
+    ({dispatch, theme, type, ice, title, onLoad}) => {
 
         let dragStart = (syntheticEvent) => {
             let event = syntheticEvent.nativeEvent;
