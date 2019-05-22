@@ -60,6 +60,9 @@ class ScanCanvas {
         this.displayById = {};
         this.connectionDataById = {};
         this.hackerDisplay = null;
+
+        this.iconThread.deactivate();
+        this.probeThreads.deactivate();
         this.iconThread = new Thread();
         this.probeThreads = new Threads();
 
@@ -126,8 +129,7 @@ class ScanCanvas {
     launchProbe(probeData) {
         const probeThread = this.probeThreads.getOrCreateThread(probeData.probeUserId);
         const probeDisplay = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, this.userId, this.hackerDisplay, this.displayById)
-        // FIXME: add this to allow removal of probe when switching away from scan
-        // this.displayById[probeData.id] = probeDisplay
+        this.displayById[probeData.id] = probeDisplay
 
     }
 

@@ -12,7 +12,6 @@ const animate = (canvas, toAnimate, attribute, value, duration, easing) => {
 
 
 class LinePositions {
-
     line = null;
     constructor(x1, y1, x2, y2) {
         this.line = [x1, y1, x2, y2];
@@ -30,8 +29,6 @@ class LinePositions {
             y2: this.line[3]
         };
     }
-
-
 }
 
 const calcDistance = (from, to) => {
@@ -44,27 +41,9 @@ const calcDistance = (from, to) => {
 
 const calcLine = (from, to, fromOffset, toOffset, delta) => {
 
-    let xDelta = 0;
-    let yDelta = 0;
-    if (delta) {
-        const dy = Math.abs(ySpan / (xSpan === 0) ? 1 : xSpan);
-        if (dy < 0.5) {
-            xDelta = delta;
-            yDelta = 0;
-        }
-        else {
-            if (dy > 5) {
-                xDelta = 0;
-                yDelta = delta;
-            }
-            else {
-                xDelta = delta;
-                yDelta = delta;
-            }
-        }
-    }
-
     const {xSpan, ySpan, distance} = calcDistance(from, to);
+
+    const [xDelta, yDelta] = determineDelta(xSpan, ySpan, delta);
 
     const startRatio = fromOffset / distance;
     const finishRatio = (distance - toOffset) / distance;
@@ -75,6 +54,30 @@ const calcLine = (from, to, fromOffset, toOffset, delta) => {
     const y2 = Math.floor(from.y + ySpan * finishRatio) + yDelta;
 
     return new LinePositions(x1, y1, x2, y2);
+};
+
+const determineDelta = (xSpan, ySpan, delta) => {
+    if (!delta) {
+        return [0, 0];
+    }
+
+    const dy = ySpan / ((xSpan === 0) ? 1 : xSpan);
+    const sign = Math.sign(dy);
+    const dyAbs = Math.abs(dy);
+    if (dyAbs < 0.5) {
+        return [0, delta];
+    }
+    else if (dyAbs > 5) {
+        return [delta, 0];
+    }
+    else {
+        if (sign === 1) {
+            return [-delta, delta];
+        }
+        else {
+            return [delta, delta];
+        }
+    }
 };
 
 const calcLineStart = (from, to, fromOffset, delta) => {

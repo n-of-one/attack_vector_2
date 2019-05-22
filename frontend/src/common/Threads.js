@@ -26,4 +26,10 @@ export default class Threads {
         return newThread
     }
 
+    deactivate() {
+        Object.keys(this.threadsById).forEach(id => {
+            this.threadsById[id].deactivate();
+        });
+    }
+
 }

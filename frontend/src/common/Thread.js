@@ -17,6 +17,8 @@ export default class Thread {
      * If it is null, then there is no current main loop, and a new one needs to be started */
     intervalId = null;
 
+    active = true;
+
     constructor(term) {
         this.term = term;
         this.queue = [];
@@ -31,12 +33,23 @@ export default class Thread {
     }
 
     wait(wait) {
-        this.run(wait, function () {
-        });
+        if (!this.active) {
+            return;
+        }
+        this.run(wait, () => {});
     }
 
+    deactivate() {
+        this.active = false;
+        this.queue = [];
+        this.waitEnd = null;
+    }
 
     _schedule(event) {
+        if (!this.active) {
+            return;
+        }
+
         if (this.intervalId === null) {
             const that = this;
             this.intervalId = setInterval( () => { that._mainLoop(); }, 50);
