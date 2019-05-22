@@ -67,6 +67,15 @@ class EditorCanvas {
         this.nodeDisplayById[nodeData.id] = nodeDisplay;
         this.canvas.deactivateAll();
         this.render();
+
+        return nodeDisplay;
+    }
+
+    addNodeAndSelect(nodeData) {
+        const nodeDisplay = this.addNode(nodeData);
+        nodeDisplay.select();
+        this.nodeSelected = nodeDisplay.nodeIcon;
+        this.dispatch({type: SELECT_NODE, data: nodeDisplay.nodeIcon.data.id});
     }
 
     addConnection(connectionData) {

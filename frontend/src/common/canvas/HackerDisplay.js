@@ -12,7 +12,7 @@ export default class HackerDisplay {
     y = null;
     x = null;
 
-    constructor(canvas, thread, startDisplay, iconThread) {
+    constructor(canvas, thread, startDisplay) {
         this.canvas = canvas;
         this.thread = thread;
 

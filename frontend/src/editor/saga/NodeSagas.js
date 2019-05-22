@@ -28,7 +28,7 @@ const createNodeSagas = (stompClient, siteId) => {
     }
 
     function* serverNodeAddedSaga(action) {
-        yield editorCanvas.addNode(action.data);
+        yield editorCanvas.addNodeAndSelect(action.data);
     }
 
 

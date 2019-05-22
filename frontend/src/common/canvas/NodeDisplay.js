@@ -178,5 +178,9 @@ export default class NodeDisplay {
         this.labelBackgroundIcon.top = this.nodeIcon.top + 35;
     }
 
+    select() {
+        this.canvas.setActiveObject(this.nodeIcon);
+    }
+
 
 };
