@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate} from "./CanvasUtils";
+import {animate, calcLine} from "./CanvasUtils";
 
 export default class ConnectionDisplay {
 
@@ -20,8 +20,10 @@ export default class ConnectionDisplay {
         this.fromIcon = fromIcon;
         this.toIcon = toIcon;
 
+        const lineData = calcLine(fromIcon, toIcon, 22, 22);
+
         this.connectionIcon = new fabric.Line(
-            [fromIcon.x, fromIcon.y, toIcon.x, toIcon.y], {
+            lineData.asArray(), {
                 stroke: "#cccccc",
                 strokeWidth: 2,
                 strokeDashArray: [3, 3],

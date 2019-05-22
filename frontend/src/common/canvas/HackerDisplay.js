@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate} from "./CanvasUtils";
+import {animate, calcLine} from "./CanvasUtils";
 
 export default class HackerDisplay {
 
@@ -32,8 +32,10 @@ export default class HackerDisplay {
 
         this.canvas.add(this.hackerIcon);
 
-        const line = new fabric.Line(
-            [this.hackerIcon.left, this.hackerIcon.top, startNode.x, startNode.y], {
+        const lineData = calcLine(this, startNode, 20, 20);
+
+        const lineIcon = new fabric.Line(
+            lineData.asArray(), {
                 stroke: "#bb8",
                 strokeWidth: 2,
                 strokeDashArray: [4, 4],
@@ -41,10 +43,8 @@ export default class HackerDisplay {
                 hoverCursor: 'default',
                 opacity: 0
             });
-        this.canvas.add(line);
-        this.canvas.sendToBack(line);
-        this.thread.run(3, () => animate(this.canvas, line, "opacity", 0.5, 100));
-
-
+        this.canvas.add(lineIcon);
+        this.canvas.sendToBack(lineIcon);
+        this.thread.run(3, () => animate(this.canvas, lineIcon, "opacity", 0.5, 100));
     }
 }

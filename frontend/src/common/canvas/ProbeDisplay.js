@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate} from "./CanvasUtils";
+import {animate, calcLine, calcLineStart, easeLinear} from "./CanvasUtils";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/scan/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/scan/model/NodeScanTypes";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
@@ -14,6 +14,8 @@ export default class ConnectionDisplay {
     autoScan = null;
     userId = null;
     probeIcon = null;
+
+    lineIcons = [];
 
     constructor(canvas, thread, dispatch, {probeUserId, path, scanType, autoScan}, userId, hackerDisplay, displayById) {
         this.canvas = canvas;
@@ -40,9 +42,12 @@ export default class ConnectionDisplay {
 
         animate(this.canvas, this.probeIcon, "opacity", 0.4, 40);
 
+
+        let currentDisplay = hackerDisplay;
         path.forEach((nodeId) => {
             const nextDisplay = displayById[nodeId];
-            thread.run(20, () => this.moveStep(nextDisplay, 20, 5, 5));
+            this.scheduleMoveStep(nextDisplay, currentDisplay, 20, 5, 5);
+            currentDisplay = nextDisplay;
         });
         const lastNodeId = path.pop();
         thread.run(0, () => {
@@ -50,13 +55,43 @@ export default class ConnectionDisplay {
         });
     }
 
-
-    moveStep(nodeDisplay, time, leftDelta, topDelta) {
-        animate(this.canvas, this.probeIcon, 'left', nodeDisplay.x + leftDelta, time);
-        animate(this.canvas, this.probeIcon, 'top', nodeDisplay.y + topDelta, time);
+    scheduleMoveStep(nextDisplay, currentDisplay) {
+        this.thread.run(20, () => this.moveStep(nextDisplay, currentDisplay, 20, 5, 5));
     }
 
+    moveStep(nextDisplay, currentDisplay, time, leftDelta, topDelta) {
 
+
+        animate(this.canvas, this.probeIcon, 'left', nextDisplay.x + leftDelta, time);
+        animate(this.canvas, this.probeIcon, 'top', nextDisplay.y + topDelta, time);
+
+        const lineIcon = this.createProbeLine(currentDisplay, nextDisplay);
+        this.lineIcons.push(lineIcon);
+        const lineData = calcLine(currentDisplay, nextDisplay, 22, 22, 3);
+        lineIcon.animate(lineData.asCoordinates(), {
+            onChange: this.canvas.renderAll.bind(this.canvas),
+            duration: time * 50,
+            easing: fabric.util.ease.easeInOutSine
+        });
+    }
+
+    createProbeLine(currentDisplay, nextDisplay) {
+        const lineData = calcLineStart(currentDisplay, nextDisplay, 22, 3);
+
+        const lineIcon = new fabric.Line(
+            lineData.asArray(), {
+                stroke: "#285ba0",
+                strokeWidth: 1,
+                selectable: false,
+                hoverCursor: 'default',
+                opacity: 1
+            });
+
+        this.canvas.add(lineIcon);
+        this.canvas.sendToBack(lineIcon);
+
+        return lineIcon;
+    }
 
     processProbeArrive(scanType, nodeId) {
         switch (scanType) {
@@ -82,17 +117,12 @@ export default class ConnectionDisplay {
             animate(this.canvas, this.probeIcon, 'height', "40", 50);
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 25);
         });
-        this.thread.run(10, () => {
-            animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
+        const finishMethod = () => {
             if (this.userId === this.probeUserId) {
                 this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: action});
             }
-        });
-
-        this.thread.run(10, () => {
-            this.canvas.remove(this.probeIcon);
-            this.performAutoScan();
-        });
+        };
+        this.finishProbe(finishMethod);
     }
 
     scanOutside(nodeId) {
@@ -106,16 +136,30 @@ export default class ConnectionDisplay {
             animate(this.canvas, this.probeIcon, 'height', "40", 50);
             animate(this.canvas, this.probeIcon, 'opacity', "0.3", 25);
         });
-        this.thread.run(10, () => {
-            animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
+        const finishMethod = () => {
             if (this.userId === this.probeUserId) {
                 this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: SCAN_CONNECTIONS});
             }
+        };
+        this.finishProbe(finishMethod)
+    }
+
+    finishProbe(finishMethod) {
+        this.thread.run(10, () => {
+            animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
+            this.lineIcons.forEach(lineIcon => {
+                animate(this.canvas, lineIcon, 'opacity', "0", 10);
+            });
+            finishMethod();
         });
         this.thread.run(10, () => {
             this.canvas.remove(this.probeIcon);
+            this.lineIcons.forEach(lineIcon => {
+                this.canvas.remove(lineIcon);
+            });
             this.performAutoScan();
         });
+
     }
 
     performAutoScan() {
