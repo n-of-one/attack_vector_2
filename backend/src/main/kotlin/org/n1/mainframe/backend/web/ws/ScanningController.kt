@@ -30,7 +30,7 @@ class ScanningController(
 
     @MessageMapping("/scan/scanForName")
     fun scanForName(siteName: String, principal: Principal) {
-        executor.run(principal) { scanningService.scanSite(siteName) }
+        executor.run(principal) { scanningService.scanSiteForName(siteName) }
     }
 
     @MessageMapping("/scan/enterScan")

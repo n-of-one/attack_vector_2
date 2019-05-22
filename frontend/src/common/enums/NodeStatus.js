@@ -4,6 +4,9 @@ const TYPE = "TYPE";
 const CONNECTIONS = "CONNECTIONS";
 const SERVICES = "SERVICES";
 const FREE = "FREE";
+const PROTECTED = "PROTECTED";
+const HACKED = "HACKED";
+
 
 export {
     UNDISCOVERED,
@@ -12,4 +15,6 @@ export {
     CONNECTIONS,
     SERVICES,
     FREE,
+    PROTECTED,
+    HACKED,
 }

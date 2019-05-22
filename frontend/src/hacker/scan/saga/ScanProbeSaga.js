@@ -4,6 +4,7 @@ import {select} from 'redux-saga/effects'
 
 
 function* serverProbeLaunchSaga(action) {
+
     scanCanvas.launchProbe(action.data);
     yield
 }

@@ -39,7 +39,7 @@ class ScanningService(val scanService: ScanService,
 
 
     data class ScanSiteResponse(val scanId: String, val siteId: String)
-    fun scanSite(siteName: String) {
+    fun scanSiteForName(siteName: String) {
         val siteData = siteDataService.findByName(siteName)
         if (siteData == null) {
             stompService.toUser(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
@@ -160,7 +160,7 @@ class ScanningService(val scanService: ScanService,
         val scanType = determineNodeScanType(status) ?: NodeScanType.SCAN_NODE_DEEP
         val path = createNodePath(targetNode)
         val userId = principalService.get().userId
-        val probeAction = ProbeAction(userId = userId, path = path, scanType = scanType, autoScan = false)
+        val probeAction = ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false)
         stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 
@@ -179,7 +179,7 @@ class ScanningService(val scanService: ScanService,
         }
     }
 
-    data class ProbeAction(val userId: String, val path: List<String>, val scanType: NodeScanType, val autoScan: Boolean)
+    data class ProbeAction(val probeUserId: String, val path: List<String>, val scanType: NodeScanType, val autoScan: Boolean)
 
     fun createProbeAction(scan: Scan, autoScan: Boolean): ProbeAction? {
         val targetNode = findProbeTarget(scan)
@@ -187,7 +187,7 @@ class ScanningService(val scanService: ScanService,
         val scanType = determineNodeScanType(status) ?: return null
         val path = createNodePath(targetNode)
         val userId = principalService.get().userId
-        return ProbeAction(userId = userId, path = path, scanType = scanType, autoScan = autoScan)
+        return ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = autoScan)
     }
 
     private fun determineNodeScanType(status: NodeStatus): NodeScanType? {

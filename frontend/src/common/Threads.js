@@ -9,14 +9,14 @@ export default class Threads {
 
     threadsById = {};
 
-    run(id, wait, functionToRun) {
-        this.getOrCreateThread(id).run(wait, functionToRun);
-    }
-
-    wait(id, wait) {
-        this.getOrCreateThread(id).wait(wait);
-    }
-
+    // run(id, wait, functionToRun) {
+    //     this.getOrCreateThread(id).run(wait, functionToRun);
+    // }
+    //
+    // wait(id, wait) {
+    //     this.getOrCreateThread(id).wait(wait);
+    // }
+    //
     getOrCreateThread(id) {
         if (this.threadsById[id]) {
             return this.threadsById[id];
