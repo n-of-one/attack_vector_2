@@ -1,5 +1,5 @@
 import scanCanvas from "../component/ScanCanvas"
-import webSocketConnection from "../../WebSocketConnection";
+import webSocketConnection from "../../../common/WebSocketConnection";
 import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {SCAN} from "../../HackerPages";
 import { select, put } from 'redux-saga/effects'

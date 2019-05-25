@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import ServiceField from "./ServiceField";
 import ServiceLayer from "./ServiceLayer";
 import ServiceName from "./ServiceName";
-import {EDIT_NETWORK_ID, EDIT_SERVICE_DATA} from "../../EditorActions";
 import ServiceOs from "./ServiceOs";
 
 /* eslint jsx-a11y/alt-text: 0*/

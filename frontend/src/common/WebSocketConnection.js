@@ -1,8 +1,8 @@
 import webstomp from 'webstomp-client';
-import {TERMINAL_RECEIVE} from "../common/terminal/TerminalActions";
-import {SERVER_SCAN_FULL} from "./scan/model/ScanActions";
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "../common/enums/CommonActions";
-import {orderByDistance} from "./scan/lib/NodeDistance";
+import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
+import {SERVER_SCAN_FULL} from "../hacker/scan/model/ScanActions";
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
+import {orderByDistance} from "../hacker/scan/lib/NodeDistance";
 
 class WebSocketConnection {
 
@@ -27,9 +27,14 @@ class WebSocketConnection {
 
     }
 
-    create(store, additionalOnWsOpen) {
+    create(store, additionalOnWsOpen, waitForType) {
         this.store = store;
         this.client = webstomp.client(this.url, {debug: false, heartbeat: {incoming: 0, outgoing: 0}});
+
+        if (waitForType) {
+            this.waitFor(waitForType, null);
+        }
+
         this.client.connect({}, (event) => {
             this.onWsOpen(event, additionalOnWsOpen);
         }, () => {
@@ -90,7 +95,7 @@ class WebSocketConnection {
                 this.waitingIgnoreList = [];
             }
             else {
-                if (this.waitingIgnoreList.includes(action.type)) {
+                if (this.waitingIgnoreList === null || this.waitingIgnoreList.includes(action.type)) {
                     return
                 }
             }
@@ -122,7 +127,8 @@ class WebSocketConnection {
     }
 
     /** Ignore certain actions until an action with a specific type is received.
-     * Make sure we get the init scan event before we start parsing changes to the site */
+     * For example: make sure we get the init scan event before we start parsing changes to the site.
+     * if ignoreList is null, then all events are ignored that are not the specified type.*/
     waitFor(type, ignoreList) {
         this.waitingForType = type;
         this.waitingIgnoreList = ignoreList;

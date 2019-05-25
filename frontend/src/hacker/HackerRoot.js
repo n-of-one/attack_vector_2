@@ -7,12 +7,11 @@ import HackerPageChooser from "./HackerPageChooser";
 import createSagaMiddleware from 'redux-saga'
 import createHackerRootSaga from "./HackerRootSaga";
 import hackerRootReducer from "./HackerRootReducer";
-import webSocketConnection from "./WebSocketConnection";
+import webSocketConnection from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 
 class HackerRoot extends Component {
-
 
     constructor(props) {
         super(props);
@@ -22,13 +21,13 @@ class HackerRoot extends Component {
     init() {
         const preLoadedState = {currentPage: HACKER_HOME};
         const sagaMiddleware = createSagaMiddleware();
-
         this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
+
         webSocketConnection.create(this.store, () => {
             this.store.dispatch({type: RETRIEVE_USER_SCANS});
         });
 
-        let scanRootSaga = createHackerRootSaga();
+        const scanRootSaga = createHackerRootSaga();
         sagaMiddleware.run(scanRootSaga);
 
         terminalManager.init(this.store);
@@ -53,15 +52,4 @@ class HackerRoot extends Component {
 }
 
 export default HackerRoot
-// this.store = createStore(hackerReducer, {currentPage: HACKER_HOME});
-// post({
-//     url: "/api/scan/scansOfPlayer",
-//     body: {},
-//     ok: (scans) => {
-//         this.store.dispatch({type: RECEIVE_SCANS, data: scans});
-//     },
-//     notok: () => {
-//         notify_fatal("Failed to retreive scans.");
-//     }
-// });
 

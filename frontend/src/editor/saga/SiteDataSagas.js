@@ -1,14 +1,26 @@
-const createSiteDataSagas = (stompClient, siteId) => {
+import editorCanvas from "../component/EditorCanvas";
+import webSocketConnection from "../../common/WebSocketConnection";
+import {select} from 'redux-saga/effects'
 
-    function* editSiteDataSaga(action) {
-        let payload = { siteId: siteId, field: action.field, value: action.value };
-        let body = JSON.stringify(payload);
-        stompClient.send("/av/editSiteData", body);
-        yield
-    }
+const getSiteId = (state) => state.siteData.id;
 
-    return [ editSiteDataSaga ];
-};
+function* requestSiteFullSaga(action) {
+    webSocketConnection.send("/av/siteFull", action.siteId);
+    yield
+}
+
+function* serverSiteFullSaga(action) {
+    yield editorCanvas.loadSite(action.data);
+}
 
 
-export default createSiteDataSagas
+function* editSiteDataSaga(action) {
+    const siteId = yield select(getSiteId);
+    let payload = {siteId: siteId, field: action.field, value: action.value};
+    let body = JSON.stringify(payload);
+    webSocketConnection.send("/av/editSiteData", body);
+    yield
+}
+
+
+export {requestSiteFullSaga, serverSiteFullSaga, editSiteDataSaga}

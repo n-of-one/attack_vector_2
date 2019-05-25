@@ -1,4 +1,3 @@
-import SiteDataReducer from "./reducer/SiteDataReducer";
 import DragAndDropReducer from "./reducer/DragAndDropReducer";
 import ThemeReducer from "../common/reducer/ThemeReducer";
 import NodesReducer from "./reducer/NodesReducer";
@@ -6,10 +5,11 @@ import ConnectionsReducer from "./reducer/ConnectionsReducer";
 import LayoutReducer from "./reducer/LayoutReducer";
 import CurrentServiceReducer from "./reducer/CurrentServiceReducer";
 import {CurrentNodeReducer} from "./reducer/CurrentNodeReducer";
+import {SiteDataReducer} from "./reducer/SiteDataReducer";
 
 
 
-const editorReducer = (state, action) => {
+const editorRootReducer = (state, action) => {
     const newState = {};
     newState.siteData = SiteDataReducer(state.siteData, action);
     newState.layout = LayoutReducer(state.layout, action);
@@ -24,4 +24,4 @@ const editorReducer = (state, action) => {
 };
 
 
-export default editorReducer;
+export default editorRootReducer;

@@ -4,7 +4,6 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import GmRoot from "./gm/GmRoot";
 import EditorRoot from "./editor/EditorRoot";
 import Login from "./Login";
-import RunRoot from "./run/RunRoot";
 import HackerRoot from "./hacker/HackerRoot";
 import Cookies from "js-cookie";
 
@@ -40,7 +39,6 @@ render(
             <Route path="/hacker" component={HackerRoot} />
             <Route path="/gm" component={GmRoot} />
             <Route path="/edit/:siteId?" component={EditorRoot} />
-            <Route path="/run/:runId?" component={RunRoot} />
             <Route path="/" render={ReRoute} />
         </Switch>
     </BrowserRouter>,

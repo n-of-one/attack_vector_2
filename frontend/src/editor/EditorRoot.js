@@ -1,74 +1,47 @@
 import React, {Component} from 'react';
-import initWebSocket from "./EditorWebSocket"
 import { Provider} from "react-redux";
 import EditorHome from "./component/EditorHome";
 import createSagas from "./saga/EditorRootSaga";
 import createSagaMiddleware from 'redux-saga'
-import editorReducer from "./EditorReducer";
+import editorRootReducer from "./EditorRootReducer";
 import {applyMiddleware, createStore} from "redux";
-import { REQUEST_SITE_FULL} from "./EditorActions";
+import {REQUEST_SITE_FULL, SERVER_SITE_FULL} from "./EditorActions";
 import RequiresRole from "../common/RequiresRole";
+import webSocketConnection from "../common/WebSocketConnection";
+import {siteDataDefaultState} from "./reducer/SiteDataReducer";
 
 class EditorRoot extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { initSuccess: null, loginToken: null };
+        this.state = { initSuccess: null };
         this.errorMessage = null;
-        this.siteIdentifier = props.match.params.siteId;
-    }
+        this.siteId = props.match.params.siteId;
 
-    init() {
-        if (!this.siteIdentifier.startsWith("site-")) {
+        if (!this.siteId.startsWith("site-")) {
             this.errorMessage = "Cannot enter site name directly in URL";
-            this.setState({ initSuccess: false });
+            this.state = { initSuccess: false };
             return;
         }
-        let siteId = this.siteIdentifier;
-        let wsInit = (result) => { this.setState( { initSuccess: result }); };
-        wsInit.bind(this);
-
-        fetch("/api/health/")
-            .then( response => {
-                if (response.ok) {
-                    this.initServerState(siteId);
-                }
-                else {
-                    this.errorMessage = "Connection to server failed, unable to continue.";
-                    wsInit(false);
-                }
-            }
-        );
-    }
-
-    initServerState(siteId) {
         document.body.style.backgroundColor = "#f5f5f5";
 
-        let preLoadedState = { };
-        let sagaMiddleware = createSagaMiddleware();
-        let store = createStore(editorReducer, preLoadedState, applyMiddleware(sagaMiddleware));
+        const preLoadedState = { siteData: { ...siteDataDefaultState, id: this.siteId} };
+        const sagaMiddleware = createSagaMiddleware();
+        this.store = createStore(editorRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
-        let webSocketInitialized = (successState) => {
-            this.setState( { initSuccess: successState });
-            if (successState) {
-                store.dispatch({type: REQUEST_SITE_FULL, siteId: siteId});
-            }
-        };
-        webSocketInitialized.bind(this);
-        let stompClient = initWebSocket(store, siteId, webSocketInitialized);
-        let editorRootSaga = createSagas(stompClient, siteId);
+        webSocketConnection.create(this.store, () => {
+            webSocketConnection.subscribe('/topic/site/' + this.siteId);
+            this.state = { initSuccess: true };
+            this.store.dispatch({type: REQUEST_SITE_FULL, siteId: this.siteId});
+        }, SERVER_SITE_FULL);
+
+        const editorRootSaga = createSagas();
         sagaMiddleware.run(editorRootSaga);
-
-        this.store = store;
     }
 
     renderIfAuthenticated() {
-        if (this.state.initSuccess === null){
-            this.init();
-            return <h1>Loading...</h1>;
-        }
         if (this.state.initSuccess === false) {
-            return <h1>{ this.errorMessage }</h1>;
+            return <h1 className="text">{ this.errorMessage } <a href="/">Continue.</a></h1>;
         }
         return (
             <Provider store={this.store}>

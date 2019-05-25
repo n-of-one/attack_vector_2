@@ -4,22 +4,23 @@ import {
     SERVER_ADD_CONNECTION, SERVER_ADD_NODE,
     SERVER_MOVE_NODE, SERVER_SITE_FULL, SNAP
 } from "../EditorActions";
-import createNodeSagas from "./NodeSagas";
-import createSiteDataSagas from "./SiteDataSagas";
+import {
+    addConnectionSaga, deleteConnections, deleteNode, dropNodeSaga, moveNodeSaga, serverAddConnectionSaga,
+    serverMoveNodeSaga, serverNodeAddedSaga, snap
+} from "./NodeSagas";
+import {editSiteDataSaga, requestSiteFullSaga, serverSiteFullSaga} from "./SiteDataSagas";
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../../common/enums/CommonActions";
+import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../../common/saga/ServerSagas";
 
-const createSagas = (stompClient, siteId) => {
+const createSagas = () => {
 
-    let [
-        requestSiteFullSaga, serverSiteFullSaga,
-        dropNodeSaga, serverNodeAddedSaga,
-        moveNodeSaga, serverMoveNodeSaga,
-        addConnectionSaga, serverAddConnectionSaga,
-        deleteConnections, deleteNode, snap,
-    ] = createNodeSagas(stompClient, siteId);
-
-    let [ editSiteDataSaga ] = createSiteDataSagas(stompClient, siteId);
 
     function* allSagas() {
+        yield takeEvery(SERVER_NOTIFICATION, serverNotificationSaga);
+        yield takeEvery(SERVER_DISCONNECT, serverDisconnectSaga);
+        yield takeEvery(SERVER_FORCE_DISCONNECT, serverForceDisconnectSaga);
+        yield takeEvery(SERVER_ERROR, serverErrorSaga);
+
         yield takeEvery(REQUEST_SITE_FULL, requestSiteFullSaga);
         yield takeEvery(SERVER_SITE_FULL, serverSiteFullSaga);
 

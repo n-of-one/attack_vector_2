@@ -1,4 +1,4 @@
-import webSocketConnection from "../../WebSocketConnection";
+import webSocketConnection from "../../../common/WebSocketConnection";
 import {select, put} from 'redux-saga/effects'
 import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {HACKER_HOME} from "../../HackerPages";
