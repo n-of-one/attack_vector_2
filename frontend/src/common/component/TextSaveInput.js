@@ -22,7 +22,9 @@ export default class TextSaveInput extends Component {
     }
 
     componentWillReceiveProps = (props) => {
-        this.handleBlur(); // in case of select new node while current node still has pending changes.
+        if (props.value !== this.state.value) {
+            this.handleBlur(); // in case of select new node while current node still has pending changes.
+        }
         this.setState({value: props.value, saving: false, initialized: true});
     };
 

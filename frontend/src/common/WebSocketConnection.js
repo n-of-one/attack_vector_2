@@ -89,7 +89,7 @@ class WebSocketConnection {
             this.client.disconnect();
         }
 
-        if (this.waitingForType) {
+        if (this.waitingForType && action.type !== SERVER_ERROR) {
             if (action.type === this.waitingForType) {
                 this.waitingForType = null;
                 this.waitingIgnoreList = [];

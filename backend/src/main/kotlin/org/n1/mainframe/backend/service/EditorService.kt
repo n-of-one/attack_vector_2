@@ -12,6 +12,7 @@ class EditorService(
         val siteDataService: SiteDataService,
         val nodeService: NodeService,
         val connectionService: ConnectionService,
+        val siteValidationService: SiteValidationService,
         val stompService: StompService) {
 
     fun getByNameOrCreate(name: String): String {
@@ -48,8 +49,9 @@ class EditorService(
     }
 
 
-    fun update(command: EditSiteData) {
+    fun updateSiteData(command: EditSiteData) {
         siteDataService.update(command)
+        siteValidationService.validate(command.siteId)
     }
 
     fun moveNode(command: MoveNode) {

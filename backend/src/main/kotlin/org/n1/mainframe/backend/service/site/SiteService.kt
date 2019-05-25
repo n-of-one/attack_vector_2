@@ -14,13 +14,15 @@ class SiteService(
         val layoutService: LayoutService,
         val siteDataService: SiteDataService,
         val nodeService: NodeService,
-        val connectionService: ConnectionService
+        val connectionService: ConnectionService,
+        val siteStateService: SiteStateService
 ) {
 
     fun createSite(name: String): String {
         val id = siteDataService.createId()
         siteDataService.create(id, name)
         layoutService.create(id)
+        siteStateService.create(id)
         return id
     }
 
@@ -31,8 +33,9 @@ class SiteService(
         val nodes = nodeService.getAll(siteId)
         val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
         val connections = connectionService.getAll(siteId)
+        val state = siteStateService.getById(siteId)
 
-        return SiteFull(siteId, siteData, layout, nodes, connections, startNodeId)
+        return SiteFull(siteId, siteData, layout, nodes, connections, state, startNodeId )
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {

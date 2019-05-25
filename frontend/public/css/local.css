@@ -106,6 +106,7 @@ body {
     line-height: 14px;
 }
 
+
 .btn-spaced {
     margin-right: 0.3em;
 }
@@ -199,6 +200,38 @@ a.textLink {
 .table > tbody > tr > td,
 .table > tfoot > tr > td {
     border-top: 1px solid #444;
+}
+
+.site-state {
+    height: 95px;
+    overflow-y : auto;
+    overflow-x: hidden;
+    scrollbar-width: 12px;
+    scrollbar-color: #666 #444;
+}
+
+.site-state-text {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 24px;
+}
+.site-state::-webkit-scrollbar {
+    width: 12px;
+}
+
+.site-state::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 5px;
+}
+
+.site-state::-webkit-scrollbar-track {
+    background: #444;
+    border-radius: 5px;
+}
+
+.thin-hr {
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 /*.rightPane {*/

@@ -6,6 +6,7 @@ import {SiteDataReducer} from "./reducer/SiteDataReducer";
 import {NodesReducer} from "./reducer/NodesReducer";
 import CurrentNodeIdReducer from "./reducer/CurrentNodeIdReducer";
 import CurrentServiceIdReducer from "./reducer/CurrentServiceIdReducer";
+import SiteStateReducer from "./reducer/SiteStateReducer";
 
 
 
@@ -19,6 +20,7 @@ const editorRootReducer = (state, action) => {
     newState.connections = ConnectionsReducer(state.connections, action);
     newState.currentNodeId = CurrentNodeIdReducer(state.currentNodeId, action, state.nodes);
     newState.currentServiceId = CurrentServiceIdReducer(state.currentServiceId, action, state.nodes);
+    newState.state = SiteStateReducer(state.state, action);
 
     return newState;
 };

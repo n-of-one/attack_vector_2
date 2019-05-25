@@ -158,7 +158,7 @@ class EditorCanvas {
     }
 
     updateNetworkId({nodeId, value}) {
-        const display = this.nodeDisplayById[nodeId]
+        const display = this.nodeDisplayById[nodeId];
         display.updateNetworkId(value);
     }
 }

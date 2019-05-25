@@ -1,7 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
-import SiteData from "./SiteData";
 import EditorMain from "./EditorMain";
+import EditorTop from "./EditorTop";
+import EditorBottom from "./EditorBottom";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -17,10 +18,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         return (
             <div className="container">
                 <br/>
-                <SiteData />
+                <EditorTop />
                 <br />
                 <EditorMain />
+                <br />
+                <EditorBottom />
                 {/*<h2>Editor for { this.store.getState().siteLink }</h2>*/}
+
             </div>
         );
     });

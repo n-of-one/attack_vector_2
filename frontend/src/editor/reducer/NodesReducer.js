@@ -10,7 +10,7 @@ const NodesReducer = (state = [], action) => {
         case SERVER_MOVE_NODE:
             return moveNode(action.data, state);
         case SERVER_UPDATE_NETWORK_ID:
-            return serverUpdateNetworkId(action.data ,state);
+            return serverUpdateNetworkId(action.data, state);
         case SERVER_UPDATE_SERVICE_DATA :
             return serverUpdateServiceData(action.data, state);
 

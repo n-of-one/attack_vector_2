@@ -28,6 +28,7 @@ enum class ReduxActions {
     SERVER_UPDATE_NETWORK_ID,
     SERVER_UPDATE_SERVICE_DATA,
 
+    SERVER_UPDATE_SITE_STATE,
 
 
 }
