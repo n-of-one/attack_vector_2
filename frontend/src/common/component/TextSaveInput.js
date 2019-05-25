@@ -2,35 +2,47 @@ import React, {Component} from 'react';
 
 const ENTER_KEY = 13;
 
+/**
+ * Props:
+ * id: "site_name"
+ * className: "form-control"
+ * placeholder: "Display name"
+ * value: "mySite"
+ * save: (value) => {...}
+ * type: "textArea" | * (default)
+ */
 export default class TextSaveInput extends Component {
 
-    state = {
-        value: null,
-        initialized: false,
-        saving: false
+    constructor(props, context, updater){
+        super(props, context, updater);
+        this.state = {
+            value: props.value,
+            saving: false,
+            initialized: true};
+    }
+
+    componentWillReceiveProps = (props) => {
+        this.setState({value: props.value, saving: false, initialized: true});
     };
 
-    componentWillReceiveProps(props) {
-        this.setState({value: props.value, saving: false, initialized: true});
-    }
+    handleChange = (event) => {
+        const newValue = event.target.value;
+        this.setState({value: newValue, initialized: true, saving: false});
+    };
 
-    handleChange(event) {
-        this.setState({value: event.target.value, initialized: true, saving: false});
-    }
-
-    handleKeyDown(event) {
+    handleKeyDown = (event) => {
         if (event.keyCode === ENTER_KEY) {
             event.target.blur();
         }
-    }
+    };
 
-    handleBlur(event) {
+    handleBlur = (event) => {
         const {value} = (this.state) ? this.state : '';
         if (this.state.value !== this.props.value) {
             this.props.save(value);
             this.setState({...this.state, saving: true});
         }
-    }
+    };
 
     render() {
         const {className, placeholder} = this.props;

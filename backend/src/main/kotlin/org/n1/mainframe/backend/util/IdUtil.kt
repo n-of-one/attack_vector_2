@@ -13,7 +13,8 @@ fun createId(prefix: String, findExisting: (String)-> Any? = ::neverFindExisting
 }
 
 fun createServiceId(siteId: String, findExisting: (String)-> Any?): String {
-    return createId("$siteId-serv", findExisting, 9, 13)
+    val siteUnique = siteId.substring(5)
+    return createId("svc-${siteUnique}", findExisting, 9, 13)
 }
 
 fun createId(prefix: String, findExisting: (String)-> Any?, start: Int, end: Int): String {

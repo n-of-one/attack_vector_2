@@ -47,40 +47,6 @@ class Login extends Component {
                 this.setState({message: "Connection to server failed, unable to continue."});
             }
         });
-
-
-        // fetch("/api/login", {
-        //         credentials: 'include',
-        //         method: "POST",
-        //         headers: { "Content-Type": "application/json" },
-        //         body: JSON.stringify(loginInput),
-        //     }
-        // ).then(response => {
-        //     if (response.ok) {
-        //         response.text().then(data => {
-        //             const {success, message} = JSON.parse(data);
-        //             if (success) {
-        //                 const search = document.location.search;
-        //                 if (search.length <= 5) {
-        //                     document.location.href = "/";
-        //                 }
-        //                 else {
-        //                     const next = search.substring(search.indexOf('=') + 1);
-        //                     document.location.href = next;
-        //                 }
-        //             }
-        //             else {
-        //                 this.setState({message: message})
-        //             }
-        //         });
-        //     }
-        //     else {
-        //
-        //     }
-        // }
-        // ).catch(error => {
-        //     console.log(error);
-        // });
     }
 
     render() {
@@ -95,7 +61,7 @@ class Login extends Component {
                     <div className="col-lg-offset-2 col-lg-5">
                         <form className="form-horizontal" onSubmit={(event) => this.login(event)}>
                             <div className="form-group">
-                                <div className="col-sm-offset-2 col-sm-10">
+                                <div className="col-sm-offset-2 col-sm-10 text">
                                     <p>&nbsp;{this.state.message}</p>
                                 </div>
                             </div>

@@ -1,14 +1,14 @@
 package org.n1.mainframe.backend.service.site
 
-import org.n1.mainframe.backend.model.site.NETWORK_ID
+import org.n1.mainframe.backend.model.service.OsService
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
-import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.site.command.AddNode
 import org.n1.mainframe.backend.model.ui.site.command.MoveNode
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.util.createId
 import org.n1.mainframe.backend.util.createServiceId
+import java.util.*
 
 
 @org.springframework.stereotype.Service
@@ -19,28 +19,27 @@ class NodeService(
 
     fun createNode(command: AddNode): Node {
         val id = createId("node", nodeRepo::findById)
-        val services = listOf( createOsService(command.siteId) )
+        val siteId = command.siteId
+        val nodes = getAll(siteId)
+        val services = listOf( createOsService(siteId, nodes) )
+        val networkId = nextFreeNetworkId( siteId, nodes )
 
         val node = Node(
                 id = id,
-                siteId = command.siteId,
+                siteId = siteId,
                 type = command.type,
                 x = command.x,
                 y = command.y,
                 ice = command.type.ice,
                 services = services,
-                networkId = services[0].data[NETWORK_ID]!!)
+                networkId = networkId)
         nodeRepo.save(node)
         return node
     }
 
-    private fun createOsService(siteId: String): Service {
-        val nodes = getAll(siteId)
+    private fun createOsService(siteId: String, nodes: List<Node>): Service {
         val id = createServiceId(nodes, siteId)
-        val networkId = nextFreeNetworkId( siteId, nodes )
-        val data = mapOf(NETWORK_ID to networkId)
-
-        return Service(id, ServiceType.OS, 0, data)
+        return OsService(id)
     }
 
     private fun createServiceId(nodes: List<Node>, siteId: String): String {

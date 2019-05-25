@@ -19,6 +19,7 @@ let addNode = (data, nodeList) => {
         connections: [ ],
         services: data.services,
         ice: data.ice,
+        networkId: data.networkId,
     };
     return [ ...nodeList, node ];
 };

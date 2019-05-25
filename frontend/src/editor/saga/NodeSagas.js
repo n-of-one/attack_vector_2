@@ -18,9 +18,6 @@ const createNodeSagas = (stompClient, siteId) => {
         let x = action.x - action.dragAndDropState.dx;
         let y = action.y - action.dragAndDropState.dy;
         let nodeType = action.dragAndDropState.type.name.toUpperCase();
-
-        console.log(new Date().getMilliseconds());
-
         let payload = { siteId: siteId, x, y, type: nodeType };
         let body = JSON.stringify(payload);
         stompClient.send("/av/addNode", body);
