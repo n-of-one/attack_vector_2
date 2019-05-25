@@ -3,12 +3,18 @@ package org.n1.mainframe.backend.service.site
 import org.n1.mainframe.backend.model.service.OsService
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
-import org.n1.mainframe.backend.model.ui.site.command.AddNode
-import org.n1.mainframe.backend.model.ui.site.command.MoveNode
+import org.n1.mainframe.backend.model.ui.site.AddNode
+import org.n1.mainframe.backend.model.ui.site.MoveNode
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.util.createId
 import org.n1.mainframe.backend.util.createServiceId
 import java.util.*
+
+const val NODE_MIN_X = 35
+const val NODE_MAX_X = 607 - 35
+
+const val NODE_MIN_Y = 35
+const val NODE_MAX_Y = 815 - 48 - 100
 
 
 @org.springframework.stereotype.Service
@@ -21,8 +27,8 @@ class NodeService(
         val id = createId("node", nodeRepo::findById)
         val siteId = command.siteId
         val nodes = getAll(siteId)
-        val services = listOf( createOsService(siteId, nodes) )
-        val networkId = nextFreeNetworkId( siteId, nodes )
+        val services = listOf(createOsService(siteId, nodes))
+        val networkId = nextFreeNetworkId(siteId, nodes)
 
         val node = Node(
                 id = id,
@@ -51,9 +57,9 @@ class NodeService(
     }
 
     private fun nextFreeNetworkId(siteId: String, nodes: List<Node>): String {
-        val usedNetworkIds : Set<String> = HashSet(nodes.map{ node:Node -> node.networkId  })
+        val usedNetworkIds: Set<String> = HashSet(nodes.map { node: Node -> node.networkId })
 
-        for (i in 0 .. usedNetworkIds.size+1 ) {
+        for (i in 0..usedNetworkIds.size + 1) {
             val candidate = String.format("%02d", i)
             if (!usedNetworkIds.contains(candidate)) {
                 return candidate
@@ -66,14 +72,18 @@ class NodeService(
         return nodeRepo.findBySiteId(siteId)
     }
 
-    fun getById(nodeId: String) : Node {
+    fun getById(nodeId: String): Node {
         return nodeRepo.findById(nodeId).orElseThrow { throw IllegalStateException("Node not found with id: ${nodeId}") }
     }
 
-    fun moveNode(command: MoveNode) {
+    fun moveNode(command: MoveNode): Node {
         val node = getById(command.nodeId)
-        val movedNode = node.copy(x = command.x, y = command.y)
+        val x = capX(command.x)
+        val y = capY(command.y)
+
+        val movedNode = node.copy(x = x, y = y)
         nodeRepo.save(movedNode)
+        return movedNode
     }
 
     fun purgeAll() {
@@ -88,10 +98,28 @@ class NodeService(
     fun snap(nodeIds: List<String>) {
         nodeIds.forEach { nodeId ->
             val node = getById(nodeId)
-            node.x = 40 * ((node.x + 20) / 40)
-            node.y = 40 * ((node.y + 20) / 40)
-            nodeRepo.save(node)
+
+            val x = capX(40 * ((node.x + 20) / 40))
+            val y = capY(40 * ((node.y + 20) / 40))
+            val copy = node.copy(x = x, y = y)
+
+            nodeRepo.save(copy)
         }
+
+    }
+
+    fun capX(x: Int): Int {
+        return capRange(x, NODE_MIN_X, NODE_MAX_X)
+    }
+
+    fun capY(y: Int): Int {
+        return capRange(y, NODE_MIN_Y, NODE_MAX_Y)
+    }
+
+    fun capRange(value: Int, lowerBound: Int, upperBound: Int): Int {
+        val lowerCapped = Math.max(value, lowerBound)
+        val totalCapped = Math.min(lowerCapped, upperBound)
+        return totalCapped
     }
 
     fun getAllById(nodeIds: Collection<String>): List<Node> {
@@ -102,10 +130,13 @@ class NodeService(
         val nodes = nodeRepo.findBySiteIdAndNetworkId(siteId, networkId)
         if (nodes.isNotEmpty()) {
             return nodes[0]
-        }
-        else {
+        } else {
             return null
         }
+    }
+
+    fun save(node: Node) {
+        nodeRepo.save(node)
     }
 
 }

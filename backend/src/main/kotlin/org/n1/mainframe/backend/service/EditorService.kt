@@ -1,10 +1,7 @@
 package org.n1.mainframe.backend.service
 
 import org.n1.mainframe.backend.model.ui.ValidationException
-import org.n1.mainframe.backend.model.ui.site.command.AddConnection
-import org.n1.mainframe.backend.model.ui.site.command.AddNode
-import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
-import org.n1.mainframe.backend.model.ui.site.command.MoveNode
+import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.service.site.*
 import org.springframework.stereotype.Service
 
@@ -56,8 +53,9 @@ class EditorService(
     }
 
     fun moveNode(command: MoveNode) {
-        nodeService.moveNode(command)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_MOVE_NODE, command)
+        val node = nodeService.moveNode(command)
+        val response = command.copy(x = node.x, y = node.y)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_MOVE_NODE, response)
     }
 
 
@@ -78,6 +76,25 @@ class EditorService(
         val layout = layoutService.getById(siteId)
         nodeService.snap(layout.nodeIds)
         sendSiteFull(siteId)
+    }
+
+    data class ServerUpdateNetworkId(val nodeId: String, val networkId: String)
+    fun editNetworkId(command: EditNetworkIdCommand) {
+        val node = nodeService.getById(command.nodeId)
+        val changedNode = node.copy(networkId = command.value)
+        nodeService.save(changedNode)
+        val message = ServerUpdateNetworkId(command.nodeId, node.networkId)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_NETWORK_ID, message)
+    }
+
+    data class ServerUpdateServiceData(val nodeId: String, val serviceId: String, val key: String, val value: String)
+    fun editServiceData(command: EditServiceDataCommand) {
+        val node = nodeService.getById(command.nodeId)
+        val service = node.services.find{ it.id == command.serviceId} ?: error("Service not found: ${command.serviceId} for ${command.nodeId}")
+        service.data[command.key] = command.value
+        nodeService.save(node)
+        val message = ServerUpdateServiceData(command.nodeId, command.serviceId, command.key, command.value)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_SERVICE_DATA, message)
     }
 
 

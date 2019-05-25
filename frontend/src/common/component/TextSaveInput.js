@@ -22,7 +22,12 @@ export default class TextSaveInput extends Component {
     }
 
     componentWillReceiveProps = (props) => {
+        this.handleBlur(); // in case of select new node while current node still has pending changes.
         this.setState({value: props.value, saving: false, initialized: true});
+    };
+
+    componentWillUnmount = () => {
+        this.handleBlur(); // in case of deselecting node with pending data.
     };
 
     handleChange = (event) => {
@@ -37,16 +42,18 @@ export default class TextSaveInput extends Component {
     };
 
     handleBlur = (event) => {
-        const {value} = (this.state) ? this.state : '';
+        if (!this.state.initialized) {
+            return;
+        }
         if (this.state.value !== this.props.value) {
-            this.props.save(value);
+            this.props.save(this.state.value);
             this.setState({...this.state, saving: true});
         }
     };
 
     render() {
         const {className, placeholder} = this.props;
-        let text = (this.state.initialized) ? this.state.value : this.props.value;
+        let text = this.state.value;
 
         // Don't have text be null or undefined, this will cause React to treat the Input as
         // an uncontrolled component and then later detect that it is now a controlled component.

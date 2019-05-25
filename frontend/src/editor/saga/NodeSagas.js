@@ -12,7 +12,7 @@ function* dropNodeSaga(action) {
     let nodeType = action.dragAndDropState.type.name.toUpperCase();
     let payload = {siteId: siteId, x, y, type: nodeType};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/addNode", body);
+    webSocketConnection.send("/av/editor/addNode", body);
     yield
 }
 
@@ -25,7 +25,7 @@ function* moveNodeSaga(action) {
     const siteId = yield select(getSiteId);
     let payload = {siteId: siteId, nodeId: action.id, x: action.x, y: action.y};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/moveNode", body);
+    webSocketConnection.send("/av/editor/moveNode", body);
     yield
 }
 
@@ -37,7 +37,7 @@ function* addConnectionSaga(action) {
     const siteId = yield select(getSiteId);
     let payload = {siteId: siteId, fromId: action.fromId, toId: action.toId};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/addConnection", body);
+    webSocketConnection.send("/av/editor/addConnection", body);
     yield
 }
 
@@ -49,7 +49,7 @@ function* deleteConnections(action) {
     const siteId = yield select(getSiteId);
     let payload = {siteId: siteId, nodeId: action.nodeId};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/deleteConnections", body);
+    webSocketConnection.send("/av/editor/deleteConnections", body);
     yield
 }
 
@@ -57,7 +57,7 @@ function* deleteNode(action) {
     const siteId = yield select(getSiteId);
     let payload = {siteId: siteId, nodeId: action.nodeId};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/deleteNode", body);
+    webSocketConnection.send("/av/editor/deleteNode", body);
     yield
 }
 
@@ -65,7 +65,7 @@ function* snap(action) {
     const siteId = yield select(getSiteId);
     let payload = {siteId: siteId};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/snap", body);
+    webSocketConnection.send("/av/editor/snap", body);
     yield
 }
 

@@ -182,5 +182,9 @@ export default class NodeDisplay {
         this.canvas.setActiveObject(this.nodeIcon);
     }
 
+    updateNetworkId(networkId) {
+        this.labelIcon.setText(networkId);
+        this.canvas.renderAll();
+    }
 
 };

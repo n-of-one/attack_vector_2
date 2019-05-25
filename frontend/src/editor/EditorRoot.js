@@ -4,7 +4,7 @@ import EditorHome from "./component/EditorHome";
 import createSagas from "./saga/EditorRootSaga";
 import createSagaMiddleware from 'redux-saga'
 import editorRootReducer from "./EditorRootReducer";
-import {applyMiddleware, createStore} from "redux";
+import {applyMiddleware, compose, createStore} from "redux";
 import {REQUEST_SITE_FULL, SERVER_SITE_FULL} from "./EditorActions";
 import RequiresRole from "../common/RequiresRole";
 import webSocketConnection from "../common/WebSocketConnection";
@@ -27,7 +27,11 @@ class EditorRoot extends Component {
 
         const preLoadedState = { siteData: { ...siteDataDefaultState, id: this.siteId} };
         const sagaMiddleware = createSagaMiddleware();
-        this.store = createStore(editorRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
+
+        const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+        this.store = createStore(editorRootReducer, preLoadedState, composeEnhancers(applyMiddleware(sagaMiddleware)));
+
+        // this.store = createStore(editorRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         webSocketConnection.create(this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + this.siteId);

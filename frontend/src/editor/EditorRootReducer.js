@@ -1,11 +1,11 @@
 import DragAndDropReducer from "./reducer/DragAndDropReducer";
 import ThemeReducer from "../common/reducer/ThemeReducer";
-import NodesReducer from "./reducer/NodesReducer";
 import ConnectionsReducer from "./reducer/ConnectionsReducer";
 import LayoutReducer from "./reducer/LayoutReducer";
-import CurrentServiceReducer from "./reducer/CurrentServiceReducer";
-import {CurrentNodeReducer} from "./reducer/CurrentNodeReducer";
 import {SiteDataReducer} from "./reducer/SiteDataReducer";
+import {NodesReducer} from "./reducer/NodesReducer";
+import CurrentNodeIdReducer from "./reducer/CurrentNodeIdReducer";
+import CurrentServiceIdReducer from "./reducer/CurrentServiceIdReducer";
 
 
 
@@ -17,8 +17,8 @@ const editorRootReducer = (state, action) => {
     newState.theme = ThemeReducer(state.theme, action);
     newState.nodes = NodesReducer(state.nodes, action);
     newState.connections = ConnectionsReducer(state.connections, action);
-    newState.currentNode = CurrentNodeReducer(state.currentNode, action, state.nodes);
-    newState.currentService = CurrentServiceReducer(state.currentService, action, state.nodes);
+    newState.currentNodeId = CurrentNodeIdReducer(state.currentNodeId, action, state.nodes);
+    newState.currentServiceId = CurrentServiceIdReducer(state.currentServiceId, action, state.nodes);
 
     return newState;
 };

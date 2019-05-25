@@ -1,7 +1,7 @@
 package org.n1.mainframe.backend.service.site
 
 import org.n1.mainframe.backend.model.site.Connection
-import org.n1.mainframe.backend.model.ui.site.command.AddConnection
+import org.n1.mainframe.backend.model.ui.site.AddConnection
 import org.n1.mainframe.backend.repo.ConnectionRepo
 import org.n1.mainframe.backend.util.createId
 import org.springframework.stereotype.Service

@@ -4,7 +4,7 @@ import org.n1.mainframe.backend.model.site.SiteData
 import org.n1.mainframe.backend.model.ui.NotyMessage
 import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.model.ui.ValidationException
-import org.n1.mainframe.backend.model.ui.site.command.EditSiteData
+import org.n1.mainframe.backend.model.ui.site.EditSiteData
 import org.n1.mainframe.backend.repo.SiteDataRepo
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService

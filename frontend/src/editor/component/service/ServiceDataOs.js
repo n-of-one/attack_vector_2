@@ -4,6 +4,7 @@ import ServiceField from "./ServiceField";
 import ServiceLayer from "./ServiceLayer";
 import ServiceName from "./ServiceName";
 import ServiceOs from "./ServiceOs";
+import {findElementById} from "../../../common/Immutable";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -16,14 +17,21 @@ const mapDispatchToProps = (dispatch) => {
 let mapStateToProps = (state) => {
 
     return {
-        currentNode: state.currentNode,
-        currentService: state.currentService,
+        nodes: state.nodes,
+        currentNodeId: state.currentNodeId,
+        currentServiceId: state.currentServiceId,
 
     };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({currentNode, currentService, dispatch}) => {
+    ({nodes, currentNodeId, currentServiceId, dispatch}) => {
+        if (!currentNodeId) {
+            return <div/>
+        }
+
+        const currentNode = findElementById(nodes, currentNodeId);
+        const currentService = findElementById(currentNode.services, currentServiceId);
 
         const os = new ServiceOs(currentService, currentNode, dispatch);
 

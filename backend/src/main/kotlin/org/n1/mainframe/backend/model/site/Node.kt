@@ -6,8 +6,8 @@ data class Node(
         val id: String,
         val siteId: String,
         val type: NodeType,
-        var x: Int,
-        var y: Int,
+        val x: Int,
+        val y: Int,
         val ice: Boolean,
         val services: List<Service>,
         val networkId: String

@@ -21,7 +21,7 @@ class EditorCanvas {
 
         this.canvas = new fabric.Canvas('canvas', {
             width: 607,
-            height: 815,
+            height: 715,
             backgroundColor: "#333333",
         });
 
@@ -157,6 +157,10 @@ class EditorCanvas {
         this.dispatch({type: SELECT_NODE, data: null});
     }
 
+    updateNetworkId({nodeId, value}) {
+        const display = this.nodeDisplayById[nodeId]
+        display.updateNetworkId(value);
+    }
 }
 
 const editorCanvas = new EditorCanvas();

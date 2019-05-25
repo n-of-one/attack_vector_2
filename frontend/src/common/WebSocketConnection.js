@@ -122,6 +122,11 @@ class WebSocketConnection {
         this.subscribe('/topic/site/' + siteId, true);
     }
 
+    sendObject(path, payload) {
+        let data = JSON.stringify(payload);
+        this.send(path, data);
+    }
+
     send(path, data) {
         this.client.send(path, data);
     }
@@ -139,6 +144,10 @@ class WebSocketConnection {
             subscription.unsubscribe();
         });
         this.subscriptions = [];
+    }
+
+    abort() {
+        this.client.disconnect();
     }
 }
 

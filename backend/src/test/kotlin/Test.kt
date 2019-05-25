@@ -4,10 +4,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.n1.mainframe.backend.AttackVector
-import org.n1.mainframe.backend.model.site.Layout
-import org.n1.mainframe.backend.model.site.SiteData
 import org.n1.mainframe.backend.model.site.enums.NodeType
-import org.n1.mainframe.backend.model.ui.site.command.AddNode
+import org.n1.mainframe.backend.model.ui.site.AddNode
 import org.n1.mainframe.backend.repo.LayoutRepo
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.repo.SiteDataRepo

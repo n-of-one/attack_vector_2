@@ -6,5 +6,5 @@ open class Service(
         val id: String,
         val type: ServiceType,
         val layer: Int,
-        val data: Map<String, String>
+        val data: MutableMap<String, String>
 )

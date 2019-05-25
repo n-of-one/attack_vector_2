@@ -32,7 +32,7 @@ export default class EditCanvasPanel extends Component {
                 <br/>
                 <div id="canvas-container" onDragOver={(event) => this.allowDrop(event)}
                      onDrop={ (event) => this.drop_image_and_create_node(event)}>
-                    <canvas id="canvas" width="607" height="815" style={{"borderRadius": "3px 3px 3px 3px"}}/>
+                    <canvas id="canvas" width="607" height="715" style={{"borderRadius": "3px 3px 3px 3px"}}/>
                 </div>
             </div>
         );

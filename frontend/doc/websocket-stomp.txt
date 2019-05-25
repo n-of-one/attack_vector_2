@@ -11,10 +11,7 @@ it supports up to stomp 1.2
 
 
 ---
-
-
-
-
+Other considered alternatives:
 
 
 
