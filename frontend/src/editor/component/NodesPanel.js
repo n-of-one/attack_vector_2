@@ -26,11 +26,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         return (
             <div className="col-lg-2" id="node-library">
                 <div className="row">
-                    <div className="col-lg-12">
-                        <span className="text-muted"> Nodes, drag to editor</span>
-                    </div>
-                </div>
-                <div className="row">
                     <div className="col-lg-12 darkWell node_panel_no_right_padding" id="node-library">
                         <br/>
                         <p className="text-muted">Content nodes</p>
@@ -53,6 +48,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <NodeImage type={MANUAL_3} ice={true} title="Ice: manual / gm puzzle" onLoad={onLoad}/>
                         <br/>
                         <br/>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-lg-12">
+                        <span className="text-muted"> Nodes, drag to editor</span>
                     </div>
                 </div>
             </div>

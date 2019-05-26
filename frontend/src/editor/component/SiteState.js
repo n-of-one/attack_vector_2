@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import {connect} from "react-redux";
 import SilentLink from "../../common/component/SilentLink";
 import editorCanvas from "./EditorCanvas";

@@ -1,7 +1,5 @@
 import React from 'react';
 import {connect} from "react-redux";
-import SiteData from "./SiteData";
-import SiteState from "./SiteState";
 import SiteDataAdditional from "./SiteDataAdditional";
 
 const mapDispatchToProps = (dispatch) => {

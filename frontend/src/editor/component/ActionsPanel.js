@@ -37,11 +37,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         return (
             <span>
             <div className="row">
-                <div className="col-lg-12">
-                    <span className="text-muted">Actions</span>
-                </div>
-            </div>
-            <div className="row">
                 <div className="col-lg-12 darkWell">
                     <br/>
                     <div>

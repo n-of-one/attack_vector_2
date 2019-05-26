@@ -17,7 +17,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
             <div className="container">
-                <br/>
+                <br />
                 <EditorTop />
                 <br />
                 <EditorMain />
