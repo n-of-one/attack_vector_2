@@ -1,10 +1,11 @@
-import {SELECT_NODE, SERVER_ADD_SERVICE} from "../EditorActions";
+import {SELECT_NODE, SELECT_SERVICE, SERVER_ADD_SERVICE} from "../EditorActions";
 import {findElementById} from "../../common/Immutable";
 
 export default (state = null, action, nodes) => {
     switch(action.type) {
         case SELECT_NODE : return selectServiceFromSelectNode(action.data, nodes);
         case SERVER_ADD_SERVICE : return action.data.service.id;
+        case SELECT_SERVICE: return action.serviceId;
         default: return state;
     }
 }

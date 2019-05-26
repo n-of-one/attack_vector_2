@@ -4,45 +4,68 @@ import ServiceOsPanel from "./type/ServiceOsPanel";
 import {findElementById} from "../../../common/Immutable";
 import {OS, TEXT} from "./ServiceTypes";
 import ServiceTextPanel from "./type/ServiceTextPanel";
+import SilentLink from "../../../common/component/SilentLink";
+import {SELECT_SERVICE} from "../../EditorActions";
+import Glyphicon from "../../../common/component/Glyphicon";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 const mapDispatchToProps = (dispatch) => {
-    return {}
+    return {
+        selectService: service => dispatch({type: SELECT_SERVICE, serviceId: service.id}),
+    };
 };
+
 let mapStateToProps = (state) => {
     if (state.currentNodeId == null) {
-        return { serviceType: null };
+        return {services: [], currentService: null};
     }
     const node = findElementById(state.nodes, state.currentNodeId);
-    const service = findElementById(node.services, state.currentServiceId);
-    return { serviceType: service.type };
+    const currentService = findElementById(node.services, state.currentServiceId);
+    return {services: node.services, currentService: currentService};
 };
 
 const renderService = (serviceType) => {
     switch (serviceType) {
-        case null: return <> </>;
-        case OS: return <ServiceOsPanel />;
-        case TEXT: return <ServiceTextPanel />;
-        default: return <div className="text">ERROR: service type unknown: {serviceType}</div>
+        case null:
+            return <> </>;
+        case OS:
+            return <ServiceOsPanel/>;
+        case TEXT:
+            return <ServiceTextPanel/>;
+        default:
+            return <div className="text">ERROR: service type unknown: {serviceType}</div>
     }
+};
 
+
+const renderTab = (service, currentService, selectService) => {
+    const activeClassName = (service === currentService) ? "active" : "";
+
+    return (
+        <li role="presentation" className={activeClassName}>
+            <SilentLink onClick={() => selectService(service)} aria-controls="home" role="tab" data-toggle="tab">
+                <Glyphicon type={service.type} size="18px" />
+            </SilentLink>
+        </li>
+    );
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({serviceType}) => {
+    ({services, currentService, selectService}) => {
+        if (!currentService) {
+            return <> </>;
+        }
         return (
             <div className="row form-horizontal darkWell serviceLayerPanel">
                 <div className="row">&nbsp;</div>
 
                 <div className="col-lg-12">
                     <ul className="nav nav-tabs" role="tablist" id="node-services-tab-list">
-                        <li role="presentation" className="active">
-                            <a href="#" aria-controls="home" role="tab" data-toggle="tab">OS</a>
-                        </li>
+                        {services.map(service => renderTab(service, currentService, selectService))}
                     </ul>
                     <br/>
-                    { renderService(serviceType) }
+                    {renderService(currentService.type)}
                 </div>
             </div>
         );
