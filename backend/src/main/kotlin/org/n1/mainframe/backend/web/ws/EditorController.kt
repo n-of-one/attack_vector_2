@@ -2,7 +2,6 @@ package org.n1.mainframe.backend.web.ws
 
 import mu.KLogging
 import org.n1.mainframe.backend.engine.SerializingExecutor
-import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.ReduxEvent
 import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.service.EditorService
@@ -79,6 +78,13 @@ class EditorController(
     fun addService(command: CommandAddService, principal: Principal) {
         executor.run(principal) { editorService.addService(command) }
     }
+
+    @MessageMapping("/editor/removeService")
+    fun removeService(command: CommandRemoveService, principal: Principal) {
+        executor.run(principal) { editorService.removeService(command) }
+    }
+
+
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 

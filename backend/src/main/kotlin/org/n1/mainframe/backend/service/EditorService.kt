@@ -1,10 +1,10 @@
 package org.n1.mainframe.backend.service
 
+import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.service.site.*
-import org.n1.mainframe.backend.web.ws.EditorController
 
 @org.springframework.stereotype.Service
 class EditorService(
@@ -109,8 +109,14 @@ class EditorService(
 
         stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_SERVICE, message)
         siteValidationService.validate(command.siteId)
-
     }
 
+    fun removeService(command: CommandRemoveService) {
+        val message = nodeService.removeService(command)
 
+        if (message != null) {
+            stompService.toSite(command.siteId, ReduxActions.SERVER_REMOVE_SERVICE, message)
+            siteValidationService.validate(command.siteId)
+        }
+    }
 }

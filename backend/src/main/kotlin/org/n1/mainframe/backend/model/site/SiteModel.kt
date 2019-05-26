@@ -31,7 +31,7 @@ private const val KEY_NOTE = "note"
 abstract class Service(
         val id: String,
         val type: ServiceType,
-        val layer: Int,
+        var layer: Int,
         val data: MutableMap<String, String>
 ) {
 

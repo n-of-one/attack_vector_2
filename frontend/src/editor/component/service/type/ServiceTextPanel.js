@@ -30,20 +30,20 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             return <div/>
         }
 
-        const currentNode = findElementById(nodes, currentNodeId);
-        const currentService = findElementById(currentNode.services, currentServiceId);
+        const node = findElementById(nodes, currentNodeId);
+        const service = findElementById(node.services, currentServiceId);
 
-        const text = new ServiceText(currentService, currentNode, dispatch);
+        const text = new ServiceText(service, node, dispatch);
 
         // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
         const key = param => currentServiceId + ":" + param;
 
-        if (currentNode) {
+        if (node) {
             return (
                 <div className="tab-content" id="node-services-tab-content ">
                     <div className="tab-pane active">
-                        <ServiceName name="Text"/>
-                        <ServiceLayer layer={0} layourCount={1}/>
+                        <ServiceName name="Text" node={node} service={service}/>
+                        <ServiceLayer layer={service.layer} layourCount={node.services.length}/>
                         <ServiceField key={key("id")} size="small" name="Node id" value={text.id} readOnly={true} />
                         <ServiceField key={key("na")} size="small" name="Name" value={text.name} placeholder="00" save={value => text.saveName(value)}/>
                         <ServiceField key={key("ha")} size="large" name="Hacked text" value={text.text} placeholder="Data found: ..." save={value => text.saveText(value)} />

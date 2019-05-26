@@ -54,3 +54,9 @@ data class CommandAddService(
         val siteId: String,
         val nodeId: String,
         val serviceType: ServiceType)
+
+data class CommandRemoveService(
+        val siteId: String,
+        val nodeId: String,
+        val serviceId: String)
+

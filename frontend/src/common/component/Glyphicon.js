@@ -11,6 +11,7 @@ const determineClassName = ({type, name}) => {
 export default (props) => {
     const className = determineClassName(props);
     const size = (props.size) ? props.size : "14px";
+    const display = (props.display) ? props.display : "block";
 
-    return (<span className={className} style={{"font-size": size}}/>);
+    return (<span className={className} style={{"fontSize": size, display: display }}/>);
 };

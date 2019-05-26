@@ -28,6 +28,15 @@ function* addService(action) {
     yield
 }
 
+function* removeService(action) {
+    const siteId = yield select(getSiteId);
+    const payload = {...action, type: undefined, siteId: siteId};
+    webSocketConnection.sendObject("/av/editor/removeService", payload);
+    yield
+}
 
 
-export { editServiceData, editNetworkId, addService }
+
+
+
+export { editServiceData, editNetworkId, addService, removeService }

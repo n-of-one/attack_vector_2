@@ -26,7 +26,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 <div className="col-lg-3 serviceLabel">Layer</div>
                 <div className="col-lg-8">
                     <div className="text-muted strong service_text_label">
-                        0&nbsp;{downHtml}&nbsp;{upHtml}
+                        {layer}&nbsp;{downHtml}&nbsp;{upHtml}
                      </div>
                 </div>
             </div>

@@ -40,7 +40,9 @@ const glyphiconFromType = (type) => {
         case PASSWORD_SEARCH : return "glyphicon-tasks";
         case ALTERNATE : return "glyphicon-star";
         case UNHACKABLE : return "glyphicon-ban-circle";
-        default: return "unknown";
+        default:
+            console.log("unknown type:" + type);
+            return "glyphicon-thumbs-down";
 
     }
 };

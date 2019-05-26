@@ -8,7 +8,7 @@ import {
     EDIT_NETWORK_ID,
     EDIT_SERVICE_DATA,
     EDIT_SITE_DATA,
-    MOVE_NODE,
+    MOVE_NODE, REMOVE_SERVICE,
     REQUEST_SITE_FULL,
     SERVER_ADD_CONNECTION,
     SERVER_ADD_NODE,
@@ -23,7 +23,7 @@ import {
 import {editSiteDataSaga, requestSiteFullSaga, serverSiteFullSaga} from "./SiteDataSagas";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../../common/enums/CommonActions";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../../common/saga/ServerSagas";
-import {addService, editNetworkId, editServiceData} from "./ServiceSagas";
+import {addService, editNetworkId, editServiceData, removeService} from "./ServiceSagas";
 
 const createSagas = () => {
 
@@ -55,6 +55,9 @@ const createSagas = () => {
         yield takeEvery(EDIT_SERVICE_DATA, editServiceData);
         yield takeEvery(EDIT_NETWORK_ID, editNetworkId);
         yield takeEvery(ADD_SERVICE, addService);
+        yield takeEvery(REMOVE_SERVICE, removeService);
+
+
     }
 
     function* editorRootSaga() {

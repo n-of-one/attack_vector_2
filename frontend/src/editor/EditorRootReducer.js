@@ -19,7 +19,7 @@ const editorRootReducer = (state, action) => {
     newState.nodes = NodesReducer(state.nodes, action);
     newState.connections = ConnectionsReducer(state.connections, action);
     newState.currentNodeId = CurrentNodeIdReducer(state.currentNodeId, action, state.nodes);
-    newState.currentServiceId = CurrentServiceIdReducer(state.currentServiceId, action, state.nodes);
+    newState.currentServiceId = CurrentServiceIdReducer(state.currentServiceId, action, state.currentNodeId, state.nodes);
     newState.state = SiteStateReducer(state.state, action);
 
     return newState;

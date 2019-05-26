@@ -3,8 +3,7 @@ import {connect} from "react-redux";
 import {ADD_SERVICE} from "../EditorActions";
 import {
     ALTERNATE, CODE, CORE, FILM, LINK, MAGIC_EYE, MONEY, NETWALK, PASSWORD,
-    PASSWORD_SEARCH, PICTURE, SCAN_BLOCK, TEXT, TIME, TRACE_LOG, TRACER, WORD_SEARCH } from "./service/ServiceTypes";
-import {UNHACKABLE} from "../../common/enums/NodeTypesNames";
+    PASSWORD_SEARCH, PICTURE, SCAN_BLOCK, TEXT, TIME, TRACE_LOG, TRACER, WORD_SEARCH, UNHACKABLE } from "./service/ServiceTypes";
 import Glyphicon from "../../common/component/Glyphicon";
 
 const mapDispatchToProps = (dispatch) => {

@@ -43,7 +43,7 @@ const renderTab = (service, currentService, selectService) => {
     const activeClassName = (service === currentService) ? "active" : "";
 
     return (
-        <li role="presentation" className={activeClassName}>
+        <li role="presentation" className={activeClassName} key={service.id}>
             <SilentLink onClick={() => selectService(service)} aria-controls="home" role="tab" data-toggle="tab">
                 <Glyphicon type={service.type} size="18px" />
             </SilentLink>
