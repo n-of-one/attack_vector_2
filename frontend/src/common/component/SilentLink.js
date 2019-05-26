@@ -3,6 +3,12 @@ import {connect} from "react-redux";
 
 /**
  * This goal of this component is to prevent the displaying of the link URL over the menu bar at the bottom of the screen.
+ *
+ * Props:
+ * - className
+ * - href     (choose one)
+ * - onClick  (choose one)
+ * - children (implicit)
  */
 
 /* eslint jsx-a11y/alt-text: 0*/

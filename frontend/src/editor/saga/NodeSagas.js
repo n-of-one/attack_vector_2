@@ -17,7 +17,9 @@ function* dropNodeSaga(action) {
 }
 
 function* serverNodeAddedSaga(action) {
-    yield editorCanvas.addNodeAndSelect(action.data);
+    editorCanvas.addNode(action.data);
+    editorCanvas.selectNode(action.data.id);
+    yield
 }
 
 

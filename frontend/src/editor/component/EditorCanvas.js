@@ -71,11 +71,11 @@ class EditorCanvas {
         return nodeDisplay;
     }
 
-    addNodeAndSelect(nodeData) {
-        const nodeDisplay = this.addNode(nodeData);
+    selectNode(nodeId) {
+        const nodeDisplay = this.nodeDisplayById[nodeId];
         nodeDisplay.select();
         this.nodeSelected = nodeDisplay.nodeIcon;
-        this.dispatch({type: SELECT_NODE, data: nodeDisplay.nodeIcon.data.id});
+        this.dispatch({type: SELECT_NODE, data: nodeId});
     }
 
     addConnection(connectionData) {
@@ -160,6 +160,10 @@ class EditorCanvas {
     updateNetworkId({nodeId, value}) {
         const display = this.nodeDisplayById[nodeId];
         display.updateNetworkId(value);
+    }
+
+    openService(nodeId, serviceId) {
+        this.selectNode(nodeId);
     }
 }
 

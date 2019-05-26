@@ -1,14 +1,10 @@
 package org.n1.mainframe.backend.service.site
 
-import org.n1.mainframe.backend.model.site.Node
-import org.n1.mainframe.backend.model.site.SiteData
-import org.n1.mainframe.backend.model.site.SiteStateMessage
-import org.n1.mainframe.backend.model.site.SiteStateMessageType
+import org.n1.mainframe.backend.model.site.*
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.springframework.stereotype.Service
-import kotlin.collections.ArrayList
 
 @Service
 class SiteValidationService(
@@ -25,27 +21,15 @@ class SiteValidationService(
         val siteData = siteDataService.getById(id)
         val nodes = nodeService.getAll(id)
 
-        validate(messages) { validateHackTime(siteData) }
-        validate(messages) { validateStartNode(siteData, nodes) }
+        validateSiteData(messages, siteData, nodes)
+        validateNodes(messages, siteData, nodes)
 
-        val ok = messages.filter { it.type == SiteStateMessageType.ERROR }.none()
-        val oldState = siteStateService.getById(id)
-        val newState = oldState.copy(ok = ok, messages = messages)
-
-        if (oldState != newState) {
-            siteStateService.save(newState)
-            stompService.toSite(id, ReduxActions.SERVER_UPDATE_SITE_STATE, newState)
-        }
+        processValidationMessages(messages, id)
     }
 
-    private fun validate(messages: MutableList<SiteStateMessage>, method: () -> Unit) {
-        try {
-            method()
-        }
-        catch( exception: ValidationException ) {
-            val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage)
-            messages.add(message)
-        }
+    private fun validateSiteData(messages: MutableList<SiteStateMessage>, siteData: SiteData, nodes: List<Node>) {
+        validate(messages) { validateHackTime(siteData) }
+        validate(messages) { validateStartNode(siteData, nodes) }
     }
 
     private fun validateHackTime(data: SiteData) {
@@ -61,8 +45,47 @@ class SiteValidationService(
         if (data.startNodeNetworkId.isBlank()) {
             throw ValidationException("Set the start node network id.")
         }
-        nodes.find {node -> node.networkId == data.startNodeNetworkId}
+        nodes.find { node -> node.networkId == data.startNodeNetworkId }
                 ?: throw ValidationException("Start node network id not found: ${data.startNodeNetworkId}.")
+    }
 
+    private fun validateNodes(messages: MutableList<SiteStateMessage>, siteData: SiteData, nodes: List<Node>) {
+        if (nodes.isEmpty()) return
+
+        val siteRep = SiteRep(nodes[0], nodes, siteData)
+
+        siteRep.nodes.forEach { node ->
+            siteRep.node = node
+            node.services.forEach { service ->
+                service.validationMethods().forEach { validateMethod ->
+                    try {
+                        validateMethod(siteRep)
+                    } catch (exception: ValidationException) {
+                        val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage, node.id, service.id)
+                        messages.add(message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun validate(messages: MutableList<SiteStateMessage>, method: () -> Unit) {
+        try {
+            method()
+        } catch (exception: ValidationException) {
+            val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage)
+            messages.add(message)
+        }
+    }
+
+    private fun processValidationMessages(messages: ArrayList<SiteStateMessage>, id: String) {
+        val ok = messages.filter { it.type == SiteStateMessageType.ERROR }.none()
+        val oldState = siteStateService.getById(id)
+        val newState = oldState.copy(ok = ok, messages = messages)
+
+        if (oldState != newState) {
+            siteStateService.save(newState)
+            stompService.toSite(id, ReduxActions.SERVER_UPDATE_SITE_STATE, newState)
+        }
     }
 }

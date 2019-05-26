@@ -85,8 +85,9 @@ class EditorService(
         val node = nodeService.getById(command.nodeId)
         val changedNode = node.copy(networkId = command.value)
         nodeService.save(changedNode)
-        val message = ServerUpdateNetworkId(command.nodeId, node.networkId)
+        val message = ServerUpdateNetworkId(command.nodeId, changedNode.networkId)
         stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_NETWORK_ID, message)
+        siteValidationService.validate(command.siteId)
     }
 
     data class ServerUpdateServiceData(val nodeId: String, val serviceId: String, val key: String, val value: String)
@@ -97,6 +98,7 @@ class EditorService(
         nodeService.save(node)
         val message = ServerUpdateServiceData(command.nodeId, command.serviceId, command.key, command.value)
         stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_SERVICE_DATA, message)
+        siteValidationService.validate(command.siteId)
     }
 
 
