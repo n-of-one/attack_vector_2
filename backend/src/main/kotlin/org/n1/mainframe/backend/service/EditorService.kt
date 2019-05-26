@@ -115,8 +115,15 @@ class EditorService(
         val message = nodeService.removeService(command)
 
         if (message != null) {
-            stompService.toSite(command.siteId, ReduxActions.SERVER_REMOVE_SERVICE, message)
+            stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)
             siteValidationService.validate(command.siteId)
+        }
+    }
+
+    fun swapServiceLayer(command: CommandSwapService) {
+        val message = nodeService.swapServices(command)
+        if (message != null) {
+            stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)
         }
     }
 }

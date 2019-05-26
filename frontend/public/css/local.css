@@ -234,6 +234,10 @@ a.textLink {
     margin-bottom: 4px;
 }
 
+.btn-grey {
+    color: #ffffff;
+    background-color: #888888;
+}
 /*.rightPane {*/
 /*padding-top: 10px;*/
 /*padding-bottom: 10px;*/

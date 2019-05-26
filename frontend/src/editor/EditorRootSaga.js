@@ -14,16 +14,16 @@ import {
     SERVER_ADD_NODE,
     SERVER_MOVE_NODE,
     SERVER_SITE_FULL,
-    SNAP
-} from "../EditorActions";
+    SNAP, SWAP_SERVICE_LAYER
+} from "./EditorActions";
 import {
     addConnectionSaga, deleteConnections, deleteNode, dropNodeSaga, moveNodeSaga, serverAddConnectionSaga,
     serverMoveNodeSaga, serverNodeAddedSaga, snap
-} from "./NodeSagas";
-import {editSiteDataSaga, requestSiteFullSaga, serverSiteFullSaga} from "./SiteDataSagas";
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../../common/enums/CommonActions";
-import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../../common/saga/ServerSagas";
-import {addService, editNetworkId, editServiceData, removeService} from "./ServiceSagas";
+} from "./saga/NodeSagas";
+import {editSiteDataSaga, requestSiteFullSaga, serverSiteFullSaga} from "./saga/SiteDataSagas";
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
+import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
+import {addService, editNetworkId, editServiceData, removeService, swapServiceLayer} from "./saga/ServiceSagas";
 
 const createSagas = () => {
 
@@ -56,8 +56,7 @@ const createSagas = () => {
         yield takeEvery(EDIT_NETWORK_ID, editNetworkId);
         yield takeEvery(ADD_SERVICE, addService);
         yield takeEvery(REMOVE_SERVICE, removeService);
-
-
+        yield takeEvery(SWAP_SERVICE_LAYER, swapServiceLayer);
     }
 
     function* editorRootSaga() {

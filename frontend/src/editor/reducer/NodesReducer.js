@@ -5,7 +5,7 @@ import {
     SERVER_UPDATE_SERVICE_DATA,
     SERVER_UPDATE_NETWORK_ID,
     SERVER_ADD_SERVICE,
-    SERVER_REMOVE_SERVICE
+    SERVER_NODE_UPDATED
 } from "../EditorActions";
 import {findElementById, updateArray} from "../../common/Immutable";
 
@@ -23,7 +23,7 @@ const NodesReducer = (state = [], action) => {
             return serverUpdateServiceData(action.data, state);
         case SERVER_ADD_SERVICE :
             return serverAddService(action.data, state);
-        case SERVER_REMOVE_SERVICE :
+        case SERVER_NODE_UPDATED :
             return serverRemoveService(action.data.node, state);
 
         default:

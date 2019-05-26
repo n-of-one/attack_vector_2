@@ -5,10 +5,7 @@ import org.n1.mainframe.backend.model.service.TextService
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
 import org.n1.mainframe.backend.model.site.enums.ServiceType
-import org.n1.mainframe.backend.model.ui.site.AddNode
-import org.n1.mainframe.backend.model.ui.site.CommandAddService
-import org.n1.mainframe.backend.model.ui.site.CommandRemoveService
-import org.n1.mainframe.backend.model.ui.site.MoveNode
+import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.util.createId
 import org.n1.mainframe.backend.util.createServiceId
@@ -162,8 +159,8 @@ class NodeService(
         }
     }
 
-    data class ServiceRemoved(val node: Node, val serviceId: String, val nextLayer: Int)
-    fun removeService(command: CommandRemoveService): ServiceRemoved? {
+    data class ServicesUpdated(val node: Node, val serviceId: String?)
+    fun removeService(command: CommandRemoveService): ServicesUpdated? {
         val node = getById(command.nodeId)
         val toRemove = node.services.firstOrNull { it.id == command.serviceId } ?: return null
         node.services.remove(toRemove)
@@ -171,6 +168,24 @@ class NodeService(
         node.services.forEachIndexed { layer, service -> service.layer = layer };
         nodeRepo.save(node)
 
-        return ServiceRemoved(node, command.serviceId, toRemove.layer -1)
+        val newFocusNode = node.services[toRemove.layer -1]
+
+        return ServicesUpdated(node, newFocusNode.id )
+    }
+
+    fun swapServices(command: CommandSwapService): ServicesUpdated? {
+        val node = getById(command.nodeId)
+        val fromService = node.services.find { it.id == command.fromId } ?: return null
+        val toService = node.services.find { it.id == command.toId } ?: return null
+
+        val fromLayer = fromService.layer
+        val toLayer = toService.layer
+        fromService.layer = toLayer
+        toService.layer = fromLayer
+        node.services.sortBy { it.layer }
+
+        nodeRepo.save(node)
+
+        return ServicesUpdated(node, null)
     }
 }

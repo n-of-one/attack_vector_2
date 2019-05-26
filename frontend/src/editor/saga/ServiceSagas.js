@@ -25,6 +25,11 @@ function* removeService(action) {
     yield
 }
 
+function* swapServiceLayer(action) {
+    yield toServer(action, "/av/editor/swapServiceLayer");
+    yield
+}
+
 
 function* toServer(action, path) {
     const siteId = yield select(getSiteId);
@@ -33,6 +38,4 @@ function* toServer(action, path) {
     yield
 }
 
-
-
-export { editServiceData, editNetworkId, addService, removeService }
+export { editServiceData, editNetworkId, addService, removeService, swapServiceLayer }

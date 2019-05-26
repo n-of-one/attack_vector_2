@@ -60,3 +60,10 @@ data class CommandRemoveService(
         val nodeId: String,
         val serviceId: String)
 
+data class CommandSwapService(
+        val siteId: String,
+        val nodeId: String,
+        val fromId: String,
+        val toId: String)
+
+

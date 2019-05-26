@@ -84,7 +84,10 @@ class EditorController(
         executor.run(principal) { editorService.removeService(command) }
     }
 
-
+    @MessageMapping("/editor/swapServiceLayer")
+    fun swapServiceLayer(command: CommandSwapService, principal: Principal) {
+        executor.run(principal) { editorService.swapServiceLayer(command) }
+    }
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
