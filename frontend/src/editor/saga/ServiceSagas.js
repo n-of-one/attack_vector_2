@@ -4,38 +4,34 @@ import editorCanvas from "../component/EditorCanvas";
 
 const getSiteId = (state) => state.siteData.id;
 
-// nodeId: this.node.id, serviceId: this.service.id, key: key, value: value
-
 function* editNetworkId(action) {
-    const siteId = yield select(getSiteId);
-    const payload = {...action, type: undefined, siteId: siteId};
-    webSocketConnection.sendObject("/av/editor/editNetworkId", payload);
+    yield toServer(action, "/av/editor/editNetworkId");
     editorCanvas.updateNetworkId(action);
     yield
 }
 
 function* editServiceData(action) {
-    const siteId = yield select(getSiteId);
-    const payload = {...action, type: undefined, siteId: siteId};
-    webSocketConnection.sendObject("/av/editor/editServiceData", payload);
+    yield toServer(action, "/av/editor/editServiceData");
     yield
 }
 
 function* addService(action) {
-    const siteId = yield select(getSiteId);
-    const payload = {...action, type: undefined, siteId: siteId};
-    webSocketConnection.sendObject("/av/editor/addService", payload);
+    yield toServer(action, "/av/editor/addService");
     yield
 }
 
 function* removeService(action) {
-    const siteId = yield select(getSiteId);
-    const payload = {...action, type: undefined, siteId: siteId};
-    webSocketConnection.sendObject("/av/editor/removeService", payload);
+    yield toServer(action, "/av/editor/removeService");
     yield
 }
 
 
+function* toServer(action, path) {
+    const siteId = yield select(getSiteId);
+    const payload = {...action, type: undefined, siteId: siteId};
+    webSocketConnection.sendObject(path, payload);
+    yield
+}
 
 
 

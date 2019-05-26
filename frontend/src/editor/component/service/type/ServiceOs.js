@@ -14,7 +14,7 @@ export default class ServiceOs extends Service {
     }
 
     saveNetworkId(value) {
-        super.dispatch({type: EDIT_NETWORK_ID, nodeId: this.node.id, value: value});
+        this.dispatch({type: EDIT_NETWORK_ID, nodeId: this.node.id, value: value});
     };
 
     saveName(value) {

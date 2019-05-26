@@ -54,7 +54,7 @@ const renderTab = (service, currentService, selectService) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({services, currentService, selectService}) => {
         if (!currentService) {
-            return <> </>;
+            return  <div className="row form-horizontal darkWell serviceLayerPanel" />;
         }
         return (
             <div className="row form-horizontal darkWell serviceLayerPanel">
