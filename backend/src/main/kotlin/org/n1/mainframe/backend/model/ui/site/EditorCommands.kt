@@ -2,6 +2,7 @@ package org.n1.mainframe.backend.model.ui.site
 
 import org.n1.mainframe.backend.model.site.*
 import org.n1.mainframe.backend.model.site.enums.NodeType
+import org.n1.mainframe.backend.model.site.enums.ServiceType
 
 data class SiteFull(
         val id: String,
@@ -10,8 +11,7 @@ data class SiteFull(
         val nodes: List<Node>,
         val connections: List<Connection>,
         val state: SiteState,
-        val startNodeId: String?
-)
+        val startNodeId: String?)
 
 data class AddNode(
         val siteId: String = "",
@@ -30,14 +30,12 @@ data class MoveNode(
         val siteId: String = "",
         val nodeId: String = "",
         val x: Int = 0,
-        val y: Int = 0
-)
+        val y: Int = 0)
 
 data class EditSiteData(
         val siteId: String = "",
         val field: String = "",
         val value: String = "")
-
 
 data class EditNetworkIdCommand(
         val siteId: String = "",
@@ -52,3 +50,7 @@ data class EditServiceDataCommand(
         val key: String = "",
         val value: String = "")
 
+data class CommandAddService(
+        val siteId: String,
+        val nodeId: String,
+        val serviceType: ServiceType)

@@ -1,4 +1,4 @@
-import {SERVER_SITE_FULL, SERVER_ADD_NODE, SERVER_MOVE_NODE, SERVER_UPDATE_SERVICE_DATA, SERVER_UPDATE_NETWORK_ID} from "../EditorActions";
+import {SERVER_SITE_FULL, SERVER_ADD_NODE, SERVER_MOVE_NODE, SERVER_UPDATE_SERVICE_DATA, SERVER_UPDATE_NETWORK_ID, SERVER_ADD_SERVICE} from "../EditorActions";
 import {findElementById, updateArray} from "../../common/Immutable";
 
 const NodesReducer = (state = [], action) => {
@@ -13,6 +13,8 @@ const NodesReducer = (state = [], action) => {
             return serverUpdateNetworkId(action.data, state);
         case SERVER_UPDATE_SERVICE_DATA :
             return serverUpdateServiceData(action.data, state);
+        case SERVER_ADD_SERVICE :
+            return serverAddService(action.data, state);
 
         default:
             return state;
@@ -60,7 +62,17 @@ const serverUpdateNetworkId = (update, nodes) => {
     return newNodes;
 };
 
+const serverAddService = (data, nodes) => {
+    const node = findElementById(nodes, data.nodeId);
+    const service = data.service;
+    const newServices = [...node.services, service];
 
+    const newNodeServices = {services: newServices};
+
+    const newNodes = updateArray(newNodeServices, nodes, data.nodeId);
+    return newNodes;
+
+};
 
 
 export { NodesReducer, createUpdatedServiceData }

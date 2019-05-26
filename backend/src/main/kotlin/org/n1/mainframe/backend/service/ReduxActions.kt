@@ -30,5 +30,6 @@ enum class ReduxActions {
 
     SERVER_UPDATE_SITE_STATE,
 
+    SERVER_ADD_SERVICE,
 
 }

@@ -1,20 +1,25 @@
 import React from 'react';
 import {connect} from "react-redux";
+import {ADD_SERVICE} from "../EditorActions";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        add: (type, nodeId) => {dispatch({type:"ADD_SERVICE", serviceType: type, nodeId: nodeId})},
+        add: (type, nodeId) => {
+            if (nodeId != null) {
+                dispatch({type:ADD_SERVICE, serviceType: type, nodeId: nodeId})
+            }
+        },
     }
 };
 
 let mapStateToProps = (state) => {
-    return { state: state};
+    return { state: state, currentNodeId: state.currentNodeId };
 };
 
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({add}) => {
+    ({add, currentNodeId}) => {
 
         const regular = (type, glyphicon) => {
             return service(type, glyphicon, "btn btn-info btn-spaced")
@@ -27,7 +32,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         const service = (type, glyphicon, enclosingClassName) => {
             const className = "glyphicon " + glyphicon;
             return (
-                <div className={enclosingClassName} onClick={() => add(type)}>
+                <div className={enclosingClassName} onClick={() => add(type, currentNodeId)}>
                     <span className={className} />
                 </div>
             );
@@ -37,28 +42,27 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 <div className="col-lg-12 darkWell">
                     <br/>
                     <div>
-                        { regular("text", "glyphicon-file") }
-                        { regular("picture", "glyphicon-picture") }
-                        { regular("link", "glyphicon-link") }
-                        { regular("tracer", "glyphicon-transfer") }
-                        { regular("tracelog", "glyphicon-erase") }
-                        { regular("scanblock", "glyphicon-magnet") }
-                        { regular("money", "glyphicon-usd") }
-                        { regular("code", "glyphicon-ok-circle") }
-                        { regular("time", "glyphicon-time") }
-                        { regular("core", "glyphicon-th-large") }
-
+                        { regular("TEXT", "glyphicon-file") }
+                        { regular("PICTURE", "glyphicon-picture") }
+                        { regular("LINK", "glyphicon-link") }
+                        { regular("TRACER", "glyphicon-transfer") }
+                        { regular("TRACELOG", "glyphicon-erase") }
+                        { regular("SCANBLOCK", "glyphicon-magnet") }
+                        { regular("MONEY", "glyphicon-usd") }
+                        { regular("CODE", "glyphicon-ok-circle") }
+                        { regular("TIME", "glyphicon-time") }
+                        { regular("CORE", "glyphicon-th-large") }
                     </div>
                     <br/>
                     <div>
-                        { ice("password", "glyphicon-console") }
-                        { ice("film", "glyphicon-film") }
-                        { ice("netwalk", "glyphicon-qrcode") }
-                        { ice("wordsearch", "glyphicon-th") }
-                        { ice("magic-eye", "glyphicon-eye-close") }
-                        { ice("password-search", "glyphicon-tasks") }
-                        { ice("alternate", "glyphicon-star") }
-                        { ice("unhackable", "glyphicon-ban-circle") }
+                        { ice("PASSWORD", "glyphicon-console") }
+                        { ice("FILM", "glyphicon-film") }
+                        { ice("NETWALK", "glyphicon-qrcode") }
+                        { ice("WORDSEARCH", "glyphicon-th") }
+                        { ice("MAGIC-eye", "glyphicon-eye-close") }
+                        { ice("PASSWORD-search", "glyphicon-tasks") }
+                        { ice("ALTERNATE", "glyphicon-star") }
+                        { ice("UNHACKABLE", "glyphicon-ban-circle") }
                     </div>
                     <br/>
 

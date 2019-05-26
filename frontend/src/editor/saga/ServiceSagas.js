@@ -21,4 +21,13 @@ function* editServiceData(action) {
     yield
 }
 
-export { editServiceData, editNetworkId }
+function* addService(action) {
+    const siteId = yield select(getSiteId);
+    const payload = {...action, type: undefined, siteId: siteId};
+    webSocketConnection.sendObject("/av/editor/addService", payload);
+    yield
+}
+
+
+
+export { editServiceData, editNetworkId, addService }

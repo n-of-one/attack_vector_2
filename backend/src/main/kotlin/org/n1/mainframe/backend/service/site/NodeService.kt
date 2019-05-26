@@ -1,13 +1,17 @@
 package org.n1.mainframe.backend.service.site
 
 import org.n1.mainframe.backend.model.service.OsService
+import org.n1.mainframe.backend.model.service.TextService
 import org.n1.mainframe.backend.model.site.Node
 import org.n1.mainframe.backend.model.site.Service
+import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.site.AddNode
+import org.n1.mainframe.backend.model.ui.site.CommandAddService
 import org.n1.mainframe.backend.model.ui.site.MoveNode
 import org.n1.mainframe.backend.repo.NodeRepo
 import org.n1.mainframe.backend.util.createId
 import org.n1.mainframe.backend.util.createServiceId
+import org.n1.mainframe.backend.web.ws.EditorController
 import java.util.*
 
 const val NODE_MIN_X = 35
@@ -27,7 +31,7 @@ class NodeService(
         val id = createId("node", nodeRepo::findById)
         val siteId = command.siteId
         val nodes = getAll(siteId)
-        val services = listOf(createOsService(siteId, nodes))
+        val services = listOf(createOsService(siteId, nodes)).toMutableList()
         val networkId = nextFreeNetworkId(siteId, nodes)
 
         val node = Node(
@@ -139,4 +143,22 @@ class NodeService(
         nodeRepo.save(node)
     }
 
+    fun addService(command: CommandAddService): Service {
+        val node = getById(command.nodeId)
+        val service = createService(command.siteId, command.serviceType, node)
+        node.services.add(service)
+        nodeRepo.save(node)
+        return service
+    }
+
+    private fun createService(siteId: String, serviceType: ServiceType, node: Node): Service {
+        val nodes = getAll(siteId)
+        val layer = node.services.size
+        val id = createServiceId(nodes, siteId)
+
+        return when (serviceType) {
+            ServiceType.TEXT -> TextService(id, layer)
+            else -> error("Unknown service type: ${serviceType}")
+        }
+    }
 }

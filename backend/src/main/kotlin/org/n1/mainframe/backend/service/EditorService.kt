@@ -1,11 +1,12 @@
 package org.n1.mainframe.backend.service
 
+import org.n1.mainframe.backend.model.site.Service
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.service.site.*
-import org.springframework.stereotype.Service
+import org.n1.mainframe.backend.web.ws.EditorController
 
-@Service
+@org.springframework.stereotype.Service
 class EditorService(
         val siteService: SiteService,
         val layoutService: LayoutService,
@@ -99,6 +100,16 @@ class EditorService(
         val message = ServerUpdateServiceData(command.nodeId, command.serviceId, command.key, command.value)
         stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_SERVICE_DATA, message)
         siteValidationService.validate(command.siteId)
+    }
+
+    data class ServiceAdded(val nodeId: String, val service: Service)
+    fun addService(command: CommandAddService) {
+        val service = nodeService.addService(command)
+        val message = ServiceAdded(command.nodeId, service)
+
+        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_SERVICE, message)
+        siteValidationService.validate(command.siteId)
+
     }
 
 

@@ -1,6 +1,9 @@
 import React from 'react';
 import {connect} from "react-redux";
-import ServiceDataOs from "./ServiceDataOs";
+import ServiceOsPanel from "./type/ServiceOsPanel";
+import {findElementById} from "../../../common/Immutable";
+import {OS, TEXT} from "./ServiceTypes";
+import ServiceTextPanel from "./type/ServiceTextPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -8,11 +11,26 @@ const mapDispatchToProps = (dispatch) => {
     return {}
 };
 let mapStateToProps = (state) => {
-    return {};
+    if (state.currentNodeId == null) {
+        return { serviceType: null };
+    }
+    const node = findElementById(state.nodes, state.currentNodeId);
+    const service = findElementById(node.services, state.currentServiceId);
+    return { serviceType: service.type };
+};
+
+const renderService = (serviceType) => {
+    switch (serviceType) {
+        case null: return <> </>;
+        case OS: return <ServiceOsPanel />;
+        case TEXT: return <ServiceTextPanel />;
+        default: return <div className="text">ERROR: service type unknown: {serviceType}</div>
+    }
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    () => {
+    ({serviceType}) => {
         return (
             <div className="row form-horizontal darkWell serviceLayerPanel">
                 <div className="row">&nbsp;</div>
@@ -24,7 +42,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         </li>
                     </ul>
                     <br/>
-                    <ServiceDataOs />
+                    { renderService(serviceType) }
                 </div>
             </div>
         );
