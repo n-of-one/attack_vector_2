@@ -21,20 +21,24 @@ let mapStateToProps = (state) => {
         return {services: [], currentService: null};
     }
     const node = findElementById(state.nodes, state.currentNodeId);
-    const currentService = findElementById(node.services, state.currentServiceId);
-    return {services: node.services, currentService: currentService};
+    const service = findElementById(node.services, state.currentServiceId);
+    return {
+        node: node,
+        services: node.services,
+        currentService: service};
 };
 
-const renderService = (serviceType) => {
-    switch (serviceType) {
+const renderService = (node, service) => {
+
+    switch (service.type) {
         case null:
-            return <> </>;
+            return null;
         case OS:
-            return <ServiceOsPanel/>;
+            return <ServiceOsPanel node={node} service={service}/>;
         case TEXT:
-            return <ServiceTextPanel/>;
+            return <ServiceTextPanel node={node} service={service}/>;
         default:
-            return <div className="text">ERROR: service type unknown: {serviceType}</div>
+            return <div className="text">ERROR: service type unknown: {service.type} for {service.id}</div>
     }
 };
 
@@ -52,7 +56,7 @@ const renderTab = (service, currentService, selectService) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({services, currentService, selectService}) => {
+    ({node, services, currentService, selectService}) => {
         if (!currentService) {
             return  <div className="row form-horizontal darkWell serviceLayerPanel" />;
         }
@@ -65,7 +69,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         {services.map(service => renderTab(service, currentService, selectService))}
                     </ul>
                     <br/>
-                    {renderService(currentService.type)}
+                    {renderService(node, currentService)}
                 </div>
             </div>
         );
