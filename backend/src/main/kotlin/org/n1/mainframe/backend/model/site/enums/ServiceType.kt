@@ -13,7 +13,7 @@ enum class ServiceType {
 //    SCAN_BLOCKER,
 //    ICE_WORD_SEARCH,
 //    ICE_MAGIC_EYE,
-//    ICE_PASSWORD,
+    ICE_PASSWORD,
 //    ICE_MANUAL,
 //    ICE_UNHACKABLE
 

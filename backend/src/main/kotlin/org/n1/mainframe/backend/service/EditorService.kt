@@ -1,7 +1,6 @@
 package org.n1.mainframe.backend.service
 
-import org.n1.mainframe.backend.model.site.Node
-import org.n1.mainframe.backend.model.site.Service
+import org.n1.mainframe.backend.model.service.Service
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.service.site.*

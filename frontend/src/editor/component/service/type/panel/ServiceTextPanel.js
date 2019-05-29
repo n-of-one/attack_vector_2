@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
-import ServiceText from "./ServiceText";
-import ServiceField from "../ServiceField";
+import ServiceText from "../ServiceText";
+import ServiceField from "../../ServiceField";
 import ServicePanel from "./ServicePanel";
 
 const mapDispatchToProps = (dispatch) => {
@@ -21,10 +21,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         const key = param => service.id + ":" + param;
 
         return (
-            <ServicePanel name="Text">
-                <ServiceField key={key("na")} size="small" name="Name" value={text.name} placeholder="00" save={value => text.saveName(value)}/>
-                <ServiceField key={key("ha")} size="large" name="Hacked text" value={text.text} placeholder="Data found: ..." save={value => text.saveText(value)} />
-                <ServiceField key={key("no")} size="large" name="Gm Note" value={text.note} placeholder="Players will never see this." save={value => text.saveNote(value)}/>
+            <ServicePanel type="Text" serviceObject={text}>
+                <ServiceField key={key("ha")} size="large" name="Hacked text" value={text.text} save={value => text.saveText(value)}
+                              placeholder="* Data found: ..." help="This is the text displayed when a player hacks this service.
+                              It can be used to provide data, or to simulate that some effect has taken place."/>
             </ServicePanel>
         );
     });

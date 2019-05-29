@@ -28,13 +28,13 @@ const renderRemove = (node, service, remove) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({name, node, service, remove}) => {
+    ({type, node, service, remove}) => {
 
         return (
             <div className="row form-group serviceFieldTopRow">
                 <div className="col-lg-3 control-label serviceLabel">Service</div>
                 <div className="col-lg-8">
-                    <div className="text-muted strong service_text_label text_gold">{name}
+                    <div className="text-muted strong service_text_label text_gold">{type}
                         {renderRemove(node, service, remove)}
                     </div>
                 </div>

@@ -1,9 +1,7 @@
 package org.n1.mainframe.backend.service.site
 
-import org.n1.mainframe.backend.model.service.OsService
-import org.n1.mainframe.backend.model.service.TextService
+import org.n1.mainframe.backend.model.service.*
 import org.n1.mainframe.backend.model.site.Node
-import org.n1.mainframe.backend.model.site.Service
 import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.site.*
 import org.n1.mainframe.backend.repo.NodeRepo
@@ -21,7 +19,8 @@ const val NODE_MAX_Y = 815 - 48 - 100
 @org.springframework.stereotype.Service
 class NodeService(
         val layoutService: LayoutService,
-        val nodeRepo: NodeRepo
+        val nodeRepo: NodeRepo,
+        val themeService: ThemeService
 ) {
 
     fun createNode(command: AddNode): Node {
@@ -46,7 +45,8 @@ class NodeService(
 
     private fun createOsService(siteId: String, nodes: List<Node>): Service {
         val id = createServiceId(nodes, siteId)
-        return OsService(id)
+        val name = themeService.getDefaultName(ServiceType.OS)
+        return OsService(id, name)
     }
 
     private fun createServiceId(nodes: List<Node>, siteId: String): String {
@@ -153,8 +153,11 @@ class NodeService(
         val layer = node.services.size
         val id = createServiceId(nodes, siteId)
 
+        val defaultName = themeService.getDefaultName(serviceType)
+
         return when (serviceType) {
-            ServiceType.TEXT -> TextService(id, layer)
+            ServiceType.TEXT -> TextService(id, layer, defaultName)
+            ServiceType.ICE_PASSWORD -> IcePasswordService(id, layer, defaultName)
             else -> error("Unknown service type: ${serviceType}")
         }
     }

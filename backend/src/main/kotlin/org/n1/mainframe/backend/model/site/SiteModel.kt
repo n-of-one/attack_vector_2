@@ -1,6 +1,7 @@
 package org.n1.mainframe.backend.model.site
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.n1.mainframe.backend.model.service.Service
 import org.n1.mainframe.backend.model.site.enums.NodeType
 import org.n1.mainframe.backend.model.site.enums.ServiceType
 import java.util.*
@@ -25,24 +26,6 @@ data class Node(
         val services: MutableList<Service>,
         val networkId: String
 )
-
-private const val KEY_NOTE = "note"
-
-abstract class Service(
-        val id: String,
-        val type: ServiceType,
-        var layer: Int,
-        val data: MutableMap<String, String>
-) {
-
-    val note: String
-        @JsonIgnore
-        get() {
-            return data[KEY_NOTE] ?: ""
-        }
-
-    abstract fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit>
-}
 
 data class Layout(
         val id: String,

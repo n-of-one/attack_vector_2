@@ -1,6 +1,7 @@
 import {EDIT_SERVICE_DATA} from "../../../EditorActions";
 
-const KEY_NOTE = "note";
+const NOTE = "note";
+const NAME = "name";
 
 export default class ServiceOs {
 
@@ -14,17 +15,24 @@ export default class ServiceOs {
         return this.service.id;
     }
 
+    get name() {
+        return this.service.data[NAME];
+    }
+
     get note() {
-        return this.service.data[KEY_NOTE];
+        return this.service.data[NOTE];
     }
 
     _save(key, value) {
         this.dispatch({type: EDIT_SERVICE_DATA, nodeId: this.node.id, serviceId: this.service.id, key: key, value: value});
     }
 
-
     saveNote(value) {
-        this._save(KEY_NOTE, value );
+        this._save(NOTE, value );
+    }
+
+    saveName(value) {
+        this._save(NAME, value );
     }
 
 

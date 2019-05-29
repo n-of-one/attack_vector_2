@@ -57,7 +57,7 @@ class SiteValidationService(
         siteRep.nodes.forEach { node ->
             siteRep.node = node
             node.services.forEach { service ->
-                service.validationMethods().forEach { validateMethod ->
+                service.allValidationMethods().forEach { validateMethod ->
                     try {
                         validateMethod(siteRep)
                     } catch (exception: ValidationException) {

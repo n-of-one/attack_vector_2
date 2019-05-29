@@ -1,7 +1,7 @@
 import {EDIT_NETWORK_ID} from "../../../EditorActions";
 import Service from "./Service";
 
-const KEY_NAME = "name";
+const NODE_NAME = "nodeName";
 
 export default class ServiceOs extends Service {
 
@@ -9,16 +9,16 @@ export default class ServiceOs extends Service {
         return this.node.networkId;
     }
 
-    get name() {
-        return this.service.data[KEY_NAME];
+    get nodeName() {
+        return this.service.data[NODE_NAME];
     }
 
     saveNetworkId(value) {
         this.dispatch({type: EDIT_NETWORK_ID, nodeId: this.node.id, value: value});
     };
 
-    saveName(value) {
-        super._save(KEY_NAME, value );
+    saveNodeName(value) {
+        super._save(NODE_NAME, value );
     }
 
 

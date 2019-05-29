@@ -2,15 +2,15 @@ import React from 'react';
 import {connect} from "react-redux";
 import {ADD_SERVICE} from "../EditorActions";
 import {
-    ALTERNATE, CODE, CORE, FILM, LINK, MAGIC_EYE, MONEY, NETWALK, PASSWORD,
-    PASSWORD_SEARCH, PICTURE, SCAN_BLOCK, TEXT, TIME, TRACE_LOG, TRACER, WORD_SEARCH, UNHACKABLE
+    CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH,
+    ICE_UNHACKABLE, ICE_WORD_SEARCH, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIME, TRACE_LOG, TRACER
 } from "./service/ServiceTypes";
 import Glyphicon from "../../common/component/Glyphicon";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        add: (type, nodeId) => {
-            if (nodeId != null) {
+        add: (type, nodeId, implemented) => {
+            if (implemented && nodeId != null) {
                 dispatch({type: ADD_SERVICE, serviceType: type, nodeId: nodeId})
             }
         },
@@ -26,28 +26,29 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({add, currentNodeId}) => {
 
         const regular = (type) => {
-            return service(type, "btn btn-info btn-spaced", true)
+            return (
+                <span className="btn btn-info btn-spaced" onClick={() => { add(type, currentNodeId, true) }}>
+                    <Glyphicon type={type} size="18px"/>
+                </span>
+            );
         };
 
         const ice = (type) => {
-            return service(type, "btn btn-primary btn-spaced", true)
+            return (
+                <span className="btn btn-info btn-spaced btn-narrowed" onClick={() => { add(type, currentNodeId, true) }}>
+                    <Glyphicon type={type} size="18px" color="NavajoWhite"/>
+                </span>
+            );
         };
 
         const unImplemented = (type) => {
-            return service(type, "btn btn-grey btn-spaced", false)
-        };
-
-        const service = (type, enclosingClassName, implemented) => {
             return (
-                <div className={enclosingClassName} onClick={() => {
-                    if (implemented) {
-                        add(type, currentNodeId)
-                    }
-                }}>
+                <span className="btn btn-grey btn-spaced">
                     <Glyphicon type={type} size="18px"/>
-                </div>
+                </span>
             );
         };
+
 
         return (
             <div className="row">
@@ -55,26 +56,26 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <br/>
                     <div>
                         {regular(TEXT)}
-                        {unImplemented(PICTURE)}
-                        {unImplemented(LINK)}
-                        {unImplemented(TRACER)}
-                        {unImplemented(TRACE_LOG)}
-                        {unImplemented(SCAN_BLOCK)}
-                        {unImplemented(MONEY)}
-                        {unImplemented(CODE)}
-                        {unImplemented(TIME)}
-                        {unImplemented(CORE)}
+                        {regular(PICTURE)}
+                        {regular(LINK)}
+                        {regular(TRACER)}
+                        {regular(TRACE_LOG)}
+                        {regular(SCAN_BLOCK)}
+                        {regular(MONEY)}
+                        {regular(CODE)}
+                        {regular(TIME)}
+                        {regular(CORE)}
                     </div>
                     <br/>
                     <div>
-                        {unImplemented(PASSWORD)}
-                        {unImplemented(FILM)}
-                        {unImplemented(NETWALK)}
-                        {unImplemented(WORD_SEARCH)}
-                        {unImplemented(MAGIC_EYE)}
-                        {unImplemented(PASSWORD_SEARCH)}
-                        {unImplemented(ALTERNATE)}
-                        {unImplemented(UNHACKABLE)}
+                        {ice(ICE_PASSWORD)}
+                        {ice(ICE_FILM)}
+                        {ice(ICE_NETWALK)}
+                        {ice(ICE_WORD_SEARCH)}
+                        {ice(ICE_MAGIC_EYE)}
+                        {ice(ICE_PASSWORD_SEARCH)}
+                        {ice(ICE_ALTERNATE)}
+                        {ice(ICE_UNHACKABLE)}
                     </div>
                     <br/>
 

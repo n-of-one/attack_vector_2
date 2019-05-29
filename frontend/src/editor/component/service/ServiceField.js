@@ -25,7 +25,7 @@ const renderInput = (value, readOnly, save, placeholder) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({name, size, readOnly, value, save, placeholder}) => {
+    ({name, size, readOnly, value, save, placeholder, help}) => {
         if (!readOnly) {
             readOnly = false;
         }
@@ -38,7 +38,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     {renderInput(value, readOnly, save, placeholder)}
                 </div>
                 <div className="col-lg-1 serviceHelpColumn">
-                    <span className="badge helpBadge" >?</span>
+                    <span className="badge helpBadge" title={help}>?
+                    </span>
                 </div>
             </div>
         );
