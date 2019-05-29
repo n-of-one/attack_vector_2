@@ -111,6 +111,10 @@ body {
     margin-right: 0.3em;
 }
 
+.btn-height-spacer {
+    height: 0.3em;
+}
+
 .service_text_label {
     margin-top: 0.5em;
     margin-bottom: 0px;

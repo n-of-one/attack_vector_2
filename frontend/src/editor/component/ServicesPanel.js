@@ -56,26 +56,26 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <br/>
                     <div>
                         {regular(TEXT)}
-                        {regular(PICTURE)}
-                        {regular(LINK)}
-                        {regular(TRACER)}
-                        {regular(TRACE_LOG)}
-                        {regular(SCAN_BLOCK)}
-                        {regular(MONEY)}
-                        {regular(CODE)}
-                        {regular(TIME)}
-                        {regular(CORE)}
+                        {unImplemented(PICTURE)}
+                        {unImplemented(LINK)}
+                        {unImplemented(TRACER)}
+                        {unImplemented(TRACE_LOG)}
+                        {unImplemented(SCAN_BLOCK)}
+                        {unImplemented(MONEY)}
+                        {unImplemented(CODE)}
+                        {unImplemented(TIME)}
+                        {unImplemented(CORE)}
                     </div>
-                    <br/>
+                    <div className="btn-height-spacer"/>
                     <div>
                         {ice(ICE_PASSWORD)}
-                        {ice(ICE_FILM)}
-                        {ice(ICE_NETWALK)}
-                        {ice(ICE_WORD_SEARCH)}
-                        {ice(ICE_MAGIC_EYE)}
-                        {ice(ICE_PASSWORD_SEARCH)}
-                        {ice(ICE_ALTERNATE)}
-                        {ice(ICE_UNHACKABLE)}
+                        {unImplemented(ICE_FILM)}
+                        {unImplemented(ICE_NETWALK)}
+                        {unImplemented(ICE_WORD_SEARCH)}
+                        {unImplemented(ICE_MAGIC_EYE)}
+                        {unImplemented(ICE_PASSWORD_SEARCH)}
+                        {unImplemented(ICE_ALTERNATE)}
+                        {unImplemented(ICE_UNHACKABLE)}
                     </div>
                     <br/>
 
