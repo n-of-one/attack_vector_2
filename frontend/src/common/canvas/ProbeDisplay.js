@@ -12,18 +12,18 @@ export default class ConnectionDisplay {
     id = null;
     thread = null;
     autoScan = null;
-    userId = null;
+    yourProbe = null;
     probeIcon = null;
 
     lineIcons = [];
 
-    constructor(canvas, thread, dispatch, {probeUserId, path, scanType, autoScan}, userId, hackerDisplay, displayById) {
+    constructor(canvas, thread, dispatch, {path, scanType, autoScan}, hackerDisplay, yourProbe, displayById) {
         this.canvas = canvas;
         this.thread = thread;
         this.autoScan = autoScan;
-        this.userId = userId;
-        this.probeUserId = probeUserId;
+        this.yourProbe = yourProbe;
         this.dispatch = dispatch;
+        this.padding = yourProbe ? 3: 5;
 
 
         const imageNumber = Math.floor(Math.random() * 10) + 1;
@@ -46,7 +46,7 @@ export default class ConnectionDisplay {
         let currentDisplay = hackerDisplay;
         path.forEach((nodeId) => {
             const nextDisplay = displayById[nodeId];
-            this.scheduleMoveStep(nextDisplay, currentDisplay, 20, 5, 5);
+            this.scheduleMoveStep(nextDisplay, currentDisplay);
             currentDisplay = nextDisplay;
         });
         const lastNodeId = path.pop();
@@ -62,12 +62,12 @@ export default class ConnectionDisplay {
     moveStep(nextDisplay, currentDisplay, time) {
         const lineIcon = this.createProbeLine(currentDisplay, nextDisplay);
         this.lineIcons.push(lineIcon);
-        const lineData = calcLine(currentDisplay, nextDisplay, 3);
+        const lineData = calcLine(currentDisplay, nextDisplay, this.padding);
         animate(this.canvas, lineIcon, null, lineData.asCoordinates(), time, easeLinear);
     }
 
     createProbeLine(currentDisplay, nextDisplay) {
-        const lineData = calcLineStart(currentDisplay, nextDisplay, 22, 3);
+        const lineData = calcLineStart(currentDisplay, nextDisplay, 22, this.padding);
 
         const lineIcon = new fabric.Line(
             lineData.asArray(), {
@@ -115,7 +115,7 @@ export default class ConnectionDisplay {
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 25);
         });
         const finishMethod = () => {
-            if (this.userId === this.probeUserId) {
+            if (this.yourProbe) {
                 this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: action});
             }
         };
@@ -134,7 +134,7 @@ export default class ConnectionDisplay {
             animate(this.canvas, this.probeIcon, 'opacity', "0.3", 25);
         });
         const finishMethod = () => {
-            if (this.userId === this.probeUserId) {
+            if (this.yourProbe) {
                 this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: SCAN_CONNECTIONS});
             }
         };
@@ -160,7 +160,7 @@ export default class ConnectionDisplay {
     }
 
     performAutoScan() {
-        if (this.autoScan && this.probeUserId === this.userId) {
+        if (this.autoScan && this.yourProbe) {
             this.dispatch({type: AUTO_SCAN});
         }
     }

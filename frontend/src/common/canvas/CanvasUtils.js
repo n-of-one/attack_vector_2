@@ -48,31 +48,31 @@ const calcDistance = (from, to) => {
     return {xSpan: xSpan, ySpan: ySpan, distance: distance};
 };
 
-const calcLine = (from, to, delta) => {
+const calcLine = (from, to, padding) => {
     const fromOffset = from.size();
     const toOffset = to.size();
 
-    return calcLineWithOffset(from, to, fromOffset, toOffset, delta);
+    return calcLineWithOffset(from, to, fromOffset, toOffset, padding);
 };
 
-const calcLineWithOffset = (from, to, fromOffset, toOffset, delta) => {
+const calcLineWithOffset = (from, to, fromOffset, toOffset, padding) => {
     const {xSpan, ySpan, distance} = calcDistance(from, to);
 
-    const [xDelta, yDelta] = determineDelta(xSpan, ySpan, delta);
+    const [xPadding, yPadding] = expandPadding(xSpan, ySpan, padding);
 
     const startRatio = fromOffset / distance;
     const finishRatio = (distance - toOffset) / distance;
 
-    const x1 = Math.floor(from.x + xSpan * startRatio) + xDelta;
-    const y1 = Math.floor(from.y + ySpan * startRatio) + yDelta;
-    const x2 = Math.floor(from.x + xSpan * finishRatio) + xDelta;
-    const y2 = Math.floor(from.y + ySpan * finishRatio) + yDelta;
+    const x1 = Math.floor(from.x + xSpan * startRatio) + xPadding;
+    const y1 = Math.floor(from.y + ySpan * startRatio) + yPadding;
+    const x2 = Math.floor(from.x + xSpan * finishRatio) + xPadding;
+    const y2 = Math.floor(from.y + ySpan * finishRatio) + yPadding;
 
     return new LinePositions(x1, y1, x2, y2);
 };
 
-const determineDelta = (xSpan, ySpan, delta) => {
-    if (!delta) {
+const expandPadding = (xSpan, ySpan, padding) => {
+    if (!padding) {
         return [0, 0];
     }
 
@@ -80,25 +80,25 @@ const determineDelta = (xSpan, ySpan, delta) => {
     const sign = Math.sign(dy);
     const dyAbs = Math.abs(dy);
     if (dyAbs < 0.5) {
-        return [0, delta];
+        return [0, padding];
     }
     else if (dyAbs > 5) {
-        return [delta, 0];
+        return [padding, 0];
     }
     else {
         if (sign === 1) {
-            return [-delta, delta];
+            return [-padding, padding];
         }
         else {
-            return [delta, delta];
+            return [padding, padding];
         }
     }
 };
 
-const calcLineStart = (from, to, fromOffset, delta) => {
+const calcLineStart = (from, to, fromOffset, padding) => {
     const {distance} = calcDistance(from, to);
     const toOffset = distance - fromOffset;
-    return calcLineWithOffset(from, to, fromOffset, toOffset, delta);
+    return calcLineWithOffset(from, to, fromOffset, toOffset, padding);
 };
 
 function easeLinear (t, b, c, d) {

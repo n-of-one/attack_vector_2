@@ -18,8 +18,7 @@ class ScanCanvas {
 
     displayById = {};
 
-    hackerDisplay = null;
-
+    // hackerDisplay = null;
     dispatch = null;
     iconThread = new Thread();
     probeThreads = new Threads();
@@ -80,7 +79,7 @@ class ScanCanvas {
         const {scan, site, hackers} = data;
         const {nodes, connections} = site;
         this.nodeDataById = {};
-        this.hackers = hackers;
+        this.sortAndaddHackers(hackers);
         nodes.forEach((nodeData) => {
             this.nodeDataById[nodeData.id] = nodeData;
             const nodeScan = scan.nodeScanById[nodeData.id];
@@ -113,14 +112,29 @@ class ScanCanvas {
         this.addHackersDisplays(startNodeDisplay);
     }
 
-    addHackersDisplays(startNodeDisplay) {
-        const hacker = this.hackers.find(hacker => hacker.userId === this.userId);
-        this.addHackerDisplay(hacker, startNodeDisplay)
+    sortAndaddHackers(hackers) {
+        const you = hackers.find(hacker => hacker.userId === this.userId );
+        const others = hackers.filter(hacker => hacker.userId !== this.userId);
+        others.sort((a, b) => (a.userName > b.userName) ? 1 : ((b.userName > a.userName) ? -1 : 0));
+        const midIndex = Math.floor(others.length / 2);
+        this.hackers = others;
+        this.hackers.splice(midIndex, 0, you);
     }
 
-    addHackerDisplay(hacker, startNodeDisplay) {
-        this.hackerDisplay = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker);
-        this.displayById["user-fixme-123"] = this.hackerDisplay;
+    addHackersDisplays(startNodeDisplay) {
+        const step = Math.floor(607 / (this.hackers.length+1));
+        this.hackers.forEach((hacker, index) => {
+            this.addHackerDisplay(hacker, startNodeDisplay, step * (index+1))
+        });
+    }
+
+    addHackerDisplay(hacker, startNodeDisplay, offset) {
+        const you = hacker.userId === this.userId;
+        const hackerDisplay= new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you);
+        this.displayById[hacker.userId] = hackerDisplay;
+        if (you) {
+            // this.hackerDisplay = hackerDisplay;
+        }
     }
 
     addNodeDisplay(node) {
@@ -137,8 +151,10 @@ class ScanCanvas {
 
     launchProbe(probeData) {
         const probeThread = this.probeThreads.getOrCreateThread(probeData.probeUserId);
-        const probeDisplay = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, this.userId, this.hackerDisplay, this.displayById)
-        this.displayById[probeData.id] = probeDisplay
+        const hackerDisplay = this.displayById[probeData.probeUserId];
+        const yourProbe = probeData.probeUserId === this.userId;
+        const probeDisplay = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
+        this.displayById[probeData.id] = probeDisplay;
 
     }
 

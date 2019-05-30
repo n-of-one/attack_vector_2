@@ -1,5 +1,6 @@
 package org.n1.mainframe.backend.service.user
 
+import org.n1.mainframe.backend.model.hacker.HackerIcon
 import org.n1.mainframe.backend.model.user.User
 import org.n1.mainframe.backend.model.user.enums.UserType
 import org.n1.mainframe.backend.repo.UserRepo
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.annotation.PostConstruct
+import javax.swing.text.html.HTML.Tag.I
 
 @Component
 class UserService(
@@ -18,7 +20,7 @@ class UserService(
     val passwordEncoder = BCryptPasswordEncoder(4)
 
     fun findByName(userName: String): User? {
-        return userRepo.findByName(userName).orElseGet { null }
+        return userRepo.findByNameIgnoreCase(userName).orElseGet { null }
     }
 
     fun getByName(userName: String): User {
@@ -26,7 +28,7 @@ class UserService(
     }
 
     fun login(userName: String, password: String): User {
-        val user = getByName(userName.toLowerCase())
+        val user = getByName(userName)
         if (passwordEncoder.matches(password, user.encodedPasscoded)) {
             return user
         }
@@ -45,17 +47,36 @@ class UserService(
     fun init() {
         mandatoryUser("admin", "", UserType.ADMIN)
         mandatoryUser("gm", "", UserType.GM)
-        mandatoryUser("hacker", "", UserType.HACKER)
-        mandatoryUser("h", "", UserType.HACKER)
+        mandatoryUser("hacker", "", UserType.HACKER, HackerIcon.CROCODILE)
+        mandatoryUser("h", "", UserType.HACKER, HackerIcon.KOALA)
+
+        mandatoryUser("Stalker", "", UserType.HACKER, HackerIcon.BEAR)
+        mandatoryUser("Obsidian", "", UserType.HACKER, HackerIcon.BIRD_1)
+        mandatoryUser("Paradox", "", UserType.HACKER, HackerIcon.BULL)
+        mandatoryUser("Shade_zero", "", UserType.HACKER, HackerIcon.EAGLE)
+        mandatoryUser("_eternity_", "", UserType.HACKER, HackerIcon.COBRA)
+        mandatoryUser("BoltBishop", "", UserType.HACKER, HackerIcon.DRAGON_1)
+        mandatoryUser("CryptoLaw", "", UserType.HACKER, HackerIcon.FROG)
+        mandatoryUser("Moonshine", "", UserType.HACKER, HackerIcon.LION)
+        mandatoryUser("Face dread" , "", UserType.HACKER, HackerIcon.LIZARD)
+        mandatoryUser("C_H_I_E_F", "", UserType.HACKER, HackerIcon.WOLF)
+        mandatoryUser("Angler", "", UserType.HACKER, HackerIcon.SHARK)
+        mandatoryUser("-=Silver=-", "", UserType.HACKER, HackerIcon.COBRA)
+        mandatoryUser("N1X", "", UserType.HACKER, HackerIcon.STINGRAY)
+        mandatoryUser(".Specter.", "", UserType.HACKER, HackerIcon.UNICORN)
+
+
+
     }
 
-    fun mandatoryUser(userName: String, password: String, type: UserType) {
+    fun mandatoryUser(userName: String, password: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
         val user = findByName(userName)
         if (user == null) {
             val newUser = User(
                     name = userName,
                     type = type,
-                    id = createUserId()
+                    id = createUserId(),
+            icon = icon
             )
             createUser(newUser, password)
         }

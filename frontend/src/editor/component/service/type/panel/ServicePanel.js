@@ -24,7 +24,7 @@ let mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({type, node, serviceData, serviceObject: serviceObject, children}) => {
+    ({type, node, serviceData, serviceObject, children}) => {
         if (!node) {
             return <div/>
         }
@@ -42,7 +42,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <ServiceField key={key("nn")} size="small" name="Service name" value={serviceObject.name} save={value => serviceObject.saveName(value)}
                                   placeholder="As seen by hackers" help="When a hacker 'scans' or 'views' a node they will see the services by this name." />
                     {children}
-                    <ServiceField key={key("no")} size="large" name="Gm Note" value={serviceObject.note}save={value => serviceObject.saveNote(value)}
+                    <ServiceField key={key("no")} size="large" name="Gm Note" value={serviceObject.note} save={value => serviceObject.saveNote(value)}
                                   placeholder="" help="Players will never see this. Notes can help to understand the design of a site."/>
                 </div>
             </div>

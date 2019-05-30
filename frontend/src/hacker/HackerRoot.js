@@ -10,7 +10,6 @@ import hackerRootReducer from "./HackerRootReducer";
 import webSocketConnection from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
-import editorRootReducer from "../editor/EditorRootReducer";
 
 class HackerRoot extends Component {
 

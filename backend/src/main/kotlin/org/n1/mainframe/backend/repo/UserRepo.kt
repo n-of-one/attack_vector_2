@@ -8,5 +8,5 @@ import java.util.*
 @Repository
 interface UserRepo : PagingAndSortingRepository<User, String> {
 
-    fun findByName(userName: String): Optional<User>
+    fun findByNameIgnoreCase(userName: String): Optional<User>
 }
