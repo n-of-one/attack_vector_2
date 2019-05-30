@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart} from "./CanvasUtils";
+import {animate, calcLine, calcLineStart, easeLinear} from "./CanvasUtils";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/scan/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/scan/model/NodeScanTypes";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
@@ -40,7 +40,7 @@ export default class ConnectionDisplay {
         this.canvas.add(this.probeIcon);
         this.canvas.bringToFront(this.probeIcon);
 
-        animate(this.canvas, this.probeIcon, "opacity", 0.4, 40);
+        // animate(this.canvas, this.probeIcon, "opacity", 0.4, 40);
 
 
         let currentDisplay = hackerDisplay;
@@ -51,28 +51,19 @@ export default class ConnectionDisplay {
         });
         const lastNodeId = path.pop();
         thread.run(0, () => {
-            this.processProbeArrive(scanType, lastNodeId);
+            this.processProbeArrive(scanType, lastNodeId, currentDisplay);
         });
     }
 
     scheduleMoveStep(nextDisplay, currentDisplay) {
-        this.thread.run(20, () => this.moveStep(nextDisplay, currentDisplay, 20, 5, 5));
+        this.thread.run(22, () => this.moveStep(nextDisplay, currentDisplay, 20));
     }
 
-    moveStep(nextDisplay, currentDisplay, time, leftDelta, topDelta) {
-
-
-        animate(this.canvas, this.probeIcon, 'left', nextDisplay.x + leftDelta, time);
-        animate(this.canvas, this.probeIcon, 'top', nextDisplay.y + topDelta, time);
-
+    moveStep(nextDisplay, currentDisplay, time) {
         const lineIcon = this.createProbeLine(currentDisplay, nextDisplay);
         this.lineIcons.push(lineIcon);
         const lineData = calcLine(currentDisplay, nextDisplay, 3);
-        lineIcon.animate(lineData.asCoordinates(), {
-            onChange: this.canvas.renderAll.bind(this.canvas),
-            duration: time * 50,
-            easing: fabric.util.ease.easeInOutSine
-        });
+        animate(this.canvas, lineIcon, null, lineData.asCoordinates(), time, easeLinear);
     }
 
     createProbeLine(currentDisplay, nextDisplay) {
@@ -93,7 +84,13 @@ export default class ConnectionDisplay {
         return lineIcon;
     }
 
-    processProbeArrive(scanType, nodeId) {
+    processProbeArrive(scanType, nodeId, currentDisplay) {
+        this.probeIcon.setLeft(currentDisplay.x + 5);
+        this.probeIcon.setTop(currentDisplay.y + 5);
+
+        // animate(this.canvas, this.probeIcon, 'left', nextDisplay.x + leftDelta, time, easeLinear);
+        // animate(this.canvas, this.probeIcon, 'top', nextDisplay.y + topDelta, time, easeLinear);
+
         switch (scanType) {
             case SCAN_NODE_INITIAL:
                 return this.scanInside(nodeId, SCAN_NODE_INITIAL);

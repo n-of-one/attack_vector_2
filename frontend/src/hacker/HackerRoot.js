@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import RequiresRole from "../common/RequiresRole";
-import {applyMiddleware, createStore} from "redux";
+import {applyMiddleware, compose, createStore} from "redux";
 import {HACKER_HOME} from "./HackerPages";
 import HackerPageChooser from "./HackerPageChooser";
 import createSagaMiddleware from 'redux-saga'
@@ -10,6 +10,7 @@ import hackerRootReducer from "./HackerRootReducer";
 import webSocketConnection from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
+import editorRootReducer from "../editor/EditorRootReducer";
 
 class HackerRoot extends Component {
 
@@ -21,7 +22,10 @@ class HackerRoot extends Component {
     init() {
         const preLoadedState = {currentPage: HACKER_HOME};
         const sagaMiddleware = createSagaMiddleware();
-        this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
+
+        const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+        this.store = createStore(hackerRootReducer, preLoadedState, composeEnhancers(applyMiddleware(sagaMiddleware)));
+        // this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         webSocketConnection.create(this.store, () => {
             this.store.dispatch({type: RETRIEVE_USER_SCANS});

@@ -14,6 +14,7 @@ class ScanCanvas {
 
     nodeDataById = null;
     connectionDataById = {};
+    hackers = [];
 
     displayById = {};
 
@@ -56,6 +57,7 @@ class ScanCanvas {
 
         this.nodeDataById = null;
         this.connections = [];
+        this.hackers = [];
 
         this.displayById = {};
         this.connectionDataById = {};
@@ -66,6 +68,7 @@ class ScanCanvas {
         this.iconThread = new Thread();
         this.probeThreads = new Threads();
 
+
         this.render();
     }
 
@@ -74,9 +77,10 @@ class ScanCanvas {
     }
 
     loadScan(data) {
-        const {scan, site} = data;
+        const {scan, site, hackers} = data;
         const {nodes, connections} = site;
         this.nodeDataById = {};
+        this.hackers = hackers;
         nodes.forEach((nodeData) => {
             this.nodeDataById[nodeData.id] = nodeData;
             const nodeScan = scan.nodeScanById[nodeData.id];
@@ -105,15 +109,17 @@ class ScanCanvas {
             }
         });
 
-        const startDisplay = this.displayById[nodes[0].id];
-
-        this.addHackerDisplay(startDisplay);
-
+        const startNodeDisplay = this.displayById[nodes[0].id];
+        this.addHackersDisplays(startNodeDisplay);
     }
 
+    addHackersDisplays(startNodeDisplay) {
+        const hacker = this.hackers.find(hacker => hacker.userId === this.userId);
+        this.addHackerDisplay(hacker, startNodeDisplay)
+    }
 
-    addHackerDisplay(startDisplay) {
-        this.hackerDisplay = new HackerIcon(this.canvas, this.iconThread, startDisplay, this.iconThread);
+    addHackerDisplay(hacker, startNodeDisplay) {
+        this.hackerDisplay = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker);
         this.displayById["user-fixme-123"] = this.hackerDisplay;
     }
 

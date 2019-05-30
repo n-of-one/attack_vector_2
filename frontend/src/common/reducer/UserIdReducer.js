@@ -5,9 +5,11 @@ const defaultState = {
     id: null
 };
 
-export default (state = defaultState, action) => {
+const userIdReducer = (state = defaultState, action) => {
     switch(action.type) {
-        case SET_USER_ID : return { id: action.userId };
+        case SET_USER_ID : return action.userId;
         default: return state;
     }
-}
+};
+
+export default userIdReducer

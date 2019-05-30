@@ -57,7 +57,7 @@ class ScanCanvasPanel extends Component {
 
 let mapStateToProps = (state) => {
     return {
-        userId: state.user.id
+        userId: state.userId
     };
 };
 

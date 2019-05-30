@@ -116,7 +116,7 @@ class ScanningService(val scanService: ScanService,
     }
 
 
-    data class ScanAndSite(val scan: Scan, val site: SiteFull, val users: List<HackerPresence>)
+    data class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerPresence>)
 
     fun enterScan(scanId: String) {
         hackerActivityService.startActivityScanning(scanId)
