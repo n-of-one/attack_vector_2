@@ -34,7 +34,6 @@ class ScanningService(val scanService: ScanService,
                       val nodeService: NodeService,
                       val connectionService: ConnectionService,
                       val hackerActivityService: HackerActivityService,
-                      val hackerService: HackerService,
                       val principalService: PrincipalService) {
 
 
@@ -123,8 +122,7 @@ class ScanningService(val scanService: ScanService,
 
         val scan = scanService.getById(scanId)
         val siteFull = siteService.getSiteFull(scan.siteId)
-        val userPresence = hackerService.getUserPresence(HackerActivityType.SCANNING, scan.id)
-
+        val userPresence = hackerActivityService.getUserPresence(HackerActivityType.SCANNING, scan.id)
 
         val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)

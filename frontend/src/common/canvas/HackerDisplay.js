@@ -1,5 +1,7 @@
 import {fabric} from "fabric";
-import {animate, calcLine} from "./CanvasUtils";
+import {animate, calcLine } from "./CanvasUtils";
+
+const APPEAR_TIME = 20;
 
 export default class HackerDisplay {
 
@@ -10,6 +12,7 @@ export default class HackerDisplay {
     thread = null;
     hacker = null;
     you = false;
+    startNodeDisplay = null;
 
     line = null;
     y = null;
@@ -19,6 +22,7 @@ export default class HackerDisplay {
         this.canvas = canvas;
         this.thread = thread;
         this.hacker = hacker;
+        this.startNodeDisplay = startNodeDisplay;
 
         const image = document.getElementById(hacker.icon);
 
@@ -32,11 +36,11 @@ export default class HackerDisplay {
             top: this.y,
             height: size,
             width: size,
-            opacity: 1,
+            opacity: 0,
 
         });
         this.canvas.add(this.hackerIcon);
-
+        animate(this.canvas, this.hackerIcon, "opacity", 1, APPEAR_TIME);
 
         this.hackerHider = new fabric.Rect({
             left: this.x,
@@ -59,14 +63,15 @@ export default class HackerDisplay {
             left: this.x,
             top: this.y + 15,
             textAlign: "center", // "center", "right" or "justify".
-            opacity: 1,
+            opacity: 0,
             selectable: false,
         });
         this.canvas.add(this.labelIcon);
+        animate(this.canvas, this.labelIcon, "opacity", 1, APPEAR_TIME);
 
         const lineData = calcLine(this, startNodeDisplay);
 
-        const lineIcon = new fabric.Line(
+        this.lineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#bb8",
                 strokeWidth: 2,
@@ -75,12 +80,22 @@ export default class HackerDisplay {
                 hoverCursor: 'default',
                 opacity: 0
             });
-        this.canvas.add(lineIcon);
-        this.canvas.sendToBack(lineIcon);
-        this.thread.run(3, () => animate(this.canvas, lineIcon, "opacity", 0.5, 100));
+        this.canvas.add(this.lineIcon);
+        this.canvas.sendToBack(this.lineIcon);
+        this.thread.run(3, () => animate(this.canvas, this.lineIcon, "opacity", 0.5, 40));
     }
 
     size() {
         return 30;
+    }
+
+    move(newX) {
+        this.x = newX;
+        animate(this.canvas, this.hackerIcon, "left", newX, APPEAR_TIME);
+        animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
+        animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
+        animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
+        const lineData = calcLine(this, this.startNodeDisplay);
+        animate(this.canvas, this.lineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
     }
 }

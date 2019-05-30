@@ -6,6 +6,7 @@ import NodeDisplay from "../../../common/canvas/NodeDisplay";
 import ConnectionIcon from "../../../common/canvas/ConnectionDisplay";
 import HackerIcon from "../../../common/canvas/HackerDisplay";
 import ProbeDisplay from "../../../common/canvas/ProbeDisplay";
+import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -18,11 +19,11 @@ class ScanCanvas {
 
     displayById = {};
 
-    // hackerDisplay = null;
     dispatch = null;
     iconThread = new Thread();
     probeThreads = new Threads();
 
+    startNodeDisplay = null;
     userId = null;
 
     canvas = null;
@@ -32,8 +33,8 @@ class ScanCanvas {
         this.dispatch = dispatch;
 
         this.canvas = new fabric.StaticCanvas('scanCanvas', {
-            width: 607,
-            height: 815,
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT,
             backgroundColor: "#333333",
         });
 
@@ -60,7 +61,7 @@ class ScanCanvas {
 
         this.displayById = {};
         this.connectionDataById = {};
-        this.hackerDisplay = null;
+        this.startNodeDisplay = null;
 
         this.iconThread.deactivate();
         this.probeThreads.deactivate();
@@ -79,7 +80,7 @@ class ScanCanvas {
         const {scan, site, hackers} = data;
         const {nodes, connections} = site;
         this.nodeDataById = {};
-        this.sortAndaddHackers(hackers);
+        this.sortAndAddHackers(hackers);
         nodes.forEach((nodeData) => {
             this.nodeDataById[nodeData.id] = nodeData;
             const nodeScan = scan.nodeScanById[nodeData.id];
@@ -108,12 +109,13 @@ class ScanCanvas {
             }
         });
 
-        const startNodeDisplay = this.displayById[nodes[0].id];
-        this.addHackersDisplays(startNodeDisplay);
+        this.startNodeDisplay = this.displayById[nodes[0].id];
+        this.addHackersDisplays(this.startNodeDisplay);
     }
 
-    sortAndaddHackers(hackers) {
-        const you = hackers.find(hacker => hacker.userId === this.userId );
+
+    sortAndAddHackers(hackers) {
+        const you = hackers.find(hacker => hacker.userId === this.userId);
         const others = hackers.filter(hacker => hacker.userId !== this.userId);
         others.sort((a, b) => (a.userName > b.userName) ? 1 : ((b.userName > a.userName) ? -1 : 0));
         const midIndex = Math.floor(others.length / 2);
@@ -122,19 +124,15 @@ class ScanCanvas {
     }
 
     addHackersDisplays(startNodeDisplay) {
-        const step = Math.floor(607 / (this.hackers.length+1));
+        const step = Math.floor(CANVAS_WIDTH / (this.hackers.length + 1));
         this.hackers.forEach((hacker, index) => {
-            this.addHackerDisplay(hacker, startNodeDisplay, step * (index+1))
+            this.addHackerDisplay(hacker, startNodeDisplay, step * (index + 1))
         });
     }
 
     addHackerDisplay(hacker, startNodeDisplay, offset) {
         const you = hacker.userId === this.userId;
-        const hackerDisplay= new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you);
-        this.displayById[hacker.userId] = hackerDisplay;
-        if (you) {
-            // this.hackerDisplay = hackerDisplay;
-        }
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you);
     }
 
     addNodeDisplay(node) {
@@ -153,8 +151,7 @@ class ScanCanvas {
         const probeThread = this.probeThreads.getOrCreateThread(probeData.probeUserId);
         const hackerDisplay = this.displayById[probeData.probeUserId];
         const yourProbe = probeData.probeUserId === this.userId;
-        const probeDisplay = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
-        this.displayById[probeData.id] = probeDisplay;
+        this.displayById[probeData.id] = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
 
     }
 
@@ -177,6 +174,35 @@ class ScanCanvas {
         });
     }
 
+    hackerEnter(newHacker) {
+        if (newHacker.userId === this.userId) {
+            return;
+        }
+        if (this.hackers.length % 2 === 0) {
+            // Even number of hackers: hacker get's added to the left.
+            this.hackers.splice(0, 0, newHacker);
+        } else {
+            // Odd: add to right.
+            this.hackers.push(newHacker);
+        }
+
+        const step = Math.floor(CANVAS_WIDTH / (this.hackers.length + 1));
+        this.hackers.forEach((hacker, index) => {
+            const newX = step * (index + 1);
+            if (hacker.userId === newHacker.userId) {
+                this.addHackerDisplay(hacker, this.startNodeDisplay, newX)
+            }
+            else {
+                this.displayById[hacker.userId].move(newX);
+            }
+        });
+
+
+    }
+
+    hackerLeave(hacker) {
+
+    }
 }
 
 const scanCanvas = new ScanCanvas();

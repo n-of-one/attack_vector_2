@@ -47,7 +47,7 @@ class ScanCanvasPanel extends Component {
                     <ScanNodeImage type={MANUAL_1} ice={true} onLoad={onLoad}/>
                     <ScanNodeImage type={MANUAL_2} ice={true} onLoad={onLoad}/>
                     <ScanNodeImage type={MANUAL_3} ice={true} onLoad={onLoad}/>
-                    <HackerImage type="BEAR" fileName="animal-bear4-sc44" onLoad={onLoad}/>
+                    <HackerImage type="BEAR" fileName="animal-bear4-sc44.png" onLoad={onLoad}/>
                     <HackerImage type="BIRD_1" fileName="animal-bird2.png" onLoad={onLoad}/>
                     <HackerImage type="CAT" fileName="animal-cat3.png" onLoad={onLoad}/>
                     <HackerImage type="CRAB" fileName="animal-crab2.png" onLoad={onLoad}/>

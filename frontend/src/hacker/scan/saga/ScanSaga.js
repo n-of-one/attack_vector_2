@@ -47,4 +47,15 @@ function* navigatePageSaga(action) {
     yield
 }
 
-export { enterScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScansSaga, scanForNameSaga };
+function* hackerEnterScanSaga(action) {
+    scanCanvas.hackerEnter(action.data);
+    yield
+}
+
+function* hackerLeaveScanSaga(action) {
+    scanCanvas.hackerLeave(action.data);
+    yield
+}
+
+export { enterScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScansSaga, scanForNameSaga,
+    hackerEnterScanSaga, hackerLeaveScanSaga };

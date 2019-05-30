@@ -33,4 +33,8 @@ enum class ReduxActions {
     SERVER_ADD_SERVICE,
     SERVER_NODE_UPDATED,
 
+    SERVER_HACKER_ENTER_SCAN,
+    SERVER_HACKER_LEAVE_SCAN,
+
+
 }
