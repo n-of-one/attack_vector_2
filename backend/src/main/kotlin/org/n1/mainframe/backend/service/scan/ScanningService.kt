@@ -161,7 +161,7 @@ class ScanningService(val scanService: ScanService,
         val path = createNodePath(targetNode)
         val userId = principalService.get().userId
         val probeAction = ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false)
-        stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+        stompService.toScan(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 
 
@@ -173,7 +173,7 @@ class ScanningService(val scanService: ScanService,
         val scan = scanService.getById(scanId)
         val probeAction = createProbeAction(scan, autoScan)
         if (probeAction != null) {
-            stompService.toSite(scan.siteId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+            stompService.toScan(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
         } else {
             stompService.terminalReceive("Scan complete.")
         }
@@ -218,10 +218,9 @@ class ScanningService(val scanService: ScanService,
         val traverseNodeValues = createTraverseNodesWithDistance(scan).values
         val traverseNodes = traverseNodeValues.filter { scan.nodeScanById[it.id]!!.status != NodeStatus.UNDISCOVERED }
         val distanceSortedNodes = traverseNodes.sortedBy { it.distance }
-        val targetNode = distanceSortedNodes.minBy {
+        return distanceSortedNodes.minBy {
             scan.nodeScanById[it.id]!!.status.level
         }!!
-        return targetNode
     }
 
     private fun createTraverseNodesWithDistance(scan: Scan): Map<String, TraverseNode> {
