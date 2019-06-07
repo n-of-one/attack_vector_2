@@ -58,11 +58,11 @@ class UserService(
         mandatoryUser("BoltBishop", "", UserType.HACKER, HackerIcon.DRAGON_1)
         mandatoryUser("CryptoLaw", "", UserType.HACKER, HackerIcon.FROG)
         mandatoryUser("Moonshine", "", UserType.HACKER, HackerIcon.LION)
-        mandatoryUser("Face dread" , "", UserType.HACKER, HackerIcon.LIZARD)
-        mandatoryUser("C_H_I_E_F", "", UserType.HACKER, HackerIcon.WOLF)
         mandatoryUser("Angler", "", UserType.HACKER, HackerIcon.SHARK)
-        mandatoryUser("-=Silver=-", "", UserType.HACKER, HackerIcon.COBRA)
         mandatoryUser("N1X", "", UserType.HACKER, HackerIcon.STINGRAY)
+        mandatoryUser("Face.dread" , "", UserType.HACKER, HackerIcon.LIZARD)
+        mandatoryUser("-=Silver=-", "", UserType.HACKER, HackerIcon.COBRA)
+        mandatoryUser("C_H_I_E_F", "", UserType.HACKER, HackerIcon.WOLF)
         mandatoryUser(".Specter.", "", UserType.HACKER, HackerIcon.UNICORN)
 
 

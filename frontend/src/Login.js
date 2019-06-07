@@ -6,23 +6,28 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.loginFunction = props.loginFunction;
-        this.state = {message: this.props.message};
+        this.state = {
+            name: "",
+            password: "",
+            message: this.props.message};
 
-        this.name = "";
-        this.password = "";
+        this.names = [
+            "Obsidian", "Paradox", "Shade_zero", "_eternity_", "BoltBishop", "CryptoLaw", "Moonshine",
+            "Angler", "N1X", "Face.dread", "-=Silver=-", "C_H_I_E_F", ".Specter.", "Stalker",
+        ];
     }
 
     onNameChange(value) {
-        this.name = value;
+        this.setState({name: value});
     }
 
     onPasswordChange(value) {
-        this.password = value;
+        this.setState({password: value});
     }
 
     login(event) {
         event.preventDefault();
-        const loginInput = {name: this.name, password: this.password};
+        const loginInput = {name: this.state.name, password: this.state.password};
         this.setState({message: "Logging in"});
 
         post({
@@ -49,7 +54,26 @@ class Login extends Component {
         });
     }
 
+    renderName = (name) => {
+        const that = this;
+        return (
+            <div className="row" key={name}>
+                <div className="col-lg-offset-2 col-lg-5">
+                    <div className="text">
+                        <a href="#" onClick={
+                            (event) => {
+                                that.onNameChange(name);
+                                return false;
+                                event.preventDefault();
+                            }} >{name}</a>
+                    </div>
+                </div>
+            </div>
+        )
+    };
+
     render() {
+
         return (
             <div className="container">
                 <br/>
@@ -71,7 +95,8 @@ class Login extends Component {
                                     <input type="text" className="form-control" id="handle" placeholder="" autoFocus={true}
                                            onChange={(event) => {
                                                this.onNameChange(event.target.value)
-                                           }}/>
+                                           }}
+                                           value={this.state.name} />
                                 </div>
                             </div>
                             <div className="form-group">
@@ -80,7 +105,8 @@ class Login extends Component {
                                     <input type="password" className="form-control" id="password" placeholder="Password"
                                            onChange={(event) => {
                                                this.onPasswordChange(event.target.value)
-                                           }}/>
+                                           }}
+                                           value={this.state.password}/>
                                 </div>
                             </div>
                             <div className="form-group">
@@ -91,6 +117,10 @@ class Login extends Component {
                         </form>
                     </div>
                 </div>
+                <br/>
+                <br/>
+                <br/>
+                {this.names.map(this.renderName)}
             </div>
         );
     }
