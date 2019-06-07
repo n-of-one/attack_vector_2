@@ -36,6 +36,7 @@ function* enterScanSaga(action) {
 
 function* deleteScanSaga(action) {
     webSocketConnection.send("/av/scan/deleteScan", action.scanId);
+    yield
 }
 
 function* serverScanFullSaga(action) {

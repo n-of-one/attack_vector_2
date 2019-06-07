@@ -25,9 +25,14 @@ class Login extends Component {
         this.setState({password: value});
     }
 
-    login(event) {
+    submit(event) {
         event.preventDefault();
-        const loginInput = {name: this.state.name, password: this.state.password};
+        this.login(this.state.name, this.state.password)
+    }
+
+
+    login(name, password) {
+        const loginInput = {name: name, password: password};
         this.setState({message: "Logging in"});
 
         post({
@@ -60,11 +65,12 @@ class Login extends Component {
             <div className="row" key={name}>
                 <div className="col-lg-offset-2 col-lg-5">
                     <div className="text">
+                        {/*eslint-disable-next-line*/}
                         <a href="#" onClick={
                             (event) => {
-                                that.onNameChange(name);
-                                return false;
+                                that.login(name, "");
                                 event.preventDefault();
+                                return false;
                             }} >{name}</a>
                     </div>
                 </div>
@@ -83,7 +89,7 @@ class Login extends Component {
                 <div className="row">
 
                     <div className="col-lg-offset-2 col-lg-5">
-                        <form className="form-horizontal" onSubmit={(event) => this.login(event)}>
+                        <form className="form-horizontal" onSubmit={(event) => this.submit(event)}>
                             <div className="form-group">
                                 <div className="col-sm-offset-2 col-sm-10 text">
                                     <p>&nbsp;{this.state.message}</p>
