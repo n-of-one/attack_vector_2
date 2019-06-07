@@ -1,14 +1,98 @@
+/*@font-face {*/
+    /*font-family: 'NotoMono';*/
+    /*src: url('../resources/fonts/notomono/NotoMono-Regular.ttf') format('truetype');*/
+    /*font-weight: normal;*/
+    /*font-style: normal;*/
+/*}*/
+
+/*@font-face {*/
+    /*font-family: 'NotoSansSymbols';*/
+    /*src: url('../resources/fonts/notomono/NotoSansSymbols-Regular.ttf') format('truetype');*/
+    /*font-weight: normal;*/
+    /*font-style: normal;*/
+/*}*/
+
+/*@font-face {*/
+    /*font-family: 'NotoSansSymbols2';*/
+    /*src: url('../resources/fonts/notomono/NotoSansSymbols2-Regular.ttf') format('truetype');*/
+    /*font-weight: normal;*/
+    /*font-style: normal;*/
+/*}*/
+
+/*@font-face {*/
+    /*font-family: 'NotoColorEmoji';*/
+    /*src: url('../resources/fonts/notomono/NotoColorEmoji.ttf') format('truetype');*/
+    /*font-weight: normal;*/
+    /*font-style: normal;*/
+/*}*/
+
+/*@font-face {*/
+    /*font-family: 'NotoEmoji';*/
+    /*src: url('../resources/fonts/notomono/NotoEmoji-Regular.ttf') format('truetype');*/
+    /*font-weight: normal;*/
+    /*font-style: normal;*/
+/*}*/
+
+body {
+    background-color: #222222;
+}
+
+@font-face {
+    font-family: 'SpaceMono';
+    src: url('../resources/fonts/space_mono/SpaceMono-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'SpaceMono';
+    src: url('../resources/fonts/space_mono/SpaceMono-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SpaceMono';
+    src: url('../resources/fonts/space_mono/SpaceMono-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SpaceMono';
+    src: url('../resources/fonts/space_mono/SpaceMono-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'EmojiSymbols';
+    src: url('../resources/fonts/EmojiSymbols-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     padding-bottom: 40px;
-    font-family: Consolas, monospace;
+    font-family: 'SpaceMono', 'EmojiSymbols', monospace;
 }
 
-.dark_well {
+.darkWell {
     background-color: #333333;
-    border-radius: 3px 3px 3px 3px
+    border-radius: 3px 3px 3px 3px;
 }
 
-.backgroundDark {
+.siteMap {
+    background-color: #333333;
+    border-radius: 3px 3px 3px 3px;
+    height: 815px;
+    width: 607px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.rightPane {
     background-color: #111111;
 }
 
@@ -22,9 +106,143 @@ body {
     line-height: 14px;
 }
 
+
 .btn-spaced {
     margin-right: 0.3em;
 }
+
+.btn-height-spacer {
+    height: 0.3em;
+}
+
+.service_text_label {
+    margin-top: 0.5em;
+    margin-bottom: 0px;
+}
+
+.text_gold {
+    color: #8a6d3b;
+}
+
+.strong {
+    font-weight: bold;
+}
+
+.textInput {
+    border: 1px solid #ccc;
+}
+
+.node_panel_no_right_padding {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.serviceInputLong {
+    /*width: 90%;*/
+    display: inherit;
+}
+
+.serviceLabel {
+    color: #777777;
+    text-align: right;
+    padding-top: 0.5em;
+    padding-right: 0;
+    /*font-weight: bold;*/
+}
+
+.noRightPadding {
+    padding-right: 0;
+}
+
+.serviceHelpColumn {
+    padding-left: 0.5em;
+    padding-top: 0.2em;
+}
+
+
+.helpBadge {
+    color: #333333;
+    border: 1px solid #46b8da30;
+    cursor: help;
+}
+
+.helpBadge:hover {
+    background-color: #5bc0de;
+    border: 1px solid #77777730;
+}
+
+.serviceFieldRow {
+    margin-bottom: 0.3em;
+}
+
+.serviceFieldTopRow {
+    margin-bottom: 0;
+
+}
+
+a.textLink {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.serviceLayerPanel {
+    height: 38em;
+}
+
+.dontDisplay {
+    display: none;
+}
+
+.silentLink {
+    cursor: pointer;
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    border-top: 1px solid #444;
+}
+
+.site-state {
+    height: 95px;
+    overflow-y : auto;
+    overflow-x: hidden;
+    scrollbar-width: 12px;
+    scrollbar-color: #666 #444;
+}
+
+.site-state-text {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 24px;
+}
+.site-state::-webkit-scrollbar {
+    width: 12px;
+}
+
+.site-state::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 5px;
+}
+
+.site-state::-webkit-scrollbar-track {
+    background: #444;
+    border-radius: 5px;
+}
+
+.thin-hr {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.btn-grey {
+    color: #ffffff;
+    background-color: #888888;
+}
+
 
 /*.rightPane {*/
 /*padding-top: 10px;*/

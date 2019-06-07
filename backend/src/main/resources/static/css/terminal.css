@@ -1,0 +1,60 @@
+.terminalPanel {
+    background-color: #222222;
+    word-wrap: break-word;
+}
+
+.terminalLine {
+    /*font-family: monospace;*/
+    /*font-family: FreeMono, monospace; this don't work on Android */
+    color: #aaa;
+    background-color: #222222;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.terminalInput {
+    border: none;
+    background-color: #222222;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.terminalCaret {
+    display: inline-block;
+    background-color: #2e6da4;
+    width: 7px;
+}
+
+.terminal_input { text-shadow: 0 0 3px rgb(145, 141, 0); }
+
+.terminal_style_primary { color: #337ab7; }
+.terminal_style_ok { /*color: #3c763d;*/ color: #5cb85c }
+.terminal_style_info { /*color: #31708f;*/ color: #5bc0de; }
+.terminal_style_warn { /*color: #a9443b;*/ color: #f0ad4e; }
+.terminal_style_error { color: #d9534f; }
+
+.terminal_style_b { font-weight: bold; }
+.terminal_style_i { font-style: italic; }
+.terminal_style_u { text-decoration: underline; }
+.terminal_style_s { text-decoration: line-through; }
+.terminal_style_us { text-decoration: underline line-through; }
+
+.terminal_scrollbar {
+    overflow-y : auto;
+    scrollbar-width: thin;
+    scrollbar-color: #666 #444;
+}
+
+.terminal_scrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.terminal_scrollbar::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 5px;
+}
+
+.terminal_scrollbar::-webkit-scrollbar-track {
+    background: #444;
+    border-radius: 5px;
+}
