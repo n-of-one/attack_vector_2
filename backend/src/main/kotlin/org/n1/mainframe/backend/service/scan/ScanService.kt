@@ -59,5 +59,9 @@ class ScanService(val scanRepo: ScanRepo,
         val userScan = UserScan(user.id, scanId)
         userScanRepo.save(userScan)
     }
+
+    fun deleteUserScan(scanId: String) {
+        userScanRepo.deleteByUserIdAndScanId(principalService.get().userId, scanId)
+    }
 }
 

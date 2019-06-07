@@ -25,12 +25,17 @@ class ScanningController(
 
     @MessageMapping("/scan/scansOfPlayer")
     fun scansOfPlayer(principal: Principal) {
-        executor.run(principal) { scanningService.scansOfPlayer() }
+        executor.run(principal) { scanningService.sendScansOfPlayer() }
     }
 
     @MessageMapping("/scan/scanForName")
     fun scanForName(siteName: String, principal: Principal) {
         executor.run(principal) { scanningService.scanSiteForName(siteName) }
+    }
+
+    @MessageMapping("/scan/deleteScan")
+    fun deleteScan(scanId: String, principal: Principal) {
+        executor.run(principal) { scanningService.deleteScan(scanId) }
     }
 
     @MessageMapping("/scan/enterScan")

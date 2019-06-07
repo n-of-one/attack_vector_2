@@ -9,7 +9,7 @@ import {
     SERVER_SCAN_FULL,
     SERVER_UPDATE_NODE_STATUS
 } from "./scan/model/ScanActions";
-import {ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
+import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./scan/saga/ScanProbeSaga";
 import {discoverNodesSaga, updateNodeStatusSaga} from "./scan/saga/NodeSagas";
 import {serverUserDcSaga, terminalSubmitSaga} from "./scan/saga/TerminalSagas";
@@ -21,7 +21,7 @@ import {
     serverScanFullSaga,
     scanForNameSaga,
     hackerEnterScanSaga,
-    hackerLeaveScanSaga
+    hackerLeaveScanSaga, deleteScanSaga
 } from "./scan/saga/ScanSaga";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
 
@@ -39,6 +39,9 @@ const createHackerRootSaga = () => {
 
         yield takeEvery(RETRIEVE_USER_SCANS, retrieveUserScansSaga);
         yield takeEvery(SCAN_FOR_NAME, scanForNameSaga);
+        yield takeEvery(DELETE_SCAN, deleteScanSaga);
+
+
         yield takeEvery(ENTER_SCAN, enterScanSaga);
         yield takeEvery(SERVER_SITE_DISCOVERED, enterScanSaga);
 

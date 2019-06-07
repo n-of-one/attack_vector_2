@@ -34,6 +34,10 @@ function* enterScanSaga(action) {
     yield
 }
 
+function* deleteScanSaga(action) {
+    webSocketConnection.send("/av/scan/deleteScan", action.scanId);
+}
+
 function* serverScanFullSaga(action) {
     scanCanvas.loadScan(action.data);
     yield
@@ -57,5 +61,5 @@ function* hackerLeaveScanSaga(action) {
     yield
 }
 
-export { enterScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScansSaga, scanForNameSaga,
+export { enterScanSaga, deleteScanSaga, serverScanFullSaga, navigatePageSaga, retrieveUserScansSaga, scanForNameSaga,
     hackerEnterScanSaga, hackerLeaveScanSaga };

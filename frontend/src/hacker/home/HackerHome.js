@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 import TextInput from "../../common/component/TextInput";
 import SilentLink from "../../common/component/SilentLink";
-import {ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
+import {DELETE_SCAN, ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -16,7 +16,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         enterScan: (scanInfo) => {
             dispatch({type: ENTER_SCAN, data: {scanId: scanInfo.scanId, siteId: scanInfo.siteId}});
-        }
+        },
+        deleteScan: (scanInfo) => {
+            dispatch({type: DELETE_SCAN, scanId: scanInfo.scanId});
+        },
     };
 };
 
@@ -27,7 +30,7 @@ let mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({scanSite, scans, enterScan}) => {
+    ({scanSite, scans, enterScan, deleteScan}) => {
 
         return (
             <div className="row">
@@ -76,6 +79,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                             <td className="strong">Site Name</td>
                                             <td className="strong">Complete</td>
                                             <td className="strong">Scan ID</td>
+                                            <td className="strong">&nbsp;</td>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -85,11 +89,18 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                                     <tr key={scanInfo.scanId}>
                                                         <td className="table-very-condensed">
                                                             <SilentLink onClick={() => {
-                                                                enterScan(scanInfo)
+                                                                enterScan(scanInfo);
                                                             }}>{scanInfo.siteName}</SilentLink>
                                                         </td>
                                                         <td className="table-very-condensed">{(scanInfo.complete) ? "yes" : "no"}</td>
                                                         <td className="table-very-condensed">{scanInfo.scanId}</td>
+                                                        <td className="table-very-condensed">
+                                                            <SilentLink onClick={() => {
+                                                                deleteScan(scanInfo);
+                                                            }}>
+                                                                <span className="glyphicon glyphicon-remove-circle" />
+                                                            </SilentLink>
+                                                        </td>
                                                     </tr>);
                                             })
                                         }

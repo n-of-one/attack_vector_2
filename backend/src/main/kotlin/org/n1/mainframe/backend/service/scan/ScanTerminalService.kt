@@ -38,7 +38,8 @@ class ScanTerminalService(val scanningService: ScanningService,
                 " [u]autoscan",
                 " [u]scan",
                 " [u]scan [ok]<network id>[/]   -- for example: [u]scan [ok]00",
-                " [u]dc")
+                " [u]dc",
+                " [u]/share [info]<user name>")
     }
 
     fun processScan(scanId: String, tokens: List<String>) {

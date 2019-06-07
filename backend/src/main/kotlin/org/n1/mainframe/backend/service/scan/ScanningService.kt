@@ -19,7 +19,6 @@ import org.n1.mainframe.backend.service.site.NodeService
 import org.n1.mainframe.backend.service.site.SiteDataService
 import org.n1.mainframe.backend.service.site.SiteService
 import org.n1.mainframe.backend.service.user.HackerActivityService
-import org.n1.mainframe.backend.service.user.HackerService
 import org.n1.mainframe.backend.util.s
 import org.springframework.stereotype.Service
 import java.util.*
@@ -37,6 +36,12 @@ class ScanningService(val scanService: ScanService,
                       val principalService: PrincipalService) {
 
 
+
+    fun deleteScan(scanId: String) {
+        scanService.deleteUserScan(scanId)
+        sendScansOfPlayer()
+    }
+
     data class ScanSiteResponse(val scanId: String, val siteId: String)
     fun scanSiteForName(siteName: String) {
         val siteData = siteDataService.findByName(siteName)
@@ -49,9 +54,10 @@ class ScanningService(val scanService: ScanService,
         val scanId = scanService.createScan(siteData, nodeScans)
         val response = ScanSiteResponse(scanId, siteData.id)
         stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
+        sendScansOfPlayer()
     }
 
-    fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
+    private fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
         val traverseNodes = determineDistances(siteId)
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
@@ -81,7 +87,7 @@ class ScanningService(val scanService: ScanService,
         }
     }
 
-    fun determineDistances(siteId: String): Map<String, TraverseNode> {
+    private fun determineDistances(siteId: String): Map<String, TraverseNode> {
         val siteData = siteDataService.getById(siteId)
         val nodes = nodeService.getAll(siteId)
         val startNodeId = siteService.findStartNode(siteData.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
@@ -107,7 +113,7 @@ class ScanningService(val scanService: ScanService,
         return traverseNodesById
     }
 
-    fun traverse(node: TraverseNode, distance: Int) {
+    private fun traverse(node: TraverseNode, distance: Int) {
         node.distance = distance
         node.connections
                 .filter { it.distance == null }
@@ -128,7 +134,6 @@ class ScanningService(val scanService: ScanService,
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 
-
     private fun reportNodeNotFound(networkId: String) {
         if (networkId.length == 1) {
             stompService.terminalReceive("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
@@ -137,7 +142,6 @@ class ScanningService(val scanService: ScanService,
         else {
             stompService.terminalReceive("Node [ok]${networkId}[/] not found.")
         }
-
     }
 
     fun launchProbeAtNode(scanId: String, networkId: String) {
@@ -313,13 +317,13 @@ class ScanningService(val scanService: ScanService,
         stompService.toScan(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
     }
 
-    fun scansOfPlayer() {
+    fun sendScansOfPlayer() {
         val userId = principalService.get().userId
-        scansOfPlayer(userId)
+        sendScansOfPlayer(userId)
     }
 
     data class ScanOverViewLine(val scanId: String, val siteName: String, val complete: Boolean, val siteId: String)
-    fun scansOfPlayer(userId: String) {
+    fun sendScansOfPlayer(userId: String) {
         val scans = scanService.getAll(userId)
         val scanItems = scans.map {scan ->
             val site = siteDataService.getById(scan.siteId)
@@ -344,7 +348,7 @@ class ScanningService(val scanService: ScanService,
 
         stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
         stompService.terminalReceiveForId(user, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
-        scansOfPlayer(user.id)
+        sendScansOfPlayer(user.id)
     }
 
 
