@@ -33,7 +33,7 @@ class RequiresRole extends Component {
         }
         else {
             return (
-                <div>
+                <div className="text">
                     You are not logged in with an account that has access to this page. Please <a href="/login">Login</a> with another account.<br />
                     <br />
                     Required role: {this.props.requires}

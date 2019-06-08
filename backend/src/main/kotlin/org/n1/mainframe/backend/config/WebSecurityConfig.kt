@@ -31,16 +31,14 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter)
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
+                .antMatchers("/**/*.{js,html,css,png,jpg,ico}").permitAll()
                 .antMatchers("/", "/health",
-                        "/edit/**", "/api/**", "/js/**", "/css/**", "/img/**",
-                        "/about", "/resources/**", "/error", "/favicon.ico", "/loginSubmit",
-                        "/notChrome", "/login/*", "/manual/**", "/keepAlive", "/signUp", "/ice/magiceye-generator").permitAll()
+                        "/edit/**", "/api/**",
+                        "/about", "/error", "/loginSubmit",
+                        "/notChrome", "/login/*", "/manual/**", "/keepAlive", "/signUp").permitAll()
                 .antMatchers("/attack_vector_websocket").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
-                .antMatchers("/me/**").hasAnyRole(UserRole.HACKER, UserRole.GM, UserRole.ADMIN)
-                .antMatchers("/gm/**").hasRole(UserRole.GM)
-                .antMatchers("/print/**").hasAnyRole(UserRole.HACKER, UserRole.GM)
-                .antMatchers("/admin/**").hasRole(UserRole.ADMIN)
-                .antMatchers("/**").hasRole(UserRole.HACKER)
+                .antMatchers("/hacker/**").permitAll()
+                .antMatchers("/gm/**").permitAll()
 //
             .and()
                 .formLogin()
