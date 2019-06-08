@@ -29,12 +29,12 @@ val map = hashMapOf(
         "spinner9-sc36.png" to "ice_4.png"
 )
 
-fun main(args: Array<String>) {
-    val dir = File("C:\\Projects\\Attack_Vector\\_attack_vector2\\frontend\\public\\img\\frontier\\nodes")
-    dir.walk().forEach { process(it) }
-//    allNames.sorted().forEach { println(it) }
-
-}
+//fun main(args: Array<String>) {
+//    val dir = File("C:\\Projects\\Attack_Vector\\_attack_vector2\\frontend\\public\\img\\frontier\\nodes")
+//    dir.walk().forEach { process(it) }
+////    allNames.sorted().forEach { println(it) }
+//
+//}
 
 fun process(file: File) {
     if (file.isFile) allNames.add(file.name)
