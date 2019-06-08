@@ -49,6 +49,10 @@ class HtmlController {
     fun editSlash(): String  {
         return INDEX
     }
+    @GetMapping("/edit/{siteId}")
+    fun editValue(): String  {
+        return INDEX
+    }
 
 
 //

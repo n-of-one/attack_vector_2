@@ -2,7 +2,10 @@ package org.n1.mainframe.backend.web.rest
 
 import org.n1.mainframe.backend.service.EditorService
 import org.n1.mainframe.backend.service.site.SiteDataService
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/site/")
@@ -21,7 +24,7 @@ class SiteController(
 
     data class SiteListItem(val id: String, val name: String)
 
-    @GetMapping("")
+    @PostMapping("")
     fun siteList(): List<SiteListItem> {
         return siteDataService.findAll().map { SiteListItem(id = it.id, name = it.name) }
     }

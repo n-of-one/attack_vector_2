@@ -158,7 +158,7 @@ export default class NodeDisplay {
     // Methods used by editor
 
     show() {
-        this.nodeIcon.opacity = 0.5;
+        this.nodeIcon.opacity = 1;
         this.labelIcon.opacity = 1;
         this.labelBackgroundIcon.opacity = 1;
         this.canvas.renderAll();

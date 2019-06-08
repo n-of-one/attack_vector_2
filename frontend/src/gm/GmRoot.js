@@ -5,12 +5,14 @@ import RequiresRole from "../common/RequiresRole";
 import {createStore} from "redux";
 import gmReducer from "./GmReducer";
 import {GM_SITES} from "./GmPages";
+import {fetchSites} from "./FetchSites";
 
 class GmRoot extends Component {
 
     constructor(props) {
         super(props);
         this.store = createStore(gmReducer, {currentPage: GM_SITES});
+        fetchSites(this.store.dispatch);
     }
 
     renderIfAuthenticated() {
