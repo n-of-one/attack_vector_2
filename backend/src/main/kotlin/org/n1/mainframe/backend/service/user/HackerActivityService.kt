@@ -9,7 +9,6 @@ import org.n1.mainframe.backend.service.PrincipalService
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.n1.mainframe.backend.util.FatalException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +18,6 @@ class HackerActivityService(
 
 //    companion object: KLogging()
 
-    @Autowired
     lateinit var stompService: StompService
 
     val hackerActivitiesById = HashMap<String, HackerActivity>()
