@@ -135,6 +135,12 @@ class ScanCanvas {
         this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you);
     }
 
+    removeHackerDisplay(hacker) {
+        const hackerDisplay = this.displayById[hacker.userId];
+        delete this.displayById[hacker.userId];
+        hackerDisplay.disappear();
+    }
+
     addNodeDisplay(node) {
         const nodeDisplay = new NodeDisplay(this.canvas, this.iconThread, node);
         this.displayById[node.id] = nodeDisplay;
@@ -185,24 +191,36 @@ class ScanCanvas {
             // Odd: add to right.
             this.hackers.push(newHacker);
         }
+        this.repositionHackers(newHacker, true);
+    }
 
+    hackerLeave(leavingHacker) {
+        if (leavingHacker.userId === this.userId) {
+            return
+        }
+        this.removeHackerDisplay(leavingHacker);
+        this.hackers = this.hackers.filter(element => element.userId !== leavingHacker.userId);
+        this.repositionHackers(leavingHacker, false);
+    }
+
+    repositionHackers(targetHacker, entering) {
         const step = Math.floor(CANVAS_WIDTH / (this.hackers.length + 1));
         this.hackers.forEach((hacker, index) => {
             const newX = step * (index + 1);
-            if (hacker.userId === newHacker.userId) {
-                this.addHackerDisplay(hacker, this.startNodeDisplay, newX)
+            if (hacker.userId === targetHacker.userId) {
+                if (entering) {
+                    this.addHackerDisplay(hacker, this.startNodeDisplay, newX)
+                }
+                else {
+                    alert("unexpected")
+                }
             }
             else {
                 this.displayById[hacker.userId].move(newX);
             }
         });
-
-
     }
 
-    hackerLeave(hacker) {
-
-    }
 }
 
 const scanCanvas = new ScanCanvas();

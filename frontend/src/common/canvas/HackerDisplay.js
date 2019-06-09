@@ -2,13 +2,18 @@ import {fabric} from "fabric";
 import {animate, calcLine } from "./CanvasUtils";
 
 const APPEAR_TIME = 20;
+const DISAPPEAR_TIME = 10;
 
 export default class HackerDisplay {
 
     canvas = null;
     startNode = null;
+
     hackerIcon = null;
+    hackerHider = null;
+    lineIcon = null;
     labelIcon = null;
+
     thread = null;
     hacker = null;
     you = false;
@@ -90,12 +95,28 @@ export default class HackerDisplay {
     }
 
     move(newX) {
-        this.x = newX;
-        animate(this.canvas, this.hackerIcon, "left", newX, APPEAR_TIME);
-        animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
-        animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
-        animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
-        const lineData = calcLine(this, this.startNodeDisplay);
-        animate(this.canvas, this.lineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
+        this.thread.run(APPEAR_TIME, () => {
+            this.x = newX;
+            animate(this.canvas, this.hackerIcon, "left", newX, APPEAR_TIME);
+            animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
+            animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
+            animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
+            const lineData = calcLine(this, this.startNodeDisplay);
+            animate(this.canvas, this.lineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
+        });
+    }
+
+    disappear() {
+        this.thread.run(DISAPPEAR_TIME, () => {
+            animate(this.canvas, this.hackerIcon, "opacity", 0, DISAPPEAR_TIME);
+            animate(this.canvas, this.lineIcon, "opacity", 0, DISAPPEAR_TIME);
+            animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME);
+        });
+        this.thread.run(0, () => {
+            this.canvas.remove(this.hackerIcon);
+            this.canvas.remove(this.lineIcon);
+            this.canvas.remove(this.labelIcon);
+            this.canvas.remove(this.hackerHider);
+        });
     }
 }

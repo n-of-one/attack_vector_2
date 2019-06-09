@@ -1,7 +1,7 @@
 import webSocketConnection from "../../../common/WebSocketConnection";
 import {select, put} from 'redux-saga/effects'
 import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
-import {HACKER_HOME} from "../../HackerPages";
+import {HACKER_HOME, SCAN} from "../../HackerPages";
 
 const getScanId = (state) => state.scan.scan.id;
 const getCurrentPage = (state) => state.currentPage;
@@ -21,4 +21,12 @@ function* serverUserDcSaga() {
 
 }
 
-export {terminalSubmitSaga, serverUserDcSaga};
+function* checkNavigateAwayFromScan(action) {
+    const scanId = yield select(getScanId);
+    if (action.from === SCAN && action.to !== SCAN) {
+        webSocketConnection.send("/av/scan/leaveScan", scanId);
+    }
+
+}
+
+export {terminalSubmitSaga, serverUserDcSaga, checkNavigateAwayFromScan};

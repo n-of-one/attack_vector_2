@@ -47,6 +47,13 @@ class HackerActivityService(
         stompService.toScan(scanId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(userPrincipal.user))
     }
 
+    fun stopActivityScanning(scanId: String) {
+        val userPrincipal  = principalService.get()
+        hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.ONLINE, id = "-")
+
+        stompService.toScan(scanId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, createPresence(userPrincipal.user))
+    }
+
     fun endActivity(userPrincipal: UserPrincipal) {
         val toRemove = hackerActivitiesById[userPrincipal.user.id] ?: return
         if (toRemove.authentication.clientId == userPrincipal.clientId) {

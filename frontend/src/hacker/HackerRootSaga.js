@@ -12,7 +12,7 @@ import {
 import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./scan/saga/ScanProbeSaga";
 import {discoverNodesSaga, updateNodeStatusSaga} from "./scan/saga/NodeSagas";
-import {serverUserDcSaga, terminalSubmitSaga} from "./scan/saga/TerminalSagas";
+import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitSaga} from "./scan/saga/TerminalSagas";
 import {SERVER_USER_DC, TERMINAL_SUBMIT} from "../common/terminal/TerminalActions";
 import {
     enterScanSaga,
@@ -43,6 +43,9 @@ const createHackerRootSaga = () => {
 
 
         yield takeEvery(ENTER_SCAN, enterScanSaga);
+        yield takeEvery(NAVIGATE_PAGE, checkNavigateAwayFromScan);
+
+
         yield takeEvery(SERVER_SITE_DISCOVERED, enterScanSaga);
 
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);

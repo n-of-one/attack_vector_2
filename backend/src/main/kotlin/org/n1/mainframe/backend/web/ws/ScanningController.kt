@@ -39,8 +39,13 @@ class ScanningController(
     }
 
     @MessageMapping("/scan/enterScan")
-    fun siteFull(siteId: String, principal: Principal) {
+    fun enterScan(siteId: String, principal: Principal) {
         executor.run(principal) { scanningService.enterScan(siteId) }
+    }
+
+    @MessageMapping("/scan/leaveScan")
+    fun leaveScan(scanId: String, principal: Principal) {
+        executor.run(principal) { scanningService.leaveScan(scanId) }
     }
 
     data class TerminalCommand(val scanId: String, val command: String)

@@ -351,5 +351,9 @@ class ScanningService(val scanService: ScanService,
         sendScansOfPlayer(user.id)
     }
 
+    fun leaveScan(scanId: String) {
+        hackerActivityService.stopActivityScanning(scanId)
+    }
+
 
 }
