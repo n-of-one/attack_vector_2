@@ -1,4 +1,4 @@
-package org.n1.mainframe.backend.config
+package org.n1.mainframe.backend.config.security
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry

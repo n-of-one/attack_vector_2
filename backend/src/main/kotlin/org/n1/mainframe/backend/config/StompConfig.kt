@@ -49,13 +49,13 @@ class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketM
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
-            hackerActivityService.startActivityOnline(event.user!! as UserPrincipal)
+            hackerActivityService.connect(event.user!! as UserPrincipal)
             logger.debug{ "===> handleConnectEvent: connection=${event.user!!.name}" }
     }
 
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
-        hackerActivityService.endActivity(event.user!! as UserPrincipal)
+        hackerActivityService.disconnect(event.user!! as UserPrincipal)
         logger.debug{ "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
     }
 }

@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority
 
 class UserPrincipal(val user: User): Authentication {
 
-    var clientId: String? = null
+    var clientId: String = createId("client" )
+
+    var invalidated = false
 
     val userId: String
         get() = user.id
@@ -21,9 +23,11 @@ class UserPrincipal(val user: User): Authentication {
     }
 
     override fun getName(): String {
-        return user.id
+        return if (invalidated)
+            "error"
+        else
+            userId
     }
-
 
     override fun getCredentials(): Any {
         error("not supported")
@@ -41,10 +45,7 @@ class UserPrincipal(val user: User): Authentication {
         return user
     }
 
-    fun generateClientId() {
-        if (this.clientId != null) {
-            error("Client ID already set, cannot overwrite. Current value: ${this.clientId}")
-        }
-        this.clientId = createId("client" )
+    fun invalidate() {
+        invalidated = true
     }
 }

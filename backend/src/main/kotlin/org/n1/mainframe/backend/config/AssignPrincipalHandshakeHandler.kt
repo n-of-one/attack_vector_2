@@ -7,14 +7,16 @@ import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.security.Principal
 
+/**
+ * determineUser is called when the Websocket connection is made.
+ * It adds the unique client ID to the connection in order to check that every user has only one connection.
+ */
 class AssignPrincipalHandshakeHandler : DefaultHandshakeHandler() {
 
     override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler?,
                                attributes: Map<String, Any>?): Principal {
 
-        val authentication = SecurityContextHolder.getContext().authentication as? UserPrincipal ?: throw RuntimeException("Login please")
-        authentication.generateClientId()
-        return authentication
+        return SecurityContextHolder.getContext().authentication as? UserPrincipal ?: throw RuntimeException("Login please")
     }
 
 }

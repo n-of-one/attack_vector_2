@@ -10,10 +10,6 @@ import hackerRootReducer from "./HackerRootReducer";
 import webSocketConnection from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
-import {post} from "../common/RestClient";
-import {RECEIVE_SITES} from "../gm/GmActions";
-import {notify_fatal} from "../common/Notification";
-import {SERVER_ERROR} from "../common/enums/CommonActions";
 
 class HackerRoot extends Component {
 
@@ -31,19 +27,6 @@ class HackerRoot extends Component {
         // this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         webSocketConnection.create(this.store, () => {
-            post({
-                url: "/api/hacker/connectionCheck",
-                body: {},
-                ok: ({ok, message}) => {
-                    if (!ok) {
-                        this.store.dispatch({type: SERVER_ERROR, data: {message: message}});
-                    }
-                },
-                notok: () => {
-                    this.store.dispatch({type: SERVER_ERROR, data: {message: "Connection with server failed. Please refresh browser."}});
-                    webSocketConnection.abort()
-                }
-            });
             this.store.dispatch({type: RETRIEVE_USER_SCANS});
         });
 

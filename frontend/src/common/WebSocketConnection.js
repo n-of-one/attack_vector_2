@@ -3,6 +3,7 @@ import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
 import {SERVER_SCAN_FULL} from "../hacker/scan/model/ScanActions";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
 import {orderByDistance} from "../hacker/scan/lib/NodeDistance";
+import {notify_fatal} from "./Notification";
 
 class WebSocketConnection {
 
@@ -43,14 +44,19 @@ class WebSocketConnection {
     }
 
     onWsOpen(event, additionalOnWsOpen) {
-        let userId = event.headers["user-name"];
+        const userId = event.headers["user-name"];
+        if (!userId || userId === "error") {
+            notify_fatal("Please close this browser tab, hackers can only use one browser tab at a time..");
+            return
+        }
+
         // notify_neutral('Status','Connection with server established (' + userName + ")");
         this.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"});
         this.dispatch({type: SET_USER_ID, userId: userId});
 
         this.setupHeartbeat();
         this.subscribe('/user/reply', false);
-        additionalOnWsOpen(userId);
+        additionalOnWsOpen();
     }
 
 

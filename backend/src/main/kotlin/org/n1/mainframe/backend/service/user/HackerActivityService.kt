@@ -1,5 +1,6 @@
 package org.n1.mainframe.backend.service.user
 
+import mu.KLogging
 import org.n1.mainframe.backend.model.hacker.HackerActivity
 import org.n1.mainframe.backend.model.hacker.HackerActivityType
 import org.n1.mainframe.backend.model.iam.UserPrincipal
@@ -11,17 +12,28 @@ class HackerActivityService(
         val principalService: PrincipalService
 ) {
 
+    companion object: KLogging()
+
     val hackerActivitiesById = HashMap<String, HackerActivity>()
 
     fun getAll(type: HackerActivityType, id: String): Collection<HackerActivity> {
         return hackerActivitiesById.values.filter { it.type == HackerActivityType.SCANNING && it.id == id }
     }
 
-    fun startActivityOnline(userPrincipal: UserPrincipal) {
+    fun connect(userPrincipal: UserPrincipal) {
         val existingAction = hackerActivitiesById[userPrincipal.user.id]
         if (existingAction == null) {
             hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.ONLINE, id = "-")
         }
+        else {
+            userPrincipal.invalidate()
+            logger.warn("Rejected duplicate session from: " + userPrincipal.user.name )
+        }
+    }
+
+    fun disconnect(userPrincipal: UserPrincipal) {
+        val toRemove = hackerActivitiesById[userPrincipal.user.id] ?: return
+        hackerActivitiesById.remove(userPrincipal.user.id)
     }
 
     fun startActivityScanning(scanId: String) {
@@ -35,22 +47,4 @@ class HackerActivityService(
         hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.ONLINE, id = "-")
     }
 
-    fun endActivity(userPrincipal: UserPrincipal) {
-        val toRemove = hackerActivitiesById[userPrincipal.user.id] ?: return
-        if (toRemove.authentication.clientId == userPrincipal.clientId) {
-            hackerActivitiesById.remove(userPrincipal.user.id)
-        }
-    }
-
-    data class ConnectionCheckResponse(val ok: Boolean, val message: String? = null)
-
-    fun checkConnection(userPrincipal: UserPrincipal): ConnectionCheckResponse {
-        val existingAction = hackerActivitiesById[userPrincipal.user.id]
-                ?: return ConnectionCheckResponse(false, "Connection not correctly established. Please refresh browser.")
-
-        if (existingAction.authentication.clientId != userPrincipal.clientId) {
-            return ConnectionCheckResponse(false, "Please close this browser tab, hackers can only use one browser tab at a time..")
-        }
-        return ConnectionCheckResponse(true)
-    }
 }
