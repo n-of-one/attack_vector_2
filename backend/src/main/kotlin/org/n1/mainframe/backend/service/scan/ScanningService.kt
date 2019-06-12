@@ -125,10 +125,13 @@ class ScanningService(val scanService: ScanService,
 
     fun enterScan(scanId: String) {
         hackerActivityService.startActivityScanning(scanId)
+        stompService.toScan(scanId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(principalService.get().user))
 
         val scan = scanService.getById(scanId)
         val siteFull = siteService.getSiteFull(scan.siteId)
-        val userPresence = hackerActivityService.getUserPresence(HackerActivityType.SCANNING, scan.id)
+        val userPresence = hackerActivityService
+                .getAll(HackerActivityType.SCANNING, scan.id)
+                .map{ activity -> createPresence(activity.authentication.user)}
 
         val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
@@ -353,7 +356,12 @@ class ScanningService(val scanService: ScanService,
 
     fun leaveScan(scanId: String) {
         hackerActivityService.stopActivityScanning(scanId)
+
+        stompService.toScan(scanId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, createPresence(principalService.get().user))
+
     }
 
-
+    private fun createPresence(user: User): HackerPresence {
+        return HackerPresence(user.id, user.name, user.icon)
+    }
 }

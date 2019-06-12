@@ -50,7 +50,7 @@ class WebSocketConnection {
 
         this.setupHeartbeat();
         this.subscribe('/user/reply', false);
-        additionalOnWsOpen();
+        additionalOnWsOpen(userId);
     }
 
 

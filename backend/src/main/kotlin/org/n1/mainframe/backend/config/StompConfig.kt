@@ -3,8 +3,6 @@ package org.n1.mainframe.backend.config
 import mu.KLogging
 import org.n1.mainframe.backend.model.iam.UserPrincipal
 import org.n1.mainframe.backend.service.user.HackerActivityService
-import org.n1.mainframe.backend.util.FatalException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.config.ChannelRegistration
@@ -22,14 +20,9 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent
 @Configuration
 @EnableWebSocketMessageBroker
 @Component
-class StompConfig() : WebSocketMessageBrokerConfigurer {
+class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketMessageBrokerConfigurer {
 
     companion object: KLogging()
-
-    /** Prevent circular dependency */
-    @Autowired
-    lateinit var hackerActivityService: HackerActivityService
-
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry
@@ -56,13 +49,8 @@ class StompConfig() : WebSocketMessageBrokerConfigurer {
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
-        try {
             hackerActivityService.startActivityOnline(event.user!! as UserPrincipal)
             logger.debug{ "===> handleConnectEvent: connection=${event.user!!.name}" }
-        }
-        catch(ignore: FatalException) {
-            logger.info("=!=> handleConnectEvent: username=${event.user!!.name} - duplicate session detected for user, will close momentarily.")
-        }
     }
 
     @EventListener
