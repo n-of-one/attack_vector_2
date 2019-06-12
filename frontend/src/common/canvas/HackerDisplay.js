@@ -42,7 +42,8 @@ export default class HackerDisplay {
             height: size,
             width: size,
             opacity: 0,
-
+            selectable: false,
+            hoverCursor: "default",
         });
         this.canvas.add(this.hackerIcon);
         animate(this.canvas, this.hackerIcon, "opacity", 1, APPEAR_TIME);
@@ -53,7 +54,9 @@ export default class HackerDisplay {
             height: 35,
             width: 40,
             opacity: 1,
-            fill: "#333333"
+            fill: "#333333",
+            selectable: false,
+            hoverCursor: "default",
         });
         this.canvas.add(this.hackerHider);
 
@@ -70,6 +73,7 @@ export default class HackerDisplay {
             textAlign: "center", // "center", "right" or "justify".
             opacity: 0,
             selectable: false,
+            hoverCursor: "default",
         });
         this.canvas.add(this.labelIcon);
         animate(this.canvas, this.labelIcon, "opacity", 1, APPEAR_TIME);

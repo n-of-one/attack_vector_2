@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority
 
 class UserPrincipal(val user: User): Authentication {
 
-    var clientId: String = createId("client" )
+    val clientId: String = createId("client" )
 
     var invalidated = false
 

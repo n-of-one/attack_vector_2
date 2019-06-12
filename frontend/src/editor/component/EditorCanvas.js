@@ -61,7 +61,7 @@ class EditorCanvas {
     }
 
     addNode(nodeData) {
-        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData);
+        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, false);
         nodeDisplay.show();
 
         this.nodeDisplayById[nodeData.id] = nodeDisplay;

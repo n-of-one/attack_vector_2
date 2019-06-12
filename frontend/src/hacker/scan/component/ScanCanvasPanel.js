@@ -30,7 +30,11 @@ class ScanCanvasPanel extends Component {
 
         return (
             <div id="canvas-container">
-                <canvas id="scanCanvas" className="siteMap"/>
+                <canvas id="scanCanvas" width="607" height="815" style={{
+                    "borderRadius": "3px 3px 3px 3px",
+                    "marginTop": "10px",
+                    "marginBottom": "10px",
+                }}/>
                 <div className="dontDisplay">
                     <ScanNodeImage type={SYSCON} onLoad={onLoad}/>
                     <ScanNodeImage type={DATA_STORE} onLoad={onLoad}/>

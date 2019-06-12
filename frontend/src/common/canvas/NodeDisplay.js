@@ -16,7 +16,7 @@ export default class NodeDisplay {
     y = null;
     x = null;
 
-    constructor(canvas, thread, nodeData) {
+    constructor(canvas, thread, nodeData, staticDisplay) {
         this.canvas = canvas;
         this.thread = thread;
         this.nodeData = nodeData;
@@ -26,6 +26,8 @@ export default class NodeDisplay {
         this.x = nodeData.x;
         this.y = nodeData.y;
 
+        const cursor = staticDisplay ? "pointer" : "move";
+
         this.nodeIcon = new fabric.Image(image, {
             left: nodeData.x,
             top: nodeData.y,
@@ -33,9 +35,13 @@ export default class NodeDisplay {
             width: image.width,
             opacity: 0,
             data: nodeData,
+            type: "node",
             lockRotation: true,
             lockScalingX: true,
             lockScalingY: true,
+            lockMovementX: staticDisplay,
+            lockMovementY: staticDisplay,
+            hoverCursor: cursor,
         });
         this.nodeIcon.setControlsVisibility({
             ml: false,
@@ -58,6 +64,7 @@ export default class NodeDisplay {
             top: nodeData.y + 35,
             textAlign: "left", // "center", "right" or "justify".
             opacity: 0,
+            hoverCursor: 'default',
             selectable: false,
         });
         this.canvas.add(this.labelIcon);
@@ -70,6 +77,7 @@ export default class NodeDisplay {
             left: nodeData.x - 20,
             top: nodeData.y + 35,
             opacity: 0,
+            hoverCursor: 'default',
             selectable: false,
         });
         this.canvas.add(this.labelBackgroundIcon);
@@ -176,10 +184,6 @@ export default class NodeDisplay {
         this.labelIcon.top = this.nodeIcon.top + 35;
         this.labelBackgroundIcon.left = this.nodeIcon.left - 20;
         this.labelBackgroundIcon.top = this.nodeIcon.top + 35;
-    }
-
-    select() {
-        this.canvas.setActiveObject(this.nodeIcon);
     }
 
     updateNetworkId(networkId) {

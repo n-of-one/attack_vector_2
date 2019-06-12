@@ -7,6 +7,7 @@ import ConnectionIcon from "../../../common/canvas/ConnectionDisplay";
 import HackerIcon from "../../../common/canvas/HackerDisplay";
 import ProbeDisplay from "../../../common/canvas/ProbeDisplay";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst";
+import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -27,12 +28,13 @@ class ScanCanvas {
     userId = null;
 
     canvas = null;
+    selectedObject = null;
 
     init(userId, dispatch) {
         this.userId = userId;
         this.dispatch = dispatch;
 
-        this.canvas = new fabric.StaticCanvas('scanCanvas', {
+        this.canvas = new fabric.Canvas('scanCanvas', {
             width: CANVAS_WIDTH,
             height: CANVAS_HEIGHT,
             backgroundColor: "#333333",
@@ -42,6 +44,9 @@ class ScanCanvas {
         fabric.Object.prototype.originY = 'center';
 
         this.canvas.selection = false;
+        this.canvas.on('object:selected', (event) => { this.canvasObjectSelected(event); });
+        this.canvas.on('selection:cleared', (event) => { this.canvasObjectDeSelected(event); });
+
     }
 
     reset() {
@@ -54,6 +59,8 @@ class ScanCanvas {
 
             this.canvas.remove(icon);
         });
+
+        this.selectedObject = null;
 
         this.nodeDataById = null;
         this.connections = [];
@@ -142,7 +149,7 @@ class ScanCanvas {
     }
 
     addNodeDisplay(node) {
-        const nodeDisplay = new NodeDisplay(this.canvas, this.iconThread, node);
+        const nodeDisplay = new NodeDisplay(this.canvas, this.iconThread, node, true);
         this.displayById[node.id] = nodeDisplay;
         nodeDisplay.appear();
     }
@@ -221,6 +228,24 @@ class ScanCanvas {
         });
     }
 
+    canvasObjectSelected(event) {
+        if (event.target && event.target.type === "node") {
+            this.selectedObject = event.target;
+            this.dispatch({type: DISPLAY_NODE_INFO, nodeId: event.target.data.id});
+        }
+    }
+
+    canvasObjectDeSelected() {
+        if (this.selectedObject) {
+            this.selectedObject = null;
+        }
+        this.dispatch({type: HIDE_NODE_INFO});
+    }
+
+    unselect() {
+        this.canvas.deactivateAll().renderAll();
+        this.canvasObjectDeSelected();
+    }
 }
 
 const scanCanvas = new ScanCanvas();

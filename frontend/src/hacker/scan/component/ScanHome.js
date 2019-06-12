@@ -2,9 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import Terminal from "../../../common/terminal/Terminal";
 import ScanCanvasPanel from "./ScanCanvasPanel";
-
-/* eslint jsx-a11y/accessible-emoji: 0 */
-/* eslint jsx-a11y/anchor-is-valid: 0*/
+import NodeScanInfo from "./NodeScanInfo";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -15,21 +13,19 @@ let mapStateToProps = (state) => {
     return {
         terminal: state.terminal,
         messageTerminal: state.scan.messageTerminal,
+        infoNodeId: state.scan.infoNodeId,
     };
 };
 
 
 
-
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({terminal, messageTerminal, dispatch}) => {
+    ({terminal, messageTerminal, infoNodeId, dispatch}) => {
 
         return (
             <div className="row">
                 <div className="col-lg-6">
-                    <div className="row backgroundLight">
-                        &nbsp;
-                    </div>
+                        <NodeScanInfo />
                     <div className="row">
                         <Terminal terminal={terminal} dispatch={dispatch} height="780px"/>
                     </div>
