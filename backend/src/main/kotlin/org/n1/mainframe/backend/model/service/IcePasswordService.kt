@@ -1,6 +1,5 @@
 package org.n1.mainframe.backend.model.service
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.n1.mainframe.backend.model.site.SiteRep
 import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.ValidationException
@@ -12,24 +11,17 @@ class IcePasswordService(
         id: String,
         type: ServiceType,
         layer: Int,
-        data: MutableMap<String, String>
-) : Service(id, type, layer, data) {
+        name: String,
+        note: String,
+        hacked: Boolean,
+        var password: String,
+        var hint: String
 
-    constructor(id: String, layer: Int, defaultName: String) : this(id, ServiceType.ICE_PASSWORD, layer, HashMap()) {
-        setDefaultName(defaultName)
-    }
+) : IceService(id, type, layer, name, note, hacked) {
 
-    val password: String
-    @JsonIgnore
-    get() {
-        return data[PASSWORD] ?: ""
-    }
+    constructor(id: String, layer: Int, defaultName: String) :
+            this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", false, "", "")
 
-    val hint: String?
-        @JsonIgnore
-        get() {
-            return data[HINT] ?: ""
-        }
 
 
     @Suppress("UNUSED_PARAMETER")
@@ -38,6 +30,16 @@ class IcePasswordService(
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
-        return  listOf(::validatePassword )
+        return listOf(::validatePassword)
     }
+
+    override fun updateInternal(key: String, value: String): Boolean {
+        when(key) {
+            PASSWORD -> password = value
+            HINT -> hint = value
+            else -> return super.updateInternal(key, value)
+        }
+        return true
+    }
+
 }

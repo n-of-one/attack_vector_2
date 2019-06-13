@@ -4,8 +4,10 @@ const KEY_TEXT = "text";
 
 export default class ServiceTex extends Service {
 
-    get text() {
-        return this.service.data[KEY_TEXT];
+    constructor(service, node, dispatch) {
+        super(service, node, dispatch);
+
+        this.text = service.text;
     }
 
     saveText(value) {

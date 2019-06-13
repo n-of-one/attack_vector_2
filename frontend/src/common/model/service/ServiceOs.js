@@ -1,16 +1,15 @@
-import {EDIT_NETWORK_ID} from "../../../EditorActions";
+import {EDIT_NETWORK_ID} from "../../../editor/EditorActions";
 import Service from "./Service";
 
 const NODE_NAME = "nodeName";
 
 export default class ServiceOs extends Service {
 
-    get networkId() {
-        return this.node.networkId;
-    }
+    constructor(service, node, dispatch) {
+        super(service, node, dispatch);
 
-    get nodeName() {
-        return this.service.data[NODE_NAME];
+        this.networkId = node.networkId;
+        this.nodeName = service.nodeName;
     }
 
     saveNetworkId(value) {

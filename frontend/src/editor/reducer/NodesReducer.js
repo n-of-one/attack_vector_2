@@ -2,7 +2,7 @@ import {
     SERVER_SITE_FULL,
     SERVER_ADD_NODE,
     SERVER_MOVE_NODE,
-    SERVER_UPDATE_SERVICE_DATA,
+    SERVER_UPDATE_SERVICE,
     SERVER_UPDATE_NETWORK_ID,
     SERVER_ADD_SERVICE,
     SERVER_NODE_UPDATED
@@ -19,8 +19,8 @@ const NodesReducer = (state = [], action) => {
             return moveNode(action.data, state);
         case SERVER_UPDATE_NETWORK_ID:
             return serverUpdateNetworkId(action.data, state);
-        case SERVER_UPDATE_SERVICE_DATA :
-            return serverUpdateServiceData(action.data, state);
+        case SERVER_UPDATE_SERVICE :
+            return serverUpdateService(action.data, state);
         case SERVER_ADD_SERVICE :
             return serverAddService(action.data, state);
         case SERVER_NODE_UPDATED :
@@ -43,11 +43,9 @@ const moveNode = (data, nodeList) => {
 };
 
 
-const serverUpdateServiceData = (update, nodes) => {
+const serverUpdateService = (update, nodes) => {
     const node = findElementById(nodes, update.nodeId);
-    const service = findElementById(node.services, update.serviceId);
-    const newService = createUpdatedServiceData(update, service);
-    const newServices = updateArray(newService, node.services, update.serviceId);
+    const newServices = updateArray(update.service, node.services, update.serviceId);
 
     const newNodeServices = {services: newServices};
 
@@ -56,15 +54,7 @@ const serverUpdateServiceData = (update, nodes) => {
 };
 
 
-const createUpdatedServiceData = (update, service) => {
-    if (update.serviceId !== service.id) {
-        return service;
-    }
-    const newData = {...service.data};
-    newData[update.key] = update.value;
-    const newService = {...service, data: newData};
-    return newService;
-};
+
 
 const serverUpdateNetworkId = (update, nodes) => {
     const newNodeData = {networkId: update.networkId};
@@ -90,4 +80,4 @@ const serverRemoveService = (node, nodes) => {
 };
 
 
-export { NodesReducer, createUpdatedServiceData }
+export { NodesReducer }

@@ -5,7 +5,7 @@ export default ({service}) => {
         <>
             &nbsp;ICE (static password)<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strength: <span className="text-info">unknown</span><br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hacked: <span className="text-danger">no</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hacked: <span className="text-danger">{service.hacked}</span>
         </>
     );
 };

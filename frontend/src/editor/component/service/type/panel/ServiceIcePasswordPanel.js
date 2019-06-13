@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import ServiceField from "../../ServiceField";
 import ServicePanel from "./ServicePanel";
-import ServiceIcePassword from "../ServiceIcePassword";
+import ServiceIcePassword from "../../../../../common/model/service/ServiceIcePassword";
 
 const mapDispatchToProps = (dispatch) => {
     return { dispatch: dispatch }

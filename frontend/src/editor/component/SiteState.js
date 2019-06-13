@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
 
 const openService = (nodeId, serviceId) => {
     editorCanvas.openService(nodeId, serviceId);
-}
+};
 
 
 const renderMessage = (message, index) => {

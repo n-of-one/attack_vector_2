@@ -1,30 +1,24 @@
 package org.n1.mainframe.backend.model.service
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.n1.mainframe.backend.model.site.SiteRep
 import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.ValidationException
 
-private const val KEY_NODE_NAME = "nodeName"
+private const val NODE_NAME = "nodeName"
 
 class OsService(
         id: String,
         type: ServiceType,
         layer: Int,
-        data: MutableMap<String, String>
-) : Service(id, type, layer, data) {
+        name: String,
+        note: String,
+        var nodeName: String
+) : Service(id, type, layer, name, note) {
 
-    constructor(id: String, defaultName: String) : this(id, ServiceType.OS, 0, HashMap()) {
-        setDefaultName(defaultName)
-    }
+    constructor(id: String, defaultName: String) :
+            this(id, ServiceType.OS, 0, defaultName, "", "")
 
-    val nodeName: String
-        @JsonIgnore
-        get() {
-            return data[KEY_NODE_NAME] ?: ""
-        }
-
-    private fun valideNetworkId(siteRep: SiteRep) {
+    private fun validateNetworkId(siteRep: SiteRep) {
 
         if (siteRep.node.networkId.isBlank()) throw ValidationException("Network Id cannot be empty.")
         val nodesWithSameNetworkId = siteRep.nodes.filter { node ->
@@ -34,6 +28,15 @@ class OsService(
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
-        return listOf(::valideNetworkId)
+        return listOf(::validateNetworkId)
     }
+
+    override fun updateInternal(key: String, value: String): Boolean {
+        when(key) {
+            NODE_NAME -> nodeName = value
+            else -> return super.updateInternal(key, value)
+        }
+        return true
+    }
+
 }

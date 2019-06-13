@@ -27,8 +27,8 @@ class NodeService(
         val id = createId("node", nodeRepo::findById)
         val siteId = command.siteId
         val nodes = getAll(siteId)
-        val services = listOf(createOsService(siteId, nodes)).toMutableList()
         val networkId = nextFreeNetworkId(siteId, nodes)
+        val services = listOf(createOsService(siteId, nodes)).toMutableList()
 
         val node = Node(
                 id = id,

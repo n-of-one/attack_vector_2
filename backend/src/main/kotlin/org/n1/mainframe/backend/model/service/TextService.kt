@@ -5,25 +5,19 @@ import org.n1.mainframe.backend.model.site.SiteRep
 import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.ValidationException
 
-private const val KEY_TEXT = "text"
+private const val TEXT = "text"
 
 class TextService(
         id: String,
         type: ServiceType,
         layer: Int,
-        data: MutableMap<String, String>
-) : Service(id, type, layer, data) {
+        name: String,
+        note: String,
+        var text: String
+) : Service(id, type, layer, name, note) {
 
-    constructor(id: String, layer: Int, defaultName: String) : this(id, ServiceType.TEXT, layer, HashMap()) {
-        setDefaultName(defaultName)
-    }
-
-
-    val text: String
-        @JsonIgnore
-        get() {
-            return data[KEY_TEXT] ?: ""
-        }
+    constructor(id: String, layer: Int, defaultName: String) :
+            this(id, ServiceType.TEXT, layer, defaultName, "", "No data of value found.")
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateText(siteRep: SiteRep) {
@@ -33,4 +27,13 @@ class TextService(
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
         return  listOf(::validateText )
     }
+
+    override fun updateInternal(key: String, value: String): Boolean {
+        when(key) {
+            TEXT -> text = value
+            else -> return super.updateInternal(key, value)
+        }
+        return true
+    }
+
 }

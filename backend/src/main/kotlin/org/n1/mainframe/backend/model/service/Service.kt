@@ -6,36 +6,20 @@ import org.n1.mainframe.backend.model.site.enums.ServiceType
 import org.n1.mainframe.backend.model.ui.ValidationException
 
 
-private const val SERVICE_NAME = "name"
+private const val NAME = "name"
 private const val NOTE = "note"
 
 abstract class Service(
         val id: String,
         val type: ServiceType,
         var layer: Int,
-        val data: MutableMap<String, String>
+        var name: String,
+        var note: String
 ) {
 
-    constructor(id: String, type: ServiceType, layer: Int, data: MutableMap<String, String>, defaultName: String) :
-            this(id, type, layer, data) {
-        data[SERVICE_NAME] = defaultName
-    }
+    constructor(id: String, type: ServiceType, layer: Int, defaultName: String) :
+            this(id, type, layer, defaultName, "")
 
-    fun setDefaultName(name: String) {
-        data[SERVICE_NAME] = name
-    }
-
-    val name: String
-        @JsonIgnore
-        get() {
-            return data[SERVICE_NAME] ?: ""
-        }
-
-    val note: String
-        @JsonIgnore
-        get() {
-            return data[NOTE] ?: ""
-        }
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateName(siteRep: SiteRep) {
@@ -50,5 +34,18 @@ abstract class Service(
         return methods
     }
 
+    fun update(key: String, value: String) {
+        val keyFound = updateInternal(key, value)
+        if (!keyFound) error("Unknown key: ${key} for service type: ${type}")
+    }
+
+    open fun updateInternal(key: String, value: String): Boolean {
+        when(key) {
+            NAME -> name = value
+            NOTE -> note = value
+            else -> return false
+        }
+        return true
+    }
 
 }

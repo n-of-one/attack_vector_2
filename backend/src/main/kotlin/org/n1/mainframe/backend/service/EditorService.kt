@@ -90,14 +90,14 @@ class EditorService(
         siteValidationService.validate(command.siteId)
     }
 
-    data class ServerUpdateServiceData(val nodeId: String, val serviceId: String, val key: String, val value: String)
+    data class ServerUpdateService(val nodeId: String, val serviceId: String, val service: Service)
     fun editServiceData(command: EditServiceDataCommand) {
         val node = nodeService.getById(command.nodeId)
         val service = node.services.find{ it.id == command.serviceId} ?: error("Service not found: ${command.serviceId} for ${command.nodeId}")
-        service.data[command.key] = command.value
+        service.update(command.key, command.value)
         nodeService.save(node)
-        val message = ServerUpdateServiceData(command.nodeId, command.serviceId, command.key, command.value)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_SERVICE_DATA, message)
+        val message = ServerUpdateService(command.nodeId, service.id, service)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_SERVICE, message)
         siteValidationService.validate(command.siteId)
     }
 

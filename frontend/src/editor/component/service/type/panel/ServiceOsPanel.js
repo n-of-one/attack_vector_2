@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import ServiceField from "../../ServiceField";
-import ServiceOs from "../ServiceOs";
+import ServiceOs from "../../../../../common/model/service/ServiceOs";
 import ServicePanel from "./ServicePanel";
 
 const mapDispatchToProps = (dispatch) => {

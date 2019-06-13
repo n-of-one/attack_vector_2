@@ -3,7 +3,7 @@ import webSocketConnection from "../../../common/WebSocketConnection";
 import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {SCAN} from "../../HackerPages";
 import { select, put } from 'redux-saga/effects'
-import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../model/ScanActions";
+import {HIDE_NODE_INFO, SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../model/ScanActions";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalActions";
 import terminalManager from "../../../common/terminal/TerminalManager";
 
@@ -27,6 +27,7 @@ function* enterScanSaga(action) {
     webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST);
     webSocketConnection.subscribeForScan(scanId, siteId);
     scanCanvas.reset();
+    yield put({ type: HIDE_NODE_INFO });
     yield put({ type: TERMINAL_CLEAR, terminalId: "main"});
     yield put({ type: NAVIGATE_PAGE, to: SCAN, from: currentPage });
     webSocketConnection.send("/av/scan/enterScan", scanId);

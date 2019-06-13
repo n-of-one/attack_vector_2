@@ -191,4 +191,8 @@ export default class NodeDisplay {
         this.canvas.renderAll();
     }
 
+    select() {
+        this.canvas.setActiveObject(this.nodeIcon);
+    }
+
 };
