@@ -24,14 +24,25 @@ let mapStateToProps = (state) => {
     };
 };
 
+function findProtectedLayer(services) {
+    for (let i = services.length-1; i >= 0 ; i--) {
+        const service = services[i];
+        if (service.ice && service.hacked === false) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 const renderServices = (services) => {
     const rendered = [];
+    const protectedLayer = findProtectedLayer(services);
     for (let i = 0; i < services.length; i++) {
         const service = services[i];
-        rendered.push (<ServiceInfo service={service} key={i}/>)
-        if (i === 0) {
-            rendered.push(<><br/>--- Services above protected by ice --- <br/><br/></>)
+        if (i === protectedLayer) {
+            rendered.push(<><br/>--- Services above are protected by ice --- <br/><br/></>)
         }
+        rendered.push (<ServiceInfo service={service} key={i}/>)
     }
     return rendered;
 };

@@ -16,6 +16,9 @@ abstract class IceService(
     constructor(id: String, layer: Int, defaultName: String) :
             this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", false)
 
+    /** For the benefit of the JS client */
+    val ice = true
+
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
             HACKED -> hacked = value.toBoolean()
