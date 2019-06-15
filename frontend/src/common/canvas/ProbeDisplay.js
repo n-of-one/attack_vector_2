@@ -35,6 +35,7 @@ export default class ConnectionDisplay {
             height: 40,
             width: 40,
             opacity: 0,
+            selectable: false,
         });
 
         this.canvas.add(this.probeIcon);

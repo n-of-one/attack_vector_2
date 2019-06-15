@@ -255,7 +255,7 @@ class ScanningService(val scanService: ScanService,
             stompService.terminalReceive("Scanning node ${node.networkId} did not find anything new.")
             return
         }
-        stompService.terminalReceive("Scanned node ${node.networkId} - discovered type")
+        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}.")
 
         nodeScan.status = NodeStatus.TYPE
         scanService.save(scan)
@@ -302,8 +302,8 @@ class ScanningService(val scanService: ScanService,
         data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
         stompService.toScan(scan.id, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
 
-        stompService.terminalReceive( "Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"node".s(discoveredNodeIds.size)}")
-
+        val iceMessage = if (node.ice) " | Ice detected" else ""
+        stompService.terminalReceive( "Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
     }
 
     private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan) {
@@ -312,8 +312,7 @@ class ScanningService(val scanService: ScanService,
             return
         }
 
-        val iceMessage = if (node.ice) " ! Ice detected" else ""
-        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}${iceMessage}")
+        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} service details")
 
         nodeScan.status = NodeStatus.SERVICES
         scanService.save(scan)

@@ -6,19 +6,36 @@ import React from "react";
 import ScanHome from "./scan/component/ScanHome";
 import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
+import scanCanvas from "./scan/component/ScanCanvas";
+
+const dismissScanInfo = (event) => {
+    let current = event.target;
+    while (current) {
+        if (current.id === "canvas-container" || current.id === "scanInfo") {
+            return
+        }
+        current = current.parentElement;
+    }
+
+    scanCanvas.unselect()
+};
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch: dispatch,
+        dismissScanInfo: dismissScanInfo,
     };
 };
 
 let mapStateToProps = (state) => {
+    const scanInfoDismiss = !!(state.scan && state.scan.infoNodeId);
     return {
         messageTerminal: state.scan.messageTerminal,
-        currentPage: state.currentPage
+        currentPage: state.currentPage,
+        renderScanInfoDismiss: scanInfoDismiss,
     };
 };
+
 
 const renderCurrentPage = (currentPage) => {
     switch (currentPage) {
@@ -31,32 +48,41 @@ const renderCurrentPage = (currentPage) => {
     }
 };
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(
-    ({currentPage, messageTerminal, dispatch}) => {
-
-        return (
-            <span>
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-2">
-                        <div className="row">
-                            <div className="col-lg-12">
-                                <span className="text">&nbsp;</span>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-lg-12">
-                                <Terminal terminal={messageTerminal} dispatch={dispatch} height="300px"/>
-                            </div>
+const renderMain = (currentPage, messageTerminal, dispatch) => {
+    return (
+        <>
+            <div className="row">
+                <div className="col-lg-2">
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <span className="text">&nbsp;</span>
                         </div>
                     </div>
-                    <div className="col-lg-10">
-                        {renderCurrentPage(currentPage)}
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <Terminal terminal={messageTerminal} dispatch={dispatch} height="300px"/>
+                        </div>
                     </div>
+                </div>
+                <div className="col-lg-10">
+                    {renderCurrentPage(currentPage)}
                 </div>
             </div>
             <MenuBar/>
-        </span>);
+        </>
+    );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+    ({currentPage, messageTerminal, dispatch, renderScanInfoDismiss, dismissScanInfo}) => {
+
+        if (renderScanInfoDismiss) {
+            return <div className="container" onClick={(event) => dismissScanInfo(event)}>
+                {renderMain(currentPage, messageTerminal, dispatch)}
+            </div>;
+        }
+        return <div className="container">
+            {renderMain(currentPage, messageTerminal, dispatch)}
+        </div>;
     });
 

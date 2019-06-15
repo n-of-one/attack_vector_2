@@ -25,6 +25,7 @@ class ScanTerminalService(val scanningService: ScanningService,
     }
 
     private fun processAutoScan(scanId: String) {
+        stompService.terminalReceive("Autoscan started. Click on nodes for information retreived by scan.")
         scanningService.launchProbe(scanId, true)
     }
 

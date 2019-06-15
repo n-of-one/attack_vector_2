@@ -100,13 +100,24 @@ body {
 }
 
 .nodeInfo {
-    background-color: #041a21;
+    background-color: #041a21e8;
     height: 780px;
     position: absolute;
     width: 590px;
     left: 47px;
     top: 48px;
     border-radius: 13px 13px 13px 13px;
+}
+
+.nodeInfoClose {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 10px;
+    background-color: #000000;
+    border-radius: 3px 3px 3px 3px;
+    padding: 2px 4px 2px 4px;
+    z-index: 100;
 }
 
 .text {
