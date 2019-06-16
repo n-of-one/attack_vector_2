@@ -7,7 +7,7 @@ function renderDiscovered() {
     return <>
         No information about services discovered yet.<br/>
         <br/>
-        Neighbouring connections not scanned..<br/>
+        Neighbouring connections not scanned.<br/>
     </>
 }
 
@@ -15,7 +15,7 @@ function renderStatusType(node) {
     return <>
         Services discovered: {node.services.length}.<br/>
         <br/>
-        Neighbouring connections not scanned..<br/>
+        Neighbouring connections not scanned.<br/>
     </>
 }
 
