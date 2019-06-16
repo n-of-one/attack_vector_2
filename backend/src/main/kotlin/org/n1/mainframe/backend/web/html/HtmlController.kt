@@ -23,53 +23,8 @@ class HtmlController(
         return "error"
     }
 
-    @GetMapping("/")
+    @GetMapping("/", "/login", "/login/", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}")
     fun default(): String {
-        return INDEX
-    }
-
-    @GetMapping("/login")
-    fun login(): String {
-        return INDEX
-    }
-
-    @GetMapping("/login/")
-    fun loginSlash(): String {
-        return INDEX
-    }
-
-    @GetMapping("/hacker")
-    fun hacker(): String {
-        return INDEX
-    }
-
-    @GetMapping("/hacker/")
-    fun hackerSlash(): String {
-        return INDEX
-    }
-
-    @GetMapping("/gm")
-    fun gm(): String {
-        return INDEX
-    }
-
-    @GetMapping("/gm/")
-    fun gmSlash(): String {
-        return INDEX
-    }
-
-    @GetMapping("/edit")
-    fun edit(): String {
-        return INDEX
-    }
-
-    @GetMapping("/edit/")
-    fun editSlash(): String {
-        return INDEX
-    }
-
-    @GetMapping("/edit/{siteId}")
-    fun editValue(): String {
         return INDEX
     }
 
