@@ -125,9 +125,9 @@ export default class ConnectionDisplay {
 
     scanOutside(nodeId) {
         this.thread.run(50, () => {
-            animate(this.canvas, this.probeIcon, 'width', "100", 50);
-            animate(this.canvas, this.probeIcon, 'height', "100", 50);
-            animate(this.canvas, this.probeIcon, 'opacity', "0.2", 50);
+            animate(this.canvas, this.probeIcon, 'width', "80", 50);
+            animate(this.canvas, this.probeIcon, 'height', "80", 50);
+            animate(this.canvas, this.probeIcon, 'opacity', "0.6", 50);
         });
         this.thread.run(25, () => {
             animate(this.canvas, this.probeIcon, 'width', "40", 50);

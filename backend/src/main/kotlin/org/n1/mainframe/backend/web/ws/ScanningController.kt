@@ -48,17 +48,10 @@ class ScanningController(
         executor.run(principal) { scanningService.leaveScan(scanId) }
     }
 
-    data class TerminalCommand(val scanId: String, val command: String)
-    @MessageMapping("/scan/terminal")
-    fun terminal(terminalCommand: TerminalCommand, principal: Principal) {
-        executor.run(principal) { scanTerminalService.processCommand(terminalCommand.scanId, terminalCommand.command) }
-    }
-
     @MessageMapping("/scan/autoScan")
     fun autoScan(scanId: String, principal: Principal) {
         executor.run(principal) { scanningService.autoScan(scanId) }
     }
-
 
     data class ProbeScanActionInput(val scanId: String, val nodeId: String, val action: NodeScanType)
     @MessageMapping("/scan/probeArrive")
