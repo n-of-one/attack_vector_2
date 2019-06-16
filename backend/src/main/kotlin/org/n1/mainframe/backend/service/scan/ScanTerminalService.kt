@@ -45,7 +45,7 @@ class ScanTerminalService(val scanningService: ScanningService,
 
     fun processScan(scanId: String, tokens: List<String>) {
         if (tokens.size == 1) {
-            stompService.terminalReceive("Missing [ok]<network id>[/], like: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
+            stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
             return
         }
         val networkId = tokens[1]

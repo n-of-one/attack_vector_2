@@ -11,7 +11,7 @@ function* terminalSubmitSaga(action) {
     const scanId = yield select(getScanId);
     const payload = {scanId: scanId, command: action.command};
     let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/scan/terminal", body);
+    webSocketConnection.send("/av/terminal/main", body);
     yield
 }
 
