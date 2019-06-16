@@ -8,8 +8,8 @@ const getCurrentPage = (state) => state.currentPage;
 
 
 function* terminalSubmitSaga(action) {
-    const scanId = yield select(getScanId);
-    const payload = {scanId: scanId, command: action.command};
+    const runId = yield select(getScanId);
+    const payload = {runId: runId, command: action.command};
     let body = JSON.stringify(payload);
     webSocketConnection.send("/av/terminal/main", body);
     yield
@@ -22,9 +22,9 @@ function* serverUserDcSaga() {
 }
 
 function* checkNavigateAwayFromScan(action) {
-    const scanId = yield select(getScanId);
+    const runId = yield select(getScanId);
     if (action.from === SCAN && action.to !== SCAN) {
-        webSocketConnection.send("/av/scan/leaveScan", scanId);
+        webSocketConnection.send("/av/scan/leaveScan", runId);
     }
 
 }

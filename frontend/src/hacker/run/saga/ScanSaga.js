@@ -21,22 +21,22 @@ function* scanForNameSaga(action) {
 }
 
 function* enterScanSaga(action) {
-    const {scanId, siteId} = action.data;
+    const {runId, siteId} = action.data;
     const currentPage = yield select(getCurrentPage);
 
     webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST);
-    webSocketConnection.subscribeForScan(scanId, siteId);
+    webSocketConnection.subscribeForScan(runId, siteId);
     scanCanvas.reset();
     yield put({ type: HIDE_NODE_INFO });
     yield put({ type: TERMINAL_CLEAR, terminalId: "main"});
     yield put({ type: NAVIGATE_PAGE, to: SCAN, from: currentPage });
-    webSocketConnection.send("/av/scan/enterScan", scanId);
+    webSocketConnection.send("/av/scan/enterScan", runId);
     terminalManager.start();
     yield
 }
 
 function* deleteScanSaga(action) {
-    webSocketConnection.send("/av/scan/deleteScan", action.scanId);
+    webSocketConnection.send("/av/scan/deleteScan", action.runId);
     yield
 }
 

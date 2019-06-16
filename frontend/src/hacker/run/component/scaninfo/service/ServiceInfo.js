@@ -22,9 +22,9 @@ const renderService = (service) =>{
 export default ({service}) => {
     return (
         <>
-            <Pad p="2" />
+            <Pad p="3" n={service.layer}/>
             <span className="text-primary">{service.layer}</span>
-            <Pad p="4" n={service.layer} />{service.name}{renderService(service)}<br/>
+            <Pad p="3" />{service.name}{renderService(service)}<br/>
         </>
     );
 };

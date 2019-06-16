@@ -27,10 +27,10 @@ class StompService(
         stompTemplate.convertAndSend("/topic/site/${siteId}", event)
     }
 
-    fun toScan(scanId: String, actionType: ReduxActions, data: Any? = null) {
+    fun toRun(runId: String, actionType: ReduxActions, data: Any? = null) {
         simulateNonLocalhost()
         val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSend("/topic/scan/${scanId}", event)
+        stompTemplate.convertAndSend("/topic/run/${runId}", event)
     }
 
     fun toUser(actionType: ReduxActions, data: Any) {

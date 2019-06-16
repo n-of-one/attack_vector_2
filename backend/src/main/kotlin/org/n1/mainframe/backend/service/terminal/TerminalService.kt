@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 @Service
 class TerminalService(val scanTerminalService: ScanTerminalService) {
 
-    fun processCommand(scanId: String, command: String) {
-        scanTerminalService.processCommand(scanId, command)
+    fun processCommand(runId: String, command: String) {
+        scanTerminalService.processCommand(runId, command)
     }
 }

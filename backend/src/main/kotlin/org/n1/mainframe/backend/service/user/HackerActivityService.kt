@@ -36,13 +36,13 @@ class HackerActivityService(
         hackerActivitiesById.remove(userPrincipal.user.id)
     }
 
-    fun startActivityScanning(scanId: String) {
+    fun startActivityScanning(runId: String) {
         val userPrincipal = principalService.get()
-        hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.SCANNING, id = scanId)
+        hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.SCANNING, id = runId)
 
     }
 
-    fun stopActivityScanning(scanId: String) {
+    fun stopActivityScanning(runId: String) {
         val userPrincipal = principalService.get()
         hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.ONLINE, id = "-")
     }

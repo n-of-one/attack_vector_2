@@ -34,8 +34,8 @@ class ScanningController(
     }
 
     @MessageMapping("/scan/deleteScan")
-    fun deleteScan(scanId: String, principal: Principal) {
-        executor.run(principal) { scanningService.deleteScan(scanId) }
+    fun deleteScan(runId: String, principal: Principal) {
+        executor.run(principal) { scanningService.deleteScan(runId) }
     }
 
     @MessageMapping("/scan/enterScan")
@@ -44,19 +44,19 @@ class ScanningController(
     }
 
     @MessageMapping("/scan/leaveScan")
-    fun leaveScan(scanId: String, principal: Principal) {
-        executor.run(principal) { scanningService.leaveScan(scanId) }
+    fun leaveScan(runId: String, principal: Principal) {
+        executor.run(principal) { scanningService.leaveScan(runId) }
     }
 
     @MessageMapping("/scan/autoScan")
-    fun autoScan(scanId: String, principal: Principal) {
-        executor.run(principal) { scanningService.autoScan(scanId) }
+    fun autoScan(runId: String, principal: Principal) {
+        executor.run(principal) { scanningService.autoScan(runId) }
     }
 
-    data class ProbeScanActionInput(val scanId: String, val nodeId: String, val action: NodeScanType)
+    data class ProbeScanActionInput(val runId: String, val nodeId: String, val action: NodeScanType)
     @MessageMapping("/scan/probeArrive")
     fun probeArrive(input: ProbeScanActionInput, principal: Principal) {
-        executor.run(principal) { scanningService.probeArrive(input.scanId, input.nodeId, input.action) }
+        executor.run(principal) { scanningService.probeArrive(input.runId, input.nodeId, input.action) }
     }
 //     --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 

@@ -32,9 +32,9 @@ function renderStatusConnections(node) {
 function renderServiceIsIce(service) {
     const text = service.ice ? "ICE" : "service";
     return <>
-        <Pad p="2"/>
+        <Pad p="3" n={service.layer}/>
         <span className="text-primary">{service.layer}</span>
-        <Pad p="4" n={service.layer}/>unknown {text}<br/>
+        <Pad p="3" />unknown {text}<br/>
     </>
 }
 

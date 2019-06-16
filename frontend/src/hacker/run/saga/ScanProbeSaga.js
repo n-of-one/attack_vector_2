@@ -11,16 +11,16 @@ function* serverProbeLaunchSaga(action) {
 const getScanId = (state) => state.run.scan.id;
 
 function* probeArriveSaga(action) {
-    const scanId = yield select(getScanId);
-    const payload = {scanId: scanId, nodeId: action.nodeId, action: action.action};
+    const runId = yield select(getScanId);
+    const payload = {runId: runId, nodeId: action.nodeId, action: action.action};
     let body = JSON.stringify(payload);
     webSocketConnection.send("/av/scan/probeArrive", body);
     yield
 }
 
 function* autoScanSaga() {
-    const scanId = yield select(getScanId);
-    webSocketConnection.send("/av/scan/autoScan", scanId);
+    const runId = yield select(getScanId);
+    webSocketConnection.send("/av/scan/autoScan", runId);
     yield
 }
 

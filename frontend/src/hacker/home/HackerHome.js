@@ -14,10 +14,10 @@ const mapDispatchToProps = (dispatch) => {
             dispatch({type: SCAN_FOR_NAME, siteName: siteName});
         },
         enterScan: (scanInfo) => {
-            dispatch({type: ENTER_SCAN, data: {scanId: scanInfo.scanId, siteId: scanInfo.siteId}});
+            dispatch({type: ENTER_SCAN, data: {runId: scanInfo.runId, siteId: scanInfo.siteId}});
         },
         deleteScan: (scanInfo) => {
-            dispatch({type: DELETE_SCAN, scanId: scanInfo.scanId});
+            dispatch({type: DELETE_SCAN, runId: scanInfo.runId});
         },
     };
 };
@@ -82,14 +82,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                         {
                                             scans.map((scanInfo) => {
                                                 return (
-                                                    <tr key={scanInfo.scanId}>
+                                                    <tr key={scanInfo.runId}>
                                                         <td className="table-very-condensed">
                                                             <SilentLink onClick={() => {
                                                                 enterScan(scanInfo);
                                                             }}>{scanInfo.siteName}</SilentLink>
                                                         </td>
                                                         <td className="table-very-condensed">{(scanInfo.complete) ? "yes" : "no"}</td>
-                                                        <td className="table-very-condensed">{scanInfo.scanId}</td>
+                                                        <td className="table-very-condensed">{scanInfo.runId}</td>
                                                         <td className="table-very-condensed">
                                                             <SilentLink onClick={() => {
                                                                 deleteScan(scanInfo);

@@ -13,10 +13,10 @@ class TerminalController(
         ) {
 
 
-    data class TerminalCommand(val scanId: String, val command: String)
+    data class TerminalCommand(val runId: String, val command: String)
     @MessageMapping("/terminal/main")
     fun terminalMain(terminalCommand: TerminalCommand, principal: Principal) {
-        executor.run(principal) { terminalService.processCommand(terminalCommand.scanId, terminalCommand.command) }
+        executor.run(principal) { terminalService.processCommand(terminalCommand.runId, terminalCommand.command) }
     }
 
 }

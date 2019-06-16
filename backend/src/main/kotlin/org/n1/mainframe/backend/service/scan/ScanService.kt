@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service
 class ScanService(val scanRepo: ScanRepo,
                   val userScanRepo: UserScanRepo,
                   val principalService: PrincipalService) {
-    fun getById(scanId: String): Scan {
-        return scanRepo.findById(scanId).orElseGet { error("${scanId} not found") }
+    fun getById(runId: String): Scan {
+        return scanRepo.findById(runId).orElseGet { error("${runId} not found") }
     }
 
     fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>): String {
-        val scanId = createId("scan") { candidate: String -> scanRepo.findById(candidate) }
+        val runId = createId("scan") { candidate: String -> scanRepo.findById(candidate) }
         val scan = Scan(
-                id = scanId,
+                id = runId,
                 siteId = siteData.id,
                 complete = false,
                 nodeScanById = nodeScanById
@@ -30,10 +30,10 @@ class ScanService(val scanRepo: ScanRepo,
         scanRepo.save(scan)
 
         val userId = principalService.get().userId
-        val userScan = UserScan(userId, scanId )
+        val userScan = UserScan(userId, runId )
         userScanRepo.save(userScan)
 
-        return scanId
+        return runId
     }
 
     fun save(scan: Scan) {
@@ -42,26 +42,26 @@ class ScanService(val scanRepo: ScanRepo,
 
     fun getAll(userId: String): List<Scan> {
         val userScans = userScanRepo.findAllByUserId(userId)
-        val scanIds = userScans.map { it.scanId }
-        return scanRepo.findByIdIn(scanIds)
+        val runIds = userScans.map { it.runId }
+        return scanRepo.findByIdIn(runIds)
     }
 
     fun purgeAll() {
         scanRepo.deleteAll()
     }
 
-    fun hasUserScan(user: User, scanId: String): Boolean {
-        val userScan = userScanRepo.findByUserIdAndScanId(user.id, scanId)
+    fun hasUserScan(user: User, runId: String): Boolean {
+        val userScan = userScanRepo.findByUserIdAndRunId(user.id, runId)
         return userScan.isPresent
     }
 
-    fun createUserScan(scanId: String, user: User) {
-        val userScan = UserScan(user.id, scanId)
+    fun createUserScan(runId: String, user: User) {
+        val userScan = UserScan(user.id, runId)
         userScanRepo.save(userScan)
     }
 
-    fun deleteUserScan(scanId: String) {
-        userScanRepo.deleteByUserIdAndScanId(principalService.get().userId, scanId)
+    fun deleteUserScan(runId: String) {
+        userScanRepo.deleteByUserIdAndRunId(principalService.get().userId, runId)
     }
 }
 

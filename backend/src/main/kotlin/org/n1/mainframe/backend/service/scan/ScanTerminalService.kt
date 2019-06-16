@@ -13,23 +13,23 @@ class ScanTerminalService(val scanningService: ScanningService,
                           val userService: UserService,
                           val environment: MyEnvironment) {
 
-    fun processCommand(scanId: String, command: String) {
+    fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
         when (tokens[0]) {
             "help" -> processHelp()
             "dc" -> processDisconnect()
-            "autoscan" -> processAutoScan(scanId)
-            "scan" -> processScan(scanId, tokens)
-            "/share" -> processShare(scanId, tokens)
+            "autoscan" -> processAutoScan(runId)
+            "scan" -> processScan(runId, tokens)
+            "/share" -> processShare(runId, tokens)
             "servererror" -> error("gah")
-            "quickscan" -> processQuickscan(scanId)
+            "quickscan" -> processQuickscan(runId)
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
     }
 
-    private fun processAutoScan(scanId: String) {
+    private fun processAutoScan(runId: String) {
         stompService.terminalReceive("Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
-        scanningService.launchProbe(scanId, true)
+        scanningService.launchProbe(runId, true)
     }
 
     private fun processDisconnect() {
@@ -53,16 +53,16 @@ class ScanTerminalService(val scanningService: ScanningService,
         }
     }
 
-    fun processScan(scanId: String, tokens: List<String>) {
+    fun processScan(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
             stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
             return
         }
         val networkId = tokens[1]
-        scanningService.launchProbeAtNode(scanId, networkId)
+        scanningService.launchProbeAtNode(runId, networkId)
     }
 
-    fun processShare(scanId: String, tokens: List<String>) {
+    fun processShare(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
             stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
             return
@@ -73,11 +73,11 @@ class ScanTerminalService(val scanningService: ScanningService,
             stompService.terminalReceive("user [info]${userName}[/] not found.")
             return
         }
-        scanningService.shareScan(scanId, user)
+        scanningService.shareScan(runId, user)
     }
 
-    fun processQuickscan(scanId: String) {
-        scanningService.quickScan(scanId)
+    fun processQuickscan(runId: String) {
+        scanningService.quickScan(runId)
     }
 
 }
