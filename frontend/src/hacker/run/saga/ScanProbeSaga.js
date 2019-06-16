@@ -8,7 +8,7 @@ function* serverProbeLaunchSaga(action) {
     yield
 }
 
-const getScanId = (state) => state.scan.scan.id;
+const getScanId = (state) => state.run.scan.id;
 
 function* probeArriveSaga(action) {
     const scanId = yield select(getScanId);

@@ -2,15 +2,15 @@ import {combineReducers} from 'redux'
 import pageReducer from "../common/menu/pageReducer";
 import homeRootReducer from "./home/HomeRootReducer";
 import mailRootReducer from "./mail/MailRootReducer";
-import scanRootReducer from "./scan/ScanRootReducer";
+import runRootReducer from "./run/RunRootReducer";
 import createTerminalReducer from "../common/terminal/TerminalReducer";
 import themeReducer from "../common/reducer/ThemeReducer";
 import userIdReducer from "../common/reducer/UserIdReducer";
-import hackersReducer from "./scan/reducer/HackersReducer";
+import hackersReducer from "./run/reducer/HackersReducer";
 
 const hackerRootReducer = combineReducers({
     currentPage: pageReducer,
-    scan: scanRootReducer,
+    run: runRootReducer,
     home: homeRootReducer,
     mail: mailRootReducer,
     hackers: hackersReducer,

@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import Terminal from "../../../common/terminal/Terminal";
 import ScanCanvasPanel from "./ScanCanvasPanel";
-import NodeScanInfo from "./NodeScanInfo";
+import NodeScanInfo from "./scaninfo/NodeScanInfo";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -12,8 +12,8 @@ const mapDispatchToProps = (dispatch) => {
 let mapStateToProps = (state) => {
     return {
         terminal: state.terminal,
-        messageTerminal: state.scan.messageTerminal,
-        infoNodeId: state.scan.infoNodeId,
+        messageTerminal: state.run.messageTerminal,
+        infoNodeId: state.run.infoNodeId,
     };
 };
 

@@ -3,10 +3,10 @@ import {MAIL, SCAN} from "./HackerPages";
 import MailHome from "./mail/MailHome";
 import HackerHome from "./home/HackerHome";
 import React from "react";
-import ScanHome from "./scan/component/ScanHome";
+import ScanHome from "./run/component/ScanHome";
 import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
-import scanCanvas from "./scan/component/ScanCanvas";
+import scanCanvas from "./run/component/ScanCanvas";
 
 const dismissScanInfo = (event) => {
     let current = event.target;
@@ -28,9 +28,9 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 let mapStateToProps = (state) => {
-    const scanInfoDismiss = !!(state.scan && state.scan.infoNodeId);
+    const scanInfoDismiss = !!(state.run && state.run.infoNodeId);
     return {
-        messageTerminal: state.scan.messageTerminal,
+        messageTerminal: state.run.messageTerminal,
         currentPage: state.currentPage,
         renderScanInfoDismiss: scanInfoDismiss,
     };

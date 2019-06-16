@@ -5,11 +5,11 @@ import createTerminalReducer from "../../common/terminal/TerminalReducer";
 import SiteReducer from "./reducer/SiteReducer";
 import infoNodeIdReducer from "./reducer/InfoNodeIdReducer";
 
-const scanRootReducer = combineReducers({
+const runRootReducer = combineReducers({
     messageTerminal: createTerminalReducer("chat", {readonly: true, receiveBuffer: [{type:"text", data: "= chat online ="}]}),
     site: SiteReducer,
     scan: ScanReducer,
     infoNodeId: infoNodeIdReducer,
 });
 
-export default scanRootReducer;
+export default runRootReducer;

@@ -3,7 +3,7 @@ import {select, put} from 'redux-saga/effects'
 import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {HACKER_HOME, SCAN} from "../../HackerPages";
 
-const getScanId = (state) => state.scan.scan.id;
+const getScanId = (state) => state.run.scan.id;
 const getCurrentPage = (state) => state.currentPage;
 
 

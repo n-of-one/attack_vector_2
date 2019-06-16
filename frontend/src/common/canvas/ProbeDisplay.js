@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, easeLinear} from "./CanvasUtils";
-import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/scan/model/ScanActions";
-import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/scan/model/NodeScanTypes";
+import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/run/model/ScanActions";
+import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/run/model/NodeScanTypes";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
 
 export default class ConnectionDisplay {

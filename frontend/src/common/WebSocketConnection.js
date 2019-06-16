@@ -1,8 +1,8 @@
 import webstomp from 'webstomp-client';
 import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
-import {SERVER_SCAN_FULL} from "../hacker/scan/model/ScanActions";
+import {SERVER_SCAN_FULL} from "../hacker/run/model/ScanActions";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
-import {orderByDistance} from "../hacker/scan/lib/NodeDistance";
+import {orderByDistance} from "../hacker/run/lib/NodeDistance";
 import {notify_fatal} from "./Notification";
 
 class WebSocketConnection {

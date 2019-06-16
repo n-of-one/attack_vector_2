@@ -17,6 +17,9 @@ export default ({node}) => {
     const services = node.services;
     const rendered = [];
     const protectedLayer = findProtectedLayer(services);
+
+    rendered.push(<>Layer Service<br/></>);
+
     for (let i = 0; i < services.length; i++) {
         const service = services[i];
         if (i === protectedLayer) {

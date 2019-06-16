@@ -8,11 +8,11 @@ import {
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
     SERVER_UPDATE_NODE_STATUS
-} from "./scan/model/ScanActions";
+} from "./run/model/ScanActions";
 import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
-import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./scan/saga/ScanProbeSaga";
-import {discoverNodesSaga, updateNodeStatusSaga} from "./scan/saga/NodeSagas";
-import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitSaga} from "./scan/saga/TerminalSagas";
+import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
+import {discoverNodesSaga, updateNodeStatusSaga} from "./run/saga/NodeSagas";
+import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitSaga} from "./run/saga/TerminalSagas";
 import {SERVER_USER_DC, TERMINAL_SUBMIT} from "../common/terminal/TerminalActions";
 import {
     enterScanSaga,
@@ -22,7 +22,7 @@ import {
     scanForNameSaga,
     hackerEnterScanSaga,
     hackerLeaveScanSaga, deleteScanSaga
-} from "./scan/saga/ScanSaga";
+} from "./run/saga/ScanSaga";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
 
 const createHackerRootSaga = () => {

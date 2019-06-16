@@ -1,8 +1,9 @@
 import React from 'react';
 import ScanInfoOs from "./ScanInfoOs";
-import {ICE_PASSWORD, OS, TEXT} from "../../../../../../editor/component/service/ServiceTypes";
+import {ICE_PASSWORD, OS, TEXT} from "../../../../../editor/component/service/ServiceTypes";
 import ScanInfoPasswordIce from "./ScanInfoPasswordIce";
 import ScanInfoText from "./ScanInfoText";
+import Pad from "../../../../../common/component/Pad";
 
 
 const renderService = (service) =>{
@@ -12,7 +13,7 @@ const renderService = (service) =>{
         case ICE_PASSWORD:
             return <ScanInfoPasswordIce service={service} />;
         case TEXT:
-            return <ScanInfoText service={service} />
+            return <ScanInfoText service={service} />;
         default:
             return <><span className="text-danger">Unknown service</span></>;
     }
@@ -21,7 +22,9 @@ const renderService = (service) =>{
 export default ({service}) => {
     return (
         <>
-            {service.layer}&nbsp;&nbsp;{service.name}{renderService(service)}<br/>
+            <Pad p="2" />
+            <span className="text-primary">{service.layer}</span>
+            <Pad p="4" n={service.layer} />{service.name}{renderService(service)}<br/>
         </>
     );
 };
