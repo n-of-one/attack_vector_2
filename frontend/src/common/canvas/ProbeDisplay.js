@@ -73,7 +73,7 @@ export default class ConnectionDisplay {
         const lineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#285ba0",
-                strokeWidth: 1,
+                strokeWidth: 2,
                 selectable: false,
                 hoverCursor: 'default',
                 opacity: 1
