@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Attack Vector</title>
+    <link href="/css/bootstrap.min.css"  rel="stylesheet" media="screen"/>
+    <link href="/css/iziToast.min.css" rel="stylesheet" />
+    <link href="/css/local.css" rel="stylesheet"/>
+    <link href="/css/terminal.css" rel="stylesheet"/>
+</head>
+<body class="text errorPage" style="padding: 20px 20px 20px 20px;">
+<h2>Error</h2>
+
+<p>
+    Something went horribly wrong at our side, sorry for that! Not much we can do about it right now...<br><br>
+    But if you are not in the middle of something time-constrained, you could take a moment to write<br>
+    down when this problem occurred, so we may fix it in the future. The more specific you are,<br>
+    the more likely it is for us to find and repair the problem.<br>
+</p>
+<p>
+    <strong>
+        Click <a href="/">here</a> to continue.
+    </strong>
+</p>
+<br/>
+<h2>Technical details</h2>
+<p>
+    Message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span th:text="${message}" /> <br/>
+    Status code&nbsp;: <span th:text="${status}" /><br/>
+    Error&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span th:text="${error}" /><br/>
+    Path&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span th:text="${path}" /><br/>
+    Exception&nbsp;&nbsp;&nbsp;: <span th:text="${exception}" /><br/>
+    Trace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span th:text="${fullTrace}" /><br/>
+    Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span th:text="${timestamp}" /><br/>
+</p>
+
+</body>
+</html>

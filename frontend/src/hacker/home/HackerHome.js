@@ -1,6 +1,5 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {NavLink} from "react-router-dom";
 import TextInput from "../../common/component/TextInput";
 import SilentLink from "../../common/component/SilentLink";
 import {DELETE_SCAN, ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
@@ -54,9 +53,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                            save={(siteName) => scanSite(siteName)}
                                            clearAfterSubmit="true"/>
 
-                            </div>
-                            <div>
-                                <NavLink to="/scan/site-123" target="_blank">Edit</NavLink>
                             </div>
                         </div>
                     </div>

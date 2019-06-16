@@ -181,6 +181,7 @@ class ScanningService(val scanService: ScanService,
             stompService.toScan(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
         } else {
             stompService.terminalReceive("Scan complete.")
+            sendScansOfPlayer()
         }
     }
 
