@@ -1,5 +1,6 @@
 package org.n1.mainframe.backend.service.scan
 
+import org.n1.mainframe.backend.config.MyEnvironment
 import org.n1.mainframe.backend.service.ReduxActions
 import org.n1.mainframe.backend.service.StompService
 import org.n1.mainframe.backend.service.user.UserService
@@ -9,7 +10,8 @@ import java.util.stream.Collectors
 @Service
 class ScanTerminalService(val scanningService: ScanningService,
                           val stompService: StompService,
-                          val userService: UserService) {
+                          val userService: UserService,
+                          val environment: MyEnvironment) {
 
     fun processCommand(scanId: String, command: String) {
         val tokens = command.split(" ")
@@ -20,6 +22,7 @@ class ScanTerminalService(val scanningService: ScanningService,
             "scan" -> processScan(scanId, tokens)
             "/share" -> processShare(scanId, tokens)
             "servererror" -> error("gah")
+            "quickscan" -> processQuickscan(scanId)
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
     }
@@ -41,6 +44,13 @@ class ScanTerminalService(val scanningService: ScanningService,
                 " [u]scan [ok]<network id>[/]   -- for example: [u]scan [ok]00",
                 " [u]dc",
                 " [u]/share [info]<user name>")
+        if (environment.dev) {
+            stompService.terminalReceive(
+                    "",
+                    "[i]Available only during development and testing:[/]",
+                    " [u]quickscan"
+            )
+        }
     }
 
     fun processScan(scanId: String, tokens: List<String>) {
@@ -57,14 +67,17 @@ class ScanTerminalService(val scanningService: ScanningService,
             stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
             return
         }
-        val userName = tokens.stream().skip(1).collect( Collectors.joining(" ") )
+        val userName = tokens.stream().skip(1).collect(Collectors.joining(" "))
         val user = userService.findByName(userName)
         if (user == null) {
             stompService.terminalReceive("user [info]${userName}[/] not found.")
             return
         }
         scanningService.shareScan(scanId, user)
+    }
 
+    fun processQuickscan(scanId: String) {
+        scanningService.quickScan(scanId)
     }
 
 }

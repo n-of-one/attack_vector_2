@@ -239,8 +239,12 @@ class ScanningService(val scanService: ScanService,
 
     fun probeArrive(scanId: String, nodeId: String, action: NodeScanType) {
         val scan = scanService.getById(scanId)
-        val nodeScan = scan.nodeScanById[nodeId] ?: throw IllegalStateException("Node to scan ${nodeId} not part of ${scan.siteId}")
         val node = nodeService.getById(nodeId)
+        probeArrive(scan, node, action)
+    }
+
+    fun probeArrive(scan: Scan, node: Node, action: NodeScanType) {
+        val nodeScan = scan.nodeScanById[node.id] ?: throw IllegalStateException("Node to scan ${node.id} not part of ${scan.siteId}")
 
         when (action) {
             NodeScanType.SCAN_NODE_INITIAL -> probeScanInitial(scan, node, nodeScan)
@@ -252,10 +256,6 @@ class ScanningService(val scanService: ScanService,
     data class ProbeResultInitial(val nodeId: String, val newStatus: NodeStatus)
 
     fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan) {
-        if (nodeScan.status != NodeStatus.DISCOVERED) {
-            stompService.terminalReceive("Scanning node ${node.networkId} did not find anything new.")
-            return
-        }
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}.")
 
         nodeScan.status = NodeStatus.TYPE
@@ -363,5 +363,26 @@ class ScanningService(val scanService: ScanService,
 
     private fun createPresence(user: User): HackerPresence {
         return HackerPresence(user.id, user.name, user.icon)
+    }
+
+    fun quickScan(scanId: String) {
+        val scan = scanService.getById(scanId)
+        val nodes = nodeService.getAll(scan.siteId)
+        nodes.forEach { quickScanNode(it, scan) }
+        autoScan(scanId)
+    }
+
+    private fun quickScanNode(node: Node, scan: Scan) {
+        val status = scan.nodeScanById[node.id]!!.status
+        if (status == NodeStatus.SERVICES) return
+        if (status == NodeStatus.UNDISCOVERED || status == NodeStatus.DISCOVERED ) {
+            probeArrive(scan, node, NodeScanType.SCAN_NODE_INITIAL)
+        }
+
+        val newStatus = scan.nodeScanById[node.id]!!.status
+        if (status == NodeStatus.TYPE || newStatus == NodeStatus.TYPE) {
+            probeArrive(scan, node, NodeScanType.SCAN_CONNECTIONS)
+        }
+        probeArrive(scan, node, NodeScanType.SCAN_NODE_DEEP)
     }
 }
