@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class StompService(
         val stompTemplate: SimpMessageSendingOperations,
-        val principalService: PrincipalService) {
+        val currentUserService: CurrentUserService) {
 
     @Value("\${ENVIRONMENT ?: default}")
     lateinit var environment: String
@@ -34,7 +34,7 @@ class StompService(
     }
 
     fun toUser(actionType: ReduxActions, data: Any) {
-        val userId = principalService.get().userId
+        val userId = currentUserService.userId
         toUser(userId, actionType, data)
     }
 
@@ -45,7 +45,7 @@ class StompService(
     }
 
     fun toUser(message: NotyMessage) {
-        val userId = principalService.get().userId
+        val userId = currentUserService.userId
         toUser(userId, message)
     }
 

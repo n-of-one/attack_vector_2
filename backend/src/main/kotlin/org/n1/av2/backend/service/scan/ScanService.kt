@@ -7,29 +7,33 @@ import org.n1.av2.backend.model.db.site.SiteData
 import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.repo.ScanRepo
 import org.n1.av2.backend.repo.UserScanRepo
-import org.n1.av2.backend.service.PrincipalService
+import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 
 @Service
 class ScanService(val scanRepo: ScanRepo,
                   val userScanRepo: UserScanRepo,
-                  val principalService: PrincipalService) {
+                  val currentUserService: CurrentUserService,
+                  val time: TimeService) {
     fun getById(runId: String): Scan {
         return scanRepo.findById(runId).orElseGet { error("${runId} not found") }
     }
 
-    fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>): String {
+    fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>, user: User): String {
         val runId = createId("run") { candidate: String -> scanRepo.findById(candidate) }
         val scan = Scan(
                 id = runId,
                 siteId = siteData.id,
                 complete = false,
-                nodeScanById = nodeScanById
+                nodeScanById = nodeScanById,
+                initiatorId =  user.id,
+                startTime = time.now()
         )
         scanRepo.save(scan)
 
-        val userId = principalService.get().userId
+        val userId = currentUserService.userId
         val userScan = UserScan(userId, runId)
         userScanRepo.save(userScan)
 
@@ -61,7 +65,7 @@ class ScanService(val scanRepo: ScanRepo,
     }
 
     fun deleteUserScan(runId: String) {
-        userScanRepo.deleteByUserIdAndRunId(principalService.get().userId, runId)
+        userScanRepo.deleteByUserIdAndRunId(currentUserService.userId, runId)
     }
 }
 

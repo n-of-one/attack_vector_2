@@ -1,6 +1,5 @@
 package org.n1.av2.backend.web.html
 
-import org.n1.av2.backend.service.PrincipalService
 import org.springframework.boot.web.servlet.error.ErrorAttributes
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.stereotype.Controller
@@ -16,9 +15,8 @@ private const val INDEX = "../static/index.html"
 
 @Controller
 class HtmlController(
-        val errorAttributes: ErrorAttributes,
-        val principalService: PrincipalService
-) : ErrorController {
+        val errorAttributes: ErrorAttributes) : ErrorController {
+
     override fun getErrorPath(): String {
         return "error"
     }
@@ -60,13 +58,4 @@ class HtmlController(
 
         return "error"
     }
-
-
-//
-//    @GetMapping("/edit/{link}")
-//    fun edit(): String  {
-//        return "redirect:/index.html"
-//    }
-
-
 }

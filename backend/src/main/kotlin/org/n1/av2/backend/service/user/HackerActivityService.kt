@@ -4,12 +4,12 @@ import mu.KLogging
 import org.n1.av2.backend.model.hacker.HackerActivity
 import org.n1.av2.backend.model.hacker.HackerActivityType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.service.PrincipalService
+import org.n1.av2.backend.service.CurrentUserService
 import org.springframework.stereotype.Service
 
 @Service
 class HackerActivityService(
-        val principalService: PrincipalService
+        val currentUserService: CurrentUserService
 ) {
 
     companion object: KLogging()
@@ -36,13 +36,13 @@ class HackerActivityService(
     }
 
     fun startActivityScanning(runId: String) {
-        val userPrincipal = principalService.get()
+        val userPrincipal = currentUserService.principal
         hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.SCANNING, id = runId)
 
     }
 
     fun stopActivityScanning(runId: String) {
-        val userPrincipal = principalService.get()
+        val userPrincipal = currentUserService.principal
         hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.ONLINE, id = "-")
     }
 

@@ -11,7 +11,7 @@ import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.SiteFull
-import org.n1.av2.backend.service.PrincipalService
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.site.ConnectionService
@@ -33,7 +33,8 @@ class ScanningService(val scanService: ScanService,
                       val nodeService: NodeService,
                       val connectionService: ConnectionService,
                       val hackerActivityService: HackerActivityService,
-                      val principalService: PrincipalService) {
+                      val currentUserService: CurrentUserService
+                      ) {
 
 
 
@@ -51,7 +52,10 @@ class ScanningService(val scanService: ScanService,
         }
 
         val nodeScans = createNodeScans(siteData.id)
-        val runId = scanService.createScan(siteData, nodeScans)
+
+        val user = currentUserService.user
+
+        val runId = scanService.createScan(siteData, nodeScans, user)
         val response = ScanSiteResponse(runId, siteData.id)
         stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
         sendScansOfPlayer()
@@ -125,7 +129,7 @@ class ScanningService(val scanService: ScanService,
 
     fun enterScan(runId: String) {
         hackerActivityService.startActivityScanning(runId)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(principalService.get().user))
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(currentUserService.user))
 
         val scan = scanService.getById(runId)
         val siteFull = siteService.getSiteFull(scan.siteId)
@@ -164,7 +168,7 @@ class ScanningService(val scanService: ScanService,
         }
         val scanType = determineNodeScanType(status) ?: NodeScanType.SCAN_NODE_DEEP
         val path = createNodePath(targetNode)
-        val userId = principalService.get().userId
+        val userId = currentUserService.userId
         val probeAction = ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false)
         stompService.toRun(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
@@ -192,7 +196,7 @@ class ScanningService(val scanService: ScanService,
         val status = scan.nodeScanById[targetNode.id]!!.status
         val scanType = determineNodeScanType(status) ?: return null
         val path = createNodePath(targetNode)
-        val userId = principalService.get().userId
+        val userId = currentUserService.userId
         return ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = autoScan)
     }
 
@@ -321,7 +325,7 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun sendScansOfPlayer() {
-        val userId = principalService.get().userId
+        val userId = currentUserService.userId
         sendScansOfPlayer(userId)
     }
 
@@ -344,7 +348,7 @@ class ScanningService(val scanService: ScanService,
         scanService.createUserScan(runId, user)
         stompService.terminalReceive("Shared scan with [info]${user.name}[/].")
 
-        val myUserName = principalService.get().user.name
+        val myUserName = currentUserService.user.name
 
         val scan = scanService.getById(runId)
         val siteData = siteDataService.getById(scan.siteId)
@@ -357,7 +361,7 @@ class ScanningService(val scanService: ScanService,
     fun leaveScan(runId: String) {
         hackerActivityService.stopActivityScanning(runId)
 
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, createPresence(principalService.get().user))
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, createPresence(currentUserService.user))
 
     }
 

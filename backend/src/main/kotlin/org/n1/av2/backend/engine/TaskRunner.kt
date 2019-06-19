@@ -2,7 +2,7 @@ package org.n1.av2.backend.engine
 
 import mu.KLogging
 import org.n1.av2.backend.model.ui.ValidationException
-import org.n1.av2.backend.service.PrincipalService
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.FatalException
@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class TaskRunner(val queue: LinkedBlockingQueue<Task>,
                  val stompService: StompService,
-                 val principalService: PrincipalService): Runnable {
+                 val currentUserService: CurrentUserService): Runnable {
 
     companion object: KLogging()
 
@@ -30,9 +30,9 @@ class TaskRunner(val queue: LinkedBlockingQueue<Task>,
     private fun runTask() {
         val task = queue.take()
         try {
-            principalService.set(task.principal)
+            currentUserService.set(task.principal)
             task.action()
-            principalService.remove()
+            currentUserService.remove()
         }
         catch (exception: Exception) {
             if (exception is InterruptedException) {

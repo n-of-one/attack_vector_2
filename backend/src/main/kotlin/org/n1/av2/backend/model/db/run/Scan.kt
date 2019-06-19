@@ -2,18 +2,20 @@ package org.n1.av2.backend.model.db.run
 
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.Duration
+import java.time.ZonedDateTime
 
 @Document
 data class Scan(
 
-    val id: String,
-//    val initiatorId: String,
-    val siteId: String,
-    var complete: Boolean,
-//    var totalDistanceScanned: Int,
-//    var startTime: ZonedDateTime,
-//    var duration: Duration,
-    val nodeScanById: MutableMap<String, NodeScan>
+        val id: String,
+        val initiatorId: String,
+        val siteId: String,
+        var complete: Boolean,
+        var totalDistanceScanned: Int = 0,
+        var startTime: ZonedDateTime,
+        var duration: Duration? = null,
+        val nodeScanById: MutableMap<String, NodeScan>
 )
 
 @Document
