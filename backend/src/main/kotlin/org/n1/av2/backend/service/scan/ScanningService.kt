@@ -1,0 +1,392 @@
+package org.n1.av2.backend.service.scan
+
+import org.n1.av2.backend.model.db.run.NodeScan
+import org.n1.av2.backend.model.db.run.NodeStatus
+import org.n1.av2.backend.model.db.run.Scan
+import org.n1.av2.backend.model.db.site.Node
+import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.model.hacker.HackerActivityType
+import org.n1.av2.backend.model.hacker.HackerPresence
+import org.n1.av2.backend.model.ui.NodeScanType
+import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.model.ui.NotyType
+import org.n1.av2.backend.model.ui.SiteFull
+import org.n1.av2.backend.service.PrincipalService
+import org.n1.av2.backend.service.ReduxActions
+import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.site.ConnectionService
+import org.n1.av2.backend.service.site.NodeService
+import org.n1.av2.backend.service.site.SiteDataService
+import org.n1.av2.backend.service.site.SiteService
+import org.n1.av2.backend.service.user.HackerActivityService
+import org.n1.av2.backend.util.s
+import org.springframework.stereotype.Service
+import java.util.*
+import kotlin.collections.HashSet
+
+/** This service deals with the action of scanning (as opposed to the actions performed on a scan). */
+@Service
+class ScanningService(val scanService: ScanService,
+                      val siteDataService: SiteDataService,
+                      val siteService: SiteService,
+                      val stompService: StompService,
+                      val nodeService: NodeService,
+                      val connectionService: ConnectionService,
+                      val hackerActivityService: HackerActivityService,
+                      val principalService: PrincipalService) {
+
+
+
+    fun deleteScan(runId: String) {
+        scanService.deleteUserScan(runId)
+        sendScansOfPlayer()
+    }
+
+    data class ScanSiteResponse(val runId: String, val siteId: String)
+    fun scanSiteForName(siteName: String) {
+        val siteData = siteDataService.findByName(siteName)
+        if (siteData == null) {
+            stompService.toUser(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+            return
+        }
+
+        val nodeScans = createNodeScans(siteData.id)
+        val runId = scanService.createScan(siteData, nodeScans)
+        val response = ScanSiteResponse(runId, siteData.id)
+        stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
+        sendScansOfPlayer()
+    }
+
+    private fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
+        val traverseNodes = determineDistances(siteId)
+        return traverseNodes.map {
+            val nodeStatus = when (it.value.distance) {
+                0 -> NodeStatus.DISCOVERED
+                else -> NodeStatus.UNDISCOVERED
+            }
+            it.key to NodeScan(status = nodeStatus, distance = it.value.distance)
+        }.toMap().toMutableMap()
+    }
+
+    data class TraverseNode(val id: String,
+                            var distance: Int? = null,
+                            val connections: MutableSet<TraverseNode> = HashSet()) {
+
+        override fun equals(other: Any?): Boolean {
+            return if (other is TraverseNode) {
+                other.id == this.id
+            } else false
+        }
+
+        override fun hashCode(): Int {
+            return this.id.hashCode()
+        }
+
+        override fun toString(): String {
+            return "${id}(d: ${distance} connect count: ${connections.size}"
+        }
+    }
+
+    private fun determineDistances(siteId: String): Map<String, TraverseNode> {
+        val siteData = siteDataService.getById(siteId)
+        val nodes = nodeService.getAll(siteId)
+        val startNodeId = siteService.findStartNode(siteData.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
+        val traverseNodesById = createTraverseNodes(siteId)
+
+        val startTraverseNode = traverseNodesById[startNodeId]!!
+        traverse(startTraverseNode, 0)
+        return traverseNodesById
+    }
+
+    private fun createTraverseNodes(siteId: String): Map<String, TraverseNode> {
+        val nodes = nodeService.getAll(siteId)
+        val connections = connectionService.getAll(siteId)
+
+        val traverseNodes = nodes.map { TraverseNode(id = it.id) }
+        val traverseNodesById = traverseNodes.map { it.id to it }.toMap()
+        connections.forEach {
+            val from = traverseNodesById[it.fromId] ?: throw IllegalStateException("Node ${it.fromId} not found in ${siteId} in ${it.id}")
+            val to = traverseNodesById[it.toId] ?: throw IllegalStateException("Node ${it.toId} not found in ${siteId} in ${it.id}")
+            from.connections.add(to)
+            to.connections.add(from)
+        }
+        return traverseNodesById
+    }
+
+    private fun traverse(node: TraverseNode, distance: Int) {
+        node.distance = distance
+        node.connections
+                .filter { it.distance == null }
+                .forEach { traverse(it, distance + 1) }
+    }
+
+
+    data class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerPresence>)
+
+    fun enterScan(runId: String) {
+        hackerActivityService.startActivityScanning(runId)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(principalService.get().user))
+
+        val scan = scanService.getById(runId)
+        val siteFull = siteService.getSiteFull(scan.siteId)
+        val userPresence = hackerActivityService
+                .getAll(HackerActivityType.SCANNING, scan.id)
+                .map{ activity -> createPresence(activity.authentication.user)}
+
+        val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
+        stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
+    }
+
+    private fun reportNodeNotFound(networkId: String) {
+        if (networkId.length == 1) {
+            stompService.terminalReceive("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
+
+        }
+        else {
+            stompService.terminalReceive("Node [ok]${networkId}[/] not found.")
+        }
+    }
+
+    fun launchProbeAtNode(runId: String, networkId: String) {
+        val scan = scanService.getById(runId)
+        val node = nodeService.findByNetworkId(scan.siteId, networkId)
+        if (node == null) {
+            reportNodeNotFound(networkId)
+            return
+        }
+
+        val traverseNodesById = createTraverseNodesWithDistance(scan)
+        val targetNode = traverseNodesById[node.id]!!
+        val status = scan.nodeScanById[targetNode.id]!!.status
+        if (status == NodeStatus.UNDISCOVERED) {
+            reportNodeNotFound(networkId)
+            return
+        }
+        val scanType = determineNodeScanType(status) ?: NodeScanType.SCAN_NODE_DEEP
+        val path = createNodePath(targetNode)
+        val userId = principalService.get().userId
+        val probeAction = ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false)
+        stompService.toRun(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+    }
+
+
+    fun autoScan(runId: String) {
+        launchProbe(runId, true)
+    }
+
+    fun launchProbe(runId: String, autoScan: Boolean) {
+        val scan = scanService.getById(runId)
+        val probeAction = createProbeAction(scan, autoScan)
+        if (probeAction != null) {
+            stompService.toRun(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+        } else {
+            stompService.terminalReceive("Scan complete.")
+            sendScansOfPlayer()
+        }
+    }
+
+    data class ProbeAction(val probeUserId: String, val path: List<String>, val scanType: NodeScanType, val autoScan: Boolean)
+
+    fun createProbeAction(scan: Scan, autoScan: Boolean): ProbeAction? {
+        val targetNode = findProbeTarget(scan)
+        val status = scan.nodeScanById[targetNode.id]!!.status
+        val scanType = determineNodeScanType(status) ?: return null
+        val path = createNodePath(targetNode)
+        val userId = principalService.get().userId
+        return ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = autoScan)
+    }
+
+    private fun determineNodeScanType(status: NodeStatus): NodeScanType? {
+        return when (status) {
+            NodeStatus.DISCOVERED -> NodeScanType.SCAN_NODE_INITIAL
+            NodeStatus.TYPE -> NodeScanType.SCAN_CONNECTIONS
+            NodeStatus.CONNECTIONS -> NodeScanType.SCAN_NODE_DEEP
+            NodeStatus.SERVICES -> null
+            NodeStatus.UNDISCOVERED -> error("Cannot scan a node that has not yet been discovered.")
+        }
+    }
+
+    private fun createNodePath(targetNode: TraverseNode): LinkedList<String> {
+        val path = LinkedList<String>()
+        path.add(targetNode.id)
+        var currentNode = targetNode
+        while (currentNode.distance != 0) {
+            currentNode = currentNode.connections.find { it.distance == (currentNode.distance!! - 1) }!!
+            path.add(0, currentNode.id)
+        }
+        return path
+    }
+
+    /**
+     * Of all nodes that are know to the players, find the one of which the least is known (lowest scan status level).
+     */
+    private fun findProbeTarget(scan: Scan): TraverseNode {
+        val traverseNodeValues = createTraverseNodesWithDistance(scan).values
+        val traverseNodes = traverseNodeValues.filter { scan.nodeScanById[it.id]!!.status != NodeStatus.UNDISCOVERED }
+        val distanceSortedNodes = traverseNodes.sortedBy { it.distance }
+        return distanceSortedNodes.minBy {
+            scan.nodeScanById[it.id]!!.status.level
+        }!!
+    }
+
+    private fun createTraverseNodesWithDistance(scan: Scan): Map<String, TraverseNode> {
+        val traverseNodeById = createTraverseNodes(scan.siteId)
+        traverseNodeById.values.forEach { it.distance = scan.nodeScanById[it.id]!!.distance }
+        return traverseNodeById
+    }
+
+    //---//
+
+    fun probeArrive(runId: String, nodeId: String, action: NodeScanType) {
+        val scan = scanService.getById(runId)
+        val node = nodeService.getById(nodeId)
+        probeArrive(scan, node, action)
+    }
+
+    fun probeArrive(scan: Scan, node: Node, action: NodeScanType) {
+        val nodeScan = scan.nodeScanById[node.id] ?: throw IllegalStateException("Node to scan ${node.id} not part of ${scan.siteId}")
+
+        when (action) {
+            NodeScanType.SCAN_NODE_INITIAL -> probeScanInitial(scan, node, nodeScan)
+            NodeScanType.SCAN_CONNECTIONS -> probeScanConnection(scan, node, nodeScan)
+            NodeScanType.SCAN_NODE_DEEP -> probeScanDeep(scan, node, nodeScan)
+        }
+    }
+
+    data class ProbeResultInitial(val nodeId: String, val newStatus: NodeStatus)
+
+    fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan) {
+        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}.")
+
+        nodeScan.status = NodeStatus.TYPE
+        scanService.save(scan)
+        stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+    }
+
+    private fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan) {
+        if (nodeScan.status != NodeStatus.TYPE) {
+            stompService.terminalReceive("Scanning node ${node.networkId} did not find new connections.")
+            return
+        }
+        nodeScan.status = NodeStatus.CONNECTIONS
+
+        val connections = connectionService.findByNodeId(node.id)
+
+        val discoveredNodeIds = LinkedList<String>()
+        val discoveredConnectionIds = HashSet<String>()
+        connections.forEach { connection ->
+            val connectedNodeId = if (connection.fromId == node.id) connection.toId else connection.fromId
+            val connectedNode = nodeService.getById(connectedNodeId)
+            if (scan.nodeScanById[connectedNode.id]!!.status == NodeStatus.UNDISCOVERED) {
+                discoveredNodeIds.add(connectedNode.id)
+                discoveredConnectionIds.add(connection.id)
+                scan.nodeScanById[connectedNode.id]!!.status = NodeStatus.DISCOVERED
+            }
+        }
+
+        val allDiscoveredNodes = scan.nodeScanById
+                .filter { (_, nodeScan) -> nodeScan.status != NodeStatus.UNDISCOVERED }
+                .keys
+
+        val connectionsFromDiscoveredNodes = discoveredNodeIds.flatMap{connectionService.findByNodeId(it)  }
+
+        val extraDiscoveredConnections = connectionsFromDiscoveredNodes
+                .filter { allDiscoveredNodes.contains(it.fromId) && allDiscoveredNodes.contains(it.toId) }
+                .map { it.id }
+
+        discoveredConnectionIds.addAll(extraDiscoveredConnections)
+
+
+        scanService.save(scan)
+        stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+
+        data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
+        stompService.toRun(scan.id, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
+
+        val iceMessage = if (node.ice) " | Ice detected" else ""
+        stompService.terminalReceive( "Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
+    }
+
+    private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan) {
+        if (nodeScan.status != NodeStatus.CONNECTIONS) {
+            stompService.terminalReceive("Scanning node ${node.networkId} did not find anything.")
+            return
+        }
+
+        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} service details")
+
+        nodeScan.status = NodeStatus.SERVICES
+        scanService.save(scan)
+        stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+    }
+
+    fun sendScansOfPlayer() {
+        val userId = principalService.get().userId
+        sendScansOfPlayer(userId)
+    }
+
+    data class ScanOverViewLine(val runId: String, val siteName: String, val complete: Boolean, val siteId: String)
+    fun sendScansOfPlayer(userId: String) {
+        val scans = scanService.getAll(userId)
+        val scanItems = scans.map {scan ->
+            val site = siteDataService.getById(scan.siteId)
+            val complete = (scan.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
+            ScanOverViewLine(scan.id, site.name, complete, site.id)
+        }
+        stompService.toUser(userId, ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
+    }
+
+    fun shareScan(runId: String, user: User) {
+        if (scanService.hasUserScan(user, runId)) {
+            stompService.terminalReceive("[info]${user.name}[/] already has this scan.")
+            return
+        }
+        scanService.createUserScan(runId, user)
+        stompService.terminalReceive("Shared scan with [info]${user.name}[/].")
+
+        val myUserName = principalService.get().user.name
+
+        val scan = scanService.getById(runId)
+        val siteData = siteDataService.getById(scan.siteId)
+
+        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
+        stompService.terminalReceiveForId(user, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
+        sendScansOfPlayer(user.id)
+    }
+
+    fun leaveScan(runId: String) {
+        hackerActivityService.stopActivityScanning(runId)
+
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, createPresence(principalService.get().user))
+
+    }
+
+    private fun createPresence(user: User): HackerPresence {
+        return HackerPresence(user.id, user.name, user.icon)
+    }
+
+    fun quickScan(runId: String) {
+        val scan = scanService.getById(runId)
+        val nodes = nodeService.getAll(scan.siteId)
+        nodes.forEach { quickScanNode(it, scan) }
+        autoScan(runId)
+    }
+
+    private fun quickScanNode(node: Node, scan: Scan) {
+        val status = scan.nodeScanById[node.id]!!.status
+        if (status == NodeStatus.SERVICES) return
+        if (status == NodeStatus.UNDISCOVERED || status == NodeStatus.DISCOVERED ) {
+            probeArrive(scan, node, NodeScanType.SCAN_NODE_INITIAL)
+        }
+
+        val newStatus = scan.nodeScanById[node.id]!!.status
+        if (status == NodeStatus.TYPE || newStatus == NodeStatus.TYPE) {
+            probeArrive(scan, node, NodeScanType.SCAN_CONNECTIONS)
+        }
+        probeArrive(scan, node, NodeScanType.SCAN_NODE_DEEP)
+    }
+
+    fun purgeAll() {
+        scanService.purgeAll()
+    }
+}

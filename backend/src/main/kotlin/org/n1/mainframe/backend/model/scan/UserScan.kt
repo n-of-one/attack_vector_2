@@ -1,3 +1,0 @@
-package org.n1.mainframe.backend.model.scan
-
-data class UserScan(val userId: String, val runId: String)
