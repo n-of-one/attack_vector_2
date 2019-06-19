@@ -32,7 +32,6 @@ class HackerActivityService(
     }
 
     fun disconnect(userPrincipal: UserPrincipal) {
-        val toRemove = hackerActivitiesById[userPrincipal.user.id] ?: return
         hackerActivitiesById.remove(userPrincipal.user.id)
     }
 

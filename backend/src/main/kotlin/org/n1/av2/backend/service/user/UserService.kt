@@ -2,6 +2,7 @@ package org.n1.av2.backend.service.user
 
 import org.n1.av2.backend.model.db.user.HackerIcon
 import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.model.db.user.UserType
 import org.n1.av2.backend.repo.UserRepo
 import org.n1.av2.backend.util.createId
 import org.springframework.data.mongodb.core.MongoTemplate

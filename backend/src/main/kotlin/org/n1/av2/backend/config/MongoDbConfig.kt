@@ -60,7 +60,7 @@ class MongobeeFactory(private val mongoConfig: MongoConfig ) {
     fun mongobee(): Mongobee {
         val runner = Mongobee(mongoConfig.clientUri)
         runner.setDbName(mongoConfig.databaseName)
-        runner.setChangeLogsScanPackage("org.n1.av2.backend.db")
+        runner.setChangeLogsScanPackage("org.n1.av2.backend.model.db.changelog")
 
         return runner
     }

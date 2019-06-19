@@ -11,7 +11,7 @@ class ThemeService {
             ServiceType.OS -> "OS"
             ServiceType.TEXT -> "Data vault"
             ServiceType.ICE_PASSWORD -> "Aruna"
-            else -> error("Unknown service type: ${serviceType}")
+//            else -> error("Unknown service type: ${serviceType}")
         }
     }
 }
