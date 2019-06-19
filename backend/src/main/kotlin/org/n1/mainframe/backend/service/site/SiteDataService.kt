@@ -1,9 +1,6 @@
 package org.n1.mainframe.backend.service.site
 
 import org.n1.mainframe.backend.model.site.SiteData
-import org.n1.mainframe.backend.model.site.SiteState
-import org.n1.mainframe.backend.model.ui.NotyMessage
-import org.n1.mainframe.backend.model.ui.NotyType
 import org.n1.mainframe.backend.model.ui.ValidationException
 import org.n1.mainframe.backend.model.ui.site.EditSiteData
 import org.n1.mainframe.backend.repo.SiteDataRepo
@@ -19,10 +16,9 @@ class SiteDataService(
 ) {
 
     fun findByName(name: String): SiteData? {
-        val all = siteDataRepo.findAllByName(name)
-        return if (all.size == 1) all.first()
-        else null
+        return siteDataRepo.findByName(name)
     }
+
     fun findAll(): MutableIterable<SiteData> {
         return siteDataRepo.findAll() ?: ArrayList()
     }

@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.annotation.PostConstruct
-import javax.swing.text.html.HTML.Tag.I
 
 @Component
 class UserService(
@@ -20,7 +19,7 @@ class UserService(
     val passwordEncoder = BCryptPasswordEncoder(4)
 
     fun findByName(userName: String): User? {
-        return userRepo.findByNameIgnoreCase(userName).orElseGet { null }
+        return userRepo.findByNameIgnoreCase(userName)
     }
 
     fun getByName(userName: String): User {

@@ -20,7 +20,7 @@ class ScanService(val scanRepo: ScanRepo,
     }
 
     fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>): String {
-        val runId = createId("scan") { candidate: String -> scanRepo.findById(candidate) }
+        val runId = createId("run") { candidate: String -> scanRepo.findById(candidate) }
         val scan = Scan(
                 id = runId,
                 siteId = siteData.id,
@@ -51,8 +51,7 @@ class ScanService(val scanRepo: ScanRepo,
     }
 
     fun hasUserScan(user: User, runId: String): Boolean {
-        val userScan = userScanRepo.findByUserIdAndRunId(user.id, runId)
-        return userScan.isPresent
+        return userScanRepo.findByUserIdAndRunId(user.id, runId) != null
     }
 
     fun createUserScan(runId: String, user: User) {

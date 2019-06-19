@@ -128,12 +128,7 @@ class NodeService(
     }
 
     fun findByNetworkId(siteId: String, networkId: String): Node? {
-        val nodes = nodeRepo.findBySiteIdAndNetworkId(siteId, networkId)
-        if (nodes.isNotEmpty()) {
-            return nodes[0]
-        } else {
-            return null
-        }
+        return nodeRepo.findBySiteIdAndNetworkId(siteId, networkId)
     }
 
     fun save(node: Node) {

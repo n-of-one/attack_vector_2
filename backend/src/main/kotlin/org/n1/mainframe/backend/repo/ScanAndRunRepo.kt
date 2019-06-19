@@ -1,10 +1,10 @@
 package org.n1.mainframe.backend.repo
 
+import org.n1.mainframe.backend.model.run.Run
 import org.n1.mainframe.backend.model.scan.Scan
 import org.n1.mainframe.backend.model.scan.UserScan
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 interface ScanRepo : PagingAndSortingRepository<Scan, String> {
@@ -15,6 +15,9 @@ interface ScanRepo : PagingAndSortingRepository<Scan, String> {
 @Repository
 interface UserScanRepo : PagingAndSortingRepository<UserScan, String> {
     fun findAllByUserId(userId:String): List<UserScan>
-    fun findByUserIdAndRunId(userId: String, runId: String): Optional<UserScan>
+    fun findByUserIdAndRunId(userId: String, runId: String): UserScan?
     fun deleteByUserIdAndRunId(userId: String, runId: String)
 }
+
+@Repository
+interface RunRepo : PagingAndSortingRepository<Run, String>
