@@ -1,5 +1,7 @@
 import {fabric} from "fabric";
-import {animate, calcLine } from "./CanvasUtils";
+import {animate, calcLine, easeLinear} from "./CanvasUtils";
+import Thread from "../Thread";
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
@@ -10,6 +12,7 @@ export default class HackerDisplay {
     startNode = null;
 
     hackerIcon = null;
+    hackerIdentifierIcon = null;
     hackerHider = null;
     lineIcon = null;
     labelIcon = null;
@@ -23,34 +26,27 @@ export default class HackerDisplay {
     y = null;
     x = null;
 
-    constructor(canvas, thread, startNodeDisplay, hacker, offset, you) {
+    dispatch = null;
+
+    constructor(canvas, thread, startNodeDisplay, hacker, offset, you, dispatch) {
         this.canvas = canvas;
         this.thread = thread;
         this.hacker = hacker;
         this.startNodeDisplay = startNodeDisplay;
-
-        const image = document.getElementById(hacker.icon);
+        this.dispatch = dispatch;
 
         this.x = offset;
         this.y = 810 - 20;
 
-        const size = you ? 60: 40;
+        const size = you ? 60 : 40;
 
-        this.hackerIcon = new fabric.Image(image, {
-            left: this.x,
-            top: this.y,
-            height: size,
-            width: size,
-            opacity: 0,
-            selectable: false,
-            hoverCursor: "default",
-        });
-        this.canvas.add(this.hackerIcon);
-        animate(this.canvas, this.hackerIcon, "opacity", 1, APPEAR_TIME);
+        this.hackerIdentifierIcon = this.createHackerIcon(size, 0);
+        this.canvas.add(this.hackerIdentifierIcon);
+        animate(this.canvas, this.hackerIdentifierIcon, "opacity", 1, APPEAR_TIME);
 
         this.hackerHider = new fabric.Rect({
             left: this.x,
-            top: this.y+25,
+            top: this.y + 25,
             height: 35,
             width: 40,
             opacity: 1,
@@ -94,6 +90,22 @@ export default class HackerDisplay {
         this.thread.run(3, () => animate(this.canvas, this.lineIcon, "opacity", 0.5, 40));
     }
 
+    createHackerIcon(size, opacity) {
+        const image = document.getElementById(this.hacker.icon);
+
+        const icon = new fabric.Image(image, {
+            left: this.x,
+            top: this.y,
+            height: size,
+            width: size,
+            opacity: opacity,
+            selectable: false,
+            hoverCursor: "default",
+        });
+
+        return icon
+    }
+
     size() {
         return 30;
     }
@@ -101,7 +113,7 @@ export default class HackerDisplay {
     move(newX) {
         this.thread.run(APPEAR_TIME, () => {
             this.x = newX;
-            animate(this.canvas, this.hackerIcon, "left", newX, APPEAR_TIME);
+            animate(this.canvas, this.hackerIdentifierIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
@@ -112,15 +124,97 @@ export default class HackerDisplay {
 
     disappear() {
         this.thread.run(DISAPPEAR_TIME, () => {
-            animate(this.canvas, this.hackerIcon, "opacity", 0, DISAPPEAR_TIME);
+            animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.lineIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME);
         });
         this.thread.run(0, () => {
-            this.canvas.remove(this.hackerIcon);
+            this.canvas.remove(this.hackerIdentifierIcon);
             this.canvas.remove(this.lineIcon);
             this.canvas.remove(this.labelIcon);
             this.canvas.remove(this.hackerHider);
         });
     }
+
+    startRun() {
+        this.dispatch({type: TERMINAL_LOCK, id: "main"});
+        this.hackerIcon = this.createHackerIcon(60, 1);
+        this.canvas.add(this.hackerIcon);
+        this.canvas.sendToBack(this.hackerIcon);
+
+        this.thread.run(0, () => {
+            this.moveStep(this.startNodeDisplay, 0, 0, 200, easeLinear);
+            animate(this.canvas, this.hackerIcon, 'width', 40, 100);
+            animate(this.canvas, this.hackerIcon, 'height', 40, 100);
+        });
+
+        const random = (max) => {
+            return Math.floor(Math.random() * max);
+        };
+        const personaId = "" + random(10) + random(10) + random(10) + random(10) + random(10) + random(10) + '-' +
+            random(10) + random(10) + random(10) + random(10) + '/' + random(10);
+
+        this.echo(20, "");
+        this.echo(20, "Persona v2.3 booting");
+        this.echo(10, "- unique ID: " + personaId);
+        this.thread.run(0, () => {
+            animate(this.canvas, this.hackerIcon, 'opacity', 0.3, 100, fabric.util.ease.easeOutSine);
+            this.canvas.bringToFront(this.hackerIcon);
+        });
+        this.echo(10, "- Matching fingerprint with OS deamon");
+        this.echo(10, "  - [ok]ok[/] Suppressing persona signature");
+        this.echo(10, "  - [ok]ok[/] Connection bandwidth adjusted");
+        this.echo(10, "  - [ok]ok[/] Content masked.");
+        this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon");
+        this.echo(30, "  - [ok]ok[/] Network origin obfuscated ");
+        this.thread.run(0, () => {
+            animate(this.canvas, this.hackerIcon, 'opacity', 1, 100);
+        });
+        this.echo(20, "- Persona creation [info]complete");
+        this.echo(0, "");
+        this.echo(80, "Entering node");
+        this.thread.run(0, () => {
+            this.moveStep(this.startNodeDisplay, 20, 20, 20)
+        });
+        this.echo(0, "Persona accepted by node OS.");
+        this.thread.run(0, () => {
+            this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
+        });
+
+
+    }
+
+    echo(time, message) {
+        this.thread.run(time, () => {
+            this.dispatch({type: SERVER_TERMINAL_RECEIVE, data: {terminalId: "main", lines: [message]}});
+        });
+    }
+
+    moveStep(node, offsetX, offsetY, time, easing) {
+        animate(this.canvas, this.hackerIcon, "left", node.x + offsetX, time, easing);
+        animate(this.canvas, this.hackerIcon, "top", node.y + offsetY, time, easing);
+    }
+
+
+    // movePersona(payload) {
+    //     var targetNodeId = payload.nodeId;
+    //     var newNodeStatus = payload.newNodeStatus;
+    //
+    //     avatarMoveToNode = nodesById[targetNodeId];
+    //
+    //     this.thread.run(4, function () {
+    //         moveStep(currentNode, 0, 0, 200, hackerAvatar);
+    //     });
+    //     this.thread.run(12, function () {
+    //         moveStep(avatarMoveToNode, 0, 0, 800, hackerAvatar);
+    //         currentNode = avatarMoveToNode;
+    //     });
+    //     this.thread.run(4, function () {
+    //         personaArrivesAtNode(avatarMoveToNode, newNodeStatus);
+    //     });
+    //
+    //     this.thread.run(0, function () {
+    //         moveStep(avatarMoveToNode, 20, 20, 200, hackerAvatar);
+    //     });
+    // }
 }

@@ -17,7 +17,7 @@ const dismissScanInfo = (event) => {
         current = current.parentElement;
     }
 
-    scanCanvas.unselect()
+    scanCanvas.unSelect()
 };
 
 const mapDispatchToProps = (dispatch) => {

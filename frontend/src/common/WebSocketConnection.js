@@ -123,7 +123,7 @@ class WebSocketConnection {
         this.store.dispatch(event);
     }
 
-    subscribeForScan(runId, siteId) {
+    subscribeForRun(runId, siteId) {
         this.subscribe('/topic/run/' + runId, true);
         this.subscribe('/topic/site/' + siteId, true);
     }

@@ -36,6 +36,8 @@ enum class ReduxActions {
     SERVER_HACKER_ENTER_SCAN,       // A hacker enters a scan (notify other hackers about this)
     SERVER_HACKER_LEAVE_SCAN,       // A hacker leaves a scan
 
+    SERVER_HACKER_ENTER_RUN,
+
 
 
 }

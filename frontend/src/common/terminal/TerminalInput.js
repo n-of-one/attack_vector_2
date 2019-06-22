@@ -9,6 +9,10 @@ const HIGHLIGHT_MAP = {
         main: [ "u"],
         rest: "error s"
     },
+    "attack": {
+        main: [ "u"],
+        rest: "error s"
+    },
     "scan": {
         main: [ "u", "ok"],
         rest: "error s"

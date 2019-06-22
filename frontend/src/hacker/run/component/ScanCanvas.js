@@ -56,7 +56,6 @@ class ScanCanvas {
 
         Object.keys(this.displayById).forEach((id) => {
             const icon = this.displayById[id];
-
             this.canvas.remove(icon);
         });
 
@@ -74,7 +73,6 @@ class ScanCanvas {
         this.probeThreads.deactivate();
         this.iconThread = new Thread();
         this.probeThreads = new Threads();
-
 
         this.render();
     }
@@ -139,7 +137,7 @@ class ScanCanvas {
 
     addHackerDisplay(hacker, startNodeDisplay, offset) {
         const you = hacker.userId === this.userId;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you);
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you, this.dispatch);
     }
 
     removeHackerDisplay(hacker) {
@@ -165,7 +163,6 @@ class ScanCanvas {
         const hackerDisplay = this.displayById[probeData.probeUserId];
         const yourProbe = probeData.probeUserId === this.userId;
         this.displayById[probeData.id] = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
-
     }
 
     updateNodeStatus(nodeId, newStatus) {
@@ -198,7 +195,7 @@ class ScanCanvas {
             // Odd: add to right.
             this.hackers.push(newHacker);
         }
-        this.repositionHackers(newHacker, true);
+        this.repositionHackers(newHacker);
     }
 
     hackerLeave(leavingHacker) {
@@ -207,20 +204,15 @@ class ScanCanvas {
         }
         this.removeHackerDisplay(leavingHacker);
         this.hackers = this.hackers.filter(element => element.userId !== leavingHacker.userId);
-        this.repositionHackers(leavingHacker, false);
+        this.repositionHackers(leavingHacker);
     }
 
-    repositionHackers(targetHacker, entering) {
+    repositionHackers(targetHacker) {
         const step = Math.floor(CANVAS_WIDTH / (this.hackers.length + 1));
         this.hackers.forEach((hacker, index) => {
             const newX = step * (index + 1);
             if (hacker.userId === targetHacker.userId) {
-                if (entering) {
-                    this.addHackerDisplay(hacker, this.startNodeDisplay, newX)
-                }
-                else {
-                    alert("unexpected")
-                }
+                this.addHackerDisplay(hacker, this.startNodeDisplay, newX)
             }
             else {
                 this.displayById[hacker.userId].move(newX);
@@ -242,9 +234,15 @@ class ScanCanvas {
         this.dispatch({type: HIDE_NODE_INFO});
     }
 
-    unselect() {
+    unSelect() {
         this.canvas.deactivateAll().renderAll();
         this.canvasObjectDeSelected();
+    }
+
+    enterRun(userId) {
+        this.displayById[userId].startRun()
+        // updateHackerIcon
+        //
     }
 }
 

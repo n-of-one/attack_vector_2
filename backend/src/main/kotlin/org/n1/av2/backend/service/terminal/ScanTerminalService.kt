@@ -1,8 +1,11 @@
-package org.n1.av2.backend.service.scan
+package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.scan.ScanningService
+import org.n1.av2.backend.service.user.HackerActivityService
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
 import java.util.stream.Collectors
@@ -11,6 +14,8 @@ import java.util.stream.Collectors
 class ScanTerminalService(val scanningService: ScanningService,
                           val stompService: StompService,
                           val userService: UserService,
+                          val currentUserService: CurrentUserService,
+                          val userActivityService: HackerActivityService,
                           val environment: MyEnvironment) {
 
     fun processCommand(runId: String, command: String) {
@@ -23,6 +28,7 @@ class ScanTerminalService(val scanningService: ScanningService,
             "/share" -> processShare(runId, tokens)
             "servererror" -> error("gah")
             "quickscan" -> processQuickscan(runId)
+            "attack" -> processAttack(runId)
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
     }
@@ -79,5 +85,14 @@ class ScanTerminalService(val scanningService: ScanningService,
     fun processQuickscan(runId: String) {
         scanningService.quickScan(runId)
     }
+
+    data class StartRun(val userId: String)
+    private fun processAttack(runId: String) {
+        val data = StartRun(currentUserService.userId)
+        userActivityService.startActivityHacking(runId)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_RUN, data)
+    }
+
+
 
 }

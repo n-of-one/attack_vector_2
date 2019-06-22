@@ -19,8 +19,7 @@ export default class Thread {
 
     active = true;
 
-    constructor(term) {
-        this.term = term;
+    constructor() {
         this.queue = [];
     }
 

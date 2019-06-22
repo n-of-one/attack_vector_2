@@ -6,7 +6,7 @@ import SiteReducer from "./reducer/SiteReducer";
 import infoNodeIdReducer from "./reducer/InfoNodeIdReducer";
 
 const runRootReducer = combineReducers({
-    messageTerminal: createTerminalReducer("chat", {readonly: true, receiveBuffer: [{type:"text", data: "= chat online ="}]}),
+    messageTerminal: createTerminalReducer("chat", {readOnly: true, receiveBuffer: [{type:"text", data: "= chat online ="}]}),
     site: SiteReducer,
     scan: ScanReducer,
     infoNodeId: infoNodeIdReducer,

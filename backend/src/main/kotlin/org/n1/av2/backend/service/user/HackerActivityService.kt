@@ -16,8 +16,12 @@ class HackerActivityService(
 
     val hackerActivitiesById = HashMap<String, HackerActivity>()
 
-    fun getAll(type: HackerActivityType, id: String): Collection<HackerActivity> {
-        return hackerActivitiesById.values.filter { it.type == HackerActivityType.SCANNING && it.id == id }
+    fun currentActivity(): HackerActivityType  {
+        return hackerActivitiesById[currentUserService.userId]!!.type
+    }
+
+    fun getAll(id: String, vararg type: HackerActivityType): Collection<HackerActivity> {
+        return hackerActivitiesById.values.filter { type.contains(it.type) && it.id == id }
     }
 
     fun connect(userPrincipal: UserPrincipal) {
@@ -38,7 +42,16 @@ class HackerActivityService(
     fun startActivityScanning(runId: String) {
         val userPrincipal = currentUserService.principal
         hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.SCANNING, id = runId)
+    }
 
+    fun startActivityHacking(runId: String) {
+        val userPrincipal = currentUserService.principal
+        hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = HackerActivityType.HACKING, id = runId)
+    }
+
+    fun stopActivityHacking(runId: String, newActivity: HackerActivityType) {
+        val userPrincipal = currentUserService.principal
+        hackerActivitiesById[userPrincipal.user.id] = HackerActivity(authentication = userPrincipal, type = newActivity, id = runId)
     }
 
     fun stopActivityScanning(runId: String) {

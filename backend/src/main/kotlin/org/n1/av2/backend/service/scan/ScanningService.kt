@@ -87,7 +87,7 @@ class ScanningService(val scanService: ScanService,
         val scan = scanService.getById(runId)
         val siteFull = siteService.getSiteFull(scan.siteId)
         val userPresence = hackerActivityService
-                .getAll(HackerActivityType.SCANNING, scan.id)
+                .getAll(scan.id, HackerActivityType.SCANNING)
                 .map { activity -> createPresence(activity.authentication.user) }
 
         val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
@@ -258,7 +258,7 @@ class ScanningService(val scanService: ScanService,
         val nodes = nodeService.getAll(scan.siteId)
         nodes.forEach { scanProbeService.quickScanNode(it, scan) }
         autoScan(runId)
-    }
+   }
 
     fun probeArrive(runId: String, nodeId: String, action: NodeScanType) {
         val updateScanInfo = scanProbeService.probeArrive(runId, nodeId, action)

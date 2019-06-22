@@ -83,7 +83,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                         {
                                             scans.map((scanInfo) => {
                                                 return (
-                                                    <tr key={scanInfo.runId}>
+                                                    <tr key={scanInfo.id}>
                                                         <td className="table-very-condensed">
                                                             <SilentLink title={scanInfo.id} onClick={() => {
                                                                 enterScan(scanInfo);

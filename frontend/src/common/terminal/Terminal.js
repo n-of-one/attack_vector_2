@@ -47,7 +47,7 @@ class Terminal extends Component {
     }
 
     renderInput() {
-        if (this.state.readonly) {
+        if (this.state.readOnly) {
             return <div/>
         }
         return (

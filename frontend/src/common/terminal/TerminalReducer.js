@@ -1,4 +1,13 @@
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TERMINAL_RECEIVE, TERMINAL_SUBMIT, SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR} from "./TerminalActions";
+import {
+    TERMINAL_KEY_PRESS,
+    TERMINAL_TICK,
+    TERMINAL_RECEIVE,
+    TERMINAL_SUBMIT,
+    SERVER_TERMINAL_RECEIVE,
+    TERMINAL_CLEAR,
+    TERMINAL_LOCK,
+    TERMINAL_UNLOCK
+} from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
 
 const LINE_LIMIT = 100;
@@ -10,7 +19,7 @@ const TAB = 9;
 const defaultStateTemplate = {
     lines: [], // lines that are fully shown
     prompt: "⇋ ",
-    readonly: false, // only allow user input if true
+    readOnly: false, // only allow user input if true
     input: "", // user input
     renderingLine: null, // String - part of the current rendering line that is being shown
     receivingLine: null, // String - part of the current rendering line that is waiting to be shown
@@ -39,6 +48,10 @@ const createTerminalReducer = (id, config) => {
                 return handleServerError(terminal, action);
             case TERMINAL_CLEAR:
                 return handleTerminalClear(terminal, action, defaultState);
+            case TERMINAL_LOCK:
+                return terminalSetReadonly(terminal, action.id, true);
+            case TERMINAL_UNLOCK:
+                return terminalSetReadonly(terminal, action.id, false);
             default:
                 return terminal;
         }
@@ -191,14 +204,22 @@ const handleServerError = (terminal, action) => {
         receiveInput: null,
         receiveBuffer: [...terminal.receiveBuffer, ...retryLines, ...errorLines],
         receiving: true,
-        readonly: true
+        readOnly: true
     };
 };
 
-function handleTerminalClear(terminal, action, defaultState) {
+const handleTerminalClear = (terminal, action, defaultState) => {
     if (action.terminalId === terminal.id) {
         return defaultState;
     }
     return terminal;
-}
+};
+
+const terminalSetReadonly = (terminal, id, readOnly) => {
+    if (terminal.id === id) {
+        return {...terminal, readOnly: readOnly}
+    }
+    return terminal;
+};
+
 export default createTerminalReducer;

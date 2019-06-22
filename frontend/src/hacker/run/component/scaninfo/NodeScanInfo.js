@@ -8,7 +8,7 @@ import Pad from "../../../../common/component/Pad";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        dismiss: () => scanCanvas.unselect(),
+        dismiss: () => scanCanvas.unSelect(),
     }
 };
 

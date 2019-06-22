@@ -25,7 +25,7 @@ function* enterScanSaga(action) {
     const currentPage = yield select(getCurrentPage);
 
     webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST);
-    webSocketConnection.subscribeForScan(runId, siteId);
+    webSocketConnection.subscribeForRun(runId, siteId);
     scanCanvas.reset();
     yield put({ type: HIDE_NODE_INFO });
     yield put({ type: TERMINAL_CLEAR, terminalId: "main"});
