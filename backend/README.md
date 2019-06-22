@@ -10,25 +10,46 @@ A hacking simulation intended for use in Live Action RolePlaying games.
 
 Version 2 release 0.1 (pre-alpha)
 
+## Configuration
 
-##Running:
+The application uses environment properties for configuration, all with defaults if you ommit them.
 
-The application is a Spring boot standalone java app, the main method class is: org.n1.mainframe.backend.AttackVector
+`MONGODB_URI`     The connect URL for Mongo DB. Defaults to: mongodb://av2:av2@localhost/admin?authMechanism=SCRAM-SHA-1
+
+`MONGODB_NAME`    The name of the database. Defaults to: av2
+
+<br/>
+The application uses the system default time zone, but this can be overriden using:
+
+`TIME_ZONE`     The IANA time zone, for instance: Europe/Amsterdam
+
+<br/>
+The application has an optional notion of differentiating between environments, such as local development, 
+deployment on a local server during an event, or being hosted in the cloud. This is shown on certain screens,
+and also used to tag database exports. Finally this is also used to enable/disable some development features
+such as simulating network delays when running the server locally. Development features
+are enabled if the environment name starts with: dev. 
+
+`ENVIRONMENT`     The name of the server environment. Defaults to: unspecified 
 
 
-##Create Mongodb user
+
+## Running:
+
+The application is a Spring boot standalone java app, the main method class is: org.n1.av2.backend
+
+It can be started using maven: mvn clean install spring-boot:run
+
+
+## Create Mongodb user
 
 Creating a user: av2 with password av2:
 
-Step 1. log into a running mongo docker with:
-
-  `docker exec -i -t mongo /bin/bash`
-
-Step 2. start mongo client with
+Step 1. start mongo client with
 
   `mongo`
 
-Step 3. create user
+Step 2. create user
 
   `use admin`
 
@@ -40,27 +61,11 @@ Step 3. create user
 
 ## Deploy to Herouku:
 
-> optional, if you want to do Heroku stuff (does not work in windows git-bash)
-heroku login
+The application is tested to work on Heroku. Free tier dynamo is usually good enough. A free MongoDB is available from mLab: Sandbox size 
 
-> upload, build & deploy:
-git push heroku master
+After a Heroku account has been set up, and configured as a git remote with name 'heroku', it can be updated using:
 
+First login: `heroku login`
 
-## Local development
-
-You can set this environment variable:
-
-`ENVIRONMENT`     The name of the server environment. For example: dev-ervi
-
-
-This will be used to trigger specific development setting, for example to simulate slower server-like response times in local development. (see StompService)
-
-
-## Heroku connecting to DB
-
-Heroku makes use of environment variables for configuration. You can do so locally if you want to test this:
-
-`MONGODB_URI`     The connect URL for Mongo DB. For example: mongodb://av2:av2@localhost/admin?authMechanism=SCRAM-SHA-1
-`MONGODB_NAME`    The name of the database. Optional, if not set, then "av2" is used.
+Then upload, build & deploy: `git push heroku master`
 

@@ -4,11 +4,16 @@ import com.github.mongobee.Mongobee
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
 import org.n1.av2.backend.AttackVector
+import org.n1.av2.backend.service.TimeService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import org.springframework.stereotype.Component
+import java.time.ZonedDateTime
+import java.util.*
 
 
 /**
@@ -38,7 +43,9 @@ class MongoConfig {
 
 @Configuration
 @EnableMongoRepositories(basePackageClasses = [(AttackVector::class)])
-class MongoDbConfig(private val mongoConfig: MongoConfig) : AbstractMongoConfiguration() {
+class MongoDbConfig(private val mongoConfig: MongoConfig, timeService: TimeService) : AbstractMongoConfiguration() {
+
+    val zoneId = timeService.zoneId
 
     override fun getDatabaseName(): String {
         return mongoConfig.databaseName
@@ -51,10 +58,34 @@ class MongoDbConfig(private val mongoConfig: MongoConfig) : AbstractMongoConfigu
     override fun getMappingBasePackages(): Collection<String> {
         return listOf("org.n1.av2.backend.model", "org.n1.av2.backend.model.scan")
     }
+
+    @Bean
+    override fun customConversions(): org.springframework.data.convert.CustomConversions {
+        val converters = ArrayList<Converter<*, *>>()
+        converters.add(DateToZonedDateTimeConverter())
+        converters.add(ZonedDateTimeToDateConverter())
+        return MongoCustomConversions(converters)
+    }
+
+
+    inner class DateToZonedDateTimeConverter : Converter<Date, ZonedDateTime> {
+
+        override fun convert(source: Date?): ZonedDateTime? {
+            return if (source == null) null else ZonedDateTime.ofInstant(source.toInstant(), zoneId)
+        }
+    }
+
+    inner class ZonedDateTimeToDateConverter : Converter<ZonedDateTime, Date> {
+
+        override fun convert(source: ZonedDateTime?): Date? {
+            return if (source == null) null else Date.from(source.toInstant())
+        }
+    }
+
 }
 
 @Configuration
-class MongobeeFactory(private val mongoConfig: MongoConfig ) {
+class MongobeeConfiguration(private val mongoConfig: MongoConfig ) {
 
     @Bean
     fun mongobee(): Mongobee {
