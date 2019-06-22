@@ -71,16 +71,16 @@ class ScanProbeService(
 
     //---//
 
-    fun probeArrive(runId: String, nodeId: String, action: NodeScanType) {
+    fun probeArrive(runId: String, nodeId: String, action: NodeScanType): Boolean {
         val scan = scanService.getById(runId)
         val node = nodeService.getById(nodeId)
-        probeArrive(scan, node, action)
+        return probeArrive(scan, node, action)
     }
 
-    fun probeArrive(scan: Scan, node: Node, action: NodeScanType) {
+    fun probeArrive(scan: Scan, node: Node, action: NodeScanType): Boolean {
         val nodeScan = scan.nodeScanById[node.id] ?: throw IllegalStateException("Node to scan ${node.id} not part of ${scan.siteId}")
 
-        when (action) {
+        return when (action) {
             NodeScanType.SCAN_NODE_INITIAL -> probeScanInitial(scan, node, nodeScan)
             NodeScanType.SCAN_CONNECTIONS -> probeScanConnection(scan, node, nodeScan)
             NodeScanType.SCAN_NODE_DEEP -> probeScanDeep(scan, node, nodeScan)
@@ -89,19 +89,21 @@ class ScanProbeService(
 
     data class ProbeResultInitial(val nodeId: String, val newStatus: NodeStatus)
 
-    fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan) {
+    fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}.")
 
         nodeScan.status = NodeStatus.TYPE
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
         stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+
+        return false
     }
 
-    private fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan) {
+    private fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
         if (nodeScan.status != NodeStatus.TYPE) {
             stompService.terminalReceive("Scanning node ${node.networkId} did not find new connections.")
-            return
+            return false
         }
         nodeScan.status = NodeStatus.CONNECTIONS
 
@@ -141,12 +143,13 @@ class ScanProbeService(
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
+        return discoveredNodeIds.isNotEmpty()
     }
 
-    private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan) {
+    private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
         if (nodeScan.status != NodeStatus.CONNECTIONS) {
             stompService.terminalReceive("Scanning node ${node.networkId} did not find anything.")
-            return
+            return false
         }
 
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} service details")
@@ -155,6 +158,7 @@ class ScanProbeService(
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
         stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+        return false
     }
 
 

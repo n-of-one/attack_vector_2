@@ -44,7 +44,7 @@ class ScanningService(val scanService: ScanService,
 
     fun deleteScan(runId: String) {
         scanService.deleteUserScan(runId)
-        sendScansOfPlayer()
+        sendScanInfosOfPlayer()
     }
 
     data class ScanSiteResponse(val runId: String, val siteId: String)
@@ -63,7 +63,7 @@ class ScanningService(val scanService: ScanService,
         val runId = scanService.createScan(siteData, nodeScans, user)
         val response = ScanSiteResponse(runId, siteData.id)
         stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
-        sendScansOfPlayer()
+        sendScanInfosOfPlayer()
     }
 
     private fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
@@ -104,29 +104,31 @@ class ScanningService(val scanService: ScanService,
     }
 
 
-    fun sendScansOfPlayer() {
+    fun sendScanInfosOfPlayer() {
         val userId = currentUserService.userId
-        sendScansOfPlayer(userId)
+        sendScanInfosOfPlayer(userId)
     }
 
-    data class ScanOverViewLine(val runId: String,
-                                val siteName: String,
-                                val siteId: String,
-                                val initiatorName: String,
-                                val nodes: String,
-                                val efficiency: String)
+    data class ScanInfo(val id: String,
+                        val siteName: String,
+                        val siteId: String,
+                        val initiatorName: String,
+                        val nodes: String,
+                        val efficiency: String)
 
-    fun sendScansOfPlayer(userId: String) {
+    fun sendScanInfosOfPlayer(userId: String) {
         val scans = scanService.getAll(userId)
-        val scanItems = scans.map { scan ->
-            val site = siteDataService.getById(scan.siteId)
-            val nodes = scan.nodeScanById.filterValues { it.status != NodeStatus.UNDISCOVERED}.size
-            val nodesText = if (scan.duration != null) "${nodes}" else "${nodes}+"
-            val userName = userService.getById(scan.initiatorId).name
-            val efficiencyStatus = deriveEfficiencyStatus(scan)
-            ScanOverViewLine(scan.id, site.name, site.id, userName, nodesText, efficiencyStatus)
-        }
+        val scanItems = scans.map (::createScanInfo)
         stompService.toUser(userId, ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
+    }
+
+    fun createScanInfo(scan: Scan): ScanningService.ScanInfo {
+        val site = siteDataService.getById(scan.siteId)
+        val nodes = scan.nodeScanById.filterValues { it.status != NodeStatus.UNDISCOVERED}.size
+        val nodesText = if (scan.duration != null) "${nodes}" else "${nodes}+"
+        val userName = userService.getById(scan.initiatorId).name
+        val efficiencyStatus = deriveEfficiencyStatus(scan)
+        return ScanningService.ScanInfo(scan.id, site.name, site.id, userName, nodesText, efficiencyStatus)
     }
 
     private fun deriveEfficiencyStatus(scan: Scan): String {
@@ -154,7 +156,7 @@ class ScanningService(val scanService: ScanService,
 
         stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
         stompService.terminalReceiveForId(user, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
-        sendScansOfPlayer(user.id)
+        sendScanInfosOfPlayer(user.id)
     }
 
     fun leaveScan(runId: String) {
@@ -202,7 +204,7 @@ class ScanningService(val scanService: ScanService,
         if (scan.startTime == null) {
             scan.startTime = time.now()
             scanService.save(scan)
-            sendScansOfPlayer()
+            updateScanInfoToPlayers(scan)
         }
         val probeAction = scanProbeService.createProbeAction(scan, autoScan)
         if (probeAction != null) {
@@ -214,7 +216,13 @@ class ScanningService(val scanService: ScanService,
             else {
                 stompService.terminalReceive("Scan complete.")
             }
-            sendScansOfPlayer()
+        }
+    }
+
+    private fun updateScanInfoToPlayers(scan: Scan) {
+        val scanInfo = createScanInfo(scan)
+        scanService.getUsersOfScan(scan.id).forEach{ userId ->
+            stompService.toUser(userId, ReduxActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
         }
     }
 
@@ -226,6 +234,7 @@ class ScanningService(val scanService: ScanService,
         scan.efficiency = calculateEfficiency(scan, durationMillis)
         scanService.save(scan)
         stompService.terminalReceive("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${scan.efficiency}%")
+        updateScanInfoToPlayers(scan)
     }
 
     private fun calculateEfficiency(scan: Scan, durationMillis: Long): Int {
@@ -252,7 +261,11 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun probeArrive(runId: String, nodeId: String, action: NodeScanType) {
-        scanProbeService.probeArrive(runId, nodeId, action)
+        val updateScanInfo = scanProbeService.probeArrive(runId, nodeId, action)
+        if (updateScanInfo) {
+            val scan = scanService.getById(runId)
+            updateScanInfoToPlayers(scan)
+        }
     }
 
 }

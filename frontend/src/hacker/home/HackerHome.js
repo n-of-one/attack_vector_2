@@ -14,10 +14,10 @@ const mapDispatchToProps = (dispatch) => {
             dispatch({type: SCAN_FOR_NAME, siteName: siteName});
         },
         enterScan: (scanInfo) => {
-            dispatch({type: ENTER_SCAN, data: {runId: scanInfo.runId, siteId: scanInfo.siteId}});
+            dispatch({type: ENTER_SCAN, data: {runId: scanInfo.id, siteId: scanInfo.siteId}});
         },
         deleteScan: (scanInfo) => {
-            dispatch({type: DELETE_SCAN, runId: scanInfo.runId});
+            dispatch({type: DELETE_SCAN, runId: scanInfo.id});
         },
     };
 };
@@ -85,7 +85,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                                 return (
                                                     <tr key={scanInfo.runId}>
                                                         <td className="table-very-condensed">
-                                                            <SilentLink title={scanInfo.runId} onClick={() => {
+                                                            <SilentLink title={scanInfo.id} onClick={() => {
                                                                 enterScan(scanInfo);
                                                             }}>{scanInfo.siteName}</SilentLink>
                                                         </td>

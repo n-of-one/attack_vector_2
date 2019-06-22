@@ -1,6 +1,6 @@
 import {assertNotNullUndef} from "./Assert";
 
-const updateArray = (newElementData, array, id) => {
+const updateArrayById = (newElementData, array, id) => {
     const nodeIndex = findElementIndex(array, id);
     const oldElement = array[nodeIndex];
     const newElement = {...oldElement, ...newElementData};
@@ -25,4 +25,4 @@ const findElementById = (array, id) => {
     return array[index];
 };
 
-export {updateArray, findElementIndex, findElementById};
+export {updateArrayById, findElementIndex, findElementById};

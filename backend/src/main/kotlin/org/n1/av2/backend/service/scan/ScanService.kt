@@ -65,5 +65,10 @@ class ScanService(val scanRepo: ScanRepo,
     fun deleteUserScan(runId: String) {
         userScanRepo.deleteByUserIdAndRunId(currentUserService.userId, runId)
     }
+
+    fun getUsersOfScan(runId: String): Collection<String> {
+        val userScans = userScanRepo.findAllByRunId(runId)
+        return userScans.map { it.userId }
+    }
 }
 

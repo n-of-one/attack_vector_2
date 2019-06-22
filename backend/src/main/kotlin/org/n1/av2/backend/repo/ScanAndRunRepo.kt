@@ -14,6 +14,7 @@ interface ScanRepo : PagingAndSortingRepository<Scan, String> {
 @Repository
 interface UserScanRepo : PagingAndSortingRepository<UserScan, String> {
     fun findAllByUserId(userId:String): List<UserScan>
+    fun findAllByRunId(runId: String): List<UserScan>
     fun findByUserIdAndRunId(userId: String, runId: String): UserScan?
     fun deleteByUserIdAndRunId(userId: String, runId: String)
 }

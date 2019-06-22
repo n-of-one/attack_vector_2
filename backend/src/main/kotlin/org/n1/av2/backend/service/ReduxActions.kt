@@ -22,6 +22,7 @@ enum class ReduxActions {
 
 
     SERVER_RECEIVE_USER_SCANS,      // Scans shown on home page of user
+    SERVER_UPDATE_SCAN_INFO,        // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_SCAN_FULL,               // Result of user enter scan (for the user itself)
 
@@ -34,6 +35,7 @@ enum class ReduxActions {
 
     SERVER_HACKER_ENTER_SCAN,       // A hacker enters a scan (notify other hackers about this)
     SERVER_HACKER_LEAVE_SCAN,       // A hacker leaves a scan
+
 
 
 }

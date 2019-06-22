@@ -23,7 +23,7 @@ class ScanningController(
 
     @MessageMapping("/scan/scansOfPlayer")
     fun scansOfPlayer(principal: Principal) {
-        executor.run(principal) { scanningService.sendScansOfPlayer() }
+        executor.run(principal) { scanningService.sendScanInfosOfPlayer() }
     }
 
     @MessageMapping("/scan/scanForName")

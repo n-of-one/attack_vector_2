@@ -7,7 +7,7 @@ import {
     SERVER_ADD_SERVICE,
     SERVER_NODE_UPDATED
 } from "../EditorActions";
-import {findElementById, updateArray} from "../../common/Immutable";
+import {findElementById, updateArrayById} from "../../common/Immutable";
 
 const NodesReducer = (state = [], action) => {
     switch (action.type) {
@@ -39,17 +39,17 @@ const addNode = (data, nodeList) => {
 
 const moveNode = (data, nodeList) => {
     const newNodeData = {x: data.x, y: data.y};
-    return updateArray(newNodeData, nodeList, data.nodeId);
+    return updateArrayById(newNodeData, nodeList, data.nodeId);
 };
 
 
 const serverUpdateService = (update, nodes) => {
     const node = findElementById(nodes, update.nodeId);
-    const newServices = updateArray(update.service, node.services, update.serviceId);
+    const newServices = updateArrayById(update.service, node.services, update.serviceId);
 
     const newNodeServices = {services: newServices};
 
-    const newNodes = updateArray(newNodeServices, nodes, update.nodeId);
+    const newNodes = updateArrayById(newNodeServices, nodes, update.nodeId);
     return newNodes;
 };
 
@@ -58,7 +58,7 @@ const serverUpdateService = (update, nodes) => {
 
 const serverUpdateNetworkId = (update, nodes) => {
     const newNodeData = {networkId: update.networkId};
-    const newNodes = updateArray(newNodeData, nodes, update.nodeId);
+    const newNodes = updateArrayById(newNodeData, nodes, update.nodeId);
     return newNodes;
 };
 
@@ -69,13 +69,13 @@ const serverAddService = (data, nodes) => {
 
     const newNodeServices = {services: newServices};
 
-    const newNodes = updateArray(newNodeServices, nodes, data.nodeId);
+    const newNodes = updateArrayById(newNodeServices, nodes, data.nodeId);
     return newNodes;
 
 };
 
 const serverRemoveService = (node, nodes) => {
-    const newNodes = updateArray(node, nodes, node.id);
+    const newNodes = updateArrayById(node, nodes, node.id);
     return newNodes;
 };
 
