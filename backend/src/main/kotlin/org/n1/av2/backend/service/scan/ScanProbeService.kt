@@ -50,7 +50,7 @@ class ScanProbeService(
         val path = LinkedList<String>()
         path.add(targetNode.id)
         var currentNode = targetNode
-        while (currentNode.distance != 0) {
+        while (currentNode.distance != 1) {
             currentNode = currentNode.connections.find { it.distance == (currentNode.distance!! - 1) }!!
             path.add(0, currentNode.id)
         }

@@ -73,8 +73,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                         <thead>
                                         <tr>
                                             <td className="strong">Site Name</td>
-                                            <td className="strong">Complete</td>
-                                            <td className="strong">Scan ID</td>
+                                            <td className="strong">Nodes</td>
+                                            <td className="strong">Initiator</td>
+                                            <td className="strong">Efficiency</td>
                                             <td className="strong">&nbsp;</td>
                                         </tr>
                                         </thead>
@@ -84,12 +85,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                                 return (
                                                     <tr key={scanInfo.runId}>
                                                         <td className="table-very-condensed">
-                                                            <SilentLink onClick={() => {
+                                                            <SilentLink title={scanInfo.runId} onClick={() => {
                                                                 enterScan(scanInfo);
                                                             }}>{scanInfo.siteName}</SilentLink>
                                                         </td>
-                                                        <td className="table-very-condensed">{(scanInfo.complete) ? "yes" : "no"}</td>
-                                                        <td className="table-very-condensed">{scanInfo.runId}</td>
+                                                        <td className="table-very-condensed">{scanInfo.nodes}</td>
+                                                        <td className="table-very-condensed">{scanInfo.initiatorName}</td>
+                                                        <td className="table-very-condensed">{scanInfo.efficiency}</td>
                                                         <td className="table-very-condensed">
                                                             <SilentLink onClick={() => {
                                                                 deleteScan(scanInfo);

@@ -1,5 +1,6 @@
 package org.n1.av2.backend.service.scan
 
+import mu.KLogging
 import org.n1.av2.backend.model.db.run.NodeScan
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.run.Scan
@@ -18,9 +19,11 @@ import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.service.site.SiteDataService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.user.HackerActivityService
+import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 
 /** This service deals with the action of scanning (as opposed to the actions performed on a scan). */
 @Service
@@ -33,9 +36,11 @@ class ScanningService(val scanService: ScanService,
                       val currentUserService: CurrentUserService,
                       val traverseNodeService: TraverseNodeService,
                       val scanProbeService: ScanProbeService,
-                      val time: TimeService
+                      val time: TimeService,
+                      val userService: UserService
 ) {
 
+    companion object: KLogging()
 
     fun deleteScan(runId: String) {
         scanService.deleteUserScan(runId)
@@ -104,16 +109,34 @@ class ScanningService(val scanService: ScanService,
         sendScansOfPlayer(userId)
     }
 
-    data class ScanOverViewLine(val runId: String, val siteName: String, val complete: Boolean, val siteId: String)
+    data class ScanOverViewLine(val runId: String,
+                                val siteName: String,
+                                val siteId: String,
+                                val initiatorName: String,
+                                val nodes: String,
+                                val efficiency: String)
 
     fun sendScansOfPlayer(userId: String) {
         val scans = scanService.getAll(userId)
         val scanItems = scans.map { scan ->
             val site = siteDataService.getById(scan.siteId)
-            val complete = (scan.nodeScanById.values.find { it.status != NodeStatus.SERVICES } == null)
-            ScanOverViewLine(scan.id, site.name, complete, site.id)
+            val nodes = scan.nodeScanById.filterValues { it.status != NodeStatus.UNDISCOVERED}.size
+            val nodesText = if (scan.duration != null) "${nodes}" else "${nodes}+"
+            val userName = userService.getById(scan.initiatorId).name
+            val efficiencyStatus = deriveEfficiencyStatus(scan)
+            ScanOverViewLine(scan.id, site.name, site.id, userName, nodesText, efficiencyStatus)
         }
         stompService.toUser(userId, ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
+    }
+
+    private fun deriveEfficiencyStatus(scan: Scan): String {
+        if (scan.startTime == null) {
+            return "(not started)"
+        }
+        if (scan.efficiency == null) {
+            return "(scanning)"
+        }
+        return "${scan.efficiency}%"
     }
 
     fun shareScan(runId: String, user: User) {
@@ -176,22 +199,49 @@ class ScanningService(val scanService: ScanService,
 
     fun launchProbe(runId: String, autoScan: Boolean) {
         val scan = scanService.getById(runId)
+        if (scan.startTime == null) {
+            scan.startTime = time.now()
+            scanService.save(scan)
+            sendScansOfPlayer()
+        }
         val probeAction = scanProbeService.createProbeAction(scan, autoScan)
         if (probeAction != null) {
             stompService.toRun(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
         } else {
             if (scan.duration == null) {
-                val durationSeconds = ChronoUnit.SECONDS.between(scan.startTime, time.now())
-                val duration = Duration.ofSeconds(durationSeconds)
-                scan.duration = duration
-                scanService.save(scan)
-                stompService.terminalReceive("Scan completed in ${duration.toHoursPart()}:${duration.toMinutesPart()}:${duration.toSecondsPart()}, total distance: ${scan.totalDistanceScanned}")
+                completeScan(scan)
             }
             else {
                 stompService.terminalReceive("Scan complete.")
             }
             sendScansOfPlayer()
         }
+    }
+
+    private fun completeScan(scan: Scan) {
+        val now = time.now()
+        val durationMillis = ChronoUnit.MILLIS.between(scan.startTime, now)
+        val duration = Duration.ofMillis(durationMillis)
+        scan.duration = (durationMillis / 1000.0).roundToInt()
+        scan.efficiency = calculateEfficiency(scan, durationMillis)
+        scanService.save(scan)
+        stompService.terminalReceive("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${scan.efficiency}%")
+    }
+
+    private fun calculateEfficiency(scan: Scan, durationMillis: Long): Int {
+        val nodeCount = scan.nodeScanById.keys.size
+        val timeForNodes = 0.1 + 13.5 * nodeCount // 0.1 startup cost + 4.5 s per node * 3 scans per node * nodeCount
+        val timeForPaths = (1.1 * scan.totalDistanceScanned) // 1 s per path segment
+        val expectedTime = timeForNodes + timeForPaths
+        val duration = (durationMillis / 1000.0)
+        val efficiency = (100 * expectedTime / duration).toInt()
+//        logger.debug("Efficiency calculation:")
+//        logger.debug("timeForNodes: ${timeForNodes}")
+//        logger.debug("timeForPaths: ${timeForPaths}")
+//        logger.debug("expectedTime: ${expectedTime}")
+//        logger.debug("duration: ${duration}")
+//        logger.debug("efficiency: ${efficiency}")
+        return efficiency
     }
 
     fun quickScan(runId: String) {

@@ -111,8 +111,8 @@ export default class ConnectionDisplay {
             animate(this.canvas, this.probeIcon, 'opacity', "0.8", 50);
         });
         this.thread.run(25, () => {
-            animate(this.canvas, this.probeIcon, 'width', "40", 50);
-            animate(this.canvas, this.probeIcon, 'height', "40", 50);
+            animate(this.canvas, this.probeIcon, 'width', "30", 25);
+            animate(this.canvas, this.probeIcon, 'height', "30", 25);
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 25);
         });
         const finishMethod = () => {
@@ -125,13 +125,14 @@ export default class ConnectionDisplay {
 
     scanOutside(nodeId) {
         this.thread.run(50, () => {
+            console.log("scanOutside start: " + Date.now());
             animate(this.canvas, this.probeIcon, 'width', "80", 50);
             animate(this.canvas, this.probeIcon, 'height', "80", 50);
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 50);
         });
         this.thread.run(25, () => {
-            animate(this.canvas, this.probeIcon, 'width', "40", 50);
-            animate(this.canvas, this.probeIcon, 'height', "40", 50);
+            animate(this.canvas, this.probeIcon, 'width', "60", 25);
+            animate(this.canvas, this.probeIcon, 'height', "60", 25);
             animate(this.canvas, this.probeIcon, 'opacity', "0.3", 25);
         });
         const finishMethod = () => {
@@ -144,13 +145,14 @@ export default class ConnectionDisplay {
 
     finishProbe(finishMethod) {
         this.thread.run(10, () => {
+            console.log("finish: " + Date.now());
             animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
             this.lineIcons.forEach(lineIcon => {
                 animate(this.canvas, lineIcon, 'opacity', "0", 10);
             });
             finishMethod();
         });
-        this.thread.run(10, () => {
+        this.thread.run(0, () => {
             this.canvas.remove(this.probeIcon);
             this.lineIcons.forEach(lineIcon => {
                 this.canvas.remove(lineIcon);

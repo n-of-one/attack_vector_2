@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service
 @Service
 class SiteValidationService(
         val stompService: StompService,
-        val layoutService: LayoutService,
         val siteDataService: SiteDataService,
         val nodeService: NodeService,
-        val connectionService: ConnectionService,
         val siteStateService: SiteStateService
 ) {
 
@@ -29,7 +27,14 @@ class SiteValidationService(
 
     private fun validateSiteData(messages: MutableList<SiteStateMessage>, siteData: SiteData, nodes: List<Node>) {
         validate(messages) { validateHackTime(siteData) }
+        validate(messages) { validateSiteName(siteData)}
         validate(messages) { validateStartNode(siteData, nodes) }
+    }
+
+    private fun validateSiteName(siteData: SiteData) {
+        if (siteData.name.length > 40) {
+            throw ValidationException("Site name too long to be displayed nicely.")
+        }
     }
 
     private fun validateHackTime(data: SiteData) {

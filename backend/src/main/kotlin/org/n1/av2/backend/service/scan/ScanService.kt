@@ -26,10 +26,8 @@ class ScanService(val scanRepo: ScanRepo,
         val scan = Scan(
                 id = runId,
                 siteId = siteData.id,
-                complete = false,
                 nodeScanById = nodeScanById,
-                initiatorId =  user.id,
-                startTime = time.now()
+                initiatorId =  user.id
         )
         scanRepo.save(scan)
 

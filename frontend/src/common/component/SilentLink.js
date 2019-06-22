@@ -9,6 +9,7 @@ import {connect} from "react-redux";
  * - href     (choose one)
  * - onClick  (choose one)
  * - children (implicit)
+ * - title
  */
 
 /* eslint jsx-a11y/alt-text: 0*/
@@ -22,7 +23,7 @@ let mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({href, classNameInput, children, onClick}) => {
+    ({href, classNameInput, children, onClick, title}) => {
 
         const onClickLocal = (e) => {
             if (onClick) {
@@ -37,5 +38,5 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         const className = "silentLink " + classNameInput;
 
         // eslint-disable-next-line
-        return ( <a onClick={(e) => onClickLocal(e) } className={className}>{children}</a> )
+        return ( <a onClick={(e) => onClickLocal(e) } className={className} title={title}>{children}</a> )
     });

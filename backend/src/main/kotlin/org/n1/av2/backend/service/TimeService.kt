@@ -2,6 +2,7 @@ package org.n1.av2.backend.service
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -13,6 +14,10 @@ class TimeService(@Value("#{environment.TIME_ZONE}") timeZoneInput: String = Zon
 
     fun now(): ZonedDateTime {
         return ZonedDateTime.now(zoneId)
+    }
+
+    fun formatDuration(duration: Duration): String {
+        return String.format("%d:%02d:%02d", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart())
     }
 
 }

@@ -27,7 +27,8 @@ class StompMessageLogInterceptor : ChannelInterceptor {
             } else {
                 "no name"
             }
-            logger.debug("${user} ${destination} : ${payloadString}")
+            val millis = System.currentTimeMillis()
+            logger.debug("${millis} ${user} ${destination} : ${payloadString}")
         }
         return message
     }
