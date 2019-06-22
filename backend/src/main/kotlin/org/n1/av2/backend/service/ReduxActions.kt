@@ -26,6 +26,7 @@ enum class ReduxActions {
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_SCAN_FULL,               // Result of user enter scan (for the user itself)
 
+    SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, // transfer syntax highlighting to terminal
     SERVER_TERMINAL_RECEIVE,
     SERVER_PROBE_LAUNCH,
     SERVER_UPDATE_NODE_STATUS,

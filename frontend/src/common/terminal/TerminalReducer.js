@@ -6,7 +6,7 @@ import {
     SERVER_TERMINAL_RECEIVE,
     TERMINAL_CLEAR,
     TERMINAL_LOCK,
-    TERMINAL_UNLOCK
+    TERMINAL_UNLOCK, SERVER_TERMINAL_SYNTAX_HIGHLIGHTING
 } from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
 
@@ -25,9 +25,8 @@ const defaultStateTemplate = {
     receivingLine: null, // String - part of the current rendering line that is waiting to be shown
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
     receiving: true,   // true if there are lines waiting to be shown, or in the process of being shown.
-//
+    syntaxHighlighting: { "help": { main: ["u"], rest: "error s" }}
 };
-
 
 const createTerminalReducer = (id, config) => {
     const defaultState = {...defaultStateTemplate, ...config, id: id};
@@ -52,6 +51,8 @@ const createTerminalReducer = (id, config) => {
                 return terminalSetReadonly(terminal, action.id, true);
             case TERMINAL_UNLOCK:
                 return terminalSetReadonly(terminal, action.id, false);
+            case SERVER_TERMINAL_SYNTAX_HIGHLIGHTING:
+                return processSyntaxHighlighting(terminal, action.data);
             default:
                 return terminal;
         }
@@ -221,5 +222,13 @@ const terminalSetReadonly = (terminal, id, readOnly) => {
     }
     return terminal;
 };
+
+const processSyntaxHighlighting = (terminal, data) => {
+    if (terminal.id === "main") {
+        return {...terminal, syntaxHighlighting: data}
+    }
+    return terminal;
+};
+
 
 export default createTerminalReducer;

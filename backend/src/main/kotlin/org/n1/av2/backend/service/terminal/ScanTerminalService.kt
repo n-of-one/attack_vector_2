@@ -1,22 +1,25 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanningService
 import org.n1.av2.backend.service.user.HackerActivityService
-import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
-import java.util.stream.Collectors
 
 @Service
 class ScanTerminalService(val scanningService: ScanningService,
                           val stompService: StompService,
-                          val userService: UserService,
                           val currentUserService: CurrentUserService,
                           val userActivityService: HackerActivityService,
+                          val hackTerminalService: HackTerminalService,
                           val environment: MyEnvironment) {
+
+    init {
+        scanningService.scanTerminalService = this
+    }
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
@@ -69,17 +72,7 @@ class ScanTerminalService(val scanningService: ScanningService,
     }
 
     fun processShare(runId: String, tokens: List<String>) {
-        if (tokens.size == 1) {
-            stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
-            return
-        }
-        val userName = tokens.stream().skip(1).collect(Collectors.joining(" "))
-        val user = userService.findByName(userName)
-        if (user == null) {
-            stompService.terminalReceive("user [info]${userName}[/] not found.")
-            return
-        }
-        scanningService.shareScan(runId, user)
+        hackTerminalService.processShare(runId, tokens)
     }
 
     fun processQuickscan(runId: String) {
@@ -90,9 +83,22 @@ class ScanTerminalService(val scanningService: ScanningService,
     private fun processAttack(runId: String) {
         val data = StartRun(currentUserService.userId)
         userActivityService.startActivityHacking(runId)
+        hackTerminalService.sendSyntaxHighlighting()
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_RUN, data)
     }
 
+    fun sendSyntaxHighlighting() {
+        val map = HashMap<String, Syntax>()
+
+        map["help"] = Syntax("u", "error s")
+        map["autoscan"] = Syntax("u", "error s")
+        map["attack"] = Syntax("u", "error s")
+        map["scan"] = Syntax("u", "ok", "error s")
+        map["dc"] = Syntax("u", "error s")
+        map["/share"] = Syntax("u warn", "info", "error s")
+
+        stompService.toUser(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, map)
+    }
 
 
 }

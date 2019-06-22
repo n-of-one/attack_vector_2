@@ -33,7 +33,6 @@ class Terminal extends Component {
         this.bottomRef.current.scrollIntoView();
     }
 
-
     renderLine(line, index) {
         return <TerminalTextLine line={line} index={index} key={index}/>
     }
@@ -51,7 +50,7 @@ class Terminal extends Component {
             return <div/>
         }
         return (
-            <TerminalInput prompt={this.state.prompt} input={this.state.input}/>
+            <TerminalInput prompt={this.state.prompt} input={this.state.input} syntaxHighlighting={this.state.syntaxHighlighting}/>
         )
         // return (
         //     <div className="terminalLine terminal_input">{this.state.prompt} {this.state.input}<span className="terminalCaret">&nbsp;</span></div>

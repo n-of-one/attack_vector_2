@@ -1,45 +1,9 @@
 import React from "react";
 
-const HIGHLIGHT_MAP = {
-    "help": {
-        main: ["u"],
-        rest: "error s"
-    },
-    "autoscan": {
-        main: [ "u"],
-        rest: "error s"
-    },
-    "attack": {
-        main: [ "u"],
-        rest: "error s"
-    },
-    "scan": {
-        main: [ "u", "ok"],
-        rest: "error s"
-    },
-    "dc": {
-        main: [ "u"],
-        rest: "error s"
-    },
-    "/share": {
-        main: [ "u warn", "info"],
-        rest: "info"
-    },
-
-    "hack": {
-        main: [ "us", "primary s"],
-        rest: "error s"
-    },
-    "passcode": {
-        main: [ "us", "primary s", "warn s"],
-        rest: "error s"
-    },
-};
-
-const renderLine = (input) => {
+const renderLine = (input, syntaxHighlighting) => {
     const parts = input.split(" ");
 
-    let mapping=HIGHLIGHT_MAP[parts[0]];
+    let mapping = syntaxHighlighting[parts[0]];
 
     if (!mapping) {
         if (!mapping) {
@@ -47,12 +11,12 @@ const renderLine = (input) => {
         }
     }
 
-    const blocks = parts.map( (part, i) => renderPart(part, i, mapping));
+    const blocks = parts.map((part, i) => renderPart(part, i, mapping));
     const renderBlocks = [];
     for (let i = 0; i < blocks.length; i++) {
         renderBlocks.push(blocks[i]);
-        if (i < blocks.length -1) {
-            renderBlocks.push(<span>&nbsp;</span>);
+        if (i < blocks.length - 1) {
+            renderBlocks.push(<span key={"space" + i}>&nbsp;</span>);
         }
     }
 
@@ -81,14 +45,14 @@ const renderPart = (part, i, mapping) => {
     return <span className={style} key={i}>{part}</span>
 };
 
-export default ({input, prompt}) => {
+export default ({input, prompt, syntaxHighlighting}) => {
     // return (
     //     <div className="terminalLine terminal_input">{prompt} {input}<span className="terminalCaret">&nbsp;</span></div>
     // )
     return (
         <div className="terminalLine terminal_input">
             <span>{prompt}</span>
-            {renderLine(input)}
+            {renderLine(input, syntaxHighlighting)}
             <span className="terminalCaret">&nbsp;</span>
         </div>
     )

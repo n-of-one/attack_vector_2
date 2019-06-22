@@ -1,15 +1,21 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.scan.ScanningService
+import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
+import java.util.stream.Collectors
 
 @Service
 class HackTerminalService(
+        val scanningService: ScanningService,
         val stompService: StompService,
-        val scanTerminalService: ScanTerminalService,
         val currentUserService: CurrentUserService,
+        val userService: UserService,
         val environment: MyEnvironment) {
 
     fun processCommand(runId: String, command: String) {
@@ -17,8 +23,8 @@ class HackTerminalService(
         when (tokens[0]) {
             "help" -> processHelp()
             "mv" -> processMove(runId, tokens)
-            "dc" -> processDisconnect()
             "hack" -> processHack(runId, tokens)
+            "dc" -> processDisconnect()
             "servererror" -> error("gah")
             "/share" -> processShare(runId, tokens)
 
@@ -55,8 +61,31 @@ class HackTerminalService(
         stompService.terminalReceive("[warn]Not implemented yet, sorry");
     }
 
-    private fun processShare(runId: String, tokens: List<String>) {
-        scanTerminalService.processShare(runId, tokens)
+    fun processShare(runId: String, tokens: List<String>) {
+        if (tokens.size == 1) {
+            stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
+            return
+        }
+        val userName = tokens.stream().skip(1).collect(Collectors.joining(" "))
+        val user = userService.findByName(userName)
+        if (user == null) {
+            stompService.terminalReceive("user [info]${userName}[/] not found.")
+            return
+        }
+        scanningService.shareScan(runId, user)    }
+
+    fun sendSyntaxHighlighting() {
+        val map = HashMap<String, Syntax>()
+
+        map["help"] = Syntax("u", "error s")
+        map["mv"] = Syntax("u", "ok", "error s")
+        map["view"] = Syntax("u", "error s")
+        map["dc"] = Syntax("u", "error s")
+        map["hack"] = Syntax("u", "primary", "error s")
+        map["/share"] = Syntax("u warn", "info", "error s")
+
+        stompService.toUser(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, map)
     }
+
 
 }

@@ -18,6 +18,7 @@ import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.service.site.SiteDataService
 import org.n1.av2.backend.service.site.SiteService
+import org.n1.av2.backend.service.terminal.ScanTerminalService
 import org.n1.av2.backend.service.user.HackerActivityService
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
@@ -41,6 +42,8 @@ class ScanningService(val scanService: ScanService,
 ) {
 
     companion object: KLogging()
+
+    lateinit var scanTerminalService: ScanTerminalService
 
     fun deleteScan(runId: String) {
         scanService.deleteUserScan(runId)
@@ -82,6 +85,7 @@ class ScanningService(val scanService: ScanService,
 
     fun enterScan(runId: String) {
         hackerActivityService.startActivityScanning(runId)
+        scanTerminalService.sendSyntaxHighlighting()
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(currentUserService.user))
 
         val scan = scanService.getById(runId)
