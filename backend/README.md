@@ -69,3 +69,24 @@ First login: `heroku login`
 
 Then upload, build & deploy: `git push heroku master`
 
+
+
+## Notes
+
+Drop all collections:
+
+db.user.drop();
+
+db.siteData.drop();
+db.siteState.drop();
+db.node.drop();
+db.layout.drop();
+db.connection.drop();
+
+db.scan.drop();
+db.userScan.drop();
+
+db.hackerPosition.drop();
+
+db.dbchangelog.drop();
+db.mongobeelock.drop();

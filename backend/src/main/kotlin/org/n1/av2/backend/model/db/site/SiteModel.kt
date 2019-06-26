@@ -9,8 +9,7 @@ import java.util.*
 
 @Document
 data class SiteData(
-        @Id private val _mongoId_: String? = null,
-        val siteId: String,
+        @Id val siteId: String,
         var name: String,
         var description: String = "",
         var creator: String = "",
@@ -33,8 +32,7 @@ data class Node(
 
 @Document
 data class Layout(
-        @Id private val _mongoId_: String? = null,
-        val siteId: String,
+        @Id val siteId: String,
         val nodeIds: MutableList<String> = ArrayList(),
         val connectionIds: MutableList<String> = ArrayList()
 )
@@ -49,8 +47,7 @@ data class Connection(
 
 @Document
 data class SiteState(
-        @Id private val _mongoId_: String? = null,
-        val siteId: String,
+        @Id val siteId: String,
         val ok: Boolean = true,
         val messages: MutableList<SiteStateMessage> = Collections.emptyList()
 )

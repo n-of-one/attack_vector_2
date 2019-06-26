@@ -7,8 +7,7 @@ import java.time.ZonedDateTime
 
 @Document
 data class Scan(
-        @Id private val _mongoId_: String? = null,
-        val runId: String,
+        @Id val runId: String,
         val initiatorId: String,
         val siteId: String,
         var totalDistanceScanned: Int = 0,

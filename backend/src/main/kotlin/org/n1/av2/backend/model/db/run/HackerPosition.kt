@@ -6,8 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
 data class HackerPosition(
-        @Id private val _mongoId_: String? = null,
-        @Indexed val runId: String,
+        @Id val runId: String,
         @Indexed val userId: String,
         val siteId: String,
         val currentNodeId: String,
