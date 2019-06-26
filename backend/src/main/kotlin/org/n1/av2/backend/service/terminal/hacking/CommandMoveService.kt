@@ -38,13 +38,9 @@ class CommandMoveService(
         connectionService.findConnection(position.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         val fromNode = nodeService.getById(position.currentNodeId)
-        if (nodeService.hasActiveIce(fromNode)) return reportProtected()
+        if (hasActiveIce(fromNode)) return reportProtected()
 
         handleMove(runId, toNode, position)
-    }
-
-    private fun reportProtected() {
-        stompService.terminalReceive("[warn]blocked[/] ICE in current node is blocking your move.")
     }
 
     fun reportNodeNotFound() {
@@ -55,9 +51,18 @@ class CommandMoveService(
         stompService.terminalReceive("[warn]error[/] no path from current node to [ok]${networkId}[/].")
     }
 
+    private fun hasActiveIce(node: Node): Boolean {
+        return node.services.any { it.type.ice  && !(it.hacked) }
+    }
+
+    private fun reportProtected() {
+        stompService.terminalReceive("[warn]blocked[/] ICE in current node is blocking your move.")
+    }
+
     private data class StartMove(val userId: String, val nodeId: String)
     private fun handleMove(runId: String, toNode: Node, position: HackerPosition) {
-        hackerPositionService.saveInTransit(position)
+//        FIXME
+//        hackerPositionService.saveInTransit(position)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_MOVE, StartMove(position.userId, toNode.id))
     }
 }

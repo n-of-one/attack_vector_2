@@ -1,6 +1,9 @@
 package org.n1.av2.backend.service.site
 
-import org.n1.av2.backend.model.db.service.*
+import org.n1.av2.backend.model.db.service.IcePasswordService
+import org.n1.av2.backend.model.db.service.OsService
+import org.n1.av2.backend.model.db.service.Service
+import org.n1.av2.backend.model.db.service.TextService
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.enums.ServiceType
 import org.n1.av2.backend.model.ui.*
@@ -185,7 +188,4 @@ class NodeService(
         return ServicesUpdated(node, null)
     }
 
-    fun hasActiveIce(node: Node): Boolean {
-        return node.services.any { it.type.ice  && !((it as IceService).hacked) }
-    }
 }

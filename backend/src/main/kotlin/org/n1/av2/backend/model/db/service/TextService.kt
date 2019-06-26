@@ -12,11 +12,12 @@ class TextService(
         layer: Int,
         name: String,
         note: String,
-        var text: String
-) : Service(id, type, layer, name, note) {
+        var text: String,
+        hacked: Boolean
+) : Service(id, type, layer, name, note, hacked) {
 
     constructor(id: String, layer: Int, defaultName: String) :
-            this(id, ServiceType.TEXT, layer, defaultName, "", "No data of value found.")
+            this(id, ServiceType.TEXT, layer, defaultName, "", "No data of value found.", false)
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateText(siteRep: SiteRep) {

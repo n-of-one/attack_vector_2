@@ -13,11 +13,12 @@ abstract class Service(
         val type: ServiceType,
         var layer: Int,
         var name: String,
-        var note: String
+        var note: String,
+        var hacked: Boolean
 ) {
 
     constructor(id: String, type: ServiceType, layer: Int, defaultName: String) :
-            this(id, type, layer, defaultName, "")
+            this(id, type, layer, defaultName, "", false)
 
 
     @Suppress("UNUSED_PARAMETER")

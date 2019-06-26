@@ -5,6 +5,7 @@ import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.scan.ScanningService
 import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
@@ -16,6 +17,7 @@ class ScanTerminalService(val scanningService: ScanningService,
                           val userActivityService: HackerActivityService,
                           val socialTerminalService: SocialTerminalService,
                           val hackTerminalService: HackTerminalService,
+                          val hackerPositionService: HackerPositionService,
                           val environment: MyEnvironment) {
 
     init {
@@ -65,7 +67,7 @@ class ScanTerminalService(val scanningService: ScanningService,
 
     fun processScan(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
-            stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
+            stompService.terminalReceive("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
             return
         }
         val networkId = tokens[1]
@@ -78,9 +80,10 @@ class ScanTerminalService(val scanningService: ScanningService,
 
     data class StartRun(val userId: String)
     private fun processAttack(runId: String) {
-        val data = StartRun(currentUserService.userId)
         userActivityService.startActivityHacking(runId)
         hackTerminalService.sendSyntaxHighlighting()
+        hackerPositionService.startRun(runId)
+        val data = StartRun(currentUserService.userId)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_RUN, data)
     }
 

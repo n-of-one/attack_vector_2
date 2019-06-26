@@ -10,8 +10,8 @@ abstract class IceService(
         layer: Int,
         name: String,
         note: String,
-        var hacked: Boolean
-) : Service(id, type, layer, name, note) {
+        hacked: Boolean
+) : Service(id, type, layer, name, note, hacked) {
 
     constructor(id: String, layer: Int, defaultName: String) :
             this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", false)

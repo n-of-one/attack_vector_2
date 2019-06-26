@@ -17,13 +17,13 @@ class SocialTerminalService(
 
     fun processShare(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
-            stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
+            stompService.terminalReceive("[warn]incomplete[/] - share this scan with who?  -- try [u warn]/share [info]<username>[/].")
             return
         }
         val userName = tokens.stream().skip(1).collect(Collectors.joining(" "))
         val user = userService.findByName(userName)
         if (user == null) {
-            stompService.terminalReceive("user [info]${userName}[/] not found.")
+            stompService.terminalReceive("[warn]not found[/] - user [info]${userName}[/] not found.")
             return
         }
         scanningService.shareScan(runId, user)
