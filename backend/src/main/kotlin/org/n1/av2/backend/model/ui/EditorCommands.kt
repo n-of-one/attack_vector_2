@@ -50,17 +50,17 @@ data class EditServiceDataCommand(
         val key: String = "",
         val value: String = "")
 
-data class CommandAddService(
+data class AddServiceCommand(
         val siteId: String,
         val nodeId: String,
         val serviceType: ServiceType)
 
-data class CommandRemoveService(
+data class RemoveServiceCommand(
         val siteId: String,
         val nodeId: String,
         val serviceId: String)
 
-data class CommandSwapService(
+data class SwapServiceCommand(
         val siteId: String,
         val nodeId: String,
         val fromId: String,

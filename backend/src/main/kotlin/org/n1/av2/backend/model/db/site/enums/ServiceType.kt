@@ -1,6 +1,8 @@
 package org.n1.av2.backend.model.db.site.enums
 
-enum class ServiceType {
+enum class ServiceType(
+        val ice: Boolean = false
+) {
 
     OS,
     TEXT,
@@ -13,8 +15,10 @@ enum class ServiceType {
 //    SCAN_BLOCKER,
 //    ICE_WORD_SEARCH,
 //    ICE_MAGIC_EYE,
-    ICE_PASSWORD,
+    ICE_PASSWORD(true),
 //    ICE_MANUAL,
 //    ICE_UNHACKABLE
+
+
 
 }

@@ -10,12 +10,14 @@ import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
 import java.util.stream.Collectors
 
+// FIXME: when the class is finished
+@Suppress("UNUSED_PARAMETER")
+
 @Service
 class HackTerminalService(
-        val scanningService: ScanningService,
         val stompService: StompService,
         val currentUserService: CurrentUserService,
-        val userService: UserService,
+        val socialTerminalService: SocialTerminalService,
         val environment: MyEnvironment) {
 
     fun processCommand(runId: String, command: String) {
@@ -26,7 +28,7 @@ class HackTerminalService(
             "hack" -> processHack(runId, tokens)
             "dc" -> processDisconnect()
             "servererror" -> error("gah")
-            "/share" -> processShare(runId, tokens)
+            "/share" -> socialTerminalService.processShare(runId, tokens)
 
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
@@ -50,29 +52,17 @@ class HackTerminalService(
     }
 
     private fun processHack(runId: String, tokens: List<String>) {
-        stompService.terminalReceive("[warn]Not implemented yet, sorry");
+        stompService.terminalReceive("[warn]Not implemented. Yet...")
     }
 
     private fun processMove(runId: String, tokens: List<String>) {
-        stompService.terminalReceive("[warn]Not implemented yet, sorry");
+        stompService.terminalReceive("[warn]Not implemented. Yet...")
     }
 
     private fun processDisconnect() {
-        stompService.terminalReceive("[warn]Not implemented yet, sorry");
+        stompService.terminalReceive("[warn]Not implemented. Yet...")
     }
 
-    fun processShare(runId: String, tokens: List<String>) {
-        if (tokens.size == 1) {
-            stompService.terminalReceive("Share this scan with who?  -- try [u warn]/share [info]<username>[/].")
-            return
-        }
-        val userName = tokens.stream().skip(1).collect(Collectors.joining(" "))
-        val user = userService.findByName(userName)
-        if (user == null) {
-            stompService.terminalReceive("user [info]${userName}[/] not found.")
-            return
-        }
-        scanningService.shareScan(runId, user)    }
 
     fun sendSyntaxHighlighting() {
         val map = HashMap<String, Syntax>()

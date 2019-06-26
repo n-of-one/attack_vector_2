@@ -2,7 +2,7 @@ import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../EditorActions";
 import {SERVER_SCAN_FULL} from "../../hacker/run/model/ScanActions";
 
 const siteDataDefaultState = {
-    id: null,
+    siteId: null,
     name: "non name yet",
     description: "",
     creator: null,

@@ -127,7 +127,7 @@ class EditorCanvas {
 
    getNodeSelectedId() {
         let selectedObject = this.canvas.getActiveObject();
-        if (selectedObject && selectedObject.data && selectedObject.get("type") === "image") {
+        if (selectedObject && selectedObject.get("type") === "node") {
             return selectedObject.data.id;
         }
         return null;

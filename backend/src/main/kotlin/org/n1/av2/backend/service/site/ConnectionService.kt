@@ -1,18 +1,25 @@
 package org.n1.av2.backend.service.site
 
+import mu.KLogging
 import org.n1.av2.backend.model.db.site.Connection
 import org.n1.av2.backend.model.ui.AddConnection
 import org.n1.av2.backend.repo.ConnectionRepo
 import org.n1.av2.backend.util.createId
+import org.n1.av2.backend.util.logNanoTime
 import org.springframework.stereotype.Service
+import kotlin.system.measureNanoTime
 
 @Service
 class ConnectionService(
         val connectionRepo: ConnectionRepo) {
 
+    companion object: KLogging()
+
     fun findConnection(startId: String, endId: String): Connection? {
-        val startConnections = findByNodeId(startId);
-        return startConnections.find { it.fromId == endId || it.toId == endId }
+        return logNanoTime("findConnection", logger) {
+            val startConnections = findByNodeId(startId)
+            startConnections.find { it.fromId == endId || it.toId == endId }
+        }
     }
 
     fun createConnection(command: AddConnection): Connection {
@@ -35,9 +42,7 @@ class ConnectionService(
     }
 
     fun findByNodeId(nodeId: String): Set<Connection> {
-        val froms = connectionRepo.findAllByFromId(nodeId)
-        val tos = connectionRepo.findAllByToId(nodeId)
-        return froms.union(tos)
+        return connectionRepo.findAllByFromIdOrToId(nodeId, nodeId).toSet()
     }
 
     fun deleteAll(connections: Collection<Connection>) {

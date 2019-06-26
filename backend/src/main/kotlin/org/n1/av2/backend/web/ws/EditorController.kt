@@ -74,17 +74,17 @@ class EditorController(
     }
 
     @MessageMapping("/editor/addService")
-    fun addService(command: CommandAddService, principal: Principal) {
+    fun addService(command: AddServiceCommand, principal: Principal) {
         executor.run(principal) { editorService.addService(command) }
     }
 
     @MessageMapping("/editor/removeService")
-    fun removeService(command: CommandRemoveService, principal: Principal) {
+    fun removeService(command: RemoveServiceCommand, principal: Principal) {
         executor.run(principal) { editorService.removeService(command) }
     }
 
     @MessageMapping("/editor/swapServiceLayer")
-    fun swapServiceLayer(command: CommandSwapService, principal: Principal) {
+    fun swapServiceLayer(command: SwapServiceCommand, principal: Principal) {
         executor.run(principal) { editorService.swapServiceLayer(command) }
     }
 

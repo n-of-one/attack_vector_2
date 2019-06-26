@@ -13,26 +13,26 @@ import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 
 @Service
-class ScanService(val scanRepo: ScanRepo,
-                  val userScanRepo: UserScanRepo,
-                  val currentUserService: CurrentUserService,
-                  val time: TimeService) {
-    fun getById(runId: String): Scan {
-        return scanRepo.findById(runId).orElseGet { error("${runId} not found") }
+class ScanService(private val scanRepo: ScanRepo,
+                  private val userScanRepo: UserScanRepo,
+                  private val currentUserService: CurrentUserService) {
+
+    fun getByRunId(runId: String): Scan {
+        return scanRepo.findByRunId(runId) ?: error("${runId} not found")
     }
 
     fun createScan(siteData: SiteData, nodeScanById: MutableMap<String, NodeScan>, user: User): String {
-        val runId = createId("run") { candidate: String -> scanRepo.findById(candidate) }
+        val runId = createId("run") { candidate: String -> scanRepo.findByRunId(candidate) }
         val scan = Scan(
-                id = runId,
-                siteId = siteData.id,
+                runId = runId,
+                siteId = siteData.siteId,
                 nodeScanById = nodeScanById,
                 initiatorId =  user.id
         )
         scanRepo.save(scan)
 
         val userId = currentUserService.userId
-        val userScan = UserScan(userId, runId)
+        val userScan = UserScan(userId = userId, runId = runId)
         userScanRepo.save(userScan)
 
         return runId
@@ -45,7 +45,7 @@ class ScanService(val scanRepo: ScanRepo,
     fun getAll(userId: String): List<Scan> {
         val userScans = userScanRepo.findAllByUserId(userId)
         val runIds = userScans.map { it.runId }
-        return scanRepo.findByIdIn(runIds)
+        return scanRepo.findByRunIdIn(runIds)
     }
 
     fun purgeAll() {
@@ -58,7 +58,7 @@ class ScanService(val scanRepo: ScanRepo,
     }
 
     fun createUserScan(runId: String, user: User) {
-        val userScan = UserScan(user.id, runId)
+        val userScan = UserScan(userId = user.id, runId = runId)
         userScanRepo.save(userScan)
     }
 

@@ -26,7 +26,7 @@ class SiteController(
 
     @PostMapping("")
     fun siteList(): List<SiteListItem> {
-        return siteDataService.findAll().map { SiteListItem(id = it.id, name = it.name) }
+        return siteDataService.findAll().map { SiteListItem(id = it.siteId, name = it.name) }
     }
 
 }

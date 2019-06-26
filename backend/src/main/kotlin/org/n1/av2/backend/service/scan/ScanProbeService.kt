@@ -72,7 +72,7 @@ class ScanProbeService(
     //---//
 
     fun probeArrive(runId: String, nodeId: String, action: NodeScanType): Boolean {
-        val scan = scanService.getById(runId)
+        val scan = scanService.getByRunId(runId)
         val node = nodeService.getById(nodeId)
         return probeArrive(scan, node, action)
     }
@@ -95,7 +95,7 @@ class ScanProbeService(
         nodeScan.status = NodeStatus.TYPE
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
-        stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
 
         return false
     }
@@ -136,10 +136,10 @@ class ScanProbeService(
 
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
-        stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
 
         data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
-        stompService.toRun(scan.id, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
+        stompService.toRun(scan.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
@@ -157,7 +157,7 @@ class ScanProbeService(
         nodeScan.status = NodeStatus.SERVICES
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
-        stompService.toRun(scan.id, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
+        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
         return false
     }
 

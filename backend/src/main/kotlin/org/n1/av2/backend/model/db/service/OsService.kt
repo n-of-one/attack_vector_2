@@ -1,6 +1,6 @@
 package org.n1.av2.backend.model.db.service
 
-import org.n1.av2.backend.model.db.site.SiteRep
+import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.db.site.enums.ServiceType
 import org.n1.av2.backend.model.ui.ValidationException
 

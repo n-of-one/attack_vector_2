@@ -1,7 +1,7 @@
 import {assertNotNullUndef} from "./Assert";
 
-const updateArrayById = (newElementData, array, id) => {
-    const nodeIndex = findElementIndex(array, id);
+const updateArrayById = (newElementData, array, id, idField = "id") => {
+    const nodeIndex = findElementIndex(array, id, idField);
     const oldElement = array[nodeIndex];
     const newElement = {...oldElement, ...newElementData};
     const newArray = [...array];
@@ -9,10 +9,10 @@ const updateArrayById = (newElementData, array, id) => {
     return newArray;
 };
 
-const findElementIndex = (array, id) => {
+const findElementIndex = (array, id, idField = "id") => {
     let elementIndex = null;
     array.forEach((element, index) => {
-        if (element.id === id) {
+        if (element[idField] === id) {
             elementIndex = index;
         }
     });
@@ -20,8 +20,8 @@ const findElementIndex = (array, id) => {
     return elementIndex;
 };
 
-const findElementById = (array, id) => {
-    const index = findElementIndex(array, id);
+const findElementById = (array, id, idField = "id") => {
+    const index = findElementIndex(array, id, idField);
     return array[index];
 };
 

@@ -11,13 +11,10 @@ class LayoutService(
         val layoutRepo: LayoutRepo) {
 
 
-    fun getById(id: String): Layout {
-        return layoutRepo.findById(id).orElseThrow { throw IllegalArgumentException("No site found for id: ${id}") }
+    /* get by Site Id */
+    fun getBySiteId(siteId: String): Layout {
+        return layoutRepo.findBySiteId(siteId) ?: error("No site found for id: ${siteId}")
     }
-// TODO: implement
-//    fun purgeAll() {
-//        layoutRepo.deleteAll()
-//    }
 
     fun save(layout: Layout) {
         layoutRepo.save(layout)
@@ -39,13 +36,9 @@ class LayoutService(
     }
 
     fun deleteNode(siteId: String, nodeId: String) {
-        val layout = getById(siteId)
+        val layout = getBySiteId(siteId)
         layout.nodeIds.remove(nodeId)
         layoutRepo.save(layout)
-    }
-
-    fun findById(id: String): Layout {
-        return layoutRepo.findById(id).orElseThrow { IllegalStateException("Did not find expected site layout for id: ${id}") }
     }
 
     fun purgeAll() {
@@ -53,7 +46,7 @@ class LayoutService(
     }
 
     fun create(id: String): Layout {
-        val layout = Layout(id = id)
+        val layout = Layout(siteId = id)
         layoutRepo.save(layout)
         return layout
     }

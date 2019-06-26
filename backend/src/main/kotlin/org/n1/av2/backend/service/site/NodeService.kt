@@ -1,9 +1,6 @@
 package org.n1.av2.backend.service.site
 
-import org.n1.av2.backend.model.db.service.IcePasswordService
-import org.n1.av2.backend.model.db.service.OsService
-import org.n1.av2.backend.model.db.service.Service
-import org.n1.av2.backend.model.db.service.TextService
+import org.n1.av2.backend.model.db.service.*
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.enums.ServiceType
 import org.n1.av2.backend.model.ui.*
@@ -127,19 +124,15 @@ class NodeService(
         return totalCapped
     }
 
-    fun getAllById(nodeIds: Collection<String>): List<Node> {
-        return nodeRepo.findAllById(nodeIds).map { it }
-    }
-
     fun findByNetworkId(siteId: String, networkId: String): Node? {
-        return nodeRepo.findBySiteIdAndNetworkId(siteId, networkId)
+        return nodeRepo.findBySiteIdAndNetworkId(siteId, networkId) ?: nodeRepo.findBySiteIdAndNetworkIdIgnoreCase(siteId, networkId)
     }
 
     fun save(node: Node) {
         nodeRepo.save(node)
     }
 
-    fun addService(command: CommandAddService): Service {
+    fun addService(command: AddServiceCommand): Service {
         val node = getById(command.nodeId)
         val service = createService(command.siteId, command.serviceType, node)
         node.services.add(service)
@@ -162,7 +155,8 @@ class NodeService(
     }
 
     data class ServicesUpdated(val node: Node, val serviceId: String?)
-    fun removeService(command: CommandRemoveService): ServicesUpdated? {
+
+    fun removeService(command: RemoveServiceCommand): ServicesUpdated? {
         val node = getById(command.nodeId)
         val toRemove = node.services.firstOrNull { it.id == command.serviceId } ?: return null
         node.services.remove(toRemove)
@@ -170,12 +164,12 @@ class NodeService(
         node.services.forEachIndexed { layer, service -> service.layer = layer };
         nodeRepo.save(node)
 
-        val newFocusNode = node.services[toRemove.layer -1]
+        val newFocusNode = node.services[toRemove.layer - 1]
 
-        return ServicesUpdated(node, newFocusNode.id )
+        return ServicesUpdated(node, newFocusNode.id)
     }
 
-    fun swapServices(command: CommandSwapService): ServicesUpdated? {
+    fun swapServices(command: SwapServiceCommand): ServicesUpdated? {
         val node = getById(command.nodeId)
         val fromService = node.services.find { it.id == command.fromId } ?: return null
         val toService = node.services.find { it.id == command.toId } ?: return null
@@ -189,5 +183,9 @@ class NodeService(
         nodeRepo.save(node)
 
         return ServicesUpdated(node, null)
+    }
+
+    fun hasActiveIce(node: Node): Boolean {
+        return node.services.any { it.type.ice  && !((it as IceService).hacked) }
     }
 }

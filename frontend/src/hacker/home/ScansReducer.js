@@ -12,5 +12,5 @@ export default (state = defaultState, action) => {
 }
 
 const processScanInfoUpdate = (state, scanInfo) => {
-    return updateArrayById(scanInfo, state, scanInfo.id)
+    return updateArrayById(scanInfo, state, scanInfo.runId, "runId")
 };

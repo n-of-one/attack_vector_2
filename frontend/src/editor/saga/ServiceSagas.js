@@ -2,7 +2,7 @@ import webSocketConnection from "../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
 import editorCanvas from "../component/EditorCanvas";
 
-const getSiteId = (state) => state.siteData.id;
+const getSiteId = (state) => state.siteData.siteId;
 
 function* editNetworkId(action) {
     yield toServer(action, "/av/editor/editNetworkId");

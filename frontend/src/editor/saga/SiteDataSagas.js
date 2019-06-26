@@ -2,7 +2,7 @@ import editorCanvas from "../component/EditorCanvas";
 import webSocketConnection from "../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
 
-const getSiteId = (state) => state.siteData.id;
+const getSiteId = (state) => state.siteData.siteId;
 
 function* requestSiteFullSaga(action) {
     webSocketConnection.send("/av/editor/siteFull", action.siteId);

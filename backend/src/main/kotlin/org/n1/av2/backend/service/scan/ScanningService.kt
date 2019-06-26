@@ -59,12 +59,12 @@ class ScanningService(val scanService: ScanService,
             return
         }
 
-        val nodeScans = createNodeScans(siteData.id)
+        val nodeScans = createNodeScans(siteData.siteId)
 
         val user = currentUserService.user
 
         val runId = scanService.createScan(siteData, nodeScans, user)
-        val response = ScanSiteResponse(runId, siteData.id)
+        val response = ScanSiteResponse(runId, siteData.siteId)
         stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
         sendScanInfosOfPlayer()
     }
@@ -88,10 +88,10 @@ class ScanningService(val scanService: ScanService,
         scanTerminalService.sendSyntaxHighlighting()
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresence(currentUserService.user))
 
-        val scan = scanService.getById(runId)
+        val scan = scanService.getByRunId(runId)
         val siteFull = siteService.getSiteFull(scan.siteId)
         val userPresence = hackerActivityService
-                .getAll(scan.id, HackerActivityType.SCANNING)
+                .getAll(scan.runId, HackerActivityType.SCANNING)
                 .map { activity -> createPresence(activity.authentication.user) }
 
         val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
@@ -113,7 +113,7 @@ class ScanningService(val scanService: ScanService,
         sendScanInfosOfPlayer(userId)
     }
 
-    data class ScanInfo(val id: String,
+    data class ScanInfo(val runId: String,
                         val siteName: String,
                         val siteId: String,
                         val initiatorName: String,
@@ -127,12 +127,12 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun createScanInfo(scan: Scan): ScanningService.ScanInfo {
-        val site = siteDataService.getById(scan.siteId)
+        val site = siteDataService.getBySiteId(scan.siteId)
         val nodes = scan.nodeScanById.filterValues { it.status != NodeStatus.UNDISCOVERED}.size
         val nodesText = if (scan.duration != null) "${nodes}" else "${nodes}+"
         val userName = userService.getById(scan.initiatorId).name
         val efficiencyStatus = deriveEfficiencyStatus(scan)
-        return ScanningService.ScanInfo(scan.id, site.name, site.id, userName, nodesText, efficiencyStatus)
+        return ScanningService.ScanInfo(scan.runId, site.name, site.siteId, userName, nodesText, efficiencyStatus)
     }
 
     private fun deriveEfficiencyStatus(scan: Scan): String {
@@ -155,8 +155,8 @@ class ScanningService(val scanService: ScanService,
 
         val myUserName = currentUserService.user.name
 
-        val scan = scanService.getById(runId)
-        val siteData = siteDataService.getById(scan.siteId)
+        val scan = scanService.getByRunId(runId)
+        val siteData = siteDataService.getBySiteId(scan.siteId)
 
         stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
         stompService.terminalReceiveForId(user, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
@@ -178,7 +178,7 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun launchProbeAtNode(runId: String, networkId: String) {
-        val scan = scanService.getById(runId)
+        val scan = scanService.getByRunId(runId)
         val node = nodeService.findByNetworkId(scan.siteId, networkId)
         if (node == null) {
             reportNodeNotFound(networkId)
@@ -196,7 +196,7 @@ class ScanningService(val scanService: ScanService,
         val path = scanProbeService.createNodePath(targetNode)
         val userId = currentUserService.userId
         val probeAction = ScanProbeService.ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false)
-        stompService.toRun(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+        stompService.toRun(scan.runId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 
     fun autoScan(runId: String) {
@@ -204,7 +204,7 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun launchProbe(runId: String, autoScan: Boolean) {
-        val scan = scanService.getById(runId)
+        val scan = scanService.getByRunId(runId)
         if (scan.startTime == null) {
             scan.startTime = time.now()
             scanService.save(scan)
@@ -212,7 +212,7 @@ class ScanningService(val scanService: ScanService,
         }
         val probeAction = scanProbeService.createProbeAction(scan, autoScan)
         if (probeAction != null) {
-            stompService.toRun(scan.id, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+            stompService.toRun(scan.runId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
         } else {
             if (scan.duration == null) {
                 completeScan(scan)
@@ -225,7 +225,7 @@ class ScanningService(val scanService: ScanService,
 
     private fun updateScanInfoToPlayers(scan: Scan) {
         val scanInfo = createScanInfo(scan)
-        scanService.getUsersOfScan(scan.id).forEach{ userId ->
+        scanService.getUsersOfScan(scan.runId).forEach{ userId ->
             stompService.toUser(userId, ReduxActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
         }
     }
@@ -258,7 +258,7 @@ class ScanningService(val scanService: ScanService,
     }
 
     fun quickScan(runId: String) {
-        val scan = scanService.getById(runId)
+        val scan = scanService.getByRunId(runId)
         val nodes = nodeService.getAll(scan.siteId)
         nodes.forEach { scanProbeService.quickScanNode(it, scan) }
         autoScan(runId)
@@ -267,7 +267,7 @@ class ScanningService(val scanService: ScanService,
     fun probeArrive(runId: String, nodeId: String, action: NodeScanType) {
         val updateScanInfo = scanProbeService.probeArrive(runId, nodeId, action)
         if (updateScanInfo) {
-            val scan = scanService.getById(runId)
+            val scan = scanService.getByRunId(runId)
             updateScanInfoToPlayers(scan)
         }
     }

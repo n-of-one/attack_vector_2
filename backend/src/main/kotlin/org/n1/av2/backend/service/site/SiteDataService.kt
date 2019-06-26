@@ -15,6 +15,11 @@ class SiteDataService(
         val stompService: StompService
 ) {
 
+    fun getBySiteId(id: String): SiteData {
+        return siteDataRepo.findBySiteId(id) ?: error ("No SiteData found for id: ${id}")
+    }
+
+
     fun findByName(name: String): SiteData? {
         return siteDataRepo.findByName(name)
     }
@@ -23,9 +28,8 @@ class SiteDataService(
         return siteDataRepo.findAll() ?: ArrayList()
     }
 
-
     fun update(command: EditSiteData) {
-        val data = siteDataRepo.findById(command.siteId).orElseThrow { throw IllegalStateException("Site ${command.siteId} not found") }
+        val data = getBySiteId(command.siteId)
         val value = command.value.trim()
 
         try {
@@ -40,11 +44,11 @@ class SiteDataService(
             }
 
             siteDataRepo.save(data)
-            stompService.toSite(data.id, ReduxActions.SERVER_UPDATE_SITE_DATA, data)
+            stompService.toSite(data.siteId, ReduxActions.SERVER_UPDATE_SITE_DATA, data)
 
         }
         catch (validationException: ValidationException) {
-            stompService.toSite(data.id, ReduxActions.SERVER_UPDATE_SITE_DATA, data)
+            stompService.toSite(data.siteId, ReduxActions.SERVER_UPDATE_SITE_DATA, data)
             throw validationException
         }
     }
@@ -59,18 +63,13 @@ class SiteDataService(
         siteDataRepo.deleteAll()
     }
 
-    fun getById(id: String): SiteData {
-        return siteDataRepo.findById(id).orElseThrow { throw IllegalArgumentException("No site found for id: ${id}") }
-    }
-
     fun createId(): String {
         return createId("site", siteDataRepo::findById)
     }
 
     fun create(id: String, name: String): SiteData {
-        val data = SiteData(id = id, name = name, hackTime = "15:00", startNodeNetworkId = "00")
+        val data = SiteData(siteId = id, name = name, hackTime = "15:00", startNodeNetworkId = "00")
         siteDataRepo.save(data)
         return data
     }
-
 }

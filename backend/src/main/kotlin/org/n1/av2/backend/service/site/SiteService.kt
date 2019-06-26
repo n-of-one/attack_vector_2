@@ -28,8 +28,8 @@ class SiteService(
 
 
     fun getSiteFull(siteId: String): SiteFull {
-        val siteData = siteDataService.getById(siteId)
-        val layout = layoutService.getById(siteId)
+        val siteData = siteDataService.getBySiteId(siteId)
+        val layout = layoutService.getBySiteId(siteId)
         val nodes = nodeService.getAll(siteId)
         val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
         val connections = connectionService.getAll(siteId)
@@ -44,7 +44,7 @@ class SiteService(
 
     fun purgeAll() {
         siteDataService.findAll().forEach { siteData ->
-            stompService.toSite(siteData.id, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
+            stompService.toSite(siteData.siteId, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
         }
 
         siteDataService.purgeAll()

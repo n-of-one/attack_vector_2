@@ -15,18 +15,18 @@ class EditorService(
         val stompService: StompService) {
 
     fun getByNameOrCreate(name: String): String {
-        return siteDataService.findByName(name)?.id ?: siteService.createSite(name)
+        return siteDataService.findByName(name)?.siteId ?: siteService.createSite(name)
     }
 
     fun addNode(command: AddNode) {
-        val layout = layoutService.getById(command.siteId)
+        val layout = layoutService.getBySiteId(command.siteId)
         val node = nodeService.createNode(command)
         layoutService.addNode(layout, node)
         stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_NODE, node)
     }
 
     fun addConnection(command: AddConnection) {
-        val layout = layoutService.getById(command.siteId)
+        val layout = layoutService.getBySiteId(command.siteId)
         val existing = connectionService.findConnection(command.fromId, command.toId)
         if (existing != null) {
             throw ValidationException("Connection already exists there")
@@ -39,12 +39,12 @@ class EditorService(
     }
 
     fun deleteConnections(siteId: String, nodeId: String) {
-        val layout = layoutService.getById(siteId)
+        val layout = layoutService.getBySiteId(siteId)
         val connections = connectionService.findByNodeId(nodeId)
         connectionService.deleteAll(connections)
         layoutService.deleteConnections(layout, connections)
 
-        sendSiteFull(layout.id)
+        sendSiteFull(layout.siteId)
     }
 
 
@@ -74,7 +74,7 @@ class EditorService(
     }
 
     fun snap(siteId: String) {
-        val layout = layoutService.getById(siteId)
+        val layout = layoutService.getBySiteId(siteId)
         nodeService.snap(layout.nodeIds)
         sendSiteFull(siteId)
     }
@@ -101,7 +101,7 @@ class EditorService(
     }
 
     data class ServiceAdded(val nodeId: String, val service: Service)
-    fun addService(command: CommandAddService) {
+    fun addService(command: AddServiceCommand) {
         val service = nodeService.addService(command)
         val message = ServiceAdded(command.nodeId, service)
 
@@ -109,7 +109,7 @@ class EditorService(
         siteValidationService.validate(command.siteId)
     }
 
-    fun removeService(command: CommandRemoveService) {
+    fun removeService(command: RemoveServiceCommand) {
         val message = nodeService.removeService(command)
 
         if (message != null) {
@@ -118,7 +118,7 @@ class EditorService(
         }
     }
 
-    fun swapServiceLayer(command: CommandSwapService) {
+    fun swapServiceLayer(command: SwapServiceCommand) {
         val message = nodeService.swapServices(command)
         if (message != null) {
             stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)

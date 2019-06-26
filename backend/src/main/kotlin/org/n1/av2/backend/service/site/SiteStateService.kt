@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service
 class SiteStateService(val repo: SiteStateRepo) {
 
     fun getById(siteId: String): SiteState {
-        return repo.findById(siteId).orElseThrow { error("Site not found: ${siteId}") }
+        return repo.findBySiteId(siteId) ?: error("Site not found: ${siteId}")
     }
 
     fun create(siteId: String) {
-        val state = SiteState(siteId)
+        val state = SiteState(siteId = siteId)
         repo.save(state)
     }
 

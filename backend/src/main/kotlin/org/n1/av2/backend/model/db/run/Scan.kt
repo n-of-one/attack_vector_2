@@ -1,13 +1,14 @@
 package org.n1.av2.backend.model.db.run
 
+import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.ZonedDateTime
 
 @Document
 data class Scan(
-
-        val id: String,
+        @Id private val _mongoId_: String? = null,
+        val runId: String,
         val initiatorId: String,
         val siteId: String,
         var totalDistanceScanned: Int = 0,
@@ -19,6 +20,7 @@ data class Scan(
 
 @Document
 data class UserScan(
+        @Id val _mongoId_: String? = null,
         @Indexed val userId: String,
         @Indexed val runId: String)
 

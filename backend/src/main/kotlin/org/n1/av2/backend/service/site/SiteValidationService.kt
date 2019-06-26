@@ -1,6 +1,10 @@
 package org.n1.av2.backend.service.site
 
-import org.n1.av2.backend.model.db.site.*
+import org.n1.av2.backend.model.SiteRep
+import org.n1.av2.backend.model.db.site.Node
+import org.n1.av2.backend.model.db.site.SiteData
+import org.n1.av2.backend.model.db.site.SiteStateMessage
+import org.n1.av2.backend.model.db.site.SiteStateMessageType
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
@@ -16,7 +20,7 @@ class SiteValidationService(
 
     fun validate(id: String) {
         val messages = ArrayList<SiteStateMessage>()
-        val siteData = siteDataService.getById(id)
+        val siteData = siteDataService.getBySiteId(id)
         val nodes = nodeService.getAll(id)
 
         validateSiteData(messages, siteData, nodes)

@@ -14,6 +14,7 @@ class ScanTerminalService(val scanningService: ScanningService,
                           val stompService: StompService,
                           val currentUserService: CurrentUserService,
                           val userActivityService: HackerActivityService,
+                          val socialTerminalService: SocialTerminalService,
                           val hackTerminalService: HackTerminalService,
                           val environment: MyEnvironment) {
 
@@ -28,7 +29,7 @@ class ScanTerminalService(val scanningService: ScanningService,
             "dc" -> processDisconnect()
             "autoscan" -> processAutoScan(runId)
             "scan" -> processScan(runId, tokens)
-            "/share" -> processShare(runId, tokens)
+            "/share" -> socialTerminalService.processShare(runId, tokens)
             "servererror" -> error("gah")
             "quickscan" -> processQuickscan(runId)
             "attack" -> processAttack(runId)
@@ -69,10 +70,6 @@ class ScanTerminalService(val scanningService: ScanningService,
         }
         val networkId = tokens[1]
         scanningService.launchProbeAtNode(runId, networkId)
-    }
-
-    fun processShare(runId: String, tokens: List<String>) {
-        hackTerminalService.processShare(runId, tokens)
     }
 
     fun processQuickscan(runId: String) {
