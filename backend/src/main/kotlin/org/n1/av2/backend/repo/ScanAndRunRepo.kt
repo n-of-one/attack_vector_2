@@ -1,7 +1,6 @@
 package org.n1.av2.backend.repo
 
 import org.n1.av2.backend.model.db.run.HackerPosition
-import org.n1.av2.backend.model.db.run.Run
 import org.n1.av2.backend.model.db.run.Scan
 import org.n1.av2.backend.model.db.run.UserScan
 import org.springframework.data.repository.PagingAndSortingRepository
@@ -24,5 +23,5 @@ interface UserScanRepo : PagingAndSortingRepository<UserScan, String> {
 
 @Repository
 interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String> {
-    fun findByRunIdAndUserId(runId: String, userId: String): HackerPosition?
+    fun findByUserId(userId: String): HackerPosition?
 }

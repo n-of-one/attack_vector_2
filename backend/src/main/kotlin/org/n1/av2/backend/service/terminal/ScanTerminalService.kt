@@ -36,8 +36,13 @@ class ScanTerminalService(val scanningService: ScanningService,
             "quickscan", "qs" -> processQuickscan(runId)
             "attack" -> processAttack(runId, false)
             "quickattack", "qa" -> processAttack(runId, true)
+            "move", "view", "hack" -> reportHackCommand()
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
+    }
+
+    private fun reportHackCommand() {
+        stompService.terminalReceive("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
     }
 
     private fun processAutoScan(runId: String) {
@@ -98,6 +103,10 @@ class ScanTerminalService(val scanningService: ScanningService,
         map["scan"] = Syntax("u", "ok", "error s")
         map["dc"] = Syntax("u", "error s")
         map["/share"] = Syntax("u warn", "info", "error s")
+
+        map["move"] = Syntax("error s",  "error s")
+        map["view"] = Syntax("error s", "error s")
+        map["hack"] = Syntax("error s", "error s")
 
         stompService.toUser(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, map)
     }

@@ -24,11 +24,12 @@ class HackTerminalService(
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
         if (tokens.isEmpty()) return
-        val command = tokens[0].toLowerCase()
-        when (command) {
+        val commandAction = tokens[0].toLowerCase()
+        when (commandAction) {
             "help" -> processHelp()
-            "mv" -> commandMoveService.process(runId, tokens)
+            "move" -> commandMoveService.process(runId, tokens)
             "hack" -> commandHackService.process(runId, tokens)
+            "view" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
             "dc" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
@@ -59,10 +60,10 @@ class HackTerminalService(
         val map = HashMap<String, Syntax>()
 
         map["help"] = Syntax("u", "error s")
-        map["mv"] = Syntax("u", "ok", "error s")
+        map["move"] = Syntax("u", "ok", "error s")
         map["view"] = Syntax("u", "error s")
-        map["dc"] = Syntax("u", "error s")
         map["hack"] = Syntax("u", "primary", "error s")
+        map["dc"] = Syntax("u", "error s")
         map["/share"] = Syntax("u warn", "info", "error s")
 
         stompService.toUser(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, map)

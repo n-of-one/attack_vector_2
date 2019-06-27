@@ -1,6 +1,7 @@
 import {fabric} from "fabric";
 import {animate, calcLine, easeLinear} from "./CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
+import {HACKER_MOVE_ARRIVE} from "../../hacker/run/model/RunActions";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
@@ -8,7 +9,6 @@ const DISAPPEAR_TIME = 10;
 export default class HackerDisplay {
 
     canvas = null;
-    startNode = null;
 
     hackerIcon = null;
     hackerIdentifierIcon = null;
@@ -19,7 +19,8 @@ export default class HackerDisplay {
     schedule = null;
     hacker = null;
     you = false;
-    startNodeDisplay = null;
+    startNode = null;
+    currentNode = null;
 
     line = null;
     y = null;
@@ -27,11 +28,13 @@ export default class HackerDisplay {
 
     dispatch = null;
 
-    constructor(canvas, schedule, startNodeDisplay, hacker, offset, you, dispatch) {
+    constructor(canvas, schedule, startNode, hacker, offset, you, dispatch) {
         this.canvas = canvas;
         this.schedule = schedule;
         this.hacker = hacker;
-        this.startNodeDisplay = startNodeDisplay;
+        this.startNode = startNode;
+        this.currentNode = startNode;
+
         this.dispatch = dispatch;
 
         this.x = offset;
@@ -73,7 +76,7 @@ export default class HackerDisplay {
         this.canvas.add(this.labelIcon);
         animate(this.canvas, this.labelIcon, "opacity", 1, APPEAR_TIME);
 
-        const lineData = calcLine(this, startNodeDisplay);
+        const lineData = calcLine(this, startNode);
 
         this.lineIcon = new fabric.Line(
             lineData.asArray(), {
@@ -109,14 +112,14 @@ export default class HackerDisplay {
         return 30;
     }
 
-    move(newX) {
+    repositionHackerIdentification(newX) {
         this.schedule.run(APPEAR_TIME, () => {
             this.x = newX;
             animate(this.canvas, this.hackerIdentifierIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
-            const lineData = calcLine(this, this.startNodeDisplay);
+            const lineData = calcLine(this, this.startNode);
             animate(this.canvas, this.lineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
         });
     }
@@ -145,12 +148,12 @@ export default class HackerDisplay {
     }
 
     startRunQuick() {
-        this.hackerIcon = this.createHackerIcon(40, 1, this.startNodeDisplay);
+        this.hackerIcon = this.createHackerIcon(40, 1, this.startNode);
         this.canvas.add(this.hackerIcon);
         this.canvas.bringToFront(this.hackerIcon);
         this.schedule.run(0, () => {
             this.echo(0, "[info]Persona established, hack started.");
-            this.moveStep(this.startNodeDisplay, 20, 20, 5);
+            this.moveStep(this.startNode, 20, 20, 5);
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
         });
     }
@@ -163,7 +166,7 @@ export default class HackerDisplay {
         this.canvas.sendToBack(this.hackerIcon);
 
         this.schedule.run(0, () => {
-            this.moveStep(this.startNodeDisplay, 0, 0, 200, easeLinear);
+            this.moveStep(this.startNode, 0, 0, 200, easeLinear);
             animate(this.canvas, this.hackerIcon, 'width', 40, 100);
             animate(this.canvas, this.hackerIcon, 'height', 40, 100);
         });
@@ -194,7 +197,7 @@ export default class HackerDisplay {
         this.echo(0, "");
         this.echo(80, "Entering node");
         this.schedule.run(0, () => {
-            this.moveStep(this.startNodeDisplay, 20, 20, 20)
+            this.moveStep(this.startNode, 20, 20, 20)
         });
         this.echo(0, "Persona accepted by node OS.");
         this.schedule.run(0, () => {
@@ -213,6 +216,26 @@ export default class HackerDisplay {
         animate(this.canvas, this.hackerIcon, "top", node.y + offsetY, time, easing);
     }
 
+    moveStart(nodeDisplay) {
+        console.time('move');
+        this.schedule.run(4, ()=> {
+            this.moveStep(this.currentNode, 0, 0, 4);
+        });
+        this.schedule.run(16, ()=> {
+            this.moveStep(nodeDisplay, 0, 0, 16);
+        });
+        this.schedule.run(4, ()=> {
+            this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
+            this.moveStep(nodeDisplay, 20, 20, 4);
+        });
+    }
+
+    moveArrive(nodeDisplay) {
+        this.currentNode = nodeDisplay;
+        this.schedule.run(0, ()=> {
+            console.timeEnd('move');
+        });
+    }
 
     // movePersona(payload) {
     //     var targetNodeId = payload.nodeId;

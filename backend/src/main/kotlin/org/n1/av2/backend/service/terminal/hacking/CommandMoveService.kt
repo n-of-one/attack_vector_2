@@ -29,9 +29,13 @@ class CommandMoveService(
             return
         }
         val networkId = tokens[1]
-        val userId = currentUserService.userId
-        val position = hackerPositionService.getByRunIdAndUserId(runId, userId)
+        val position = hackerPositionService.get()
+
+        if (position.inTransit) return reportInTransit()
         val toNode = nodeService.findByNetworkId(position.siteId, networkId) ?: return reportNodeNotFound(networkId)
+
+        if (toNode.id == position.currentNodeId) return reportAtTargetNode(networkId)
+
         if (position.previousNodeId == toNode.id) return handleMove(runId, toNode, position)
         val scan = scanService.getByRunId(runId)
         if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
@@ -43,12 +47,20 @@ class CommandMoveService(
         handleMove(runId, toNode, position)
     }
 
+    private fun reportAtTargetNode(networkId: String) {
+        stompService.terminalReceive("[error]error[/] already at [ok]${networkId}[/].")
+    }
+
+    private fun reportInTransit() {
+        stompService.terminalReceive("[error]busy[/] current move not finished.")
+    }
+
     fun reportNodeNotFound(networkId: String) {
-        stompService.terminalReceive("[warn]error[/] node [ok]${networkId}[/] not found.")
+        stompService.terminalReceive("[error]error[/] node [ok]${networkId}[/] not found.")
     }
 
     fun reportNoPath(networkId: String) {
-        stompService.terminalReceive("[warn]error[/] no path from current node to [ok]${networkId}[/].")
+        stompService.terminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
     }
 
     private fun hasActiveIce(node: Node): Boolean {
@@ -56,13 +68,12 @@ class CommandMoveService(
     }
 
     private fun reportProtected() {
-        stompService.terminalReceive("[warn]blocked[/] ICE in current node is blocking your move.")
+        stompService.terminalReceive("[warn b]blocked[/] ICE in current node is blocking your move.")
     }
 
     private data class StartMove(val userId: String, val nodeId: String)
     private fun handleMove(runId: String, toNode: Node, position: HackerPosition) {
-//        FIXME
-//        hackerPositionService.saveInTransit(position)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_MOVE, StartMove(position.userId, toNode.id))
+        hackerPositionService.saveInTransit(position)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(position.userId, toNode.id))
     }
 }

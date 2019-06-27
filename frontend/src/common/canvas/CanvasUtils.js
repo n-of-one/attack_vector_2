@@ -7,14 +7,14 @@ const animate = (canvas, toAnimate, attribute, value, duration, easing) => {
     if (attribute) {
         toAnimate.animate(attribute, value, {
             onChange: canvas.renderAll.bind(canvas),
-            duration: duration * 50,
+            duration: duration * 50 - 25,
             easing: easingFunction
         });
     }
     else {
         toAnimate.animate(value, {
             onChange: canvas.renderAll.bind(canvas),
-            duration: duration * 50,
+            duration: duration * 50 - 25,
             easing: easingFunction
         });
     }

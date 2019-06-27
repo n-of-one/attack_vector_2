@@ -51,7 +51,7 @@ export default class Schedule {
 
         if (this.intervalId === null) {
             const that = this;
-            this.intervalId = setInterval( () => { that._mainLoop(); }, 50);
+            this.intervalId = setInterval( () => { that._mainLoop(); }, 5);
         }
         this.queue.push(event);
     }
@@ -60,7 +60,7 @@ export default class Schedule {
         this.waitEnd = Date.now() + 50 * wait;
     }
 
-    /** Main loop tick function. Triggers every 100ms. */
+    /** Main loop tick function. Triggers every 5ms. */
     _mainLoop() {
         if (this.waitEnd != null) {
             if (Date.now() < this.waitEnd) {

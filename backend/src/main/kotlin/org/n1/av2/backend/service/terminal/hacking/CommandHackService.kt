@@ -26,8 +26,7 @@ class CommandHackService(
             return stompService.terminalReceive("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
 
         }
-        val userId = currentUserService.userId
-        val position = hackerPositionService.getByRunIdAndUserId(runId, userId)
+        val position = hackerPositionService.get()
         val node = nodeService.getById(position.currentNodeId)
 
         val layer = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])
@@ -57,17 +56,17 @@ class CommandHackService(
     private fun reportLayerUnknown(node: Node, layerInput: String) {
         val serviceCount = node.services.size
         if (serviceCount == 1) {
-            stompService.terminalReceive("[warn]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
-                    "This node has only one service, the only valid option is [primary]0[/].")
+            stompService.terminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
+                    "This node has only one service, the only valid option is: [u]hack [primary]0[/].")
         } else {
-            stompService.terminalReceive("[warn]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
+            stompService.terminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
                     "This node has ${serviceCount} services, so use a number between [primary]0[/] and [primary]${serviceCount - 1}[/].")
         }
     }
 
     private fun reportBlockingIce(node: Node, blockingIceLayer: Int) {
         val ice = node.services.find { it.layer == blockingIceLayer }!!
-        stompService.terminalReceive("[warn]blocked[/] - ICE (${ice.name}) blocks hacking. Hack the ICE first.")
+        stompService.terminalReceive("[warn b]blocked[/] - ICE (${ice.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer}")
     }
 
 

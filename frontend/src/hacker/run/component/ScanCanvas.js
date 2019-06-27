@@ -115,9 +115,8 @@ class ScanCanvas {
         });
 
         this.startNodeDisplay = this.displayById[nodes[0].id];
-        this.addHackersDisplays(this.startNodeDisplay);
+        this.addHackersDisplays();
     }
-
 
     sortAndAddHackers(hackers) {
         const you = hackers.find(hacker => hacker.userId === this.userId);
@@ -128,16 +127,16 @@ class ScanCanvas {
         this.hackers.splice(midIndex, 0, you);
     }
 
-    addHackersDisplays(startNodeDisplay) {
+    addHackersDisplays() {
         const step = Math.floor(CANVAS_WIDTH / (this.hackers.length + 1));
         this.hackers.forEach((hacker, index) => {
-            this.addHackerDisplay(hacker, startNodeDisplay, step * (index + 1))
+            this.addHackerDisplay(hacker, step * (index + 1))
         });
     }
 
-    addHackerDisplay(hacker, startNodeDisplay, offset) {
+    addHackerDisplay(hacker, offset) {
         const you = hacker.userId === this.userId;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconSchedule, startNodeDisplay, hacker, offset, you, this.dispatch);
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconSchedule, this.startNodeDisplay, hacker, offset, you, this.dispatch);
     }
 
     removeHackerDisplay(hacker) {
@@ -212,10 +211,10 @@ class ScanCanvas {
         this.hackers.forEach((hacker, index) => {
             const newX = step * (index + 1);
             if (hacker.userId === targetHacker.userId) {
-                this.addHackerDisplay(hacker, this.startNodeDisplay, newX)
+                this.addHackerDisplay(hacker, newX)
             }
             else {
-                this.displayById[hacker.userId].move(newX);
+                this.displayById[hacker.userId].repositionHackerIdentification(newX);
             }
         });
     }
@@ -241,8 +240,16 @@ class ScanCanvas {
 
     enterRun(userId, quick) {
         this.displayById[userId].startRun(quick)
-        // updateHackerIcon
-        //
+    }
+
+    moveStart(userId, nodeId) {
+        const nodeDisplay = this.displayById[nodeId];
+        this.displayById[userId].moveStart(nodeDisplay)
+    }
+
+    moveArrive(userId, nodeId) {
+        const nodeDisplay = this.displayById[nodeId];
+        this.displayById[userId].moveArrive(nodeDisplay)
     }
 }
 

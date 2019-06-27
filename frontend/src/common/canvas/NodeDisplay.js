@@ -5,6 +5,7 @@ import {animate} from "./CanvasUtils";
 
 export default class NodeDisplay {
 
+    id = null;
     nodeData = null;
     canvas = null;
     status = null;
@@ -17,6 +18,7 @@ export default class NodeDisplay {
     x = null;
 
     constructor(canvas, schedule, nodeData, staticDisplay) {
+        this.id = nodeData.id;
         this.canvas = canvas;
         this.schedule = schedule;
         this.nodeData = nodeData;

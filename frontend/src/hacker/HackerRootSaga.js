@@ -3,7 +3,7 @@ import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT,
 import {
     AUTO_SCAN,
     PROBE_SCAN_NODE,
-    SERVER_DISCOVER_NODES, SERVER_HACKER_ENTER_RUN,
+    SERVER_DISCOVER_NODES,
     SERVER_HACKER_ENTER_SCAN, SERVER_HACKER_LEAVE_SCAN,
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
@@ -24,7 +24,8 @@ import {
     hackerLeaveScanSaga, deleteScanSaga
 } from "./run/saga/ScanSagas";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
-import {enterRunSaga} from "./run/saga/RunSagas";
+import {enterRunSaga, moveArriveSaga, moveStartSaga, serverMoveArriveSaga} from "./run/saga/RunSagas";
+import {HACKER_MOVE_ARRIVE, SERVER_HACKER_ENTER_RUN, SERVER_HACKER_MOVE_ARRIVE, SERVER_HACKER_MOVE_START} from "./run/model/RunActions";
 
 const createHackerRootSaga = () => {
 
@@ -63,6 +64,9 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_HACKER_LEAVE_SCAN, hackerLeaveScanSaga);
 
         yield takeEvery(SERVER_HACKER_ENTER_RUN, enterRunSaga);
+        yield takeEvery(SERVER_HACKER_MOVE_START, moveStartSaga);
+        yield takeEvery(HACKER_MOVE_ARRIVE, moveArriveSaga);
+        yield takeEvery(SERVER_HACKER_MOVE_ARRIVE, serverMoveArriveSaga);
     }
 
     function* scanRootSaga() {
