@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {findElementById} from "../../../../../common/Immutable";
+import {findElementById} from "../../../../../../../common/Immutable";
 import ServiceType from "../../ServiceName";
 import ServiceLayer from "../../ServiceLayer";
 import ServiceField from "../../ServiceField";

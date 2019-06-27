@@ -3,9 +3,9 @@ import {connect} from "react-redux";
 import {
     DATA_STORE, MANUAL_1, MANUAL_2, MANUAL_3, PASSCODE_STORE, RESOURCE_STORE, SYSCON,
     ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
-} from "../../common/enums/NodeTypesNames";
+} from "../../../../common/enums/NodeTypesNames";
 import NodeImage from "./EditorNodeImage";
-import editorCanvas from "./EditorCanvas";
+import editorCanvas from "../middle/EditorCanvas";
 
 /* eslint jsx-a11y/alt-text: 0*/
 

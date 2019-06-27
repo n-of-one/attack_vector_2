@@ -1,4 +1,4 @@
-import editorCanvas from "../component/EditorCanvas";
+import editorCanvas from "../component/middle/middle/EditorCanvas";
 import webSocketConnection from "../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
 

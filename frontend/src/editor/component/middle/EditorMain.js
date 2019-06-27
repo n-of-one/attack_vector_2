@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
-import NodesPanel from "./NodesPanel";
-import EditCanvasPanel from "./EditCanvasPanel";
-import DetailPanel from "./DetailPanel";
+import NodesPanel from "./left/NodesPanel";
+import EditCanvasPanel from "./middle/EditCanvasPanel";
+import DetailPanel from "./right/DetailPanel";
 
 let mapStateToProps = (state) => {
     return {

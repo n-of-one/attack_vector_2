@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {DRAG_DROP_START} from "../EditorActions";
+import {DRAG_DROP_START} from "../../../EditorActions";
 
 /* eslint jsx-a11y/alt-text: 0*/
 

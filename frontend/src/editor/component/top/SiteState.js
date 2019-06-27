@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
-import SilentLink from "../../common/component/SilentLink";
-import editorCanvas from "./EditorCanvas";
+import SilentLink from "../../../common/component/SilentLink";
+import editorCanvas from "../middle/middle/EditorCanvas";
 
 const mapDispatchToProps = (dispatch) => {
     return {}

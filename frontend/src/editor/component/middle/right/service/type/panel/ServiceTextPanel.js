@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import ServiceText from "../../../../../common/model/service/ServiceText";
+import ServiceText from "../../../../../../../common/model/service/ServiceText";
 import ServiceField from "../../ServiceField";
 import ServicePanel from "./ServicePanel";
 

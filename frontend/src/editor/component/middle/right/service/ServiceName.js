@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from "react-redux";
-import SilentLink from "../../../common/component/SilentLink";
-import Glyphicon from "../../../common/component/Glyphicon";
+import SilentLink from "../../../../../common/component/SilentLink";
+import Glyphicon from "../../../../../common/component/Glyphicon";
 import {OS} from "./ServiceTypes";
-import {REMOVE_SERVICE} from "../../EditorActions";
+import {REMOVE_SERVICE} from "../../../../EditorActions";
 
 const mapDispatchToProps = (dispatch) => {
     return {

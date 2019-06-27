@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
-import EditorMain from "./EditorMain";
-import EditorTop from "./EditorTop";
-import EditorBottom from "./EditorBottom";
+import EditorMain from "./middle/EditorMain";
+import EditorTop from "./top/EditorTop";
+import EditorBottom from "./bottom/EditorBottom";
 
 const mapDispatchToProps = (dispatch) => {
     return {

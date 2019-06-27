@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
-import SilentLink from "../../../common/component/SilentLink";
-import {SWAP_SERVICE_LAYER} from "../../EditorActions";
+import {SWAP_SERVICE_LAYER} from "../../../../EditorActions";
+import SilentLink from "../../../../../common/component/SilentLink";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

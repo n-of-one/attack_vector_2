@@ -1,12 +1,12 @@
 import React from 'react';
 import {connect} from "react-redux";
 import ServiceOsPanel from "./type/panel/ServiceOsPanel";
-import {findElementById} from "../../../common/Immutable";
+import {findElementById} from "../../../../../common/Immutable";
 import {ICE_PASSWORD, OS, TEXT} from "./ServiceTypes";
 import ServiceTextPanel from "./type/panel/ServiceTextPanel";
-import SilentLink from "../../../common/component/SilentLink";
-import {SELECT_SERVICE} from "../../EditorActions";
-import Glyphicon from "../../../common/component/Glyphicon";
+import SilentLink from "../../../../../common/component/SilentLink";
+import {SELECT_SERVICE} from "../../../../EditorActions";
+import Glyphicon from "../../../../../common/component/Glyphicon";
 import ServiceIcePasswordPanel from "./type/panel/ServiceIcePasswordPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/

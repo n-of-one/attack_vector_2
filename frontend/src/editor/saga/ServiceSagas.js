@@ -1,6 +1,6 @@
 import webSocketConnection from "../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
-import editorCanvas from "../component/EditorCanvas";
+import editorCanvas from "../component/middle/middle/EditorCanvas";
 
 const getSiteId = (state) => state.siteData.siteId;
 
