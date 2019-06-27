@@ -73,7 +73,7 @@ class SiteValidationService(
     }
 
     private fun validateNetworkId(node: Node, networkIds: MutableSet<String>, messages: MutableList<SiteStateMessage>) {
-        val networkId = node.networkId
+        val networkId = node.networkId?.toLowerCase()
         if (networkIds.contains(networkId)) {
             val message = SiteStateMessage(SiteStateMessageType.ERROR, "Duplicate network id: ${networkId}", node.id, node.services[0].id)
             messages.add(message)
