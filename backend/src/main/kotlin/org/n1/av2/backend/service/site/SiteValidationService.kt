@@ -23,13 +23,13 @@ class SiteValidationService(
         val siteData = siteDataService.getBySiteId(id)
         val nodes = nodeService.getAll(id)
 
-        validateSiteData(messages, siteData, nodes)
-        validateNodes(messages, siteData, nodes)
+        validateSiteData(siteData, nodes, messages)
+        validateNodes(siteData, nodes, messages)
 
         processValidationMessages(messages, id)
     }
 
-    private fun validateSiteData(messages: MutableList<SiteStateMessage>, siteData: SiteData, nodes: List<Node>) {
+    private fun validateSiteData(siteData: SiteData, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         validate(messages) { validateHackTime(siteData) }
         validate(messages) { validateSiteName(siteData)}
         validate(messages) { validateStartNode(siteData, nodes) }
@@ -58,21 +58,39 @@ class SiteValidationService(
                 ?: throw ValidationException("Start node network id not found: ${data.startNodeNetworkId}.")
     }
 
-    private fun validateNodes(messages: MutableList<SiteStateMessage>, siteData: SiteData, nodes: List<Node>) {
+    private fun validateNodes(siteData: SiteData, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         if (nodes.isEmpty()) return
 
         val siteRep = SiteRep(nodes[0], nodes, siteData)
 
+        val networkIds = HashSet<String>()
+
         siteRep.nodes.forEach { node ->
             siteRep.node = node
-            node.services.forEach { service ->
-                service.allValidationMethods().forEach { validateMethod ->
-                    try {
-                        validateMethod(siteRep)
-                    } catch (exception: ValidationException) {
-                        val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage, node.id, service.id)
-                        messages.add(message)
-                    }
+            validateNetworkId(node, networkIds, messages)
+            validateServices(node, siteRep, messages)
+        }
+    }
+
+    private fun validateNetworkId(node: Node, networkIds: MutableSet<String>, messages: MutableList<SiteStateMessage>) {
+        val networkId = node.networkId
+        if (networkIds.contains(networkId)) {
+            val message = SiteStateMessage(SiteStateMessageType.ERROR, "Duplicate network id: ${networkId}", node.id, node.services[0].id)
+            messages.add(message)
+        }
+        else {
+            networkIds.add(networkId)
+        }
+    }
+
+    private fun validateServices(node: Node, siteRep: SiteRep, messages: MutableList<SiteStateMessage>) {
+        node.services.forEach { service ->
+            service.allValidationMethods().forEach { validateMethod ->
+                try {
+                    validateMethod(siteRep)
+                } catch (exception: ValidationException) {
+                    val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage, node.id, service.id)
+                    messages.add(message)
                 }
             }
         }
