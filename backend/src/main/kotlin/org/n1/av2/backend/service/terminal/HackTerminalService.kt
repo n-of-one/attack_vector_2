@@ -21,7 +21,9 @@ class HackTerminalService(
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
-        when (tokens[0]) {
+        if (tokens.isEmpty()) return
+        val command = tokens[0].toLowerCase()
+        when (command) {
             "help" -> processHelp()
             "mv" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
             "hack" -> commandHackService.process(runId, tokens)
