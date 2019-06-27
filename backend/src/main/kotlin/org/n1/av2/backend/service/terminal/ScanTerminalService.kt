@@ -33,8 +33,9 @@ class ScanTerminalService(val scanningService: ScanningService,
             "scan" -> processScan(runId, tokens)
             "/share" -> socialTerminalService.processShare(runId, tokens)
             "servererror" -> error("gah")
-            "quickscan" -> processQuickscan(runId)
-            "attack" -> processAttack(runId)
+            "quickscan", "qs" -> processQuickscan(runId)
+            "attack" -> processAttack(runId, false)
+            "quickattack", "qa" -> processAttack(runId, true)
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
         }
     }
@@ -60,7 +61,8 @@ class ScanTerminalService(val scanningService: ScanningService,
             stompService.terminalReceive(
                     "",
                     "[i]Available only during development and testing:[/]",
-                    " [u]quickscan"
+                    " [u]quickscan[/] or [u]qs",
+                    " [u]quickattack[/] or [u]qa"
             )
         }
     }
@@ -78,12 +80,12 @@ class ScanTerminalService(val scanningService: ScanningService,
         scanningService.quickScan(runId)
     }
 
-    data class StartRun(val userId: String)
-    private fun processAttack(runId: String) {
+    data class StartRun(val userId: String, val quick: Boolean)
+    private fun processAttack(runId: String, quick: Boolean) {
         userActivityService.startActivityHacking(runId)
         hackTerminalService.sendSyntaxHighlighting()
         hackerPositionService.startRun(runId)
-        val data = StartRun(currentUserService.userId)
+        val data = StartRun(currentUserService.userId, quick)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_RUN, data)
     }
 

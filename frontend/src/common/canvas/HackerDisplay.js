@@ -39,7 +39,7 @@ export default class HackerDisplay {
 
         const size = you ? 60 : 40;
 
-        this.hackerIdentifierIcon = this.createHackerIcon(size, 0);
+        this.hackerIdentifierIcon = this.createHackerIcon(size, 0, this);
         this.canvas.add(this.hackerIdentifierIcon);
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", 1, APPEAR_TIME);
 
@@ -89,12 +89,12 @@ export default class HackerDisplay {
         this.schedule.run(3, () => animate(this.canvas, this.lineIcon, "opacity", 0.5, 40));
     }
 
-    createHackerIcon(size, opacity) {
+    createHackerIcon(size, opacity, position) {
         const image = document.getElementById(this.hacker.icon);
 
         const icon = new fabric.Image(image, {
-            left: this.x,
-            top: this.y,
+            left: position.x,
+            top: position.y,
             height: size,
             width: size,
             opacity: opacity,
@@ -135,9 +135,30 @@ export default class HackerDisplay {
         });
     }
 
-    startRun() {
+    startRun(quick) {
+        if (quick) {
+            this.startRunQuick()
+        }
+        else {
+            this.startRunSlow()
+        }
+    }
+
+    startRunQuick() {
+        this.hackerIcon = this.createHackerIcon(40, 1, this.startNodeDisplay);
+        this.canvas.add(this.hackerIcon);
+        this.canvas.bringToFront(this.hackerIcon);
+        this.schedule.run(0, () => {
+            this.echo(0, "[info]Persona established, hack started.");
+            this.moveStep(this.startNodeDisplay, 20, 20, 5);
+            animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
+        });
+    }
+
+
+    startRunSlow() {
         this.dispatch({type: TERMINAL_LOCK, id: "main"});
-        this.hackerIcon = this.createHackerIcon(60, 1);
+        this.hackerIcon = this.createHackerIcon(60, 1, this);
         this.canvas.add(this.hackerIcon);
         this.canvas.sendToBack(this.hackerIcon);
 
@@ -179,8 +200,6 @@ export default class HackerDisplay {
         this.schedule.run(0, () => {
             this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
         });
-
-
     }
 
     echo(time, message) {

@@ -31,10 +31,10 @@ class CommandMoveService(
         val networkId = tokens[1]
         val userId = currentUserService.userId
         val position = hackerPositionService.getByRunIdAndUserId(runId, userId)
-        val toNode = nodeService.findByNetworkId(position.siteId, networkId) ?: return reportNodeNotFound()
+        val toNode = nodeService.findByNetworkId(position.siteId, networkId) ?: return reportNodeNotFound(networkId)
         if (position.previousNodeId == toNode.id) return handleMove(runId, toNode, position)
         val scan = scanService.getByRunId(runId)
-        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeStatus.UNDISCOVERED) return reportNodeNotFound()
+        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
         connectionService.findConnection(position.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         val fromNode = nodeService.getById(position.currentNodeId)
@@ -43,8 +43,8 @@ class CommandMoveService(
         handleMove(runId, toNode, position)
     }
 
-    fun reportNodeNotFound() {
-        stompService.terminalReceive("[warn]error[/] node not found.")
+    fun reportNodeNotFound(networkId: String) {
+        stompService.terminalReceive("[warn]error[/] node [ok]${networkId}[/] not found.")
     }
 
     fun reportNoPath(networkId: String) {

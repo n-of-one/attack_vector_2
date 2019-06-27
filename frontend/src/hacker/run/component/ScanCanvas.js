@@ -239,8 +239,8 @@ class ScanCanvas {
         this.canvasObjectDeSelected();
     }
 
-    enterRun(userId) {
-        this.displayById[userId].startRun()
+    enterRun(userId, quick) {
+        this.displayById[userId].startRun(quick)
         // updateHackerIcon
         //
     }
