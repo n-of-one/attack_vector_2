@@ -2,24 +2,26 @@ import React from 'react';
 import {connect} from "react-redux";
 import SilentLink from "../../../common/component/SilentLink";
 import editorCanvas from "../middle/middle/EditorCanvas";
+import {SELECT_SERVICE} from "../../EditorActions";
 
 const mapDispatchToProps = (dispatch) => {
-    return {}
+    return {
+        navigateToService: (nodeId, serviceId) => {
+            editorCanvas.openService(nodeId, serviceId);
+            dispatch({type: SELECT_SERVICE, serviceId: serviceId })
+        }
+    }
 };
+
 const mapStateToProps = (state) => {
     return {
         siteState: state.state,
     };
 };
 
-const openService = (nodeId, serviceId) => {
-    editorCanvas.openService(nodeId, serviceId);
-};
-
-
-const renderMessage = (message, index) => {
+const renderMessage = (message, index, navigateToService) => {
     const label = (message.type === "INFO") ? <span className="label label-info">Info&nbsp;</span> : <span className="label label-warning">Error</span>;
-    const link = (message.serviceId) ? (<>&nbsp;<SilentLink onClick={() => {openService(message.nodeId, message.serviceId)}}>
+    const link = (message.serviceId) ? (<>&nbsp;<SilentLink onClick={() => {navigateToService(message.nodeId, message.serviceId)}}>
         <span className="glyphicon glyphicon-share-alt" /></SilentLink></>) : <></>;
 
     return (
@@ -32,7 +34,7 @@ const renderMessage = (message, index) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({siteState}) => {
+    ({siteState, navigateToService}) => {
 
         let statusElement = (siteState.ok) ? <span className="label label-success">Ok</span> :  <span className="label label-warning">Error</span>;
 
@@ -45,7 +47,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
                 <hr className="thin-hr"/>
                 {siteState.messages.map( (message, index) => {
-                    return renderMessage(message, index)
+                    return renderMessage(message, index, navigateToService)
                 })}
             </div>
         );
