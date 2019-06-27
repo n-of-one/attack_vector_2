@@ -1,6 +1,5 @@
 import {fabric} from "fabric";
 import {animate, calcLine, easeLinear} from "./CanvasUtils";
-import Thread from "../Thread";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
 
 const APPEAR_TIME = 20;
@@ -17,7 +16,7 @@ export default class HackerDisplay {
     lineIcon = null;
     labelIcon = null;
 
-    thread = null;
+    schedule = null;
     hacker = null;
     you = false;
     startNodeDisplay = null;
@@ -28,9 +27,9 @@ export default class HackerDisplay {
 
     dispatch = null;
 
-    constructor(canvas, thread, startNodeDisplay, hacker, offset, you, dispatch) {
+    constructor(canvas, schedule, startNodeDisplay, hacker, offset, you, dispatch) {
         this.canvas = canvas;
-        this.thread = thread;
+        this.schedule = schedule;
         this.hacker = hacker;
         this.startNodeDisplay = startNodeDisplay;
         this.dispatch = dispatch;
@@ -87,7 +86,7 @@ export default class HackerDisplay {
             });
         this.canvas.add(this.lineIcon);
         this.canvas.sendToBack(this.lineIcon);
-        this.thread.run(3, () => animate(this.canvas, this.lineIcon, "opacity", 0.5, 40));
+        this.schedule.run(3, () => animate(this.canvas, this.lineIcon, "opacity", 0.5, 40));
     }
 
     createHackerIcon(size, opacity) {
@@ -111,7 +110,7 @@ export default class HackerDisplay {
     }
 
     move(newX) {
-        this.thread.run(APPEAR_TIME, () => {
+        this.schedule.run(APPEAR_TIME, () => {
             this.x = newX;
             animate(this.canvas, this.hackerIdentifierIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
@@ -123,12 +122,12 @@ export default class HackerDisplay {
     }
 
     disappear() {
-        this.thread.run(DISAPPEAR_TIME, () => {
+        this.schedule.run(DISAPPEAR_TIME, () => {
             animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.lineIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME);
         });
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.canvas.remove(this.hackerIdentifierIcon);
             this.canvas.remove(this.lineIcon);
             this.canvas.remove(this.labelIcon);
@@ -142,7 +141,7 @@ export default class HackerDisplay {
         this.canvas.add(this.hackerIcon);
         this.canvas.sendToBack(this.hackerIcon);
 
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.moveStep(this.startNodeDisplay, 0, 0, 200, easeLinear);
             animate(this.canvas, this.hackerIcon, 'width', 40, 100);
             animate(this.canvas, this.hackerIcon, 'height', 40, 100);
@@ -157,7 +156,7 @@ export default class HackerDisplay {
         this.echo(20, "");
         this.echo(20, "Persona v2.3 booting");
         this.echo(10, "- unique ID: " + personaId);
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             animate(this.canvas, this.hackerIcon, 'opacity', 0.3, 100, fabric.util.ease.easeOutSine);
             this.canvas.bringToFront(this.hackerIcon);
         });
@@ -167,17 +166,17 @@ export default class HackerDisplay {
         this.echo(10, "  - [ok]ok[/] Content masked.");
         this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon");
         this.echo(30, "  - [ok]ok[/] Network origin obfuscated ");
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 100);
         });
         this.echo(20, "- Persona creation [info]complete");
         this.echo(0, "");
         this.echo(80, "Entering node");
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.moveStep(this.startNodeDisplay, 20, 20, 20)
         });
         this.echo(0, "Persona accepted by node OS.");
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
         });
 
@@ -185,7 +184,7 @@ export default class HackerDisplay {
     }
 
     echo(time, message) {
-        this.thread.run(time, () => {
+        this.schedule.run(time, () => {
             this.dispatch({type: SERVER_TERMINAL_RECEIVE, data: {terminalId: "main", lines: [message]}});
         });
     }
@@ -202,18 +201,18 @@ export default class HackerDisplay {
     //
     //     avatarMoveToNode = nodesById[targetNodeId];
     //
-    //     this.thread.run(4, function () {
+    //     this.schedule.run(4, function () {
     //         moveStep(currentNode, 0, 0, 200, hackerAvatar);
     //     });
-    //     this.thread.run(12, function () {
+    //     this.schedule.run(12, function () {
     //         moveStep(avatarMoveToNode, 0, 0, 800, hackerAvatar);
     //         currentNode = avatarMoveToNode;
     //     });
-    //     this.thread.run(4, function () {
+    //     this.schedule.run(4, function () {
     //         personaArrivesAtNode(avatarMoveToNode, newNodeStatus);
     //     });
     //
-    //     this.thread.run(0, function () {
+    //     this.schedule.run(0, function () {
     //         moveStep(avatarMoveToNode, 20, 20, 200, hackerAvatar);
     //     });
     // }

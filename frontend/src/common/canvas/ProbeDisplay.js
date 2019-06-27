@@ -10,16 +10,16 @@ export default class ConnectionDisplay {
     dispatch = null;
 
     id = null;
-    thread = null;
+    schedule = null;
     autoScan = null;
     yourProbe = null;
     probeIcon = null;
 
     lineIcons = [];
 
-    constructor(canvas, thread, dispatch, {path, scanType, autoScan}, hackerDisplay, yourProbe, displayById) {
+    constructor(canvas, schedule, dispatch, {path, scanType, autoScan}, hackerDisplay, yourProbe, displayById) {
         this.canvas = canvas;
-        this.thread = thread;
+        this.schedule = schedule;
         this.autoScan = autoScan;
         this.yourProbe = yourProbe;
         this.dispatch = dispatch;
@@ -51,13 +51,13 @@ export default class ConnectionDisplay {
             currentDisplay = nextDisplay;
         });
         const lastNodeId = path.pop();
-        thread.run(0, () => {
+        schedule.run(0, () => {
             this.processProbeArrive(scanType, lastNodeId, currentDisplay);
         });
     }
 
     scheduleMoveStep(nextDisplay, currentDisplay) {
-        this.thread.run(22, () => this.moveStep(nextDisplay, currentDisplay, 20));
+        this.schedule.run(22, () => this.moveStep(nextDisplay, currentDisplay, 20));
     }
 
     moveStep(nextDisplay, currentDisplay, time) {
@@ -105,12 +105,12 @@ export default class ConnectionDisplay {
     }
 
     scanInside(nodeId, action) {
-        this.thread.run(50, () => {
+        this.schedule.run(50, () => {
             animate(this.canvas, this.probeIcon, 'width', "20", 50);
             animate(this.canvas, this.probeIcon, 'height', "20", 50);
             animate(this.canvas, this.probeIcon, 'opacity', "0.8", 50);
         });
-        this.thread.run(25, () => {
+        this.schedule.run(25, () => {
             animate(this.canvas, this.probeIcon, 'width', "30", 25);
             animate(this.canvas, this.probeIcon, 'height', "30", 25);
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 25);
@@ -124,13 +124,13 @@ export default class ConnectionDisplay {
     }
 
     scanOutside(nodeId) {
-        this.thread.run(50, () => {
+        this.schedule.run(50, () => {
             console.log("scanOutside start: " + Date.now());
             animate(this.canvas, this.probeIcon, 'width', "80", 50);
             animate(this.canvas, this.probeIcon, 'height', "80", 50);
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 50);
         });
-        this.thread.run(25, () => {
+        this.schedule.run(25, () => {
             animate(this.canvas, this.probeIcon, 'width', "60", 25);
             animate(this.canvas, this.probeIcon, 'height', "60", 25);
             animate(this.canvas, this.probeIcon, 'opacity', "0.3", 25);
@@ -144,7 +144,7 @@ export default class ConnectionDisplay {
     }
 
     finishProbe(finishMethod) {
-        this.thread.run(10, () => {
+        this.schedule.run(10, () => {
             console.log("finish: " + Date.now());
             animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
             this.lineIcons.forEach(lineIcon => {
@@ -152,7 +152,7 @@ export default class ConnectionDisplay {
             });
             finishMethod();
         });
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.canvas.remove(this.probeIcon);
             this.lineIcons.forEach(lineIcon => {
                 this.canvas.remove(lineIcon);
@@ -170,10 +170,10 @@ export default class ConnectionDisplay {
 
 
     probeError(scanType, nodeId) {
-        this.thread.run(30, () => {
+        this.schedule.run(30, () => {
             animate(this.canvas, this.probeIcon, "height", 0, 30)
         });
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + scanType + "[/] unknown. nodeId: [info]" + nodeId})
         });
     }

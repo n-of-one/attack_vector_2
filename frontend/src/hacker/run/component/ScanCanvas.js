@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
-import Thread from "../../../common/Thread";
+import Schedule from "../../../common/Schedule";
 import {DISCOVERED, UNDISCOVERED} from "../../../common/enums/NodeStatus";
-import Threads from "../../../common/Threads";
+import Schedules from "../../../common/Schedules";
 import NodeDisplay from "../../../common/canvas/NodeDisplay";
 import ConnectionIcon from "../../../common/canvas/ConnectionDisplay";
 import HackerIcon from "../../../common/canvas/HackerDisplay";
@@ -21,8 +21,8 @@ class ScanCanvas {
     displayById = {};
 
     dispatch = null;
-    iconThread = new Thread();
-    probeThreads = new Threads();
+    iconSchedule = new Schedule();
+    probeSchedule = new Schedules();
 
     startNodeDisplay = null;
     userId = null;
@@ -69,10 +69,10 @@ class ScanCanvas {
         this.connectionDataById = {};
         this.startNodeDisplay = null;
 
-        this.iconThread.deactivate();
-        this.probeThreads.deactivate();
-        this.iconThread = new Thread();
-        this.probeThreads = new Threads();
+        this.iconSchedule.deactivate();
+        this.probeSchedule.deactivate();
+        this.iconSchedule = new Schedule();
+        this.probeSchedule = new Schedules();
 
         this.render();
     }
@@ -137,7 +137,7 @@ class ScanCanvas {
 
     addHackerDisplay(hacker, startNodeDisplay, offset) {
         const you = hacker.userId === this.userId;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconThread, startNodeDisplay, hacker, offset, you, this.dispatch);
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconSchedule, startNodeDisplay, hacker, offset, you, this.dispatch);
     }
 
     removeHackerDisplay(hacker) {
@@ -147,22 +147,22 @@ class ScanCanvas {
     }
 
     addNodeDisplay(node) {
-        const nodeDisplay = new NodeDisplay(this.canvas, this.iconThread, node, true);
+        const nodeDisplay = new NodeDisplay(this.canvas, this.iconSchedule, node, true);
         this.displayById[node.id] = nodeDisplay;
         nodeDisplay.appear();
     }
 
     addConnectionDisplay(id, fromDisplay, toDisplay) {
-        const connectionDisplay = new ConnectionIcon(this.canvas, this.iconThread, id, fromDisplay, toDisplay);
+        const connectionDisplay = new ConnectionIcon(this.canvas, this.iconSchedule, id, fromDisplay, toDisplay);
         this.displayById[id] = connectionDisplay;
         connectionDisplay.appear();
     }
 
     launchProbe(probeData) {
-        const probeThread = this.probeThreads.getOrCreateThread(probeData.probeUserId);
+        const probeSchedule = this.probeSchedule.getOrCreateSchedule(probeData.probeUserId);
         const hackerDisplay = this.displayById[probeData.probeUserId];
         const yourProbe = probeData.probeUserId === this.userId;
-        this.displayById[probeData.id] = new ProbeDisplay(this.canvas, probeThread, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
+        this.displayById[probeData.id] = new ProbeDisplay(this.canvas, probeSchedule, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
     }
 
     updateNodeStatus(nodeId, newStatus) {

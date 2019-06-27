@@ -16,9 +16,9 @@ export default class NodeDisplay {
     y = null;
     x = null;
 
-    constructor(canvas, thread, nodeData, staticDisplay) {
+    constructor(canvas, schedule, nodeData, staticDisplay) {
         this.canvas = canvas;
-        this.thread = thread;
+        this.schedule = schedule;
         this.nodeData = nodeData;
 
         const image = this.getNodeIconImage();
@@ -110,7 +110,7 @@ export default class NodeDisplay {
     }
 
     appear() {
-        this.thread.run(3, () => {
+        this.schedule.run(3, () => {
 
             animate(this.canvas, this.labelIcon, "opacity", 1, 40);
             animate(this.canvas, this.labelBackgroundIcon, "opacity", 0.8, 40);
@@ -135,7 +135,7 @@ export default class NodeDisplay {
 
     updateNodeIcon = (fadeOut) => {
         if (fadeOut) {
-            this.thread.run(8, () => {
+            this.schedule.run(8, () => {
                 animate(this.canvas, this.nodeIcon, 'opacity', 0.05, 8, fabric.util.ease.easeOutSine);
                 animate(this.canvas, this.nodeIcon, 'left', "-=10", 8, fabric.util.ease.easeOutSine);
             });
@@ -143,7 +143,7 @@ export default class NodeDisplay {
 
         const newIconImage = this.getNodeIconImage();
 
-        this.thread.run(0, () => {
+        this.schedule.run(0, () => {
             this.nodeIcon.setElement(newIconImage);
             this.canvas.renderAll();
             const newOpacity = 0.4;

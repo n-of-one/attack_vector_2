@@ -4,7 +4,7 @@ import {animate, calcLine} from "./CanvasUtils";
 export default class ConnectionDisplay {
 
     canvas = null;
-    thread = null;
+    schedule = null;
 
     connectionIcon = null;
 
@@ -12,9 +12,9 @@ export default class ConnectionDisplay {
     fromDisplay= null;
     toDisplay = null;
 
-    constructor(canvas, thread, connectionData, fromDisplay, toDisplay) {
+    constructor(canvas, schedule, connectionData, fromDisplay, toDisplay) {
         this.canvas = canvas;
-        this.thread = thread;
+        this.schedule = schedule;
 
         this.connectionData = connectionData;
         this.fromDisplay = fromDisplay;
@@ -37,7 +37,7 @@ export default class ConnectionDisplay {
     }
 
     appear() {
-        this.thread.run(3, () => {
+        this.schedule.run(3, () => {
             animate(this.canvas, this.connectionIcon, "opacity", 0.5, 40);
         });
     }
