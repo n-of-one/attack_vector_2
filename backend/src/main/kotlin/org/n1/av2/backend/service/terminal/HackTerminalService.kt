@@ -7,6 +7,7 @@ import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.terminal.hacking.CommandHackService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
+import org.n1.av2.backend.service.terminal.hacking.CommandViewService
 import org.springframework.stereotype.Service
 
 // FIXME: when the class is finished
@@ -19,17 +20,18 @@ class HackTerminalService(
         val socialTerminalService: SocialTerminalService,
         val commandHackService: CommandHackService,
         val commandMoveService: CommandMoveService,
+        val commandViewService: CommandViewService,
         val environment: MyEnvironment) {
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
-        if (tokens.isEmpty()) return
+        if (tokens[0].isNullOrBlank()) return
         val commandAction = tokens[0].toLowerCase()
         when (commandAction) {
             "help" -> processHelp()
             "move" -> commandMoveService.process(runId, tokens)
             "hack" -> commandHackService.process(runId, tokens)
-            "view" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
+            "view" -> commandViewService.process(runId)
             "dc" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)

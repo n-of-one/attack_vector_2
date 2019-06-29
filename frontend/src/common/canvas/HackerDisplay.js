@@ -217,7 +217,6 @@ export default class HackerDisplay {
     }
 
     moveStart(nodeDisplay) {
-        console.time('move');
         this.schedule.run(4, ()=> {
             this.moveStep(this.currentNode, 0, 0, 4);
         });
@@ -232,9 +231,6 @@ export default class HackerDisplay {
 
     moveArrive(nodeDisplay) {
         this.currentNode = nodeDisplay;
-        this.schedule.run(0, ()=> {
-            console.timeEnd('move');
-        });
     }
 
     // movePersona(payload) {

@@ -58,6 +58,11 @@ class StompService(
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
     }
 
+    data class TerminalReceiveLinesAsCollection(val terminalId: String, val lines: Collection<String>)
+    fun terminalReceive(lines: Collection<String>) {
+        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceiveLinesAsCollection("main", lines))
+    }
+
     fun terminalReceiveForId(terminalId: String, vararg lines: String) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }

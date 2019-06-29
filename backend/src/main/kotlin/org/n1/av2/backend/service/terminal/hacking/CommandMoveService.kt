@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.terminal.hacking
 import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.site.Node
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
@@ -14,12 +13,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandMoveService(
-        val stompService: StompService,
-        val nodeService: NodeService,
-        val connectionService: ConnectionService,
-        val currentUserService: CurrentUserService,
-        val hackerPositionService: HackerPositionService,
-        val scanService: ScanService
+        private val stompService: StompService,
+        private val nodeService: NodeService,
+        private val connectionService: ConnectionService,
+        private val hackerPositionService: HackerPositionService,
+        private val scanService: ScanService
 
         ) {
 

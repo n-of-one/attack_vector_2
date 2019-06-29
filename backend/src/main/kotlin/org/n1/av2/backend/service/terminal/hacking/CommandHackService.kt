@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.terminal.hacking
 import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.enums.ServiceType
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.service.ServiceOs
@@ -13,12 +12,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandHackService(
-        val stompService: StompService,
-        val nodeService: NodeService,
-        val currentUserService: CurrentUserService,
-        val hackerPositionService: HackerPositionService,
-        val serviceOs: ServiceOs,
-        val serviceText: ServiceText
+        private val stompService: StompService,
+        private val nodeService: NodeService,
+        private val hackerPositionService: HackerPositionService,
+        private val serviceOs: ServiceOs,
+        private val serviceText: ServiceText
 ) {
 
     fun process(runId: String, tokens: List<String>) {
@@ -32,7 +30,7 @@ class CommandHackService(
         val layer = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])
         if (layer < 0 || layer >= node.services.size) return reportLayerUnknown(node, tokens[1])
 
-        val blockingIceLayer = checkBlockingIce(node)
+        val blockingIceLayer = findBlockingIceLayer(node)
         if (blockingIceLayer != null && blockingIceLayer > layer) return reportBlockingIce(node, blockingIceLayer)
 
         handleHack(node, layer, position)
@@ -43,15 +41,11 @@ class CommandHackService(
 
         when (service.type) {
             ServiceType.OS -> serviceOs.hack(service, node, position)
-            ServiceType.TEXT -> serviceText.hack(service)
-            else -> error("Service type not supported yet: ${service.type}")
+            ServiceType.TEXT -> serviceText.hack(service, node)
+            else -> stompService.terminalReceive("Service type not supported yet: ${service.type}")
         }
     }
 
-    private fun checkBlockingIce(node: Node): Int? {
-        val blockingIce = node.services.reversed().find { it.type.ice && !it.hacked } ?: return null
-        return blockingIce.layer
-    }
 
     private fun reportLayerUnknown(node: Node, layerInput: String) {
         val serviceCount = node.services.size
