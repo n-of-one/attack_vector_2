@@ -140,7 +140,8 @@ class ScanCanvas {
 
     addHackerDisplay(hacker, offset) {
         const you = hacker.userId === this.userId;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.hackerSchedule, this.startNodeDisplay, hacker, offset, you, this.dispatch);
+        const currentNode = (hacker.hacking) ? this.displayById[hacker.nodeId] : null;
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.hackerSchedule, this.startNodeDisplay, hacker, offset, you, this.dispatch, currentNode);
     }
 
     removeHackerDisplay(hacker) {

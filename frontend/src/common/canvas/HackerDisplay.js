@@ -34,25 +34,56 @@ export default class HackerDisplay {
 
     dispatch = null;
 
-    constructor(canvas, schedule, startNode, hacker, offset, you, dispatch) {
+    constructor(canvas, schedule, startNode, hacker, offset, you, dispatch, currentNode) {
         this.canvas = canvas;
         this.schedule = schedule;
         this.hacker = hacker;
         this.you = you;
         this.startNode = startNode;
-        this.currentNode = startNode;
+        this.currentNode = (currentNode) ? currentNode : startNode;
 
         this.dispatch = dispatch;
 
         this.x = offset;
         this.y = 810 - 20;
 
-        const size = you ? 60 : 40;
-
-        this.hackerIdentifierIcon = this.createHackerIcon(size, 0, this);
-        this.canvas.add(this.hackerIdentifierIcon);
+        this.addHackerIdentificationIcons();
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0.3, APPEAR_TIME);
+        animate(this.canvas, this.labelIcon, "opacity", 1, APPEAR_TIME);
+        this.schedule.run(3, () => {
+            if (hacker.hacking) {
+                const opacity = (hacker.inTransit) ? 0 : 1;
+                this.notVisible = hacker.inTransit;
+                this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, opacity, currentNode, OFFSET, OFFSET);
+                this.canvas.add(this.hackerIcon);
+                this.canvas.renderAll();
+            }
+            animate(this.canvas, this.lineIcon, "opacity", 0.5, 40);
+        });
+    }
 
+    createHackerIcon(size, opacity, position, offsetX, offsetY) {
+        offsetX = (offsetX) ? offsetX : 0;
+        offsetY = (offsetY) ? offsetY : 0;
+
+        const image = document.getElementById(this.hacker.icon);
+
+        const icon = new fabric.Image(image, {
+            left: position.x + offsetX,
+            top: position.y + offsetY,
+            height: size,
+            width: size,
+            opacity: opacity,
+            selectable: false,
+            hoverCursor: "default",
+        });
+
+        return icon
+    }
+
+    addHackerIdentificationIcons() {
+        const size = this.you ? 60 : 40;
+        this.hackerIdentifierIcon = this.createHackerIcon(size, 0, this);
         this.hackerHider = new fabric.Rect({
             left: this.x,
             top: this.y + 25,
@@ -63,10 +94,7 @@ export default class HackerDisplay {
             selectable: false,
             hoverCursor: "default",
         });
-        this.canvas.add(this.hackerHider);
-
-
-        const hackerName = you ? "You" : hacker.userName;
+        const hackerName = this.you ? "You" : this.hacker.userName;
         this.labelIcon = new fabric.Text(hackerName, {
             fill: "#f0ad4e",    // color-ok
             fontFamily: "courier",
@@ -80,11 +108,7 @@ export default class HackerDisplay {
             selectable: false,
             hoverCursor: "default",
         });
-        this.canvas.add(this.labelIcon);
-        animate(this.canvas, this.labelIcon, "opacity", 1, APPEAR_TIME);
-
-        const lineData = calcLine(this, startNode);
-
+        const lineData = calcLine(this, this.startNode);
         this.lineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#bb8",
@@ -94,25 +118,13 @@ export default class HackerDisplay {
                 hoverCursor: 'default',
                 opacity: 0
             });
+
+        this.canvas.add(this.hackerIdentifierIcon);
+        this.canvas.add(this.hackerHider);
+        this.canvas.add(this.labelIcon);
         this.canvas.add(this.lineIcon);
         this.canvas.sendToBack(this.lineIcon);
-        this.schedule.run(3, () => animate(this.canvas, this.lineIcon, "opacity", 0.5, 40));
-    }
 
-    createHackerIcon(size, opacity, position) {
-        const image = document.getElementById(this.hacker.icon);
-
-        const icon = new fabric.Image(image, {
-            left: position.x,
-            top: position.y,
-            height: size,
-            width: size,
-            opacity: opacity,
-            selectable: false,
-            hoverCursor: "default",
-        });
-
-        return icon
     }
 
     size() {
@@ -263,13 +275,14 @@ export default class HackerDisplay {
     moveArrive(nodeDisplay) {
         this.currentNode = nodeDisplay;
         this.schedule.run(4, () => {
+            this.appearIfNotVisible(nodeDisplay);
             this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);
         });
     }
 
     hackerProbeServices(nodeDisplay) {
-
         this.schedule.run(50, () => {
+            this.appearIfNotVisible(nodeDisplay);
             this.animateZoom(SIZE_SMALL, 50);
         });
         this.schedule.run(45, () => {
@@ -284,11 +297,11 @@ export default class HackerDisplay {
 
     hackerProbeConnections(nodeDisplay) {
         this.schedule.run(4, () => {
+            this.appearIfNotVisible(nodeDisplay);
             this.moveStep(nodeDisplay, 0, 0, 4);
         });
 
         this.schedule.run(50, () => {
-            this.resetPosition(nodeDisplay);
             this.animateZoom(SIZE_LARGE, 50);
             this.animateOpacity(0.6, 50)
         });
@@ -306,12 +319,17 @@ export default class HackerDisplay {
         });
     }
 
-    /* This is guard against the situation that Hacker B was moving while hacker A enters the scan.
-      The position of hacker B will not be correct, as Hacker A's Canvas never initiated the move.
+    /*
+    When Hacker A enters a run that has hacker B who is in a move, the icon for hacker B is hidden (opacity 0)
+    until Hacker B performs an action at a node. Then it appears.
      */
-    resetPosition(nodeDisplay) {
-        this.hackerIcon.set("top", nodeDisplay.y);
-        this.hackerIcon.set("left", nodeDisplay.x);
+    appearIfNotVisible(nodeDisplay) {
+        if (this.notVisible) {
+            this.notVisible = false;
+            this.hackerIcon.set("top", nodeDisplay.y);
+            this.hackerIcon.set("left", nodeDisplay.x);
+            this.animateOpacity(1, 4);
+        }
     }
 
     animateZoom(size, time) {

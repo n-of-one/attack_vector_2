@@ -20,8 +20,12 @@ class HackerPositionService(
 
     companion object: KLogging()
 
-    fun retrieve(): HackerPosition {
+    fun retrieveForCurrentUser(): HackerPosition {
         return hackerPositionRepo.findByUserId(currentUserService.userId) ?: error("HackerPosition not found for ${currentUserService.userId}")
+    }
+
+    fun retrieve(userId: String): HackerPosition {
+        return hackerPositionRepo.findByUserId(userId) ?: error("HackerPosition not found for ${userId}")
     }
 
     fun startRun(runId: String) {
@@ -37,7 +41,7 @@ class HackerPositionService(
                 userId = userId,
                 currentNodeId = startNode.id,
                 previousNodeId = startNode.networkId,
-                inTransit = false)
+                inTransit = true)
         hackerPositionRepo.save(newPosition)
     }
 
@@ -47,7 +51,7 @@ class HackerPositionService(
     }
 
     fun arriveAt(nodeId: String) {
-        val position = retrieve()
+        val position = retrieveForCurrentUser()
 
         val newPosition = position.copy(inTransit = false, currentNodeId = nodeId, previousNodeId = position.currentNodeId)
         hackerPositionRepo.save(newPosition)

@@ -9,20 +9,35 @@ import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService
 import org.n1.av2.backend.service.site.NodeService
+import org.n1.av2.backend.service.terminal.HackTerminalService
+import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
 
 val STATUSES_NEEDING_PROBE_SERVICES = listOf( DISCOVERED, TYPE, CONNECTIONS)
 
 @Service
 class HackingService(
-        val hackerPositionService: HackerPositionService,
-        val currentUserService: CurrentUserService,
-        val scanService: ScanService,
-        val nodeService: NodeService,
-        val probeService: ScanProbeService,
-        val stompService: StompService) {
+        private val hackerPositionService: HackerPositionService,
+        private val currentUserService: CurrentUserService,
+        private val scanService: ScanService,
+        private val nodeService: NodeService,
+        private val probeService: ScanProbeService,
+        private val userActivityService: HackerActivityService,
+        private val hackTerminalService: HackTerminalService,
+        private val stompService: StompService) {
 
     companion object : KLogging()
+
+
+    data class StartRun(val userId: String, val quick: Boolean)
+
+    fun startAttack(runId: String, quick: Boolean) {
+        userActivityService.startActivityHacking(runId)
+        hackTerminalService.sendSyntaxHighlighting()
+        hackerPositionService.startRun(runId)
+        val data = StartRun(currentUserService.userId, quick)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_HACK, data)
+    }
 
     private data class MoveArrive(val nodeId: String, val userId: String)
     fun moveArrive(nodeId: String, runId: String) {

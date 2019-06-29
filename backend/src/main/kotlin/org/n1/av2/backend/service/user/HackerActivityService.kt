@@ -4,7 +4,6 @@ import mu.KLogging
 import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.model.hacker.HackerActivity
 import org.n1.av2.backend.model.hacker.HackerActivityType
-import org.n1.av2.backend.model.hacker.HackerPresence
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
@@ -16,7 +15,7 @@ val runActivities = listOf(HackerActivityType.SCANNING, HackerActivityType.HACKI
 
 @Service
 class HackerActivityService(
-        val currentUserService: CurrentUserService
+        private val currentUserService: CurrentUserService
 ) {
 
     companion object: KLogging()
@@ -29,8 +28,8 @@ class HackerActivityService(
         return hackerActivitiesById[currentUserService.userId]!!.type
     }
 
-    fun getAll(runId: String): Collection<HackerActivity> {
-        return hackerActivitiesById.values.filter { runActivities.contains(it.type) && it.runId == runId }
+    fun getAll(runId: String, activity: HackerActivityType): Collection<HackerActivity> {
+        return hackerActivitiesById.values.filter { activity == it.type && it.runId == runId }
     }
 
     fun connect(userPrincipal: UserPrincipal) {
@@ -68,7 +67,9 @@ class HackerActivityService(
     }
 
     fun notifyLeaveRun(runId: String, user: User) {
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, HackerPresence(user.id, user.name, user.icon))
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(user.id))
     }
+
+    data class HackerLeaveNotification(val userId: String)
 
 }

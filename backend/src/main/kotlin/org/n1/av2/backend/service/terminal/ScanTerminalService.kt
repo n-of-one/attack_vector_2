@@ -2,23 +2,19 @@ package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
 import org.n1.av2.backend.model.Syntax
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.HackerPositionService
+import org.n1.av2.backend.service.run.HackingService
 import org.n1.av2.backend.service.scan.ScanningService
-import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
 
 @Service
-class ScanTerminalService(val scanningService: ScanningService,
-                          val stompService: StompService,
-                          val currentUserService: CurrentUserService,
-                          val userActivityService: HackerActivityService,
-                          val socialTerminalService: SocialTerminalService,
-                          val hackTerminalService: HackTerminalService,
-                          val hackerPositionService: HackerPositionService,
-                          val environment: MyEnvironment) {
+class ScanTerminalService(
+        private val scanningService: ScanningService,
+        private val stompService: StompService,
+        private val socialTerminalService: SocialTerminalService,
+        private val hackingService: HackingService,
+        private val environment: MyEnvironment) {
 
     init {
         scanningService.scanTerminalService = this
@@ -85,13 +81,9 @@ class ScanTerminalService(val scanningService: ScanningService,
         scanningService.quickScan(runId)
     }
 
-    data class StartRun(val userId: String, val quick: Boolean)
     private fun processAttack(runId: String, quick: Boolean) {
-        userActivityService.startActivityHacking(runId)
-        hackTerminalService.sendSyntaxHighlighting()
-        hackerPositionService.startRun(runId)
-        val data = StartRun(currentUserService.userId, quick)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_HACK, data)
+        hackingService.startAttack(runId, quick)
+
     }
 
     fun sendSyntaxHighlighting() {
@@ -104,7 +96,7 @@ class ScanTerminalService(val scanningService: ScanningService,
         map["dc"] = Syntax("u", "error s")
         map["/share"] = Syntax("u warn", "info", "error s")
 
-        map["move"] = Syntax("error s",  "error s")
+        map["move"] = Syntax("error s", "error s")
         map["view"] = Syntax("error s", "error s")
         map["hack"] = Syntax("error s", "error s")
 
