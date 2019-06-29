@@ -24,7 +24,7 @@ class CommandHackService(
             return stompService.terminalReceive("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
 
         }
-        val position = hackerPositionService.get()
+        val position = hackerPositionService.retrieve()
         val node = nodeService.getById(position.currentNodeId)
 
         val layer = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])

@@ -18,12 +18,12 @@ export default ({node}) => {
     const rendered = [];
     const protectedLayer = findProtectedLayer(services);
 
-    rendered.push(<>Layer Service<br/></>);
+    rendered.push(<span key="_0">Layer Service<br/></span>);
 
     for (let i = 0; i < services.length; i++) {
         const service = services[i];
         if (i === protectedLayer) {
-            rendered.push(<><br/>--- Services above are protected by ice --- <br/><br/></>)
+            rendered.push(<span key="_1"><br/>--- Services above are protected by ice --- <br/><br/></span>)
         }
         rendered.push(<ServiceInfo service={service} key={i}/>)
     }

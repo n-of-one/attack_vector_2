@@ -106,14 +106,14 @@ export default class ConnectionDisplay {
 
     scanInside(nodeId, action) {
         this.schedule.run(50, () => {
-            animate(this.canvas, this.probeIcon, 'width', "20", 50);
-            animate(this.canvas, this.probeIcon, 'height', "20", 50);
-            animate(this.canvas, this.probeIcon, 'opacity', "0.8", 50);
+            animate(this.canvas, this.probeIcon, 'width', 20, 50);
+            animate(this.canvas, this.probeIcon, 'height', 20, 50);
+            animate(this.canvas, this.probeIcon, 'opacity', 0.8, 50);
         });
         this.schedule.run(25, () => {
-            animate(this.canvas, this.probeIcon, 'width', "30", 25);
-            animate(this.canvas, this.probeIcon, 'height', "30", 25);
-            animate(this.canvas, this.probeIcon, 'opacity', "0.6", 25);
+            animate(this.canvas, this.probeIcon, 'width', 30, 25);
+            animate(this.canvas, this.probeIcon, 'height', 30, 25);
+            animate(this.canvas, this.probeIcon, 'opacity', 0.6, 25);
         });
         const finishMethod = () => {
             if (this.yourProbe) {
@@ -125,7 +125,6 @@ export default class ConnectionDisplay {
 
     scanOutside(nodeId) {
         this.schedule.run(50, () => {
-            console.log("scanOutside start: " + Date.now());
             animate(this.canvas, this.probeIcon, 'width', "80", 50);
             animate(this.canvas, this.probeIcon, 'height', "80", 50);
             animate(this.canvas, this.probeIcon, 'opacity', "0.6", 50);
@@ -145,7 +144,6 @@ export default class ConnectionDisplay {
 
     finishProbe(finishMethod) {
         this.schedule.run(10, () => {
-            console.log("finish: " + Date.now());
             animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
             this.lineIcons.forEach(lineIcon => {
                 animate(this.canvas, lineIcon, 'opacity', "0", 10);

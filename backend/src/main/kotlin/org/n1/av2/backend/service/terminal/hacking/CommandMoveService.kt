@@ -27,7 +27,7 @@ class CommandMoveService(
             return
         }
         val networkId = tokens[1]
-        val position = hackerPositionService.get()
+        val position = hackerPositionService.retrieve()
 
         if (position.inTransit) return reportInTransit()
         val toNode = nodeService.findByNetworkId(position.siteId, networkId) ?: return reportNodeNotFound(networkId)

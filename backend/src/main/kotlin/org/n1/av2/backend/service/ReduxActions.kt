@@ -41,4 +41,7 @@ enum class ReduxActions {
     SERVER_HACKER_MOVE_START,       // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,      // step two of the move
 
+    SERVER_HACKER_PROBE_SERVICES,    // when arriving at a node that is state DISCOVERED or TYPE
+    SERVER_HACKER_PROBE_CONNECTIONS, // when hacking OS
+
 }

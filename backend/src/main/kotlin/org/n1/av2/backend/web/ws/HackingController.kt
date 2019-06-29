@@ -15,11 +15,16 @@ class HackingController(
 
     companion object: KLogging()
 
+    data class NodeBody(val nodeId: String, val runId: String)
 
-    data class MoveArriveBody(val nodeId: String, val runId: String)
     @MessageMapping("/hack/moveArrive")
-    fun scansOfPlayer(command: MoveArriveBody, principal: Principal) {
+    fun scansOfPlayer(command: NodeBody, principal: Principal) {
         executor.run(principal) { hackingService.moveArrive(command.nodeId, command.runId) }
+    }
+
+    @MessageMapping("/hack/probedServices")
+    fun probedServices(command: NodeBody, principal: Principal) {
+        executor.run(principal) { hackingService.probedServices(command.nodeId, command.runId) }
     }
 
 }

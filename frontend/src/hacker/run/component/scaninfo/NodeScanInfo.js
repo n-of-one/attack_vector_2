@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import scanCanvas from "../ScanCanvas";
 import {findElementById} from "../../../../common/Immutable";
 import NodeScanInfoByStatus from "./NodeScanInfoByStatus";
-import {CONNECTIONS, DISCOVERED, SERVICES, TYPE} from "../../../../common/enums/NodeStatus";
+import {CONNECTIONS, DISCOVERED, SERVICES, SERVICES_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
 import Pad from "../../../../common/component/Pad";
 
 const mapDispatchToProps = (dispatch) => {
@@ -37,6 +37,8 @@ const statusText = (status) => {
         case TYPE:
             return "1/3";
         case CONNECTIONS:
+            return "2/3";
+        case SERVICES_NO_CONNECTIONS:
             return "2/3";
         case SERVICES:
             return "3/3 (complete)";

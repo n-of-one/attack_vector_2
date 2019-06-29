@@ -1,14 +1,14 @@
 import React from "react";
 
-const nonBreakingSpace = () => {
-    return <>&nbsp;</>
+const nonBreakingSpace = (key) => {
+    return <span key={key}>&nbsp;</span>
 };
 
 const renderSpaces = (count) => {
     let text = [];
 
     for (let i = 0; i < count; i++) {
-        text.push(nonBreakingSpace())
+        text.push(nonBreakingSpace(i))
     }
 
     return text;

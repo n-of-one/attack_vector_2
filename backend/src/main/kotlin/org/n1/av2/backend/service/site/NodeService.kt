@@ -139,6 +139,9 @@ class NodeService(
         val node = getById(command.nodeId)
         val service = createService(command.siteId, command.serviceType, node)
         node.services.add(service)
+        if (service.type.ice) {
+            node.ice = true
+        }
         nodeRepo.save(node)
         return service
     }
@@ -165,10 +168,9 @@ class NodeService(
         node.services.remove(toRemove)
         node.services.sortBy { it.layer }
         node.services.forEachIndexed { layer, service -> service.layer = layer };
+        node.ice = node.services.any{it.type.ice}
         nodeRepo.save(node)
-
         val newFocusNode = node.services[toRemove.layer - 1]
-
         return ServicesUpdated(node, newFocusNode.id)
     }
 

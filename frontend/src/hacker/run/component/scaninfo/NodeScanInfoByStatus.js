@@ -1,5 +1,5 @@
 import React from "react";
-import {CONNECTIONS, DISCOVERED, SERVICES, TYPE} from "../../../../common/enums/NodeStatus";
+import {CONNECTIONS, DISCOVERED, SERVICES, SERVICES_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
 import NodeScanInfoServices from "./NodeScanInfoServices";
 import Pad from "../../../../common/component/Pad";
 
@@ -21,7 +21,7 @@ function renderStatusType(node) {
 
 function renderStatusConnections(node) {
     const lines = [];
-    lines.push(<>Layer Service<br/></>);
+    lines.push(<span key="_0">Layer Service<br/></span>);
     node.services.forEach(service => {
         lines.push(renderServiceIsIce(service))
     });
@@ -31,16 +31,22 @@ function renderStatusConnections(node) {
 
 function renderServiceIsIce(service) {
     const text = service.ice ? "ICE" : "service";
-    return <>
+    return <span key={service.layer}>
         <Pad p="3" n={service.layer}/>
         <span className="text-primary">{service.layer}</span>
         <Pad p="3" />unknown {text}<br/>
-    </>
+    </span>
 }
+
+function renderStatusServicesNoConnections(node) {
+    return <>
+        <NodeScanInfoServices node={node}/>
+        <br/>
+        Neighbouring connections not scanned.<br/>
+    </>}
 
 function renderError(node, status) {
     return <>Unknown node status: {status} for node: {node.id}.<br/></>
-
 }
 
 export default ({node, status}) => {
@@ -51,6 +57,8 @@ export default ({node, status}) => {
             return renderStatusType(node);
         case CONNECTIONS:
             return renderStatusConnections(node);
+        case SERVICES_NO_CONNECTIONS:
+            return renderStatusServicesNoConnections(node);
         case SERVICES:
             return <NodeScanInfoServices node={node}/>;
         default:

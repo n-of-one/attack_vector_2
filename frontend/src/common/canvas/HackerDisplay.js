@@ -1,10 +1,16 @@
 import {fabric} from "fabric";
 import {animate, calcLine, easeLinear} from "./CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
-import {HACKER_MOVE_ARRIVE} from "../../hacker/run/model/RunActions";
+import {HACKER_MOVE_ARRIVE, HACKER_PROBED_SERVICES} from "../../hacker/run/model/HackActions";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
+
+const SIZE_NORMAL = 40;
+const SIZE_SMALL = 20;
+const SIZE_LARGE = 60;
+
+const OFFSET = 20;
 
 export default class HackerDisplay {
 
@@ -32,6 +38,7 @@ export default class HackerDisplay {
         this.canvas = canvas;
         this.schedule = schedule;
         this.hacker = hacker;
+        this.you = you;
         this.startNode = startNode;
         this.currentNode = startNode;
 
@@ -153,8 +160,8 @@ export default class HackerDisplay {
         this.canvas.bringToFront(this.hackerIcon);
         this.schedule.run(0, () => {
             this.echo(0, "[info]Persona established, hack started.");
-            this.moveStep(this.startNode, 20, 20, 5);
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
+            this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
         });
     }
 
@@ -167,8 +174,8 @@ export default class HackerDisplay {
 
         this.schedule.run(0, () => {
             this.moveStep(this.startNode, 0, 0, 200, easeLinear);
-            animate(this.canvas, this.hackerIcon, 'width', 40, 100);
-            animate(this.canvas, this.hackerIcon, 'height', 40, 100);
+            animate(this.canvas, this.hackerIcon, 'width', SIZE_NORMAL, 100);
+            animate(this.canvas, this.hackerIcon, 'height', SIZE_NORMAL, 100);
             animate(this.canvas, this.hackerIcon, 'opacity', 0.7, 20);
         });
 
@@ -198,7 +205,7 @@ export default class HackerDisplay {
         this.echo(0, "");
         this.echo(80, "Entering node");
         this.schedule.run(0, () => {
-            this.moveStep(this.startNode, 20, 20, 20)
+            this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
         });
         this.echo(0, "Persona accepted by node OS.");
         this.schedule.run(0, () => {
@@ -224,35 +231,36 @@ export default class HackerDisplay {
         this.schedule.run(16, ()=> {
             this.moveStep(nodeDisplay, 0, 0, 16);
         });
-        this.schedule.run(4, ()=> {
-            this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
-            this.moveStep(nodeDisplay, 20, 20, 4);
-        });
+        if (this.you) {
+            this.schedule.run(0, ()=> {
+                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
+            });
+        }
     }
 
     moveArrive(nodeDisplay) {
         this.currentNode = nodeDisplay;
+        this.schedule.run(4, ()=> {
+            this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);
+        });
     }
 
-    // movePersona(payload) {
-    //     var targetNodeId = payload.nodeId;
-    //     var newNodeStatus = payload.newNodeStatus;
-    //
-    //     avatarMoveToNode = nodesById[targetNodeId];
-    //
-    //     this.schedule.run(4, function () {
-    //         moveStep(currentNode, 0, 0, 200, hackerAvatar);
-    //     });
-    //     this.schedule.run(12, function () {
-    //         moveStep(avatarMoveToNode, 0, 0, 800, hackerAvatar);
-    //         currentNode = avatarMoveToNode;
-    //     });
-    //     this.schedule.run(4, function () {
-    //         personaArrivesAtNode(avatarMoveToNode, newNodeStatus);
-    //     });
-    //
-    //     this.schedule.run(0, function () {
-    //         moveStep(avatarMoveToNode, 20, 20, 200, hackerAvatar);
-    //     });
-    // }
+    hackerProbeServices(nodeDisplay) {
+        this.hackerIcon.set("top", nodeDisplay.y);
+        this.hackerIcon.set("left", nodeDisplay.x);
+        this.schedule.run(50, () => {
+            animate(this.canvas, this.hackerIcon, 'width', SIZE_SMALL, 50);
+            animate(this.canvas, this.hackerIcon, 'height', SIZE_SMALL, 50);
+        });
+        this.schedule.run(45, () => {
+            animate(this.canvas, this.hackerIcon, 'width', SIZE_NORMAL, 50);
+            animate(this.canvas, this.hackerIcon, 'height', SIZE_NORMAL, 50);
+        });
+        this.schedule.run(5, () => {
+            if (this.you) {
+                this.dispatch({type: HACKER_PROBED_SERVICES, nodeId: nodeDisplay.id});
+            }
+        });
+    }
+
 }

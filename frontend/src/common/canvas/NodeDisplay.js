@@ -1,16 +1,10 @@
 import {fabric} from "fabric";
 import {toType} from "../enums/NodeTypesNames";
-import {CONNECTIONS, DISCOVERED, FREE, PROTECTED, TYPE} from "../enums/NodeStatus";
-import {animate} from "./CanvasUtils";
+import {CONNECTIONS, DISCOVERED, FREE, PROTECTED, SERVICES, SERVICES_NO_CONNECTIONS, TYPE} from "../enums/NodeStatus";
+import {animate, easeInSine, easeLinear, easeOutSine} from "./CanvasUtils";
 
 const SCAN_OPACITY = 0.4;
-const HACKING_OPACITY_BY_TYPE = {
-    "DISCOVERED" : SCAN_OPACITY,
-    "TYPE": SCAN_OPACITY,
-    "FREE": 1,
-    "PROTECTED": 1,
-    "HACKED": 1
-};
+const HACK_OPACITY = 1;
 
 export default class NodeDisplay {
 
@@ -25,6 +19,8 @@ export default class NodeDisplay {
 
     y = null;
     x = null;
+
+    crossFadeResidualDelay = 0;
 
     constructor(canvas, schedule, nodeData, staticDisplay, hacking) {
         this.id = nodeData.id;
@@ -107,21 +103,13 @@ export default class NodeDisplay {
     getNodeIconImage() {
         const imageStatus = this.determineStatusForIcon();
         const type = toType(this.nodeData.type);
-        const prefix = (this.hacking) ? "HACK_" : "SCAN_";
-        const imageId = prefix + type.name + "_" + imageStatus;
+        const imageId = type.name + "_" + imageStatus;
         return document.getElementById(imageId);
     }
 
-    getNodeHackOpacity() {
-        return HACKING_OPACITY_BY_TYPE[this.determineStatusForIcon()];
-    }
-
     determineStatusForIcon() {
-        if (this.nodeData.status === DISCOVERED || this.nodeData.status === TYPE) {
+        if (this.nodeData.status === DISCOVERED || this.nodeData.status === TYPE || this.nodeData.status === CONNECTIONS) {
             return this.nodeData.status;
-        }
-        if (this.nodeData.status === CONNECTIONS) {
-            return TYPE;
         }
         if (this.nodeData.ice) {
             return PROTECTED;
@@ -142,20 +130,45 @@ export default class NodeDisplay {
 
     transitionToHack(quick) {
         const delay = (quick) ? 0: 5;
+        this.hacking = true;
+        if (this.nodeData.status === SERVICES) {
+            this.crossFadeToNewIcon(delay);
+        }
+    }
+
+    crossFadeToNewIcon(delay) {
+        const crossFadeTime = 20;
+        this.crossFadeResidualDelay = crossFadeTime - delay;
         this.schedule.run(delay, () => {
+
             this.oldNodeIcon = this.nodeIcon;
-            this.hacking = true;
             this.nodeIcon = this.createNodeIcon(true);
             this.canvas.add(this.nodeIcon);
             this.canvas.sendToBack(this.nodeIcon);
             this.canvas.sendToBack(this.oldNodeIcon);
-            animate(this.canvas, this.nodeIcon, "opacity", this.getNodeHackOpacity(), 40);
-            animate(this.canvas, this.oldNodeIcon, "opacity", 0, 20);
+
+            this.nodeIcon.set("left", this.x - 10);
+            animate(this.canvas, this.oldNodeIcon, 'left', this.x - 10, crossFadeTime, easeOutSine);
+            animate(this.canvas, this.nodeIcon, 'left', this.x, crossFadeTime, easeInSine);
+
+            animate(this.canvas, this.nodeIcon, "opacity", this.determineNodeIconOpacity(), crossFadeTime, easeInSine);
+            animate(this.canvas, this.oldNodeIcon, "opacity", 0, crossFadeTime, easeOutSine);
         });
     }
 
-    cleanUpTransitionToHack() {
-        this.canvas.remove(this.oldNodeIcon);
+
+    cleanUpAfterCrossFade(canvasSelectedIcon) {
+        if (!this.oldNodeIcon) {
+            return;
+        }
+        this.schedule.wait(this.crossFadeResidualDelay);
+        this.schedule.run(0, () => {
+            this.canvas.remove(this.oldNodeIcon);
+            if (canvasSelectedIcon === this.oldNodeIcon) {
+                this.select();
+            }
+            this.oldNodeIcon = null;
+        });
     }
 
     remove() {
@@ -164,39 +177,35 @@ export default class NodeDisplay {
         this.canvas.remove(this.labelBackgroundIcon);
     }
 
-    updateStatus(newStatus) {
+    updateStatus(newStatus, canvasSelectedIcon) {
         this.nodeData.status = newStatus;
-        if (newStatus !== CONNECTIONS) {
-            this.updateNodeIcon(true);
-        }
+        this.updateNodeIcon(canvasSelectedIcon);
     }
 
 
-    updateNodeIcon = (fadeOut) => {
-        if (fadeOut) {
-            this.schedule.run(8, () => {
-                animate(this.canvas, this.nodeIcon, 'opacity', 0.05, 8, fabric.util.ease.easeOutSine);
-                animate(this.canvas, this.nodeIcon, 'left', "-=10", 8, fabric.util.ease.easeOutSine);
-            });
-        }
+    updateNodeIcon(canvasSelectedIcon)  {
+        this.crossFadeToNewIcon(5);
+        this.cleanUpAfterCrossFade(canvasSelectedIcon);
 
-        const newIconImage = this.getNodeIconImage();
+    }
 
-        this.schedule.run(0, () => {
-            this.nodeIcon.setElement(newIconImage);
-            this.canvas.renderAll();
-            const newOpacity = 0.4;
-            // TODO check if we want opacity based on status...
-            // const newOpacity = nodeOpacityByStatus[node.status];
-            animate(this.canvas, this.nodeIcon, 'opacity', newOpacity, 8);
-            if (fadeOut) {
-                animate(this.canvas, this.nodeIcon, 'left', "+=10", 8, fabric.util.ease.easeInSine);
+
+    determineNodeIconOpacity() {
+        if (this.hacking) {
+            switch (this.nodeData.status) {
+                case SERVICES:
+                    return HACK_OPACITY;
+                default:
+                    return SCAN_OPACITY;
             }
-        });
-    };
+        }
+        else {
+            return SCAN_OPACITY;
+        }
+    }
 
     size() {
-        return 22;
+        return 33;
     }
 
 

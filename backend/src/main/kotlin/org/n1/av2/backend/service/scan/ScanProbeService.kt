@@ -40,6 +40,7 @@ class ScanProbeService(
         return when (status) {
             NodeStatus.DISCOVERED -> NodeScanType.SCAN_NODE_INITIAL
             NodeStatus.TYPE -> NodeScanType.SCAN_CONNECTIONS
+            NodeStatus.SERVICES_NO_CONNECTIONS -> NodeScanType.SCAN_CONNECTIONS
             NodeStatus.CONNECTIONS -> NodeScanType.SCAN_NODE_DEEP
             NodeStatus.SERVICES -> null
             NodeStatus.UNDISCOVERED -> error("Cannot scan a node that has not yet been discovered.")
@@ -87,25 +88,22 @@ class ScanProbeService(
         }
     }
 
-    data class ProbeResultInitial(val nodeId: String, val newStatus: NodeStatus)
+    data class ProbeResultSingleNode(val nodeId: String, val newStatus: NodeStatus)
 
-    fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
+    private fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} ${"service".s(node.services.size)}.")
 
-        nodeScan.status = NodeStatus.TYPE
-        scan.totalDistanceScanned += nodeScan.distance!!
-        scanService.save(scan)
-        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
-
+        probeScanSingleNode(nodeScan, scan, node, NodeStatus.TYPE)
         return false
     }
 
     private fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
-        if (nodeScan.status != NodeStatus.TYPE) {
+        if (nodeScan.status != NodeStatus.TYPE && nodeScan.status != NodeStatus.SERVICES_NO_CONNECTIONS) {
             stompService.terminalReceive("Scanning node ${node.networkId} did not find new connections.")
             return false
         }
-        nodeScan.status = NodeStatus.CONNECTIONS
+
+        nodeScan.status = if (nodeScan.status == NodeStatus.TYPE) NodeStatus.CONNECTIONS else NodeStatus.SERVICES
 
         val connections = connectionService.findByNodeId(node.id)
 
@@ -136,10 +134,10 @@ class ScanProbeService(
 
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
-        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
 
         data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
         stompService.toRun(scan.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
+        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(node.id, nodeScan.status))
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
@@ -154,11 +152,19 @@ class ScanProbeService(
 
         stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.services.size} service details")
 
-        nodeScan.status = NodeStatus.SERVICES
+        probeScanSingleNode(nodeScan, scan, node, NodeStatus.SERVICES)
+        return false
+    }
+
+    private fun probeScanSingleNode(nodeScan: NodeScan, scan: Scan, node: Node, newStatus: NodeStatus) {
+        probeScanSingleNode(nodeScan, scan, node.id, newStatus)
+    }
+
+    fun probeScanSingleNode(nodeScan: NodeScan, scan: Scan, nodeId: String, newStatus: NodeStatus) {
+        nodeScan.status = newStatus
         scan.totalDistanceScanned += nodeScan.distance!!
         scanService.save(scan)
-        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultInitial(node.id, nodeScan.status))
-        return false
+        stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(nodeId, nodeScan.status))
     }
 
 

@@ -169,7 +169,7 @@ class ScanCanvas {
     }
 
     updateNodeStatus(nodeId, newStatus) {
-        this.displayById[nodeId].updateStatus(newStatus);
+        this.displayById[nodeId].updateStatus(newStatus, this.selectedObject);
     }
 
     discoverNodes(nodeIds, connectionIds) {
@@ -231,9 +231,7 @@ class ScanCanvas {
     }
 
     canvasObjectDeSelected() {
-        if (this.selectedObject) {
-            this.selectedObject = null;
-        }
+        this.selectedObject = null;
         this.dispatch({type: HIDE_NODE_INFO});
     }
 
@@ -248,8 +246,8 @@ class ScanCanvas {
             this.iconSchedule.wait(30);
         }
         this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.transitionToHack(quick)});
-        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpTransitionToHack(quick)});
-        this.displayById[userId].startRun(quick)
+        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpAfterCrossFade()});
+        this.displayById[userId].startRun(quick);
     }
 
     forAllNodeDisplays(toRun) {
@@ -263,12 +261,17 @@ class ScanCanvas {
 
     moveStart(userId, nodeId) {
         const nodeDisplay = this.displayById[nodeId];
-        this.displayById[userId].moveStart(nodeDisplay)
+        this.displayById[userId].moveStart(nodeDisplay);
     }
 
     moveArrive(userId, nodeId) {
         const nodeDisplay = this.displayById[nodeId];
-        this.displayById[userId].moveArrive(nodeDisplay)
+        this.displayById[userId].moveArrive(nodeDisplay);
+    }
+
+    hackerProbeServicesSaga(userId, nodeId) {
+        const nodeDisplay = this.displayById[nodeId];
+        this.displayById[userId].hackerProbeServices(nodeDisplay);
     }
 }
 

@@ -223,7 +223,7 @@ class ScanningService(val scanService: ScanService,
         }
     }
 
-    private fun updateScanInfoToPlayers(scan: Scan) {
+    fun updateScanInfoToPlayers(scan: Scan) {
         val scanInfo = createScanInfo(scan)
         scanService.getUsersOfScan(scan.runId).forEach{ userId ->
             stompService.toUser(userId, ReduxActions.SERVER_UPDATE_SCAN_INFO, scanInfo)

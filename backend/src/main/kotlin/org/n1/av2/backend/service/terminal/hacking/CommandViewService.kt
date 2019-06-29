@@ -14,7 +14,7 @@ class CommandViewService(
         ) {
 
     fun process(runId: String) {
-        val position = hackerPositionService.get()
+        val position = hackerPositionService.retrieve()
         val node = nodeService.getById(position.currentNodeId)
 
         val blockingIceLayer = findBlockingIceLayer(node) ?: -1

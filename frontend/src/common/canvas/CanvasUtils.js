@@ -106,6 +106,11 @@ function easeLinear (t, b, c, d) {
     return b + (t/d) * c;
 }
 
+const easeInSine = fabric.util.ease.easeInSine;
+const easeOutSine = fabric.util.ease.easeOutSine;
 
 
-export {animate, calcLine, calcLineStart, easeLinear};
+
+export {animate, calcLine, calcLineStart,
+    easeLinear, easeInSine, easeOutSine,
+};

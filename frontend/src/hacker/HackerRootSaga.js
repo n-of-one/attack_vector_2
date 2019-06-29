@@ -24,8 +24,14 @@ import {
     hackerLeaveScanSaga, deleteScanSaga
 } from "./run/saga/ScanSagas";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
-import {startHackSaga, moveArriveSaga, moveStartSaga, serverMoveArriveSaga} from "./run/saga/RunSagas";
-import {HACKER_MOVE_ARRIVE, SERVER_HACKER_START_HACK, SERVER_HACKER_MOVE_ARRIVE, SERVER_HACKER_MOVE_START} from "./run/model/RunActions";
+import {startHackSaga, moveArriveSaga, moveStartSaga, serverMoveArriveSaga, serverHackerProbeServicesSaga, probeServicesSaga} from "./run/saga/HackSagas";
+import {
+    HACKER_MOVE_ARRIVE,
+    SERVER_HACKER_START_HACK,
+    SERVER_HACKER_MOVE_ARRIVE,
+    SERVER_HACKER_MOVE_START,
+    SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES
+} from "./run/model/HackActions";
 
 const createHackerRootSaga = () => {
 
@@ -64,9 +70,13 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_HACKER_LEAVE_SCAN, hackerLeaveScanSaga);
 
         yield takeEvery(SERVER_HACKER_START_HACK, startHackSaga);
+
         yield takeEvery(SERVER_HACKER_MOVE_START, moveStartSaga);
         yield takeEvery(HACKER_MOVE_ARRIVE, moveArriveSaga);
         yield takeEvery(SERVER_HACKER_MOVE_ARRIVE, serverMoveArriveSaga);
+
+        yield takeEvery(SERVER_HACKER_PROBE_SERVICES, serverHackerProbeServicesSaga);
+        yield takeEvery(HACKER_PROBED_SERVICES, probeServicesSaga);
     }
 
     function* scanRootSaga() {

@@ -25,7 +25,7 @@ data class Node(
         val type: NodeType,
         val x: Int,
         val y: Int,
-        val ice: Boolean,
+        var ice: Boolean,
         val services: MutableList<Service>,
         @Indexed val networkId: String
 )

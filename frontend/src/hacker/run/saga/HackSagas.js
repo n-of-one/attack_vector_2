@@ -26,7 +26,19 @@ function* serverMoveArriveSaga(action) {
     yield
 }
 
+function* serverHackerProbeServicesSaga(action) {
+    scanCanvas.hackerProbeServicesSaga(action.data.userId, action.data.nodeId);
+    yield
+}
 
+function* probeServicesSaga(action) {
+    const runId = yield select(getRunId);
+    const payload = {nodeId: action.nodeId, runId: runId};
+    webSocketConnection.send("/av/hack/probedServices", JSON.stringify(payload));
+    yield
+}
 
-
-export {startHackSaga, moveStartSaga, moveArriveSaga, serverMoveArriveSaga}
+export {startHackSaga,
+    moveStartSaga, moveArriveSaga, serverMoveArriveSaga,
+    serverHackerProbeServicesSaga, probeServicesSaga,
+}

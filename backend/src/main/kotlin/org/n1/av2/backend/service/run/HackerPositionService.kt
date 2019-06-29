@@ -20,7 +20,7 @@ class HackerPositionService(
 
     companion object: KLogging()
 
-    fun get(): HackerPosition {
+    fun retrieve(): HackerPosition {
         return hackerPositionRepo.findByUserId(currentUserService.userId) ?: error("HackerPosition not found for ${currentUserService.userId}")
     }
 
@@ -47,7 +47,7 @@ class HackerPositionService(
     }
 
     fun arriveAt(nodeId: String) {
-        val position = get()
+        val position = retrieve()
 
         val newPosition = position.copy(inTransit = false, currentNodeId = nodeId, previousNodeId = position.currentNodeId)
         hackerPositionRepo.save(newPosition)
