@@ -8,7 +8,6 @@ import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.repo.ScanRepo
 import org.n1.av2.backend.repo.UserScanRepo
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 

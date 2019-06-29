@@ -7,7 +7,6 @@ import org.n1.av2.backend.repo.ConnectionRepo
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.logNanoTime
 import org.springframework.stereotype.Service
-import kotlin.system.measureNanoTime
 
 @Service
 class ConnectionService(

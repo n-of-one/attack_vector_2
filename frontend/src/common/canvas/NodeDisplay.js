@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {toType} from "../enums/NodeTypesNames";
-import {CONNECTIONS, DISCOVERED, FREE, PROTECTED, SERVICES, SERVICES_NO_CONNECTIONS, TYPE} from "../enums/NodeStatus";
-import {animate, easeInSine, easeLinear, easeOutSine} from "./CanvasUtils";
+import {CONNECTIONS, DISCOVERED, FREE, PROTECTED, SERVICES, TYPE} from "../enums/NodeStatus";
+import {animate, easeInSine, easeOutSine} from "./CanvasUtils";
 
 const SCAN_OPACITY = 0.4;
 const HACK_OPACITY = 1;

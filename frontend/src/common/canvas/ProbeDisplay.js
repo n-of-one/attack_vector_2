@@ -92,9 +92,6 @@ export default class ConnectionDisplay {
         this.probeIcon.setLeft(currentDisplay.x + 5);
         this.probeIcon.setTop(currentDisplay.y + 5);
 
-        // animate(this.canvas, this.probeIcon, 'left', nextDisplay.x + leftDelta, time, easeLinear);
-        // animate(this.canvas, this.probeIcon, 'top', nextDisplay.y + topDelta, time, easeLinear);
-
         switch (scanType) {
             case SCAN_NODE_INITIAL:
                 return this.scanInside(nodeId, SCAN_NODE_INITIAL);
@@ -110,22 +107,18 @@ export default class ConnectionDisplay {
     scanInside(nodeId, action) {
         this.schedule.run(50, () => {
             console.time("scan");
-            this.animateZoomAndOpacity(SIZE_SMALL, 0.8, 50);
+            this.animateZoom(SIZE_SMALL, 50);
+            this.animateOpacity(0.9, 50);
+
         });
         this.schedule.run(25, () => {
-            // this.animateZoomAndOpacity(SIZE_SMALL_MEDIUM, 0.6, 25);
-            animate(this.canvas, this.probeIcon, 'width', SIZE_SMALL_MEDIUM, 25);
-            animate(this.canvas, this.probeIcon, 'height', SIZE_SMALL_MEDIUM, 25);
-            animate(this.canvas, this.probeIcon, 'opacity', 0, 35);
-
-
+            this.animateZoom(SIZE_SMALL_MEDIUM, 25);
+            this.animateOpacity(0, 35);
         });
         const finishMethod = () => {
             if (this.yourProbe) {
                 this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: action});
             }
-            // animate(this.canvas, this.probeIcon, 'opacity', 0, 10);
-
         };
         this.finishProbe(finishMethod);
     }
@@ -133,12 +126,12 @@ export default class ConnectionDisplay {
     scanOutside(nodeId) {
         this.schedule.run(50, () => {
             console.time("scan");
-            this.animateZoomAndOpacity(SIZE_LARGE, 0.6, 50);
+            this.animateZoom(SIZE_LARGE, 50);
+            this.animateOpacity(0.7, 50);
         });
         this.schedule.run(25, () => {
-            animate(this.canvas, this.probeIcon, 'width', SIZE_MEDIUM_LARGE, 35);
-            animate(this.canvas, this.probeIcon, 'height', SIZE_MEDIUM_LARGE, 35);
-            animate(this.canvas, this.probeIcon, 'opacity', 0, 35);
+            this.animateZoom(SIZE_MEDIUM_LARGE, 35);
+            this.animateOpacity(0, 35);
         });
         const finishMethod = () => {
             if (this.yourProbe) {
@@ -187,9 +180,11 @@ export default class ConnectionDisplay {
         });
     }
 
-    animateZoomAndOpacity(size, opacity, time) {
+    animateZoom(size, time) {
         animate(this.canvas, this.probeIcon, 'width', size, time);
         animate(this.canvas, this.probeIcon, 'height', size, time);
+    }
+    animateOpacity(opacity, time) {
         animate(this.canvas, this.probeIcon, 'opacity', opacity, time);
     }
 
