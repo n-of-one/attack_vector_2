@@ -41,8 +41,4 @@ enum class ReduxActions {
     SERVER_HACKER_MOVE_START,       // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,      // step two of the move
 
-
-
-
-
 }
