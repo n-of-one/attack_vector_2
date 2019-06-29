@@ -165,9 +165,11 @@ export default class HackerDisplay {
         this.canvas.add(this.hackerIcon);
         this.canvas.bringToFront(this.hackerIcon);
         this.schedule.run(0, () => {
-            this.echo(0, "[info]Persona established, hack started.");
+            if (this.you) {
+                this.echo(0, "[info]Persona established, hack started.");
+                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
+            }
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
-            this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
         });
     }
 
@@ -260,8 +262,6 @@ export default class HackerDisplay {
 
     moveArrive(nodeDisplay) {
         this.currentNode = nodeDisplay;
-        this.x = nodeDisplay.x;
-        this.y = nodeDisplay.y;
         this.schedule.run(4, () => {
             this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);
         });

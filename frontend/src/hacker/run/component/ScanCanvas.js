@@ -242,11 +242,13 @@ class ScanCanvas {
 
     startHack(userId, quick) {
         this.hacking = true;
-        if (!quick) {
-            this.iconSchedule.wait(30);
+        if (this.userId === userId) {
+            if (!quick) {
+                this.iconSchedule.wait(30);
+            }
+            this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.transitionToHack(quick)});
+            this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpAfterCrossFade(this.selectedObject)});
         }
-        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.transitionToHack(quick)});
-        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpAfterCrossFade(this.selectedObject)});
         this.displayById[userId].startRun(quick);
     }
 
