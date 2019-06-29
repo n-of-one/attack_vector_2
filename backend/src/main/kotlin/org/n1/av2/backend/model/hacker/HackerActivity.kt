@@ -1,6 +1,7 @@
 package org.n1.av2.backend.model.hacker
 
-import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.model.db.user.User
+
 
 enum class HackerActivityType {
     ONLINE,     // this is the -other- activity indicator. Not visible or useful to other players other than that this hacker is online.
@@ -9,7 +10,7 @@ enum class HackerActivityType {
 }
 
 class HackerActivity(
-        val authentication: UserPrincipal,
+        val user: User,
         val type: HackerActivityType,
-        val id: String
+        val runId: String
 )

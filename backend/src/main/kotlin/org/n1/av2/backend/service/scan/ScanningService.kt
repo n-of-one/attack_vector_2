@@ -5,7 +5,6 @@ import org.n1.av2.backend.model.db.run.NodeScan
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.run.Scan
 import org.n1.av2.backend.model.db.user.User
-import org.n1.av2.backend.model.hacker.HackerActivityType
 import org.n1.av2.backend.model.hacker.HackerPresence
 import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.NotyMessage
@@ -92,13 +91,16 @@ class ScanningService(val scanService: ScanService,
         val siteFull = siteService.getSiteFull(scan.siteId)
         siteFull.sortNodeByDistance(scan)
         val userPresence = hackerActivityService
-                .getAll(scan.runId, HackerActivityType.SCANNING)
-                .map { activity -> createPresence(activity.authentication.user) }
+                .getAll(scan.runId)
+                .map { activity -> createPresence(activity.user) }
 
         val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 
+    private fun createPresence(user: User): HackerPresence {
+        return HackerPresence(user.id, user.name, user.icon)
+    }
     private fun reportNodeNotFound(networkId: String) {
         if (networkId.length == 1) {
             stompService.terminalReceive("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
@@ -166,12 +168,6 @@ class ScanningService(val scanService: ScanService,
 
     fun leaveScan(runId: String) {
         hackerActivityService.stopActivityScanning(runId)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, createPresence(currentUserService.user))
-
-    }
-
-    private fun createPresence(user: User): HackerPresence {
-        return HackerPresence(user.id, user.name, user.icon)
     }
 
     fun purgeAll() {

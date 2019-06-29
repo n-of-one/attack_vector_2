@@ -2,6 +2,7 @@ package org.n1.av2.backend.config
 
 import mu.KLogging
 import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
@@ -15,6 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.messaging.SessionConnectEvent
 import org.springframework.web.socket.messaging.SessionDisconnectEvent
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
+import javax.annotation.PostConstruct
 
 
 @Configuration
@@ -58,4 +60,16 @@ class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketM
         hackerActivityService.disconnect(event.user!! as UserPrincipal)
         logger.debug{ "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
     }
+}
+
+@Configuration
+class ConfigStompServiceAndHackerActivityService(
+        val stompService: StompService,
+        val hackerActivityService: HackerActivityService) {
+
+    @PostConstruct
+    fun postConstruct() {
+        hackerActivityService.stompService = stompService
+    }
+
 }
