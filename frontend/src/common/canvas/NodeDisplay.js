@@ -17,6 +17,8 @@ export default class NodeDisplay {
     labelIcon = null;
     labelBackgroundIcon = null;
 
+    otherHackerDisplays = [];
+
     y = null;
     x = null;
 
@@ -241,5 +243,23 @@ export default class NodeDisplay {
     select() {
         this.canvas.setActiveObject(this.nodeIcon);
     }
+
+    registerHacker(hackerDisplay) {
+        this.otherHackerDisplays.push(hackerDisplay)
+    }
+
+    getYOffset(hackerDisplay) {
+        const index = this.otherHackerDisplays.indexOf(hackerDisplay)
+        return 20 + index * -20;
+    }
+
+    unregisterHacker(hackerDisplay) {
+        const index = this.otherHackerDisplays.indexOf(hackerDisplay)
+        if (index >= 0) {
+            this.otherHackerDisplays.splice(index, 1);
+        }
+    }
+
+
 
 };

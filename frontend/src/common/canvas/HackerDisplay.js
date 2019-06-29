@@ -25,8 +25,8 @@ export default class HackerDisplay {
     schedule = null;
     hacker = null;
     you = false;
-    startNode = null;
-    currentNode = null;
+    startNodeDisplay = null;
+    currentNodeDisplay = null;
 
     line = null;
     y = null;
@@ -34,13 +34,13 @@ export default class HackerDisplay {
 
     dispatch = null;
 
-    constructor(canvas, schedule, startNode, hacker, offset, you, dispatch, currentNode) {
+    constructor(canvas, schedule, startNodeDisplay, hacker, offset, you, dispatch, currentNodeDisplay) {
         this.canvas = canvas;
         this.schedule = schedule;
         this.hacker = hacker;
         this.you = you;
-        this.startNode = startNode;
-        this.currentNode = (currentNode) ? currentNode : startNode;
+        this.startNodeDisplay = startNodeDisplay;
+        this.currentNodeDisplay = (currentNodeDisplay) ? currentNodeDisplay : startNodeDisplay;
 
         this.dispatch = dispatch;
 
@@ -54,7 +54,9 @@ export default class HackerDisplay {
             if (hacker.hacking) {
                 const opacity = (hacker.inTransit) ? 0 : 1;
                 this.notVisible = hacker.inTransit;
-                this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, opacity, currentNode, OFFSET, OFFSET);
+
+                const {xOffset, yOffset} = this.processOffset(currentNodeDisplay);
+                this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, opacity, currentNodeDisplay, xOffset, yOffset);
                 this.canvas.add(this.hackerIcon);
                 this.canvas.renderAll();
             }
@@ -108,7 +110,7 @@ export default class HackerDisplay {
             selectable: false,
             hoverCursor: "default",
         });
-        const lineData = calcLine(this, this.startNode);
+        const lineData = calcLine(this, this.startNodeDisplay);
         this.lineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#bb8",
@@ -138,7 +140,7 @@ export default class HackerDisplay {
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
-            const lineData = calcLine(this, this.startNode);
+            const lineData = calcLine(this, this.startNodeDisplay);
             animate(this.canvas, this.lineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
         });
     }
@@ -173,13 +175,13 @@ export default class HackerDisplay {
     }
 
     startRunQuick() {
-        this.hackerIcon = this.createHackerIcon(40, 1, this.startNode);
+        this.hackerIcon = this.createHackerIcon(40, 1, this.startNodeDisplay);
         this.canvas.add(this.hackerIcon);
         this.canvas.bringToFront(this.hackerIcon);
         this.schedule.run(0, () => {
             if (this.you) {
                 this.echo(0, "[info]Persona established, hack started.");
-                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
+                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
             }
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
         });
@@ -192,7 +194,7 @@ export default class HackerDisplay {
         this.canvas.sendToBack(this.hackerIcon);
 
         this.schedule.run(0, () => {
-            this.moveStep(this.startNode, 0, 0, 200, easeLinear);
+            this.moveStep(this.startNodeDisplay, 0, 0, 200, easeLinear);
             this.animateZoom(SIZE_NORMAL, 100);
             this.animateOpacity(0.7, 20);
         });
@@ -225,7 +227,7 @@ export default class HackerDisplay {
             this.echo(0, "");
             this.echo(80, "Entering node");
             this.schedule.run(0, () => {
-                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
+                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
             });
             this.echo(0, "Persona accepted by node OS.");
             this.schedule.run(0, () => {
@@ -260,7 +262,8 @@ export default class HackerDisplay {
 
     moveStart(nodeDisplay) {
         this.schedule.run(4, () => {
-            this.moveStep(this.currentNode, 0, 0, 4);
+            this.currentNodeDisplay.unregisterHacker(this);
+            this.moveStep(this.currentNodeDisplay, 0, 0, 4);
         });
         this.schedule.run(16, () => {
             this.moveStep(nodeDisplay, 0, 0, 16);
@@ -273,11 +276,24 @@ export default class HackerDisplay {
     }
 
     moveArrive(nodeDisplay) {
-        this.currentNode = nodeDisplay;
+        this.currentNodeDisplay = nodeDisplay;
         this.schedule.run(4, () => {
             this.appearIfNotVisible(nodeDisplay);
-            this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);
+
+            const {xOffset, yOffset} = this.processOffset(nodeDisplay);
+            this.moveStep(nodeDisplay, xOffset, yOffset, 4);
         });
+    }
+
+    processOffset(nodeDisplay) {
+        if (this.you) {
+            return {xOffset: OFFSET, yOffset: OFFSET};
+        }
+        else {
+            nodeDisplay.registerHacker(this);
+            const yOffset = nodeDisplay.getYOffset(this);
+            return {xOffset: -OFFSET, yOffset: yOffset};
+        }
     }
 
     hackerProbeServices(nodeDisplay) {
