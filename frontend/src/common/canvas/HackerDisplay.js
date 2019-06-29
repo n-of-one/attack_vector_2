@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate, calcLine, easeLinear} from "./CanvasUtils";
+import {animate, calcLine, easeLinear, easeOutSine} from "./CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
 import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_SERVICES} from "../../hacker/run/model/HackActions";
 
@@ -136,12 +136,18 @@ export default class HackerDisplay {
             animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.lineIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME);
+            if (this.hackerIcon) {
+                animate(this.canvas, this.hackerIcon, "opacity", 0, DISAPPEAR_TIME);
+            }
         });
         this.schedule.run(0, () => {
             this.canvas.remove(this.hackerIdentifierIcon);
             this.canvas.remove(this.lineIcon);
             this.canvas.remove(this.labelIcon);
             this.canvas.remove(this.hackerHider);
+            if (this.hackerIcon) {
+                this.canvas.remove(this.hackerIcon);
+            }
         });
     }
 
@@ -167,7 +173,6 @@ export default class HackerDisplay {
 
 
     startRunSlow() {
-        this.dispatch({type: TERMINAL_LOCK, id: "main"});
         this.hackerIcon = this.createHackerIcon(60, 0, this);
         this.canvas.add(this.hackerIcon);
         this.canvas.sendToBack(this.hackerIcon);
@@ -175,41 +180,57 @@ export default class HackerDisplay {
         this.schedule.run(0, () => {
             this.moveStep(this.startNode, 0, 0, 200, easeLinear);
             this.animateZoom(SIZE_NORMAL, 100);
-            animate(this.canvas, this.hackerIcon, 'opacity', 0.7, 20);
+            this.animateOpacity(0.7, 20);
         });
 
-        const random = (max) => {
-            return Math.floor(Math.random() * max);
-        };
-        const personaId = "" + random(10) + random(10) + random(10) + random(10) + random(10) + random(10) + '-' +
-            random(10) + random(10) + random(10) + random(10) + '/' + random(10);
+        if (this.you) {
+            this.dispatch({type: TERMINAL_LOCK, id: "main"});
+            const random = (max) => {
+                return Math.floor(Math.random() * max);
+            };
+            const personaId = "" + random(10) + random(10) + random(10) + random(10) + random(10) + random(10) + '-' +
+                random(10) + random(10) + random(10) + random(10) + '/' + random(10);
 
-        this.echo(20, "");
-        this.echo(20, "Persona v2.3 booting");
-        this.echo(10, "- unique ID: " + personaId);
-        this.schedule.run(0, () => {
-            animate(this.canvas, this.hackerIcon, 'opacity', 0.1, 100, fabric.util.ease.easeOutSine);
-            this.canvas.bringToFront(this.hackerIcon);
-        });
-        this.echo(10, "- Matching fingerprint with OS deamon");
-        this.echo(10, "  - [ok]ok[/] Suppressing persona signature");
-        this.echo(10, "  - [ok]ok[/] Connection bandwidth adjusted");
-        this.echo(10, "  - [ok]ok[/] Content masked.");
-        this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon");
-        this.echo(30, "  - [ok]ok[/] Network origin obfuscated ");
-        this.schedule.run(0, () => {
-            animate(this.canvas, this.hackerIcon, 'opacity', 1, 100);
-        });
-        this.echo(20, "- Persona creation [info]complete");
-        this.echo(0, "");
-        this.echo(80, "Entering node");
-        this.schedule.run(0, () => {
-            this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
-        });
-        this.echo(0, "Persona accepted by node OS.");
-        this.schedule.run(0, () => {
-            this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
-        });
+            this.echo(20, "");
+            this.echo(20, "Persona v2.3 booting");
+            this.echo(10, "- unique ID: " + personaId);
+            this.schedule.run(0, () => {
+                this.animateOpacity(0.1, 100, easeOutSine);
+                this.canvas.bringToFront(this.hackerIcon);
+            });
+            this.echo(10, "- Matching fingerprint with OS deamon");
+            this.echo(10, "  - [ok]ok[/] Suppressing persona signature");
+            this.echo(10, "  - [ok]ok[/] Connection bandwidth adjusted");
+            this.echo(10, "  - [ok]ok[/] Content masked.");
+            this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon");
+            this.echo(30, "  - [ok]ok[/] Network origin obfuscated ");
+            this.schedule.run(0, () => {
+                this.animateOpacity(1, 100);
+            });
+            this.echo(20, "- Persona creation [info]complete");
+            this.echo(0, "");
+            this.echo(80, "Entering node");
+            this.schedule.run(0, () => {
+                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNode.id});
+            });
+            this.echo(0, "Persona accepted by node OS.");
+            this.schedule.run(0, () => {
+                this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
+            });
+        }
+        else {
+            this.schedule.run(0, () => {
+                this.canvas.bringToFront(this.hackerIcon);
+            });
+            this.schedule.wait(50);
+            this.schedule.run(100, () => {
+                this.animateOpacity(0.1, 100, easeOutSine);
+                this.canvas.bringToFront(this.hackerIcon);
+            });
+            this.schedule.run(0, () => {
+                this.animateOpacity(1, 100);
+            });
+        }
     }
 
     echo(time, message) {
@@ -224,14 +245,14 @@ export default class HackerDisplay {
     }
 
     moveStart(nodeDisplay) {
-        this.schedule.run(4, ()=> {
+        this.schedule.run(4, () => {
             this.moveStep(this.currentNode, 0, 0, 4);
         });
-        this.schedule.run(16, ()=> {
+        this.schedule.run(16, () => {
             this.moveStep(nodeDisplay, 0, 0, 16);
         });
         if (this.you) {
-            this.schedule.run(0, ()=> {
+            this.schedule.run(0, () => {
                 this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
             });
         }
@@ -241,7 +262,7 @@ export default class HackerDisplay {
         this.currentNode = nodeDisplay;
         this.x = nodeDisplay.x;
         this.y = nodeDisplay.y;
-        this.schedule.run(4, ()=> {
+        this.schedule.run(4, () => {
             this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);
         });
     }
@@ -262,7 +283,7 @@ export default class HackerDisplay {
     }
 
     hackerProbeConnections(nodeDisplay) {
-        this.schedule.run(4, ()=> {
+        this.schedule.run(4, () => {
             this.moveStep(nodeDisplay, 0, 0, 4);
         });
 
@@ -280,7 +301,7 @@ export default class HackerDisplay {
                 this.dispatch({type: HACKER_PROBED_CONNECTIONS, nodeId: nodeDisplay.id});
             }
         });
-        this.schedule.run(4, ()=> {
+        this.schedule.run(4, () => {
             this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);
         });
     }
@@ -298,7 +319,7 @@ export default class HackerDisplay {
         animate(this.canvas, this.hackerIcon, 'height', size, time);
     }
 
-    animateOpacity(opacity, time) {
-        animate(this.canvas, this.hackerIcon, 'opacity', opacity, time);
+    animateOpacity(opacity, time, easing) {
+        animate(this.canvas, this.hackerIcon, 'opacity', opacity, time, easing);
     }
 }
