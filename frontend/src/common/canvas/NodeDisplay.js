@@ -158,11 +158,11 @@ export default class NodeDisplay {
 
 
     cleanUpAfterCrossFade(canvasSelectedIcon) {
-        if (!this.oldNodeIcon) {
-            return;
-        }
         this.schedule.wait(this.crossFadeResidualDelay);
         this.schedule.run(0, () => {
+            if (!this.oldNodeIcon) {
+                return;
+            }
             this.canvas.remove(this.oldNodeIcon);
             if (canvasSelectedIcon === this.oldNodeIcon) {
                 this.select();

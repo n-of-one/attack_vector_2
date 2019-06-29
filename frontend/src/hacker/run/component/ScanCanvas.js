@@ -246,7 +246,7 @@ class ScanCanvas {
             this.iconSchedule.wait(30);
         }
         this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.transitionToHack(quick)});
-        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpAfterCrossFade()});
+        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpAfterCrossFade(this.selectedObject)});
         this.displayById[userId].startRun(quick);
     }
 

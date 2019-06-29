@@ -5,7 +5,6 @@ export default (state = [], action) => {
         case SERVER_SITE_FULL: return action.data.connections;
         case SERVER_ADD_CONNECTION: return addConnection(action.data, state);
         default: return state;
-// TODO: implement remove connection ;)
     }
 }
 

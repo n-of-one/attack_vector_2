@@ -90,6 +90,7 @@ class ScanningService(val scanService: ScanService,
 
         val scan = scanService.getByRunId(runId)
         val siteFull = siteService.getSiteFull(scan.siteId)
+        siteFull.sortNodeByDistance(scan)
         val userPresence = hackerActivityService
                 .getAll(scan.runId, HackerActivityType.SCANNING)
                 .map { activity -> createPresence(activity.authentication.user) }

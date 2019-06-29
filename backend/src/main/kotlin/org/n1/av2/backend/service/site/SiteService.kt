@@ -30,7 +30,7 @@ class SiteService(
     fun getSiteFull(siteId: String): SiteFull {
         val siteData = siteDataService.getBySiteId(siteId)
         val layout = layoutService.getBySiteId(siteId)
-        val nodes = nodeService.getAll(siteId)
+        val nodes = nodeService.getAll(siteId).toMutableList()
         val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
         val connections = connectionService.getAll(siteId)
         val state = siteStateService.getById(siteId)

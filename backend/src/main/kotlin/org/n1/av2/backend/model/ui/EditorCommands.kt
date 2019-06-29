@@ -1,5 +1,6 @@
 package org.n1.av2.backend.model.ui
 
+import org.n1.av2.backend.model.db.run.Scan
 import org.n1.av2.backend.model.db.site.*
 import org.n1.av2.backend.model.db.site.enums.NodeType
 import org.n1.av2.backend.model.db.site.enums.ServiceType
@@ -8,10 +9,15 @@ data class SiteFull(
         val id: String,
         val siteData: SiteData,
         val layout: Layout,
-        val nodes: List<Node>,
+        val nodes: MutableList<Node>,
         val connections: List<Connection>,
         val state: SiteState,
-        val startNodeId: String?)
+        val startNodeId: String?) {
+
+    fun sortNodeByDistance(scan: Scan) {
+        nodes.sortBy { node -> scan.nodeScanById[node.id]!!.distance }
+    }
+}
 
 data class AddNode(
         val siteId: String = "",

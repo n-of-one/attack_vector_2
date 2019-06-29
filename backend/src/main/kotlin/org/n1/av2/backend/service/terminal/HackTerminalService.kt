@@ -10,9 +10,6 @@ import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.CommandViewService
 import org.springframework.stereotype.Service
 
-// FIXME: when the class is finished
-@Suppress("UNUSED_PARAMETER")
-
 @Service
 class HackTerminalService(
         val stompService: StompService,

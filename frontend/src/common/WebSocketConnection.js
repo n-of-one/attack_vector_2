@@ -107,11 +107,6 @@ class WebSocketConnection {
             }
         }
 
-        // FIXME: do this server side
-        if (action.type === SERVER_SCAN_FULL) {
-            orderByDistance(action.data);
-        }
-
         this.store.dispatch(action);
 
         /* Our server (Spring simple broker) does not support ACK , so we keep our network logs clean */
