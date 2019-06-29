@@ -61,7 +61,9 @@ class HackingService(
         val scan = scanService.getByRunId(runId)
         val nodeScan= scan.nodeScanById[nodeId]!!
         val node = nodeService.getById(nodeId)
-        probeService.probeScanConnection(scan, node, nodeScan)
+        val service = node.services.first()
+        val prefix = "Hacked: [pri]0[/] ${service.name}"
+        probeService.probeScanConnection(scan, node, nodeScan, prefix)
     }
 
 }

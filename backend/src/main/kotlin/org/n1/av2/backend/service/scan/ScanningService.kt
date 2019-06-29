@@ -244,8 +244,15 @@ class ScanningService(val scanService: ScanService,
 
     private fun calculateEfficiency(scan: Scan, durationMillis: Long): Int {
         val nodeCount = scan.nodeScanById.keys.size
-        val timeForNodes = 0.1 + 13.5 * nodeCount // 0.1 startup cost + 4.5 s per node * 3 scans per node * nodeCount
-        val timeForPaths = (1.1 * scan.totalDistanceScanned) // 1 s per path segment
+
+        /*
+        Time per node zooming in and out
+          calculated: 85 * 0.05 s = 4.25 s
+          measured: ~4.26 s
+         */
+
+        val timeForNodes = 0.1 + (3 * 4.26) * nodeCount // 0.1 startup cost + 4.26 s per node * 3 scans per node * nodeCount
+        val timeForPaths = (1.1 * scan.totalDistanceScanned) // 1.1 s per path segment
         val expectedTime = timeForNodes + timeForPaths
         val duration = (durationMillis / 1000.0)
         val efficiency = (100 * expectedTime / duration).toInt()

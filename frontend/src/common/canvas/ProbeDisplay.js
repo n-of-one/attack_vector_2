@@ -8,7 +8,7 @@ const SIZE_SMALL = 20;
 const SIZE_SMALL_MEDIUM = 30;
 const SIZE_MEDIUM = 40;
 const SIZE_LARGE = 80;
-const SIZE_MEDIUM_LARGE = 60;
+const SIZE_MEDIUM_LARGE = 58;
 
 export default class ConnectionDisplay {
 
@@ -38,17 +38,14 @@ export default class ConnectionDisplay {
         this.probeIcon = new fabric.Image(image, {
             left: hackerDisplay.x,
             top: hackerDisplay.y,
-            height: 40,
-            width: 40,
+            height: SIZE_MEDIUM,
+            width: SIZE_MEDIUM,
             opacity: 0,
             selectable: false,
         });
 
         this.canvas.add(this.probeIcon);
         this.canvas.bringToFront(this.probeIcon);
-
-        // animate(this.canvas, this.probeIcon, "opacity", 0.4, 40);
-
 
         let currentDisplay = hackerDisplay;
         path.forEach((nodeId) => {
@@ -112,25 +109,36 @@ export default class ConnectionDisplay {
 
     scanInside(nodeId, action) {
         this.schedule.run(50, () => {
+            console.time("scan");
             this.animateZoomAndOpacity(SIZE_SMALL, 0.8, 50);
         });
         this.schedule.run(25, () => {
-            this.animateZoomAndOpacity(SIZE_SMALL_MEDIUM, 0.6, 25);
+            // this.animateZoomAndOpacity(SIZE_SMALL_MEDIUM, 0.6, 25);
+            animate(this.canvas, this.probeIcon, 'width', SIZE_SMALL_MEDIUM, 25);
+            animate(this.canvas, this.probeIcon, 'height', SIZE_SMALL_MEDIUM, 25);
+            animate(this.canvas, this.probeIcon, 'opacity', 0, 35);
+
+
         });
         const finishMethod = () => {
             if (this.yourProbe) {
                 this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: action});
             }
+            // animate(this.canvas, this.probeIcon, 'opacity', 0, 10);
+
         };
         this.finishProbe(finishMethod);
     }
 
     scanOutside(nodeId) {
         this.schedule.run(50, () => {
-            this.animateZoomAndOpacity(SIZE_LARGE, 0.6, 25);
+            console.time("scan");
+            this.animateZoomAndOpacity(SIZE_LARGE, 0.6, 50);
         });
         this.schedule.run(25, () => {
-            this.animateZoomAndOpacity(SIZE_MEDIUM_LARGE, 0.3, 25);
+            animate(this.canvas, this.probeIcon, 'width', SIZE_MEDIUM_LARGE, 35);
+            animate(this.canvas, this.probeIcon, 'height', SIZE_MEDIUM_LARGE, 35);
+            animate(this.canvas, this.probeIcon, 'opacity', 0, 35);
         });
         const finishMethod = () => {
             if (this.yourProbe) {
@@ -142,9 +150,8 @@ export default class ConnectionDisplay {
 
     finishProbe(finishMethod) {
         this.schedule.run(10, () => {
-            animate(this.canvas, this.probeIcon, 'opacity', "0", 10);
             this.lineIcons.forEach(lineIcon => {
-                animate(this.canvas, lineIcon, 'opacity', "0", 10);
+                animate(this.canvas, lineIcon, 'opacity', 0, 10);
             });
             finishMethod();
         });
@@ -153,9 +160,9 @@ export default class ConnectionDisplay {
             this.lineIcons.forEach(lineIcon => {
                 this.canvas.remove(lineIcon);
             });
+            console.timeEnd("scan");
             this.performAutoScan();
         });
-
     }
 
     performAutoScan() {
@@ -163,7 +170,6 @@ export default class ConnectionDisplay {
             this.dispatch({type: AUTO_SCAN});
         }
     }
-
 
     probeError(scanType, nodeId) {
         this.schedule.run(30, () => {

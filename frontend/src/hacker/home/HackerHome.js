@@ -11,7 +11,9 @@ import {DELETE_SCAN, ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 const mapDispatchToProps = (dispatch) => {
     return {
         scanSite: (siteName) => {
-            dispatch({type: SCAN_FOR_NAME, siteName: siteName});
+            if (siteName) {
+                dispatch({type: SCAN_FOR_NAME, siteName: siteName});
+            }
         },
         enterScan: (scanInfo) => {
             dispatch({type: ENTER_SCAN, data: {runId: scanInfo.runId, siteId: scanInfo.siteId}});
