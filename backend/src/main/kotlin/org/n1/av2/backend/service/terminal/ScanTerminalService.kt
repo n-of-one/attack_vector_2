@@ -91,7 +91,7 @@ class ScanTerminalService(val scanningService: ScanningService,
         hackTerminalService.sendSyntaxHighlighting()
         hackerPositionService.startRun(runId)
         val data = StartRun(currentUserService.userId, quick)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_RUN, data)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_HACK, data)
     }
 
     fun sendSyntaxHighlighting() {

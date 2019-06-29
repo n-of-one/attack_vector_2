@@ -44,7 +44,7 @@ export default class HackerDisplay {
 
         this.hackerIdentifierIcon = this.createHackerIcon(size, 0, this);
         this.canvas.add(this.hackerIdentifierIcon);
-        animate(this.canvas, this.hackerIdentifierIcon, "opacity", 1, APPEAR_TIME);
+        animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0.3, APPEAR_TIME);
 
         this.hackerHider = new fabric.Rect({
             left: this.x,
@@ -161,7 +161,7 @@ export default class HackerDisplay {
 
     startRunSlow() {
         this.dispatch({type: TERMINAL_LOCK, id: "main"});
-        this.hackerIcon = this.createHackerIcon(60, 1, this);
+        this.hackerIcon = this.createHackerIcon(60, 0, this);
         this.canvas.add(this.hackerIcon);
         this.canvas.sendToBack(this.hackerIcon);
 
@@ -169,6 +169,7 @@ export default class HackerDisplay {
             this.moveStep(this.startNode, 0, 0, 200, easeLinear);
             animate(this.canvas, this.hackerIcon, 'width', 40, 100);
             animate(this.canvas, this.hackerIcon, 'height', 40, 100);
+            animate(this.canvas, this.hackerIcon, 'opacity', 0.7, 20);
         });
 
         const random = (max) => {
@@ -181,7 +182,7 @@ export default class HackerDisplay {
         this.echo(20, "Persona v2.3 booting");
         this.echo(10, "- unique ID: " + personaId);
         this.schedule.run(0, () => {
-            animate(this.canvas, this.hackerIcon, 'opacity', 0.3, 100, fabric.util.ease.easeOutSine);
+            animate(this.canvas, this.hackerIcon, 'opacity', 0.1, 100, fabric.util.ease.easeOutSine);
             this.canvas.bringToFront(this.hackerIcon);
         });
         this.echo(10, "- Matching fingerprint with OS deamon");

@@ -4,8 +4,8 @@ import webSocketConnection from "../../../common/WebSocketConnection";
 
 const getRunId = (state) => state.run.scan.runId;
 
-function* enterRunSaga(action) {
-    scanCanvas.enterRun(action.data.userId, action.data.quick);
+function* startHackSaga(action) {
+    scanCanvas.startHack(action.data.userId, action.data.quick);
     yield
 }
 
@@ -29,4 +29,4 @@ function* serverMoveArriveSaga(action) {
 
 
 
-export {enterRunSaga, moveStartSaga, moveArriveSaga, serverMoveArriveSaga}
+export {startHackSaga, moveStartSaga, moveArriveSaga, serverMoveArriveSaga}

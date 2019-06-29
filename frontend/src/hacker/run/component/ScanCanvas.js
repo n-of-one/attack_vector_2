@@ -22,6 +22,7 @@ class ScanCanvas {
 
     dispatch = null;
     iconSchedule = new Schedule();
+    hackerSchedule = new Schedule();
     probeSchedule = new Schedules();
 
     startNodeDisplay = null;
@@ -29,6 +30,8 @@ class ScanCanvas {
 
     canvas = null;
     selectedObject = null;
+    hacking = false;
+
 
     init(userId, dispatch) {
         this.userId = userId;
@@ -72,7 +75,9 @@ class ScanCanvas {
         this.iconSchedule.deactivate();
         this.probeSchedule.deactivate();
         this.iconSchedule = new Schedule();
+        this.hackerSchedule = new Schedule();
         this.probeSchedule = new Schedules();
+        this.hacking = false;
 
         this.render();
     }
@@ -93,16 +98,15 @@ class ScanCanvas {
             nodeData.distance = nodeScan.distance;
 
         });
-        this.connectionDataById = {};
-        connections.forEach((connectionData) => {
-            this.connectionDataById[connectionData.id] = connectionData;
-        });
-
         nodes.forEach(node => {
-
             if (node.status !== UNDISCOVERED) {
                 this.addNodeDisplay(node);
             }
+        });
+
+        this.connectionDataById = {};
+        connections.forEach((connectionData) => {
+            this.connectionDataById[connectionData.id] = connectionData;
         });
         connections.forEach(connection => {
 
@@ -136,7 +140,7 @@ class ScanCanvas {
 
     addHackerDisplay(hacker, offset) {
         const you = hacker.userId === this.userId;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.iconSchedule, this.startNodeDisplay, hacker, offset, you, this.dispatch);
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.hackerSchedule, this.startNodeDisplay, hacker, offset, you, this.dispatch);
     }
 
     removeHackerDisplay(hacker) {
@@ -146,7 +150,7 @@ class ScanCanvas {
     }
 
     addNodeDisplay(node) {
-        const nodeDisplay = new NodeDisplay(this.canvas, this.iconSchedule, node, true);
+        const nodeDisplay = new NodeDisplay(this.canvas, this.iconSchedule, node, true, this.hacking);
         this.displayById[node.id] = nodeDisplay;
         nodeDisplay.appear();
     }
@@ -238,8 +242,23 @@ class ScanCanvas {
         this.canvasObjectDeSelected();
     }
 
-    enterRun(userId, quick) {
+    startHack(userId, quick) {
+        this.hacking = true;
+        if (!quick) {
+            this.iconSchedule.wait(30);
+        }
+        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.transitionToHack(quick)});
+        this.forAllNodeDisplays((nodeDisplay) => {nodeDisplay.cleanUpTransitionToHack(quick)});
         this.displayById[userId].startRun(quick)
+    }
+
+    forAllNodeDisplays(toRun) {
+        Object.values(this.nodeDataById).forEach( (nodeData) => {
+            const nodeDisplay = this.displayById[nodeData.id];
+            if (nodeDisplay) {
+                toRun(nodeDisplay);
+            }
+        });
     }
 
     moveStart(userId, nodeId) {

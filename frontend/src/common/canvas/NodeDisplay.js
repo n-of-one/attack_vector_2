@@ -3,6 +3,15 @@ import {toType} from "../enums/NodeTypesNames";
 import {CONNECTIONS, DISCOVERED, FREE, PROTECTED, TYPE} from "../enums/NodeStatus";
 import {animate} from "./CanvasUtils";
 
+const SCAN_OPACITY = 0.4;
+const HACKING_OPACITY_BY_TYPE = {
+    "DISCOVERED" : SCAN_OPACITY,
+    "TYPE": SCAN_OPACITY,
+    "FREE": 1,
+    "PROTECTED": 1,
+    "HACKED": 1
+};
+
 export default class NodeDisplay {
 
     id = null;
@@ -17,41 +26,16 @@ export default class NodeDisplay {
     y = null;
     x = null;
 
-    constructor(canvas, schedule, nodeData, staticDisplay) {
+    constructor(canvas, schedule, nodeData, staticDisplay, hacking) {
         this.id = nodeData.id;
         this.canvas = canvas;
         this.schedule = schedule;
         this.nodeData = nodeData;
-
-        const image = this.getNodeIconImage();
-
+        this.hacking = hacking;
         this.x = nodeData.x;
         this.y = nodeData.y;
 
-        const cursor = staticDisplay ? "pointer" : "move";
-
-        this.nodeIcon = new fabric.Image(image, {
-            left: nodeData.x,
-            top: nodeData.y,
-            height: image.height,
-            width: image.width,
-            opacity: 0,
-            data: nodeData,
-            type: "node",
-            lockRotation: true,
-            lockScalingX: true,
-            lockScalingY: true,
-            lockMovementX: staticDisplay,
-            lockMovementY: staticDisplay,
-            hoverCursor: cursor,
-        });
-        this.nodeIcon.setControlsVisibility({
-            ml: false,
-            mt: false,
-            mr: false,
-            mb: false,
-            mtr: false});
-
+        this.nodeIcon = this.createNodeIcon(staticDisplay);
         this.canvas.add(this.nodeIcon);
 
         this.labelIcon = new fabric.Text(nodeData.networkId, {
@@ -89,11 +73,47 @@ export default class NodeDisplay {
         this.canvas.bringToFront(this.labelIcon);
     }
 
+    createNodeIcon(staticDisplay) {
+        const image = this.getNodeIconImage();
+        const cursor = staticDisplay ? "pointer" : "move";
+
+         const nodeIcon = new fabric.Image(image, {
+            left: this.nodeData.x,
+            top: this.nodeData.y,
+            height: image.height,
+            width: image.width,
+            opacity: 0,
+            data: this.nodeData,
+            type: "node",
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockMovementX: staticDisplay,
+            lockMovementY: staticDisplay,
+            hoverCursor: cursor,
+        });
+        nodeIcon.setControlsVisibility({
+            ml: false,
+            mt: false,
+            mr: false,
+            mb: false,
+            mtr: false
+        });
+
+        return nodeIcon;
+    }
+
+
     getNodeIconImage() {
         const imageStatus = this.determineStatusForIcon();
         const type = toType(this.nodeData.type);
-        const imageId = type.name + "_" + imageStatus;
+        const prefix = (this.hacking) ? "HACK_" : "SCAN_";
+        const imageId = prefix + type.name + "_" + imageStatus;
         return document.getElementById(imageId);
+    }
+
+    getNodeHackOpacity() {
+        return HACKING_OPACITY_BY_TYPE[this.determineStatusForIcon()];
     }
 
     determineStatusForIcon() {
@@ -116,8 +136,26 @@ export default class NodeDisplay {
 
             animate(this.canvas, this.labelIcon, "opacity", 1, 40);
             animate(this.canvas, this.labelBackgroundIcon, "opacity", 0.8, 40);
-            animate(this.canvas, this.nodeIcon, "opacity", 0.4, 40);
+            animate(this.canvas, this.nodeIcon, "opacity", SCAN_OPACITY, 40);
         });
+    }
+
+    transitionToHack(quick) {
+        const delay = (quick) ? 0: 5;
+        this.schedule.run(delay, () => {
+            this.oldNodeIcon = this.nodeIcon;
+            this.hacking = true;
+            this.nodeIcon = this.createNodeIcon(true);
+            this.canvas.add(this.nodeIcon);
+            this.canvas.sendToBack(this.nodeIcon);
+            this.canvas.sendToBack(this.oldNodeIcon);
+            animate(this.canvas, this.nodeIcon, "opacity", this.getNodeHackOpacity(), 40);
+            animate(this.canvas, this.oldNodeIcon, "opacity", 0, 20);
+        });
+    }
+
+    cleanUpTransitionToHack() {
+        this.canvas.remove(this.oldNodeIcon);
     }
 
     remove() {
@@ -131,7 +169,6 @@ export default class NodeDisplay {
         if (newStatus !== CONNECTIONS) {
             this.updateNodeIcon(true);
         }
-
     }
 
 
@@ -160,8 +197,6 @@ export default class NodeDisplay {
 
     size() {
         return 22;
-        // 22
-        // 32
     }
 
 
