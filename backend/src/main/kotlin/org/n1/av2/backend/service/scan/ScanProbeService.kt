@@ -97,7 +97,7 @@ class ScanProbeService(
         return false
     }
 
-    private fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
+    fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
         if (nodeScan.status != NodeStatus.TYPE && nodeScan.status != NodeStatus.SERVICES_NO_CONNECTIONS) {
             stompService.terminalReceive("Scanning node ${node.networkId} did not find new connections.")
             return false

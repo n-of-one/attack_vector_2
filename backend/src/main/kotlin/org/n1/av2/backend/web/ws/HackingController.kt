@@ -27,4 +27,9 @@ class HackingController(
         executor.run(principal) { hackingService.probedServices(command.nodeId, command.runId) }
     }
 
+    @MessageMapping("/hack/probedConnections")
+    fun probedConnections(command: NodeBody, principal: Principal) {
+        executor.run(principal) { hackingService.probedConnections(command.nodeId, command.runId) }
+    }
+
 }

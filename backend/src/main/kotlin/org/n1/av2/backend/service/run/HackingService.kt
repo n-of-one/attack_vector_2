@@ -8,6 +8,7 @@ import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService
+import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
 val STATUSES_NEEDING_PROBE_SERVICES = listOf( DISCOVERED, TYPE, CONNECTIONS)
@@ -17,6 +18,7 @@ class HackingService(
         val hackerPositionService: HackerPositionService,
         val currentUserService: CurrentUserService,
         val scanService: ScanService,
+        val nodeService: NodeService,
         val probeService: ScanProbeService,
         val stompService: StompService) {
 
@@ -29,7 +31,6 @@ class HackingService(
 
         val data = MoveArrive(nodeId, currentUserService.userId)
         if (STATUSES_NEEDING_PROBE_SERVICES.contains(nodeStatus)) {
-            stompService.terminalReceive("probing services in node.")
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_SERVICES, data)
         }
         else {
@@ -40,7 +41,6 @@ class HackingService(
 
     fun probedServices(nodeId: String, runId: String) {
         val scan = scanService.getByRunId(runId)
-        val hackerPosition = hackerPositionService.retrieve()
         val nodeScan= scan.nodeScanById[nodeId]!!
 
         val newNodeStatus = when (nodeScan.status) {
@@ -55,6 +55,13 @@ class HackingService(
         val data = MoveArrive(nodeId, currentUserService.userId)
         hackerPositionService.arriveAt(nodeId)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
+    }
+
+    fun probedConnections(nodeId: String, runId: String) {
+        val scan = scanService.getByRunId(runId)
+        val nodeScan= scan.nodeScanById[nodeId]!!
+        val node = nodeService.getById(nodeId)
+        probeService.probeScanConnection(scan, node, nodeScan)
     }
 
 }

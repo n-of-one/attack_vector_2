@@ -33,6 +33,7 @@ export default class NodeDisplay {
 
         this.nodeIcon = this.createNodeIcon(staticDisplay);
         this.canvas.add(this.nodeIcon);
+        this.canvas.sendToBack(this.nodeIcon);
 
         this.labelIcon = new fabric.Text(nodeData.networkId, {
             // fill: "#bbbbbb", // just simple grey

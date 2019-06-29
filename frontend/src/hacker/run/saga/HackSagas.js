@@ -38,7 +38,20 @@ function* probeServicesSaga(action) {
     yield
 }
 
+function* serverHackerProbeConnectionsSaga(action) {
+    scanCanvas.hackerProbeConnections(action.data.userId, action.data.nodeId);
+    yield
+}
+
+function* hackerProbedConnectionsSaga(action) {
+    const runId = yield select(getRunId);
+    const payload = {nodeId: action.nodeId, runId: runId};
+    webSocketConnection.send("/av/hack/probedConnections", JSON.stringify(payload));
+    yield
+}
+
 export {startHackSaga,
     moveStartSaga, moveArriveSaga, serverMoveArriveSaga,
     serverHackerProbeServicesSaga, probeServicesSaga,
+    serverHackerProbeConnectionsSaga, hackerProbedConnectionsSaga
 }

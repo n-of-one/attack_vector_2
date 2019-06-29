@@ -273,6 +273,11 @@ class ScanCanvas {
         const nodeDisplay = this.displayById[nodeId];
         this.displayById[userId].hackerProbeServices(nodeDisplay);
     }
+
+    hackerProbeConnections(userId, nodeId) {
+        const nodeDisplay = this.displayById[nodeId];
+        this.displayById[userId].hackerProbeConnections(nodeDisplay);
+    }
 }
 
 const scanCanvas = new ScanCanvas();

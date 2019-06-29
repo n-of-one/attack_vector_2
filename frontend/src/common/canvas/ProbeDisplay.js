@@ -4,6 +4,12 @@ import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/run/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/run/model/NodeScanTypes";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
 
+const SIZE_SMALL = 20;
+const SIZE_SMALL_MEDIUM = 30;
+const SIZE_MEDIUM = 40;
+const SIZE_LARGE = 80;
+const SIZE_MEDIUM_LARGE = 60;
+
 export default class ConnectionDisplay {
 
     canvas = null;
@@ -106,14 +112,10 @@ export default class ConnectionDisplay {
 
     scanInside(nodeId, action) {
         this.schedule.run(50, () => {
-            animate(this.canvas, this.probeIcon, 'width', 20, 50);
-            animate(this.canvas, this.probeIcon, 'height', 20, 50);
-            animate(this.canvas, this.probeIcon, 'opacity', 0.8, 50);
+            this.animateZoomAndOpacity(SIZE_SMALL, 0.8, 50);
         });
         this.schedule.run(25, () => {
-            animate(this.canvas, this.probeIcon, 'width', 30, 25);
-            animate(this.canvas, this.probeIcon, 'height', 30, 25);
-            animate(this.canvas, this.probeIcon, 'opacity', 0.6, 25);
+            this.animateZoomAndOpacity(SIZE_SMALL_MEDIUM, 0.6, 25);
         });
         const finishMethod = () => {
             if (this.yourProbe) {
@@ -125,14 +127,10 @@ export default class ConnectionDisplay {
 
     scanOutside(nodeId) {
         this.schedule.run(50, () => {
-            animate(this.canvas, this.probeIcon, 'width', "80", 50);
-            animate(this.canvas, this.probeIcon, 'height', "80", 50);
-            animate(this.canvas, this.probeIcon, 'opacity', "0.6", 50);
+            this.animateZoomAndOpacity(SIZE_LARGE, 0.6, 25);
         });
         this.schedule.run(25, () => {
-            animate(this.canvas, this.probeIcon, 'width', "60", 25);
-            animate(this.canvas, this.probeIcon, 'height', "60", 25);
-            animate(this.canvas, this.probeIcon, 'opacity', "0.3", 25);
+            this.animateZoomAndOpacity(SIZE_MEDIUM_LARGE, 0.3, 25);
         });
         const finishMethod = () => {
             if (this.yourProbe) {
@@ -182,4 +180,11 @@ export default class ConnectionDisplay {
             this.canvas.remove(lineIcon);
         });
     }
+
+    animateZoomAndOpacity(size, opacity, time) {
+        animate(this.canvas, this.probeIcon, 'width', size, time);
+        animate(this.canvas, this.probeIcon, 'height', size, time);
+        animate(this.canvas, this.probeIcon, 'opacity', opacity, time);
+    }
+
 }
