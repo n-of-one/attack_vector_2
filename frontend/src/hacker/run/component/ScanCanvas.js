@@ -1,7 +1,6 @@
 import {fabric} from "fabric";
 import Schedule from "../../../common/Schedule";
 import {DISCOVERED, UNDISCOVERED} from "../../../common/enums/NodeStatus";
-import Schedules from "../../../common/Schedules";
 import NodeDisplay from "../../../common/canvas/NodeDisplay";
 import ConnectionIcon from "../../../common/canvas/ConnectionDisplay";
 import HackerIcon from "../../../common/canvas/HackerDisplay";

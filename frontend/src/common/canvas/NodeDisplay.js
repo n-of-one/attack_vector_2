@@ -258,6 +258,10 @@ export default class NodeDisplay {
         if (index >= 0) {
             this.otherHackerDisplays.splice(index, 1);
         }
+        this.otherHackerDisplays.forEach((otherHackerDisplay) => {
+            const yOffset = this.getYOffset(otherHackerDisplay);
+            otherHackerDisplay.repositionInNode(yOffset);
+        });
     }
 
 

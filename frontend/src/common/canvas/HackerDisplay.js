@@ -325,6 +325,12 @@ export default class HackerDisplay {
         }
     }
 
+    repositionInNode(yOffset) {
+        this.schedule.run(4, () => {
+            this.moveStep(this.currentNodeDisplay, -OFFSET, yOffset, 4)
+        });
+    }
+
     hackerProbeServices(nodeDisplay) {
         this.schedule.run(50, () => {
             this.appearIfNotVisible(nodeDisplay);
