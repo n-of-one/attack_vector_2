@@ -18,12 +18,12 @@ The application uses environment properties for configuration, all with defaults
 
 `MONGODB_NAME`    The name of the database. Defaults to: av2
 
-<br/>
+<br />
 The application uses the system default time zone, but this can be overriden using:
 
 `TIME_ZONE`     The IANA time zone, for instance: Europe/Amsterdam
 
-<br/>
+<br />
 The application has an optional notion of differentiating between environments, such as local development, 
 deployment on a local server during an event, or being hosted in the cloud. This is shown on certain screens,
 and also used to tag database exports. Finally this is also used to enable/disable some development features
