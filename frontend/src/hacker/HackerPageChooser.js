@@ -3,7 +3,7 @@ import {MAIL, SCAN} from "./HackerPages";
 import MailHome from "./mail/MailHome";
 import HackerHome from "./home/HackerHome";
 import React from "react";
-import ScanHome from "./run/component/RunHome";
+import RunHome from "./run/component/RunHome";
 import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
@@ -42,7 +42,7 @@ const renderCurrentPage = (currentPage) => {
         case MAIL:
             return <MailHome/>;
         case SCAN:
-            return <ScanHome/>;
+            return <RunHome/>;
         default:
             return <HackerHome/>;
     }
@@ -71,7 +71,7 @@ const renderMain = (currentPage, messageTerminal, dispatch) => {
             <MenuBar/>
         </>
     );
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({currentPage, messageTerminal, dispatch, renderScanInfoDismiss, dismissScanInfo}) => {

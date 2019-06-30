@@ -13,11 +13,13 @@ const mapDispatchToProps = (dispatch) => {
 };
 let mapStateToProps = (state) => {
 
-    let userName = Cookies.get("userName");
+    const userName = Cookies.get("userName");
+    const siteName = (state.run.site.siteData) ? state.run.site.siteData.name : "";
 
     return {
         userName: userName,
-        currentPage: state.currentPage
+        currentPage: state.currentPage,
+        runName: siteName,
     };
 };
 
@@ -30,10 +32,10 @@ let logout = (event) => {
     document.location.href = "/login";
 };
 
-const scanItem = (currentPage) => {
-    if (currentPage === SCAN) {
+const scanItem = (currentPage, runName) => {
+    if (currentPage === SCAN && runName) {
         return (
-            <MenuItem requriesRole="ROLE_HACKER" targetPage={SCAN} label="Scan"/>
+            <MenuItem requriesRole="ROLE_HACKER" targetPage={SCAN} label={"> " + runName}/>
             )
     }
     else {
@@ -43,7 +45,7 @@ const scanItem = (currentPage) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({userName, currentPage}) => {
+    ({userName, currentPage, runName}) => {
 
         return (
             <div className="navbar navbar-inverse navbar-fixed-bottom">
@@ -61,7 +63,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <ul className="nav navbar-nav">
                             {/*<MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />*/}
                             <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
-                            {scanItem(currentPage)}
+                            {scanItem(currentPage, runName)}
                             <MenuItem requriesRole="ROLE_SITE_MANAGER" targetPage={GM_SITES} label="Sites" />
                             <MenuItem requriesRole="ROLE_LOGS" targetPage={LOGS} label="Logs" />
                             <MenuItem requriesRole="ROLE_MISSION_MANAGER" targetPage={MISSIONS} label="Missions" />

@@ -10,7 +10,7 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 let mapStateToProps = (state) => {
-    const siteName = (state.run.site.siteData) ? state.run.site.siteData.name : ""
+    const siteName = (state.run.site.siteData) ? state.run.site.siteData.name : "";
     return {
         terminal: state.terminal,
         messageTerminal: state.run.messageTerminal,
