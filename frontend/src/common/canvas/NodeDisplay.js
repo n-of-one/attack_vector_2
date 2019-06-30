@@ -250,7 +250,7 @@ export default class NodeDisplay {
 
     getYOffset(hackerDisplay) {
         const index = this.otherHackerDisplays.indexOf(hackerDisplay)
-        return 20 + index * -20;
+        return 10 + index * -20;
     }
 
     unregisterHacker(hackerDisplay) {

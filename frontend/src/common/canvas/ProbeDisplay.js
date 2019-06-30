@@ -3,6 +3,7 @@ import {animate, calcLine, calcLineStart, easeLinear} from "./CanvasUtils";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/run/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/run/model/NodeScanTypes";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
+import Schedule from "../Schedule";
 
 const SIZE_SMALL = 20;
 const SIZE_SMALL_MEDIUM = 30;
@@ -23,9 +24,9 @@ export default class ConnectionDisplay {
 
     lineIcons = [];
 
-    constructor(canvas, schedule, dispatch, {path, scanType, autoScan}, hackerDisplay, yourProbe, displayById) {
+    constructor(canvas, dispatch, {path, scanType, autoScan}, hackerDisplay, yourProbe, displayById) {
         this.canvas = canvas;
-        this.schedule = schedule;
+        this.schedule = new Schedule();
         this.autoScan = autoScan;
         this.yourProbe = yourProbe;
         this.dispatch = dispatch;
@@ -54,7 +55,7 @@ export default class ConnectionDisplay {
             currentDisplay = nextDisplay;
         });
         const lastNodeId = path.pop();
-        schedule.run(0, () => {
+        this.schedule.run(0, () => {
             this.processProbeArrive(scanType, lastNodeId, currentDisplay);
         });
     }

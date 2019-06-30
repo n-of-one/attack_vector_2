@@ -22,8 +22,6 @@ class ScanCanvas {
 
     dispatch = null;
     iconSchedule = new Schedule();
-    hackerSchedule = new Schedule();
-    probeSchedule = new Schedules();
 
     startNodeDisplay = null;
     userId = null;
@@ -73,10 +71,7 @@ class ScanCanvas {
         this.startNodeDisplay = null;
 
         this.iconSchedule.deactivate();
-        this.probeSchedule.deactivate();
         this.iconSchedule = new Schedule();
-        this.hackerSchedule = new Schedule();
-        this.probeSchedule = new Schedules();
         this.hacking = false;
 
         this.render();
@@ -141,7 +136,7 @@ class ScanCanvas {
     addHackerDisplay(hacker, offset) {
         const you = hacker.userId === this.userId;
         const currentNode = (hacker.hacking) ? this.displayById[hacker.nodeId] : null;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.hackerSchedule, this.startNodeDisplay, hacker, offset, you, this.dispatch, currentNode);
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, currentNode);
     }
 
     removeHackerDisplay(hacker) {
@@ -163,10 +158,9 @@ class ScanCanvas {
     }
 
     launchProbe(probeData) {
-        const probeSchedule = this.probeSchedule.getOrCreateSchedule(probeData.probeUserId);
         const hackerDisplay = this.displayById[probeData.probeUserId];
         const yourProbe = probeData.probeUserId === this.userId;
-        this.displayById[probeData.id] = new ProbeDisplay(this.canvas, probeSchedule, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
+        this.displayById[probeData.id] = new ProbeDisplay(this.canvas, this.dispatch, probeData, hackerDisplay, yourProbe, this.displayById);
     }
 
     updateNodeStatus(nodeId, newStatus) {
