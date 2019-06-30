@@ -11,7 +11,7 @@ import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions";
 /**
  * This class renders the scan map on the JFabric Canvas
  */
-class ScanCanvas {
+class RunCanvas {
 
     nodeDataById = null;
     connectionDataById = {};
@@ -34,7 +34,7 @@ class ScanCanvas {
         this.userId = userId;
         this.dispatch = dispatch;
 
-        this.canvas = new fabric.Canvas('scanCanvas', {
+        this.canvas = new fabric.Canvas('runCanvas', {
             width: CANVAS_WIDTH,
             height: CANVAS_HEIGHT,
             backgroundColor: "#333333",
@@ -276,5 +276,5 @@ class ScanCanvas {
     }
 }
 
-const scanCanvas = new ScanCanvas();
-export default scanCanvas
+const runCanvas = new RunCanvas();
+export default runCanvas

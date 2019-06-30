@@ -1,4 +1,4 @@
-import scanCanvas from "../component/ScanCanvas"
+import runCanvas from "../component/RunCanvas"
 import webSocketConnection from "../../../common/WebSocketConnection";
 import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {SCAN} from "../../HackerPages";
@@ -26,7 +26,7 @@ function* enterScanSaga(action) {
 
     webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST);
     webSocketConnection.subscribeForRun(runId, siteId);
-    scanCanvas.reset();
+    runCanvas.reset();
     yield put({ type: HIDE_NODE_INFO });
     yield put({ type: TERMINAL_CLEAR, terminalId: "main"});
     yield put({ type: NAVIGATE_PAGE, to: SCAN, from: currentPage });
@@ -41,7 +41,7 @@ function* deleteScanSaga(action) {
 }
 
 function* serverScanFullSaga(action) {
-    scanCanvas.loadScan(action.data);
+    runCanvas.loadScan(action.data);
     yield
 }
 
@@ -54,12 +54,12 @@ function* navigatePageSaga(action) {
 }
 
 function* hackerEnterScanSaga(action) {
-    scanCanvas.hackerEnter(action.data);
+    runCanvas.hackerEnter(action.data);
     yield
 }
 
 function* hackerLeaveScanSaga(action) {
-    scanCanvas.hackerLeave(action.data);
+    runCanvas.hackerLeave(action.data);
     yield
 }
 

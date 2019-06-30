@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import scanCanvas from "../ScanCanvas";
+import runCanvas from "../RunCanvas";
 import {findElementById} from "../../../../common/Immutable";
 import NodeScanInfoByStatus from "./NodeScanInfoByStatus";
 import {CONNECTIONS, DISCOVERED, SERVICES, SERVICES_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
@@ -8,7 +8,7 @@ import Pad from "../../../../common/component/Pad";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        dismiss: () => scanCanvas.unSelect(),
+        dismiss: () => runCanvas.unSelect(),
     }
 };
 

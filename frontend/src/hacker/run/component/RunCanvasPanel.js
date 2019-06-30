@@ -1,22 +1,22 @@
 import React, {Component} from 'react';
-import scanCanvas from "./ScanCanvas";
+import runCanvas from "./RunCanvas";
 import {
     DATA_STORE, MANUAL_1, MANUAL_2, MANUAL_3, PASSCODE_STORE, RESOURCE_STORE, SYSCON,
     ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
 } from "../../../common/enums/NodeTypesNames";
-import ScanNodeImage from "./ScanNodeImage";
+import ScanNodeImage from "./RunNodeImage";
 import HackerImage from "../../../common/component/HackerImage";
 import ScanProbeImages from "./ScanProbeImages";
 import connect from "react-redux/es/connect/connect";
 
-class ScanCanvasPanel extends Component {
+class RunCanvasPanel extends Component {
 
     componentWillMount() {
         // dispatch some actions if you use Redux
     }
 
     componentDidMount() {
-        scanCanvas.init(this.props.userId, this.props.dispatch);
+        runCanvas.init(this.props.userId, this.props.dispatch);
     }
 
     allowDrop(event) {
@@ -25,12 +25,12 @@ class ScanCanvasPanel extends Component {
 
     render() {
         const onLoad = () => {
-            scanCanvas.render();
+            runCanvas.render();
         };
 
         return (
             <div id="canvas-container">
-                <canvas id="scanCanvas" width="607" height="815" style={{
+                <canvas id="runCanvas" width="607" height="815" style={{
                     "borderRadius": "3px 3px 3px 3px",
                     "marginTop": "10px",
                     "marginBottom": "10px",
@@ -113,4 +113,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ScanCanvasPanel);
+export default connect(mapStateToProps, mapDispatchToProps)(RunCanvasPanel);

@@ -1,11 +1,11 @@
-import scanCanvas from "../component/ScanCanvas"
+import runCanvas from "../component/RunCanvas"
 import webSocketConnection from "../../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
 
 const getRunId = (state) => state.run.scan.runId;
 
 function* serverProbeLaunchSaga(action) {
-    scanCanvas.launchProbe(action.data);
+    runCanvas.launchProbe(action.data);
     yield
 }
 

@@ -1,14 +1,14 @@
-import scanCanvas from "../component/ScanCanvas";
+import runCanvas from "../component/RunCanvas";
 
 function* updateNodeStatusSaga(action) {
     const {nodeId, newStatus} = action.data;
-    scanCanvas.updateNodeStatus(nodeId, newStatus);
+    runCanvas.updateNodeStatus(nodeId, newStatus);
     yield
 }
 
 function* discoverNodesSaga(action) {
     const {nodeIds, connectionIds} = action.data;
-    scanCanvas.discoverNodes(nodeIds, connectionIds);
+    runCanvas.discoverNodes(nodeIds, connectionIds);
     yield
 }
 

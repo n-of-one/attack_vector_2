@@ -1,16 +1,16 @@
 import {select} from 'redux-saga/effects'
-import scanCanvas from "../component/ScanCanvas";
+import runCanvas from "../component/RunCanvas";
 import webSocketConnection from "../../../common/WebSocketConnection";
 
 const getRunId = (state) => state.run.scan.runId;
 
 function* startHackSaga(action) {
-    scanCanvas.startHack(action.data.userId, action.data.quick);
+    runCanvas.startHack(action.data.userId, action.data.quick);
     yield
 }
 
 function* moveStartSaga(action) {
-    scanCanvas.moveStart(action.data.userId, action.data.nodeId);
+    runCanvas.moveStart(action.data.userId, action.data.nodeId);
     yield
 }
 
@@ -22,12 +22,12 @@ function* moveArriveSaga(action) {
 }
 
 function* serverMoveArriveSaga(action) {
-    scanCanvas.moveArrive(action.data.userId, action.data.nodeId);
+    runCanvas.moveArrive(action.data.userId, action.data.nodeId);
     yield
 }
 
 function* serverHackerProbeServicesSaga(action) {
-    scanCanvas.hackerProbeServicesSaga(action.data.userId, action.data.nodeId);
+    runCanvas.hackerProbeServicesSaga(action.data.userId, action.data.nodeId);
     yield
 }
 
@@ -39,7 +39,7 @@ function* probeServicesSaga(action) {
 }
 
 function* serverHackerProbeConnectionsSaga(action) {
-    scanCanvas.hackerProbeConnections(action.data.userId, action.data.nodeId);
+    runCanvas.hackerProbeConnections(action.data.userId, action.data.nodeId);
     yield
 }
 
