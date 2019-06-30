@@ -29,7 +29,7 @@ class RunCanvasPanel extends Component {
         };
 
         return (
-            <div id="canvas-container">
+            <div id="canvas-container" style={{height: "850px"}}>
                 <canvas id="runCanvas" width="607" height="815" style={{
                     "borderRadius": "3px 3px 3px 3px",
                     "marginTop": "10px",

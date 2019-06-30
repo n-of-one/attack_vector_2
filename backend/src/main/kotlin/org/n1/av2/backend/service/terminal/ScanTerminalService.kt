@@ -86,6 +86,7 @@ class ScanTerminalService(
 
     }
 
+
     fun sendSyntaxHighlighting() {
         val map = HashMap<String, Syntax>()
 
@@ -100,7 +101,7 @@ class ScanTerminalService(
         map["view"] = Syntax("error s", "error s")
         map["hack"] = Syntax("error s", "error s")
 
-        stompService.toUser(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, map)
+        sendSyntaxHighlighting(map, stompService)
     }
 
 

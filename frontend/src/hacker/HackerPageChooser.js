@@ -22,7 +22,6 @@ const dismissScanInfo = (event) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        dispatch: dispatch,
         dismissScanInfo: dismissScanInfo,
     };
 };
@@ -48,7 +47,7 @@ const renderCurrentPage = (currentPage) => {
     }
 };
 
-const renderMain = (currentPage, messageTerminal, dispatch) => {
+const renderMain = (currentPage, messageTerminal) => {
     return (
         <>
             <div className="row">
@@ -60,7 +59,7 @@ const renderMain = (currentPage, messageTerminal, dispatch) => {
                     </div>
                     <div className="row">
                         <div className="col-lg-12">
-                            <Terminal terminal={messageTerminal} dispatch={dispatch} height="300px"/>
+                            <Terminal terminal={messageTerminal} height="300px"/>
                         </div>
                     </div>
                 </div>

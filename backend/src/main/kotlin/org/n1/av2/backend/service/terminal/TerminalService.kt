@@ -15,6 +15,9 @@ class TerminalService(
     companion object: KLogging()
 
     fun processCommand(runId: String, command: String) {
+        if (command.trim().isBlank()) {
+            return
+        }
         val type = userActivityService.currentActivity()
         when (type) {
             HackerActivityType.SCANNING -> scanTerminalService.processCommand(runId, command)

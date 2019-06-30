@@ -12,8 +12,8 @@ import {
 import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
 import {discoverNodesSaga, updateNodeStatusSaga} from "./run/saga/NodeSagas";
-import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitSaga} from "./run/saga/TerminalSagas";
-import {SERVER_USER_DC, TERMINAL_SUBMIT} from "../common/terminal/TerminalActions";
+import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
+import {SERVER_USER_DC} from "../common/terminal/TerminalActions";
 import {
     enterScanSaga,
     navigatePageSaga,
@@ -40,6 +40,7 @@ import {
     SERVER_HACKER_MOVE_START,
     SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS
 } from "./run/model/HackActions";
+import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 
 const createHackerRootSaga = () => {
 
@@ -65,7 +66,7 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_SITE_DISCOVERED, enterScanSaga);
 
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
-        yield takeEvery(TERMINAL_SUBMIT, terminalSubmitSaga);
+        yield takeEvery(SUBMIT_TERMINAL_COMMAND, terminalSubmitCommandSaga);
         //
         yield takeEvery(SERVER_UPDATE_NODE_STATUS, updateNodeStatusSaga);
         yield takeEvery(SERVER_DISCOVER_NODES, discoverNodesSaga);

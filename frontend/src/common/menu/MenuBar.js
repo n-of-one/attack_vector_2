@@ -41,7 +41,6 @@ const scanItem = (currentPage, runName) => {
     else {
         return <span />
     }
-
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(

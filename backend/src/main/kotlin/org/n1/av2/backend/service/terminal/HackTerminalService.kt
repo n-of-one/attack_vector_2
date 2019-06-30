@@ -22,7 +22,6 @@ class HackTerminalService(
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
-        if (tokens[0].isNullOrBlank()) return
         val commandAction = tokens[0].toLowerCase()
         when (commandAction) {
             "help" -> processHelp()
@@ -65,7 +64,7 @@ class HackTerminalService(
         map["dc"] = Syntax("u", "error s")
         map["/share"] = Syntax("u warn", "info", "error s")
 
-        stompService.toUser(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, map)
+        sendSyntaxHighlighting(map, stompService)
     }
 
 

@@ -6,7 +6,7 @@ import {
     SERVER_TERMINAL_RECEIVE,
     TERMINAL_CLEAR,
     TERMINAL_LOCK,
-    TERMINAL_UNLOCK, SERVER_TERMINAL_SYNTAX_HIGHLIGHTING
+    TERMINAL_UNLOCK, SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, CHANGE_ACTIVE_TERMINAL
 } from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
 
@@ -17,24 +17,42 @@ const TAB = 9;
 
 
 const defaultStateTemplate = {
-    lines: [], // lines that are fully shown
+    lines: [],              // lines that are fully shown
     prompt: "⇋ ",
-    readOnly: false, // only allow user input if true
-    input: "", // user input
-    renderingLine: null, // String - part of the current rendering line that is being shown
-    receivingLine: null, // String - part of the current rendering line that is waiting to be shown
+    readOnly: false,        // only allow user input if true
+    renderOutput: true,     // If false, this Terminal acts like an input prompt
+    autoScroll: false,      // scroll to bottom one new info. (Only works if active === true)
+    active: false,          // active means that it is receiving input (managed by TerminalManager and ActiveTerminalIdReducer. Here it mainly allows autoScroll to work.
+    input: "",              // user input
+    renderingLine: null,    // String - part of the current rendering line that is being shown
+    receivingLine: null,    // String - part of the current rendering line that is waiting to be shown
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
-    receiving: true,   // true if there are lines waiting to be shown, or in the process of being shown.
-    syntaxHighlighting: { "help": { main: ["u"], rest: "error s" }}
+    receiving: true,        // true if there are lines waiting to be shown, or in the process of being shown.
+    syntaxHighlighting: { },
 };
 
 const createTerminalReducer = (id, config) => {
     const defaultState = {...defaultStateTemplate, ...config, id: id};
 
     return (terminal = defaultState, action) => {
+        if  (action.type === TERMINAL_TICK) {
+            return processTick(processTick(processTick(processTick(terminal))));
+        }
+
+        if (action.type === CHANGE_ACTIVE_TERMINAL) {
+            return processChangeActiveTerminal(terminal, action);
+        }
+
+        if (!action.terminalId && !action.data) {
+            return terminal
+        }
+
+        if ((action.terminalId && action.terminalId !== terminal.id) ||
+            (action.data && action.data.terminalId !== terminal.id)) {
+            return terminal
+        }
+
         switch (action.type) {
-            case TERMINAL_TICK:
-                return processTick(processTick(processTick(processTick(terminal))));
             case TERMINAL_RECEIVE:
                 return receive(terminal, action);
             case SERVER_TERMINAL_RECEIVE:
@@ -57,6 +75,13 @@ const createTerminalReducer = (id, config) => {
                 return terminal;
         }
     };
+};
+
+const processChangeActiveTerminal = (terminal, action) => {
+    if (terminal.id === action.terminalId) {
+        return {...terminal, active: true};
+    }
+    return {...terminal, active: false};
 };
 
 function processTick(terminal) {
@@ -115,10 +140,6 @@ function processTick(terminal) {
 
 
 const receive = (terminal, action) => {
-    if (action.terminalId !== terminal.id) {
-        return terminal
-    }
-
     const buffer = (terminal.receiveBuffer) ? terminal.receiveBuffer : [];
 
     const line = {type: "text", data: action.data};
@@ -131,10 +152,6 @@ const receive = (terminal, action) => {
 };
 
 const receiveFromServer = (terminal, action) => {
-    if (action.data.terminalId !== terminal.id) {
-        return terminal;
-    }
-
     const lines = action.data.lines.map((line) => {
         return {type: "text", data: line}
     });
@@ -169,10 +186,6 @@ const determineInput = (input, keyCode, key) => {
 };
 
 const handlePressEnter = (terminal, action) => {
-    if (action.terminalId !== terminal.id) {
-        return terminal;
-    }
-
     const line = terminal.prompt + action.command;
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
     return {...terminal, lines: lines, input: "", receiving: true};
@@ -210,24 +223,15 @@ const handleServerError = (terminal, action) => {
 };
 
 const handleTerminalClear = (terminal, action, defaultState) => {
-    if (action.terminalId === terminal.id) {
         return defaultState;
-    }
-    return terminal;
 };
 
 const terminalSetReadonly = (terminal, id, readOnly) => {
-    if (terminal.id === id) {
-        return {...terminal, readOnly: readOnly}
-    }
-    return terminal;
+    return {...terminal, readOnly: readOnly}
 };
 
 const processSyntaxHighlighting = (terminal, data) => {
-    if (terminal.id === "main") {
-        return {...terminal, syntaxHighlighting: data}
-    }
-    return terminal;
+    return {...terminal, syntaxHighlighting: data}
 };
 
 

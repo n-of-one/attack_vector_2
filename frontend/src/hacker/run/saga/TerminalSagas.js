@@ -7,7 +7,7 @@ const getRunId = (state) => state.run.scan.runId;
 const getCurrentPage = (state) => state.currentPage;
 
 
-function* terminalSubmitSaga(action) {
+function* terminalSubmitCommandSaga(action) {
     const runId = yield select(getRunId);
     const payload = {runId: runId, command: action.command};
     let body = JSON.stringify(payload);
@@ -29,4 +29,4 @@ function* checkNavigateAwayFromScan(action) {
 
 }
 
-export {terminalSubmitSaga, serverUserDcSaga, checkNavigateAwayFromScan};
+export {terminalSubmitCommandSaga, serverUserDcSaga, checkNavigateAwayFromScan};

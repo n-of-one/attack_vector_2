@@ -8,6 +8,8 @@ class TerminalManager {
     terminalTickIntervalId = null;
     running = false;
 
+    terminals = {};
+
     init(store) {
         this.store = store;
         this.dispatch = store.dispatch;
@@ -37,13 +39,21 @@ class TerminalManager {
         }
 
         event.preventDefault();
+
+        const terminalId = this.store.getState().activeTerminalId;
+
         if (keyCode === ENTER_KEY) {
-            this.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.store.getState().terminal.input, terminalId: "main"});
+            this.terminals[terminalId].submit(key);
         }
         else {
-            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: "main"});
+            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId});
         }
     }
+
+    registerTerminal(terminalId, terminal) {
+        this.terminals[terminalId] = terminal;
+    }
+
 }
 
 const terminalManager = new TerminalManager();

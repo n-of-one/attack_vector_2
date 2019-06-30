@@ -1,20 +1,33 @@
 import React, {Component} from 'react';
 import TerminalInput from "./TerminalInput";
 import TerminalTextLine from "./TerminalTextLine";
+import terminalManager from "./TerminalManager";
+import {TERMINAL_SUBMIT} from "./TerminalActions";
 
 class Terminal extends Component {
 
     state = {};
-    dispatch = null;
     bottomRef = React.createRef();
     height = "200px";
+    submitMethod = (input) => {
+        console.log("Ingored terminal input: " + input);
+    };
+    dispatch = null;
 
     constructor(props) {
         super(props);
         this.state = {...props.terminal};
         this.height = props.height;
+        terminalManager.registerTerminal(this.state.id, this);
+        if (props.submit) {
+            this.submitMethod = props.submit;
+        }
         this.dispatch = props.dispatch;
-        this.id = props.id;
+    }
+
+    submit(key) {
+        this.submitMethod(this.state.input);
+        this.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.state.input, terminalId: this.state.id});
     }
 
     componentWillReceiveProps(props) {
@@ -30,7 +43,9 @@ class Terminal extends Component {
     }
 
     scrollToBottom() {
-        this.bottomRef.current.scrollIntoView();
+        if (this.state.autoScroll && this.state.active) {
+            this.bottomRef.current.scrollIntoView();
+        }
     }
 
     renderLine(line, index) {
@@ -52,36 +67,23 @@ class Terminal extends Component {
         return (
             <TerminalInput prompt={this.state.prompt} input={this.state.input} syntaxHighlighting={this.state.syntaxHighlighting}/>
         )
-        // return (
-        //     <div className="terminalLine terminal_input">{this.state.prompt} {this.state.input}<span className="terminalCaret">&nbsp;</span></div>
-        // )
     }
 
-
     render() {
-        return (
-            <div className="terminalPanel terminal_scrollbar" style={{height: this.height}} >
+        if (this.state.renderOutput) {
+            return <div className="terminalPanel terminal_scrollbar" style={{height: this.height}}>
                 {this.state.lines.map((line, index) => this.renderLine(line, index))}
                 {this.renderRenderingLine()}
                 {this.renderInput()}
                 <div ref={this.bottomRef}/>
-            </div>
-        );
+            </div>;
+        }
+        else {
+            return <div className="terminalPanel" style={{height: this.height}}>
+                {this.renderInput()}
+            </div>;
+        }
     }
 }
 
 export default Terminal;
-
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         dispatch: dispatch
-//     };
-// };
-//
-// let mapStateToProps = (state) => {
-//     return {
-//         terminal: state.terminal,
-//     };
-// };
-//
-// export default connect(mapStateToProps, mapDispatchToProps)(Terminal);
