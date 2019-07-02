@@ -12,8 +12,6 @@ function* passwordIceSubmit(action) {
 
     const offset = new Date().getTimezoneOffset();
     const payload = {runId: runId, nodeId: ice.nodeId, serviceId: ice.serviceId, password: action.password, now: action.now, offset: offset};
-    webSocketConnection.send("/av/hack/moveArrive", JSON.stringify(payload));
+    webSocketConnection.send("/av/ice/password/submit", JSON.stringify(payload));
     yield
-
-    // FIXME: continue on server side from here
 }
