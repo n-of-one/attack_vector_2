@@ -1,6 +1,6 @@
 import React from 'react';
 import ScanInfoOs from "./ScanInfoOs";
-import {ICE_PASSWORD, OS, TEXT} from "../../../../../editor/component/middle/right/service/ServiceTypes";
+import {ICE_PASSWORD, OS, TEXT} from "../../../../../common/enums/ServiceTypes";
 import ScanInfoPasswordIce from "./ScanInfoPasswordIce";
 import ScanInfoText from "./ScanInfoText";
 import Pad from "../../../../../common/component/Pad";

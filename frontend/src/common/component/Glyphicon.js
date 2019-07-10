@@ -1,5 +1,5 @@
 import React from "react";
-import {glyphiconFromType} from "../../editor/component/middle/right/service/ServiceTypes";
+import {glyphiconFromType} from "../enums/ServiceTypes";
 
 const determineClassName = ({type, name}) => {
     if (name) {

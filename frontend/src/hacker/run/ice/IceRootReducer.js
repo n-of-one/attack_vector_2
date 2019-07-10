@@ -1,9 +1,11 @@
 import {combineReducers} from "redux";
 import PasswordIceReducer from "./password/PasswordIceReducer";
 import createTerminalReducer from "../../../common/terminal/TerminalReducer";
+import currentIceReducer from "./CurrentIceReducer";
 
 const iceRootReducer = combineReducers({
 
+    currentIce: currentIceReducer,
     password: PasswordIceReducer,
     displayTerminal: createTerminalReducer("iceDisplay", {readOnly: true, receiveBuffer: [
             {type:"text", data: "↼ Connecting to ice, initiating attack."},

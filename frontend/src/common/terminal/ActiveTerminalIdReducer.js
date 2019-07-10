@@ -1,7 +1,7 @@
 import {CHANGE_ACTIVE_TERMINAL} from "./TerminalActions";
 
-// const defaultState = "main";
-const defaultState = "iceInput";
+const defaultState = "main";
+// const defaultState = "iceInput";
 
 const activeTerminalIdReducer = (state = defaultState, action) => {
     switch (action.type) {

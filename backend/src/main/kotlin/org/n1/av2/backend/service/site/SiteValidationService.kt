@@ -6,7 +6,7 @@ import org.n1.av2.backend.model.db.site.SiteData
 import org.n1.av2.backend.model.db.site.SiteStateMessage
 import org.n1.av2.backend.model.db.site.SiteStateMessageType
 import org.n1.av2.backend.model.ui.ValidationException
-import org.n1.av2.backend.service.ReduxActions
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 

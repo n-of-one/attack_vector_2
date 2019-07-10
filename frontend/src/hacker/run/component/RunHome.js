@@ -5,6 +5,7 @@ import ScanCanvasPanel from "./RunCanvasPanel";
 import NodeScanInfo from "./scaninfo/NodeScanInfo";
 import PasswordIceHome from "../ice/password/PasswordIceHome";
 import {SUBMIT_TERMINAL_COMMAND} from "../model/RunActions";
+import IceGame from "../ice/IceGame";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -28,8 +29,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         return (
             <>
-                <br />
-                <PasswordIceHome />
+                <IceGame />
                 <br />
                 <div className="row">
                     <div className="col-lg-6">

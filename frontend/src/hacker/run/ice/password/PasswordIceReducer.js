@@ -5,7 +5,7 @@ const defaultState = {
     nodeId: "node-3933-1233",
     serviceId: "svc-7baa-4572-cde0",
     lockedUntil: 1561909151223,
-    attempts: ["zwaardvis", "12345"],
+    attempts: ["zwaardvis", "secret"],
     lockedAfterSubmit: false,
 };
 
@@ -16,7 +16,7 @@ const PasswordIceReducer = (state = defaultState, action) => {
         case SERVER_ICE_PASSWORD_UPDATE:
             return { ...action, lockedAfterSubmit: false};
         case ICE_PASSWORD_SUBMIT:
-            return { state, lockedAfterSubmit: true};
+            return { ...state, lockedAfterSubmit: true};
         default:
             return state;
     }

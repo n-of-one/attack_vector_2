@@ -6,26 +6,26 @@ import {ICE_PASSWORD_SUBMIT} from "./PasswordIceActions";
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch: dispatch,
-        enterPassword: (password) => dispatch({type: ICE_PASSWORD_SUBMIT, now: Date.now(), password: password}),
+        enterPassword: (password) => dispatch({type: ICE_PASSWORD_SUBMIT, password: password}),
     }
 };
 let mapStateToProps = (state) => {
     return {
         displayTerminal: state.run.ice.displayTerminal,
         inputTerminal: state.run.ice.inputTerminal,
-        readOnly: state.run.ice.password.lockedAfterSubmit,
+        ice: state.run.ice.password
     };
 };
 
-const renderInput = (inputTerminal, enterPassword, dispatch, readOnly) => {
-    if (readOnly) {
+const renderInput = (inputTerminal, enterPassword, dispatch, lockedAfterSubmit) => {
+    if (lockedAfterSubmit) {
         return <></>;
     }
     return  <Terminal terminal={inputTerminal} submit={enterPassword} dispatch={dispatch}/>;
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({displayTerminal, inputTerminal, readOnly, enterPassword, dispatch}) => {
+    ({displayTerminal, inputTerminal, readOnly, enterPassword, dispatch, ice}) => {
 
         return (
             <div className="row icePanelRow">
@@ -61,14 +61,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                     Timeout: <span className="text-info">0:00</span><br/>
                                 </strong>
                             </h4>
-                            {renderInput(inputTerminal, enterPassword, dispatch, readOnly)}
+                            {renderInput(inputTerminal, enterPassword, dispatch, ice.lockedAfterSubmit)}
                         </div>
                         <div className="col-lg-6 text">
                             Passwords tried:<br/>
                             <br/>
                             <ul>
-                                <li>zwaardvis</li>
-                                <li>12345</li>
+                                { ice.attempts.map( (attempt, index) => <li key={index}>{attempt}</li>)}
                             </ul>
                         </div>
                     </div>

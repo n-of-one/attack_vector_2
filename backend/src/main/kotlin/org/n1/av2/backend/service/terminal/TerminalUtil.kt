@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.model.Syntax
-import org.n1.av2.backend.service.ReduxActions
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 
 

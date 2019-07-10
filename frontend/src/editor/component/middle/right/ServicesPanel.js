@@ -4,7 +4,7 @@ import {ADD_SERVICE} from "../../../EditorActions";
 import {
     CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH,
     ICE_UNHACKABLE, ICE_WORD_SEARCH, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIME, TRACE_LOG, TRACER
-} from "./service/ServiceTypes";
+} from "../../../../common/enums/ServiceTypes";
 import Glyphicon from "../../../../common/component/Glyphicon";
 
 const mapDispatchToProps = (dispatch) => {

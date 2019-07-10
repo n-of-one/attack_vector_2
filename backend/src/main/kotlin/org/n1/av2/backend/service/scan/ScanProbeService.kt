@@ -6,7 +6,7 @@ import org.n1.av2.backend.model.db.run.Scan
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.service.ReduxActions
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.site.ConnectionService
 import org.n1.av2.backend.service.site.NodeService

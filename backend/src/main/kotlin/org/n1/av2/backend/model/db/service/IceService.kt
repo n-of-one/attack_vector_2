@@ -25,8 +25,6 @@ abstract class IceService(
         return true
     }
 
-
-
     override fun updateInternal(key: String, value: String): Boolean {
         when (key) {
             HACKED -> hacked = value.toBoolean()

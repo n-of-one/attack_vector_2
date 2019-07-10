@@ -13,7 +13,7 @@ import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.service.ReduxActions
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.HackerPositionService

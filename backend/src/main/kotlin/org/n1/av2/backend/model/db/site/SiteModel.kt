@@ -28,7 +28,11 @@ data class Node(
         var ice: Boolean,
         val services: MutableList<Service>,
         @Indexed val networkId: String
-)
+) {
+    fun getServiceById(serviceId: String): Service {
+        return services.find {it.id == serviceId}!!
+    }
+}
 
 @Document
 data class Layout(

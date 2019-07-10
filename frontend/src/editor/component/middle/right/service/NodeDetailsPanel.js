@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import ServiceOsPanel from "./type/panel/ServiceOsPanel";
 import {findElementById} from "../../../../../common/Immutable";
-import {ICE_PASSWORD, OS, TEXT} from "./ServiceTypes";
+import {ICE_PASSWORD, OS, TEXT} from "../../../../../common/enums/ServiceTypes";
 import ServiceTextPanel from "./type/panel/ServiceTextPanel";
 import SilentLink from "../../../../../common/component/SilentLink";
 import {SELECT_SERVICE} from "../../../../EditorActions";

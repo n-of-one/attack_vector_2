@@ -43,7 +43,7 @@ const renderCurrentPage = (currentPage) => {
         case SCAN:
             return <RunHome/>;
         default:
-            return <HackerHome/>;
+            return <HackerHome />;
     }
 };
 

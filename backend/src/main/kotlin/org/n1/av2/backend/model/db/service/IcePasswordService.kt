@@ -22,8 +22,6 @@ class IcePasswordService(
     constructor(id: String, layer: Int, defaultName: String) :
             this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", false, "", "")
 
-
-
     @Suppress("UNUSED_PARAMETER")
     private fun validatePassword(siteRep: SiteRep) {
         if (this.password.isEmpty()) throw ValidationException("Password cannot be empty.")

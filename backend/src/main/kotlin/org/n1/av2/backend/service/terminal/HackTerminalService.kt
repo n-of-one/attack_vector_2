@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.terminal
 import org.n1.av2.backend.config.MyEnvironment
 import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.service.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.terminal.hacking.CommandHackService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService

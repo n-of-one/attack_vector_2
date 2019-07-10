@@ -4,7 +4,7 @@ import mu.KLogging
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.run.NodeStatus.*
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.service.ReduxActions
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService

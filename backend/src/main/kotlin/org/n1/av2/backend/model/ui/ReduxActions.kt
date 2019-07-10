@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.model.ui
 
 enum class ReduxActions {
 
@@ -43,5 +43,9 @@ enum class ReduxActions {
 
     SERVER_HACKER_PROBE_SERVICES,    // when arriving at a node that is state DISCOVERED or TYPE
     SERVER_HACKER_PROBE_CONNECTIONS, // when hacking OS
+
+
+    SERVER_ICE_PASSWORD_HACKED,
+    SERVER_ICE_PASSWORD_UPDATE,
 
 }
