@@ -14,7 +14,7 @@ const mapDispatchToProps = (dispatch) => {
 let mapStateToProps = (state) => {
 
     const userName = Cookies.get("userName");
-    const siteName = (state.run.site.siteData) ? state.run.site.siteData.name : "";
+    const siteName = (state.run && state.run.site.siteData) ? state.run.site.siteData.name : "";
 
     return {
         userName: userName,

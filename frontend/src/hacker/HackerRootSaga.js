@@ -25,7 +25,7 @@ import {
 } from "./run/saga/ScanSagas";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
 import {
-    startHackSaga,
+    startAttackSaga,
     moveArriveSaga,
     moveStartSaga,
     serverMoveArriveSaga,
@@ -35,7 +35,7 @@ import {
 } from "./run/saga/HackSagas";
 import {
     HACKER_MOVE_ARRIVE,
-    SERVER_HACKER_START_HACK,
+    SERVER_HACKER_START_ATTACK,
     SERVER_HACKER_MOVE_ARRIVE,
     SERVER_HACKER_MOVE_START,
     SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS
@@ -78,7 +78,7 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_HACKER_ENTER_SCAN, hackerEnterScanSaga);
         yield takeEvery(SERVER_HACKER_LEAVE_SCAN, hackerLeaveScanSaga);
 
-        yield takeEvery(SERVER_HACKER_START_HACK, startHackSaga);
+        yield takeEvery(SERVER_HACKER_START_ATTACK, startAttackSaga);
 
         yield takeEvery(SERVER_HACKER_MOVE_START, moveStartSaga);
         yield takeEvery(HACKER_MOVE_ARRIVE, moveArriveSaga);

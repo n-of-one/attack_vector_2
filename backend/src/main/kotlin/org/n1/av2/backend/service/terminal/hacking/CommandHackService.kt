@@ -7,6 +7,7 @@ import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.service.ServiceOs
 import org.n1.av2.backend.service.service.ServiceText
+import org.n1.av2.backend.service.service.ice.ServiceIcePassword
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
@@ -16,7 +17,8 @@ class CommandHackService(
         private val nodeService: NodeService,
         private val hackerPositionService: HackerPositionService,
         private val serviceOs: ServiceOs,
-        private val serviceText: ServiceText
+        private val serviceText: ServiceText,
+        private val serviceIcePassword: ServiceIcePassword
 ) {
 
     fun process(runId: String, tokens: List<String>) {
@@ -42,6 +44,7 @@ class CommandHackService(
         when (service.type) {
             ServiceType.OS -> serviceOs.hack(service, node, position)
             ServiceType.TEXT -> serviceText.hack(service, node)
+            ServiceType.ICE_PASSWORD -> serviceIcePassword.hack(service, node, position.runId)
             else -> stompService.terminalReceive("Service type not supported yet: ${service.type}")
         }
     }

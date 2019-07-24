@@ -36,7 +36,7 @@ class HackingService(
         hackTerminalService.sendSyntaxHighlighting()
         hackerPositionService.startRun(runId)
         val data = StartRun(currentUserService.userId, quick)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_HACK, data)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
     }
 
     private data class MoveArrive(val nodeId: String, val userId: String)

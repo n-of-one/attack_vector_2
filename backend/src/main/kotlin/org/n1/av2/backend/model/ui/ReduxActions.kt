@@ -37,7 +37,7 @@ enum class ReduxActions {
     SERVER_HACKER_ENTER_SCAN,       // A hacker enters a scan (notify other hackers about this)
     SERVER_HACKER_LEAVE_SCAN,       // A hacker leaves a scan
 
-    SERVER_HACKER_START_HACK,
+    SERVER_HACKER_START_ATTACK,
     SERVER_HACKER_MOVE_START,       // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,      // step two of the move
 
@@ -45,7 +45,8 @@ enum class ReduxActions {
     SERVER_HACKER_PROBE_CONNECTIONS, // when hacking OS
 
 
-    SERVER_ICE_PASSWORD_HACKED,
-    SERVER_ICE_PASSWORD_UPDATE,
+    SERVER_START_HACKING_ICE_PASSWORD, // sent to hacker that hacks this ice
+    SERVER_ICE_PASSWORD_UPDATE,        // sent to run to inform of hacked status update
+    SERVER_ICE_PASSWORD_HACKED,        // sent to run to inform of hacked status update
 
 }

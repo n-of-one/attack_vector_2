@@ -234,7 +234,7 @@ class RunCanvas {
         this.canvasObjectDeSelected();
     }
 
-    startHack(userId, quick) {
+    startAttack(userId, quick) {
         this.hacking = true;
         if (this.userId === userId) {
             if (!quick) {

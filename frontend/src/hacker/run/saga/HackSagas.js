@@ -4,8 +4,8 @@ import webSocketConnection from "../../../common/WebSocketConnection";
 
 const getRunId = (state) => state.run.scan.runId;
 
-function* startHackSaga(action) {
-    runCanvas.startHack(action.data.userId, action.data.quick);
+function* startAttackSaga(action) {
+    runCanvas.startAttack(action.data.userId, action.data.quick);
     yield
 }
 
@@ -50,7 +50,7 @@ function* hackerProbedConnectionsSaga(action) {
     yield
 }
 
-export {startHackSaga,
+export {startAttackSaga,
     moveStartSaga, moveArriveSaga, serverMoveArriveSaga,
     serverHackerProbeServicesSaga, probeServicesSaga,
     serverHackerProbeConnectionsSaga, hackerProbedConnectionsSaga

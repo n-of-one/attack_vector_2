@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.run.ice
 import org.n1.av2.backend.model.db.run.IcePasswordStatus
 import org.n1.av2.backend.model.db.run.ServiceStatusHolder
 import org.n1.av2.backend.model.db.service.IcePasswordService
-import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.repo.ServiceStatusHolderRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -23,7 +22,7 @@ class IcePasswordGame(
         val time: TimeService,
         val stompService: StompService) {
 
-    private fun getOrCreateStatusHolder(serviceId: String, runId: String): ServiceStatusHolder {
+    fun getOrCreateStatusHolder(serviceId: String, runId: String): ServiceStatusHolder {
         return serviceStatusRepo.findByIdOrNull(serviceId) ?: createStatusHolder(serviceId, runId)
     }
 
@@ -49,7 +48,7 @@ class IcePasswordGame(
         }
     }
 
-    private class IcePasswordUpdate(serviceId: String, status: IcePasswordStatus)
+    private class IcePasswordUpdate(val serviceId: String, val status: IcePasswordStatus)
 
     private fun resolveHacked(statusHolder: ServiceStatusHolder, password: String) {
         val status = statusHolder.status as IcePasswordStatus
