@@ -1,5 +1,6 @@
 package org.n1.av2.backend.util
 
+import org.n1.av2.backend.model.db.site.Node
 import java.util.*
 
 
@@ -12,9 +13,12 @@ fun createId(prefix: String, findExisting: (String)-> Any? = ::neverFindExisting
     return createId(prefix, findExisting, 9, 18)
 }
 
-fun createServiceId(siteId: String, findExisting: (String)-> Any?): String {
-    val siteUnique = siteId.substring(5)
-    return createId("svc-${siteUnique}", findExisting, 9, 13)
+fun createServiceId(node: Node, findExisting: (String)-> Any?): String {
+    return createId("${node.id}-svc", findExisting, 9, 13)
+}
+
+fun nodeIdFromServiceId(serviceId: String): String {
+    return serviceId.substring(0,14)
 }
 
 fun createId(prefix: String, findExisting: (String)-> Any?, start: Int, end: Int): String {

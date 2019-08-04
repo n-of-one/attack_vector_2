@@ -57,4 +57,8 @@ class HackerPositionService(
         hackerPositionRepo.save(newPosition)
     }
 
+    fun purgeAll() {
+        hackerPositionRepo.deleteAll()
+    }
+
 }

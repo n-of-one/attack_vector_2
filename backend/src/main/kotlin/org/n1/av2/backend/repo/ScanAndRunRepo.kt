@@ -29,5 +29,4 @@ interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String
 
 @Repository
 interface ServiceStatusHolderRepo: PagingAndSortingRepository<ServiceStatusHolder, String> {
-
 }

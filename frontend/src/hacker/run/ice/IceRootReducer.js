@@ -2,6 +2,7 @@ import {combineReducers} from "redux";
 import PasswordIceReducer from "./password/PasswordIceReducer";
 import createTerminalReducer from "../../../common/terminal/TerminalReducer";
 import currentIceReducer from "./CurrentIceReducer";
+import {ICE_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 
 const iceRootReducer = combineReducers({
 
@@ -17,7 +18,7 @@ const iceRootReducer = combineReducers({
             {type:"text", data: "↺ Failed to sidestep incremental time-out."},
             {type:"text", data: "↼ Suggested attack vectors: retrieve password, informed password guessing."},
         ]}),
-    inputTerminal: createTerminalReducer("iceInput", {renderOutput: false}),
+    inputTerminal: createTerminalReducer(ICE_TERMINAL_ID, {renderOutput: false}),
 
 
 });

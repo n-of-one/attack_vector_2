@@ -67,7 +67,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             Passwords tried:<br/>
                             <br/>
                             <ul>
-                                { ice.attempts.map( (attempt, index) => <li key={index}>{attempt}</li>)}
+                                { ice.status.attempts.map( (attempt, index) => <li key={index}>{attempt}</li>)}
                             </ul>
                         </div>
                     </div>

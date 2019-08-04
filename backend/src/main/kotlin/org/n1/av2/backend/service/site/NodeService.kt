@@ -32,7 +32,7 @@ class NodeService(
         val siteId = command.siteId
         val nodes = getAll(siteId)
         val networkId = nextFreeNetworkId(siteId, nodes)
-        val services = listOf(createOsService(siteId, nodes)).toMutableList()
+        val services = mutableListOf(createOsService(id))
 
         val node = Node(
                 id = id,
@@ -47,18 +47,17 @@ class NodeService(
         return node
     }
 
-    private fun createOsService(siteId: String, nodes: List<Node>): Service {
-        val id = createServiceId(nodes, siteId)
+    private fun createOsService(nodeId: String): Service {
+        val id = "${nodeId}-svc-0000"
         val name = themeService.getDefaultName(ServiceType.OS)
         return OsService(id, name)
     }
 
-    private fun createServiceId(nodes: List<Node>, siteId: String): String {
-        val allServiceIds: List<String> = nodes.map { node -> node.services.map { service -> service.id } }.flatten()
+    private fun createServiceId(node: Node): String {
         val findExisting = fun(candidate: String): String? {
-            return allServiceIds.find { it == candidate }
+            return node.services.find{ it.id == candidate }?.id
         }
-        return createServiceId(siteId, findExisting)
+        return createServiceId(node, findExisting)
     }
 
     private fun nextFreeNetworkId(siteId: String, nodes: List<Node>): String {
@@ -137,7 +136,7 @@ class NodeService(
 
     fun addService(command: AddServiceCommand): Service {
         val node = getById(command.nodeId)
-        val service = createService(command.siteId, command.serviceType, node)
+        val service = createService(command.serviceType, node)
         node.services.add(service)
         if (service.type.ice) {
             node.ice = true
@@ -146,10 +145,9 @@ class NodeService(
         return service
     }
 
-    private fun createService(siteId: String, serviceType: ServiceType, node: Node): Service {
-        val nodes = getAll(siteId)
+    private fun createService(serviceType: ServiceType, node: Node): Service {
         val layer = node.services.size
-        val id = createServiceId(nodes, siteId)
+        val id = createServiceId(node)
 
         val defaultName = themeService.getDefaultName(serviceType)
 

@@ -3,8 +3,9 @@ package org.n1.av2.backend.service.run
 import mu.KLogging
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.run.NodeStatus.*
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.repo.ServiceStatusHolderRepo
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService
@@ -24,7 +25,8 @@ class HackingService(
         private val probeService: ScanProbeService,
         private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
-        private val stompService: StompService) {
+        private val stompService: StompService,
+        private val serviceStatusHolderRepo: ServiceStatusHolderRepo) {
 
     companion object : KLogging()
 
@@ -79,6 +81,11 @@ class HackingService(
         val service = node.services.first()
         val prefix = "Hacked: [pri]0[/] ${service.name}"
         probeService.probeScanConnection(scan, node, nodeScan, prefix)
+    }
+
+    fun purgeAll() {
+        serviceStatusHolderRepo.deleteAll()
+        hackerPositionService.purgeAll()
     }
 
 }

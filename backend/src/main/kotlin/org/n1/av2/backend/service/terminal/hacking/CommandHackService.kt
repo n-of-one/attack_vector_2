@@ -7,7 +7,7 @@ import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.service.ServiceOs
 import org.n1.av2.backend.service.service.ServiceText
-import org.n1.av2.backend.service.service.ice.ServiceIcePassword
+import org.n1.av2.backend.service.service.ice.password.ServiceIcePassword
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 

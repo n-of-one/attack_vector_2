@@ -13,3 +13,5 @@ function* passwordIceSubmit(action) {
     webSocketConnection.send("/av/ice/password/submit", JSON.stringify(payload));
     yield
 }
+
+export {passwordIceSubmit}

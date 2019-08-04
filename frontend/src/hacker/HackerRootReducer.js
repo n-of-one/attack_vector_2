@@ -7,7 +7,7 @@ import createTerminalReducer from "../common/terminal/TerminalReducer";
 import themeReducer from "../common/reducer/ThemeReducer";
 import userIdReducer from "../common/reducer/UserIdReducer";
 import hackersReducer from "./run/reducer/HackersReducer";
-import activeTerminalIdReducer from "../common/terminal/ActiveTerminalIdReducer";
+import {activeTerminalIdReducer, MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
 
 const hackerRootReducer = combineReducers({
     currentPage: pageReducer,
@@ -15,7 +15,7 @@ const hackerRootReducer = combineReducers({
     home: homeRootReducer,
     mail: mailRootReducer,
     hackers: hackersReducer,
-    terminal: createTerminalReducer("main", {autoScroll: true}),
+    terminal: createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true}),
     activeTerminalId: activeTerminalIdReducer,
     theme: themeReducer,
     userId: userIdReducer

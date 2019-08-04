@@ -3,10 +3,10 @@ import {MAIL, SCAN} from "./HackerPages";
 import MailHome from "./mail/MailHome";
 import HackerHome from "./home/HackerHome";
 import React from "react";
-import RunHome from "./run/component/RunHome";
 import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
+import RunPageChooser from "./run/component/RunPageChooser";
 
 const dismissScanInfo = (event) => {
     let current = event.target;
@@ -41,7 +41,7 @@ const renderCurrentPage = (currentPage) => {
         case MAIL:
             return <MailHome/>;
         case SCAN:
-            return <RunHome/>;
+            return <RunPageChooser />;
         default:
             return <HackerHome />;
     }

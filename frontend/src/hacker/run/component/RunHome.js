@@ -29,8 +29,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         return (
             <>
-                <IceGame />
-                <br />
                 <div className="row">
                     <div className="col-lg-6">
                         <NodeScanInfo/>
