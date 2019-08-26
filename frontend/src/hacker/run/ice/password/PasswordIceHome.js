@@ -17,15 +17,33 @@ let mapStateToProps = (state) => {
     };
 };
 
-const renderInput = (inputTerminal, enterPassword, dispatch, locked) => {
-    if (locked) {
+const renderInput = (inputTerminal, enterPassword, dispatch, ice) => {
+    if (ice.locked) {
         return <></>;
     }
-    return  <Terminal terminal={inputTerminal} submit={enterPassword} dispatch={dispatch}/>;
+    if (ice.waitSeconds && ice.waitSeconds > 0) {
+        return <div className="text"><span className="text-info"><br/>Time-out in progress.</span></div>
+    }
+
+    return <Terminal terminal={inputTerminal} submit={enterPassword} dispatch={dispatch}/>;
+};
+
+const renderHint = (ice) => {
+    if (ice.hint) {
+        return <div className="text"><em>Password hint: {ice.hint}</em><br/></div>
+    } else {
+        return <></>
+    }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({displayTerminal, inputTerminal, readOnly, enterPassword, dispatch, ice}) => {
+    ({displayTerminal, inputTerminal, enterPassword, dispatch, ice}) => {
+
+        let waitSeconds = (ice.waitSeconds && ice.waitSeconds > 0) ? "" + ice.waitSeconds : "00";
+
+        if (waitSeconds.length < 2) {
+            waitSeconds = "0" + waitSeconds
+        }
 
         return (
             <div className="row icePanelRow">
@@ -58,16 +76,18 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             <br/>
                             <h4 className="text-success">
                                 <strong>
-                                    Timeout: <span className="text-info">0:00</span><br/>
+                                    Time-out: <span className="text-info">0:{waitSeconds}</span><br/>
                                 </strong>
                             </h4>
-                            {renderInput(inputTerminal, enterPassword, dispatch, ice.locked)}
+                            {renderHint(ice)}
+                            {renderInput(inputTerminal, enterPassword, dispatch, ice)}<br/>
+
                         </div>
                         <div className="col-lg-6 text">
                             Passwords tried:<br/>
                             <br/>
                             <ul>
-                                { ice.status.attempts.map( (attempt, index) => <li key={index}>{attempt}</li>)}
+                                {ice.status.attempts.map((attempt, index) => <li key={index}>{attempt}</li>)}
                             </ul>
                         </div>
                     </div>

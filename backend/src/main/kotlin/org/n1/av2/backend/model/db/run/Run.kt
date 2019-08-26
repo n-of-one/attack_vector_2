@@ -3,15 +3,13 @@ package org.n1.av2.backend.model.db.run
 import org.springframework.data.annotation.Id
 
 
-data class ServiceStatusHolder (
+data class ServiceStatus (
         @Id val id: String,
         val serviceId: String,
         val runId: String,
         var hacked: Boolean,
-        val hackedBy: MutableList<String>,
-        val status: ServiceStatus)
+        val hackedBy: MutableList<String>)
 
-abstract class ServiceStatus
 
 
 //data class Run (

@@ -5,6 +5,7 @@ import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.enums.ServiceType
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
+import org.n1.av2.backend.service.service.ServiceIceGeneric
 import org.n1.av2.backend.service.service.ServiceOs
 import org.n1.av2.backend.service.service.ServiceText
 import org.n1.av2.backend.service.service.ice.password.ServiceIcePassword
@@ -18,7 +19,7 @@ class CommandHackService(
         private val hackerPositionService: HackerPositionService,
         private val serviceOs: ServiceOs,
         private val serviceText: ServiceText,
-        private val serviceIcePassword: ServiceIcePassword
+        private val serviceIceGeneric: ServiceIceGeneric
 ) {
 
     fun process(runId: String, tokens: List<String>) {
@@ -44,7 +45,7 @@ class CommandHackService(
         when (service.type) {
             ServiceType.OS -> serviceOs.hack(service, node, position)
             ServiceType.TEXT -> serviceText.hack(service, node)
-            ServiceType.ICE_PASSWORD -> serviceIcePassword.hack(service, node, position.runId)
+            ServiceType.ICE_PASSWORD -> serviceIceGeneric.hack(service, position.runId)
             else -> stompService.terminalReceive("Service type not supported yet: ${service.type}")
         }
     }

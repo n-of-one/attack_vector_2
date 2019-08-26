@@ -1,9 +1,6 @@
 package org.n1.av2.backend.repo
 
-import org.n1.av2.backend.model.db.run.HackerPosition
-import org.n1.av2.backend.model.db.run.Scan
-import org.n1.av2.backend.model.db.run.ServiceStatusHolder
-import org.n1.av2.backend.model.db.run.UserScan
+import org.n1.av2.backend.model.db.run.*
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
@@ -28,6 +25,11 @@ interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String
 }
 
 @Repository
-interface ServiceStatusHolderRepo: PagingAndSortingRepository<ServiceStatusHolder, String> {
-    fun findByServiceIdAndRunId(serviceId: String, runId: String): ServiceStatusHolder?
+interface ServiceStatusRepo: PagingAndSortingRepository<ServiceStatus, String> {
+    fun findByServiceIdAndRunId(serviceId: String, runId: String): ServiceStatus?
+}
+
+@Repository
+interface IcePasswordStatusRepo: PagingAndSortingRepository<IcePasswordStatus, String> {
+    fun findByServiceIdAndRunId(serviceId: String, runId: String): IcePasswordStatus?
 }

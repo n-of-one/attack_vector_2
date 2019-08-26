@@ -31,7 +31,7 @@ export function* passwordIceStartHack(action) {
 export function* passwordIceSubmit(action) {
     const runId = yield select(getRunId);
     const ice = yield select(getPasswordIce);
-    const payload = {serviceId: ice.serviceId, nodeId: ice.nodeId, runId: runId, password: action.password};
+    const payload = {serviceId: ice.status.serviceId, nodeId: ice.nodeId, runId: runId, password: action.password};
     webSocketConnection.send("/av/ice/password/submit", JSON.stringify(payload));
     yield
 }
@@ -43,6 +43,7 @@ export function* serverPasswordIceUpdate(action) {
             yield * processSuccess(action.data.message);
         } else {
             notify({type: "neutral", title: "Result", message: action.data.message})
+            yield
         }
     }
 }

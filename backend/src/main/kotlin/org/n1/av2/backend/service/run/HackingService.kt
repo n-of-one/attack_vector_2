@@ -4,7 +4,8 @@ import mu.KLogging
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.run.NodeStatus.*
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.ServiceStatusHolderRepo
+import org.n1.av2.backend.repo.IcePasswordStatusRepo
+import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanProbeService
@@ -26,7 +27,8 @@ class HackingService(
         private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
         private val stompService: StompService,
-        private val serviceStatusHolderRepo: ServiceStatusHolderRepo) {
+        private val serviceStatusRepo: ServiceStatusRepo,
+        private val icePasswordStatusRepo: IcePasswordStatusRepo) {
 
     companion object : KLogging()
 
@@ -84,12 +86,14 @@ class HackingService(
     }
 
     fun purgeAll() {
-        serviceStatusHolderRepo.deleteAll()
+        serviceStatusRepo.deleteAll()
+        icePasswordStatusRepo.deleteAll()
         hackerPositionService.purgeAll()
     }
 
     fun reset() {
-        serviceStatusHolderRepo.deleteAll()
+        serviceStatusRepo.deleteAll()
+        icePasswordStatusRepo.deleteAll()
     }
 
 }
