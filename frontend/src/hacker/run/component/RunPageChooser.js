@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
 import RunHome from "./RunHome";
-import {ICE_PASSWORD} from "../../../common/enums/ServiceTypes";
 import IceGame from "../ice/IceGame";
 
 const mapDispatchToProps = (dispatch) => {
@@ -14,23 +13,12 @@ let mapStateToProps = (state) => {
     };
 };
 
-const icePage = (currentIce) => {
-    switch (currentIce) {
-        case ICE_PASSWORD:
-            return <IceGame/>;
-        default:
-            return <h1>Ice not yet implemented: {currentIce}</h1>;
-    }
-};
-
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({currentIce}) => {
 
-        if (currentIce) {
-            return icePage(currentIce);
+        if (currentIce.type) {
+            return <IceGame />
         } else {
             return <RunHome/>;
         }
-
-
     });

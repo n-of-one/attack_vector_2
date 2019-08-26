@@ -17,8 +17,8 @@ let mapStateToProps = (state) => {
     };
 };
 
-const renderInput = (inputTerminal, enterPassword, dispatch, lockedAfterSubmit) => {
-    if (lockedAfterSubmit) {
+const renderInput = (inputTerminal, enterPassword, dispatch, locked) => {
+    if (locked) {
         return <></>;
     }
     return  <Terminal terminal={inputTerminal} submit={enterPassword} dispatch={dispatch}/>;
@@ -48,7 +48,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             </div>
                         </div>
                         <div className="col-lg-9">
-                            <Terminal className="displayTerminal" terminal={displayTerminal} dispatch={dispatch} height={null}/>
+                            <Terminal className="displayTerminal" terminal={displayTerminal} dispatch={dispatch} height={112}/>
                         </div>
                     </div>
                     <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
@@ -61,7 +61,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                     Timeout: <span className="text-info">0:00</span><br/>
                                 </strong>
                             </h4>
-                            {renderInput(inputTerminal, enterPassword, dispatch, ice.lockedAfterSubmit)}
+                            {renderInput(inputTerminal, enterPassword, dispatch, ice.locked)}
                         </div>
                         <div className="col-lg-6 text">
                             Passwords tried:<br/>

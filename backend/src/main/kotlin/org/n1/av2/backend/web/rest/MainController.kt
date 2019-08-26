@@ -5,7 +5,6 @@ import org.n1.av2.backend.service.scan.ScanningService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -23,14 +22,21 @@ class MainController(
         return "ok"
     }
 
-    @RequestMapping("purgeAll/{confirm}")
-    fun get(@PathVariable("confirm") confirm: String): String {
-        if (confirm != "confirm") return "please confirm."
+    @RequestMapping("purgeAll")
+    fun purgeAll(): String {
         siteService.purgeAll()
         scanningService.purgeAll()
         userService.purgeAll()
         hackingService.purgeAll()
 
-        return "It is done."
+        return "Purged!"
     }
+
+    @RequestMapping("reset")
+    fun reset(): String {
+        hackingService.reset()
+
+        return "Reset."
+    }
+
 }

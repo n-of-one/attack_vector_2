@@ -41,8 +41,8 @@ import {
     SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
-import {ICE_PASSWORD_SUBMIT} from "./run/ice/password/PasswordIceActions";
-import {passwordIceSubmit} from "./run/ice/password/PasswordIceSagas";
+import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
+import {passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 
 const createHackerRootSaga = () => {
 
@@ -92,7 +92,11 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_HACKER_PROBE_CONNECTIONS, serverHackerProbeConnectionsSaga);
         yield takeEvery(HACKER_PROBED_CONNECTIONS, hackerProbedConnectionsSaga);
 
+        yield takeEvery(SERVER_START_HACKING_ICE_PASSWORD, passwordIceStartHack);
         yield takeEvery(ICE_PASSWORD_SUBMIT, passwordIceSubmit);
+
+        yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
+
     }
 
     function* scanRootSaga() {

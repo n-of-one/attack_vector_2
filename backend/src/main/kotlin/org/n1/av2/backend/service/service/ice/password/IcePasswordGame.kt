@@ -11,7 +11,6 @@ import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.nodeIdFromServiceId
 import org.springframework.data.repository.findByIdOrNull
-import java.time.ZonedDateTime
 import java.util.*
 
 
@@ -51,6 +50,8 @@ class IcePasswordGame(
         }
     }
 
+    data class ResultIcePasswordAttempt(val message: String, val hacked: Boolean, val status: ServiceStatusHolder)
+
     private fun resolveHacked(statusHolder: ServiceStatusHolder, password: String) {
         val status = statusHolder.status as IcePasswordStatus
         status.attempts.add(password)
@@ -58,30 +59,34 @@ class IcePasswordGame(
         statusHolder.hacked = true
         serviceStatusRepo.save(statusHolder)
 
-        stompService.toRun(statusHolder.runId, ReduxActions.SERVER_ICE_PASSWORD_HACKED, statusHolder.serviceId)
-        stompService.toRun(statusHolder.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, statusHolder)
+        val result = ResultIcePasswordAttempt("Password accepted.", true, statusHolder)
+        stompService.toRun(statusHolder.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
+        stompService.toRun(statusHolder.runId, ReduxActions.SERVER_ICE_HACKED, statusHolder.serviceId)
     }
 
     private fun resolveFailed(statusHolder: ServiceStatusHolder, password: String) {
         val status = statusHolder.status as IcePasswordStatus
         status.attempts.add(password)
-        status.lockedUntil = calculatedLockedUntil(status.attempts.size)
+        val timeOutSeconds = calculateTimeOutSeconds(status.attempts.size)
+        status.lockedUntil = time.now().plusSeconds(timeOutSeconds)
+
 
         if (status.attempts.size == 1 ) {
             status.displayHint = true
         }
         serviceStatusRepo.save(statusHolder)
-        stompService.toRun(statusHolder.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, statusHolder)
+
+        val result = ResultIcePasswordAttempt("Password incorrect, try again in ${timeOutSeconds} seconds.", false, statusHolder)
+        stompService.toRun(statusHolder.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
     }
 
-    private fun calculatedLockedUntil(totalAttempts: Int): ZonedDateTime? {
-        val timeOutSeconds = when (totalAttempts) {
+
+    private fun calculateTimeOutSeconds(totalAttempts: Int): Long {
+        return when (totalAttempts) {
             0, 1, 2 -> 2L
             3, 4, 5 -> 5L
             else -> 10L
         }
-
-        return time.now().plusSeconds(timeOutSeconds)
     }
 
 

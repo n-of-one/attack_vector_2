@@ -14,7 +14,7 @@ let mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({currentIce}) => {
-        switch (currentIce) {
+        switch (currentIce.type) {
             case null:
                 return <></>;
             case ICE_PASSWORD:

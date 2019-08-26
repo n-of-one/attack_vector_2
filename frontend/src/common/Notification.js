@@ -49,10 +49,11 @@ const notify_advice = (title, message, position) => {
     });
 };
 
-const notify = (data) => {
-    let {type, title, message} = data;
+const notify = ({type, title, message}) => {
 
-
+    if (type === "ok") {
+        notify_ok(title, message, "topCenter");
+    }
     if (type === "ok_right") {
         notify_ok(title, message, "topRight");
     }

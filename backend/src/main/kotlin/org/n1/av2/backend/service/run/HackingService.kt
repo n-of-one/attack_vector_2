@@ -88,4 +88,8 @@ class HackingService(
         hackerPositionService.purgeAll()
     }
 
+    fun reset() {
+        serviceStatusHolderRepo.deleteAll()
+    }
+
 }

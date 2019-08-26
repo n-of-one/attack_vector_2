@@ -43,13 +43,15 @@ const createTerminalReducer = (id, config) => {
             return processChangeActiveTerminal(terminal, action);
         }
 
-        if (!action.terminalId && !action.data) {
-            return terminal
+        if (action.terminalId) {
+            if (action.terminalId !== terminal.id) {
+                return terminal;
+            }
         }
-
-        if ((action.terminalId && action.terminalId !== terminal.id) ||
-            (action.data && action.data.terminalId !== terminal.id)) {
-            return terminal
+        else {
+            if (!action.data || !action.data.terminalId || action.data.terminalId !== terminal.id ) {
+                return terminal;
+            }
         }
 
         switch (action.type) {
