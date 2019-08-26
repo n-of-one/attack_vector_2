@@ -3,9 +3,9 @@ package org.n1.av2.backend.model.db.run
 import org.springframework.data.annotation.Id
 
 
-// FIXME: primary key must be connected to run. Currently there is only one status holder per service over all runs.
 data class ServiceStatusHolder (
-        @Id val serviceId: String,
+        @Id val id: String,
+        val serviceId: String,
         val runId: String,
         var hacked: Boolean,
         val hackedBy: MutableList<String>,

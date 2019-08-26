@@ -9,27 +9,27 @@ import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.site.NodeService
+import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId
-import org.springframework.data.repository.findByIdOrNull
 import java.util.*
 
 
 @org.springframework.stereotype.Service
 class IcePasswordGame(
         val nodeService: NodeService,
-        val serviceStatusRepo:
-        ServiceStatusHolderRepo,
+        val serviceStatusRepo: ServiceStatusHolderRepo,
         val currentUser: CurrentUserService,
         val time: TimeService,
         val stompService: StompService) {
 
     fun getOrCreateStatusHolder(serviceId: String, runId: String): ServiceStatusHolder {
-        return serviceStatusRepo.findByIdOrNull(serviceId) ?: createStatusHolder(serviceId, runId)
+        return serviceStatusRepo.findByServiceIdAndRunId(serviceId, runId) ?: createStatusHolder(serviceId, runId)
     }
 
     private fun createStatusHolder(serviceId: String, runId: String): ServiceStatusHolder {
         val status = IcePasswordStatus(LinkedList(), null)
-        val holder = ServiceStatusHolder(serviceId, runId, false, LinkedList(), status)
+        val id = createId("serviceStatusHolder-")
+        val holder = ServiceStatusHolder(id, serviceId, runId, false, LinkedList(), status)
         serviceStatusRepo.save(holder)
         return holder
     }

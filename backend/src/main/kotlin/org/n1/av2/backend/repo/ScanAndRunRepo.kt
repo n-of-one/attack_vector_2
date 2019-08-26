@@ -29,4 +29,5 @@ interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String
 
 @Repository
 interface ServiceStatusHolderRepo: PagingAndSortingRepository<ServiceStatusHolder, String> {
+    fun findByServiceIdAndRunId(serviceId: String, runId: String): ServiceStatusHolder?
 }
