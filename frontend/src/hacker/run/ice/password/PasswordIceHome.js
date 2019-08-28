@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import Terminal from "../../../../common/terminal/Terminal";
 import {ICE_PASSWORD_SUBMIT} from "./PasswordIceActions";
+import {HIDDEN, LOCKED} from "./PasswordIceUiState";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -18,7 +19,7 @@ let mapStateToProps = (state) => {
 };
 
 const renderInput = (inputTerminal, enterPassword, dispatch, ice) => {
-    if (ice.locked) {
+    if (ice.uiState === LOCKED) {
         return <></>;
     }
     if (ice.waitSeconds && ice.waitSeconds > 0) {
@@ -40,10 +41,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({displayTerminal, inputTerminal, enterPassword, dispatch, ice}) => {
 
         let waitSeconds = (ice.waitSeconds && ice.waitSeconds > 0) ? "" + ice.waitSeconds : "00";
-
         if (waitSeconds.length < 2) {
             waitSeconds = "0" + waitSeconds
         }
+
+        const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : "";
+
 
         return (
             <div className="row icePanelRow">
@@ -71,7 +74,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     </div>
                     <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
 
-                    <div className="row">
+                    <div className={"row transition_alpha_fast" + classHidden}>
                         <div className="col-lg-6">
                             <br/>
                             <h4 className="text-success">
@@ -87,7 +90,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             Passwords tried:<br/>
                             <br/>
                             <ul>
-                                {ice.status.attempts.map((attempt, index) => <li key={index}>{attempt}</li>)}
+                                {ice.attempts.map((attempt, index) => <li key={index}>{attempt}</li>)}
                             </ul>
                         </div>
                     </div>

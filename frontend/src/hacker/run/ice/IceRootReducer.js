@@ -1,19 +1,22 @@
-import {combineReducers} from "redux";
-import PasswordIceReducer from "./password/PasswordIceReducer";
 import createTerminalReducer from "../../../common/terminal/TerminalReducer";
-import currentIceReducer from "./CurrentIceReducer";
 import {ICE_DISPLAY_TERMINAL_ID, ICE_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
+import PasswordIceReducer from "./password/PasswordIceReducer";
+import CurrentIceReducer from "./CurrentIceReducer";
 
+const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, receiveBuffer: []});
+const inputTerminalReducer = createTerminalReducer(ICE_TERMINAL_ID, {renderOutput: false});
 
+const iceRootReducer = (state, action) => {
+    const newState = {};
+    if (!state) {
+        state = {};
+    }
 
-const iceRootReducer = combineReducers({
-
-    currentIce: currentIceReducer,
-    password: PasswordIceReducer,
-    displayTerminal: createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, receiveBuffer: []}),
-    inputTerminal: createTerminalReducer(ICE_TERMINAL_ID, {renderOutput: false}),
-
-
-});
+    newState.currentIce = CurrentIceReducer(state.currentIce, action);
+    newState.password = PasswordIceReducer(state.password, action, newState.currentIce);
+    newState.displayTerminal = displayTerminalReducer(state.displayTerminal, action);
+    newState.inputTerminal =  inputTerminalReducer(state.inputTerminal, action);
+    return newState;
+};
 
 export default iceRootReducer

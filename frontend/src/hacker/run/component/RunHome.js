@@ -3,9 +3,7 @@ import {connect} from "react-redux";
 import Terminal from "../../../common/terminal/Terminal";
 import ScanCanvasPanel from "./RunCanvasPanel";
 import NodeScanInfo from "./scaninfo/NodeScanInfo";
-import PasswordIceHome from "../ice/password/PasswordIceHome";
 import {SUBMIT_TERMINAL_COMMAND} from "../model/RunActions";
-import IceGame from "../ice/IceGame";
 
 const mapDispatchToProps = (dispatch) => {
     return {

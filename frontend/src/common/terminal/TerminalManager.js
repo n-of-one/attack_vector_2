@@ -1,5 +1,5 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
-import {TERMINAL_KEY_PRESS, TERMINAL_SUBMIT, TERMINAL_TICK} from "./TerminalActions";
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
 
 class TerminalManager {
 

@@ -12,6 +12,7 @@ import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId
+import java.time.ZonedDateTime
 import java.util.*
 
 
@@ -24,7 +25,16 @@ class ServiceIcePassword(
         val time: TimeService,
         val stompService: StompService) {
 
-    data class UiState(val message: String?, val hacked: Boolean, val hint: String?, val status: IcePasswordStatus)
+    data class UiState(val message: String?,
+                       val hacked: Boolean,
+                       val hint: String?,
+                       val serviceId: String,
+                       val attempts: MutableList<String>,
+                       var lockedUntil: ZonedDateTime) {
+
+        constructor(message: String?, hacked: Boolean, hint: String?, status: IcePasswordStatus ) :
+                this(message, hacked, hint, status.serviceId, status.attempts, status.lockedUntil)
+    }
 
     fun hack(service: Service, runId: String) {
         val passwordStatus = getOrCreateStatus(service.id, runId)
@@ -33,7 +43,7 @@ class ServiceIcePassword(
 
         val uiState = UiState(null, false, hintToDisplay, passwordStatus)
 
-        stompService.toRun(runId, ReduxActions.SERVER_START_HACKING_ICE_PASSWORD, uiState)
+        stompService.toUser(ReduxActions.SERVER_START_HACKING_ICE_PASSWORD, uiState)
     }
 
 
@@ -100,7 +110,7 @@ class ServiceIcePassword(
         val hintToDisplay = if (status.attempts.size > 0) hint else null
         icePasswordStatusRepo.save(status)
 
-        val result = UiState("Password incorrect, time-out: ${timeOutSeconds} seconds.", false, hintToDisplay, status)
+        val result = UiState("Password incorrect: ${password}", false, hintToDisplay, status)
         stompService.toRun(runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
     }
 

@@ -4,7 +4,8 @@ import {notify} from "../../../../common/Notification";
 import {TERMINAL_CLEAR, TERMINAL_RECEIVE} from "../../../../common/terminal/TerminalActions";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import {ICE_DISPLAY_TERMINAL_ID, ICE_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
-import {ICE_PASSWORD_UNLOCK} from "./PasswordIceActions";
+import {ICE_PASSWORD_BEGIN, ICE_PASSWORD_LOCK} from "./PasswordIceActions";
+import {UNLOCKED} from "./PasswordIceUiState";
 
 
 const getRunId = (state) => state.run.scan.runId;
@@ -23,22 +24,29 @@ export function* passwordIceStartHack(action) {
     yield * show(20, "↺ Detected incremental time-out.");
     yield * show(20, "↺ Failed to sidestep incremental time-out.");
     yield * show(20, "↼ Suggested attack vectors: retrieve password, informed password guessing.");
-    yield put({type: ICE_PASSWORD_UNLOCK});
+    yield put({type: ICE_PASSWORD_BEGIN});
 
 }
 
 
 export function* passwordIceSubmit(action) {
-    const runId = yield select(getRunId);
     const ice = yield select(getPasswordIce);
-    const payload = {serviceId: ice.status.serviceId, nodeId: ice.nodeId, runId: runId, password: action.password};
+    if (ice.uiState !== UNLOCKED || ice.waitSeconds > 0) {
+        return
+    }
+    if (action.password.trim().length === 0) {
+        return
+    }
+
+    const runId = yield select(getRunId);
+    const payload = {serviceId: ice.serviceId, nodeId: ice.nodeId, runId: runId, password: action.password};
     webSocketConnection.send("/av/ice/password/submit", JSON.stringify(payload));
-    yield
+    yield put({type: ICE_PASSWORD_LOCK});
 }
 
 export function* serverPasswordIceUpdate(action) {
     const currentIce = yield select(getCurrentIce);
-    if (currentIce.serviceId === action.data.status.serviceId) {
+    if (currentIce.serviceId === action.data.serviceId) {
         if (action.data.hacked) {
             yield * processSuccess(action.data.message);
         } else {
