@@ -13,14 +13,13 @@ class IcePasswordService(
         layer: Int,
         name: String,
         note: String,
-        hacked: Boolean,
         var password: String,
         var hint: String
 
-) : IceService(id, type, layer, name, note, hacked) {
+) : IceService(id, type, layer, name, note) {
 
     constructor(id: String, layer: Int, defaultName: String) :
-            this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", false, "", "")
+            this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", "", "")
 
     @Suppress("UNUSED_PARAMETER")
     private fun validatePassword(siteRep: SiteRep) {

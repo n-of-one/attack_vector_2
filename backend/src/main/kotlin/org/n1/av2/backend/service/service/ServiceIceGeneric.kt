@@ -26,7 +26,6 @@ class ServiceIceGeneric(
             ServiceType.ICE_PASSWORD -> serviceIcePassword.hack(service, runId)
             else -> error("unsupported hack type: ${service.type}")
         }
-
     }
 
 
@@ -40,5 +39,6 @@ class ServiceIceGeneric(
         serviceStatusRepo.save(status)
         return status
     }
+
 
 }

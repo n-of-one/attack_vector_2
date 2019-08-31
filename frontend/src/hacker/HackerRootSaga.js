@@ -11,7 +11,7 @@ import {
 } from "./run/model/ScanActions";
 import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
-import {discoverNodesSaga, updateNodeStatusSaga} from "./run/saga/NodeSagas";
+import {discoverNodesSaga, serverIceHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
 import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
 import {SERVER_USER_DC} from "../common/terminal/TerminalActions";
 import {
@@ -38,7 +38,7 @@ import {
     SERVER_HACKER_START_ATTACK,
     SERVER_HACKER_MOVE_ARRIVE,
     SERVER_HACKER_MOVE_START,
-    SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS, FINISH_HACKING_ICE
+    SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS, FINISH_HACKING_ICE, SERVER_ICE_HACKED
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
@@ -69,10 +69,10 @@ const createHackerRootSaga = () => {
 
         yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
         yield takeEvery(SUBMIT_TERMINAL_COMMAND, terminalSubmitCommandSaga);
-        //
+
         yield takeEvery(SERVER_UPDATE_NODE_STATUS, updateNodeStatusSaga);
         yield takeEvery(SERVER_DISCOVER_NODES, discoverNodesSaga);
-        //
+
         yield takeEvery(SERVER_PROBE_LAUNCH, serverProbeLaunchSaga);
         yield takeEvery(PROBE_SCAN_NODE, probeArriveSaga);
         yield takeEvery(AUTO_SCAN, autoScanSaga);
@@ -96,6 +96,8 @@ const createHackerRootSaga = () => {
         yield takeEvery(ICE_PASSWORD_SUBMIT, passwordIceSubmit);
         yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
         yield takeEvery(FINISH_HACKING_ICE, passwordIceFinish);
+
+        yield takeEvery(SERVER_ICE_HACKED, serverIceHacked);
 
     }
 

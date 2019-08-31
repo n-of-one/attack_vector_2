@@ -62,7 +62,8 @@ class CommandMoveService(
     }
 
     private fun hasActiveIce(node: Node): Boolean {
-        return node.services.any { it.type.ice  && !(it.hacked) }
+        // FIXME:  return node.services.any { it.type.ice  && !(it.hacked) }
+        return node.services.any { it.type.ice }
     }
 
     private fun reportProtected() {

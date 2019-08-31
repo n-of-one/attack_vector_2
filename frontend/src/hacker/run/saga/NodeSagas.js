@@ -12,4 +12,9 @@ function* discoverNodesSaga(action) {
     yield
 }
 
+export function* serverIceHacked(action) {
+    runCanvas.iceHacked(action.data);
+    yield
+}
+
 export {updateNodeStatusSaga, discoverNodesSaga}

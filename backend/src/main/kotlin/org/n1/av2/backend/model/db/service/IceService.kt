@@ -9,12 +9,11 @@ abstract class IceService(
         type: ServiceType,
         layer: Int,
         name: String,
-        note: String,
-        hacked: Boolean
-) : Service(id, type, layer, name, note, hacked) {
+        note: String
+) : Service(id, type, layer, name, note) {
 
     constructor(id: String, layer: Int, defaultName: String) :
-            this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "", false)
+            this(id, ServiceType.ICE_PASSWORD, layer, defaultName, "")
 
     @Suppress("UNUSED_PARAMETER")
     var ice: Boolean
@@ -22,14 +21,6 @@ abstract class IceService(
         // Needed setter because creating the object from Mongo always called the setter.
     }
     get() {
-        return true
-    }
-
-    override fun updateInternal(key: String, value: String): Boolean {
-        when (key) {
-            HACKED -> hacked = value.toBoolean()
-            else -> return super.updateInternal(key, value)
-        }
         return true
     }
 

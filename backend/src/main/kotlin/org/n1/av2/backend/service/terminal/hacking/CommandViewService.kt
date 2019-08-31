@@ -24,7 +24,8 @@ class CommandViewService(
         lines.add("Node service layers:")
         node.services.forEach { service ->
             val blocked = if (service.layer < blockingIceLayer) "* " else ""
-            val hacked = if (service.hacked) " [mute]hacked[/]" else ""
+            // FIXME: val hacked = if (service.hacked) " [mute]hacked[/]" else ""
+            val hacked = ""
             val iceSuffix = if (service.type.ice) " ICE" else ""
             lines.add("${blocked}[pri]${service.layer}[/] ${service.name}${iceSuffix}${hacked}")
         }

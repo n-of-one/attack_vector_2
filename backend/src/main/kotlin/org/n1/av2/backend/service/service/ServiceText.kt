@@ -15,7 +15,8 @@ class ServiceText(
     fun hack(orig: Service, node: Node) {
         val service = orig as TextService
 //        stompService.terminalReceive("Hacked: [primary]${service.name}", "", service.text)
-        service.hacked = true
+
+        // FIXME: service.hacked = true
         nodeService.save(node)
 
         stompService.terminalReceive("Hacked: [pri]${service.layer}[/] ${service.name}", "", service.text)

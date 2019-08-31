@@ -274,6 +274,10 @@ class RunCanvas {
         const nodeDisplay = this.displayById[nodeId];
         this.displayById[userId].hackerProbeConnections(nodeDisplay);
     }
+
+    iceHacked(serviceId) {
+        // ignore
+    }
 }
 
 const runCanvas = new RunCanvas();

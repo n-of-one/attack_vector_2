@@ -12,12 +12,11 @@ class OsService(
         layer: Int,
         name: String,
         note: String,
-        var nodeName: String,
-        hacked: Boolean
-) : Service(id, type, layer, name, note, hacked) {
+        var nodeName: String
+) : Service(id, type, layer, name, note) {
 
     constructor(id: String, defaultName: String) :
-            this(id, ServiceType.OS, 0, defaultName, "", "", false)
+            this(id, ServiceType.OS, 0, defaultName, "", "")
 
     private fun validateNetworkId(siteRep: SiteRep) {
 

@@ -3,12 +3,14 @@ package org.n1.av2.backend.service.service.ice.password
 import org.n1.av2.backend.model.db.run.IcePasswordStatus
 import org.n1.av2.backend.model.db.service.IcePasswordService
 import org.n1.av2.backend.model.db.service.Service
+import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IcePasswordStatusRepo
 import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
+import org.n1.av2.backend.service.service.ServiceIceUtil
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId
@@ -23,6 +25,7 @@ class ServiceIcePassword(
         val icePasswordStatusRepo: IcePasswordStatusRepo,
         val currentUser: CurrentUserService,
         val time: TimeService,
+        val serviceIceUtil: ServiceIceUtil,
         val stompService: StompService) {
 
     data class UiState(val message: String?,
@@ -38,7 +41,11 @@ class ServiceIcePassword(
 
     fun hack(service: Service, runId: String) {
         val passwordStatus = getOrCreateStatus(service.id, runId)
-        val passwordService = getService(service.id)
+
+        val nodeId = nodeIdFromServiceId(service.id)
+        val node = nodeService.getById(nodeId)
+        val passwordService =  node.getServiceById(service.id) as IcePasswordService
+
         val hintToDisplay = hintToDisplay(passwordStatus, passwordService)
 
         val uiState = UiState(null, false, hintToDisplay, passwordStatus)
@@ -48,7 +55,6 @@ class ServiceIcePassword(
 
 
     private fun getOrCreateStatus(serviceId: String, runId: String): IcePasswordStatus {
-
         return icePasswordStatusRepo.findByServiceIdAndRunId(serviceId, runId) ?: createServiceStatus(serviceId, runId)
     }
 
@@ -64,21 +70,17 @@ class ServiceIcePassword(
 
     fun submitAttempt(command: SubmitPassword) {
         val status = getOrCreateStatus(command.serviceId, command.runId)
-        val service = getService(command.serviceId)
-
+        val nodeId = nodeIdFromServiceId(command.serviceId)
+        val node = nodeService.getById(nodeId)
+        val service =  node.getServiceById(command.serviceId) as IcePasswordService
 
         when {
             status.attempts.contains(command.password) -> resolveDuplicate(command.runId, status, command.password, service.hint)
-            command.password == service.password -> resolveHacked(command, command.password)
+            command.password == service.password -> resolveHacked(command, command.password, node)
             else -> resolveFailed(command.runId, status, command.password, service.hint)
         }
     }
 
-    private fun getService(serviceId: String): IcePasswordService {
-        val nodeId = nodeIdFromServiceId(serviceId)
-        val node = nodeService.getById(nodeId)
-        return node.getServiceById(serviceId) as IcePasswordService
-    }
 
 
     private fun resolveDuplicate(runId: String, status: IcePasswordStatus, password: String, hint: String) {
@@ -88,7 +90,8 @@ class ServiceIcePassword(
     }
 
 
-    private fun resolveHacked(command: SubmitPassword, password: String) {
+
+    private fun resolveHacked(command: SubmitPassword, password: String, node: Node) {
         val layerStatus = serviceStatusRepo.findByServiceIdAndRunId(command.serviceId, command.runId) !!
         val passwordStatus = getOrCreateStatus(command.serviceId, command.runId)
         passwordStatus.attempts.add(password)
@@ -98,7 +101,7 @@ class ServiceIcePassword(
 
         val result = UiState("Password accepted.", true, null, passwordStatus)
         stompService.toRun(command.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
-        stompService.toRun(command.runId, ReduxActions.SERVER_ICE_HACKED, layerStatus.serviceId)
+        serviceIceUtil.iceHacked(command.serviceId, node, command.runId)
     }
 
     private fun resolveFailed(runId: String, status: IcePasswordStatus, password: String, hint: String) {
