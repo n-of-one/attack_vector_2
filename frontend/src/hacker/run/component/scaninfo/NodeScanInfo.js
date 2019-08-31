@@ -5,6 +5,7 @@ import {findElementById} from "../../../../common/Immutable";
 import NodeScanInfoByStatus from "./NodeScanInfoByStatus";
 import {CONNECTIONS, DISCOVERED, SERVICES, SERVICES_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
 import Pad from "../../../../common/component/Pad";
+import CloseButton from "../../../../common/component/CloseButton";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -59,7 +60,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             <>
                 <div className="row backgroundLight">&nbsp;</div>
                 <div className="row nodeInfo text" id="scanInfo">
-                    <div className="nodeInfoClose" onClick={() => dismiss()}><span className="glyphicon glyphicon-ok"/></div>
+                    <CloseButton closeAction={dismiss} />
                     <div className="col-lg-12">
                         <br/>
                         Scan info on <span className="networkId">{node.networkId}</span><Pad p="10" t={node.networkId} />
