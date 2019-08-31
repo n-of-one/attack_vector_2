@@ -27,7 +27,14 @@ interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String
 @Repository
 interface ServiceStatusRepo: PagingAndSortingRepository<ServiceStatus, String> {
     fun findByServiceIdAndRunId(serviceId: String, runId: String): ServiceStatus?
+    fun findByRunId(runId: String): List<ServiceStatus>
 }
+
+@Repository
+interface NodeStatusRepo: PagingAndSortingRepository<NodeStatus, String> {
+    fun findByRunId(runId: String): List<NodeStatus>
+}
+
 
 @Repository
 interface IcePasswordStatusRepo: PagingAndSortingRepository<IcePasswordStatus, String> {

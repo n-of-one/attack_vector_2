@@ -8,6 +8,7 @@ import {
     SERVER_NODE_UPDATED
 } from "../EditorActions";
 import {findElementById, updateArrayById} from "../../common/Immutable";
+import {SERVER_ICE_HACKED} from "../../hacker/run/model/HackActions";
 
 const NodesReducer = (state = [], action) => {
     switch (action.type) {

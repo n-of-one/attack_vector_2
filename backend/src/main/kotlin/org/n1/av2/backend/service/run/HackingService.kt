@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.run
 
 import mu.KLogging
-import org.n1.av2.backend.model.db.run.NodeStatus
-import org.n1.av2.backend.model.db.run.NodeStatus.*
+import org.n1.av2.backend.model.db.run.NodeScanStatus
+import org.n1.av2.backend.model.db.run.NodeScanStatus.*
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IcePasswordStatusRepo
 import org.n1.av2.backend.repo.ServiceStatusRepo
@@ -63,8 +63,8 @@ class HackingService(
         val nodeScan= scan.nodeScanById[nodeId]!!
 
         val newNodeStatus = when (nodeScan.status) {
-            DISCOVERED, NodeStatus.TYPE -> NodeStatus.SERVICES_NO_CONNECTIONS
-            CONNECTIONS -> NodeStatus.SERVICES
+            DISCOVERED, NodeScanStatus.TYPE -> NodeScanStatus.SERVICES_NO_CONNECTIONS
+            CONNECTIONS -> NodeScanStatus.SERVICES
             else -> nodeScan.status
         }
         if (newNodeStatus != nodeScan.status) {

@@ -2,18 +2,16 @@ package org.n1.av2.backend.service.scan
 
 import mu.KLogging
 import org.n1.av2.backend.model.db.run.NodeScan
-import org.n1.av2.backend.model.db.run.NodeStatus
+import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.Scan
 import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.model.hacker.HackerActivityType
 import org.n1.av2.backend.model.hacker.HackerPresence
 import org.n1.av2.backend.model.hacker.HackerPresenceHacking
-import org.n1.av2.backend.model.ui.NodeScanType
-import org.n1.av2.backend.model.ui.NotyMessage
-import org.n1.av2.backend.model.ui.NotyType
-import org.n1.av2.backend.model.ui.SiteFull
+import org.n1.av2.backend.model.ui.*
+import org.n1.av2.backend.repo.NodeStatusRepo
+import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.HackerPositionService
@@ -41,7 +39,9 @@ class ScanningService(private val scanService: ScanService,
                       private val scanProbeService: ScanProbeService,
                       private val time: TimeService,
                       private val hackerPositionService: HackerPositionService,
-                      private val userService: UserService
+                      private val userService: UserService,
+                      private val serviceStatusRepo: ServiceStatusRepo,
+                      private val nodeStatusRepo: NodeStatusRepo
 ) {
 
     companion object: KLogging()
@@ -76,8 +76,8 @@ class ScanningService(private val scanService: ScanService,
         val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId)
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
-                1 -> NodeStatus.DISCOVERED
-                else -> NodeStatus.UNDISCOVERED
+                1 -> NodeScanStatus.DISCOVERED
+                else -> NodeScanStatus.UNDISCOVERED
             }
             it.key to NodeScan(status = nodeStatus, distance = it.value.distance)
         }.toMap().toMutableMap()
@@ -94,6 +94,10 @@ class ScanningService(private val scanService: ScanService,
         val scan = scanService.getByRunId(runId)
         val siteFull = siteService.getSiteFull(scan.siteId)
         siteFull.sortNodeByDistance(scan)
+
+        siteFull.nodeStatuses = nodeStatusRepo.findByRunId(runId)
+        siteFull.serviceStatuses = serviceStatusRepo.findByRunId(runId)
+
         val userPresenceScanning = hackerActivityService
                 .getAll(scan.runId, HackerActivityType.SCANNING)
                 .map { activity -> createPresenceForScanning(activity.user) }
@@ -147,7 +151,7 @@ class ScanningService(private val scanService: ScanService,
 
     fun createScanInfo(scan: Scan): ScanningService.ScanInfo {
         val site = siteDataService.getBySiteId(scan.siteId)
-        val nodes = scan.nodeScanById.filterValues { it.status != NodeStatus.UNDISCOVERED}.size
+        val nodes = scan.nodeScanById.filterValues { it.status != NodeScanStatus.UNDISCOVERED}.size
         val nodesText = if (scan.duration != null) "${nodes}" else "${nodes}+"
         val userName = userService.getById(scan.initiatorId).name
         val efficiencyStatus = deriveEfficiencyStatus(scan)
@@ -201,7 +205,7 @@ class ScanningService(private val scanService: ScanService,
         val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(scan)
         val targetNode = traverseNodesById[node.id]!!
         val status = scan.nodeScanById[targetNode.id]!!.status
-        if (status == NodeStatus.UNDISCOVERED) {
+        if (status == NodeScanStatus.UNDISCOVERED) {
             reportNodeNotFound(networkId)
             return
         }

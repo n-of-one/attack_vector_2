@@ -1,14 +1,21 @@
 package org.n1.av2.backend.model.db.run
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 
 
 data class ServiceStatus (
         @Id val id: String,
         val serviceId: String,
-        val runId: String,
+        @Indexed val runId: String,
         var hacked: Boolean,
         val hackedBy: MutableList<String>)
+
+data class NodeStatus (
+        @Id val nodeId: String,
+        @Indexed val runId: String,
+        var hacked: Boolean
+)
 
 
 

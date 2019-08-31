@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.service
 
 import org.n1.av2.backend.model.db.run.HackerPosition
-import org.n1.av2.backend.model.db.run.NodeStatus
+import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.service.Service
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -20,7 +20,7 @@ class ServiceOs(
         val scan = scanService.getByRunId(position.runId)
         val nodeStatus = scan.nodeScanById[node.id]!!.status
 
-        if (nodeStatus != NodeStatus.SERVICES) {
+        if (nodeStatus != NodeScanStatus.SERVICES) {
             val data = ProbeConnections(node.id, position.userId)
             stompService.toRun(position.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
         }

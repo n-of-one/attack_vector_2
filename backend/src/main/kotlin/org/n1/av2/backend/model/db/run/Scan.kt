@@ -38,7 +38,7 @@ When hacking, the situation is different. There are two situations that occur fo
  2. The hacker performs a "hack 0" to hack the OS. This will probe the node for connections. And then upgrade the status to SERVICES
     as the hacker already had access to all service details.
  */
-enum class NodeStatus(val level:Int) {
+enum class NodeScanStatus(val level:Int) {
     UNDISCOVERED(0),             // scan, run: the existence of this node has not been discovered      [ - no image - ]
     DISCOVERED(1),               // scan, run: existence is known, but the type of node is not known   [discovered]
     TYPE(2),                     // scan, run: type and number of services known                       [type]
@@ -50,6 +50,6 @@ enum class NodeStatus(val level:Int) {
 }
 
 data class NodeScan(
-        var status: NodeStatus,
+        var status: NodeScanStatus,
         var distance: Int? = null
 )

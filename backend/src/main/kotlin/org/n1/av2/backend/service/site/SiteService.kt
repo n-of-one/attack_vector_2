@@ -3,8 +3,8 @@ package org.n1.av2.backend.service.site
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
-import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 
@@ -35,7 +35,7 @@ class SiteService(
         val connections = connectionService.getAll(siteId)
         val state = siteStateService.getById(siteId)
 
-        return SiteFull(siteId, siteData, layout, nodes, connections, state, startNodeId)
+        return SiteFull(siteId, siteData, layout, nodes, connections, state, startNodeId, null, null)
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {

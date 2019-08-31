@@ -3,8 +3,7 @@ import Pad from "../../../../../common/component/Pad";
 
 export default ({service}) => {
 
-    // FIXME: const hackedText = service.hacked ? "Yes" : "No";
-    const hackedText = "(Never, FIXME)";
+    const hackedText = service.hacked ? "Yes" : "No";
     return (
         <>
             &nbsp;ICE (static password)<br/>

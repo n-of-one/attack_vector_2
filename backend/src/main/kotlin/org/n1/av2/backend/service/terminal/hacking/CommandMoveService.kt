@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.terminal.hacking
 
 import org.n1.av2.backend.model.db.run.HackerPosition
-import org.n1.av2.backend.model.db.run.NodeStatus
+import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
@@ -36,7 +36,7 @@ class CommandMoveService(
 
         if (position.previousNodeId == toNode.id) return handleMove(runId, toNode, position)
         val scan = scanService.getByRunId(runId)
-        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
+        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
         connectionService.findConnection(position.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         val fromNode = nodeService.getById(position.currentNodeId)

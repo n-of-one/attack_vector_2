@@ -82,15 +82,35 @@ class RunCanvas {
 
     loadScan(data) {
         const {scan, site, hackers} = data;
-        const {nodes, connections} = site;
+        const {nodes, connections, nodeStatuses, serviceStatuses} = site;
         this.nodeDataById = {};
         this.sortAndAddHackers(hackers);
+
+        /* On the server side, the node status is tied to a run. But client side we always are in one run.
+        So the node Status (per run) is added to the node itself to make it simpler. */
+        nodeStatuses.forEach((nodeStatus) => {
+            const node = nodes.find((node) => node.id === nodeStatus.nodeId);
+            node.hacked = nodeStatus.hacked;
+        });
+
+        /* Similarly the service status is added to each service. */
+        const serviceById = {};
+        nodes.forEach((node) => {
+            node.services.forEach((service) => {
+                serviceById[service.id] = service;
+            });
+        });
+        serviceStatuses.forEach((serviceStatus) => {
+            const service = serviceById[serviceStatus.serviceId];
+            service.hacked = serviceStatus.hacked;
+        });
+
+
         nodes.forEach((nodeData) => {
             this.nodeDataById[nodeData.id] = nodeData;
             const nodeScan = scan.nodeScanById[nodeData.id];
             nodeData.status = nodeScan.status;
             nodeData.distance = nodeScan.distance;
-
         });
         nodes.forEach(node => {
             if (node.status !== UNDISCOVERED) {
