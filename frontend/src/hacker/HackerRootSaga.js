@@ -38,11 +38,11 @@ import {
     SERVER_HACKER_START_ATTACK,
     SERVER_HACKER_MOVE_ARRIVE,
     SERVER_HACKER_MOVE_START,
-    SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS
+    SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS, FINISH_HACKING_ICE
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
-import {passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
+import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 
 const createHackerRootSaga = () => {
 
@@ -94,8 +94,8 @@ const createHackerRootSaga = () => {
 
         yield takeEvery(SERVER_START_HACKING_ICE_PASSWORD, passwordIceStartHack);
         yield takeEvery(ICE_PASSWORD_SUBMIT, passwordIceSubmit);
-
         yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
+        yield takeEvery(FINISH_HACKING_ICE, passwordIceFinish);
 
     }
 

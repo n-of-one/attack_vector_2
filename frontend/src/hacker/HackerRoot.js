@@ -10,6 +10,7 @@ import hackerRootReducer from "./HackerRootReducer";
 import webSocketConnection from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
+import passwordIceManager from "./run/ice/password/PasswordIceManager";
 
 class HackerRoot extends Component {
 
@@ -34,6 +35,7 @@ class HackerRoot extends Component {
         sagaMiddleware.run(scanRootSaga);
 
         terminalManager.init(this.store);
+        passwordIceManager.init(this.store);
     }
 
     renderIfAuthenticated() {

@@ -109,14 +109,17 @@ function processTick(terminal) {
 
     let input = nextReceivingLine.data;
 
-    const nextChar = input.substr(0, 1);
-    const nextData = input.substr(1);
+    if (input === "") {
+        nextReceivingLine.data = "";
+        nextRenderingLine.data = "";
+    }
+    else {
+        const nextChar = input.substr(0, 1);
+        const nextData = input.substr(1);
 
-    nextReceivingLine.data = nextData;
-    nextRenderingLine.data += nextChar;
-
-
-
+        nextReceivingLine.data = nextData;
+        nextRenderingLine.data += nextChar;
+    }
 
     let nextReceiving = true;
     if (nextReceivingLine.data.length === 0) {

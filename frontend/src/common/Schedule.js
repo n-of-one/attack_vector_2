@@ -19,14 +19,26 @@ export default class Schedule {
 
     active = true;
 
-    constructor() {
+    /** You can give the scheduler the dispatch to allow using the schedule.dispatch(wait, event) function. */
+    dispatcher = null;
+
+    constructor(dispatch) {
         this.queue = [];
+        this.dispatcher = dispatch;
     }
 
     run(wait, functionToRun) {
         let that = this;
         this._schedule( () => {
             functionToRun();
+            that._setWait(wait);
+        });
+    }
+
+    dispatch(wait, event) {
+        let that = this;
+        this._schedule( () => {
+            this.dispatcher(event);
             that._setWait(wait);
         });
     }
@@ -38,8 +50,14 @@ export default class Schedule {
         this.run(wait, () => {});
     }
 
+    /** clear all activity and prevent schedule from ever working again */
     deactivate() {
         this.active = false;
+        this.clear();
+    }
+
+    /** clear all activity, but allow future activity to continue*/
+    clear() {
         this.queue = [];
         this.waitEnd = null;
     }

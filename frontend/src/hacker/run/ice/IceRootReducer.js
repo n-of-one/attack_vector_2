@@ -1,10 +1,10 @@
 import createTerminalReducer from "../../../common/terminal/TerminalReducer";
-import {ICE_DISPLAY_TERMINAL_ID, ICE_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
+import {ICE_DISPLAY_TERMINAL_ID, ICE_INPUT_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import PasswordIceReducer from "./password/PasswordIceReducer";
 import CurrentIceReducer from "./CurrentIceReducer";
 
 const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, receiveBuffer: []});
-const inputTerminalReducer = createTerminalReducer(ICE_TERMINAL_ID, {renderOutput: false});
+const inputTerminalReducer = createTerminalReducer(ICE_INPUT_TERMINAL_ID, {renderOutput: false});
 
 const iceRootReducer = (state, action) => {
     const newState = {};
