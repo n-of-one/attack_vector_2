@@ -13,12 +13,23 @@ let mapStateToProps = (state) => {
     };
 };
 
+const ice = (currentIce) => {
+    if (currentIce.type) {
+        return <IceGame/>
+    } else {
+        return <></>
+    }
+};
+
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({currentIce}) => {
 
-        if (currentIce.type) {
-            return <IceGame />
-        } else {
-            return <RunHome/>;
-        }
+        const runHomeStyle = (currentIce.type) ? "none" : "inline";
+
+        return <>
+            {ice(currentIce)}
+            <span style={{"display": runHomeStyle}}>
+                    <RunHome/>
+                </span>
+        </>
     });

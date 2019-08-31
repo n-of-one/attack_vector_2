@@ -2,6 +2,7 @@ import {ICE_PASSWORD_SUBMIT, ICE_PASSWORD_BEGIN, SERVER_ICE_PASSWORD_UPDATE, SER
 import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
 import {ICE_PASSWORD} from "../../../../common/enums/ServiceTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "./PasswordIceUiState";
+import {FINISH_HACKING_ICE} from "../../model/HackActions";
 
 // const defaultState = {
 //     serviceId: "svc-7baa-4572-cde0",
@@ -33,6 +34,8 @@ const PasswordIceReducer = (state = defaultState, action, currentIce) => {
             return {...state, uiState: UNLOCKED};
         case ICE_PASSWORD_LOCK:
             return {...state, uiState: LOCKED};
+        case FINISH_HACKING_ICE:
+            return defaultState;
         default:
             return state;
     }

@@ -1,5 +1,6 @@
 import {CHANGE_ACTIVE_TERMINAL} from "./TerminalActions";
 import {SERVER_START_HACKING_ICE_PASSWORD} from "../../hacker/run/ice/password/PasswordIceActions";
+import {FINISH_HACKING_ICE} from "../../hacker/run/model/HackActions";
 
 export const MAIN_TERMINAL_ID = "main";
 export const ICE_TERMINAL_ID = "ice";
@@ -13,6 +14,8 @@ export const activeTerminalIdReducer = (state = defaultState, action) => {
             return action;
         case SERVER_START_HACKING_ICE_PASSWORD:
             return ICE_TERMINAL_ID;
+        case FINISH_HACKING_ICE:
+            return MAIN_TERMINAL_ID;
         default:
             return state;
     }

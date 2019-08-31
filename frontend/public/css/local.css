@@ -114,8 +114,10 @@ body {
     right: 20px;
     top: 20px;
     font-size: 10px;
-    background-color: #000000;
+    /*background-color: #000000;*/
+    background-color:#337ab7;
     border-radius: 3px 3px 3px 3px;
+    border-color: #000000;
     padding: 2px 4px 2px 4px;
     z-index: 100;
     cursor: pointer;

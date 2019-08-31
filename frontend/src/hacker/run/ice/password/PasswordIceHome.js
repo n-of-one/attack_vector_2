@@ -3,11 +3,14 @@ import {connect} from "react-redux";
 import Terminal from "../../../../common/terminal/Terminal";
 import {ICE_PASSWORD_SUBMIT} from "./PasswordIceActions";
 import {HIDDEN, LOCKED} from "./PasswordIceUiState";
+import CloseButton from "../../../../common/component/CloseButton";
+import {FINISH_HACKING_ICE} from "../../model/HackActions";
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch: dispatch,
         enterPassword: (password) => dispatch({type: ICE_PASSWORD_SUBMIT, password: password}),
+        close: () => dispatch({type: FINISH_HACKING_ICE}),
     }
 };
 let mapStateToProps = (state) => {
@@ -38,7 +41,7 @@ const renderHint = (ice) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({displayTerminal, inputTerminal, enterPassword, dispatch, ice}) => {
+    ({displayTerminal, inputTerminal, enterPassword, dispatch, ice, close}) => {
 
         let waitSeconds = (ice.waitSeconds && ice.waitSeconds > 0) ? "" + ice.waitSeconds : "00";
         if (waitSeconds.length < 2) {
@@ -51,16 +54,21 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         return (
             <div className="row icePanelRow">
                 <div className="col-lg-12">
-                    <br/>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <CloseButton closeAction={close} />
+                            <h4 className="text-success">
+                                <strong>
+                                    Ice: <span className="text-info">Aruna</span><br/>
+                                    Strength: <span className="text-info">Unknown</span><br/>
+                                </strong>
+                            </h4>
+                        </div>
+                    </div>
+                    <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
                     <div className="row">
                         <div className="col-lg-3">
                             <div className="text-left">
-                                <h4 className="text-success">
-                                    <strong>
-                                        Ice: <span className="text-info">Aruna</span><br/>
-                                        Strength: <span className="text-info">Unknown</span><br/>
-                                    </strong>
-                                </h4>
                                 <div className="text">
                                     Community &nbsp;avg 14:33 &nbsp;best 03:33 &nbsp;(44%)<br/>
                                     You &nbsp; &nbsp; &nbsp; &nbsp;avg 12:00 &nbsp;best 08:23 &nbsp;(85%)<br/>
