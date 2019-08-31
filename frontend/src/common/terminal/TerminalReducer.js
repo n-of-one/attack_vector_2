@@ -21,8 +21,7 @@ const defaultStateTemplate = {
     prompt: "⇋ ",
     readOnly: false,        // only allow user input if true
     renderOutput: true,     // If false, this Terminal acts like an input prompt
-    autoScroll: false,      // scroll to bottom one new info. (Only works if active === true)
-    active: false,          // active means that it is receiving input (managed by TerminalManager and ActiveTerminalIdReducer. Here it mainly allows autoScroll to work.
+    autoScroll: false,      // scroll to bottom one new info.
     input: "",              // user input
     renderingLine: null,    // String - part of the current rendering line that is being shown
     receivingLine: null,    // String - part of the current rendering line that is waiting to be shown
@@ -37,10 +36,6 @@ const createTerminalReducer = (id, config) => {
     return (terminal = defaultState, action) => {
         if  (action.type === TERMINAL_TICK) {
             return processTick(processTick(processTick(processTick(terminal))));
-        }
-
-        if (action.type === CHANGE_ACTIVE_TERMINAL) {
-            return processChangeActiveTerminal(terminal, action);
         }
 
         if (action.terminalId) {
@@ -77,13 +72,6 @@ const createTerminalReducer = (id, config) => {
                 return terminal;
         }
     };
-};
-
-const processChangeActiveTerminal = (terminal, action) => {
-    if (terminal.id === action.terminalId) {
-        return {...terminal, active: true};
-    }
-    return {...terminal, active: false};
 };
 
 function processTick(terminal) {

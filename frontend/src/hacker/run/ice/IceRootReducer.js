@@ -3,7 +3,7 @@ import {ICE_DISPLAY_TERMINAL_ID, ICE_INPUT_TERMINAL_ID} from "../../../common/te
 import PasswordIceReducer from "./password/PasswordIceReducer";
 import CurrentIceReducer from "./CurrentIceReducer";
 
-const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, receiveBuffer: []});
+const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, receiveBuffer: [], autoScroll: true});
 const inputTerminalReducer = createTerminalReducer(ICE_INPUT_TERMINAL_ID, {renderOutput: false});
 
 const iceRootReducer = (state, action) => {

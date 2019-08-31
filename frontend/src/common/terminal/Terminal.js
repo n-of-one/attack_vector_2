@@ -43,7 +43,7 @@ class Terminal extends Component {
     }
 
     scrollToBottom() {
-        if (this.state.autoScroll && this.state.active) {
+        if (this.state.autoScroll) {
             this.bottomRef.current.scrollIntoView();
         }
     }
