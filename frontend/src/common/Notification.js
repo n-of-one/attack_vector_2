@@ -54,10 +54,10 @@ const notify = ({type, title, message}) => {
     if (type === "ok") {
         notify_ok(title, message, "topCenter");
     }
-    if (type === "ok_right") {
+    else if (type === "ok_right") {
         notify_ok(title, message, "topRight");
     }
-    else  if (type === "advice_right") {
+    else if (type === "advice_right") {
         notify_advice(title, message, "topRight");
     }
     else if (type === "advice_left") {
@@ -66,7 +66,7 @@ const notify = ({type, title, message}) => {
     else if (type === "neutral") {
         notify_neutral(title, message);
     }
-    else  if (type === "error") {
+    else if (type === "error") {
         notify_error(title, message);
     }
     else {
