@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 import {toType} from "../enums/NodeTypesNames";
-import {CONNECTIONS, DISCOVERED, FREE, HACKED, PROTECTED, SERVICES, TYPE} from "../enums/NodeStatus";
+import {CONNECTIONS, DISCOVERED, FREE, HACKED, PROTECTED, LAYERS, TYPE} from "../enums/NodeStatus";
 import {animate, easeInSine, easeOutSine} from "./CanvasUtils";
 
 const SCAN_OPACITY = 0.4;
@@ -139,7 +139,7 @@ export default class NodeDisplay {
     transitionToHack(quick) {
         const delay = (quick) ? 0: 5;
         this.hacking = true;
-        if (this.nodeData.status === SERVICES) {
+        if (this.nodeData.status === LAYERS) {
             this.crossFadeToNewIcon(delay);
         }
     }
@@ -201,7 +201,7 @@ export default class NodeDisplay {
     determineNodeIconOpacity() {
         if (this.hacking) {
             switch (this.nodeData.status) {
-                case SERVICES:
+                case LAYERS:
                     return HACK_OPACITY;
                 default:
                     return SCAN_OPACITY;

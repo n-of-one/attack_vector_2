@@ -13,11 +13,11 @@ enum class ReduxActions {
     SERVER_UPDATE_SITE_DATA,
 
     SERVER_UPDATE_NETWORK_ID,
-    SERVER_UPDATE_SERVICE,
+    SERVER_UPDATE_LAYER,
 
     SERVER_UPDATE_SITE_STATE,       // Report errors or OK state
 
-    SERVER_ADD_SERVICE,
+    SERVER_ADD_LAYER,
     SERVER_NODE_UPDATED,
 
 
@@ -41,13 +41,13 @@ enum class ReduxActions {
     SERVER_HACKER_MOVE_START,       // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,      // step two of the move
 
-    SERVER_HACKER_PROBE_SERVICES,    // when arriving at a node that is state DISCOVERED or TYPE
+    SERVER_HACKER_PROBE_LAYERS,      // when arriving at a node that is state DISCOVERED or TYPE
     SERVER_HACKER_PROBE_CONNECTIONS, // when hacking OS
 
 
     SERVER_START_HACKING_ICE_PASSWORD, // sent to hacker that hacks this ice
     SERVER_ICE_PASSWORD_UPDATE,        // sent to run to inform of hacked status update
-    SERVER_SERVICE_HACKED,             // sent to run to update info, this is visible when clicking on icon
+    SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                // change icon of node in run
 
 }

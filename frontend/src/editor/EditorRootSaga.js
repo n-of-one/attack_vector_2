@@ -1,20 +1,20 @@
 import { takeEvery, all } from 'redux-saga/effects'
 import {
     ADD_CONNECTION,
-    ADD_SERVICE,
+    ADD_LAYER,
     DELETE_CONNECTIONS,
     DELETE_NODE,
     DRAG_DROP_END,
     EDIT_NETWORK_ID,
-    EDIT_SERVICE_DATA,
+    EDIT_LAYER_DATA,
     EDIT_SITE_DATA,
-    MOVE_NODE, REMOVE_SERVICE,
+    MOVE_NODE, REMOVE_LAYER,
     REQUEST_SITE_FULL,
     SERVER_ADD_CONNECTION,
     SERVER_ADD_NODE,
     SERVER_MOVE_NODE,
     SERVER_SITE_FULL,
-    SNAP, SWAP_SERVICE_LAYER
+    SNAP, SWAP_LAYERS
 } from "./EditorActions";
 import {
     addConnectionSaga, deleteConnections, deleteNode, dropNodeSaga, moveNodeSaga, serverAddConnectionSaga,
@@ -23,7 +23,7 @@ import {
 import {editSiteDataSaga, requestSiteFullSaga, serverSiteFullSaga} from "./saga/SiteDataSagas";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
-import {addService, editNetworkId, editServiceData, removeService, swapServiceLayer} from "./saga/ServiceSagas";
+import {addLayer, editNetworkId, editLayerData, removeLayer, swapLayers} from "./saga/LayerSagas";
 
 const createSagas = () => {
 
@@ -52,11 +52,11 @@ const createSagas = () => {
         yield takeEvery(DELETE_NODE, deleteNode);
         yield takeEvery(SNAP, snap);
 
-        yield takeEvery(EDIT_SERVICE_DATA, editServiceData);
+        yield takeEvery(EDIT_LAYER_DATA, editLayerData);
         yield takeEvery(EDIT_NETWORK_ID, editNetworkId);
-        yield takeEvery(ADD_SERVICE, addService);
-        yield takeEvery(REMOVE_SERVICE, removeService);
-        yield takeEvery(SWAP_SERVICE_LAYER, swapServiceLayer);
+        yield takeEvery(ADD_LAYER, addLayer);
+        yield takeEvery(REMOVE_LAYER, removeLayer);
+        yield takeEvery(SWAP_LAYERS, swapLayers);
     }
 
     function* editorRootSaga() {

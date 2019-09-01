@@ -162,7 +162,7 @@ class EditorCanvas {
         display.updateNetworkId(value);
     }
 
-    openService(nodeId, serviceId) {
+    openLayer(nodeId, layerId) {
         this.selectNode(nodeId);
     }
 }

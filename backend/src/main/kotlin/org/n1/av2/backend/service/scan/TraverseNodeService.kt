@@ -7,6 +7,9 @@ import org.n1.av2.backend.service.site.SiteDataService
 import org.n1.av2.backend.service.site.SiteService
 import org.springframework.stereotype.Service
 
+/**
+ * TraverseNodes are used to calculate paths in sites. They are used for scanning.
+ */
 @Service
 class TraverseNodeService(
         val siteDataService: SiteDataService,

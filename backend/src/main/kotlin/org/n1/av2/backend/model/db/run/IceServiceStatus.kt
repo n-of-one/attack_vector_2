@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 
 data class IcePasswordStatus(
         @Id val id: String,
-        val serviceId: String,
+        val layerId: String,
         val runId: String,
         val attempts: MutableList<String>,
         var lockedUntil: ZonedDateTime

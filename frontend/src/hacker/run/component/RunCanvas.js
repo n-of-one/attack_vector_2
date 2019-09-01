@@ -82,7 +82,7 @@ class RunCanvas {
 
     loadScan(data) {
         const {scan, site, hackers} = data;
-        const {nodes, connections, nodeStatuses, serviceStatuses} = site;
+        const {nodes, connections, nodeStatuses, layerStatuses} = site;
         this.nodeDataById = {};
         this.sortAndAddHackers(hackers);
 
@@ -93,16 +93,16 @@ class RunCanvas {
             node.hacked = nodeStatus.hacked;
         });
 
-        /* Similarly the service status is added to each service. */
-        const serviceById = {};
+        /* Similarly the layer status is added to each layer. */
+        const layerById = {};
         nodes.forEach((node) => {
-            node.services.forEach((service) => {
-                serviceById[service.id] = service;
+            node.layers.forEach((layer) => {
+                layerById[layer.id] = layer;
             });
         });
-        serviceStatuses.forEach((serviceStatus) => {
-            const service = serviceById[serviceStatus.serviceId];
-            service.hacked = serviceStatus.hacked;
+        layerStatuses.forEach((layerStatus) => {
+            const layer = layerById[layerStatus.layerId];
+            layer.hacked = layerStatus.hacked;
         });
 
 
@@ -285,9 +285,9 @@ class RunCanvas {
         this.displayById[userId].moveArrive(nodeDisplay);
     }
 
-    hackerProbeServicesSaga(userId, nodeId) {
+    hackerProbeLayersSaga(userId, nodeId) {
         const nodeDisplay = this.displayById[nodeId];
-        this.displayById[userId].hackerProbeServices(nodeDisplay);
+        this.displayById[userId].hackerProbeLayers(nodeDisplay);
     }
 
     hackerProbeConnections(userId, nodeId) {

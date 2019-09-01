@@ -5,8 +5,8 @@ import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.NodeScanStatus.*
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IcePasswordStatusRepo
+import org.n1.av2.backend.repo.LayerStatusRepo
 import org.n1.av2.backend.repo.NodeStatusRepo
-import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.scan.ScanProbeService
@@ -16,7 +16,7 @@ import org.n1.av2.backend.service.terminal.HackTerminalService
 import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
 
-val STATUSES_NEEDING_PROBE_SERVICES = listOf( DISCOVERED, TYPE, CONNECTIONS)
+val STATUSES_NEEDING_PROBE_LAYERS = listOf( DISCOVERED, TYPE, CONNECTIONS)
 
 @Service
 class HackingService(
@@ -28,7 +28,7 @@ class HackingService(
         private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
         private val stompService: StompService,
-        private val serviceStatusRepo: ServiceStatusRepo,
+        private val layerStatusRepo: LayerStatusRepo,
         private val nodeStatusRepo: NodeStatusRepo,
         private val icePasswordStatusRepo: IcePasswordStatusRepo) {
 
@@ -51,8 +51,8 @@ class HackingService(
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
         val data = MoveArrive(nodeId, currentUserService.userId)
-        if (STATUSES_NEEDING_PROBE_SERVICES.contains(nodeStatus)) {
-            stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_SERVICES, data)
+        if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
+            stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
         }
         else {
             hackerPositionService.arriveAt(nodeId)
@@ -60,13 +60,13 @@ class HackingService(
         }
     }
 
-    fun probedServices(nodeId: String, runId: String) {
+    fun probedLayers(nodeId: String, runId: String) {
         val scan = scanService.getByRunId(runId)
         val nodeScan= scan.nodeScanById[nodeId]!!
 
         val newNodeStatus = when (nodeScan.status) {
             DISCOVERED, NodeScanStatus.TYPE -> NodeScanStatus.SERVICES_NO_CONNECTIONS
-            CONNECTIONS -> NodeScanStatus.SERVICES
+            CONNECTIONS -> NodeScanStatus.LAYERS
             else -> nodeScan.status
         }
         if (newNodeStatus != nodeScan.status) {
@@ -82,19 +82,19 @@ class HackingService(
         val scan = scanService.getByRunId(runId)
         val nodeScan= scan.nodeScanById[nodeId]!!
         val node = nodeService.getById(nodeId)
-        val service = node.services.first()
-        val prefix = "Hacked: [pri]0[/] ${service.name}"
+        val layer = node.layers.first()
+        val prefix = "Hacked: [pri]0[/] ${layer.name}"
         probeService.probeScanConnection(scan, node, nodeScan, prefix)
     }
 
     fun purgeAll() {
-        serviceStatusRepo.deleteAll()
+        layerStatusRepo.deleteAll()
         icePasswordStatusRepo.deleteAll()
         hackerPositionService.purgeAll()
     }
 
     fun reset() {
-        serviceStatusRepo.deleteAll()
+        layerStatusRepo.deleteAll()
         nodeStatusRepo.deleteAll()
         icePasswordStatusRepo.deleteAll()
     }

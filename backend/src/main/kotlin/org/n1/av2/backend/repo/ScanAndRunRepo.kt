@@ -25,20 +25,20 @@ interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String
 }
 
 @Repository
-interface ServiceStatusRepo: PagingAndSortingRepository<ServiceStatus, String> {
-    fun findByServiceIdAndRunId(serviceId: String, runId: String): ServiceStatus?
-    fun findByRunId(runId: String): List<ServiceStatus>
-    fun findByRunIdAndServiceIdIn(runId: String, serviceIds: List<String>): List<ServiceStatus>
+interface LayerStatusRepo: PagingAndSortingRepository<LayerStatus, String> {
+    fun findByLayerIdAndRunId(layerId: String, runId: String): LayerStatus?
+    fun findByRunId(runId: String): List<LayerStatus>
+    fun findByRunIdAndLayerIdIn(runId: String, layerIds: List<String>): List<LayerStatus>
 }
 
 @Repository
 interface NodeStatusRepo: PagingAndSortingRepository<NodeStatus, String> {
     fun findByRunId(runId: String): List<NodeStatus>
-    fun findByNodeIdAndRunId(serviceId: String, runId: String): NodeStatus?
+    fun findByNodeIdAndRunId(layerId: String, runId: String): NodeStatus?
 }
 
 
 @Repository
 interface IcePasswordStatusRepo: PagingAndSortingRepository<IcePasswordStatus, String> {
-    fun findByServiceIdAndRunId(serviceId: String, runId: String): IcePasswordStatus?
+    fun findByLayerIdAndRunId(layerId: String, runId: String): IcePasswordStatus?
 }

@@ -1,6 +1,6 @@
 package org.n1.av2.backend.model.db.site
 
-import org.n1.av2.backend.model.db.service.Service
+import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.site.enums.NodeType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
@@ -26,11 +26,11 @@ data class Node(
         val x: Int,
         val y: Int,
         var ice: Boolean,
-        val services: MutableList<Service>,
+        val layers: MutableList<Layer>,
         @Indexed val networkId: String
 ) {
-    fun getServiceById(serviceId: String): Service {
-        return services.find {it.id == serviceId}!!
+    fun getLayerById(layerId: String): Layer {
+        return layers.find {it.id == layerId}!!
     }
 }
 
@@ -60,7 +60,7 @@ data class SiteStateMessage(
         val type: SiteStateMessageType,
         val text: String,
         val nodeId: String? = null,
-        val serviceId: String? = null
+        val layerId: String? = null
 )
 
 enum class SiteStateMessageType {

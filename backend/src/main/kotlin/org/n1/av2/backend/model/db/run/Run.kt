@@ -4,9 +4,9 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 
 
-data class ServiceStatus (
+data class LayerStatus (
         @Id val id: String,
-        val serviceId: String,
+        val layerId: String,
         @Indexed val runId: String,
         var hacked: Boolean,
         val hackedBy: MutableList<String>)

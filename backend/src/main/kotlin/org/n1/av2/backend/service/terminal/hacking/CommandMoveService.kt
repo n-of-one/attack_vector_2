@@ -5,7 +5,6 @@ import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.NodeStatusRepo
-import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.scan.ScanService
@@ -65,7 +64,7 @@ class CommandMoveService(
     }
 
     private fun hasActiveIce(node: Node, runId: String): Boolean {
-        if (node.services.none{it.type.ice}) {
+        if (node.layers.none{it.type.ice}) {
             return false
         }
 

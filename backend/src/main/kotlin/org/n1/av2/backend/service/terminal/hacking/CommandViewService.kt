@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service.terminal.hacking
 
-import org.n1.av2.backend.repo.ServiceStatusRepo
+import org.n1.av2.backend.repo.LayerStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.site.NodeService
@@ -12,26 +12,27 @@ class CommandViewService(
         private val nodeService: NodeService,
         private val hackerPositionService: HackerPositionService,
         private val commandServiceUtil: CommandServiceUtil,
-        private val serviceStatusRepo: ServiceStatusRepo
+        private val layerStatusRepo: LayerStatusRepo
 ) {
 
     fun process(runId: String) {
         val position = hackerPositionService.retrieveForCurrentUser()
         val node = nodeService.getById(position.currentNodeId)
 
-        val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, runId) ?: -1
+        val blockingIceLevel = commandServiceUtil.findBlockingIceLayer(node, runId)?.level ?: -1
 
         val lines = ArrayList<String>()
 
-        val serviceStatuses = serviceStatusRepo.findByRunIdAndServiceIdIn(runId, node.services.map { it.id })
-        val hackedServiceIds = serviceStatuses.filter { it.hacked }.map { it.serviceId }
+        // TODO: move to layerStatusService
+        val layerStatuses = layerStatusRepo.findByRunIdAndLayerIdIn(runId, node.layers.map { it.id })
+        val hackedLayerIds = layerStatuses.filter { it.hacked }.map { it.layerId }
 
         lines.add("Node service layers:")
-        node.services.forEach { service ->
-            val blocked = if (service.layer < blockingIceLayer) "* " else ""
-            val hacked = if (hackedServiceIds.contains(service.id)) " [mute]hacked[/]" else ""
-            val iceSuffix = if (service.type.ice) " ICE" else ""
-            lines.add("${blocked}[pri]${service.layer}[/] ${service.name}${iceSuffix}${hacked}")
+        node.layers.forEach { layer ->
+            val blocked = if (layer.level < blockingIceLevel) "* " else ""
+            val hacked = if (hackedLayerIds.contains(layer.id)) " [mute]hacked[/]" else ""
+            val iceSuffix = if (layer.type.ice) " ICE" else ""
+            lines.add("${blocked}[pri]${layer.level}[/] ${layer.name}${iceSuffix}${hacked}")
         }
 
         stompService.terminalReceive(lines)

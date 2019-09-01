@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service
 
-import org.n1.av2.backend.model.db.service.Service
+import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.site.*
 
@@ -89,28 +89,28 @@ class EditorService(
         siteValidationService.validate(command.siteId)
     }
 
-    data class ServerUpdateService(val nodeId: String, val serviceId: String, val service: Service)
-    fun editServiceData(command: EditServiceDataCommand) {
+    data class ServerUpdateLayer(val nodeId: String, val layerId: String, val layer: Layer)
+    fun editLayerData(command: EditLayerDataCommand) {
         val node = nodeService.getById(command.nodeId)
-        val service = node.services.find{ it.id == command.serviceId} ?: error("Service not found: ${command.serviceId} for ${command.nodeId}")
-        service.update(command.key, command.value)
+        val layer = node.layers.find{ it.id == command.layerId} ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
+        layer.update(command.key, command.value)
         nodeService.save(node)
-        val message = ServerUpdateService(command.nodeId, service.id, service)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_SERVICE, message)
+        val message = ServerUpdateLayer(command.nodeId, layer.id, layer)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_LAYER, message)
         siteValidationService.validate(command.siteId)
     }
 
-    data class ServiceAdded(val nodeId: String, val service: Service)
-    fun addService(command: AddServiceCommand) {
-        val service = nodeService.addService(command)
-        val message = ServiceAdded(command.nodeId, service)
+    data class LayerAdded(val nodeId: String, val layer: Layer)
+    fun addLayer(command: AddLayerCommand) {
+        val layer = nodeService.addLayer(command)
+        val message = LayerAdded(command.nodeId, layer)
 
-        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_SERVICE, message)
+        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_LAYER, message)
         siteValidationService.validate(command.siteId)
     }
 
-    fun removeService(command: RemoveServiceCommand) {
-        val message = nodeService.removeService(command)
+    fun removeLayer(command: RemoveLayerCommand) {
+        val message = nodeService.removeLayer(command)
 
         if (message != null) {
             stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)
@@ -118,8 +118,8 @@ class EditorService(
         }
     }
 
-    fun swapServiceLayer(command: SwapServiceCommand) {
-        val message = nodeService.swapServices(command)
+    fun swapLayers(command: SwapLayerCommand) {
+        val message = nodeService.swapLayers(command)
         if (message != null) {
             stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)
         }

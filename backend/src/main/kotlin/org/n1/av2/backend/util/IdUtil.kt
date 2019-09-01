@@ -13,12 +13,12 @@ fun createId(prefix: String, findExisting: (String)-> Any? = ::neverFindExisting
     return createId(prefix, findExisting, 9, 18)
 }
 
-fun createServiceId(node: Node, findExisting: (String)-> Any?): String {
-    return createId("${node.id}-svc", findExisting, 9, 13)
+fun createLayerId(node: Node, findExisting: (String)-> Any?): String {
+    return createId("${node.id}-layer", findExisting, 9, 13)
 }
 
-fun nodeIdFromServiceId(serviceId: String): String {
-    return serviceId.substring(0,14)
+fun nodeIdFromServiceId(layerId: String): String {
+    return layerId.substring(0,14)
 }
 
 fun createId(prefix: String, findExisting: (String)-> Any?, start: Int, end: Int): String {

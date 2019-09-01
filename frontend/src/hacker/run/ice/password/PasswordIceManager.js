@@ -39,7 +39,7 @@ class PasswordIceManager {
 
     serverPasswordIceUpdate(action) {
         const currentIce = this.store.getState().run.ice.currentIce;
-        if (currentIce.serviceId === action.data.serviceId) {
+        if (currentIce.layerId === action.data.layerId) {
             if (action.data.hacked) {
                 this.processSuccess(action.data.message);
             } else {

@@ -1,16 +1,16 @@
 package org.n1.av2.backend.service.site
 
-import org.n1.av2.backend.model.db.service.IcePasswordService
-import org.n1.av2.backend.model.db.service.OsService
-import org.n1.av2.backend.model.db.service.Service
-import org.n1.av2.backend.model.db.service.TextService
+import org.n1.av2.backend.model.db.layer.IcePasswordLayer
+import org.n1.av2.backend.model.db.layer.Layer
+import org.n1.av2.backend.model.db.layer.OsLayer
+import org.n1.av2.backend.model.db.layer.TextLayer
 import org.n1.av2.backend.model.db.site.Node
-import org.n1.av2.backend.model.db.site.enums.ServiceType
+import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.repo.NodeRepo
 import org.n1.av2.backend.service.ThemeService
 import org.n1.av2.backend.util.createId
-import org.n1.av2.backend.util.createServiceId
+import org.n1.av2.backend.util.createLayerId
 import java.util.*
 
 const val NODE_MIN_X = 35
@@ -22,7 +22,6 @@ const val NODE_MAX_Y = 815 - 48 - 100
 
 @org.springframework.stereotype.Service
 class NodeService(
-        val layoutService: LayoutService,
         val nodeRepo: NodeRepo,
         val themeService: ThemeService
 ) {
@@ -32,7 +31,7 @@ class NodeService(
         val siteId = command.siteId
         val nodes = getAll(siteId)
         val networkId = nextFreeNetworkId(siteId, nodes)
-        val services = mutableListOf(createOsService(id))
+        val layers = mutableListOf(createOsLayer(id))
 
         val node = Node(
                 id = id,
@@ -41,23 +40,23 @@ class NodeService(
                 x = command.x,
                 y = command.y,
                 ice = command.type.ice,
-                services = services,
+                layers = layers,
                 networkId = networkId)
         nodeRepo.save(node)
         return node
     }
 
-    private fun createOsService(nodeId: String): Service {
-        val id = "${nodeId}-svc-0000"
-        val name = themeService.getDefaultName(ServiceType.OS)
-        return OsService(id, name)
+    private fun createOsLayer(nodeId: String): Layer {
+        val id = "${nodeId}-layer-0000"
+        val name = themeService.getDefaultName(LayerType.OS)
+        return OsLayer(id, name)
     }
 
-    private fun createServiceId(node: Node): String {
+    private fun createLayerId(node: Node): String {
         val findExisting = fun(candidate: String): String? {
-            return node.services.find{ it.id == candidate }?.id
+            return node.layers.find{ it.id == candidate }?.id
         }
-        return createServiceId(node, findExisting)
+        return createLayerId(node, findExisting)
     }
 
     private fun nextFreeNetworkId(siteId: String, nodes: List<Node>): String {
@@ -134,58 +133,57 @@ class NodeService(
         nodeRepo.save(node)
     }
 
-    fun addService(command: AddServiceCommand): Service {
+    fun addLayer(command: AddLayerCommand): Layer {
         val node = getById(command.nodeId)
-        val service = createService(command.serviceType, node)
-        node.services.add(service)
-        if (service.type.ice) {
-            node.ice = true
+        val layer = createLayer(command.layerType, node)
+        node.layers.add(layer)
+        node.ice = node.layers.any{it.type.ice}
+        nodeRepo.save(node)
+        return layer
+    }
+
+    private fun createLayer(layerType: LayerType, node: Node): Layer {
+        val layer = node.layers.size
+        val id = createLayerId(node)
+
+        val defaultName = themeService.getDefaultName(layerType)
+
+        // TODO use type inference
+        return when (layerType) {
+            LayerType.TEXT -> TextLayer(id, layer, defaultName)
+            LayerType.ICE_PASSWORD -> IcePasswordLayer(id, layer, defaultName)
+            else -> error("Unknown service type: ${layerType}")
         }
-        nodeRepo.save(node)
-        return service
     }
 
-    private fun createService(serviceType: ServiceType, node: Node): Service {
-        val layer = node.services.size
-        val id = createServiceId(node)
+    data class LayersUpdated(val node: Node, val layerId: String?)
 
-        val defaultName = themeService.getDefaultName(serviceType)
-
-        return when (serviceType) {
-            ServiceType.TEXT -> TextService(id, layer, defaultName)
-            ServiceType.ICE_PASSWORD -> IcePasswordService(id, layer, defaultName)
-            else -> error("Unknown service type: ${serviceType}")
-        }
-    }
-
-    data class ServicesUpdated(val node: Node, val serviceId: String?)
-
-    fun removeService(command: RemoveServiceCommand): ServicesUpdated? {
+    fun removeLayer(command: RemoveLayerCommand): LayersUpdated? {
         val node = getById(command.nodeId)
-        val toRemove = node.services.firstOrNull { it.id == command.serviceId } ?: return null
-        node.services.remove(toRemove)
-        node.services.sortBy { it.layer }
-        node.services.forEachIndexed { layer, service -> service.layer = layer };
-        node.ice = node.services.any{it.type.ice}
+        val toRemove = node.layers.firstOrNull { it.id == command.layerId } ?: return null
+        node.layers.remove(toRemove)
+        node.layers.sortBy { it.level }
+        node.layers.forEachIndexed { level, layer -> layer.level = level }
+        node.ice = node.layers.any{it.type.ice}
         nodeRepo.save(node)
-        val newFocusNode = node.services[toRemove.layer - 1]
-        return ServicesUpdated(node, newFocusNode.id)
+        val newFocusLayer = node.layers[toRemove.level - 1]
+        return LayersUpdated(node, newFocusLayer.id)
     }
 
-    fun swapServices(command: SwapServiceCommand): ServicesUpdated? {
+    fun swapLayers(command: SwapLayerCommand): LayersUpdated? {
         val node = getById(command.nodeId)
-        val fromService = node.services.find { it.id == command.fromId } ?: return null
-        val toService = node.services.find { it.id == command.toId } ?: return null
+        val fromLayer = node.layers.find { it.id == command.fromId } ?: return null
+        val toLayer = node.layers.find { it.id == command.toId } ?: return null
 
-        val fromLayer = fromService.layer
-        val toLayer = toService.layer
-        fromService.layer = toLayer
-        toService.layer = fromLayer
-        node.services.sortBy { it.layer }
+        val fromLevel = fromLayer.level
+        val toLevel = toLayer.level
+        fromLayer.level = toLevel
+        toLayer.level = fromLevel
+        node.layers.sortBy { it.level }
 
         nodeRepo.save(node)
 
-        return ServicesUpdated(node, null)
+        return LayersUpdated(node, null)
     }
 
 }

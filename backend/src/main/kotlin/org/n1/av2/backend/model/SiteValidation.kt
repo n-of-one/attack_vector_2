@@ -10,10 +10,10 @@ data class SiteRep(
         val siteData: SiteData
 ) {
 
-    fun findNodeByServiceId(serviceId: String): Node? {
+    fun findNodeByServiceId(layerId: String): Node? {
         val node = nodes.find { node ->
-            node.services.filter { service ->
-                service.id == serviceId
+            node.layers.filter { layer ->
+                layer.id == layerId
             }.any()
         }
         return node

@@ -68,24 +68,24 @@ class EditorController(
         executor.run(principal) { editorService.editNetworkId(command) }
     }
 
-    @MessageMapping("/editor/editServiceData")
-    fun editServiceData(command: EditServiceDataCommand, principal: Principal) {
-        executor.run(principal) { editorService.editServiceData(command) }
+    @MessageMapping("/editor/editLayerData")
+    fun editServiceData(command: EditLayerDataCommand, principal: Principal) {
+        executor.run(principal) { editorService.editLayerData(command) }
     }
 
-    @MessageMapping("/editor/addService")
-    fun addService(command: AddServiceCommand, principal: Principal) {
-        executor.run(principal) { editorService.addService(command) }
+    @MessageMapping("/editor/addLayer")
+    fun addService(command: AddLayerCommand, principal: Principal) {
+        executor.run(principal) { editorService.addLayer(command) }
     }
 
-    @MessageMapping("/editor/removeService")
-    fun removeService(command: RemoveServiceCommand, principal: Principal) {
-        executor.run(principal) { editorService.removeService(command) }
+    @MessageMapping("/editor/removeLayer")
+    fun removeService(command: RemoveLayerCommand, principal: Principal) {
+        executor.run(principal) { editorService.removeLayer(command) }
     }
 
-    @MessageMapping("/editor/swapServiceLayer")
-    fun swapServiceLayer(command: SwapServiceCommand, principal: Principal) {
-        executor.run(principal) { editorService.swapServiceLayer(command) }
+    @MessageMapping("/editor/swapLayers")
+    fun swapServiceLayer(command: SwapLayerCommand, principal: Principal) {
+        executor.run(principal) { editorService.swapLayers(command) }
     }
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

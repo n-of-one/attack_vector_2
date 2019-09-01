@@ -10,11 +10,11 @@ import org.n1.av2.backend.model.hacker.HackerPresence
 import org.n1.av2.backend.model.hacker.HackerPresenceHacking
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.repo.NodeStatusRepo
-import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.HackerPositionService
+import org.n1.av2.backend.service.run.LayerStatusService
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.service.site.SiteDataService
 import org.n1.av2.backend.service.site.SiteService
@@ -40,7 +40,7 @@ class ScanningService(private val scanService: ScanService,
                       private val time: TimeService,
                       private val hackerPositionService: HackerPositionService,
                       private val userService: UserService,
-                      private val serviceStatusRepo: ServiceStatusRepo,
+                      private val layerStatusService: LayerStatusService,
                       private val nodeStatusRepo: NodeStatusRepo
 ) {
 
@@ -96,7 +96,7 @@ class ScanningService(private val scanService: ScanService,
         siteFull.sortNodeByDistance(scan)
 
         siteFull.nodeStatuses = nodeStatusRepo.findByRunId(runId)
-        siteFull.serviceStatuses = serviceStatusRepo.findByRunId(runId)
+        siteFull.layerStatuses = layerStatusService.getForRun(runId)
 
         val userPresenceScanning = hackerActivityService
                 .getAll(scan.runId, HackerActivityType.SCANNING)

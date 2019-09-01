@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {animate, calcLine, easeLinear, easeOutSine} from "./CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
-import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_SERVICES} from "../../hacker/run/model/HackActions";
+import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS} from "../../hacker/run/model/HackActions";
 import Schedule from "../Schedule";
 
 const APPEAR_TIME = 20;
@@ -331,7 +331,7 @@ export default class HackerDisplay {
         });
     }
 
-    hackerProbeServices(nodeDisplay) {
+    hackerProbeLayers(nodeDisplay) {
         this.schedule.run(50, () => {
             this.appearIfNotVisible(nodeDisplay);
             this.animateZoom(SIZE_SMALL, 50);
@@ -341,7 +341,7 @@ export default class HackerDisplay {
         });
         this.schedule.run(5, () => {
             if (this.you) {
-                this.dispatch({type: HACKER_PROBED_SERVICES, nodeId: nodeDisplay.id});
+                this.dispatch({type: HACKER_PROBED_LAYERS, nodeId: nodeDisplay.id});
             }
         });
     }

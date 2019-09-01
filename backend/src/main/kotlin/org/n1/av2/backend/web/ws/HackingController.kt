@@ -22,9 +22,9 @@ class HackingController(
         executor.run(principal) { hackingService.moveArrive(command.nodeId, command.runId) }
     }
 
-    @MessageMapping("/hack/probedServices")
+    @MessageMapping("/hack/probedLayers")
     fun probedServices(command: NodeBody, principal: Principal) {
-        executor.run(principal) { hackingService.probedServices(command.nodeId, command.runId) }
+        executor.run(principal) { hackingService.probedLayers(command.nodeId, command.runId) }
     }
 
     @MessageMapping("/hack/probedConnections")

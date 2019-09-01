@@ -30,9 +30,9 @@ import {
     hackerProbedConnectionsSaga,
     moveArriveSaga,
     moveStartSaga,
-    probeServicesSaga,
+    probeLayersSaga,
     serverHackerProbeConnectionsSaga,
-    serverHackerProbeServicesSaga,
+    serverHackerProbeLayersSaga,
     serverMoveArriveSaga,
     startAttackSaga
 } from "./run/saga/HackSagas";
@@ -40,11 +40,11 @@ import {
     FINISH_HACKING_ICE,
     HACKER_MOVE_ARRIVE,
     HACKER_PROBED_CONNECTIONS,
-    HACKER_PROBED_SERVICES,
+    HACKER_PROBED_LAYERS,
     SERVER_HACKER_MOVE_ARRIVE,
     SERVER_HACKER_MOVE_START,
     SERVER_HACKER_PROBE_CONNECTIONS,
-    SERVER_HACKER_PROBE_SERVICES,
+    SERVER_HACKER_PROBE_LAYERS,
     SERVER_HACKER_START_ATTACK,
     SERVER_NODE_HACKED
 } from "./run/model/HackActions";
@@ -94,8 +94,8 @@ const createHackerRootSaga = () => {
         yield takeEvery(HACKER_MOVE_ARRIVE, moveArriveSaga);
         yield takeEvery(SERVER_HACKER_MOVE_ARRIVE, serverMoveArriveSaga);
 
-        yield takeEvery(SERVER_HACKER_PROBE_SERVICES, serverHackerProbeServicesSaga);
-        yield takeEvery(HACKER_PROBED_SERVICES, probeServicesSaga);
+        yield takeEvery(SERVER_HACKER_PROBE_LAYERS, serverHackerProbeLayersSaga);
+        yield takeEvery(HACKER_PROBED_LAYERS, probeLayersSaga);
 
         yield takeEvery(SERVER_HACKER_PROBE_CONNECTIONS, serverHackerProbeConnectionsSaga);
         yield takeEvery(HACKER_PROBED_CONNECTIONS, hackerProbedConnectionsSaga);

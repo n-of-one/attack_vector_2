@@ -31,7 +31,7 @@ export function* passwordIceSubmit(action) {
     }
 
     const runId = yield select(getRunId);
-    const payload = {serviceId: ice.serviceId, nodeId: ice.nodeId, runId: runId, password: action.password};
+    const payload = {layerId: ice.layerId, nodeId: ice.nodeId, runId: runId, password: action.password};
     webSocketConnection.send("/av/ice/password/submit", JSON.stringify(payload));
     yield put({type: ICE_PASSWORD_LOCK});
 }

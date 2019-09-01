@@ -2,13 +2,13 @@ import React from 'react';
 import {connect} from "react-redux";
 import SilentLink from "../../../common/component/SilentLink";
 import editorCanvas from "../middle/middle/EditorCanvas";
-import {SELECT_SERVICE} from "../../EditorActions";
+import {SELECT_LAYER} from "../../EditorActions";
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        navigateToService: (nodeId, serviceId) => {
-            editorCanvas.openService(nodeId, serviceId);
-            dispatch({type: SELECT_SERVICE, serviceId: serviceId })
+        navigateToLayer: (nodeId, layerId) => {
+            editorCanvas.openLayer(nodeId, layerId);
+            dispatch({type: SELECT_LAYER, layerId: layerId })
         }
     }
 };
@@ -19,9 +19,9 @@ const mapStateToProps = (state) => {
     };
 };
 
-const renderMessage = (message, index, navigateToService) => {
+const renderMessage = (message, index, navigateToLayer) => {
     const label = (message.type === "INFO") ? <span className="label label-info">Info&nbsp;</span> : <span className="label label-warning">Error</span>;
-    const link = (message.serviceId) ? (<>&nbsp;<SilentLink onClick={() => {navigateToService(message.nodeId, message.serviceId)}}>
+    const link = (message.layerId) ? (<>&nbsp;<SilentLink onClick={() => {navigateToLayer(message.nodeId, message.layerId)}}>
         <span className="glyphicon glyphicon-share-alt" /></SilentLink></>) : <></>;
 
     return (
@@ -34,7 +34,7 @@ const renderMessage = (message, index, navigateToService) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({siteState, navigateToService}) => {
+    ({siteState, navigateToLayer}) => {
 
         let statusElement = (siteState.ok) ? <span className="label label-success">Ok</span> :  <span className="label label-warning">Error</span>;
 
@@ -47,7 +47,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
                 <hr className="thin-hr"/>
                 {siteState.messages.map( (message, index) => {
-                    return renderMessage(message, index, navigateToService)
+                    return renderMessage(message, index, navigateToLayer)
                 })}
             </div>
         );

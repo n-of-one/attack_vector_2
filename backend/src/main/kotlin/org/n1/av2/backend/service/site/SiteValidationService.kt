@@ -5,8 +5,8 @@ import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.SiteData
 import org.n1.av2.backend.model.db.site.SiteStateMessage
 import org.n1.av2.backend.model.db.site.SiteStateMessageType
-import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 
@@ -75,7 +75,7 @@ class SiteValidationService(
     private fun validateNetworkId(node: Node, networkIds: MutableSet<String>, messages: MutableList<SiteStateMessage>) {
         val networkId = node.networkId.toLowerCase()
         if (networkIds.contains(networkId)) {
-            val message = SiteStateMessage(SiteStateMessageType.ERROR, "Duplicate network id: ${networkId}", node.id, node.services[0].id)
+            val message = SiteStateMessage(SiteStateMessageType.ERROR, "Duplicate network id: ${networkId}", node.id, node.layers[0].id)
             messages.add(message)
         }
         else {
@@ -84,7 +84,7 @@ class SiteValidationService(
     }
 
     private fun validateServices(node: Node, siteRep: SiteRep, messages: MutableList<SiteStateMessage>) {
-        node.services.forEach { service ->
+        node.layers.forEach { service ->
             service.allValidationMethods().forEach { validateMethod ->
                 try {
                     validateMethod(siteRep)

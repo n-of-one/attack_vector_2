@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import PasswordIceHome from "./password/PasswordIceHome";
-import {ICE_PASSWORD} from "../../../common/enums/ServiceTypes";
+import {ICE_PASSWORD} from "../../../common/enums/LayerTypes";
 
 const mapDispatchToProps = (dispatch) => {
     return {}

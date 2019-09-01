@@ -1,11 +1,11 @@
 import {ICE_PASSWORD_BEGIN, ICE_PASSWORD_LOCK, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./PasswordIceActions";
 import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
-import {ICE_PASSWORD} from "../../../../common/enums/ServiceTypes";
+import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "./PasswordIceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 
 // const defaultState = {
-//     serviceId: "svc-7baa-4572-cde0",
+//     layerId: "svc-7baa-4572-cde0",
 //     lockedUntil: "2019-08-26T15:38:40.9179757+02:00",
 //     attempts: ["zwaardvis", "secret"],
 //     uiState: "UNLOCKED",
@@ -60,7 +60,7 @@ const processStartHacking = (serverStatus) => {
 
 const processServerUpdate = (serverStatus, currentIce, oldState) => {
     // disregard updates for password ice that this player is not hacking.
-    if (currentIce.serviceId !== serverStatus.serviceId) {
+    if (currentIce.layerId !== serverStatus.layerId) {
         return oldState;
     }
 

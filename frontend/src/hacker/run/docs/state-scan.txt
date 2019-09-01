@@ -6,7 +6,7 @@ Redux state
     site: (site)
     nodes: [ (node) ]
     connections: [ (connection) ]
-    services: [ (service) ]
+    layers: [ (layer) ]
 }
 
 scan = {
@@ -48,7 +48,7 @@ connection = {
 }
 
 
-service = {
+layer = {
   id: "site-83e8-d83a-serv-3393"
   type: "OS"
   layer: 0

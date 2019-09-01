@@ -1,11 +1,11 @@
 import {
     SERVER_ADD_NODE,
-    SERVER_ADD_SERVICE,
+    SERVER_ADD_LAYER,
     SERVER_MOVE_NODE,
     SERVER_NODE_UPDATED,
     SERVER_SITE_FULL,
     SERVER_UPDATE_NETWORK_ID,
-    SERVER_UPDATE_SERVICE
+    SERVER_UPDATE_LAYER
 } from "../EditorActions";
 import {findElementById, updateArrayById} from "../../common/Immutable";
 
@@ -19,12 +19,12 @@ const NodesReducer = (state = [], action) => {
             return moveNode(action.data, state);
         case SERVER_UPDATE_NETWORK_ID:
             return serverUpdateNetworkId(action.data, state);
-        case SERVER_UPDATE_SERVICE :
-            return serverUpdateService(action.data, state);
-        case SERVER_ADD_SERVICE :
-            return serverAddService(action.data, state);
+        case SERVER_UPDATE_LAYER :
+            return serverUpdateLayer(action.data, state);
+        case SERVER_ADD_LAYER :
+            return serverAddLayer(action.data, state);
         case SERVER_NODE_UPDATED :
-            return serverRemoveService(action.data.node, state);
+            return serverRemoveLayer(action.data.node, state);
 
         default:
             return state;
@@ -43,13 +43,13 @@ const moveNode = (data, nodeList) => {
 };
 
 
-const serverUpdateService = (update, nodes) => {
+const serverUpdateLayer = (update, nodes) => {
     const node = findElementById(nodes, update.nodeId);
-    const newServices = updateArrayById(update.service, node.services, update.serviceId);
+    const newLayers = updateArrayById(update.layer, node.layers, update.layerId);
 
-    const newNodeServices = {services: newServices};
+    const newNodeLayers = {layers: newLayers};
 
-    const newNodes = updateArrayById(newNodeServices, nodes, update.nodeId);
+    const newNodes = updateArrayById(newNodeLayers, nodes, update.nodeId);
     return newNodes;
 };
 
@@ -62,19 +62,19 @@ const serverUpdateNetworkId = (update, nodes) => {
     return newNodes;
 };
 
-const serverAddService = (data, nodes) => {
+const serverAddLayer = (data, nodes) => {
     const node = findElementById(nodes, data.nodeId);
-    const service = data.service;
-    const newServices = [...node.services, service];
+    const layer = data.layer;
+    const newLayers = [...node.layers, layer];
 
-    const newNodeServices = {services: newServices};
+    const newNodeLayers = {layers: newLayers};
 
-    const newNodes = updateArrayById(newNodeServices, nodes, data.nodeId);
+    const newNodes = updateArrayById(newNodeLayers, nodes, data.nodeId);
     return newNodes;
 
 };
 
-const serverRemoveService = (node, nodes) => {
+const serverRemoveLayer = (node, nodes) => {
     const newNodes = updateArrayById(node, nodes, node.id);
     return newNodes;
 };

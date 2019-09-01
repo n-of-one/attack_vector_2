@@ -1,11 +1,11 @@
 package org.n1.av2.backend.model.ui
 
+import org.n1.av2.backend.model.db.run.LayerStatus
 import org.n1.av2.backend.model.db.run.NodeStatus
 import org.n1.av2.backend.model.db.run.Scan
-import org.n1.av2.backend.model.db.run.ServiceStatus
 import org.n1.av2.backend.model.db.site.*
+import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.model.db.site.enums.NodeType
-import org.n1.av2.backend.model.db.site.enums.ServiceType
 
 data class SiteFull(
         val id: String,
@@ -16,7 +16,7 @@ data class SiteFull(
         val state: SiteState,
         val startNodeId: String?,
         var nodeStatuses: List<NodeStatus>?,
-        var serviceStatuses: List<ServiceStatus>?) {
+        var layerStatuses: List<LayerStatus>?) {
 
     fun sortNodeByDistance(scan: Scan) {
         nodes.sortBy { node -> scan.nodeScanById[node.id]!!.distance }
@@ -53,24 +53,24 @@ data class EditNetworkIdCommand(
         val value: String = "")
 
 
-data class EditServiceDataCommand(
+data class EditLayerDataCommand(
         val siteId: String = "",
         val nodeId: String = "",
-        val serviceId: String = "",
+        val layerId: String = "",
         val key: String = "",
         val value: String = "")
 
-data class AddServiceCommand(
+data class AddLayerCommand(
         val siteId: String,
         val nodeId: String,
-        val serviceType: ServiceType)
+        val layerType: LayerType)
 
-data class RemoveServiceCommand(
+data class RemoveLayerCommand(
         val siteId: String,
         val nodeId: String,
-        val serviceId: String)
+        val layerId: String)
 
-data class SwapServiceCommand(
+data class SwapLayerCommand(
         val siteId: String,
         val nodeId: String,
         val fromId: String,

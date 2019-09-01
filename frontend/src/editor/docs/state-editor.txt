@@ -6,11 +6,11 @@ state = {
     layout: (layout)
     nodes: [ (node) ]
     connections: [ (connection) ]
-    services: [ (service) ]
+    layers: [ (layer) ]
     dragAndDrop: { type: "DATA_STORE", dx: -4, dy: 12, ice: false }
     theme: "frontier"
     currentNode: 3384
-    currentService: 39932
+    currentLayer: 39932
 }
 
 theme: for different larps/events we can have different themes.
@@ -36,7 +36,7 @@ node = {
     x: 393
     y: 10
     type: "TRANSIT_1"
-    services: [ (service)* ]
+    layers: [ (layer)* ]
 }
 
 connection = {
@@ -46,7 +46,7 @@ connection = {
 }
 
 
-service = {
+layer = {
   id: "site-83e8-d83a-serv-3393"
   type: "OS"
   layer: 0

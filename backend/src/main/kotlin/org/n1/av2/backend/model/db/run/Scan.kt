@@ -44,7 +44,7 @@ enum class NodeScanStatus(val level:Int) {
     TYPE(2),                     // scan, run: type and number of services known                       [type]
     SERVICES_NO_CONNECTIONS(3),  // scan, run: the connections of this node are known.                 [free, protected, hacked]
     CONNECTIONS(4),              // scan, run: the connections of this node are known.                 [type]
-    SERVICES(5),                 // scan, run: the services of this node are known                     [free, protected, hacked]
+    LAYERS(5),                   // scan, run: the layers of this node are known                     [free, protected, hacked]
 
 
 }

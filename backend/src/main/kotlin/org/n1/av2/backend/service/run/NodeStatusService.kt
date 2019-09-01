@@ -8,11 +8,12 @@ import org.n1.av2.backend.util.createId
 class NodeStatusService(
         private val nodeStatusRepo: NodeStatusRepo) {
 
-    fun getNodeStatus(nodeId: String, runId: String): NodeStatus {
-        val status = nodeStatusRepo.findByNodeIdAndRunId(nodeId, runId) ?: NodeStatus("", nodeId, runId, false)
-        return status
-    }
-
+// FIXME: remove if it compiles without this method
+//    fun getNodeStatus(nodeId: String, runId: String): NodeStatus {
+//        val status = nodeStatusRepo.findByNodeIdAndRunId(nodeId, runId) ?: NodeStatus("", nodeId, runId, false)
+//        return status
+//    }
+//
 
     fun createHackedStatus(nodeId: String, runId: String) {
         val id = createId("nodeStatus-")
