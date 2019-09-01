@@ -26,7 +26,21 @@ const renderInput = (inputTerminal, enterPassword, dispatch, ice) => {
         return <></>;
     }
     if (ice.waitSeconds && ice.waitSeconds > 0) {
-        return <div className="text"><span className="text-info"><br/>Time-out in progress.</span></div>
+
+
+        let waitSeconds = (ice.waitSeconds && ice.waitSeconds > 0) ? "" + ice.waitSeconds : "00";
+        if (waitSeconds.length < 2) {
+            waitSeconds = "0" + waitSeconds
+        }
+
+
+        return<h4 className="text-warning">
+            <strong>
+                Time-out: <span className="text-info">0:{waitSeconds}</span><br/>
+            </strong>
+        </h4>
+
+
     }
 
     return <Terminal terminal={inputTerminal} submit={enterPassword} dispatch={dispatch}/>;
@@ -42,11 +56,6 @@ const renderHint = (ice) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({displayTerminal, inputTerminal, enterPassword, dispatch, ice, close}) => {
-
-        let waitSeconds = (ice.waitSeconds && ice.waitSeconds > 0) ? "" + ice.waitSeconds : "00";
-        if (waitSeconds.length < 2) {
-            waitSeconds = "0" + waitSeconds
-        }
 
         const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : "";
 
@@ -84,10 +93,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
                     <div className={"row transition_alpha_fast" + classHidden}>
                         <div className="col-lg-6">
-                            <br/>
                             <h4 className="text-success">
                                 <strong>
-                                    Time-out: <span className="text-info">0:{waitSeconds}</span><br/>
+                                    Password
                                 </strong>
                             </h4>
                             {renderHint(ice)}
@@ -95,8 +103,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
                         </div>
                         <div className="col-lg-6 text">
-                            Passwords tried:<br/>
-                            <br/>
+                            <h4 className="text-success">
+                                <strong>
+                                    Already tried
+                                </strong>
+                            </h4>
                             <ul>
                                 {ice.attempts.map((attempt, index) => <li key={index}>{attempt}</li>)}
                             </ul>

@@ -52,8 +52,6 @@ const processTick = (state) => {
 
 
 const processStartHacking = (serverStatus) => {
-    // Start locked while terminal displays flavour text. Unlocks via PasswordIceSagas.passwordIceStartHack
-
     const waitSeconds = calculateWaitSeconds(serverStatus);
     return {...serverStatus, waitSeconds: waitSeconds, uiState: HIDDEN };
 };
