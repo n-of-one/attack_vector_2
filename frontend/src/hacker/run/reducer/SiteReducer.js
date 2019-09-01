@@ -1,6 +1,6 @@
 import {SERVER_SCAN_FULL} from "../model/ScanActions";
 import {findElementById, updateArrayById} from "../../../common/Immutable";
-import {SERVER_ICE_HACKED} from "../model/HackActions";
+import {SERVER_SERVICE_HACKED} from "../model/HackActions";
 
 const defaultState = {};
 
@@ -8,7 +8,7 @@ export default (state = defaultState, action) => {
     switch (action.type) {
         case SERVER_SCAN_FULL:
             return action.data.site;
-        case SERVER_ICE_HACKED:
+        case SERVER_SERVICE_HACKED:
             return serverIceHacked(action.data, state);
         default:
             return state;

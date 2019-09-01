@@ -47,6 +47,7 @@ enum class ReduxActions {
 
     SERVER_START_HACKING_ICE_PASSWORD, // sent to hacker that hacks this ice
     SERVER_ICE_PASSWORD_UPDATE,        // sent to run to inform of hacked status update
-    SERVER_ICE_HACKED,                 // change icon
+    SERVER_SERVICE_HACKED,             // sent to run to update info, this is visible when clicking on icon
+    SERVER_NODE_HACKED,                // change icon of node in run
 
 }

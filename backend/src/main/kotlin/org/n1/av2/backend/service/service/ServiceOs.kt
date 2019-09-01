@@ -13,6 +13,7 @@ import org.n1.av2.backend.service.scan.ScanService
 @org.springframework.stereotype.Service
 class ServiceOs(
         val scanService: ScanService,
+        val hackedUtil: HackedUtil,
         val stompService: StompService) {
 
     private data class ProbeConnections(val nodeId: String, val userId: String)
@@ -23,6 +24,7 @@ class ServiceOs(
         if (nodeStatus != NodeScanStatus.SERVICES) {
             val data = ProbeConnections(node.id, position.userId)
             stompService.toRun(position.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
+            hackedUtil.nonIceHacked(service.id, node, position.runId)
         }
         else {
             stompService.terminalReceive("Hacking ${service.name} reveals nothing new.")

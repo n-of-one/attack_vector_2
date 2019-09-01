@@ -1,14 +1,13 @@
 import {
-    SERVER_SITE_FULL,
     SERVER_ADD_NODE,
-    SERVER_MOVE_NODE,
-    SERVER_UPDATE_SERVICE,
-    SERVER_UPDATE_NETWORK_ID,
     SERVER_ADD_SERVICE,
-    SERVER_NODE_UPDATED
+    SERVER_MOVE_NODE,
+    SERVER_NODE_UPDATED,
+    SERVER_SITE_FULL,
+    SERVER_UPDATE_NETWORK_ID,
+    SERVER_UPDATE_SERVICE
 } from "../EditorActions";
 import {findElementById, updateArrayById} from "../../common/Immutable";
-import {SERVER_ICE_HACKED} from "../../hacker/run/model/HackActions";
 
 const NodesReducer = (state = [], action) => {
     switch (action.type) {

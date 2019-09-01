@@ -4,6 +4,7 @@ import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.scan.ScanService
@@ -17,9 +18,10 @@ class CommandMoveService(
         private val nodeService: NodeService,
         private val connectionService: ConnectionService,
         private val hackerPositionService: HackerPositionService,
-        private val scanService: ScanService
+        private val scanService: ScanService,
+        private val serviceStatusRepo: ServiceStatusRepo
 
-        ) {
+) {
 
     fun process(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
@@ -40,7 +42,7 @@ class CommandMoveService(
         connectionService.findConnection(position.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         val fromNode = nodeService.getById(position.currentNodeId)
-        if (hasActiveIce(fromNode)) return reportProtected()
+        if (hasActiveIce(fromNode, runId)) return reportProtected()
 
         handleMove(runId, toNode, position)
     }
@@ -61,9 +63,12 @@ class CommandMoveService(
         stompService.terminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
     }
 
-    private fun hasActiveIce(node: Node): Boolean {
-        // FIXME:  return node.services.any { it.type.ice  && !(it.hacked) }
-        return node.services.any { it.type.ice }
+    private fun hasActiveIce(node: Node, runId: String): Boolean {
+        val serviceIds = node.services.map { it.id }
+        val serviceStatuses = serviceStatusRepo.findByRunIdAndServiceIdIn(runId, serviceIds)
+        val hackedServiceIds = serviceStatuses.filter { it.hacked } .map { it.serviceId }
+
+        return node.services.any { it.type.ice  && !hackedServiceIds.contains(it.id) }
     }
 
     private fun reportProtected() {
@@ -71,6 +76,7 @@ class CommandMoveService(
     }
 
     private data class StartMove(val userId: String, val nodeId: String)
+
     private fun handleMove(runId: String, toNode: Node, position: HackerPosition) {
         hackerPositionService.saveInTransit(position)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(position.userId, toNode.id))

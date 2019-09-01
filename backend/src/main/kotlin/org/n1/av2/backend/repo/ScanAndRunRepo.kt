@@ -28,11 +28,13 @@ interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String
 interface ServiceStatusRepo: PagingAndSortingRepository<ServiceStatus, String> {
     fun findByServiceIdAndRunId(serviceId: String, runId: String): ServiceStatus?
     fun findByRunId(runId: String): List<ServiceStatus>
+    fun findByRunIdAndServiceIdIn(runId: String, serviceIds: List<String>): List<ServiceStatus>
 }
 
 @Repository
 interface NodeStatusRepo: PagingAndSortingRepository<NodeStatus, String> {
     fun findByRunId(runId: String): List<NodeStatus>
+    fun findByNodeIdAndRunId(serviceId: String, runId: String): NodeStatus?
 }
 
 

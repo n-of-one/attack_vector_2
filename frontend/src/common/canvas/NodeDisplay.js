@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 import {toType} from "../enums/NodeTypesNames";
-import {CONNECTIONS, DISCOVERED, FREE, PROTECTED, SERVICES, TYPE} from "../enums/NodeStatus";
+import {CONNECTIONS, DISCOVERED, FREE, HACKED, PROTECTED, SERVICES, TYPE} from "../enums/NodeStatus";
 import {animate, easeInSine, easeOutSine} from "./CanvasUtils";
 
 const SCAN_OPACITY = 0.4;
@@ -115,7 +115,12 @@ export default class NodeDisplay {
             return this.nodeData.status;
         }
         if (this.nodeData.ice) {
-            return PROTECTED;
+            if (this.nodeData.hacked) {
+                return HACKED;
+            }
+            else {
+                return PROTECTED;
+            }
         }
         else {
             return FREE;
@@ -264,6 +269,9 @@ export default class NodeDisplay {
         });
     }
 
+    hacked() {
+        this.crossFadeToNewIcon(5);
+    }
 
 
 };

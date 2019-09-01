@@ -10,23 +10,21 @@ import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.service.ServiceIceUtil
+import org.n1.av2.backend.service.service.HackedUtil
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId
 import java.time.ZonedDateTime
 import java.util.*
 
-
 @org.springframework.stereotype.Service
 class ServiceIcePassword(
         val nodeService: NodeService,
-        val serviceStatusRepo: ServiceStatusRepo,
         val icePasswordStatusRepo: IcePasswordStatusRepo,
-        val currentUser: CurrentUserService,
         val time: TimeService,
-        val serviceIceUtil: ServiceIceUtil,
+        val serviceIceUtil: HackedUtil,
         val stompService: StompService) {
+
 
     data class UiState(val message: String?,
                        val hacked: Boolean,
@@ -92,16 +90,13 @@ class ServiceIcePassword(
 
 
     private fun resolveHacked(command: SubmitPassword, password: String, node: Node) {
-        val layerStatus = serviceStatusRepo.findByServiceIdAndRunId(command.serviceId, command.runId) !!
         val passwordStatus = getOrCreateStatus(command.serviceId, command.runId)
         passwordStatus.attempts.add(password)
-        layerStatus.hackedBy.add(currentUser.userId)
-        layerStatus.hacked = true
-        serviceStatusRepo.save(layerStatus)
+
 
         val result = UiState("Password accepted.", true, null, passwordStatus)
         stompService.toRun(command.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
-        serviceIceUtil.iceHacked(command.serviceId, node, command.runId)
+        serviceIceUtil.iceHacked(command.serviceId, node, command.runId, 70)
     }
 
     private fun resolveFailed(runId: String, status: IcePasswordStatus, password: String, hint: String) {

@@ -9,15 +9,15 @@ import org.n1.av2.backend.service.site.NodeService
 @org.springframework.stereotype.Service
 class ServiceText(
         val stompService: StompService,
-        val nodeService: NodeService
+        val nodeService: NodeService,
+        val hackedUtil: HackedUtil
 ) {
 
-    fun hack(orig: Service, node: Node) {
+    fun hack(orig: Service, node: Node, runId: String) {
         val service = orig as TextService
-//        stompService.terminalReceive("Hacked: [primary]${service.name}", "", service.text)
 
-        // FIXME: service.hacked = true
         nodeService.save(node)
+        hackedUtil.nonIceHacked(service.id, node, runId)
 
         stompService.terminalReceive("Hacked: [pri]${service.layer}[/] ${service.name}", "", service.text)
     }

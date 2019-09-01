@@ -1,44 +1,52 @@
-import {takeEvery, all} from 'redux-saga/effects'
+import {all, takeEvery} from 'redux-saga/effects'
 import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
 import {
     AUTO_SCAN,
     PROBE_SCAN_NODE,
     SERVER_DISCOVER_NODES,
-    SERVER_HACKER_ENTER_SCAN, SERVER_HACKER_LEAVE_SCAN,
+    SERVER_HACKER_ENTER_SCAN,
+    SERVER_HACKER_LEAVE_SCAN,
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
     SERVER_UPDATE_NODE_STATUS
 } from "./run/model/ScanActions";
 import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
-import {discoverNodesSaga, serverIceHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
+import {discoverNodesSaga, serverNodeHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
 import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
 import {SERVER_USER_DC} from "../common/terminal/TerminalActions";
 import {
+    deleteScanSaga,
     enterScanSaga,
+    hackerEnterScanSaga,
+    hackerLeaveScanSaga,
     navigatePageSaga,
     retrieveUserScansSaga,
-    serverScanFullSaga,
     scanForNameSaga,
-    hackerEnterScanSaga,
-    hackerLeaveScanSaga, deleteScanSaga
+    serverScanFullSaga
 } from "./run/saga/ScanSagas";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
 import {
-    startAttackSaga,
+    hackerProbedConnectionsSaga,
     moveArriveSaga,
     moveStartSaga,
-    serverMoveArriveSaga,
-    serverHackerProbeServicesSaga,
     probeServicesSaga,
-    serverHackerProbeConnectionsSaga, hackerProbedConnectionsSaga
+    serverHackerProbeConnectionsSaga,
+    serverHackerProbeServicesSaga,
+    serverMoveArriveSaga,
+    startAttackSaga
 } from "./run/saga/HackSagas";
 import {
+    FINISH_HACKING_ICE,
     HACKER_MOVE_ARRIVE,
-    SERVER_HACKER_START_ATTACK,
+    HACKER_PROBED_CONNECTIONS,
+    HACKER_PROBED_SERVICES,
     SERVER_HACKER_MOVE_ARRIVE,
     SERVER_HACKER_MOVE_START,
-    SERVER_HACKER_PROBE_SERVICES, HACKER_PROBED_SERVICES, SERVER_HACKER_PROBE_CONNECTIONS, HACKER_PROBED_CONNECTIONS, FINISH_HACKING_ICE, SERVER_ICE_HACKED
+    SERVER_HACKER_PROBE_CONNECTIONS,
+    SERVER_HACKER_PROBE_SERVICES,
+    SERVER_HACKER_START_ATTACK,
+    SERVER_NODE_HACKED
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
@@ -97,7 +105,7 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
         yield takeEvery(FINISH_HACKING_ICE, passwordIceFinish);
 
-        yield takeEvery(SERVER_ICE_HACKED, serverIceHacked);
+        yield takeEvery(SERVER_NODE_HACKED, serverNodeHacked);
 
     }
 

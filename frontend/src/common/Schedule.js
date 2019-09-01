@@ -3,6 +3,10 @@
  *
  * An event can set a wait time (in 50ms units). The next event will wait that time before firing.
  *
+ * The 50ms time units correspond to a frame-rate of 20 FPS. This is tied to the TICK event that is also fired every 50ms.
+ * When the TICK and Scheduler use the same time units, it becomes easier to reason about times in the system
+ * 20 TICKs per second is already putting some strain on a 2017-high-end-PC, so it is deemed that this is good enough for now.
+ *
  * The event loop will auto-clear if there are no events in the queue, no need to externally stop/clear the interval.
  */
 

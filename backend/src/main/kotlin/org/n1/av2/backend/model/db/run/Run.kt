@@ -12,7 +12,8 @@ data class ServiceStatus (
         val hackedBy: MutableList<String>)
 
 data class NodeStatus (
-        @Id val nodeId: String,
+        @Id val id: String,
+        val nodeId: String,
         @Indexed val runId: String,
         var hacked: Boolean
 )

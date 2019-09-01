@@ -295,8 +295,9 @@ class RunCanvas {
         this.displayById[userId].hackerProbeConnections(nodeDisplay);
     }
 
-    iceHacked(serviceId) {
-        // ignore
+    nodeHacked(nodeId) {
+        this.nodeDataById[nodeId].hacked = true;
+        this.displayById[nodeId].hacked();
     }
 }
 

@@ -44,7 +44,7 @@ class CommandHackService(
 
         when (service.type) {
             ServiceType.OS -> serviceOs.hack(service, node, position)
-            ServiceType.TEXT -> serviceText.hack(service, node)
+            ServiceType.TEXT -> serviceText.hack(service, node, position.runId)
             ServiceType.ICE_PASSWORD -> serviceIceGeneric.hack(service, position.runId)
             else -> stompService.terminalReceive("Service type not supported yet: ${service.type}")
         }

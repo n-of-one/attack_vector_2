@@ -5,6 +5,7 @@ import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.NodeScanStatus.*
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IcePasswordStatusRepo
+import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
@@ -28,6 +29,7 @@ class HackingService(
         private val hackTerminalService: HackTerminalService,
         private val stompService: StompService,
         private val serviceStatusRepo: ServiceStatusRepo,
+        private val nodeStatusRepo: NodeStatusRepo,
         private val icePasswordStatusRepo: IcePasswordStatusRepo) {
 
     companion object : KLogging()
@@ -93,6 +95,7 @@ class HackingService(
 
     fun reset() {
         serviceStatusRepo.deleteAll()
+        nodeStatusRepo.deleteAll()
         icePasswordStatusRepo.deleteAll()
     }
 
