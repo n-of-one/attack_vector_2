@@ -10,11 +10,10 @@ import {
     TERMINAL_UNLOCK
 } from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
+import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes";
 
 const LINE_LIMIT = 100;
 
-const BACKSPACE = 8;
-const TAB = 9;
 
 
 const defaultStateTemplate = {
@@ -29,6 +28,8 @@ const defaultStateTemplate = {
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
     receiving: true,        // true if there are lines waiting to be shown, or in the process of being shown.
     syntaxHighlighting: {},
+    history: [],            // [ "move 00", "view", "hack 2" ]
+    historyIndex: 0         // which history item was last selected. When historyIndex == history then no history item is selected
 };
 
 const createTerminalReducer = (id, config) => {
@@ -157,6 +158,10 @@ const receiveFromServer = (terminal, action) => {
 
 const handlePressKey = (terminal, action) => {
     const {keyCode, key} = action;
+    if (keyCode === UP || keyCode === DOWN) {
+        return handleHistory(terminal, keyCode);
+    }
+
     const newInput = determineInput(terminal.input, keyCode, key);
     return {...terminal, input: newInput}
 };
@@ -175,10 +180,25 @@ const determineInput = (input, keyCode, key) => {
     }
 };
 
+const handleHistory = (terminal, keyCode) => {
+    const index = terminal.historyIndex + ((keyCode === UP) ? -1 : 1);
+    if (index < 0) {
+        return terminal;
+    }
+    if  (index >= terminal.history.length) {
+        return {...terminal, historyIndex: terminal.history.length, input: "" }
+    }
+    return {...terminal, historyIndex: index, input: terminal.history[index] }
+
+};
+
 const handlePressEnter = (terminal, action) => {
     const line = terminal.prompt + action.command;
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
-    return {...terminal, lines: lines, input: "", receiving: true};
+
+    const newHistory = limitLines([... terminal.history, action.command]);
+
+    return {...terminal, lines: lines, input: "", receiving: true, history: newHistory, historyIndex: newHistory.length};
 };
 
 /* Only call on mutable array */
