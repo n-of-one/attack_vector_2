@@ -25,14 +25,14 @@ const LINE_OPACITY_HACKING = 1;
 export default class HackerDisplay {
 
     canvas = null;
+    schedule = null;
 
     hackerIcon = null;
     hackerIdentifierIcon = null;
     hackerHider = null;
     lineIcon = null;
-    labelIcon = null;
 
-    schedule = null;
+    labelIcon = null;
     hacker = null;
     you = false;
     startNodeDisplay = null;
@@ -391,4 +391,9 @@ export default class HackerDisplay {
     animateOpacity(opacity, time, easing) {
         animate(this.canvas, this.hackerIcon, 'opacity', opacity, time, easing);
     }
+
+    terminate() {
+        this.schedule.terminate();
+    }
+
 }

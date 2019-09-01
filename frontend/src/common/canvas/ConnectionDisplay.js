@@ -63,4 +63,9 @@ export default class ConnectionDisplay {
         this.connectionIcon.setCoords();
     }
 
+    terminate() {
+        this.schedule.terminate();
+    }
+
+
 }

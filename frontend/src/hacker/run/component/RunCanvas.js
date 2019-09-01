@@ -69,7 +69,7 @@ class RunCanvas {
         this.connectionDataById = {};
         this.startNodeDisplay = null;
 
-        this.iconSchedule.deactivate();
+        this.iconSchedule.terminate();
         this.iconSchedule = new Schedule();
         this.hacking = false;
 
@@ -298,6 +298,11 @@ class RunCanvas {
     nodeHacked(nodeId) {
         this.nodeDataById[nodeId].hacked = true;
         this.displayById[nodeId].hacked();
+    }
+
+    stop() {
+        this.iconSchedule.terminate();
+        Object.values(this.displayById).forEach( (display) => display.terminate() );
     }
 }
 

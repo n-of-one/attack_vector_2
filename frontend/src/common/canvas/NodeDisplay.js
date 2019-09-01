@@ -13,6 +13,8 @@ export default class NodeDisplay {
     canvas = null;
     status = null;
 
+    schedule = null;
+
     nodeIcon = null;
     labelIcon = null;
     labelBackgroundIcon = null;
@@ -273,5 +275,8 @@ export default class NodeDisplay {
         this.crossFadeToNewIcon(5);
     }
 
+    terminate() {
+        this.schedule.terminate();
+    }
 
 };

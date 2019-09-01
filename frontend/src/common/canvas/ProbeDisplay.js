@@ -189,4 +189,9 @@ export default class ConnectionDisplay {
         animate(this.canvas, this.probeIcon, 'opacity', opacity, time);
     }
 
+    terminate() {
+        this.schedule.terminate();
+    }
+
+
 }

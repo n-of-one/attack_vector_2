@@ -55,7 +55,7 @@ export default class Schedule {
     }
 
     /** clear all activity and prevent schedule from ever working again */
-    deactivate() {
+    terminate() {
         this.active = false;
         this.clear();
     }

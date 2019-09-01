@@ -49,6 +49,7 @@ function* navigatePageSaga(action) {
     if (action.from === SCAN && action.to !== SCAN) {
         webSocketConnection.unsubscribe();
         terminalManager.stop();
+        runCanvas.stop();
     }
     yield
 }
