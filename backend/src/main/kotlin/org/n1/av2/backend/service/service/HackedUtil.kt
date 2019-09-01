@@ -20,16 +20,13 @@ class HackedUtil(
     data class NodeHacked(val nodeId: String, val delay: Int)
 
     fun iceHacked(serviceId: String, node: Node, runId: String, delay: Int) {
-
-
-        val lastNonHackedIceServicel = findLastNonHackedIceService(node, runId)
-
+        val lastNonHackedIceService = findLastNonHackedIceService(node, runId)
         saveServiceStatusHacked(serviceId, runId)
 
         val update = IceHackedUpdate(serviceId, node.id)
         stompService.toRun(runId, ReduxActions.SERVER_SERVICE_HACKED, update)
 
-        if (serviceId == lastNonHackedIceServicel) {
+        if (serviceId == lastNonHackedIceService) {
             nodeStatusService.createHackedStatus(node.id, runId)
             val nodeHackedUpdate = NodeHacked(node.id, delay)
             stompService.toRun(runId, ReduxActions.SERVER_NODE_HACKED, nodeHackedUpdate)
