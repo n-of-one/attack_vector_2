@@ -9,11 +9,24 @@ class Login extends Component {
         this.state = {
             name: "",
             password: "",
-            message: this.props.message};
+            message: this.props.message
+        };
 
-        this.names = [
-            "Obsidian", "Paradox", "Shade_zero", "_eternity_", "BoltBishop", "CryptoLaw", "Moonshine",
-            "Angler", "N1X", "Face.dread", "-=Silver=-", "C_H_I_E_F", ".Specter.", "Stalker",
+        this.simpleLogins = [
+            {name: "[Corne] Stalker", login: "Stalker"},
+            {name: "[Josh] Shade_zero", login: "Shade_zero"},
+            {name: "[Rob] Paradox", login: "Paradox"},
+            {name: "[Sander] Angler", login: "Angler"},
+            {name: "[Silvester] _eternity_", login: "_eternity_"},
+            {name: "[Thijs] C_H_I_E_F", login: "C_H_I_E_F"},
+            {name: "[Verik] -=Silver=", login: "-=Silver=-"},
+            {name: "*unclaimed* Obsidian", login: "Obsidian"},
+            {name: "*unclaimed* BoltBishop", login: "BoltBishop"},
+            {name: "*unclaimed* CryptoLaw", login: "CryptoLaw"},
+            {name: "*unclaimed* Moonshine", login: "Moonshine"},
+            {name: "*unclaimed* N1X", login: "N1X"},
+            {name: "*unclaimed* Face.dread", login: "Face.dread"},
+            {name: "*unclaimed* .Specter.", login: ".Specter."},
         ];
     }
 
@@ -43,13 +56,11 @@ class Login extends Component {
                     const search = document.location.search;
                     if (search.length <= 5) {
                         document.location.href = "/";
-                    }
-                    else {
+                    } else {
                         const next = search.substring(search.indexOf('=') + 1);
                         document.location.href = next;
                     }
-                }
-                else {
+                } else {
                     this.setState({message: message});
                 }
             },
@@ -59,19 +70,19 @@ class Login extends Component {
         });
     }
 
-    renderName = (name) => {
+    renderName = (simpleLogin) => {
         const that = this;
         return (
-            <div className="row" key={name}>
+            <div className="row" key={simpleLogin.login}>
                 <div className="col-lg-offset-2 col-lg-5">
                     <div className="text">
                         {/*eslint-disable-next-line*/}
                         <a href="#" onClick={
                             (event) => {
-                                that.login(name, "");
+                                that.login(simpleLogin.login, "");
                                 event.preventDefault();
                                 return false;
-                            }} >{name}</a>
+                            }}>{simpleLogin.name}</a>
                     </div>
                 </div>
             </div>
@@ -102,7 +113,7 @@ class Login extends Component {
                                            onChange={(event) => {
                                                this.onNameChange(event.target.value)
                                            }}
-                                           value={this.state.name} />
+                                           value={this.state.name}/>
                                 </div>
                             </div>
                             <div className="form-group">
@@ -126,7 +137,7 @@ class Login extends Component {
                 <br/>
                 <br/>
                 <br/>
-                {this.names.map(this.renderName)}
+                {this.simpleLogins.map(this.renderName)}
             </div>
         );
     }
