@@ -34,7 +34,8 @@ export default class TextSaveInput extends Component {
         const {placeholder, buttonLabel, buttonClass} = this.props;
 
         const totalButtonClass = "btn " + buttonClass;
-        let text = this.state.value;
+        const text = this.state.value ? this.state.value : '';
+
         return (
             <div className="form-inline">
                 <div className="form-group">

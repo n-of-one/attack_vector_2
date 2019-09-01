@@ -196,7 +196,7 @@ const handlePressEnter = (terminal, action) => {
     const line = terminal.prompt + action.command;
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
 
-    const newHistory = limitLines([... terminal.history, action.command]);
+    const newHistory = limitLines([...terminal.history, action.command]);
 
     return {...terminal, lines: lines, input: "", receiving: true, history: newHistory, historyIndex: newHistory.length};
 };
