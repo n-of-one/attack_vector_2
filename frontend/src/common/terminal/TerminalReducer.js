@@ -28,14 +28,14 @@ const defaultStateTemplate = {
     receivingLine: null,    // String - part of the current rendering line that is waiting to be shown
     receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
     receiving: true,        // true if there are lines waiting to be shown, or in the process of being shown.
-    syntaxHighlighting: { },
+    syntaxHighlighting: {},
 };
 
 const createTerminalReducer = (id, config) => {
     const defaultState = {...defaultStateTemplate, ...config, id: id};
 
     return (terminal = defaultState, action) => {
-        if  (action.type === TERMINAL_TICK) {
+        if (action.type === TERMINAL_TICK) {
             return processTick(processTick(processTick(processTick(terminal))));
         }
 
@@ -43,9 +43,8 @@ const createTerminalReducer = (id, config) => {
             if (action.terminalId !== terminal.id) {
                 return terminal;
             }
-        }
-        else {
-            if (!action.data || !action.data.terminalId || action.data.terminalId !== terminal.id ) {
+        } else {
+            if (!action.data || !action.data.terminalId || action.data.terminalId !== terminal.id) {
                 return terminal;
             }
         }
@@ -89,10 +88,9 @@ function processTick(terminal) {
 
     let nextReceivingLine;
     if (terminal.receivingLine !== null) {
-        nextReceivingLine = {...terminal.receivingLine };
-    }
-    else {
-        nextReceivingLine = { ...nextReceiveBuffer[0] };
+        nextReceivingLine = {...terminal.receivingLine};
+    } else {
+        nextReceivingLine = {...nextReceiveBuffer[0]};
         nextReceiveBuffer = [...terminal.receiveBuffer].splice(1);
     }
 
@@ -101,8 +99,7 @@ function processTick(terminal) {
     if (input === "") {
         nextReceivingLine.data = "";
         nextRenderingLine.data = "";
-    }
-    else {
+    } else {
         const nextChar = input.substr(0, 1);
         const nextData = input.substr(1);
 
@@ -173,8 +170,7 @@ const determineInput = (input, keyCode, key) => {
     }
     if (key.length === 1) {
         return input + key;
-    }
-    else {
+    } else {
         return input;
     }
 };
@@ -217,7 +213,7 @@ const handleServerError = (terminal, action) => {
 };
 
 const handleTerminalClear = (terminal, action, defaultState) => {
-        return defaultState;
+    return defaultState;
 };
 
 const terminalSetReadonly = (terminal, id, readOnly) => {
@@ -225,7 +221,7 @@ const terminalSetReadonly = (terminal, id, readOnly) => {
 };
 
 const processSyntaxHighlighting = (terminal, data) => {
-    return {...terminal, syntaxHighlighting: data}
+    return {...terminal, syntaxHighlighting: data.highlighting}
 };
 
 
