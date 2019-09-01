@@ -4,6 +4,7 @@ import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerPositionService
@@ -19,7 +20,7 @@ class CommandMoveService(
         private val connectionService: ConnectionService,
         private val hackerPositionService: HackerPositionService,
         private val scanService: ScanService,
-        private val serviceStatusRepo: ServiceStatusRepo
+        private val nodeStatusRepo: NodeStatusRepo
 
 ) {
 
@@ -64,11 +65,12 @@ class CommandMoveService(
     }
 
     private fun hasActiveIce(node: Node, runId: String): Boolean {
-        val serviceIds = node.services.map { it.id }
-        val serviceStatuses = serviceStatusRepo.findByRunIdAndServiceIdIn(runId, serviceIds)
-        val hackedServiceIds = serviceStatuses.filter { it.hacked } .map { it.serviceId }
+        if (node.services.none{it.type.ice}) {
+            return false
+        }
 
-        return node.services.any { it.type.ice  && !hackedServiceIds.contains(it.id) }
+        val nodeStatus = nodeStatusRepo.findByNodeIdAndRunId(node.id, runId)
+        return (nodeStatus == null || !nodeStatus.hacked)
     }
 
     private fun reportProtected() {

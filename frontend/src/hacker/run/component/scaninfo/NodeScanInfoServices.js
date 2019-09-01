@@ -5,7 +5,7 @@ import ServiceInfo from "./service/ServiceInfo";
 function findProtectedLayer(services) {
     for (let i = services.length - 1; i >= 0; i--) {
         const service = services[i];
-        if (service.ice && service.hacked === false) {
+        if (service.ice && !service.hacked ) {
             return i;
         }
     }

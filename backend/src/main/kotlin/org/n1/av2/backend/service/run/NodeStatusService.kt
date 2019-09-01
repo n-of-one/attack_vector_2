@@ -19,4 +19,6 @@ class NodeStatusService(
         val status = NodeStatus(id, nodeId, runId, true)
         nodeStatusRepo.save(status)
     }
+
+
 }

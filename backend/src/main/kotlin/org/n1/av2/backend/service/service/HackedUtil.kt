@@ -2,15 +2,15 @@ package org.n1.av2.backend.service.service
 
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.ServiceStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.NodeStatusService
+import org.n1.av2.backend.service.run.ServiceStatusService
 
 
 @org.springframework.stereotype.Service
 class HackedUtil(
-        val serviceStatusRepo: ServiceStatusRepo,
+        val serviceStatusService: ServiceStatusService,
         val currentUser: CurrentUserService,
         val nodeStatusService: NodeStatusService,
         val stompService: StompService
@@ -24,10 +24,7 @@ class HackedUtil(
 
         val lastNonHackedIceServicel = findLastNonHackedIceService(node, runId)
 
-        val layerStatus = serviceStatusRepo.findByServiceIdAndRunId(serviceId, runId) !!
-        layerStatus.hackedBy.add(currentUser.userId)
-        layerStatus.hacked = true
-        serviceStatusRepo.save(layerStatus)
+        saveServiceStatusHacked(serviceId, runId)
 
         val update = IceHackedUpdate(serviceId, node.id)
         stompService.toRun(runId, ReduxActions.SERVER_SERVICE_HACKED, update)
@@ -40,13 +37,21 @@ class HackedUtil(
     }
 
     fun nonIceHacked(serviceId: String, node: Node, runId: String) {
+        saveServiceStatusHacked(serviceId, runId)
         val update = IceHackedUpdate(serviceId, node.id)
         stompService.toRun(runId, ReduxActions.SERVER_SERVICE_HACKED, update)
     }
 
+    private fun saveServiceStatusHacked(serviceId: String, runId: String) {
+        val layerStatus = serviceStatusService.getOrCreate(serviceId, runId)
+        layerStatus.hackedBy.add(currentUser.userId)
+        layerStatus.hacked = true
+        serviceStatusService.save(layerStatus)
+    }
+
     private fun findLastNonHackedIceService(node: Node, runId: String): String? {
         val iceServiceIds = node.services.filter {it.type.ice }. map { it.id }
-        val serviceStatuses = serviceStatusRepo.findByRunIdAndServiceIdIn(runId, iceServiceIds)
+        val serviceStatuses = serviceStatusService.getServicesStatus(runId, iceServiceIds)
         val hackedServiceIds = serviceStatuses.filter { it.hacked } .map { it.serviceId }
         val nonHackedIceServiceIds = iceServiceIds.subtract(hackedServiceIds)
 

@@ -19,7 +19,8 @@ class CommandHackService(
         private val hackerPositionService: HackerPositionService,
         private val serviceOs: ServiceOs,
         private val serviceText: ServiceText,
-        private val serviceIceGeneric: ServiceIceGeneric
+        private val serviceIceGeneric: ServiceIceGeneric,
+        private val commandServiceUtil: CommandServiceUtil
 ) {
 
     fun process(runId: String, tokens: List<String>) {
@@ -33,7 +34,7 @@ class CommandHackService(
         val layer = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])
         if (layer < 0 || layer >= node.services.size) return reportLayerUnknown(node, tokens[1])
 
-        val blockingIceLayer = findBlockingIceLayer(node)
+        val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, runId)
         if (blockingIceLayer != null && blockingIceLayer > layer) return reportBlockingIce(node, blockingIceLayer)
 
         handleHack(node, layer, position)
