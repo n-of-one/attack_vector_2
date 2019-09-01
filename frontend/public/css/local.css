@@ -284,3 +284,9 @@ a.textLink {
     -o-transition: opacity 2s ease-in;
     transition: opacity 2s ease-in;
 }
+
+.close-x-position {
+    top: 2px;
+    left: 1px;
+    color: #aaa;
+}
