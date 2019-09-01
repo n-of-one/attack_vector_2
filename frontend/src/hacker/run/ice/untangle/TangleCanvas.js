@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 import TanglePointDisplay from "./TanglePointDisplay";
-import TangleLine from "./TangleLine";
+import TangleLineDisplay from "./TangleLineDisplay";
 
 class TangleCanvas {
 
@@ -32,13 +32,22 @@ class TangleCanvas {
 
     init() {
         this.canvas = new fabric.Canvas('untangleCanvas', {
-            width: 800,
-            height: 800,
+            width: 1200,
+            height: 680,
             backgroundColor: "#aaa",
         });
 
         fabric.Object.prototype.originX = "center";
         fabric.Object.prototype.originY = 'center';
+
+        const canvas = this.canvas;
+
+        setTimeout(function() {
+            fabric.Image.fromURL("/img/frontier/ice/tangle/fractal-untangle-1200x680.png", (img) => {
+                img.set({width: canvas.width, height: canvas.height, originX: 'left', originY: 'top'});
+                canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+            });
+        }, 100);
 
         // this.canvas.on('object:modified', (event) => { this.canvasObjectModified(event); });
         this.canvas.on('object:selected', (event) => {
@@ -77,7 +86,7 @@ class TangleCanvas {
         const fromDisplay = this.pointDisplayById[lineData.fromId];
         const toDisplay = this.pointDisplayById[lineData.toId];
 
-        const lineDisplay = new TangleLine(this.canvas, lineData.id, fromDisplay, toDisplay);
+        const lineDisplay = new TangleLineDisplay(this.canvas, lineData.id, fromDisplay, toDisplay);
         fromDisplay.addLine(lineDisplay);
         toDisplay.addLine(lineDisplay);
 

@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 
-export default class TangleLine {
+export default class TangleLineDisplay {
 
 
     constructor(canvas, id, point1, point2) {
@@ -11,8 +11,8 @@ export default class TangleLine {
 
         this.icon = new fabric.Line(
             [this.point1.icon.left, this.point1.icon.top, this.point2.icon.left, this.point2.icon.top], {
-                stroke: "#222",
-                strokeWidth: 1,
+                stroke: "#000",
+                strokeWidth: 2,
                 selectable: false,
                 hoverCursor: 'default',
             });
@@ -37,11 +37,11 @@ export default class TangleLine {
     }
 
     highLight() {
-        this.icon.set("strokeWidth", 2);
+        this.icon.set("strokeWidth", 1);
     }
 
     unHighlight() {
-        this.icon.set("strokeWidth", 1);
+        this.icon.set("strokeWidth", 2);
     }
 
     moved() {

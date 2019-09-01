@@ -26,7 +26,7 @@ const PasswordIceReducer = (state = defaultState, action, currentIce) => {
     if (!init) {
         setTimeout(() => {
             untangleCanvas.init();
-        }, 100)
+        }, 100);
         init = true;
     }
 

@@ -12,7 +12,7 @@ export default class TanglePointDisplay {
             radius: 6,
             top: pointData.y,
             left: pointData.x,
-            fill: "#3c763d",
+            fill: "#337ab7",
             stroke: "#000",
             strokeWidth: 2,
             selectable: true,
@@ -49,12 +49,12 @@ export default class TanglePointDisplay {
     }
 
     highLight() {
-        this.icon.set("fill", "white");
+        this.icon.set("fill", "#eee");
         this.lines.forEach(line => line.highlightOtherEnd(this));
     }
 
     secondaryHighlight() {
-        this.icon.set("fill", "red");
+        this.icon.set("fill", "#f7ecb5");
     }
 
     unHighlight() {
@@ -63,7 +63,7 @@ export default class TanglePointDisplay {
     }
 
     secondaryUnHighlight() {
-        this.icon.set("fill", "#3c763d");
+        this.icon.set("fill", "#337ab7");
     }
 
     updateLines() {

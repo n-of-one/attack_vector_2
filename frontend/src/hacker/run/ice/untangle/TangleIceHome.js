@@ -56,7 +56,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
                     <div className={"row transition_alpha_fast" + classHidden}>
                         <div className="col-lg-12" >
-                            <div style={{height: "830px"}}>
+                            <div>
                             <canvas id="untangleCanvas" style={{
                                 "borderRadius": "3px 3px 3px 3px",
                                 "marginTop": "10px",
