@@ -17,16 +17,15 @@ class PasswordIceManager {
     passwordIceStartHack() {
         this.schedule.clear();
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
-        // FIXME
-        // this.displayTerminal (20, "↼ Connecting to ice, initiating attack.");
-        // this.displayTerminal (20, "↼ Scanning for weaknesses.");
-        // this.displayTerminal (20, "↼ .......................................................................................................................");
-        // this.displayTerminal (30, "↼ Found weak interface: static (non-rotating) password.");
-        // this.displayTerminal (20, "↼ Attempting brute force...");
-        // this.displayTerminal (30, "↺ Detected incremental time-out.");
-        // this.displayTerminal (20, "↺ Failed to sidestep incremental time-out.");
-        // this.displayTerminal (20, "");
-        // this.displayTerminal (20, "↼ Suggested attack vectors: retrieve password, informed password guessing.");
+        this.displayTerminal (20, "↼ Connecting to ice, initiating attack.");
+        this.displayTerminal (20, "↼ Scanning for weaknesses.");
+        this.displayTerminal (20, "↼ .......................................................................................................................");
+        this.displayTerminal (30, "↼ Found weak interface: static (non-rotating) password.");
+        this.displayTerminal (20, "↼ Attempting brute force...");
+        this.displayTerminal (30, "↺ Detected incremental time-out.");
+        this.displayTerminal (20, "↺ Failed to sidestep incremental time-out.");
+        this.displayTerminal (20, "");
+        this.displayTerminal (20, "↼ Suggested attack vectors: retrieve password, informed password guessing.");
         this.schedule.dispatch(0, {type: ICE_PASSWORD_BEGIN});
     }
 
