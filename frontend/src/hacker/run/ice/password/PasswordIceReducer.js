@@ -1,7 +1,7 @@
 import {ICE_PASSWORD_BEGIN, ICE_PASSWORD_LOCK, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./PasswordIceActions";
 import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
 import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
-import {HIDDEN, LOCKED, UNLOCKED} from "./PasswordIceUiState";
+import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 
 // const defaultState = {

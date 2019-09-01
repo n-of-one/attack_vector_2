@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import Terminal from "../../../../common/terminal/Terminal";
 import {ICE_PASSWORD_SUBMIT} from "./PasswordIceActions";
-import {HIDDEN, LOCKED} from "./PasswordIceUiState";
+import {HIDDEN, LOCKED} from "../IceUiState";
 import CloseButton from "../../../../common/component/CloseButton";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 
@@ -61,7 +61,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
 
         return (
-            <div className="row icePanelRow">
+            <div className="row passwordIcePanelRow">
                 <div className="col-lg-12">
                     <div className="row">
                         <div className="col-lg-12">

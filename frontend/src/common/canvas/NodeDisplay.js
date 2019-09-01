@@ -94,11 +94,15 @@ export default class NodeDisplay {
             hoverCursor: cursor,
         });
         nodeIcon.setControlsVisibility({
+            tl: false,
+            tr: false,
+            br: false,
+            bl: false,
             ml: false,
             mt: false,
             mr: false,
             mb: false,
-            mtr: false
+            mtr: false,
         });
 
         return nodeIcon;

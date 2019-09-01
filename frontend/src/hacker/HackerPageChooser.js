@@ -7,6 +7,7 @@ import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
 import RunPageChooser from "./run/component/RunPageChooser";
+import UntangleIceHome from "./run/ice/untangle/TangleIceHome";
 
 const dismissScanInfo = (event) => {
     let current = event.target;
@@ -37,14 +38,17 @@ let mapStateToProps = (state) => {
 
 
 const renderCurrentPage = (currentPage) => {
-    switch (currentPage) {
-        case MAIL:
-            return <MailHome/>;
-        case SCAN:
-            return <RunPageChooser />;
-        default:
-            return <HackerHome />;
-    }
+
+    // FIXME
+    // switch (currentPage) {
+    //     case MAIL:
+    //         return <MailHome/>;
+    //     case SCAN:
+    //         return <RunPageChooser />;
+    //     default:
+    //         return <HackerHome />;
+    // }
+    return <UntangleIceHome />
 };
 
 const renderMain = (currentPage, messageTerminal) => {

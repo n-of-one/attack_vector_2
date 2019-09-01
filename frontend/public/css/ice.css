@@ -1,5 +1,10 @@
-.icePanelRow {
+.passwordIcePanelRow {
     height: 800px;
+    background-color: #333;
+}
+
+.untangleIcePanelRow {
+    height: 195px;
     background-color: #333;
 }
 

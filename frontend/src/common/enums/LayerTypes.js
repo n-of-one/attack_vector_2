@@ -17,7 +17,7 @@ const ICE_MAGIC_EYE = "ICE_MAGIC_EYE";
 const ICE_PASSWORD_SEARCH = "ICE_PASSWORD_SEARCH";
 const ICE_ALTERNATE = "ICE_ALTERNATE";
 const ICE_UNHACKABLE = "ICE_UNHACKABLE";
-
+const ICE_UNTANGLE = "ICE_UNTANGLE";
 
 const glyphiconFromType = (type) => {
     switch(type) {
