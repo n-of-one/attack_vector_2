@@ -16,7 +16,6 @@ class TangleIceManager extends GenericIceManager {
     startHack(data) {
         tangleIceCanvas.init(data);
         this.schedule.clear();
-        tangleIceCanvas.init(data);
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
         // this.displayTerminal (20, "↼ Connecting to ice, initiating attack.");
         // this.displayTerminal (40, "↼ Network inspection.");
