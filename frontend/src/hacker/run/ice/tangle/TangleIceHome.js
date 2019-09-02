@@ -12,7 +12,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 let mapStateToProps = (state) => {
     return {
-        ice: state.run.ice.untangle,
+        ice: state.run.ice.tangle,
         displayTerminal: state.run.ice.displayTerminal,
     };
 };

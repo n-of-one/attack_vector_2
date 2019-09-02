@@ -1,37 +1,17 @@
-import {UNLOCKED} from "../IceUiState";
-import untangleCanvas from "./TangleCanvas";
+import {HIDDEN, UNLOCKED} from "../IceUiState";
+import untangleCanvas from "./TangleIceCanvas";
+import {ICE_TANGLE} from "../../../../common/enums/LayerTypes";
+import {ICE_TANGLE_BEGIN} from "./TangleIceActions";
 
-// const defaultState = {
-//     layerId: "svc-7baa-4572-cde0",
-//     lockedUntil: "2019-08-26T15:38:40.9179757+02:00",
-//     attempts: ["zwaardvis", "secret"],
-//     uiState: "UNLOCKED",
-//     waitSeconds: 7,
-//     hacked: false,
-//     hint: "mother's name",
-// };
 const defaultState = {
-    uiState: UNLOCKED,
+    uiState: HIDDEN,
 };
 
-// FIXME
-var init = false;
 
-const PasswordIceReducer = (state = defaultState, action, currentIce) => {
-    // FIXME
-    // if (!currentIce || currentIce.type !== ICE_UNTANGLE) {
-    //     return state;
-    // }
-
-    if (!init) {
-        setTimeout(() => {
-            untangleCanvas.init();
-        }, 100);
-        init = true;
-    }
-
+const TangleIceReducer = (state = defaultState, action, currentIce) => {
     switch (action.type) {
-
+        case ICE_TANGLE_BEGIN:
+            return { uiState: UNLOCKED };
         // case SERVER_START_HACKING_ICE_PASSWORD:
         //     return processStartHacking(action.data);
         // case SERVER_ICE_PASSWORD_UPDATE:
@@ -81,4 +61,4 @@ const PasswordIceReducer = (state = defaultState, action, currentIce) => {
 //
 
 
-export default PasswordIceReducer
+export default TangleIceReducer

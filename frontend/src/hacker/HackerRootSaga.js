@@ -51,6 +51,8 @@ import {
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
+import {SERVER_START_HACKING_ICE_TANGLE} from "./run/ice/tangle/TangleIceActions";
+import {tangleIceStartHack} from "./run/ice/tangle/TangleSagas";
 
 const createHackerRootSaga = () => {
 
@@ -106,6 +108,9 @@ const createHackerRootSaga = () => {
         yield takeEvery(FINISH_HACKING_ICE, passwordIceFinish);
 
         yield takeEvery(SERVER_NODE_HACKED, serverNodeHacked);
+
+        yield takeEvery(SERVER_START_HACKING_ICE_TANGLE, tangleIceStartHack);
+
 
     }
 

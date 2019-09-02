@@ -1,25 +1,24 @@
-const OS = "OS";
-const TEXT = "TEXT";
-const PICTURE = "PICTURE";
-const LINK = "LINK";
-const TRACER = "TRACER";
-const TRACE_LOG = "TRACE_LOG";
-const SCAN_BLOCK = "SCAN_BLOCK";
-const MONEY = "MONEY";
-const CODE = "CODE";
-const TIME = "TIME";
-const CORE = "CORE";
-const ICE_PASSWORD = "ICE_PASSWORD";
-const ICE_FILM = "ICE_FILM";
-const ICE_NETWALK = "ICE_NETWALK";
-const ICE_WORD_SEARCH = "ICE_WORD_SEARCH";
-const ICE_MAGIC_EYE = "ICE_MAGIC_EYE";
-const ICE_PASSWORD_SEARCH = "ICE_PASSWORD_SEARCH";
-const ICE_ALTERNATE = "ICE_ALTERNATE";
-const ICE_UNHACKABLE = "ICE_UNHACKABLE";
-const ICE_UNTANGLE = "ICE_UNTANGLE";
-
-const glyphiconFromType = (type) => {
+export const OS = "OS";
+export const TEXT = "TEXT";
+export const PICTURE = "PICTURE";
+export const LINK = "LINK";
+export const TRACER = "TRACER";
+export const TRACE_LOG = "TRACE_LOG";
+export const SCAN_BLOCK = "SCAN_BLOCK";
+export const MONEY = "MONEY";
+export const CODE = "CODE";
+export const TIME = "TIME";
+export const CORE = "CORE";
+export const ICE_PASSWORD = "ICE_PASSWORD";
+export const ICE_FILM = "ICE_FILM";
+export const ICE_NETWALK = "ICE_NETWALK";
+export const ICE_WORD_SEARCH = "ICE_WORD_SEARCH";
+export const ICE_MAGIC_EYE = "ICE_MAGIC_EYE";
+export const ICE_PASSWORD_SEARCH = "ICE_PASSWORD_SEARCH";
+export const ICE_ALTERNATE = "ICE_ALTERNATE";
+export const ICE_UNHACKABLE = "ICE_UNHACKABLE";
+export const ICE_TANGLE = "ICE_TANGLE";
+export const glyphiconFromType = (type) => {
     switch(type) {
         case OS : return "glyphicon-home";
         case TEXT : return "glyphicon-file";
@@ -45,11 +44,4 @@ const glyphiconFromType = (type) => {
             return "glyphicon-thumbs-down";
 
     }
-};
-
-
-export {
-    glyphiconFromType,
-    OS, TEXT, PICTURE, LINK, TRACER, TRACE_LOG, SCAN_BLOCK, MONEY, CODE, TIME, CORE,
-    ICE_PASSWORD, ICE_FILM, ICE_NETWALK, ICE_WORD_SEARCH, ICE_MAGIC_EYE, ICE_PASSWORD_SEARCH, ICE_ALTERNATE, ICE_UNHACKABLE,
 };

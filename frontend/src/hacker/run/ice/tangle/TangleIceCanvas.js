@@ -2,35 +2,14 @@ import {fabric} from "fabric";
 import TanglePointDisplay from "./TanglePointDisplay";
 import TangleLineDisplay from "./TangleLineDisplay";
 
-class TangleCanvas {
+class TangleIceCanvas {
 
     currentSelected = null;
     canvas = null;
     pointDisplayById = null;
 
 
-    fakeInput = {
-        points: [
-            {id: 1, x: 250, y: 80},
-            {id: 2, x: 450, y: 80},
-            {id: 3, x: 150, y: 280},
-            {id: 4, x: 650, y: 280},
-            {id: 5, x: 250, y: 480},
-            {id: 6, x: 450, y: 480},
-        ],
-        lines: [
-            {id: 1, fromId: 1, toId: 2},
-            {id: 2, fromId: 1, toId: 3},
-            {id: 3, fromId: 1, toId: 5},
-            {id: 5, fromId: 2, toId: 3},
-            {id: 4, fromId: 2, toId: 5},
-            {id: 8, fromId: 3, toId: 6},
-            {id: 9, fromId: 4, toId: 5},
-            {id: 10, fromId: 4, toId: 6},
-        ]
-    };
-
-    init() {
+    init(puzzleData) {
         this.canvas = new fabric.Canvas('untangleCanvas', {
             width: 1200,
             height: 680,
@@ -64,7 +43,7 @@ class TangleCanvas {
         });
         this.canvas.selection = false;
 
-        const {points, lines} = this.fakeInput;
+        const {points, lines} = puzzleData;
 
         this.pointDisplayById = {};
 
@@ -120,5 +99,5 @@ class TangleCanvas {
 }
 
 
-const untangleCanvas = new TangleCanvas();
-export default untangleCanvas
+const tangleIceCanvas = new TangleIceCanvas();
+export default tangleIceCanvas
