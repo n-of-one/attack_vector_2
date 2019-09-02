@@ -1,9 +1,6 @@
 package org.n1.av2.backend.service.site
 
-import org.n1.av2.backend.model.db.layer.IcePasswordLayer
-import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.layer.OsLayer
-import org.n1.av2.backend.model.db.layer.TextLayer
+import org.n1.av2.backend.model.db.layer.*
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.model.ui.*
@@ -148,10 +145,10 @@ class NodeService(
 
         val defaultName = themeService.getDefaultName(layerType)
 
-        // TODO use type inference
         return when (layerType) {
             LayerType.TEXT -> TextLayer(id, layer, defaultName)
             LayerType.ICE_PASSWORD -> IcePasswordLayer(id, layer, defaultName)
+            LayerType.ICE_TANGLE -> IceTangleLayer(id, layer, defaultName)
             else -> error("Unknown service type: ${layerType}")
         }
     }

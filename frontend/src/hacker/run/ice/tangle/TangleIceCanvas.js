@@ -1,15 +1,20 @@
 import {fabric} from "fabric";
 import TanglePointDisplay from "./TanglePointDisplay";
 import TangleLineDisplay from "./TangleLineDisplay";
+import {ICE_TANGLE_MOVE_POINT} from "./TangleIceActions";
 
 class TangleIceCanvas {
 
     currentSelected = null;
     canvas = null;
     pointDisplayById = null;
+    dispatch = null;
 
 
-    init(puzzleData) {
+    init(puzzleData, dispatch) {
+
+        this.dispatch = dispatch;
+
         this.canvas = new fabric.Canvas('untangleCanvas', {
             width: 1200,
             height: 680,
@@ -83,6 +88,8 @@ class TangleIceCanvas {
 
     canvasObjectDeSelected(event) {
         if (this.currentSelected) {
+            const icon = this.currentSelected.icon;
+            this.dispatch({type: ICE_TANGLE_MOVE_POINT, id: this.currentSelected.id, x: icon.left, y: icon.top});
             this.currentSelected.unHighlight();
             this.currentSelected = null;
             this.canvas.deactivateAll().renderAll();

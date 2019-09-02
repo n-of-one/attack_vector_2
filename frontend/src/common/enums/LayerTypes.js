@@ -32,6 +32,7 @@ export const glyphiconFromType = (type) => {
         case TIME : return "glyphicon-time";
         case CORE : return "glyphicon-th-large";
         case ICE_PASSWORD : return "glyphicon-console";
+        case ICE_TANGLE: return "glyphicon-asterisk";
         case ICE_FILM : return "glyphicon-film";
         case ICE_NETWALK : return "glyphicon-qrcode";
         case ICE_WORD_SEARCH : return "glyphicon-th";

@@ -40,7 +40,7 @@ class ScanProbeService(
         return when (status) {
             NodeScanStatus.DISCOVERED -> NodeScanType.SCAN_NODE_INITIAL
             NodeScanStatus.TYPE -> NodeScanType.SCAN_CONNECTIONS
-            NodeScanStatus.SERVICES_NO_CONNECTIONS -> NodeScanType.SCAN_CONNECTIONS
+            NodeScanStatus.LAYERS_NO_CONNECTIONS -> NodeScanType.SCAN_CONNECTIONS
             NodeScanStatus.CONNECTIONS -> NodeScanType.SCAN_NODE_DEEP
             NodeScanStatus.LAYERS -> null
             NodeScanStatus.UNDISCOVERED -> error("Cannot scan a node that has not yet been discovered.")
@@ -98,7 +98,7 @@ class ScanProbeService(
     }
 
     fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan, prefix: String? = null): Boolean {
-        if (nodeScan.status != NodeScanStatus.TYPE && nodeScan.status != NodeScanStatus.SERVICES_NO_CONNECTIONS) {
+        if (nodeScan.status != NodeScanStatus.TYPE && nodeScan.status != NodeScanStatus.LAYERS_NO_CONNECTIONS) {
             stompService.terminalReceive("Scanning node ${node.networkId} did not find new connections.")
             return false
         }

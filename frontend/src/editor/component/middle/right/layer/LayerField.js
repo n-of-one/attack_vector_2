@@ -2,20 +2,12 @@ import React from 'react';
 import {connect} from "react-redux";
 import TextSaveInput from "../../../../../common/component/TextSaveInput";
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        fieldChange: (data) => alert("data=" + data)
-    }
-};
-let mapStateToProps = (state) => {
-    return {
-    };
-};
+
 
 const renderInput = (value, readOnly, save, placeholder) => {
     if(readOnly) {
         return (
-            <span><input type="text" className="form-control input-sm layerInputLong" disabled={readOnly} value={value} /></span>
+            <span><input type="text" className="form-control input-sm" disabled={readOnly} value={value} /></span>
         );
     }
     return (
@@ -24,13 +16,12 @@ const renderInput = (value, readOnly, save, placeholder) => {
     );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-    ({name, size, readOnly, value, save, placeholder, help}) => {
+export default ({name, size, readOnly, value, save, placeholder, help}) => {
         if (!readOnly) {
             readOnly = false;
         }
 
-        let colSize = (size === "large") ? "col-lg-8 noRightPadding" : "col-lg-4 noRightPadding";
+        let colSize = (size === "large") ? "col-lg-8 noRightPadding" : "col-lg-5 noRightPadding";
         return (
             <div className="row form-group layerFieldRow">
                 <div className="col-lg-3 layerLabel">{name}</div>
@@ -43,4 +34,4 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 </div>
             </div>
         );
-    });
+    };

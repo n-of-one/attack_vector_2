@@ -39,16 +39,16 @@ let mapStateToProps = (state) => {
 
 const renderCurrentPage = (currentPage) => {
 
+    switch (currentPage) {
+        case MAIL:
+            return <MailHome/>;
+        case SCAN:
+            return <RunPageChooser />;
+        default:
+            return <HackerHome />;
+    }
     // FIXME
-    // switch (currentPage) {
-    //     case MAIL:
-    //         return <MailHome/>;
-    //     case SCAN:
-    //         return <RunPageChooser />;
-    //     default:
-    //         return <HackerHome />;
-    // }
-    return <UntangleIceHome />
+    // return <UntangleIceHome />
 };
 
 const renderMain = (currentPage, messageTerminal) => {

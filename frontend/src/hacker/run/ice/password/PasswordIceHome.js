@@ -105,7 +105,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <div className="col-lg-6 text">
                             <h4 className="text-success">
                                 <strong>
-                                    Already tried
+                                    Passwords tried
                                 </strong>
                             </h4>
                             <ul>

@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import {ADD_LAYER} from "../../../EditorActions";
 import {
-    CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH,
+    CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH, ICE_TANGLE,
     ICE_UNHACKABLE, ICE_WORD_SEARCH, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIME, TRACE_LOG, TRACER
 } from "../../../../common/enums/LayerTypes";
 import Glyphicon from "../../../../common/component/Glyphicon";
@@ -69,6 +69,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="btn-height-spacer"/>
                     <div>
                         {ice(ICE_PASSWORD)}
+                        {ice(ICE_TANGLE)}
                         {unImplemented(ICE_FILM)}
                         {unImplemented(ICE_NETWALK)}
                         {unImplemented(ICE_WORD_SEARCH)}

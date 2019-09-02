@@ -65,7 +65,7 @@ class HackingService(
         val nodeScan= scan.nodeScanById[nodeId]!!
 
         val newNodeStatus = when (nodeScan.status) {
-            DISCOVERED, NodeScanStatus.TYPE -> NodeScanStatus.SERVICES_NO_CONNECTIONS
+            DISCOVERED, NodeScanStatus.TYPE -> NodeScanStatus.LAYERS_NO_CONNECTIONS
             CONNECTIONS -> NodeScanStatus.LAYERS
             else -> nodeScan.status
         }

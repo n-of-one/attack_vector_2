@@ -11,6 +11,7 @@ class ThemeService {
             LayerType.OS -> "OS"
             LayerType.TEXT -> "Data vault"
             LayerType.ICE_PASSWORD -> "Aruna"
+            LayerType.ICE_TANGLE -> "Reva"
 //            else -> error("Unknown service type: ${serviceType}")
         }
     }
