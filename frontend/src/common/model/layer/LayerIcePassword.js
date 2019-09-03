@@ -1,17 +1,15 @@
-import Layer from "./Layer";
+import LayerIce from "./LayerIce";
 
 const PASSWORD = "password";
 const HINT = "hint";
-const HACKED = "hacked";
 
-export default class LayerIcePassword extends Layer {
+export default class LayerIcePassword extends LayerIce {
 
     constructor(layer, node, dispatch) {
         super(layer, node, dispatch);
 
         this.password = layer.password;
         this.hint = layer.hint;
-        this.hacked = layer.hacked;
     }
 
     savePassword(value) {
@@ -20,10 +18,6 @@ export default class LayerIcePassword extends Layer {
 
     saveHint(value) {
         super._save(HINT, value );
-    }
-
-    saveHacked(value) {
-        super._save(HACKED, value );
     }
 
 }

@@ -1,6 +1,7 @@
 package org.n1.av2.backend.model.db.layer
 
 import org.n1.av2.backend.model.SiteRep
+import org.n1.av2.backend.model.db.site.enums.IceStrength
 import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.model.ui.ValidationException
 
@@ -13,13 +14,13 @@ class IcePasswordLayer(
         level: Int,
         name: String,
         note: String,
+        strength: IceStrength,
         var password: String,
         var hint: String
-
-) : IceLayer(id, type, level, name, note) {
+) : IceLayer(id, type, level, name, note, strength) {
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.ICE_PASSWORD, level, defaultName, "", "", "")
+            this(id, LayerType.ICE_PASSWORD, level, defaultName, "", IceStrength.UNKNOWN, "", "")
 
     @Suppress("UNUSED_PARAMETER")
     private fun validatePassword(siteRep: SiteRep) {
