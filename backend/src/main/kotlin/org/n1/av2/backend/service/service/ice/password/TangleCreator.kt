@@ -16,14 +16,14 @@ import kotlin.random.Random
  */
 
 
-
 class IdTPoint(val x: Float, val y: Float, val id: Int)
+
 data class TConnection(val from: TPoint, val to: TPoint)
 
 class TLine(val slope: Float, val yOffset: Float, val intersections: MutableList<TPoint>,
-                    val x1: Float, val y1: Float, val x2: Float, val y2: Float) {
+            val x1: Float, val y1: Float, val x2: Float, val y2: Float) {
 
-    constructor(slope: Float, yOffset: Float): this(slope, yOffset, LinkedList<TPoint>(), 0F, 0F, 0F, 0F)
+    constructor(slope: Float, yOffset: Float) : this(slope, yOffset, LinkedList<TPoint>(), 0F, 0F, 0F, 0F)
 
     val ox = -100000F
     val oy = this.slope * ox + this.yOffset
@@ -47,7 +47,7 @@ class TLine(val slope: Float, val yOffset: Float, val intersections: MutableList
         val dx = ox - point.x
         val dy = oy - point.y
 
-        return (dx * dx) +  (dy * dy)
+        return (dx * dx) + (dy * dy)
     }
 
     fun connections(): List<TConnection> {
@@ -94,7 +94,6 @@ class TangleCreator {
         val tangleLines = connections.mapIndexed { index, connection -> toIdConnection(connection, idPoints, index) }.toMutableList()
 
 
-
         // FIXME
 //        idPoints.addAll( createLinePoints(lines))
 //        lines.forEachIndexed { index, line ->
@@ -113,8 +112,8 @@ class TangleCreator {
     private fun createLinePoints(lines: List<TLine>): List<IdTPoint> {
         val linePoints = LinkedList<IdTPoint>()
         lines.forEachIndexed { index, line ->
-            linePoints.add(IdTPoint(line.x1, line.y1, 100+index))
-            linePoints.add(IdTPoint(line.x2, line.y2, 200+index))
+            linePoints.add(IdTPoint(line.x1, line.y1, 100 + index))
+            linePoints.add(IdTPoint(line.x2, line.y2, 200 + index))
         }
         return linePoints
     }
@@ -142,10 +141,21 @@ class TangleCreator {
     private fun layoutForStart(size: Int): List<TanglePoint> {
         val angleStep = (2 * Math.PI / size)
         val tanglePoints = LinkedList<TanglePoint>()
-        (0..size - 1).forEach { index ->
+
+        val padding = 20
+        val xSize = 680
+        val ySize = 680
+        val xCenter = xSize / 2
+        val yCenter = ySize / 2
+        val xRadius = (xSize / 2) - padding
+        val yRadius = (ySize / 2) - padding
+
+
+
+        (0 until size).forEach { index ->
             val angle = angleStep * index
-            val x = (300 + 200 * Math.sin(angle)).roundToInt()
-            val y = (300 + 200 * Math.cos(angle)).roundToInt()
+            val x = (xCenter + xRadius * Math.sin(angle)).roundToInt()
+            val y = (yCenter + yRadius * Math.cos(angle)).roundToInt()
             tanglePoints.add(TanglePoint(index, x, y))
         }
         return tanglePoints

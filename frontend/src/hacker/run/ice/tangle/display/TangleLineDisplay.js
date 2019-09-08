@@ -40,11 +40,13 @@ export default class TangleLineDisplay {
     }
 
     highLight() {
-        this.icon.set("strokeWidth", 1);
+        // this.icon.set("strokeWidth", 1);
+        this.icon.set("stroke", "#337ab7");
     }
 
     unHighlight() {
         this.icon.set("strokeWidth", 2);
+        this.icon.set("stroke", "#000");
     }
 
     moved() {
