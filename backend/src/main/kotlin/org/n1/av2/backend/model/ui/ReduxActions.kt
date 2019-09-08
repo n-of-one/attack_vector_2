@@ -50,4 +50,7 @@ enum class ReduxActions {
     SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                // change icon of node in run
 
+    SERVER_START_HACKING_ICE_TANGLE,  // sent to hacker that hacks this ice
+
+
 }

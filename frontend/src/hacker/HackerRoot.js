@@ -56,15 +56,17 @@ class HackerRoot extends Component {
         //     lines: [
         //         {id: 1, fromId: 1, toId: 2},
         //         {id: 2, fromId: 1, toId: 3},
-        //         {id: 3, fromId: 1, toId: 5},
+        //         {id: 3, fromId: 1, toId: 4},
+        //         {id: 4, fromId: 1, toId: 5},
         //         {id: 5, fromId: 2, toId: 3},
-        //         {id: 4, fromId: 2, toId: 5},
-        //         {id: 8, fromId: 3, toId: 6},
-        //         {id: 9, fromId: 4, toId: 5},
-        //         {id: 10, fromId: 4, toId: 6},
+        //         {id: 6, fromId: 2, toId: 4},
+        //         {id: 7, fromId: 2, toId: 5},
+        //         {id: 8, fromId: 3, toId: 4},
+        //         {id: 9, fromId: 3, toId: 5},
+        //         {id: 10, fromId: 4, toId: 5},
         //     ]
         // };
-        //
+
         // setTimeout(() => {
         //     this.store.dispatch({type: SERVER_START_HACKING_ICE_TANGLE, data: data});
         // }, 100);

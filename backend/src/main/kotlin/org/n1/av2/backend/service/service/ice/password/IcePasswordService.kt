@@ -5,7 +5,7 @@ import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.run.IcePasswordStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.IcePasswordStatusRepo
+import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.service.HackedUtil
@@ -18,7 +18,7 @@ import java.util.*
 @org.springframework.stereotype.Service
 class IcePasswordService(
         val nodeService: NodeService,
-        val icePasswordStatusRepo: IcePasswordStatusRepo,
+        val iceStatusRepo: IceStatusRepo,
         val time: TimeService,
         val serviceIceUtil: HackedUtil,
         val stompService: StompService) {
@@ -51,13 +51,13 @@ class IcePasswordService(
 
 
     private fun getOrCreateStatus(layerId: String, runId: String): IcePasswordStatus {
-        return icePasswordStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: createServiceStatus(layerId, runId)
+        return ( iceStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: createServiceStatus(layerId, runId) ) as IcePasswordStatus
     }
 
     private fun createServiceStatus(layerId: String, runId: String): IcePasswordStatus {
         val id = createId("icePasswordStatus-")
-        val passwordStatus = IcePasswordStatus(id, layerId, runId, LinkedList<String>(), time.now().minusSeconds(1))
-        icePasswordStatusRepo.save(passwordStatus)
+        val passwordStatus = IcePasswordStatus(id, layerId, runId, LinkedList(), time.now().minusSeconds(1))
+        iceStatusRepo.save(passwordStatus)
         return passwordStatus
     }
 
@@ -104,7 +104,7 @@ class IcePasswordService(
         status.lockedUntil = time.now().plusSeconds(timeOutSeconds)
 
         val hintToDisplay = if (status.attempts.size > 0) hint else null
-        icePasswordStatusRepo.save(status)
+        iceStatusRepo.save(status)
 
         val result = UiState("Password incorrect: ${password}", false, hintToDisplay, status)
         stompService.toRun(runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)

@@ -35,7 +35,7 @@ class CommandHackService(
         if (level < 0 || level >= node.layers.size) return reportLayerUnknown(node, tokens[1])
 
         val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, runId)
-        if (blockingIceLayer != null && blockingIceLayer.level > level) return reportBlockingIce(node, blockingIceLayer)
+        if (blockingIceLayer != null && blockingIceLayer.level > level) return reportBlockingIce(blockingIceLayer)
 
         handleHack(node, level, position)
     }
@@ -48,6 +48,7 @@ class CommandHackService(
             LayerType.OS -> osLayerService.hack(layer, node, position)
             LayerType.TEXT -> textLayerService.hack(layer, node, position.runId)
             LayerType.ICE_PASSWORD -> serviceIceGeneric.hack(layer, position.runId)
+            LayerType.ICE_TANGLE -> serviceIceGeneric.hack(layer, position.runId)
             else -> stompService.terminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
@@ -64,7 +65,7 @@ class CommandHackService(
         }
     }
 
-    private fun reportBlockingIce(node: Node, blockingIceLayer: Layer) {
+    private fun reportBlockingIce(blockingIceLayer: Layer) {
         stompService.terminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
     }
 

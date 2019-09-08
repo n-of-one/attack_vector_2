@@ -39,6 +39,6 @@ interface NodeStatusRepo: PagingAndSortingRepository<NodeStatus, String> {
 
 
 @Repository
-interface IcePasswordStatusRepo: PagingAndSortingRepository<IcePasswordStatus, String> {
-    fun findByLayerIdAndRunId(layerId: String, runId: String): IcePasswordStatus?
+interface IceStatusRepo: PagingAndSortingRepository<IceStatus, String> {
+    fun findByLayerIdAndRunId(layerId: String, runId: String): IceStatus?
 }

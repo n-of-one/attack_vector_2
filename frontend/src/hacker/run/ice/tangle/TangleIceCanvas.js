@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
-import TanglePointDisplay from "./TanglePointDisplay";
-import TangleLineDisplay from "./TangleLineDisplay";
+import TanglePointDisplay from "./display/TanglePointDisplay";
+import TangleLineDisplay from "./display/TangleLineDisplay";
 import {ICE_TANGLE_MOVE_POINT} from "./TangleIceActions";
 
 class TangleIceCanvas {
@@ -70,7 +70,7 @@ class TangleIceCanvas {
         const fromDisplay = this.pointDisplayById[lineData.fromId];
         const toDisplay = this.pointDisplayById[lineData.toId];
 
-        const lineDisplay = new TangleLineDisplay(this.canvas, lineData.id, fromDisplay, toDisplay);
+        const lineDisplay = new TangleLineDisplay(this.canvas, lineData.id, fromDisplay, toDisplay, lineData.type);
         fromDisplay.addLine(lineDisplay);
         toDisplay.addLine(lineDisplay);
 

@@ -4,3 +4,8 @@
 Artwork:
 
 Background Reva (untangle ICE) - Image by Pete Linforth from Pixabay (https://pixabay.com/users/thedigitalartist-202249/)
+
+
+The Ice game Untangle has its own page: https://en.wikipedia.org/wiki/Planarity
+
+It is based on the game Planarity by John Tantalo, who in turn credits Mary Radcliffe with the concept.

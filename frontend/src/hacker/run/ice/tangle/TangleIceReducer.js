@@ -1,7 +1,7 @@
 import {HIDDEN, UNLOCKED} from "../IceUiState";
 import untangleCanvas from "./TangleIceCanvas";
 import {ICE_TANGLE} from "../../../../common/enums/LayerTypes";
-import {ICE_TANGLE_BEGIN} from "./TangleIceActions";
+import {ICE_TANGLE_BEGIN, SERVER_START_HACKING_ICE_TANGLE} from "./TangleIceActions";
 
 const defaultState = {
     uiState: HIDDEN,
@@ -10,8 +10,10 @@ const defaultState = {
 
 const TangleIceReducer = (state = defaultState, action, currentIce) => {
     switch (action.type) {
+        case SERVER_START_HACKING_ICE_TANGLE:
+            return { ...action.data, uiState: HIDDEN };
         case ICE_TANGLE_BEGIN:
-            return { uiState: UNLOCKED };
+            return { ...state, uiState: UNLOCKED };
         // case SERVER_START_HACKING_ICE_PASSWORD:
         //     return processStartHacking(action.data);
         // case SERVER_ICE_PASSWORD_UPDATE:

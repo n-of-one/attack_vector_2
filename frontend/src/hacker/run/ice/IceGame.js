@@ -1,7 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
 import PasswordIceHome from "./password/PasswordIceHome";
-import {ICE_PASSWORD} from "../../../common/enums/LayerTypes";
+import {ICE_PASSWORD, ICE_TANGLE} from "../../../common/enums/LayerTypes";
+import TangleIceHome from "./tangle/TangleIceHome";
 
 const mapDispatchToProps = (dispatch) => {
     return {}
@@ -19,8 +20,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 return <></>;
             case ICE_PASSWORD:
                 return <PasswordIceHome/>;
+            case ICE_TANGLE:
+                return <TangleIceHome/>;
             default:
-                return <h1 className="text">Unsupported ICE: {currentIce}</h1>;
+                return <h1 className="text">IceGame.js: Unsupported ICE: {currentIce.type}</h1>;
         }
 
     });
