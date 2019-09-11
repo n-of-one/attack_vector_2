@@ -149,7 +149,8 @@ class NodeService(
             LayerType.TEXT -> TextLayer(id, layer, defaultName)
             LayerType.ICE_PASSWORD -> IcePasswordLayer(id, layer, defaultName)
             LayerType.ICE_TANGLE -> IceTangleLayer(id, layer, defaultName)
-            else -> error("Unknown service type: ${layerType}")
+            LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, layer, defaultName)
+            LayerType.OS -> error("Cannot add OS")
         }
     }
 

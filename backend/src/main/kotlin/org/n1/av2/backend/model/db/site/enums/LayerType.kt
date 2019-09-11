@@ -8,7 +8,7 @@ enum class LayerType(
     TEXT,
 //    IMAGE,
 //    LINK,
-//    TIME,
+    TIMER_TRIGGER,
 //    SYSCON,
 //    CODE,
 //    RESOURCE,

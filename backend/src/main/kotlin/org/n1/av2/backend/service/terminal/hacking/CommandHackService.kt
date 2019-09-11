@@ -1,13 +1,16 @@
 package org.n1.av2.backend.service.terminal.hacking
 
 import org.n1.av2.backend.model.db.layer.Layer
+import org.n1.av2.backend.model.db.layer.OsLayer
+import org.n1.av2.backend.model.db.layer.TextLayer
+import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.site.Node
-import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.service.OsLayerService
 import org.n1.av2.backend.service.service.ServiceIceGeneric
 import org.n1.av2.backend.service.service.TextLayerService
+import org.n1.av2.backend.service.service.TimerTriggerLayerService
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
@@ -18,13 +21,13 @@ class CommandHackService(
         private val osLayerService: OsLayerService,
         private val textLayerService: TextLayerService,
         private val serviceIceGeneric: ServiceIceGeneric,
+        private val timerTriggerLayerService: TimerTriggerLayerService,
         private val commandServiceUtil: CommandServiceUtil
 ) {
 
     fun process(runId: String, tokens: List<String>, position: HackerPosition) {
         if (tokens.size == 1) {
             return stompService.terminalReceive("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
-
         }
         val node = nodeService.getById(position.currentNodeId)
 
@@ -40,12 +43,11 @@ class CommandHackService(
     private fun handleHack(node: Node, level: Int, position: HackerPosition) {
         val layer = node.layers.find { it.level == level }!!
 
-        // TODO: replace with type check and remove forced coercion in underlying services.
-        when (layer.type) {
-            LayerType.OS -> osLayerService.hack(layer, node, position)
-            LayerType.TEXT -> textLayerService.hack(layer, node, position.runId)
-            LayerType.ICE_PASSWORD -> serviceIceGeneric.hack(layer, position.runId)
-            LayerType.ICE_TANGLE -> serviceIceGeneric.hack(layer, position.runId)
+        when  {
+            layer is OsLayer-> osLayerService.hack(layer, node, position)
+            layer is TextLayer -> textLayerService.hack(layer, node, position.runId)
+            layer is TimerTriggerLayer -> timerTriggerLayerService.hack(layer)
+            layer.type.ice -> serviceIceGeneric.hack(layer, position.runId)
             else -> stompService.terminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }

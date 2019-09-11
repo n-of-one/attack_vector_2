@@ -14,6 +14,8 @@ const renderSpaces = (count) => {
     return text;
 };
 
+
+
 /**
  *
  * Render a number of non-breaking spaces.
@@ -60,4 +62,12 @@ export default ({ n, p, t}) => {
     else {
         return <>[[Invalid value for spaces: {spaces}]]</>
     }
+};
+
+
+const ZEROES = "00000000000000000000000000000000000000";
+export const zeroPad = (number, totalPositions) => {
+    const numberPositions = (number === 0) ? 1 : 1 + Math.floor(Math.log10(number));
+
+    return ZEROES.substr(0, (totalPositions - numberPositions)) + number;
 };

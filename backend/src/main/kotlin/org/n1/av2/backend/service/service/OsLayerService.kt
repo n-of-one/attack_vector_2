@@ -16,17 +16,17 @@ class OsLayerService(
         val stompService: StompService) {
 
     private data class ProbeConnections(val nodeId: String, val userId: String)
-    fun hack(service: Layer, node: Node, position: HackerPosition) {
+    fun hack(layer: Layer, node: Node, position: HackerPosition) {
         val scan = scanService.getByRunId(position.runId)
         val nodeStatus = scan.nodeScanById[node.id]!!.status
 
         if (nodeStatus != NodeScanStatus.LAYERS) {
             val data = ProbeConnections(node.id, position.userId)
             stompService.toRun(position.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
-            hackedUtil.nonIceHacked(service.id, node, position.runId)
+            hackedUtil.nonIceHacked(layer.id, node, position.runId)
         }
         else {
-            stompService.terminalReceive("Hacking ${service.name} reveals nothing new.")
+            stompService.terminalReceive("Hacking ${layer.name} reveals nothing new.")
         }
     }
 

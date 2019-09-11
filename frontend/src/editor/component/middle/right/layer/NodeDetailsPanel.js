@@ -2,13 +2,14 @@ import React from 'react';
 import {connect} from "react-redux";
 import LayerOsPanel from "./type/panel/LayerOsPanel";
 import {findElementById} from "../../../../../common/Immutable";
-import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT} from "../../../../../common/enums/LayerTypes";
+import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes";
 import LayerTextPanel from "./type/panel/LayerTextPanel";
 import SilentLink from "../../../../../common/component/SilentLink";
 import {SELECT_LAYER} from "../../../../EditorActions";
 import Glyphicon from "../../../../../common/component/Glyphicon";
 import LayerIcePasswordPanel from "./type/panel/LayerIcePasswordPanel";
 import LayerIceTanglePanel from "./type/panel/LayerIceTanglePanel";
+import LayerTimerTriggerPanel from "./type/panel/LayerTimerTriggerPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -39,6 +40,8 @@ const renderLayer = (node, layer) => {
             return <LayerOsPanel node={node} layer={layer}/>;
         case TEXT:
             return <LayerTextPanel node={node} layer={layer}/>;
+        case TIMER_TRIGGER:
+            return <LayerTimerTriggerPanel node={node} layer={layer}/>;
         case ICE_PASSWORD:
             return <LayerIcePasswordPanel node={node} layer={layer}/>;
         case ICE_TANGLE:

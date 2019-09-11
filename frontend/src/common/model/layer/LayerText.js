@@ -2,7 +2,7 @@ import Layer from "./Layer";
 
 const KEY_TEXT = "text";
 
-export default class LayerTex extends Layer {
+export default class LayerText extends Layer {
 
     constructor(layer, node, dispatch) {
         super(layer, node, dispatch);

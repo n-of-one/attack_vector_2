@@ -1,9 +1,10 @@
 import React from 'react';
 import ScanInfoOs from "./ScanInfoOs";
-import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT} from "../../../../../common/enums/LayerTypes";
+import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes";
 import ScanInfoText from "./ScanInfoText";
 import Pad from "../../../../../common/component/Pad";
 import ScanInfoIce from "./ScanInfoIce";
+import ScanInfoTimerTrigger from "./ScanInfoTimerTrigger";
 
 
 const renderLayer = (layer) =>{
@@ -16,6 +17,8 @@ const renderLayer = (layer) =>{
             return <ScanInfoIce layer={layer} iceDescription="tangle" />;
         case TEXT:
             return <ScanInfoText layer={layer} />;
+        case TIMER_TRIGGER:
+            return <ScanInfoTimerTrigger layer={layer} />;
         default:
             return <><span className="text-danger">Unknown layer</span></>;
     }
