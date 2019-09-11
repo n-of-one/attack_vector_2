@@ -5,7 +5,6 @@ import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.service.OsLayerService
 import org.n1.av2.backend.service.service.ServiceIceGeneric
 import org.n1.av2.backend.service.service.TextLayerService
@@ -16,19 +15,17 @@ import org.springframework.stereotype.Service
 class CommandHackService(
         private val stompService: StompService,
         private val nodeService: NodeService,
-        private val hackerPositionService: HackerPositionService,
         private val osLayerService: OsLayerService,
         private val textLayerService: TextLayerService,
         private val serviceIceGeneric: ServiceIceGeneric,
         private val commandServiceUtil: CommandServiceUtil
 ) {
 
-    fun process(runId: String, tokens: List<String>) {
+    fun process(runId: String, tokens: List<String>, position: HackerPosition) {
         if (tokens.size == 1) {
             return stompService.terminalReceive("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
 
         }
-        val position = hackerPositionService.retrieveForCurrentUser()
         val node = nodeService.getById(position.currentNodeId)
 
         val level = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])

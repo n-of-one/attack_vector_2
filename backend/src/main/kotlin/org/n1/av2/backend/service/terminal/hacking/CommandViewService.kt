@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.terminal.hacking
 
+import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.repo.LayerStatusRepo
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
@@ -10,13 +10,11 @@ import org.springframework.stereotype.Service
 class CommandViewService(
         private val stompService: StompService,
         private val nodeService: NodeService,
-        private val hackerPositionService: HackerPositionService,
         private val commandServiceUtil: CommandServiceUtil,
         private val layerStatusRepo: LayerStatusRepo
 ) {
 
-    fun process(runId: String) {
-        val position = hackerPositionService.retrieveForCurrentUser()
+    fun process(runId: String, position: HackerPosition) {
         val node = nodeService.getById(position.currentNodeId)
 
         val blockingIceLevel = commandServiceUtil.findBlockingIceLayer(node, runId)?.level ?: -1

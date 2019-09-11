@@ -23,15 +23,13 @@ class CommandMoveService(
 
 ) {
 
-    fun process(runId: String, tokens: List<String>) {
+    fun process(runId: String, tokens: List<String>, position: HackerPosition) {
         if (tokens.size == 1) {
             stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
             return
         }
         val networkId = tokens[1]
-        val position = hackerPositionService.retrieveForCurrentUser()
 
-        if (position.inTransit) return reportInTransit()
         val toNode = nodeService.findByNetworkId(position.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
         if (toNode.id == position.currentNodeId) return reportAtTargetNode(networkId)
@@ -49,10 +47,6 @@ class CommandMoveService(
 
     private fun reportAtTargetNode(networkId: String) {
         stompService.terminalReceive("[error]error[/] already at [ok]${networkId}[/].")
-    }
-
-    private fun reportInTransit() {
-        stompService.terminalReceive("[error]busy[/] current move not finished.")
     }
 
     fun reportNodeNotFound(networkId: String) {
