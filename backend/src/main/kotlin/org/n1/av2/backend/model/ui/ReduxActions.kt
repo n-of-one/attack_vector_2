@@ -51,6 +51,7 @@ enum class ReduxActions {
     SERVER_NODE_HACKED,                // change icon of node in run
 
     SERVER_START_HACKING_ICE_TANGLE,  // sent to hacker that hacks this ice
+    SERVER_TANGLE_POINT_MOVED,        // some hacker moved a tangle point
 
 
 }

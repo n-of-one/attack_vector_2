@@ -15,7 +15,7 @@ const iceRootReducer = (state, action) => {
 
     newState.currentIce = CurrentIceReducer(state.currentIce, action);
     newState.password = PasswordIceReducer(state.password, action, newState.currentIce);
-    newState.tangle = TangleIceReducer(state.tangle, action);
+    newState.tangle = TangleIceReducer(state.tangle, action, newState.currentIce);
     newState.displayTerminal = displayTerminalReducer(state.displayTerminal, action);
     newState.inputTerminal =  inputTerminalReducer(state.inputTerminal, action);
     return newState;

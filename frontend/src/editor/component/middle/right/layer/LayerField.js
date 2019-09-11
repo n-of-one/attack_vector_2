@@ -1,7 +1,5 @@
 import React from 'react';
-import {connect} from "react-redux";
 import TextSaveInput from "../../../../../common/component/TextSaveInput";
-
 
 
 const renderInput = (value, readOnly, save, placeholder) => {

@@ -51,8 +51,8 @@ import {
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
-import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE} from "./run/ice/tangle/TangleIceActions";
-import {tangleIcePointMoved, tangleIceStartHack} from "./run/ice/tangle/TangleIceSagas";
+import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
+import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
 
 const createHackerRootSaga = () => {
 
@@ -111,6 +111,7 @@ const createHackerRootSaga = () => {
 
         yield takeEvery(SERVER_START_HACKING_ICE_TANGLE, tangleIceStartHack);
         yield takeEvery(ICE_TANGLE_MOVE_POINT, tangleIcePointMoved);
+        yield takeEvery(SERVER_TANGLE_POINT_MOVED, tanglePointMoved);
     }
 
     function* scanRootSaga() {

@@ -7,7 +7,6 @@ import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
 import RunPageChooser from "./run/component/RunPageChooser";
-import UntangleIceHome from "./run/ice/tangle/TangleIceHome";
 
 const dismissScanInfo = (event) => {
     let current = event.target;
@@ -47,8 +46,6 @@ const renderCurrentPage = (currentPage) => {
         default:
             return <HackerHome />;
     }
-    // FIXME
-    // return <UntangleIceHome />
 };
 
 const renderMain = (currentPage, messageTerminal) => {

@@ -1,6 +1,4 @@
 import React from 'react';
-import {connect} from "react-redux";
-import TextSaveInput from "../../../../../common/component/TextSaveInput";
 
 export default ({value, save}) => {
 

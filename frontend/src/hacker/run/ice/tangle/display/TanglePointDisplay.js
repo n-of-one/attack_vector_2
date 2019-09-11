@@ -66,6 +66,13 @@ export default class TanglePointDisplay {
         this.icon.set("fill", "#337ab7");
     }
 
+    moved(x, y) {
+        this.icon.setTop(y);
+        this.icon.setLeft(x);
+        this.icon.setCoords();
+        this.updateLines();
+    }
+
     updateLines() {
         this.lines.forEach(line => line.moved())
     }

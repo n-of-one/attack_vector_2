@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Provider } from 'react-redux'
+import React, {Component} from 'react'
+import {Provider} from 'react-redux'
 import RequiresRole from "../common/RequiresRole";
 import {applyMiddleware, compose, createStore} from "redux";
 import {HACKER_HOME} from "./HackerPages";
@@ -12,8 +12,6 @@ import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 import passwordIceManager from "./run/ice/password/PasswordIceManager";
 import tangleIceManager from "./run/ice/tangle/TangleIceManager";
-import untangleCanvas from "./run/ice/tangle/TangleIceCanvas";
-import {SERVER_START_HACKING_ICE_TANGLE} from "./run/ice/tangle/TangleIceActions";
 
 class HackerRoot extends Component {
 
@@ -40,36 +38,6 @@ class HackerRoot extends Component {
         terminalManager.init(this.store);
         passwordIceManager.init(this.store);
         tangleIceManager.init(this.store);
-
-
-        // FIXME
-        // const data = {
-        //     layerId: "fake",
-        //     points: [
-        //         {id: 1, x: 250, y: 80},
-        //         {id: 2, x: 450, y: 80},
-        //         {id: 3, x: 150, y: 280},
-        //         {id: 4, x: 650, y: 280},
-        //         {id: 5, x: 250, y: 480},
-        //         {id: 6, x: 450, y: 480},
-        //     ],
-        //     lines: [
-        //         {id: 1, fromId: 1, toId: 2},
-        //         {id: 2, fromId: 1, toId: 3},
-        //         {id: 3, fromId: 1, toId: 4},
-        //         {id: 4, fromId: 1, toId: 5},
-        //         {id: 5, fromId: 2, toId: 3},
-        //         {id: 6, fromId: 2, toId: 4},
-        //         {id: 7, fromId: 2, toId: 5},
-        //         {id: 8, fromId: 3, toId: 4},
-        //         {id: 9, fromId: 3, toId: 5},
-        //         {id: 10, fromId: 4, toId: 5},
-        //     ]
-        // };
-
-        // setTimeout(() => {
-        //     this.store.dispatch({type: SERVER_START_HACKING_ICE_TANGLE, data: data});
-        // }, 100);
     }
 
     renderIfAuthenticated() {

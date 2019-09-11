@@ -103,6 +103,10 @@ class TangleIceCanvas {
         this.canvas.renderAll();
     }
 
+    serverMovedPoint(actionData) {
+        this.pointDisplayById[actionData.id].moved(actionData.x, actionData.y);
+        this.canvas.renderAll();
+    }
 }
 
 
