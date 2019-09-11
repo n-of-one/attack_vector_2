@@ -16,7 +16,7 @@ import kotlin.random.Random
  */
 
 
-class IdTPoint(val x: Float, val y: Float, val id: Int)
+class IdTPoint(val x: Float, val y: Float, val id: String)
 
 data class TConnection(val from: TPoint, val to: TPoint)
 
@@ -42,7 +42,7 @@ class TLine(val slope: Float, val yOffset: Float, val intersections: MutableList
         intersections.forEach { println(it) }
     }
 
-    fun distanceSquared(point: TPoint): Float {
+    private fun distanceSquared(point: TPoint): Float {
 
         val dx = ox - point.x
         val dy = oy - point.y
@@ -89,22 +89,24 @@ class TangleCreator {
         // so we create a unique TPoint for each x-y location
         val points = HashSet<TPoint>()
         lines.forEach { points.addAll(it.intersections) }
-        val idPoints = points.mapIndexed { index, point -> IdTPoint(point.x, point.y, index) }.toMutableList()
+        val idPoints = points.mapIndexed { index, point -> IdTPoint(point.x, point.y, "p-${index}") }.toMutableList()
 
-        val tangleLines = connections.mapIndexed { index, connection -> toIdConnection(connection, idPoints, index) }.toMutableList()
+        val tangleLines = connections.mapIndexed { index, connection ->
+            toIdConnection(connection, idPoints, index)
+        }.toMutableList()
 
 
-        // FIXME
+        // For debug: add the original line segments as points.
 //        idPoints.addAll( createLinePoints(lines))
 //        lines.forEachIndexed { index, line ->
 //            tangleLines.add(TangleLine(500+index, 100+index, 200+index, TangleLineType.SETUP))
 //        }
 
-        val tanglePoints = layoutForStart(idPoints.size)
-
-
 //      For debugging: layout the original points
 //        val tanglePoints = layout(idPoints)
+
+        val tanglePoints = layoutAsCircle(idPoints)
+
 
         return TangleCreation(tanglePoints.toMutableList(), tangleLines)
     }
@@ -112,13 +114,16 @@ class TangleCreator {
     private fun createLinePoints(lines: List<TLine>): List<IdTPoint> {
         val linePoints = LinkedList<IdTPoint>()
         lines.forEachIndexed { index, line ->
-            linePoints.add(IdTPoint(line.x1, line.y1, 100 + index))
-            linePoints.add(IdTPoint(line.x2, line.y2, 200 + index))
+            linePoints.add(IdTPoint(line.x1, line.y1, "op-${line}-1"))
+            linePoints.add(IdTPoint(line.x2, line.y2, "op-${index}-2"))
         }
         return linePoints
     }
 
-    private fun layout(idPoints: List<IdTPoint>): List<TanglePoint> {
+    /**
+     * For debugging: layout the points as the original construction lines.
+     */
+    private fun layoutOriginalConstruction(idPoints: List<IdTPoint>): List<TanglePoint> {
         val minX = idPoints.minBy { it.x }!!.x
         val maxX = idPoints.maxBy { it.x }!!.x
         val minY = idPoints.minBy { it.y }!!.y
@@ -132,14 +137,17 @@ class TangleCreator {
 
 
         return idPoints.map {
-            TanglePoint(it.id,
+            TanglePoint("p-${it.id}",
                     (50 + (it.x - minX) / scaleX).roundToInt(),
                     (30 + (it.y - minY) / scaleY).roundToInt())
         }
     }
 
-    private fun layoutForStart(size: Int): List<TanglePoint> {
-        val angleStep = (2 * Math.PI / size)
+    /**
+     * Layout for actual puzzle
+     */
+    private fun layoutAsCircle(idPoints: List<IdTPoint>): List<TanglePoint> {
+        val angleStep = (2 * Math.PI / idPoints.size)
         val tanglePoints = LinkedList<TanglePoint>()
 
         val padding = 20
@@ -150,13 +158,11 @@ class TangleCreator {
         val xRadius = (xSize / 2) - padding
         val yRadius = (ySize / 2) - padding
 
-
-
-        (0 until size).forEach { index ->
+        idPoints.forEachIndexed { index, idTPoint ->
             val angle = angleStep * index
             val x = (xCenter + xRadius * Math.sin(angle)).roundToInt()
             val y = (yCenter + yRadius * Math.cos(angle)).roundToInt()
-            tanglePoints.add(TanglePoint(index, x, y))
+            tanglePoints.add(TanglePoint(idTPoint.id, x, y))
         }
         return tanglePoints
     }
@@ -164,7 +170,7 @@ class TangleCreator {
     private fun toIdConnection(connection: TConnection, idPoints: List<IdTPoint>, index: Int): TangleLine {
         val idFrom = idPoints.find { it.x == connection.from.x && it.y == connection.from.y }!!
         val idTo = idPoints.find { it.x == connection.to.x && it.y == connection.to.y }!!
-        return TangleLine(index, idFrom.id, idTo.id, TangleLineType.NORMAL)
+        return TangleLine("l-${index}", idFrom.id, idTo.id, TangleLineType.NORMAL)
     }
 
 

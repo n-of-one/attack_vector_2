@@ -13,7 +13,7 @@ class IceTangleController(
 
     data class TanglePointMoveInput(val layerId: String,
                                     val runId: String,
-                                    val id: Int,
+                                    val id: String,
                                     val x: Int,
                                     val y: Int)
 

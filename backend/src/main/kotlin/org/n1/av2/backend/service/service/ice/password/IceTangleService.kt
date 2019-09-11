@@ -1,21 +1,27 @@
 package org.n1.av2.backend.service.service.ice.password
 
+import mu.KLogging
 import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.run.*
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.service.HackedUtil
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.web.ws.ice.IceTangleController
 import org.springframework.stereotype.Service
+import kotlin.system.measureNanoTime
 
 const val X_SIZE = 1200
 const val Y_SIZE = 680
 const val PADDING = 10
 
+private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: Int, val id: String)
+
 @Service
 class IceTangleService(
         val iceStatusRepo: IceStatusRepo,
+        val hackedUtil: HackedUtil,
         val stompService: StompService) {
 
     data class UiTangleState(
@@ -23,6 +29,8 @@ class IceTangleService(
             val points: MutableList<TanglePoint>,
             val lines: List<TangleLine>
     )
+
+    companion object : KLogging()
 
     fun hack(layer: Layer, runId: String) {
         val tangleStatus = getOrCreateStatus(layer, runId)
@@ -43,7 +51,7 @@ class IceTangleService(
     private fun createServiceStatus(layer: Layer, runId: String): IceTangleStatus {
         val id = createId("icePasswordStatus-")
 
-        val creation = TangleCreator().create(6)
+        val creation = TangleCreator().create(4)
 
         val iceTangleStatus = IceTangleStatus(id, layer.id, runId, creation.points, creation.points, creation.lines)
         iceStatusRepo.save(iceTangleStatus)
@@ -52,7 +60,7 @@ class IceTangleService(
 
     // Puzzle solving //
 
-    data class TanglePointMoved(val layerId: String, val id: Int, val x: Int, val y: Int)
+    data class TanglePointMoved(val layerId: String, val id: String, val x: Int, val y: Int, val solved: Boolean)
 
     fun move(command: IceTangleController.TanglePointMoveInput) {
         val x = keepInPlayArea(command.x, X_SIZE)
@@ -60,15 +68,22 @@ class IceTangleService(
 
         val tangleStatus = getStatus(command.layerId, command.runId)!!
 
-        tangleStatus.points.removeIf { it.id == command.id}
+        tangleStatus.points.removeIf { it.id == command.id }
         val newPoint = TanglePoint(command.id, x, y)
         tangleStatus.points.add(newPoint)
 
         iceStatusRepo.save(tangleStatus)
 
-        val message = TanglePointMoved(command.layerId, command.id, x, y)
+        val solved = tangleSolved(tangleStatus)
+
+        val message = TanglePointMoved(command.layerId, command.id, x, y, solved)
 
         stompService.toRun(command.runId, ReduxActions.SERVER_TANGLE_POINT_MOVED, message)
+
+        if (solved) {
+            hackedUtil.iceHacked(command.layerId, command.runId, 70)
+        }
+
     }
 
     private fun keepInPlayArea(position: Int, size: Int): Int {
@@ -77,4 +92,58 @@ class IceTangleService(
         return position
     }
 
+
+    private fun tangleSolved(tangleStatus: IceTangleStatus): Boolean {
+
+        val segments = toSegments(tangleStatus)
+
+        var solved: Boolean? = null
+        val nanos = measureNanoTime {
+            solved = tangleSolvedInternal(segments)
+        }
+        logger.debug("Measure intersections of ${tangleStatus.points.size} took ${nanos} nanos")
+
+        return solved!!
+    }
+
+    private fun toSegments(tangleStatus: IceTangleStatus): List<TangleLineSegment> {
+        return tangleStatus.lines.map { line ->
+            val from = tangleStatus.points.find {it.id ==line.fromId }!!
+            val to = tangleStatus.points.find {it.id == line.toId }!!
+
+            TangleLineSegment(from.x, from.y, to.x, to.y, line.id)
+        }
+    }
+
+    private fun tangleSolvedInternal(segments: List<TangleLineSegment>): Boolean {
+        val uncheckedSegments = segments.toMutableList()
+        var solved = true
+        while (!uncheckedSegments.isEmpty()) {
+            val segment_1 = uncheckedSegments.removeAt(0)
+
+
+            uncheckedSegments.forEach { segment_2 ->
+                if (!connected(segment_1, segment_2)) {
+                    val intersect = segmentsIntersect(
+                            segment_1.x1, segment_1.y1, segment_1.x2, segment_1.y2,
+                            segment_2.x1, segment_2.y1, segment_2.x2, segment_2.y2)
+
+                    if (intersect) {
+                        solved = false
+//                        logger.debug("Intersect: ${segment_1.id} x ${segment_2.id}")
+                    }
+                }
+            }
+        }
+        return solved
+    }
+
+    private fun connected(segment_1: TangleLineSegment, segment_2: TangleLineSegment): Boolean {
+        return connected(segment_1.x1, segment_1.y1, segment_2) || connected(segment_1.x2, segment_1.y2, segment_2)
+    }
+
+    private fun connected(x: Int, y: Int, segment: TangleLineSegment): Boolean {
+        return (x == segment.x1 && y == segment.y1) ||
+                (x == segment.x2 && y == segment.y2)
+    }
 }

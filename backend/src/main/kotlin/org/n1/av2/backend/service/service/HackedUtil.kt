@@ -6,18 +6,27 @@ import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.LayerStatusService
 import org.n1.av2.backend.service.run.NodeStatusService
+import org.n1.av2.backend.service.site.NodeService
+import org.n1.av2.backend.util.nodeIdFromServiceId
 
 
 @org.springframework.stereotype.Service
 class HackedUtil(
         val layerStatusService: LayerStatusService,
         val currentUser: CurrentUserService,
+        val nodeService: NodeService,
         val nodeStatusService: NodeStatusService,
         val stompService: StompService
 ) {
 
     data class IceHackedUpdate(val layerId: String, val nodeId: String)
     data class NodeHacked(val nodeId: String, val delay: Int)
+
+    fun iceHacked(layerId: String, runId: String, delay: Int) {
+        val nodeId = nodeIdFromServiceId(layerId)
+        val node = nodeService.getById(nodeId)
+        iceHacked(layerId, node, runId, delay)
+    }
 
     fun iceHacked(layerId: String, node: Node, runId: String, delay: Int) {
         val lastNonHackedIceLayerId = findLastNonHackedIceLayerId(node, runId)

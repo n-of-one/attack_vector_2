@@ -19,10 +19,20 @@ export default class TangleLineDisplay {
                 selectable: false,
                 hoverCursor: 'default',
             });
+
+        // this.idIcon = new fabric.Text("" + id, {
+        //     fill: "#000",
+        //     fontFamily: "SpaceMono",
+        //     fontSize: 12,
+        //     top: (this.point1.icon.top + this.point2.icon.top) / 2,
+        //     left: (this.point1.icon.left + this.point2.icon.left) / 2,
+        //     selectable: false,
+        //     });
     }
 
     show() {
         this.canvas.add(this.icon);
+        // this.canvas.add(this.idIcon);
     }
 
     highlightOtherEnd(pointDisplay) {
@@ -56,6 +66,12 @@ export default class TangleLineDisplay {
         };
         this.icon.set(newCoordinates);
         this.icon.setCoords();
+
+        // this.idIcon.top = (this.point1.icon.top + this.point2.icon.top) / 2;
+        // this.idIcon.left = (this.point1.icon.left + this.point2.icon.left) / 2;
+        // this.idIcon.setCoords();
+
+
     }
 
 }

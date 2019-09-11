@@ -28,8 +28,8 @@ class IceTangleStatus(
 
 ) : IceStatus(id, layerId, runId)
 
-data class TanglePoint(val id: Int, val x: Int, val y: Int)
+data class TanglePoint(val id: String, val x: Int, val y: Int)
 
 enum class TangleLineType { NORMAL, SETUP}
-data class TangleLine(val id: Int, val fromId: Int, val toId: Int, val type: TangleLineType)
+data class TangleLine(val id: String, val fromId: String, val toId: String, val type: TangleLineType)
 

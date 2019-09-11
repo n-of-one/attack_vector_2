@@ -38,10 +38,20 @@ export default class TanglePointDisplay {
             mb: false,
             mtr: false,
         });
+
+        // this.idIcon = new fabric.Text("" + pointData.id, {
+        //     fill: "#000",
+        //     fontFamily: "SpaceMono",
+        //     fontSize: 12,
+        //     top: pointData.y + 10,
+        //     left: pointData.x + 10,
+        //     selectable: false,
+        // })
     }
 
     show() {
         this.canvas.add(this.icon);
+        // this.canvas.add(this.idIcon);
     }
 
     addLine(tangleLine) {
@@ -70,6 +80,11 @@ export default class TanglePointDisplay {
         this.icon.setTop(y);
         this.icon.setLeft(x);
         this.icon.setCoords();
+
+        // this.idIcon.setTop(y+10);
+        // this.idIcon.setLeft(x+10);
+        // this.idIcon.setCoords();
+
         this.updateLines();
     }
 

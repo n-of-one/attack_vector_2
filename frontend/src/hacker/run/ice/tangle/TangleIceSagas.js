@@ -22,6 +22,7 @@ export function* tangleIcePointMoved(action) {
 export function* tanglePointMoved(action) {
     const currentIce = yield select(getCurrentIce);
     if (currentIce.layerId === action.data.layerId) {
-        tangleIceCanvas.serverMovedPoint(action.data)
+        tangleIceManager.moved(action.data);
     }
+    yield
 }

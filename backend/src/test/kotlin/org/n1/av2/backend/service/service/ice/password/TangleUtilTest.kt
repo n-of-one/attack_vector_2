@@ -56,5 +56,66 @@ class TangleUtilTest {
 
     }
 
+    @Test
+    fun `Test segmentsIntersect (0,-1)-(0,1) x (-1,0) x (1,0)`() {
+        val answer = segmentsIntersect(
+                0, -1, 0, 1,
+                -1, 0, 1, 0)
 
+        assertThat (answer, Is(true))
+    }
+
+    @Test
+    fun `Test segmentsIntersect (0,-1)-(0,1) x (0,0) x (1,0)`() {
+        val answer = segmentsIntersect(
+                0, -1, 0, 1,
+                0, 0, 1, 0)
+
+        assertThat (answer, Is(true))
+    }
+
+    @Test
+    fun `Test segmentsIntersect (0,-1)-(0,1) x (2,0) x (1,0)`() {
+        val answer = segmentsIntersect(
+                0, -1, 0, 1,
+                2, 0, 1, 0)
+
+        assertThat (answer, Is(false))
+    }
+
+    @Test
+    fun `Test segmentsIntersect (2,1)-(6,3) x (-1,4) x (3,0)`() {
+        val answer = segmentsIntersect(
+                2, 1, 6, 3,
+                -1, 4, 3, 0)
+
+        assertThat (answer, Is(true))
+    }
+
+    @Test
+    fun `Test segmentsIntersect (2,1)-(6,3) x (-1,4) x (1,2)`() {
+        val answer = segmentsIntersect(
+                2, 1, 6, 3,
+                -1, 4, 1, 2)
+
+        assertThat (answer, Is(false))
+    }
+
+    @Test
+    fun `Test segmentsIntersect parallel horizontal (0,0)-(1,0) x (0,2) x (1,2)`() {
+        val answer = segmentsIntersect(
+                0, 0, 1, 0,
+                0, 2, 1, 2)
+
+        assertThat (answer, Is(false))
+    }
+
+    @Test
+    fun `Test segmentsIntersect parallel vertical (0,0)-(0,1) x (2,0) x (2,1)`() {
+        val answer = segmentsIntersect(
+                0, 0, 0, 1,
+                2, 0, 2, 1)
+
+        assertThat (answer, Is(false))
+    }
 }
