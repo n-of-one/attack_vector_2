@@ -31,9 +31,9 @@ function renderStatusConnections(node) {
 
 function renderLayerIsIce(layer) {
     const text = layer.ice ? "ICE" : "layer";
-    return <span key={layer.layer}>
-        <Pad p="3" n={layer.layer}/>
-        <span className="text-primary">{layer.layer}</span>
+    return <span key={layer.level}>
+        <Pad p="3" n={layer.level}/>
+        <span className="text-primary">{layer.level}</span>
         <Pad p="3" />unknown {text}<br/>
     </span>
 }

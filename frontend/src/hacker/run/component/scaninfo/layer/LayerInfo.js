@@ -1,9 +1,9 @@
 import React from 'react';
 import ScanInfoOs from "./ScanInfoOs";
-import {ICE_PASSWORD, OS, TEXT} from "../../../../../common/enums/LayerTypes";
-import ScanInfoPasswordIce from "./ScanInfoPasswordIce";
+import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT} from "../../../../../common/enums/LayerTypes";
 import ScanInfoText from "./ScanInfoText";
 import Pad from "../../../../../common/component/Pad";
+import ScanInfoIce from "./ScanInfoIce";
 
 
 const renderLayer = (layer) =>{
@@ -11,7 +11,9 @@ const renderLayer = (layer) =>{
         case OS:
             return <ScanInfoOs layer={layer}/>;
         case ICE_PASSWORD:
-            return <ScanInfoPasswordIce layer={layer} />;
+            return <ScanInfoIce layer={layer} iceDescription="static password" />;
+        case ICE_TANGLE:
+            return <ScanInfoIce layer={layer} iceDescription="tangle" />;
         case TEXT:
             return <ScanInfoText layer={layer} />;
         default:
@@ -22,8 +24,8 @@ const renderLayer = (layer) =>{
 export default ({layer}) => {
     return (
         <>
-            <Pad p="3" n={layer.layer}/>
-            <span className="text-primary">{layer.layer}</span>
+            <Pad p="3" n={layer.level}/>
+            <span className="text-primary">{layer.level}</span>
             <Pad p="3" />{layer.name}{renderLayer(layer)}<br/>
         </>
     );
