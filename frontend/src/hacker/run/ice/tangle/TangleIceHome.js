@@ -32,7 +32,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             <h4 className="text-success">
                                 <strong>
                                     Ice: <span className="text-info">Reva</span><br/>
-                                    Strength: <span className="text-info">TODO</span><br/>
+                                    Strength: <span className="text-info">{ice.strength}</span><br/>
                                 </strong>
                             </h4>
                         </div>

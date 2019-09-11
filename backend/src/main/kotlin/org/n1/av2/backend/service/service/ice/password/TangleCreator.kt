@@ -3,6 +3,7 @@ package org.n1.av2.backend.service.service.ice.password
 import org.n1.av2.backend.model.db.run.TangleLine
 import org.n1.av2.backend.model.db.run.TangleLineType
 import org.n1.av2.backend.model.db.run.TanglePoint
+import org.n1.av2.backend.model.db.site.enums.IceStrength
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -63,15 +64,16 @@ class TLine(val slope: Float, val yOffset: Float, val intersections: MutableList
 }
 
 
-private var random = Random(0)
+private var random = Random
 
 class TangleCreation(val points: MutableList<TanglePoint>, val lines: List<TangleLine>)
 
 
 class TangleCreator {
 
-    fun create(lineCount: Int): TangleCreation {
-        random = Random(0)
+    fun create(strength: IceStrength): TangleCreation {
+        val lineCount = determineLineCount(strength)
+
         val lines = (1..lineCount).map { createLine() }
 
         val linesLeft = lines.toMutableList()
@@ -109,6 +111,18 @@ class TangleCreator {
 
 
         return TangleCreation(tanglePoints.toMutableList(), tangleLines)
+    }
+
+    private fun determineLineCount(strength: IceStrength): Int {
+        return when (strength) {
+            IceStrength.VERY_WEAK -> 5
+            IceStrength.WEAK -> 7
+            IceStrength.AVERAGE -> 9
+            IceStrength.STRONG -> 12
+            IceStrength.VERY_STRONG -> 15
+            IceStrength.IMPENETRABLE -> 20
+            else -> error("Invalid strength for Tangle ice: ${strength}")
+        }
     }
 
     private fun createLinePoints(lines: List<TLine>): List<IdTPoint> {

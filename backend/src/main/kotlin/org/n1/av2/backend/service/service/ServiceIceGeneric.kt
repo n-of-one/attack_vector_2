@@ -1,5 +1,6 @@
 package org.n1.av2.backend.service.service
 
+import org.n1.av2.backend.model.db.layer.IceTangleLayer
 import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.service.StompService
@@ -14,17 +15,17 @@ class ServiceIceGeneric(
         private val iceTangleService: IceTangleService,
         private val stompService: StompService) {
 
-    fun hack(service: Layer, runId: String) {
-        val holder = layerStatusService.getOrCreate(service.id, runId)
+    fun hack(layer: Layer, runId: String) {
+        val holder = layerStatusService.getOrCreate(layer.id, runId)
         if (holder.hacked) {
             stompService.terminalReceive("[info]not required[/] Ice already hacked.")
             return
         }
 
-        when (service.type) {
-            LayerType.ICE_PASSWORD -> icePasswordService.hack(service, runId)
-            LayerType.ICE_TANGLE -> iceTangleService.hack(service, runId)
-            else -> error("unsupported hack type: ${service.type}")
+        when (layer.type) {
+            LayerType.ICE_PASSWORD -> icePasswordService.hack(layer, runId)
+            LayerType.ICE_TANGLE -> iceTangleService.hack(layer as IceTangleLayer, runId)
+            else -> error("unsupported hack type: ${layer.type}")
         }
     }
 

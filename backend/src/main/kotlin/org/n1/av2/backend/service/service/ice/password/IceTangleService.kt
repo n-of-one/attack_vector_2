@@ -1,13 +1,19 @@
 package org.n1.av2.backend.service.service.ice.password
 
 import mu.KLogging
+import org.n1.av2.backend.model.db.layer.IceTangleLayer
 import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.run.*
+import org.n1.av2.backend.model.db.run.IceTangleStatus
+import org.n1.av2.backend.model.db.run.TangleLine
+import org.n1.av2.backend.model.db.run.TanglePoint
+import org.n1.av2.backend.model.db.site.enums.IceStrength
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.service.HackedUtil
+import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
+import org.n1.av2.backend.util.nodeIdFromServiceId
 import org.n1.av2.backend.web.ws.ice.IceTangleController
 import org.springframework.stereotype.Service
 import kotlin.system.measureNanoTime
@@ -21,21 +27,22 @@ private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: I
 @Service
 class IceTangleService(
         val iceStatusRepo: IceStatusRepo,
+        val nodeService: NodeService,
         val hackedUtil: HackedUtil,
         val stompService: StompService) {
 
     data class UiTangleState(
             val layerId: String,
+            val strength: IceStrength,
             val points: MutableList<TanglePoint>,
             val lines: List<TangleLine>
     )
 
     companion object : KLogging()
 
-    fun hack(layer: Layer, runId: String) {
+    fun hack(layer: IceTangleLayer, runId: String) {
         val tangleStatus = getOrCreateStatus(layer, runId)
-
-        val uiState = UiTangleState(layer.id, tangleStatus.points, tangleStatus.lines)
+        val uiState = UiTangleState(layer.id, layer.strength, tangleStatus.points, tangleStatus.lines)
         stompService.toUser(ReduxActions.SERVER_START_HACKING_ICE_TANGLE, uiState)
     }
 
@@ -49,10 +56,15 @@ class IceTangleService(
     }
 
     private fun createServiceStatus(layer: Layer, runId: String): IceTangleStatus {
-        val id = createId("icePasswordStatus-")
+        val nodeId = nodeIdFromServiceId(layer.id)
+        val node = nodeService.getById(nodeId)
 
-        val creation = TangleCreator().create(4)
+        val iceConfig = node.layers.find {it.id == layer.id }!! as IceTangleLayer
 
+
+        val creation = TangleCreator().create(iceConfig.strength)
+
+        val id = createId("iceTangleStatus-")
         val iceTangleStatus = IceTangleStatus(id, layer.id, runId, creation.points, creation.points, creation.lines)
         iceStatusRepo.save(iceTangleStatus)
         return iceTangleStatus

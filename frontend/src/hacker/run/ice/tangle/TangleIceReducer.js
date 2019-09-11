@@ -3,6 +3,7 @@ import {ICE_TANGLE_BEGIN, SERVER_START_HACKING_ICE_TANGLE} from "./TangleIceActi
 import {ICE_TANGLE} from "../../../../common/enums/LayerTypes";
 
 const defaultState = {
+    strength: "AVERAGE",
     uiState: HIDDEN,
 };
 
@@ -13,11 +14,9 @@ const TangleIceReducer = (state = defaultState, action, currentIce) => {
 
     switch (action.type) {
         case SERVER_START_HACKING_ICE_TANGLE:
-            return { uiState: HIDDEN };
+            return { ...action.data, uiState: HIDDEN };
         case ICE_TANGLE_BEGIN:
-            return { uiState: UNLOCKED };
-        // case FINISH_HACKING_ICE:
-        //     return defaultState;
+            return { ...state, uiState: UNLOCKED };
         default:
             return state;
     }

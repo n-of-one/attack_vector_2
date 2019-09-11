@@ -17,7 +17,6 @@ export default ({value, save}) => {
                         <option value="STRONG">Strong</option>
                         <option value="VERY_STRONG">Very Strong</option>
                         <option value="IMPENETRABLE">Impenetrable</option>
-                        <option value="UNKNOWN">Unknown</option>
                     </select>
                 </div>
                 <div className="col-lg-1 layerHelpColumn">
