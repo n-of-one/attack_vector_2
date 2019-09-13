@@ -3,6 +3,7 @@ import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
 import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
+import serverTime from "../../../../common/ServerTime";
 
 // const defaultState = {
 //     layerId: "svc-7baa-4572-cde0",
@@ -68,8 +69,7 @@ const processServerUpdate = (serverStatus, currentIce, oldState) => {
 
 
 const calculateWaitSeconds = (serverStatus) => {
-    const lockedUntilSeconds = new Date(serverStatus.lockedUntil).getTime();
-    return Math.ceil((lockedUntilSeconds - new Date().getTime())/1000);
+    return serverTime.secondsLeft(serverStatus.lockedUntil);
 };
 
 

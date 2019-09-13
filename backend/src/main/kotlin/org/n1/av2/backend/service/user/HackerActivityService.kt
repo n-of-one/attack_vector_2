@@ -9,6 +9,7 @@ import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
+import java.time.ZonedDateTime
 
 
 val runActivities = listOf(HackerActivityType.SCANNING, HackerActivityType.HACKING)
@@ -68,6 +69,10 @@ class HackerActivityService(
 
     fun notifyLeaveRun(runId: String, user: User) {
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(user.id))
+    }
+
+    fun sendTime(userId: String) {
+        stompService.toUser(userId, ReduxActions.SERVER_TIME_SYNC, ZonedDateTime.now())
     }
 
     data class HackerLeaveNotification(val userId: String)

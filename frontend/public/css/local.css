@@ -290,3 +290,11 @@ a.textLink {
     left: 1px;
     color: #aaa;
 }
+
+.alarm {
+    color: RED;
+    top: 1px;
+    left: 567px;
+    position: absolute;
+    z-index: 100;
+}

@@ -5,6 +5,7 @@ import {ICE_PASSWORD_SUBMIT} from "./PasswordIceActions";
 import {HIDDEN, LOCKED} from "../IceUiState";
 import CloseButton from "../../../../common/component/CloseButton";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
+import serverTime from "../../../../common/ServerTime";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -27,16 +28,11 @@ const renderInput = (inputTerminal, enterPassword, dispatch, ice) => {
     }
     if (ice.waitSeconds && ice.waitSeconds > 0) {
 
-
-        let waitSeconds = (ice.waitSeconds && ice.waitSeconds > 0) ? "" + ice.waitSeconds : "00";
-        if (waitSeconds.length < 2) {
-            waitSeconds = "0" + waitSeconds
-        }
-
+        const wait = serverTime.format(ice.waitSeconds);
 
         return<h4 className="text-warning">
             <strong>
-                Time-out: <span className="text-info">0:{waitSeconds}</span><br/>
+                Time-out: <span className="text-info">{wait}</span><br/>
             </strong>
         </h4>
 

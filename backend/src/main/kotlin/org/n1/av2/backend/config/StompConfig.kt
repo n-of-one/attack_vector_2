@@ -24,7 +24,7 @@ import javax.annotation.PostConstruct
 @Component
 class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketMessageBrokerConfigurer {
 
-    companion object: KLogging()
+    companion object : KLogging()
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry
@@ -46,19 +46,22 @@ class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketM
 
     @EventListener
     fun handleSubscribeEvent(event: SessionSubscribeEvent) {
-        logger.debug{ "<==> handleSubscribeEvent: connection=${event.user!!.name} ${event.message.headers["nativeHeaders"]}" }
+        logger.debug { "<==> handleSubscribeEvent: connection=${event.user!!.name} ${event.message.headers["nativeHeaders"]}" }
+        val principal = event.user!! as UserPrincipal
+        hackerActivityService.sendTime(principal.name)
     }
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
-            hackerActivityService.connect(event.user!! as UserPrincipal)
-            logger.debug{ "===> handleConnectEvent: connection=${event.user!!.name}" }
+        val principal = event.user!! as UserPrincipal
+        hackerActivityService.connect(principal)
+        logger.debug { "===> handleConnectEvent: connection=${event.user!!.name}" }
     }
 
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
         hackerActivityService.disconnect(event.user!! as UserPrincipal)
-        logger.debug{ "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
+        logger.debug { "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
     }
 }
 

@@ -5,6 +5,8 @@ import createTerminalReducer from "../../common/terminal/TerminalReducer";
 import SiteReducer from "./reducer/SiteReducer";
 import infoNodeIdReducer from "./reducer/InfoNodeIdReducer";
 import iceRootReducer from "./ice/IceRootReducer";
+import alarmReducer from "./alarm/AlarmReducer";
+
 
 const runRootReducer = combineReducers({
     messageTerminal: createTerminalReducer("chat", {readOnly: true, receiveBuffer: [{type:"text", data: "= chat offline ="}]}),
@@ -13,6 +15,7 @@ const runRootReducer = combineReducers({
     scan: ScanReducer,
     infoNodeId: infoNodeIdReducer,
     ice: iceRootReducer,
+    alarm: alarmReducer
 });
 
 export default runRootReducer;

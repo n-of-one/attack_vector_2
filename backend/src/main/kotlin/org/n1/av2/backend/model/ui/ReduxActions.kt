@@ -2,6 +2,8 @@ package org.n1.av2.backend.model.ui
 
 enum class ReduxActions {
 
+    SERVER_TIME_SYNC,               // Send server time to client to make it use server time.
+
     SERVER_NOTIFICATION,
     SERVER_ERROR,
 
@@ -52,6 +54,8 @@ enum class ReduxActions {
 
     SERVER_START_HACKING_ICE_TANGLE,  // sent to hacker that hacks this ice
     SERVER_TANGLE_POINT_MOVED,        // some hacker moved a tangle point
+
+    SERVER_TRIGGER_TIMER              // The client can show the countdown clock
 
 
 }

@@ -6,24 +6,36 @@ import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.scan.ScanService
 import org.n1.av2.backend.service.site.ConnectionService
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
+import java.time.ZonedDateTime
 
 @Service
 class CommandMoveService(
-        private val stompService: StompService,
         private val nodeService: NodeService,
         private val connectionService: ConnectionService,
         private val hackerPositionService: HackerPositionService,
         private val scanService: ScanService,
-        private val nodeStatusRepo: NodeStatusRepo
+        private val nodeStatusRepo: NodeStatusRepo,
+        private val stompService: StompService
+
+        //fixme temporary to implement timer trigger client side
+, private val time: TimeService
 
 ) {
 
     fun process(runId: String, tokens: List<String>, position: HackerPosition) {
+
+        // fixme temporary to implement timer trigger client side
+        class TimerTrigger(val alarm: ZonedDateTime)
+        val alarmTime = time.now().plusSeconds(70)
+        stompService.toRun(runId, ReduxActions.SERVER_TRIGGER_TIMER, TimerTrigger(alarmTime))
+
+
         if (tokens.size == 1) {
             stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
             return

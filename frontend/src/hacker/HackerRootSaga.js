@@ -1,10 +1,7 @@
 import {all, takeEvery} from 'redux-saga/effects'
-import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
+import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../common/enums/CommonActions";
 import {
-    AUTO_SCAN,
-    PROBE_SCAN_NODE,
-    SERVER_DISCOVER_NODES,
-    SERVER_HACKER_ENTER_SCAN,
+    AUTO_SCAN, PROBE_SCAN_NODE, SERVER_DISCOVER_NODES, SERVER_HACKER_ENTER_SCAN,
     SERVER_HACKER_LEAVE_SCAN,
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
@@ -25,7 +22,7 @@ import {
     scanForNameSaga,
     serverScanFullSaga
 } from "./run/saga/ScanSagas";
-import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
+import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga, serverTimeSync} from "../common/saga/ServerSagas";
 import {
     hackerProbedConnectionsSaga,
     moveArriveSaga,
@@ -37,16 +34,9 @@ import {
     startAttackSaga
 } from "./run/saga/HackSagas";
 import {
-    FINISH_HACKING_ICE,
-    HACKER_MOVE_ARRIVE,
-    HACKER_PROBED_CONNECTIONS,
-    HACKER_PROBED_LAYERS,
-    SERVER_HACKER_MOVE_ARRIVE,
-    SERVER_HACKER_MOVE_START,
-    SERVER_HACKER_PROBE_CONNECTIONS,
-    SERVER_HACKER_PROBE_LAYERS,
-    SERVER_HACKER_START_ATTACK,
-    SERVER_NODE_HACKED
+    FINISH_HACKING_ICE, HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS,
+    SERVER_HACKER_MOVE_ARRIVE, SERVER_HACKER_MOVE_START, SERVER_HACKER_PROBE_CONNECTIONS,
+    SERVER_HACKER_PROBE_LAYERS, SERVER_HACKER_START_ATTACK, SERVER_NODE_HACKED
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
@@ -57,6 +47,8 @@ import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/i
 const createHackerRootSaga = () => {
 
     function* allSagas() {
+
+        yield takeEvery(SERVER_TIME_SYNC, serverTimeSync);
 
         yield takeEvery(SERVER_NOTIFICATION, serverNotificationSaga);
         yield takeEvery(SERVER_DISCONNECT, serverDisconnectSaga);

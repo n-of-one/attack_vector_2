@@ -1,7 +1,6 @@
 import tangleIceManager from "./TangleIceManager";
 import {select} from 'redux-saga/effects'
 import webSocketConnection from "../../../../common/WebSocketConnection";
-import tangleIceCanvas from "./TangleIceCanvas";
 
 const getRunId = (state) => state.run.scan.runId;
 const getCurrentIce = (state) => state.run.ice.currentIce;
