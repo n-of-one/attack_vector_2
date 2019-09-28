@@ -11,7 +11,7 @@ import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
 import {discoverNodesSaga, serverNodeHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
 import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
-import {SERVER_USER_DC} from "../common/terminal/TerminalActions";
+import {SERVER_USER_DC, TERMINAL_TICK} from "../common/terminal/TerminalActions";
 import {
     deleteScanSaga,
     enterScanSaga,
@@ -43,6 +43,7 @@ import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_IC
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
+import {checkTimerSaga} from  "./run/alarm/AlarmSagas";
 
 const createHackerRootSaga = () => {
 
@@ -104,6 +105,8 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_START_HACKING_ICE_TANGLE, tangleIceStartHack);
         yield takeEvery(ICE_TANGLE_MOVE_POINT, tangleIcePointMoved);
         yield takeEvery(SERVER_TANGLE_POINT_MOVED, tanglePointMoved);
+
+        yield takeEvery(TERMINAL_TICK, checkTimerSaga);
     }
 
     function* scanRootSaga() {

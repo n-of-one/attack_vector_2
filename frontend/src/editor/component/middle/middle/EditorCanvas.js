@@ -1,8 +1,8 @@
 import {fabric} from "fabric";
 import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../../EditorActions";
 import {assertNotNullUndef} from "../../../../common/Assert";
-import NodeDisplay from "../../../../common/canvas/NodeDisplay";
-import ConnectionDisplay from "../../../../common/canvas/ConnectionDisplay";
+import NodeDisplay from "../../../../common/canvas/display/NodeDisplay";
+import ConnectionDisplay from "../../../../common/canvas/display/ConnectionDisplay";
 
 /**
  * This class provides editor map like actions to the fabric canvas.

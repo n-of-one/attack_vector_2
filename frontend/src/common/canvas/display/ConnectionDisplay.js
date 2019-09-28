@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate, calcLine} from "./CanvasUtils";
+import {animate, calcLine} from "../CanvasUtils";
 
 export default class ConnectionDisplay {
 

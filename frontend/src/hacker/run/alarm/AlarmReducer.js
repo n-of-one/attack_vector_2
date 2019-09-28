@@ -1,4 +1,4 @@
-import {SERVER_TRIGGER_TIMER} from "./AlarmActions";
+import {SERVER_TRIGGER_TIMER, SERVER_EXPIRE_TIMER} from "./AlarmActions";
 import serverTime from "../../../common/ServerTime";
 import {TERMINAL_TICK} from "../../../common/terminal/TerminalActions";
 
@@ -9,15 +9,15 @@ const defaultState = {
 };
 
 
-
 export default (state = defaultState, action) => {
 
     switch (action.type) {
         case SERVER_TRIGGER_TIMER:
             return serverAlarmTrigger(state, action.data.alarm);
-        case TERMINAL_TICK: {
+        case TERMINAL_TICK:
             return processTick(state);
-        }
+        case SERVER_EXPIRE_TIMER:
+            return processExpireTimer(state, action);
         default:
             return state;
     }
@@ -35,11 +35,19 @@ const processTick = (state) => {
         return state;
     }
     const secondsUntilAlarm = serverTime.secondsLeft(state.alarmAt);
-    if (secondsUntilAlarm === 0) {
-        return {
-            ...state, secondsUntilAlarm: 0, alarmTriggered: true
-        }
-    }
+    // if (secondsUntilAlarm === 0) {
+    //     return {
+    //         ...state, secondsUntilAlarm: 0, alarmTriggered: true
+    //     }
+    // }
 
     return {alarmAt: state.alarmAt, secondsUntilAlarm: secondsUntilAlarm};
+};
+
+const processExpireTimer = (state, serverAction) => {
+    return {
+        alarmAt: null,
+        secondsUntilAlarm: 0,
+        alarmTriggered: true
+    };
 };

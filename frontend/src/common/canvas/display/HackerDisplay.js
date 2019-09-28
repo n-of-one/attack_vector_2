@@ -1,8 +1,8 @@
 import {fabric} from "fabric";
-import {animate, calcLine, easeLinear, easeOutSine} from "./CanvasUtils";
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../terminal/TerminalActions";
-import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS} from "../../hacker/run/model/HackActions";
-import Schedule from "../Schedule";
+import {animate, calcLine, easeLinear, easeOutSine} from "../CanvasUtils";
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalActions";
+import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS} from "../../../hacker/run/model/HackActions";
+import Schedule from "../../Schedule";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;

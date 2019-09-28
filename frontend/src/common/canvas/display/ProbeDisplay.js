@@ -1,9 +1,9 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart, easeLinear} from "./CanvasUtils";
-import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../hacker/run/model/ScanActions";
-import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../hacker/run/model/NodeScanTypes";
-import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
-import Schedule from "../Schedule";
+import {animate, calcLine, calcLineStart, easeLinear} from "../CanvasUtils";
+import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../../hacker/run/model/ScanActions";
+import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes";
+import {TERMINAL_RECEIVE} from "../../terminal/TerminalActions";
+import Schedule from "../../Schedule";
 
 const SIZE_SMALL = 20;
 const SIZE_SMALL_MEDIUM = 30;

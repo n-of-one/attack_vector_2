@@ -1,10 +1,10 @@
 import {fabric} from "fabric";
 import Schedule from "../../../common/Schedule";
 import {DISCOVERED, UNDISCOVERED} from "../../../common/enums/NodeStatus";
-import NodeDisplay from "../../../common/canvas/NodeDisplay";
-import ConnectionIcon from "../../../common/canvas/ConnectionDisplay";
-import HackerIcon from "../../../common/canvas/HackerDisplay";
-import ProbeDisplay from "../../../common/canvas/ProbeDisplay";
+import NodeDisplay from "../../../common/canvas/display/NodeDisplay";
+import ConnectionIcon from "../../../common/canvas/display/ConnectionDisplay";
+import HackerIcon from "../../../common/canvas/display/HackerDisplay";
+import ProbeDisplay from "../../../common/canvas/display/ProbeDisplay";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst";
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions";
 
