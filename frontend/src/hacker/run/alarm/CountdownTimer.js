@@ -7,17 +7,18 @@ const mapDispatchToProps = (dispatch) => {
 };
 let mapStateToProps = (state) => {
     return {
-        secondsUntilAlarm: state.run.alarm.secondsUntilAlarm
+        showCountdown: state.run.countdown.finishAt !==null,
+        secondsLeft: state.run.countdown.secondsLeft
     };
 };
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-    ({secondsUntilAlarm}) => {
+    ({showCountdown, secondsLeft}) => {
 
-        if (secondsUntilAlarm) {
+        if (showCountdown) {
             return (
-                <span className="alarm">{serverTime.format(secondsUntilAlarm)}</span>
+                <span className="countdown">{serverTime.format(secondsLeft)}</span>
             );
         } else {
             return <></>;

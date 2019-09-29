@@ -5,7 +5,7 @@ import createTerminalReducer from "../../common/terminal/TerminalReducer";
 import SiteReducer from "./reducer/SiteReducer";
 import infoNodeIdReducer from "./reducer/InfoNodeIdReducer";
 import iceRootReducer from "./ice/IceRootReducer";
-import alarmReducer from "./alarm/AlarmReducer";
+import countdownReducer from "./alarm/CountdownReducer";
 
 
 const runRootReducer = combineReducers({
@@ -15,7 +15,7 @@ const runRootReducer = combineReducers({
     scan: ScanReducer,
     infoNodeId: infoNodeIdReducer,
     ice: iceRootReducer,
-    alarm: alarmReducer
+    countdown: countdownReducer
 });
 
 export default runRootReducer;

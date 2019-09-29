@@ -31,9 +31,9 @@ class CommandMoveService(
     fun process(runId: String, tokens: List<String>, position: HackerPosition) {
 
         // fixme temporary to implement timer trigger client side
-        class TimerTrigger(val alarm: ZonedDateTime)
-        val alarmTime = time.now().plusSeconds(70)
-        stompService.toRun(runId, ReduxActions.SERVER_TRIGGER_TIMER, TimerTrigger(alarmTime))
+        class CountdownStart(val finishAt: ZonedDateTime)
+        val alarmTime = time.now().plusSeconds(7)
+        stompService.toRun(runId, ReduxActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
 
 
         if (tokens.size == 1) {

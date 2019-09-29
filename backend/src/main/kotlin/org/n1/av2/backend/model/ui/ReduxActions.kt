@@ -55,7 +55,8 @@ enum class ReduxActions {
     SERVER_START_HACKING_ICE_TANGLE,  // sent to hacker that hacks this ice
     SERVER_TANGLE_POINT_MOVED,        // some hacker moved a tangle point
 
-    SERVER_TRIGGER_TIMER              // The client can show the countdown clock
+    SERVER_START_COUNTDOWN,          // The client can show the countdown clock
+    SERVER_COMPLETE_COUNTDOWN,       // The countdown completes and triggers the event (that the client must perform).
 
 
 }
