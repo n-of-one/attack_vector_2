@@ -43,7 +43,7 @@ import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_IC
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
-import {checkTimerSaga} from "./run/alarm/CountdownSagas";
+import {checkTimerSaga} from "./run/coundown/CountdownSagas";
 
 
 const createHackerRootSaga = () => {

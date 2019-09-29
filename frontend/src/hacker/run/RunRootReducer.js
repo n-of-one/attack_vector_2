@@ -5,7 +5,7 @@ import createTerminalReducer from "../../common/terminal/TerminalReducer";
 import SiteReducer from "./reducer/SiteReducer";
 import infoNodeIdReducer from "./reducer/InfoNodeIdReducer";
 import iceRootReducer from "./ice/IceRootReducer";
-import countdownReducer from "./alarm/CountdownReducer";
+import countdownReducer from "./coundown/CountdownReducer";
 
 
 const runRootReducer = combineReducers({

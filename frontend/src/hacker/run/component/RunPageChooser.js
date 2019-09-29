@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import RunHome from "./RunHome";
 import IceGame from "../ice/IceGame";
-import AlarmTimer from "../alarm/CountdownTimer";
+import AlarmTimer from "../coundown/CountdownTimer";
 
 const mapDispatchToProps = (dispatch) => {
     return {}
