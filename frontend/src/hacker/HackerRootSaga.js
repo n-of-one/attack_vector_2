@@ -45,9 +45,11 @@ import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_PO
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
 import {checkTimerSaga} from  "./run/alarm/AlarmSagas";
 
+
 const createHackerRootSaga = () => {
 
     function* allSagas() {
+
 
         yield takeEvery(SERVER_TIME_SYNC, serverTimeSync);
 
