@@ -58,5 +58,7 @@ enum class ReduxActions {
     SERVER_START_COUNTDOWN,          // The client can show the countdown clock
     SERVER_COMPLETE_COUNTDOWN,       // The countdown completes and triggers the event (that the client must perform).
 
+    SERVER_LEASH_LOCKS_HACKER,          // Client can show leash locking hacker, and start back tracing.
+
 
 }

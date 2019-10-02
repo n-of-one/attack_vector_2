@@ -1,9 +1,9 @@
 package org.n1.av2.backend.engine
 
 import mu.KLogging
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.FatalException
 import org.n1.av2.backend.util.ServerFatal
@@ -15,9 +15,11 @@ class TaskRunner(val queue: LinkedBlockingQueue<Task>,
 
     companion object: KLogging()
 
+    var running = true
+
     override fun run() {
         try {
-            while (true) {
+            while (running) {
                 runTask()
             }
         } catch (e: InterruptedException) {
@@ -52,6 +54,10 @@ class TaskRunner(val queue: LinkedBlockingQueue<Task>,
             stompService.toUser(ReduxActions.SERVER_ERROR, event)
             logger.info("${task.principal.name} - task triggered exception. ", exception)
         }
+    }
+
+    fun terminate() {
+        this.running = false
     }
 
 }

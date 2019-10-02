@@ -32,4 +32,12 @@ class HackingController(
         executor.run(principal) { hackingService.probedConnections(command.nodeId, command.runId) }
     }
 
+
+    data class LeashArriveHacker(val nodeId: String, val runId: String)
+
+    @MessageMapping("/hack/leashArriveHacker")
+    fun leashArriveHacker(command: LeashArriveHacker, principal: Principal) {
+        executor.run(principal) { hackingService.leashArriveHacker(command.nodeId, command.runId) }
+    }
+
 }

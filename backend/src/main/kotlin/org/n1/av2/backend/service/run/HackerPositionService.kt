@@ -41,7 +41,8 @@ class HackerPositionService(
                 userId = userId,
                 currentNodeId = startNode.id,
                 previousNodeId = startNode.networkId,
-                inTransit = true)
+                inTransit = true,
+                locked = false)
         hackerPositionRepo.save(newPosition)
     }
 
@@ -59,6 +60,12 @@ class HackerPositionService(
 
     fun purgeAll() {
         hackerPositionRepo.deleteAll()
+    }
+
+    fun lockHacker() {
+        val position = retrieveForCurrentUser()
+        val newPosition = position.copy(locked = true)
+        hackerPositionRepo.save(newPosition)
     }
 
 }

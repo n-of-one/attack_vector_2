@@ -99,4 +99,19 @@ class HackingService(
         iceStatusRepo.deleteAll()
     }
 
+    private data class LeashLocksHacker(val hackerId: String)
+
+    fun leashArriveHacker(nodeId: String, runId: String) {
+        val hackerPosition = hackerPositionService.retrieveForCurrentUser()
+        val hackerId = currentUserService.userId
+        if (hackerPosition.currentNodeId == nodeId) {
+            hackerPositionService.lockHacker()
+            stompService.toRun(runId, ReduxActions.SERVER_LEASH_LOCKS_HACKER, LeashLocksHacker(hackerId))
+        } else {
+            // FIXME
+
+        }
+
+    }
+
 }

@@ -4,7 +4,6 @@ import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Component
 import java.security.Principal
-import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -16,26 +15,32 @@ import javax.annotation.PreDestroy
 @Component
 class SerializingExecutor(
         stompService: StompService,
-        currentUserService: CurrentUserService)  {
+        currentUserService: CurrentUserService,
+        timedEventQueue: TimedEventQueue,
+        gameEventService: GameEventService)  {
 
     private val queue = LinkedBlockingQueue<Task>()
-    val executorService = Executors.newSingleThreadExecutor()!!
     val runner = TaskRunner(queue, stompService, currentUserService)
+    val eventRunner = TimedEventRunner(timedEventQueue, queue, gameEventService)
+    val executorThread = Thread(runner)
+    val timedEventThread = Thread(eventRunner)
 
     @PostConstruct
     fun init() {
-        executorService.execute(runner)
+        executorThread.start()
+        timedEventThread.start()
     }
 
     @PreDestroy
     fun destroy() {
         // unlike shutdown() shutdownNow() sends interruption to running tasks
-        executorService.shutdownNow()
+        runner.terminate()
     }
 
     fun run(principal: Principal, action: () -> Unit) {
         val task = Task(action, principal)
         queue.put(task)
     }
+
 
 }
