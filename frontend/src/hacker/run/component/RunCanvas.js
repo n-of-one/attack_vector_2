@@ -7,6 +7,7 @@ import HackerIcon from "../../../common/canvas/display/HackerDisplay";
 import ProbeDisplay from "../../../common/canvas/display/ProbeDisplay";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst";
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions";
+import SnifferLeashDisplay from "../../../common/canvas/display/SnifferLeashDisplay";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -303,6 +304,19 @@ class RunCanvas {
     stop() {
         this.iconSchedule.terminate();
         Object.values(this.displayById).forEach( (display) => display.terminate() );
+    }
+
+    activateSniffer(nodeId) {
+        const targetHackerDisplay = this.displayById[this.userId];
+        const snifferLeashDisplay = new SnifferLeashDisplay(this.canvas, this.dispatch, nodeId, targetHackerDisplay, this.displayById);
+        const snifferId = "sniffer-" + this.userId;
+        this.displayById[snifferId] = snifferLeashDisplay;
+    }
+
+    leashLocksHacker(hackerId) {
+        const snifferId = "sniffer-" + hackerId;
+        const snifferDisplay = this.displayById[snifferId];
+        snifferDisplay.capture();
     }
 }
 

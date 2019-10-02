@@ -8,6 +8,7 @@ import ScanNodeImage from "./RunNodeImage";
 import HackerImage from "../../../common/component/HackerImage";
 import ScanProbeImages from "./ScanProbeImages";
 import connect from "react-redux/es/connect/connect";
+import PatrollerImage from "../../../common/component/PatrollerImage";
 
 class RunCanvasPanel extends Component {
 
@@ -92,6 +93,8 @@ class RunCanvasPanel extends Component {
                     <HackerImage type="CAT_2" fileName="animal-cat1.png" onLoad={onLoad}/>
                     <HackerImage type="BIRD_2" fileName="animal-bird.png" onLoad={onLoad}/>
                     <HackerImage type="NOT" fileName="animal-cat-print.png" onLoad={onLoad}/>
+
+                    <PatrollerImage type="PATROLLER_3" fileName="patroller_3.png" onLoad={onLoad}/>
 
 
                     <ScanProbeImages />

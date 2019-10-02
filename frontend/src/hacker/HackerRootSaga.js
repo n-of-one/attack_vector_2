@@ -43,7 +43,8 @@ import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_IC
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
-import {checkTimerSaga} from "./run/coundown/CountdownSagas";
+import {checkTimerSaga, leashArriveHackerSaga, serverCompleteCountdownSaga, serverLeashLocksHackerSaga} from "./run/coundown/CountdownSagas";
+import {SERVER_COMPLETE_COUNTDOWN, SERVER_LEASH_LOCKS_HACKER, SNIFFER_LEASH_ARRIVE_HACKER} from "./run/coundown/CountdownActions";
 
 
 const createHackerRootSaga = () => {
@@ -109,6 +110,9 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_TANGLE_POINT_MOVED, tanglePointMoved);
 
         yield takeEvery(TERMINAL_TICK, checkTimerSaga);
+        yield takeEvery(SERVER_COMPLETE_COUNTDOWN, serverCompleteCountdownSaga);
+        yield takeEvery(SNIFFER_LEASH_ARRIVE_HACKER, leashArriveHackerSaga);
+        yield takeEvery(SERVER_LEASH_LOCKS_HACKER, serverLeashLocksHackerSaga);
     }
 
     function* scanRootSaga() {

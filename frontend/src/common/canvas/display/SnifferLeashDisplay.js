@@ -1,10 +1,8 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, easeLinear} from "../CanvasUtils";
-import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../../hacker/run/model/ScanActions";
-import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes";
-import {TERMINAL_RECEIVE} from "../../terminal/TerminalActions";
 import Schedule from "../../Schedule";
-import {SNIFFER_LEASH_ARRIVE_HACKER} from "../../../hacker/run/model/LayerActions";
+import {SNIFFER_LEASH_ARRIVE_HACKER} from "../../../hacker/run/coundown/CountdownActions";
+import {SIZE_NORMAL} from "./DisplayConstants";
 
 
 export default class SnifferLeashDisplay {
@@ -26,19 +24,35 @@ export default class SnifferLeashDisplay {
 
         this.targetHackerDisplay = targetHackerDisplay;
 
-        const targetNodeDisplay = displayById[startNodeId];
+        this.currentNodeDisplay = displayById[startNodeId];
 
-        this.schedule.run(0, () => {
-            this.arriveAt(targetNodeDisplay);
+        const image = document.getElementById("PATROLLER_3");
+
+        this.tracerIcon = new fabric.Image(image, {
+            left: this.currentNodeDisplay.x,
+            top: this.currentNodeDisplay.y,
+            height: SIZE_NORMAL,
+            width: SIZE_NORMAL,
+            opacity: 0,
+            selectable: false,
         });
+        this.canvas.add(this.tracerIcon);
+        this.canvas.bringToFront(this.tracerIcon);
+        animate(this.canvas, this.tracerIcon, "opacity", 1, 20);
+
+        this.schedule.wait(20);
+        this.schedule.run(0, () => {
+            this.arriveAt(this.currentNodeDisplay);
+        });
+
     }
 
-    arriveAt(display) {
-        if (display === this.targetHackerDisplay.currentNodeDisplay) {
-            this.attemptToCatch(display.id);
+    arriveAt(nodeDisplay) {
+        if (nodeDisplay === this.targetHackerDisplay.currentNodeDisplay) {
+            this.attemptToCatch(nodeDisplay.id);
         }
         else {
-            this.extendLeash(display);
+            this.extendLeash();
         }
     }
 
@@ -46,8 +60,23 @@ export default class SnifferLeashDisplay {
         this.dispatch({type: SNIFFER_LEASH_ARRIVE_HACKER, hackerId: this.targetHackerId, nodeId: nodeId})
     }
 
-    extendLeash(display) {
-        alert("not implemented yey")
+    extendLeash() {
+        // this.nextNodeDisplay = findNextNodeDisplay();
+        // FIXME: render
+    }
+
+
+    capture() {
+        this.targetHackerDisplay.capturedByLeash();
+    }
+
+
+    findNextNodeDisplay() {
+        // FIXME
+        return
+
+        // this.currentNodeDisplay
+        // this.targetHackerDisplay
     }
     //
     //
