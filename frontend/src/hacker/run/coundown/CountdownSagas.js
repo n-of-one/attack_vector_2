@@ -16,8 +16,8 @@ export function* checkTimerSaga(action) {
     yield
 }
 
-export function* serverCompleteCountdownSaga(action) {
-    yield runCanvas.activateSniffer("node-6901-48c9")
+export function* serverStartPatrollerSaga(action) {
+    yield runCanvas.activateSniffer(action.data)
 }
 
 export function* leashArriveHackerSaga(action) {
@@ -26,6 +26,6 @@ export function* leashArriveHackerSaga(action) {
     yield webSocketConnection.send("/av/hack/leashArriveHacker", JSON.stringify(payload));
 }
 
-export function* serverLeashLocksHackerSaga(action) {
-    yield runCanvas.leashLocksHacker(action.data.hackerId);
+export function* serverPatrollerLocksHackerSaga(action) {
+    yield runCanvas.leashLocksHacker(action.data);
 }

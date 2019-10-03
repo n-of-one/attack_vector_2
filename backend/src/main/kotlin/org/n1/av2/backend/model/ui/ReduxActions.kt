@@ -52,13 +52,17 @@ enum class ReduxActions {
     SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                // change icon of node in run
 
-    SERVER_START_HACKING_ICE_TANGLE,  // sent to hacker that hacks this ice
-    SERVER_TANGLE_POINT_MOVED,        // some hacker moved a tangle point
+    SERVER_START_HACKING_ICE_TANGLE,    // sent to hacker that hacks this ice
+    SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
 
-    SERVER_START_COUNTDOWN,          // The client can show the countdown clock
-    SERVER_COMPLETE_COUNTDOWN,       // The countdown completes and triggers the event (that the client must perform).
+    SERVER_START_COUNTDOWN,             // The client can show the countdown clock
+    SERVER_COMPLETE_COUNTDOWN,          // The countdown completes
+
+    SERVER_START_PATROLLER,             // Client shows a patroller (for example as a result of an alarm countdown)
+
 
     SERVER_LEASH_LOCKS_HACKER,          // Client can show leash locking hacker, and start back tracing.
+    SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
 
 
 }

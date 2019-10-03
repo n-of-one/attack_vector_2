@@ -1,7 +1,6 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, easeLinear} from "../CanvasUtils";
 import Schedule from "../../Schedule";
-import {SNIFFER_LEASH_ARRIVE_HACKER} from "../../../hacker/run/coundown/CountdownActions";
 import {SIZE_NORMAL} from "./DisplayConstants";
 
 
@@ -9,22 +8,26 @@ export default class SnifferLeashDisplay {
 
     canvas = null;
     dispatch = null;
-    schedule = null;
-
-    targetHackerDisplay = null;
     displayById = null;
+
+    patrollerId = null;
+    currentNodeId = null;
+
+    schedule = null;
 
     lineIcons = [];
 
-    constructor(canvas, dispatch, startNodeId, targetHackerDisplay, displayById) {
+    constructor({patrollerId, nodeId, appearTicks}, canvas, dispatch, displayById) {
+        this.patrollerId = patrollerId;
+        this.currentNodeId = nodeId;
+
         this.canvas = canvas;
         this.schedule = new Schedule();
         this.dispatch = dispatch;
         this.displayById = displayById;
 
-        this.targetHackerDisplay = targetHackerDisplay;
 
-        this.currentNodeDisplay = displayById[startNodeId];
+        this.currentNodeDisplay = displayById[nodeId];
 
         const image = document.getElementById("PATROLLER_3");
 
@@ -38,46 +41,34 @@ export default class SnifferLeashDisplay {
         });
         this.canvas.add(this.tracerIcon);
         this.canvas.bringToFront(this.tracerIcon);
-        animate(this.canvas, this.tracerIcon, "opacity", 1, 20);
 
-        this.schedule.wait(20);
-        this.schedule.run(0, () => {
-            this.arriveAt(this.currentNodeDisplay);
-        });
-
+        animate(this.canvas, this.tracerIcon, "opacity", 1, appearTicks);
+        this.schedule.wait(appearTicks);
     }
 
-    arriveAt(nodeDisplay) {
-        if (nodeDisplay === this.targetHackerDisplay.currentNodeDisplay) {
-            this.attemptToCatch(nodeDisplay.id);
-        }
-        else {
-            this.extendLeash();
-        }
+    // arriveAt(nodeDisplay) {
+    //     if (nodeDisplay === this.targetHackerDisplay.currentNodeDisplay) {
+    //         this.attemptToCatch(nodeDisplay.id);
+    //     }
+    //     else {
+    //         this.extendLeash();
+    //     }
+    // }
+    //
+    // attemptToCatch(nodeId) {
+    //     this.dispatch({type: SNIFFER_LEASH_ARRIVE_HACKER, hackerId: this.targetHackerId, nodeId: nodeId})
+    // }
+    //
+    // extendLeash() {
+    //     // this.nextNodeDisplay = findNextNodeDisplay();
+    // }
+    //
+    //
+
+    capture(hackerId) {
+        this.displayById[hackerId].capturedByLeash();
     }
 
-    attemptToCatch(nodeId) {
-        this.dispatch({type: SNIFFER_LEASH_ARRIVE_HACKER, hackerId: this.targetHackerId, nodeId: nodeId})
-    }
-
-    extendLeash() {
-        // this.nextNodeDisplay = findNextNodeDisplay();
-        // FIXME: render
-    }
-
-
-    capture() {
-        this.targetHackerDisplay.capturedByLeash();
-    }
-
-
-    findNextNodeDisplay() {
-        // FIXME
-        return
-
-        // this.currentNodeDisplay
-        // this.targetHackerDisplay
-    }
     //
     //
     // scheduleMoveStep(nextDisplay, currentDisplay) {

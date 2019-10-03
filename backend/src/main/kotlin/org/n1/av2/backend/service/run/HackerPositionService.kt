@@ -62,10 +62,16 @@ class HackerPositionService(
         hackerPositionRepo.deleteAll()
     }
 
-    fun lockHacker() {
-        val position = retrieveForCurrentUser()
+    fun lockHacker(hackerId: String) {
+        val position = retrieve(hackerId)
         val newPosition = position.copy(locked = true)
         hackerPositionRepo.save(newPosition)
+    }
+
+    fun hackersAt(nodeId: String, runId: String): List<String> {
+        return hackerPositionRepo
+                .findByCurrentNodeIdAndRunId(nodeId, runId)
+                .map { it.userId }
     }
 
 }

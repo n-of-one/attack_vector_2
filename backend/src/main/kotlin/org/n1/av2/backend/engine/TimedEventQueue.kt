@@ -5,7 +5,9 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-const val FRAME_MILLIS = 20
+const val TICK_MILLIS = 50
+const val SECOND_MILLIS = 1000
+const val MINUTE_MILLIS = 60 * SECOND_MILLIS
 
 /**
  * Queue to hold times events.
@@ -25,18 +27,18 @@ class TimedEventQueue {
         }
     }
 
-    fun queueInFrames(frames: Int, event: GameEvent) {
-        val due = System.currentTimeMillis() + FRAME_MILLIS * frames
+    fun queueInTicks(ticks: Int, event: GameEvent) {
+        val due = System.currentTimeMillis() + TICK_MILLIS * ticks
         add(due, event)
     }
 
     fun queueInSeconds(seconds: Int, event: GameEvent) {
-        val due = System.currentTimeMillis() + 1000 * seconds
+        val due = System.currentTimeMillis() + SECOND_MILLIS * seconds
         add(due, event)
     }
 
     fun queueInMinutesAndSeconds(minutes: Int, seconds: Int, event: GameEvent) {
-        val due = System.currentTimeMillis() + 1000 * seconds + 60000 * minutes
+        val due = System.currentTimeMillis() + SECOND_MILLIS * seconds + MINUTE_MILLIS * minutes
         add(due, event)
     }
 

@@ -37,7 +37,7 @@ class CommandMoveService(
         class CountdownStart(val finishAt: ZonedDateTime)
         val alarmTime = time.now().plusSeconds(7)
         stompService.toRun(runId, ReduxActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
-        timedEventQueue.queueInSeconds(7, AlarmGameEvent(runId))
+        timedEventQueue.queueInSeconds(7, AlarmGameEvent(runId, position.currentNodeId))
 
         if (tokens.size == 1) {
             stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
