@@ -19,7 +19,7 @@ class Login extends Component {
             {name: "[Sander] Angler", login: "Angler"},
             {name: "[Silvester] _eternity_", login: "_eternity_"},
             {name: "[Thijs] C_H_I_E_F", login: "C_H_I_E_F"},
-            {name: "[Verik] -=Silver=", login: "-=Silver=-"},
+            {name: "[Verik] -=Silver=-", login: "-=Silver=-"},
             {name: "*unclaimed* Obsidian", login: "Obsidian"},
             {name: "*unclaimed* BoltBishop", login: "BoltBishop"},
             {name: "*unclaimed* CryptoLaw", login: "CryptoLaw"},
