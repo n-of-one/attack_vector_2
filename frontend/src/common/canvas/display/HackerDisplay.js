@@ -3,7 +3,7 @@ import {animate, calcLine, easeLinear, easeOutSine} from "../CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalActions";
 import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS} from "../../../hacker/run/model/HackActions";
 import Schedule from "../../Schedule";
-import {IDENTIFICATION_SIZE_LARGE, IDENTIFICATION_SIZE_NORMAL, OFFSET, SIZE_LARGE, SIZE_NORMAL, SIZE_SMALL} from "./DisplayConstants";
+import {IDENTIFICATION_SIZE_LARGE, IDENTIFICATION_SIZE_NORMAL, OFFSET, COLOR_PATROLLER_LINE, SIZE_LARGE, SIZE_NORMAL, SIZE_SMALL} from "./util/DisplayConstants";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
@@ -433,7 +433,7 @@ export default class HackerDisplay {
         this.lockIcon = new fabric.Rect({
             width: 34,
             height: 34,
-            fill: "#A42433",
+            fill: COLOR_PATROLLER_LINE,
             left: this.hackerIcon.left,
             top: this.hackerIcon.top -1,
             opacity: 0,

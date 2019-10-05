@@ -11,7 +11,7 @@ import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
 import {discoverNodesSaga, serverNodeHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
 import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
-import {SERVER_USER_DC, TERMINAL_TICK} from "../common/terminal/TerminalActions";
+import {SERVER_USER_DC} from "../common/terminal/TerminalActions";
 import {
     deleteScanSaga,
     enterScanSaga,
@@ -44,18 +44,14 @@ import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswo
 import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
 import {
-    checkTimerSaga,
-    leashArriveHackerSaga,
     serverStartPatrollerSaga,
     serverPatrollerLocksHackerSaga,
-    serverFlashPatrollerSaga
+    serverFlashPatrollerSaga, serverPatrollerMoveSaga
 } from "./run/coundown/CountdownSagas";
 import {
-    SERVER_COMPLETE_COUNTDOWN, SERVER_FLASH_PATROLLER,
-    SERVER_LEASH_LOCKS_HACKER,
-    SERVER_PATROLLER_LOCKS_HACKER,
+    SERVER_FLASH_PATROLLER,
+    SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE,
     SERVER_START_PATROLLER,
-    SNIFFER_LEASH_ARRIVE_HACKER
 } from "./run/coundown/CountdownActions";
 
 
@@ -121,13 +117,10 @@ const createHackerRootSaga = () => {
         yield takeEvery(ICE_TANGLE_MOVE_POINT, tangleIcePointMoved);
         yield takeEvery(SERVER_TANGLE_POINT_MOVED, tanglePointMoved);
 
-        yield takeEvery(TERMINAL_TICK, checkTimerSaga);
-
         yield takeEvery(SERVER_FLASH_PATROLLER, serverFlashPatrollerSaga);
-
         yield takeEvery(SERVER_START_PATROLLER, serverStartPatrollerSaga);
-        // yield takeEvery(SNIFFER_LEASH_ARRIVE_HACKER, leashArriveHackerSaga);
         yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);
+        yield takeEvery(SERVER_PATROLLER_MOVE, serverPatrollerMoveSaga);
     }
 
     function* scanRootSaga() {

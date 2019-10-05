@@ -8,21 +8,27 @@ import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.HomingPatrollerRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
+import org.n1.av2.backend.service.scan.TraverseNodeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
 
 class AlarmGameEvent(val runId: String, val nodeId: String, val userId: String): GameEvent
-class PatrollerArriveGameEvent(val runId: String, val patrollerId: String, val nodeId: String): GameEvent
+class PatrollerArriveGameEvent(val patrollerId: String, val nodeId: String, val runId: String): GameEvent
+
+
+const val PATROLLER_ARRIVE_FIRST_TICKS = 20
+const val PATROLLER_MOVE_TICKS = 15
 
 @Service
 class AlarmService(
         val hackerPositionService: HackerPositionService,
         val timedEventQueue: TimedEventQueue,
-        val stompService: StompService,
         val homingPatrollerRepo: HomingPatrollerRepo,
-        val time: TimeService) {
+        val traverseNodeService: TraverseNodeService,
+        val time: TimeService,
+        val stompService: StompService) {
 
 
     fun hackerTriggers(layer: TimerTriggerLayer, nodeId: String, userId: String, runId: String) {
@@ -34,7 +40,6 @@ class AlarmService(
         stompService.toUser(ReduxActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
 
         val detectTime = format(layer.minutes, layer.seconds)
-
         stompService.terminalReceive("[pri]${layer.level}[/] Network sniffer : analyzing traffic. Persona mask will fail in [error]${detectTime}[/].")
 
         class FlashPatroller(val nodeId: String)
@@ -48,7 +53,7 @@ class AlarmService(
     }
 
 
-    class ActionStartPatroller(val patrollerId: String, val nodeId: String, val appearTicks:Int = 20)
+    class ActionStartPatroller(val patrollerId: String, val nodeId: String, val appearTicks:Int = PATROLLER_ARRIVE_FIRST_TICKS)
     fun processAlarm(event: AlarmGameEvent) {
         stompService.toRun(event.runId, ReduxActions.SERVER_COMPLETE_COUNTDOWN)
 
@@ -56,6 +61,7 @@ class AlarmService(
                 id = createId("homingPatroller", homingPatrollerRepo::findById),
                 runId = event.runId,
                 targetUserId = event.userId,
+                siteId = hackerPositionService.retrieve(event.userId).siteId,
                 currentNodeId = event.nodeId
         )
         homingPatrollerRepo.save(patroller)
@@ -63,7 +69,7 @@ class AlarmService(
         val action = ActionStartPatroller(patroller.id, event.nodeId)
         stompService.toRun(event.runId, ReduxActions.SERVER_START_PATROLLER, action)
 
-        val next = PatrollerArriveGameEvent(event.runId, patroller.id, event.nodeId)
+        val next = PatrollerArriveGameEvent(patroller.id, event.nodeId, event.runId)
         timedEventQueue.queueInTicks(20, next)
     }
 
@@ -82,13 +88,31 @@ class AlarmService(
             // TODO schedule removal of patroller from view
         }
         else {
-            // TODO
+            movePatrollerLeashTowardsHacker(patroller, event.runId)
         }
 
 //        val hackers = hackerPositionService.hackersAt(event.nodeId, event.runId)
 //        hackers.forEach {hackerId ->
 //        }
     }
+
+    class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val moveTicks: Int)
+    private fun movePatrollerLeashTowardsHacker(patroller: HomingPatroller, runId: String) {
+        val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId)
+        val startTraverseNode = traverseNodesById[patroller.currentNodeId]!!
+        startTraverseNode.fillDistanceFromHere(0)
+        val targetNodeId = hackerPositionService.retrieve(patroller.targetUserId).currentNodeId
+        val targetTraverseNode = traverseNodesById[targetNodeId]!!
+        val nextNodeToTarget = targetTraverseNode.traceToDistance(1) ?: error("Cannot find path to hacker at ${targetNodeId} from ${patroller.currentNodeId}")
+
+        stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_MOVE, ActionPatrollerMove(patroller.id, patroller.currentNodeId, nextNodeToTarget.id, PATROLLER_MOVE_TICKS))
+
+        val next = PatrollerArriveGameEvent(patroller.id, nextNodeToTarget.id, runId)
+        timedEventQueue.queueInTicks(PATROLLER_MOVE_TICKS + 1, next)
+    }
+
+
+    // TODO deal with hackers whose connection is reset while being hunted by the patroller. Either due to active DC or due to disconnect.
 
 
 }

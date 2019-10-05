@@ -1,7 +1,8 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart, easeLinear} from "../CanvasUtils";
+import {animate, calcLine, calcLineStart} from "../CanvasUtils";
 import Schedule from "../../Schedule";
-import {SIZE_NORMAL} from "./DisplayConstants";
+import {COLOR_PATROLLER_LINE, SIZE_NORMAL} from "./util/DisplayConstants";
+import LineElement from "./util/LineElement";
 
 
 export default class SnifferLeashDisplay {
@@ -15,7 +16,7 @@ export default class SnifferLeashDisplay {
 
     schedule = null;
 
-    lineIcons = [];
+    lineElements = [];
 
     constructor({patrollerId, nodeId, appearTicks}, canvas, dispatch, displayById) {
         this.patrollerId = patrollerId;
@@ -44,6 +45,23 @@ export default class SnifferLeashDisplay {
 
         animate(this.canvas, this.patrollerIcon, "opacity", 1, appearTicks);
         this.schedule.wait(appearTicks);
+    }
+
+    move(fromNodeId, toNodeId, moveTicks) {
+
+        this.schedule.run(moveTicks, () => {
+            const fromNodeDisplay = this.displayById[fromNodeId];
+            const toNodeDisplay = this.displayById[toNodeId];
+
+            const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 22, 4);
+            const lineElement = new LineElement(lineStartData, COLOR_PATROLLER_LINE, this.canvas);
+
+            this.lineElements.push(lineElement);
+
+            const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
+            lineElement.extendTo(lineEndData, moveTicks);
+        });
+
     }
 
     // arriveAt(nodeDisplay) {

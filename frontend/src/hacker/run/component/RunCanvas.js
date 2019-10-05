@@ -306,6 +306,14 @@ class RunCanvas {
         Object.values(this.displayById).forEach( (display) => display.terminate() );
     }
 
+    flashPatroller({nodeId}) {
+        const patrollerData = {
+            patrollerId: null, nodeId, appearTicks: 20
+        };
+        new SnifferLeashDisplay(patrollerData, this.canvas, null, this.displayById).disappear(20);
+
+    }
+
     activateSniffer(patrollerData) {
         const snifferLeashDisplay = new SnifferLeashDisplay(patrollerData, this.canvas, this.dispatch, this.displayById);
         this.displayById[patrollerData.patrollerId] = snifferLeashDisplay;
@@ -316,13 +324,8 @@ class RunCanvas {
         patroller.capture(hackerId);
     }
 
-    flashPatroller({nodeId}) {
-        const nodeDisplay = this.displayById[nodeId];
-        const patrollerData = {
-            patrollerId: null, nodeId, appearTicks: 20
-        };
-        new SnifferLeashDisplay(patrollerData, this.canvas, null, this.displayById).disappear(20);
-
+    movePatroller({patrollerId, fromNodeId, toNodeId, moveTicks}) {
+        this.displayById[patrollerId].move(fromNodeId, toNodeId, moveTicks);
     }
 }
 

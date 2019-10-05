@@ -1,9 +1,11 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart, easeLinear} from "../CanvasUtils";
+import {animate, calcLine, calcLineStart} from "../CanvasUtils";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../../hacker/run/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes";
 import {TERMINAL_RECEIVE} from "../../terminal/TerminalActions";
 import Schedule from "../../Schedule";
+import LineElement from "./util/LineElement";
+import {COLOR_PROBE_LINE} from "./util/DisplayConstants";
 
 const SIZE_SMALL = 20;
 const SIZE_SMALL_MEDIUM = 30;
@@ -22,7 +24,7 @@ export default class ConnectionDisplay {
     yourProbe = null;
     probeIcon = null;
 
-    lineIcons = [];
+    lineElements = [];
 
     constructor(canvas, dispatch, {path, scanType, autoScan}, hackerDisplay, yourProbe, displayById) {
         this.canvas = canvas;
@@ -65,29 +67,14 @@ export default class ConnectionDisplay {
     }
 
     moveStep(nextDisplay, currentDisplay, time) {
-        const lineIcon = this.createProbeLine(currentDisplay, nextDisplay);
-        this.lineIcons.push(lineIcon);
+        const lineStartData = calcLineStart(currentDisplay, nextDisplay, 22, this.padding);
+        const lineElement = new LineElement(lineStartData, COLOR_PROBE_LINE, this.canvas);
+
+        this.lineElements.push(lineElement);
         const lineData = calcLine(currentDisplay, nextDisplay, this.padding);
-        animate(this.canvas, lineIcon, null, lineData.asCoordinates(), time, easeLinear);
+        lineElement.extendTo(lineData, time);
     }
 
-    createProbeLine(currentDisplay, nextDisplay) {
-        const lineData = calcLineStart(currentDisplay, nextDisplay, 22, this.padding);
-
-        const lineIcon = new fabric.Line(
-            lineData.asArray(), {
-                stroke: "#285ba0",
-                strokeWidth: 2,
-                selectable: false,
-                hoverCursor: 'default',
-                opacity: 1
-            });
-
-        this.canvas.add(lineIcon);
-        this.canvas.sendToBack(lineIcon);
-
-        return lineIcon;
-    }
 
     processProbeArrive(scanType, nodeId, currentDisplay) {
         this.probeIcon.setLeft(currentDisplay.x + 5);
@@ -144,15 +131,15 @@ export default class ConnectionDisplay {
 
     finishProbe(finishMethod) {
         this.schedule.run(10, () => {
-            this.lineIcons.forEach(lineIcon => {
-                animate(this.canvas, lineIcon, 'opacity', 0, 10);
+            this.lineElements.forEach(lineElement => {
+                lineElement.disappear(10);
             });
             finishMethod();
         });
         this.schedule.run(0, () => {
             this.canvas.remove(this.probeIcon);
-            this.lineIcons.forEach(lineIcon => {
-                this.canvas.remove(lineIcon);
+            this.lineElements.forEach(lineElement => {
+                lineElement.remove();
             });
             console.timeEnd("scan");
             this.performAutoScan();
@@ -176,8 +163,8 @@ export default class ConnectionDisplay {
 
     remove() {
         this.canvas.remove(this.probeIcon);
-        this.lineIcons.forEach(lineIcon => {
-            this.canvas.remove(lineIcon);
+        this.lineElements.forEach(lineElement => {
+            lineElement.remove();
         });
     }
 

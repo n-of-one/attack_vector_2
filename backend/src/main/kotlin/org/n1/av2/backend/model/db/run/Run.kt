@@ -21,6 +21,7 @@ data class NodeStatus(
 data class HomingPatroller(
         @Id val id: String,
         @Indexed val runId: String,
+        val siteId: String,
         val targetUserId: String,
         var currentNodeId: String
 )

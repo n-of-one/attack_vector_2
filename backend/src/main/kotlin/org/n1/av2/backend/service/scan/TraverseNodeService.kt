@@ -8,7 +8,7 @@ import org.n1.av2.backend.service.site.SiteService
 import org.springframework.stereotype.Service
 
 /**
- * TraverseNodes are used to calculate paths in sites. They are used for scanning.
+ * TraverseNodes are used to calculate paths in sites. They are used for scanning and patrollers
  */
 @Service
 class TraverseNodeService(
@@ -32,12 +32,12 @@ class TraverseNodeService(
         val startNodeId = siteService.findStartNode(siteData.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
 
         val startTraverseNode = traverseNodesById[startNodeId]!!
-        traverseAndSetDistance(startTraverseNode, 1)
+        startTraverseNode.fillDistanceFromHere(1)
 
         return traverseNodesById
     }
 
-    private fun createTraverseNodesWithoutDistance(siteId: String): Map<String, TraverseNode> {
+    fun createTraverseNodesWithoutDistance(siteId: String): Map<String, TraverseNode> {
         val nodes = nodeService.getAll(siteId)
         val connections = connectionService.getAll(siteId)
 
@@ -52,18 +52,13 @@ class TraverseNodeService(
         return traverseNodesById
     }
 
-    private fun traverseAndSetDistance(node: TraverseNode, distance: Int) {
-        node.distance = distance
-        node.connections
-                .filter { it.distance == null }
-                .forEach { traverseAndSetDistance(it, distance + 1) }
-    }
 
 }
 
 data class TraverseNode(val id: String,
                         var distance: Int? = null,
-                        val connections: MutableSet<TraverseNode> = HashSet()) {
+                        val connections: MutableSet<TraverseNode> = HashSet(),
+                        var visited: Boolean = false) {
 
     override fun equals(other: Any?): Boolean {
         return if (other is TraverseNode) {
@@ -78,4 +73,26 @@ data class TraverseNode(val id: String,
     override fun toString(): String {
         return "${id}(d: ${distance} connect count: ${connections.size}"
     }
+
+    fun fillDistanceFromHere(distance: Int) {
+        this.distance = distance
+        this.connections
+                .filter { it.distance == null }
+                .forEach { it.fillDistanceFromHere(distance + 1) }
+    }
+
+    fun traceToDistance(targetDistance: Int): TraverseNode? {
+        if (this.visited) {
+            return null
+        }
+        if (this.distance == targetDistance) {
+            return this
+        }
+        this.visited = true
+
+        return this.connections.firstOrNull { neighbour ->
+            neighbour.traceToDistance(targetDistance) != null
+        }
+    }
+
 }
