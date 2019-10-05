@@ -315,6 +315,15 @@ class RunCanvas {
         const patroller = this.displayById[patrollerId];
         patroller.capture(hackerId);
     }
+
+    flashPatroller({nodeId}) {
+        const nodeDisplay = this.displayById[nodeId];
+        const patrollerData = {
+            patrollerId: null, nodeId, appearTicks: 20
+        };
+        new SnifferLeashDisplay(patrollerData, this.canvas, null, this.displayById).disappear(20);
+
+    }
 }
 
 const runCanvas = new RunCanvas();

@@ -7,10 +7,10 @@ import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.service.OsLayerService
-import org.n1.av2.backend.service.service.ServiceIceGeneric
-import org.n1.av2.backend.service.service.TextLayerService
-import org.n1.av2.backend.service.service.TimerTriggerLayerService
+import org.n1.av2.backend.service.layer.OsLayerService
+import org.n1.av2.backend.service.layer.ServiceIceGeneric
+import org.n1.av2.backend.service.layer.TextLayerService
+import org.n1.av2.backend.service.layer.TimerTriggerLayerService
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 

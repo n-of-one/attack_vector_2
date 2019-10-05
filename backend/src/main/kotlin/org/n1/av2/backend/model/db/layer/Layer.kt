@@ -46,5 +46,4 @@ abstract class Layer(
         }
         return true
     }
-
 }

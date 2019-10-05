@@ -4,20 +4,26 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 
 
-data class LayerStatus (
+data class LayerStatus(
         @Id val id: String,
         val layerId: String,
         @Indexed val runId: String,
         var hacked: Boolean,
         val hackedBy: MutableList<String>)
 
-data class NodeStatus (
+data class NodeStatus(
         @Id val id: String,
         val nodeId: String,
         @Indexed val runId: String,
         var hacked: Boolean
 )
 
+data class HomingPatroller(
+        @Id val id: String,
+        @Indexed val runId: String,
+        val targetUserId: String,
+        var currentNodeId: String
+)
 
 
 //data class Run (

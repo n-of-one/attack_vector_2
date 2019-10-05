@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class HackerPositionService(
-        val hackerPositionRepo: HackerPositionRepo,
-        val currentUserService: CurrentUserService,
-        val siteDataService: SiteDataService,
-        val nodeService: NodeService,
-        val scanService: ScanService
+        private val hackerPositionRepo: HackerPositionRepo,
+        private val currentUserService: CurrentUserService,
+        private val siteDataService: SiteDataService,
+        private val nodeService: NodeService,
+        private val scanService: ScanService
 ) {
 
     companion object: KLogging()

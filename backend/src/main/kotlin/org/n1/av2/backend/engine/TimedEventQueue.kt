@@ -37,7 +37,7 @@ class TimedEventQueue {
         add(due, event)
     }
 
-    fun queueInMinutesAndSeconds(minutes: Int, seconds: Int, event: GameEvent) {
+    fun queueInMinutesAndSeconds(minutes: Long, seconds: Long, event: GameEvent) {
         val due = System.currentTimeMillis() + SECOND_MILLIS * seconds + MINUTE_MILLIS * minutes
         add(due, event)
     }

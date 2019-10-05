@@ -63,6 +63,7 @@ enum class ReduxActions {
 
     SERVER_LEASH_LOCKS_HACKER,          // Client can show leash locking hacker, and start back tracing.
     SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
+    SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
 
 
 }

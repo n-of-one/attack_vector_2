@@ -43,9 +43,15 @@ import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_IC
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
-import {checkTimerSaga, leashArriveHackerSaga, serverStartPatrollerSaga, serverPatrollerLocksHackerSaga} from "./run/coundown/CountdownSagas";
 import {
-    SERVER_COMPLETE_COUNTDOWN,
+    checkTimerSaga,
+    leashArriveHackerSaga,
+    serverStartPatrollerSaga,
+    serverPatrollerLocksHackerSaga,
+    serverFlashPatrollerSaga
+} from "./run/coundown/CountdownSagas";
+import {
+    SERVER_COMPLETE_COUNTDOWN, SERVER_FLASH_PATROLLER,
     SERVER_LEASH_LOCKS_HACKER,
     SERVER_PATROLLER_LOCKS_HACKER,
     SERVER_START_PATROLLER,
@@ -116,6 +122,9 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_TANGLE_POINT_MOVED, tanglePointMoved);
 
         yield takeEvery(TERMINAL_TICK, checkTimerSaga);
+
+        yield takeEvery(SERVER_FLASH_PATROLLER, serverFlashPatrollerSaga);
+
         yield takeEvery(SERVER_START_PATROLLER, serverStartPatrollerSaga);
         // yield takeEvery(SNIFFER_LEASH_ARRIVE_HACKER, leashArriveHackerSaga);
         yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);

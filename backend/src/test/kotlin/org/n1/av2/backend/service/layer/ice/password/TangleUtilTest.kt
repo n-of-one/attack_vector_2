@@ -1,10 +1,9 @@
-package org.n1.av2.backend.service.service.ice.password
+package org.n1.av2.backend.service.layer.ice.password
 
-import org.hamcrest.core.Is.`is`
+import org.junit.Assert.assertThat
 import org.junit.Test
-
-import org.junit.Assert.*
 import org.hamcrest.CoreMatchers.`is` as Is
+
 class TangleUtilTest {
 
     @Test

@@ -16,6 +16,10 @@ export function* checkTimerSaga(action) {
     yield
 }
 
+
+export function* serverFlashPatrollerSaga(action) {
+    yield runCanvas.flashPatroller(action.data)
+}
 export function* serverStartPatrollerSaga(action) {
     yield runCanvas.activateSniffer(action.data)
 }

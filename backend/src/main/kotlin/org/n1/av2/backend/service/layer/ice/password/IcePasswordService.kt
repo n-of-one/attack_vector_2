@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.service.ice.password
+package org.n1.av2.backend.service.layer.ice.password
 
 import org.n1.av2.backend.model.db.layer.IcePasswordLayer
 import org.n1.av2.backend.model.db.layer.Layer
@@ -8,7 +8,7 @@ import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.service.HackedUtil
+import org.n1.av2.backend.service.layer.HackedUtil
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId

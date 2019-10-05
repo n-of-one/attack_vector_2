@@ -31,7 +31,7 @@ export default class SnifferLeashDisplay {
 
         const image = document.getElementById("PATROLLER_3");
 
-        this.tracerIcon = new fabric.Image(image, {
+        this.patrollerIcon = new fabric.Image(image, {
             left: this.currentNodeDisplay.x,
             top: this.currentNodeDisplay.y,
             height: SIZE_NORMAL,
@@ -39,10 +39,10 @@ export default class SnifferLeashDisplay {
             opacity: 0,
             selectable: false,
         });
-        this.canvas.add(this.tracerIcon);
-        this.canvas.bringToFront(this.tracerIcon);
+        this.canvas.add(this.patrollerIcon);
+        this.canvas.bringToFront(this.patrollerIcon);
 
-        animate(this.canvas, this.tracerIcon, "opacity", 1, appearTicks);
+        animate(this.canvas, this.patrollerIcon, "opacity", 1, appearTicks);
         this.schedule.wait(appearTicks);
     }
 
@@ -67,6 +67,12 @@ export default class SnifferLeashDisplay {
 
     capture(hackerId) {
         this.displayById[hackerId].capturedByLeash();
+    }
+
+    disappear() {
+        this.schedule.run(0, () => {
+            animate(this.canvas, this.patrollerIcon, "opacity", 0, 20);
+        });
     }
 
     //

@@ -1,12 +1,12 @@
-package org.n1.av2.backend.service.service
+package org.n1.av2.backend.service.layer
 
 import org.n1.av2.backend.model.db.layer.IceTangleLayer
 import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.site.enums.LayerType
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.layer.ice.password.IcePasswordService
+import org.n1.av2.backend.service.layer.ice.password.IceTangleService
 import org.n1.av2.backend.service.run.LayerStatusService
-import org.n1.av2.backend.service.service.ice.password.IcePasswordService
-import org.n1.av2.backend.service.service.ice.password.IceTangleService
 
 @org.springframework.stereotype.Service
 class ServiceIceGeneric(

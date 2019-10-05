@@ -43,3 +43,8 @@ interface NodeStatusRepo: PagingAndSortingRepository<NodeStatus, String> {
 interface IceStatusRepo: PagingAndSortingRepository<IceStatus, String> {
     fun findByLayerIdAndRunId(layerId: String, runId: String): IceStatus?
 }
+
+
+@Repository
+interface HomingPatrollerRepo: PagingAndSortingRepository<HomingPatroller, String> {
+}

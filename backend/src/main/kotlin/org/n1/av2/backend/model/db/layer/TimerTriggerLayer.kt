@@ -14,8 +14,8 @@ class TimerTriggerLayer(
         level: Int,
         name: String,
         note: String,
-        var minutes: Int,
-        var seconds: Int
+        var minutes: Long,
+        var seconds: Long
 ) : Layer(id, type, level, name, note) {
 
     constructor(id: String, level: Int, defaultName: String) :
@@ -24,7 +24,7 @@ class TimerTriggerLayer(
 
     @Suppress("UNUSED_PARAMETER")
     private fun validatePositiveTriggerTime(siteRep: SiteRep) {
-        if (this.seconds == 0 && this.minutes == 0) throw ValidationException("Time trigger must have a delay of at least one second.")
+        if (this.seconds == 0L && this.minutes == 0L) throw ValidationException("Time trigger must have a delay of at least one second.")
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
@@ -33,16 +33,16 @@ class TimerTriggerLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            MINUTES -> this.minutes = toInt(value)
-            SECONDS -> this.seconds = toInt(value)
+            MINUTES -> this.minutes = toNumberOrZero(value)
+            SECONDS -> this.seconds = toNumberOrZero(value)
             else -> return super.updateInternal(key, value)
         }
         return true
     }
 
-    private fun toInt(value: String): Int {
+    private fun toNumberOrZero(value: String): Long {
         try {
-            return Math.max(0, value.toInt())
+            return Math.max(0, value.toLong())
         }
         catch (exception: NumberFormatException) {
             return 0

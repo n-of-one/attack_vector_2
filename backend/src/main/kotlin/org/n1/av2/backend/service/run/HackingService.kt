@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.run
 
 import mu.KLogging
+import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.NodeScanStatus.*
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -16,7 +17,7 @@ import org.n1.av2.backend.service.terminal.HackTerminalService
 import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
 
-val STATUSES_NEEDING_PROBE_LAYERS = listOf( DISCOVERED, TYPE, CONNECTIONS)
+val STATUSES_NEEDING_PROBE_LAYERS = listOf(DISCOVERED, TYPE, CONNECTIONS)
 
 @Service
 class HackingService(
@@ -27,10 +28,11 @@ class HackingService(
         private val probeService: ScanProbeService,
         private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
-        private val stompService: StompService,
+        private val alarmService: AlarmService,
         private val layerStatusRepo: LayerStatusRepo,
         private val nodeStatusRepo: NodeStatusRepo,
-        private val iceStatusRepo: IceStatusRepo) {
+        private val iceStatusRepo: IceStatusRepo,
+        private val stompService: StompService) {
 
     companion object : KLogging()
 
@@ -46,23 +48,37 @@ class HackingService(
     }
 
     private data class MoveArrive(val nodeId: String, val userId: String)
+
     fun moveArrive(nodeId: String, runId: String) {
         val scan = scanService.getByRunId(runId)
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
-        val data = MoveArrive(nodeId, currentUserService.userId)
+        val userId = currentUserService.userId
+
+        val data = MoveArrive(nodeId, userId)
         if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
-        }
-        else {
+        } else {
             hackerPositionService.arriveAt(nodeId)
+            triggerLayersAtArrive(nodeId, userId, runId)
+            // TODO: trigger patrollers in node
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
+        }
+    }
+
+    private fun triggerLayersAtArrive(nodeId: String, userId: String, runId: String) {
+        val node = nodeService.getById(nodeId)
+        node.layers.forEach { layer ->
+            when (layer) {
+                is TimerTriggerLayer -> alarmService.hackerTriggers(layer, nodeId, userId, runId)
+                else -> { } // do nothing
+            }
         }
     }
 
     fun probedLayers(nodeId: String, runId: String) {
         val scan = scanService.getByRunId(runId)
-        val nodeScan= scan.nodeScanById[nodeId]!!
+        val nodeScan = scan.nodeScanById[nodeId]!!
 
         val newNodeStatus = when (nodeScan.status) {
             DISCOVERED, NodeScanStatus.TYPE -> NodeScanStatus.LAYERS_NO_CONNECTIONS
@@ -80,7 +96,7 @@ class HackingService(
 
     fun probedConnections(nodeId: String, runId: String) {
         val scan = scanService.getByRunId(runId)
-        val nodeScan= scan.nodeScanById[nodeId]!!
+        val nodeScan = scan.nodeScanById[nodeId]!!
         val node = nodeService.getById(nodeId)
         val layer = node.layers.first()
         val prefix = "Hacked: [pri]0[/] ${layer.name}"
