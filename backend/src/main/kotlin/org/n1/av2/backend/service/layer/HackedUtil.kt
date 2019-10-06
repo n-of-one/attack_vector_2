@@ -57,7 +57,7 @@ class HackedUtil(
 
     private fun findLastNonHackedIceLayerId(node: Node, runId: String): String? {
         val iceLayerIds = node.layers.filter {it.type.ice }. map { it.id }
-        val layerStatuses = layerStatusService.getServicesStatus(runId, iceLayerIds)
+        val layerStatuses = layerStatusService.getLayerStatuses(iceLayerIds, runId)
         val hackedLayerIds = layerStatuses.filter { it.hacked } .map { it.layerId }
         val nonHackedIceLayerIds = iceLayerIds.subtract(hackedLayerIds)
 

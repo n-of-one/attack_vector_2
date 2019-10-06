@@ -51,9 +51,8 @@ export default class HackerDisplay {
 
     inTransit = false;
 
-    captured = false;
-    // FIXME:
-    // captured = true;
+    locked = false;
+    lineElement = null;
 
     constructor(canvas, startNodeDisplay, hacker, offset, you, dispatch, currentNodeDisplay) {
         this.canvas = canvas;
@@ -305,7 +304,7 @@ export default class HackerDisplay {
             this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_START);
         });
         this.schedule.run(TICKS_HACKER_MOVE_MAIN, () => {
-            if (this.captured) {
+            if (this.locked) {
                 this.undoMoveStartAndCaptureComplete(nodeDisplay)
             } else {
                 this.moveStep(nodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
@@ -313,8 +312,8 @@ export default class HackerDisplay {
             }
         });
         this.schedule.run(0, () => {
-            if (this.captured) {
-                this.snapBackAndCapture(this.currentNodeDisplay, nodeDisplay);
+            if (this.locked) {
+                this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay);
             }
             else {
                 if (this.lineElement) {
@@ -334,11 +333,11 @@ export default class HackerDisplay {
             this.moveStep(this.currentNodeDisplay, xOffset, yOffset, TICKS_HACKER_MOVE_START);
         });
         this.schedule.run(4, () => {
-            this.capturedByLeashComplete();
+            this.lockByPatrollerComplete();
         });
     }
 
-    snapBackAndCapture(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
+    snapBackAndLock(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
         this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
 
         if (!this.lineElement) {
@@ -364,10 +363,10 @@ export default class HackerDisplay {
         });
         this.inTransit = false;
         this.schedule.run(0, () => {
-            if (this.captured) {
+            if (this.locked) {
                 this.schedule.wait(4);
                 this.schedule.run(0, () => {
-                    this.capturedByLeashComplete();
+                    this.lockByPatrollerComplete();
                 });
             }
         });
@@ -466,20 +465,20 @@ export default class HackerDisplay {
         this.schedule.terminate();
     }
 
-    capturedByLeash(patrollerDisplay) {
+    lockByPatrollerStart(patrollerDisplay) {
         this.capturePatrollerDisplay = patrollerDisplay;
+        this.locked = true;
         if (this.inTransit) {
-            this.captured = true;
             if (this.lineElement) {
                 this.lineElement.setColor(COLOR_PATROLLER_LINE);
             }
-            // Undo the move animation first.
+            // Wait for the the move animation to complete. At that point we will detect we are locked, and trigger lockByPatrollerComplete().
         } else {
-            this.capturedByLeashComplete();
+            this.lockByPatrollerComplete();
         }
     }
 
-    capturedByLeashComplete() {
+    lockByPatrollerComplete() {
         this.lockIcon = new fabric.Rect({
             width: 34,
             height: 34,

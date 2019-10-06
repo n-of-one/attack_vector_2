@@ -46,5 +46,5 @@ interface IceStatusRepo: PagingAndSortingRepository<IceStatus, String> {
 
 
 @Repository
-interface HomingPatrollerRepo: PagingAndSortingRepository<HomingPatroller, String> {
+interface TracingPatrollerRepo: PagingAndSortingRepository<TracingPatroller, String> {
 }

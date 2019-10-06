@@ -5,7 +5,7 @@ import {COLOR_PATROLLER_LINE, SIZE_NORMAL} from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 
 
-export default class SnifferPatrollerDisplay {
+export default class TracingPatrollerDisplay {
 
     canvas = null;
     dispatch = null;
@@ -65,8 +65,8 @@ export default class SnifferPatrollerDisplay {
     }
 
 
-    capture(hackerId) {
-        this.displayById[hackerId].capturedByLeash(this);
+    lock(hackerId) {
+        this.displayById[hackerId].lockByPatrollerStart(this);
     }
 
     captureComplete() {

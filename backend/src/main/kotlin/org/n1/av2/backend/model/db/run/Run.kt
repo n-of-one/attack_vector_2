@@ -18,7 +18,7 @@ data class NodeStatus(
         var hacked: Boolean
 )
 
-data class HomingPatroller(
+data class TracingPatroller(
         @Id val id: String,
         @Indexed val runId: String,
         val siteId: String,

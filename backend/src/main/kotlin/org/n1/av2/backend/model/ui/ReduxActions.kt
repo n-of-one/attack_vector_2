@@ -58,7 +58,7 @@ enum class ReduxActions {
     SERVER_START_COUNTDOWN,             // The client can show the countdown clock
     SERVER_COMPLETE_COUNTDOWN,          // The countdown completes
 
-    SERVER_START_SNIFFER_PATROLLER,             // Client shows a patroller (for example as a result of an alarm countdown)
+    SERVER_START_TRACING_PATROLLER,             // Client shows a patroller (for example as a result of an alarm countdown)
     SERVER_LEASH_LOCKS_HACKER,          // Client can show leash locking hacker
     SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)

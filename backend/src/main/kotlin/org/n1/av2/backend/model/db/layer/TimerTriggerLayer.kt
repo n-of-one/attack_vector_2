@@ -8,7 +8,7 @@ private const val MINUTES = "minutes"
 private const val SECONDS = "seconds"
 
 
-class NetworkSnifferLayer(
+class TimerTriggerLayer(
         id: String,
         type: LayerType,
         level: Int,
@@ -19,7 +19,7 @@ class NetworkSnifferLayer(
 ) : Layer(id, type, level, name, note) {
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.NETWORK_SNIFFER, level, defaultName, "", 15, 0)
+            this(id, LayerType.TIMER_TRIGGER, level, defaultName, "", 15, 0)
 
 
     @Suppress("UNUSED_PARAMETER")

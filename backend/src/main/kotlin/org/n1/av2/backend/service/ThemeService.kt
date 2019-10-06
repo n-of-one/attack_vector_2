@@ -12,7 +12,7 @@ class ThemeService {
             LayerType.TEXT -> "Data vault"
             LayerType.ICE_PASSWORD -> "Aruna"
             LayerType.ICE_TANGLE -> "Reva"
-            LayerType.NETWORK_SNIFFER -> "Network Sniffer"
+            LayerType.TIMER_TRIGGER -> "Network Sniffer"
 //            else -> error("Unknown service type: ${serviceType}")
         }
     }

@@ -41,7 +41,7 @@ class TraverseNodeService(
         val nodes = nodeService.getAll(siteId)
         val connections = connectionService.getAll(siteId)
 
-        val traverseNodes = nodes.map { TraverseNode(id = it.id) }
+        val traverseNodes = nodes.map { TraverseNode(id = it.id, networkId = it.networkId) }
         val traverseNodesById = traverseNodes.map { it.id to it }.toMap()
         connections.forEach {
             val from = traverseNodesById[it.fromId] ?: throw IllegalStateException("Node ${it.fromId} not found in ${siteId} in ${it.id}")
@@ -56,6 +56,7 @@ class TraverseNodeService(
 }
 
 data class TraverseNode(val id: String,
+                        val networkId: String,
                         var distance: Int? = null,
                         val connections: MutableSet<TraverseNode> = HashSet(),
                         var visited: Boolean = false) {
@@ -71,14 +72,15 @@ data class TraverseNode(val id: String,
     }
 
     override fun toString(): String {
-        return "${id}(d: ${distance} connect count: ${connections.size}"
+        return "${networkId}(${id}) Dist: ${distance} Connect count: ${connections.size}"
     }
 
     fun fillDistanceFromHere(distance: Int) {
         this.distance = distance
+        val nextDistance = distance +1
         this.connections
-                .filter { it.distance == null }
-                .forEach { it.fillDistanceFromHere(distance + 1) }
+                .filter { it.distance == null || it.distance!! > nextDistance }
+                .forEach { it.fillDistanceFromHere(nextDistance) }
     }
 
     fun traceToDistance(targetDistance: Int): TraverseNode? {
@@ -90,9 +92,11 @@ data class TraverseNode(val id: String,
         }
         this.visited = true
 
-        return this.connections.firstOrNull { neighbour ->
-            neighbour.traceToDistance(targetDistance) != null
-        }
+        // trace back to the target going via the connection with the shortest path (lowest distance)
+        return this.connections
+                .sortedBy { it.distance }
+                .first()
+                .traceToDistance(targetDistance)
     }
 
 }

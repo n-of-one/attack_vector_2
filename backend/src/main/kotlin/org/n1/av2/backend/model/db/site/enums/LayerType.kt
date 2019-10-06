@@ -10,7 +10,7 @@ enum class LayerType(
     TEXT,
 //    IMAGE,
 //    LINK,
-    NETWORK_SNIFFER,
+    TIMER_TRIGGER,
 //    SYSCON,
 //    CODE,
 //    RESOURCE,

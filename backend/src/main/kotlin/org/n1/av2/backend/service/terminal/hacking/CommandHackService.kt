@@ -3,7 +3,7 @@ package org.n1.av2.backend.service.terminal.hacking
 import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.layer.OsLayer
 import org.n1.av2.backend.model.db.layer.TextLayer
-import org.n1.av2.backend.model.db.layer.NetworkSnifferLayer
+import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.db.run.HackerPosition
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.service.StompService
@@ -18,7 +18,7 @@ class CommandHackService(
         private val osLayerService: OsLayerService,
         private val textLayerService: TextLayerService,
         private val serviceIceGeneric: ServiceIceGeneric,
-        private val snifferLayerService: SnifferLayerService,
+        private val snifferLayerService: TimerTriggerLayerService,
         private val commandServiceUtil: CommandServiceUtil
 ) {
 
@@ -43,7 +43,7 @@ class CommandHackService(
         when  {
             layer is OsLayer-> osLayerService.hack(layer, node, position)
             layer is TextLayer -> textLayerService.hack(layer, node, position.runId)
-            layer is NetworkSnifferLayer -> snifferLayerService.hack(layer)
+            layer is TimerTriggerLayer -> snifferLayerService.hack(layer)
             layer.type.ice -> serviceIceGeneric.hack(layer, position.runId)
             else -> stompService.terminalReceive("Layer type not supported yet: ${layer.type}")
         }

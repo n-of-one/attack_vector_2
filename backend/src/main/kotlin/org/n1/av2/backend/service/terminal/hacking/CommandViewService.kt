@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.terminal.hacking
 
 import org.n1.av2.backend.model.db.run.HackerPosition
-import org.n1.av2.backend.repo.LayerStatusRepo
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.LayerStatusService
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
@@ -11,7 +11,7 @@ class CommandViewService(
         private val stompService: StompService,
         private val nodeService: NodeService,
         private val commandServiceUtil: CommandServiceUtil,
-        private val layerStatusRepo: LayerStatusRepo
+        private val layerStatusService: LayerStatusService
 ) {
 
     fun process(runId: String, position: HackerPosition) {
@@ -21,8 +21,7 @@ class CommandViewService(
 
         val lines = ArrayList<String>()
 
-        // TODO: move to layerStatusService
-        val layerStatuses = layerStatusRepo.findByRunIdAndLayerIdIn(runId, node.layers.map { it.id })
+        val layerStatuses = layerStatusService.getLayerStatuses(node, runId)
         val hackedLayerIds = layerStatuses.filter { it.hacked }.map { it.layerId }
 
         lines.add("Node service layers:")
@@ -35,4 +34,5 @@ class CommandViewService(
 
         stompService.terminalReceive(lines)
     }
+
 }
