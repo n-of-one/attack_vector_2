@@ -22,6 +22,7 @@ data class HomingPatroller(
         @Id val id: String,
         @Indexed val runId: String,
         val siteId: String,
+        val originatingNodeId: String,
         val targetUserId: String,
         var currentNodeId: String
 )

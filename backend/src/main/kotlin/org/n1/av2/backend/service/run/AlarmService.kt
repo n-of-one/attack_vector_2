@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 
 
 class AlarmGameEvent(val runId: String, val nodeId: String, val userId: String): GameEvent
-class PatrollerArriveGameEvent(val patrollerId: String, val nodeId: String, val runId: String): GameEvent
+class PatrollerArriveGameEvent(val patrollerId: String, val nodeId: String): GameEvent
 
 
 const val PATROLLER_ARRIVE_FIRST_TICKS = 20
@@ -62,14 +62,15 @@ class AlarmService(
                 runId = event.runId,
                 targetUserId = event.userId,
                 siteId = hackerPositionService.retrieve(event.userId).siteId,
-                currentNodeId = event.nodeId
+                currentNodeId = event.nodeId,
+                originatingNodeId = event.nodeId
         )
         homingPatrollerRepo.save(patroller)
 
         val action = ActionStartPatroller(patroller.id, event.nodeId)
         stompService.toRun(event.runId, ReduxActions.SERVER_START_PATROLLER, action)
 
-        val next = PatrollerArriveGameEvent(patroller.id, event.nodeId, event.runId)
+        val next = PatrollerArriveGameEvent(patroller.id, event.nodeId)
         timedEventQueue.queueInTicks(20, next)
     }
 
@@ -81,15 +82,16 @@ class AlarmService(
 
         val targetPosition = hackerPositionService.retrieve(patroller.targetUserId)
         if (targetPosition.currentNodeId == patroller.currentNodeId) {
-            val action = ActionPatrollerLocksHacker(event.patrollerId, patroller.targetUserId)
-            stompService.toRun(event.runId, ReduxActions.SERVER_PATROLLER_LOCKS_HACKER, action)
+            val action = ActionPatrollerLocksHacker(patroller.id, patroller.targetUserId)
+            stompService.toRun(patroller.runId, ReduxActions.SERVER_PATROLLER_LOCKS_HACKER, action)
             hackerPositionService.lockHacker(patroller.targetUserId)
             stompService.terminalReceiveForUser( patroller.targetUserId, "[error]critical[/] OS privileges revoked.")
+
             // TODO start tracing
             // TODO schedule removal of patroller from view
         }
         else {
-            movePatrollerLeashTowardsHacker(patroller, event.runId)
+            movePatrollerLeashTowardsHacker(patroller, patroller.runId)
         }
     }
 
@@ -104,7 +106,7 @@ class AlarmService(
 
         stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_MOVE, ActionPatrollerMove(patroller.id, patroller.currentNodeId, nextNodeToTarget.id, PATROLLER_MOVE_TICKS))
 
-        val next = PatrollerArriveGameEvent(patroller.id, nextNodeToTarget.id, runId)
+        val next = PatrollerArriveGameEvent(patroller.id, nextNodeToTarget.id)
         timedEventQueue.queueInTicks(PATROLLER_MOVE_TICKS + 1, next)
     }
 

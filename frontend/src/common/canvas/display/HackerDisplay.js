@@ -466,7 +466,8 @@ export default class HackerDisplay {
         this.schedule.terminate();
     }
 
-    capturedByLeash() {
+    capturedByLeash(patrollerDisplay) {
+        this.capturePatrollerDisplay = patrollerDisplay;
         if (this.inTransit) {
             this.captured = true;
             if (this.lineElement) {
@@ -496,6 +497,7 @@ export default class HackerDisplay {
 
         animate(this.canvas, this.lockIcon, "opacity", 1, 20);
 
+        this.capturePatrollerDisplay.captureComplete();
     }
 
 
