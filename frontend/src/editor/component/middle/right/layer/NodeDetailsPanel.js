@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import LayerOsPanel from "./type/panel/LayerOsPanel";
 import {findElementById} from "../../../../../common/Immutable";
-import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes";
+import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, NETWORK_SNIFFER} from "../../../../../common/enums/LayerTypes";
 import LayerTextPanel from "./type/panel/LayerTextPanel";
 import SilentLink from "../../../../../common/component/SilentLink";
 import {SELECT_LAYER} from "../../../../EditorActions";
@@ -40,7 +40,7 @@ const renderLayer = (node, layer) => {
             return <LayerOsPanel node={node} layer={layer}/>;
         case TEXT:
             return <LayerTextPanel node={node} layer={layer}/>;
-        case TIMER_TRIGGER:
+        case NETWORK_SNIFFER:
             return <LayerTimerTriggerPanel node={node} layer={layer}/>;
         case ICE_PASSWORD:
             return <LayerIcePasswordPanel node={node} layer={layer}/>;

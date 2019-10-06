@@ -1,11 +1,11 @@
 import runCanvas from "../component/RunCanvas";
 
 export function* serverFlashPatrollerSaga(action) {
-    yield runCanvas.flashPatroller(action.data)
+    yield runCanvas.flashSnifferPatroller(action.data)
 }
 
 export function* serverStartPatrollerSaga(action) {
-    yield runCanvas.activateSniffer(action.data)
+    yield runCanvas.activateSnifferPatroller(action.data)
 }
 
 export function* serverPatrollerMoveSaga(action) {
@@ -13,5 +13,5 @@ export function* serverPatrollerMoveSaga(action) {
 }
 
 export function* serverPatrollerLocksHackerSaga(action) {
-    yield runCanvas.leashLocksHacker(action.data);
+    yield runCanvas.snifferCatchesHacker(action.data);
 }

@@ -7,7 +7,7 @@ import HackerIcon from "../../../common/canvas/display/HackerDisplay";
 import ProbeDisplay from "../../../common/canvas/display/ProbeDisplay";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst";
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions";
-import SnifferLeashDisplay from "../../../common/canvas/display/SnifferLeashDisplay";
+import SnifferPatrollerDisplay from "../../../common/canvas/display/SnifferPatrollerDisplay";
 
 /**
  * This class renders the scan map on the JFabric Canvas
@@ -306,20 +306,18 @@ class RunCanvas {
         Object.values(this.displayById).forEach( (display) => display.terminate() );
     }
 
-    flashPatroller({nodeId}) {
+    flashSnifferPatroller({nodeId}) {
         const patrollerData = {
             patrollerId: null, nodeId, appearTicks: 20
         };
-        new SnifferLeashDisplay(patrollerData, this.canvas, null, this.displayById).disappear(20);
-
+        new SnifferPatrollerDisplay(patrollerData, this.canvas, null, this.displayById).disappear(20);
     }
 
-    activateSniffer(patrollerData) {
-        const snifferLeashDisplay = new SnifferLeashDisplay(patrollerData, this.canvas, this.dispatch, this.displayById);
-        this.displayById[patrollerData.patrollerId] = snifferLeashDisplay;
+    activateSnifferPatroller(patrollerData) {
+        this.displayById[patrollerData.patrollerId] = new SnifferPatrollerDisplay(patrollerData, this.canvas, this.dispatch, this.displayById);
     }
 
-    leashLocksHacker({patrollerId, hackerId}) {
+    snifferCatchesHacker({patrollerId, hackerId}) {
         const patroller = this.displayById[patrollerId];
         patroller.capture(hackerId);
     }

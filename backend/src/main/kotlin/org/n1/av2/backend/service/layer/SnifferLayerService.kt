@@ -1,28 +1,29 @@
-package org.n1.av2.backend.service.run
+package org.n1.av2.backend.service.layer
 
 import org.n1.av2.backend.engine.GameEvent
 import org.n1.av2.backend.engine.TimedEventQueue
-import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
+import org.n1.av2.backend.model.db.layer.NetworkSnifferLayer
 import org.n1.av2.backend.model.db.run.HomingPatroller
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.HomingPatrollerRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
+import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.scan.TraverseNodeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
 
-class AlarmGameEvent(val runId: String, val nodeId: String, val userId: String): GameEvent
-class PatrollerArriveGameEvent(val patrollerId: String, val nodeId: String): GameEvent
+class SnifferDetectsHackerGameEvent(val runId: String, val nodeId: String, val userId: String): GameEvent
+class SnifferPatrollerArriveGameEvent(val patrollerId: String, val nodeId: String): GameEvent
 
 
 const val PATROLLER_ARRIVE_FIRST_TICKS = 20
 const val PATROLLER_MOVE_TICKS = 15
 
 @Service
-class AlarmService(
+class SnifferLayerService(
         val hackerPositionService: HackerPositionService,
         val timedEventQueue: TimedEventQueue,
         val homingPatrollerRepo: HomingPatrollerRepo,
@@ -31,9 +32,13 @@ class AlarmService(
         val stompService: StompService) {
 
 
-    fun hackerTriggers(layer: TimerTriggerLayer, nodeId: String, userId: String, runId: String) {
+    fun hack(layer: NetworkSnifferLayer) {
+        stompService.terminalReceive("${layer.name} resists hack.")
+    }
 
-        class CountdownStart(val finishAt: ZonedDateTime)
+    private class CountdownStart(val finishAt: ZonedDateTime)
+    fun hackerTriggers(layer: NetworkSnifferLayer, nodeId: String, userId: String, runId: String) {
+
         val alarmTime = time.now()
                 .plusMinutes(layer.minutes)
                 .plusSeconds(layer.seconds)
@@ -45,7 +50,7 @@ class AlarmService(
         class FlashPatroller(val nodeId: String)
         stompService.toRun(runId, ReduxActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
 
-        timedEventQueue.queueInMinutesAndSeconds(layer.minutes, layer.seconds, AlarmGameEvent(runId, nodeId, userId))
+        timedEventQueue.queueInMinutesAndSeconds(layer.minutes, layer.seconds, SnifferDetectsHackerGameEvent(runId, nodeId, userId))
     }
 
     private fun format(minutes: Long, seconds: Long): String {
@@ -53,8 +58,8 @@ class AlarmService(
     }
 
 
-    class ActionStartPatroller(val patrollerId: String, val nodeId: String, val appearTicks:Int = PATROLLER_ARRIVE_FIRST_TICKS)
-    fun processAlarm(event: AlarmGameEvent) {
+    private class ActionStartPatroller(val patrollerId: String, val nodeId: String, val appearTicks:Int = PATROLLER_ARRIVE_FIRST_TICKS)
+    fun processAlarm(event: SnifferDetectsHackerGameEvent) {
         stompService.toRun(event.runId, ReduxActions.SERVER_COMPLETE_COUNTDOWN)
 
         val patroller = HomingPatroller(
@@ -68,14 +73,14 @@ class AlarmService(
         homingPatrollerRepo.save(patroller)
 
         val action = ActionStartPatroller(patroller.id, event.nodeId)
-        stompService.toRun(event.runId, ReduxActions.SERVER_START_PATROLLER, action)
+        stompService.toRun(event.runId, ReduxActions.SERVER_START_SNIFFER_PATROLLER, action)
 
-        val next = PatrollerArriveGameEvent(patroller.id, event.nodeId)
+        val next = SnifferPatrollerArriveGameEvent(patroller.id, event.nodeId)
         timedEventQueue.queueInTicks(20, next)
     }
 
-    class ActionPatrollerLocksHacker(val patrollerId: String, val hackerId: String)
-    fun processPatrollerArrive(event: PatrollerArriveGameEvent) {
+    private class ActionPatrollerLocksHacker(val patrollerId: String, val hackerId: String)
+    fun processPatrollerArrive(event: SnifferPatrollerArriveGameEvent) {
 
         val patroller = homingPatrollerRepo.findById(event.patrollerId).get()
         patroller.currentNodeId = event.nodeId
@@ -91,12 +96,12 @@ class AlarmService(
             // TODO schedule removal of patroller from view
         }
         else {
-            movePatrollerLeashTowardsHacker(patroller, patroller.runId)
+            patrollerMove(patroller, patroller.runId)
         }
     }
 
-    class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val moveTicks: Int)
-    private fun movePatrollerLeashTowardsHacker(patroller: HomingPatroller, runId: String) {
+    private class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val moveTicks: Int)
+    private fun patrollerMove(patroller: HomingPatroller, runId: String) {
         val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId)
         val startTraverseNode = traverseNodesById[patroller.currentNodeId]!!
         startTraverseNode.fillDistanceFromHere(0)
@@ -106,12 +111,12 @@ class AlarmService(
 
         stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_MOVE, ActionPatrollerMove(patroller.id, patroller.currentNodeId, nextNodeToTarget.id, PATROLLER_MOVE_TICKS))
 
-        val next = PatrollerArriveGameEvent(patroller.id, nextNodeToTarget.id)
+        val next = SnifferPatrollerArriveGameEvent(patroller.id, nextNodeToTarget.id)
         timedEventQueue.queueInTicks(PATROLLER_MOVE_TICKS + 1, next)
     }
 
 
-    // TODO deal with hackers whose connection is reset while timer is running. They need to see the alarm timer.
+    // TODO deal with hackers whose connection is reset while timer is running. They need to see the alarm timer when they return.
     // TODO deal with hackers whose connection is reset while being hunted by the patroller. Either due to active DC or due to disconnect.
     // TODO deal with hackers logging into a run when there is an in progress patroller chasing / tracing someone.
 

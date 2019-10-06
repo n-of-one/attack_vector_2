@@ -7,7 +7,7 @@ export const TRACE_LOG = "TRACE_LOG";
 export const SCAN_BLOCK = "SCAN_BLOCK";
 export const MONEY = "MONEY";
 export const CODE = "CODE";
-export const TIMER_TRIGGER = "TIMER_TRIGGER";
+export const NETWORK_SNIFFER = "NETWORK_SNIFFER";
 export const CORE = "CORE";
 export const ICE_PASSWORD = "ICE_PASSWORD";
 export const ICE_FILM = "ICE_FILM";
@@ -29,7 +29,7 @@ export const glyphiconFromType = (type) => {
         case SCAN_BLOCK : return "glyphicon-magnet";
         case MONEY : return "glyphicon-usd";
         case CODE : return "glyphicon-ok-circle";
-        case TIMER_TRIGGER : return "glyphicon-time";
+        case NETWORK_SNIFFER : return "glyphicon-time";
         case CORE : return "glyphicon-th-large";
         case ICE_PASSWORD : return "glyphicon-console";
         case ICE_TANGLE: return "glyphicon-asterisk";

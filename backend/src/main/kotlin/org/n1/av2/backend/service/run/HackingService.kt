@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.run
 
 import mu.KLogging
-import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
+import org.n1.av2.backend.model.db.layer.NetworkSnifferLayer
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.NodeScanStatus.*
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -10,6 +10,7 @@ import org.n1.av2.backend.repo.LayerStatusRepo
 import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.layer.SnifferLayerService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService
 import org.n1.av2.backend.service.site.NodeService
@@ -28,7 +29,7 @@ class HackingService(
         private val probeService: ScanProbeService,
         private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
-        private val alarmService: AlarmService,
+        private val alarmService: SnifferLayerService,
         private val layerStatusRepo: LayerStatusRepo,
         private val nodeStatusRepo: NodeStatusRepo,
         private val iceStatusRepo: IceStatusRepo,
@@ -70,7 +71,6 @@ class HackingService(
         } else {
             hackerPositionService.arriveAt(position, nodeId)
             triggerLayersAtArrive(nodeId, userId, runId)
-            // TODO: trigger patrollers in node
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
         }
     }
@@ -79,7 +79,7 @@ class HackingService(
         val node = nodeService.getById(nodeId)
         node.layers.forEach { layer ->
             when (layer) {
-                is TimerTriggerLayer -> alarmService.hackerTriggers(layer, nodeId, userId, runId)
+                is NetworkSnifferLayer -> alarmService.hackerTriggers(layer, nodeId, userId, runId)
                 else -> { } // do nothing
             }
         }

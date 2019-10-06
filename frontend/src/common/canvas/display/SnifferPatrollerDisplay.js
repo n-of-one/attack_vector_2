@@ -5,7 +5,7 @@ import {COLOR_PATROLLER_LINE, SIZE_NORMAL} from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 
 
-export default class SnifferLeashDisplay {
+export default class SnifferPatrollerDisplay {
 
     canvas = null;
     dispatch = null;
