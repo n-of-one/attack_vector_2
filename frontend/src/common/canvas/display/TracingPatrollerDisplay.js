@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart, easeInSine, easeLinear} from "../CanvasUtils";
+import {animate, calcLine, calcLineStart} from "../CanvasUtils";
 import Schedule from "../../Schedule";
 import {COLOR_PATROLLER_LINE, SIZE_NORMAL} from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
@@ -67,12 +67,6 @@ export default class TracingPatrollerDisplay {
 
     lock(hackerId) {
         this.displayById[hackerId].lockByPatrollerStart(this);
-    }
-
-    captureComplete() {
-        // this.canvas.bringToFront(this.patrollerIcon);
-        // animate(this.canvas, this.patrollerIcon, 'width', 160, 100, easeInSine);
-        // animate(this.canvas, this.patrollerIcon, 'height', 160, 100, easeInSine);
     }
 
     disappear() {

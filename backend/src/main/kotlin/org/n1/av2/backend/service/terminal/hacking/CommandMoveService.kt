@@ -73,7 +73,7 @@ class CommandMoveService(
     private data class StartMove(val userId: String, val nodeId: String)
 
     private fun handleMove(runId: String, toNode: Node, position: HackerPosition) {
-        hackerPositionService.saveInTransit(position)
+        hackerPositionService.saveInTransit(position, toNode.id)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(position.userId, toNode.id))
     }
 }

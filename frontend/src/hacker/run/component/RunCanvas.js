@@ -81,8 +81,7 @@ class RunCanvas {
         this.canvas.renderAll();
     }
 
-    loadScan(data) {
-        const {scan, site, hackers} = data;
+    loadScan({scan, site, hackers}) {
         const {nodes, connections, nodeStatuses, layerStatuses} = site;
         this.nodeDataById = {};
         this.sortAndAddHackers(hackers);
@@ -155,8 +154,9 @@ class RunCanvas {
 
     addHackerDisplay(hacker, offset) {
         const you = hacker.userId === this.userId;
-        const currentNode = (hacker.hacking) ? this.displayById[hacker.nodeId] : null;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, currentNode);
+        const currentNodeDisplay = (hacker.hacking) ? this.displayById[hacker.nodeId] : null;
+        const targetNodeDisplay = (hacker.hacking && hacker.targetNodeId) ? this.displayById[hacker.targetNodeId] : null;
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, currentNodeDisplay, targetNodeDisplay);
     }
 
     removeHackerDisplay(hacker) {

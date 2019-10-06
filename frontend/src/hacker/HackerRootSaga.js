@@ -46,11 +46,11 @@ import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/i
 import {
     serverStartPatrollerSaga,
     serverPatrollerLocksHackerSaga,
-    serverFlashPatrollerSaga, serverPatrollerMoveSaga, serverPatrollerSnapsBackHackerSaga
+    serverFlashPatrollerSaga, serverPatrollerMoveSaga,
 } from "./run/coundown/CountdownSagas";
 import {
     SERVER_FLASH_PATROLLER,
-    SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE, SERVER_PATROLLER_SNAPS_BACK_HACKER,
+    SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE,
     SERVER_START_TRACING_PATROLLER,
 } from "./run/coundown/CountdownActions";
 

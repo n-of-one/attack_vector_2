@@ -11,4 +11,6 @@ class HackerPresenceHacking(userId: String,
                             userName: String,
                             icon: HackerIcon,
                             val nodeId: String,
-                            val inTransit: Boolean) : HackerPresence(userId, userName, icon, true)
+                            val targetNodeId: String?,
+                            val inTransit: Boolean,
+                            val locked: Boolean) : HackerPresence(userId, userName, icon, true)

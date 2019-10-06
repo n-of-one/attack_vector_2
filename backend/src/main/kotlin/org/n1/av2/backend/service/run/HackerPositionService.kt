@@ -41,18 +41,19 @@ class HackerPositionService(
                 userId = userId,
                 currentNodeId = startNode.id,
                 previousNodeId = startNode.networkId,
+                targetNodeId = null,
                 inTransit = true,
                 locked = false)
         hackerPositionRepo.save(newPosition)
     }
 
-    fun saveInTransit(position: HackerPosition) {
-        val newPosition = position.copy(inTransit = true)
+    fun saveInTransit(position: HackerPosition, toNodeId: String) {
+        val newPosition = position.copy(inTransit = true, targetNodeId = toNodeId)
         hackerPositionRepo.save(newPosition)
     }
 
     fun arriveAt(position: HackerPosition, nodeId: String) {
-        val newPosition = position.copy(inTransit = false, currentNodeId = nodeId, previousNodeId = position.currentNodeId)
+        val newPosition = position.copy(inTransit = false, currentNodeId = nodeId, previousNodeId = position.currentNodeId, targetNodeId = null)
         hackerPositionRepo.save(newPosition)
     }
 
@@ -62,7 +63,7 @@ class HackerPositionService(
 
     fun lockHacker(hackerId: String) {
         val position = retrieve(hackerId)
-        val newPosition = position.copy(locked = true, inTransit = false)
+        val newPosition = position.copy(locked = true, inTransit = false, targetNodeId = null)
         hackerPositionRepo.save(newPosition)
     }
 

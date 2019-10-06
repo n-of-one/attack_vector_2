@@ -10,6 +10,7 @@ data class HackerPosition(
         val siteId: String,
         val currentNodeId: String,
         val previousNodeId: String,
+        val targetNodeId: String?,
         val inTransit: Boolean = false,
         val locked: Boolean = false
 

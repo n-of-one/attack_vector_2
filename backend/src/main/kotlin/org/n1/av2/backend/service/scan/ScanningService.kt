@@ -84,7 +84,7 @@ class ScanningService(private val scanService: ScanService,
     }
 
 
-    data class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerPresence>)
+    data class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: Collection<HackerPresence>)
 
     fun enterScan(runId: String) {
         hackerActivityService.startActivityScanning(runId)
@@ -106,15 +106,14 @@ class ScanningService(private val scanService: ScanService,
                 .getAll(scan.runId, HackerActivityType.HACKING)
                 .map { activity -> createPresenceForHacking(activity.user) }
 
-        val userPresence = userPresenceScanning.toMutableList()
-        userPresence.addAll(userPresenceHacking)
+        val userPresence = userPresenceScanning.union(userPresenceHacking)
         val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 
     private fun createPresenceForHacking(user: User): HackerPresenceHacking {
         val position = hackerPositionService.retrieve(user.id)
-        return HackerPresenceHacking(user.id, user.name, user.icon, position.currentNodeId, position.inTransit)
+        return HackerPresenceHacking(user.id, user.name, user.icon, position.currentNodeId, position.targetNodeId, position.inTransit, position.locked)
     }
 
     private fun createPresenceForScanning(user: User): HackerPresence {

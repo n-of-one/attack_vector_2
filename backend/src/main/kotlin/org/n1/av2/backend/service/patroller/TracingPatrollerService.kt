@@ -90,7 +90,7 @@ class TracingPatrollerService(
 
     // TODO deal with hackers whose connection is reset while timer is running. They need to see the alarm timer when they return.
     // TODO deal with hackers whose connection is reset while being hunted by the patroller. Either due to active DC or due to disconnect.
-    // TODO deal with hackers logging into a run when there is an in progress patroller chasing / tracing someone.
+    // TODO show patroller to hackers logging into a run when there is an in progress patroller chasing / tracing someone.
 
 
 

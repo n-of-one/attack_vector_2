@@ -37,30 +37,25 @@ export default class HackerDisplay {
     hackerIcon = null;
     hackerIdentifierIcon = null;
     hackerHider = null;
-
-    lineIcon = null;
+    startLineIcon = null;
     labelIcon = null;
-    hacker = null;
+    moveLineElement = null;
+
+    hackerData = null;
     you = false;
     startNodeDisplay = null;
-
     currentNodeDisplay = null;
-    line = null;
     y = null;
     x = null;
-
     inTransit = false;
-
     locked = false;
-    lineElement = null;
 
-    constructor(canvas, startNodeDisplay, hacker, offset, you, dispatch, currentNodeDisplay) {
+    constructor(canvas, startNodeDisplay, hackerData, offset, you, dispatch, currentNodeDisplay, targetNodeDisplay) {
         this.canvas = canvas;
         this.schedule = new Schedule();
-        this.hacker = hacker;
+        this.hackerData = hackerData;
         this.you = you;
         this.startNodeDisplay = startNodeDisplay;
-        this.currentNodeDisplay = (currentNodeDisplay) ? currentNodeDisplay : startNodeDisplay;
 
         this.dispatch = dispatch;
 
@@ -70,34 +65,50 @@ export default class HackerDisplay {
         this.addHackerIdentificationIcons();
 
         this.schedule.run(3, () => {
-            if (hacker.hacking) {
-                this.addHackerIcon(hacker, currentNodeDisplay);
+            if (hackerData.hacking) {
+                this.locked = hackerData.locked;
+
+                // even if the hacker is in transit, we are not displaying it.
+                // because it becomes a mess if the hacker is also locked during this transit.
+                // Better to have the hacker icon jump from the current node to the target node.
+                this.inTransit = false;
+                this.addHackingHacker(currentNodeDisplay);
 
                 animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, APPEAR_TIME);
-                animate(this.canvas, this.lineIcon, "opacity", LINE_OPACITY_HACKING, 40);
+                animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 40);
                 animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, APPEAR_TIME);
+
+
             } else {
+                this.currentNodeDisplay = startNodeDisplay;
+
                 animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_SCANNING, APPEAR_TIME);
-                animate(this.canvas, this.lineIcon, "opacity", LINE_OPACITY_SCANNING, 40);
+                animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_SCANNING, 40);
                 animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_SCANNING, APPEAR_TIME);
             }
         });
     }
 
-    addHackerIcon(hacker, currentNodeDisplay) {
-        const opacity = (hacker.inTransit) ? 0 : 1;
-        this.notVisible = hacker.inTransit;
+    addHackingHacker(currentNodeDisplay) {
+        // even if the hacker is in transit, we are not displaying it.
+        const nodeDisplay = currentNodeDisplay;
 
-        const {xOffset, yOffset} = this.processOffset(currentNodeDisplay);
-        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, opacity, currentNodeDisplay, xOffset, yOffset);
+        this.currentNodeDisplay = nodeDisplay;
+
+        const {xOffset, yOffset} = this.processOffset(nodeDisplay);
+        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, nodeDisplay, xOffset, yOffset);
         this.canvas.add(this.hackerIcon);
+
+        if (this.locked) {
+            this.lockByPatrollerComplete()
+        }
     }
 
     createHackerIcon(size, opacity, position, offsetX, offsetY) {
         offsetX = (offsetX) ? offsetX : 0;
         offsetY = (offsetY) ? offsetY : 0;
 
-        const image = document.getElementById(this.hacker.icon);
+        const image = document.getElementById(this.hackerData.icon);
 
         const icon = new fabric.Image(image, {
             left: position.x + offsetX,
@@ -125,7 +136,7 @@ export default class HackerDisplay {
             selectable: false,
             hoverCursor: "default",
         });
-        const hackerName = this.you ? "You" : this.hacker.userName;
+        const hackerName = this.you ? "You" : this.hackerData.userName;
         this.labelIcon = new fabric.Text(hackerName, {
             fill: "#f0ad4e",    // color-ok
             fontFamily: "SpaceMono",
@@ -139,7 +150,7 @@ export default class HackerDisplay {
             hoverCursor: "default",
         });
         const lineData = calcLine(this, this.startNodeDisplay);
-        this.lineIcon = new fabric.Line(
+        this.startLineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#bb8",
                 strokeWidth: 1,
@@ -152,8 +163,8 @@ export default class HackerDisplay {
         this.canvas.add(this.hackerIdentifierIcon);
         this.canvas.add(this.hackerHider);
         this.canvas.add(this.labelIcon);
-        this.canvas.add(this.lineIcon);
-        this.canvas.sendToBack(this.lineIcon);
+        this.canvas.add(this.startLineIcon);
+        this.canvas.sendToBack(this.startLineIcon);
 
     }
 
@@ -169,7 +180,7 @@ export default class HackerDisplay {
             animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
             const lineData = calcLine(this, this.startNodeDisplay);
-            animate(this.canvas, this.lineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
+            animate(this.canvas, this.startLineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
         });
     }
 
@@ -177,19 +188,25 @@ export default class HackerDisplay {
         this.schedule.run(DISAPPEAR_TIME, () => {
             this.currentNodeDisplay.unregisterHacker(this);
             animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0, DISAPPEAR_TIME);
-            animate(this.canvas, this.lineIcon, "opacity", 0, DISAPPEAR_TIME);
+            animate(this.canvas, this.startLineIcon, "opacity", 0, DISAPPEAR_TIME);
             animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME);
             if (this.hackerIcon) {
                 animate(this.canvas, this.hackerIcon, "opacity", 0, DISAPPEAR_TIME);
             }
+            if (this.lockIcon) {
+                animate(this.canvas, this.lockIcon, 'opacity', 0, DISAPPEAR_TIME);
+            }
         });
         this.schedule.run(0, () => {
             this.canvas.remove(this.hackerIdentifierIcon);
-            this.canvas.remove(this.lineIcon);
+            this.canvas.remove(this.startLineIcon);
             this.canvas.remove(this.labelIcon);
             this.canvas.remove(this.hackerHider);
             if (this.hackerIcon) {
                 this.canvas.remove(this.hackerIcon);
+            }
+            if (this.lockIcon) {
+                this.canvas.remove(this.lockIcon);
             }
         });
     }
@@ -206,7 +223,7 @@ export default class HackerDisplay {
         this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, this.startNodeDisplay);
         this.canvas.add(this.hackerIcon);
         this.canvas.bringToFront(this.hackerIcon);
-        animate(this.canvas, this.lineIcon, "opacity", LINE_OPACITY_HACKING, 10);
+        animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 10);
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 10);
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 10);
 
@@ -231,7 +248,7 @@ export default class HackerDisplay {
             this.animateZoom(SIZE_NORMAL, 100);
             this.animateOpacity(0.7, 20);
 
-            animate(this.canvas, this.lineIcon, "opacity", LINE_OPACITY_HACKING, 200);
+            animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200);
             animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100);
             animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 100);
 
@@ -308,7 +325,7 @@ export default class HackerDisplay {
                 this.undoMoveStartAndCaptureComplete(nodeDisplay)
             } else {
                 this.moveStep(nodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
-                this.lineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay);
+                this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay);
             }
         });
         this.schedule.run(0, () => {
@@ -316,9 +333,9 @@ export default class HackerDisplay {
                 this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay);
             }
             else {
-                if (this.lineElement) {
-                    this.lineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
-                    this.lineElement = null;
+                if (this.moveLineElement) {
+                    this.moveLineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
+                    this.moveLineElement = null;
                 }
                 if (this.you) {
                     this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
@@ -340,14 +357,14 @@ export default class HackerDisplay {
     snapBackAndLock(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
         this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
 
-        if (!this.lineElement) {
+        if (!this.moveLineElement) {
             const lineEndData = calcLineWithOffset(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0, 0);
-            this.lineElement = new LineElement(lineEndData, COLOR_HACKER_LINE, this.canvas);
-            this.lineElement.setColor(COLOR_PATROLLER_LINE);
+            this.moveLineElement = new LineElement(lineEndData, COLOR_HACKER_LINE, this.canvas);
+            this.moveLineElement.setColor(COLOR_PATROLLER_LINE);
         }
 
         const lineStartData = calcLineStart(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0);
-        this.lineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
+        this.moveLineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
         this.schedule.wait(TICKS_HACKER_MOVE_MAIN);
         this.undoMoveStartAndCaptureComplete(snapBackToNodeDisplay);
     }
@@ -356,7 +373,6 @@ export default class HackerDisplay {
     moveArrive(nodeDisplay) {
         this.currentNodeDisplay = nodeDisplay;
         this.schedule.run(4, () => {
-            this.appearIfNotVisible(nodeDisplay);
 
             const {xOffset, yOffset} = this.processOffset(nodeDisplay);
             this.moveStep(nodeDisplay, xOffset, yOffset, 4);
@@ -402,7 +418,6 @@ export default class HackerDisplay {
 
     hackerProbeLayers(nodeDisplay) {
         this.schedule.run(50, () => {
-            this.appearIfNotVisible(nodeDisplay);
             this.animateZoom(SIZE_SMALL, 50);
         });
         this.schedule.run(45, () => {
@@ -417,7 +432,6 @@ export default class HackerDisplay {
 
     hackerProbeConnections(nodeDisplay) {
         this.schedule.run(4, () => {
-            this.appearIfNotVisible(nodeDisplay);
             this.moveStep(nodeDisplay, 0, 0, 4);
         });
 
@@ -439,18 +453,6 @@ export default class HackerDisplay {
         });
     }
 
-    /*
-    When Hacker A enters a run that has hacker B who is in a move, the icon for hacker B is hidden (opacity 0)
-    until Hacker B performs an action at a node. Then it appears.
-     */
-    appearIfNotVisible(nodeDisplay) {
-        if (this.notVisible) {
-            this.notVisible = false;
-            this.hackerIcon.set("top", nodeDisplay.y);
-            this.hackerIcon.set("left", nodeDisplay.x);
-            this.animateOpacity(1, 4);
-        }
-    }
 
     animateZoom(size, time) {
         animate(this.canvas, this.hackerIcon, 'width', size, time);
@@ -465,12 +467,11 @@ export default class HackerDisplay {
         this.schedule.terminate();
     }
 
-    lockByPatrollerStart(patrollerDisplay) {
-        this.capturePatrollerDisplay = patrollerDisplay;
+    lockByPatrollerStart() {
         this.locked = true;
         if (this.inTransit) {
-            if (this.lineElement) {
-                this.lineElement.setColor(COLOR_PATROLLER_LINE);
+            if (this.moveLineElement) {
+                this.moveLineElement.setColor(COLOR_PATROLLER_LINE);
             }
             // Wait for the the move animation to complete. At that point we will detect we are locked, and trigger lockByPatrollerComplete().
         } else {
@@ -495,8 +496,6 @@ export default class HackerDisplay {
         this.canvas.bringToFront(this.hackerIcon);
 
         animate(this.canvas, this.lockIcon, "opacity", 1, 20);
-
-        this.capturePatrollerDisplay.captureComplete();
     }
 
 
