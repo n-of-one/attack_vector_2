@@ -182,7 +182,7 @@ class ScanningService(private val scanService: ScanService,
         val siteData = siteDataService.getBySiteId(scan.siteId)
 
         stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
-        stompService.terminalReceiveForId(user, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
+        stompService.terminalReceiveForUserForTerminal(user.id, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
         sendScanInfosOfPlayer(user.id)
     }
 

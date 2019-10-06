@@ -10,6 +10,8 @@
  * The event loop will auto-clear if there are no events in the queue, no need to externally stop/clear the interval.
  */
 
+export const TICK_MILLIS = 50;
+
 export default class Schedule {
 
     queue = [];
@@ -79,7 +81,7 @@ export default class Schedule {
     }
 
     _setWait(wait) {
-        this.waitEnd = Date.now() + 50 * wait;
+        this.waitEnd = Date.now() + TICK_MILLIS * wait;
     }
 
     /** Main loop tick function. Triggers every 5ms. */

@@ -50,6 +50,15 @@ class HackingService(
     private data class MoveArrive(val nodeId: String, val userId: String)
 
     fun moveArrive(nodeId: String, runId: String) {
+        val position = hackerPositionService.retrieveForCurrentUser()
+        if (position.locked) {
+
+            class ActionSnapBack(val hackerId: String, val nodeId: String)
+            stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_SNAPS_BACK_HACKER, ActionSnapBack(position.userId, position.currentNodeId))
+            return
+        }
+
+
         val scan = scanService.getByRunId(runId)
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
@@ -59,7 +68,7 @@ class HackingService(
         if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
         } else {
-            hackerPositionService.arriveAt(nodeId)
+            hackerPositionService.arriveAt(position, nodeId)
             triggerLayersAtArrive(nodeId, userId, runId)
             // TODO: trigger patrollers in node
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
@@ -90,7 +99,8 @@ class HackingService(
         }
 
         val data = MoveArrive(nodeId, currentUserService.userId)
-        hackerPositionService.arriveAt(nodeId)
+        val position = hackerPositionService.retrieveForCurrentUser()
+        hackerPositionService.arriveAt(position, nodeId)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
     }
 

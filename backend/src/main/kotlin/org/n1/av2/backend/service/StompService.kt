@@ -64,12 +64,12 @@ class StompService(
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceiveLinesAsCollection("main", lines))
     }
 
-    fun terminalReceiveForId(terminalId: String, vararg lines: String) {
-        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
+    fun terminalReceiveForUser(userId: String, vararg lines: String) {
+        toUser(userId, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
     }
 
-    fun terminalReceiveForId(user: User, terminalId: String, vararg lines: String) {
-        toUser(user.id, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
+    fun terminalReceiveForUserForTerminal(userId: String, terminalId: String, vararg lines: String) {
+        toUser(userId, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }
 
 }

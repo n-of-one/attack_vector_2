@@ -327,6 +327,7 @@ class RunCanvas {
     movePatroller({patrollerId, fromNodeId, toNodeId, moveTicks}) {
         this.displayById[patrollerId].move(fromNodeId, toNodeId, moveTicks);
     }
+
 }
 
 const runCanvas = new RunCanvas();

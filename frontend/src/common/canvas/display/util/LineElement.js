@@ -1,5 +1,6 @@
 import {fabric} from "fabric";
 import {animate, easeLinear} from "../../CanvasUtils";
+import {TICK_MILLIS} from "../../../Schedule";
 
 
 export default class LineElement {
@@ -8,7 +9,7 @@ export default class LineElement {
     line = null;
 
 
-    constructor(lineData, color, canvas) {
+    constructor(lineData, color, canvas, styling) {
         this.canvas = canvas;
 
         this.line = new fabric.Line(
@@ -17,23 +18,33 @@ export default class LineElement {
                 strokeWidth: 2,
                 selectable: false,
                 hoverCursor: 'default',
-                opacity: 1
+                opacity: 1,
+                ...styling
             });
 
         this.canvas.add(this.line);
         this.canvas.sendToBack(this.line);
     }
 
-    extendTo(lineData, time) {
-        animate(this.canvas, this.line, null, lineData.asCoordinates(), time, easeLinear);
+    setColor(value) {
+        this.line.set('stroke', value);
     }
 
-    disappear(time) {
-        animate(this.canvas, this.line, 'opacity', 0, time);
+    extendTo(lineData, time, ease = easeLinear) {
+        animate(this.canvas, this.line, null, lineData.asCoordinates(), time, ease);
+    }
+
+    disappear(ticks) {
+        animate(this.canvas, this.line, 'opacity', 0, ticks);
     }
 
     remove() {
         this.canvas.remove(this.line);
+    }
+
+    disappearAndRemove(ticks) {
+        this.disappear(ticks);
+        setTimeout( () => this.remove,ticks * TICK_MILLIS);
     }
 
 }

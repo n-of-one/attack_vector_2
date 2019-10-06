@@ -25,20 +25,25 @@ class HackTerminalService(
         val tokens = command.trim().split(" ")
         val commandAction = tokens[0].toLowerCase()
 
-        if (commandAction == "help") {
-            processHelp()
-            return
-        }
 
+        when (commandAction) {
+            "help" -> processHelp()
+            "dc" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
+            "servererror" -> error("gah")
+            "/share" -> socialTerminalService.processShare(runId, tokens)
+            else -> processPrivilegedCommand(runId, tokens, commandAction)
+        }
+    }
+
+    private fun processPrivilegedCommand(runId: String, tokens: List<String>, commandAction: String) {
         val position = hackerPositionService.retrieveForCurrentUser()
+        if (position.locked) return reportLocked()
         if (position.inTransit) return reportInTransit()
 
         when (commandAction) {
             "move" -> commandMoveService.process(runId, tokens, position)
             "hack" -> commandHackService.process(runId, tokens, position)
             "view" -> commandViewService.process(runId, position)
-            "dc" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
-            "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
@@ -60,6 +65,10 @@ class HackTerminalService(
 //                    " [u]quickscan"
 //            )
 //        }
+    }
+
+    fun reportLocked() {
+        stompService.terminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
 
     private fun reportInTransit() {

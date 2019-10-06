@@ -64,5 +64,6 @@ enum class ReduxActions {
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
     SERVER_PATROLLER_MOVE,              // Client can show this
 
+    SERVER_PATROLLER_SNAPS_BACK_HACKER, // Show hacker display snapped back to node it was trying to leave.
 
 }

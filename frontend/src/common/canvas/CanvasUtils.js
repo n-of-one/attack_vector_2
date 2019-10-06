@@ -56,7 +56,7 @@ const calcLine = (from, to, padding) => {
     return calcLineWithOffset(from, to, fromOffset, toOffset, padding);
 };
 
-const calcLineWithOffset = (from, to, fromOffset, toOffset, padding) => {
+export const calcLineWithOffset = (from, to, fromOffset, toOffset, padding) => {
     const {xSpan, ySpan, distance} = calcDistance(from, to);
 
     const [xPadding, yPadding] = expandPadding(xSpan, ySpan, padding);

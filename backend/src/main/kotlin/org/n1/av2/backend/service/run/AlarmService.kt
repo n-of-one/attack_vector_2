@@ -84,16 +84,13 @@ class AlarmService(
             val action = ActionPatrollerLocksHacker(event.patrollerId, patroller.targetUserId)
             stompService.toRun(event.runId, ReduxActions.SERVER_PATROLLER_LOCKS_HACKER, action)
             hackerPositionService.lockHacker(patroller.targetUserId)
+            stompService.terminalReceiveForUser( patroller.targetUserId, "[error]critical[/] OS privileges revoked.")
             // TODO start tracing
             // TODO schedule removal of patroller from view
         }
         else {
             movePatrollerLeashTowardsHacker(patroller, event.runId)
         }
-
-//        val hackers = hackerPositionService.hackersAt(event.nodeId, event.runId)
-//        hackers.forEach {hackerId ->
-//        }
     }
 
     class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val moveTicks: Int)
@@ -112,7 +109,9 @@ class AlarmService(
     }
 
 
+    // TODO deal with hackers whose connection is reset while timer is running. They need to see the alarm timer.
     // TODO deal with hackers whose connection is reset while being hunted by the patroller. Either due to active DC or due to disconnect.
+    // TODO deal with hackers logging into a run when there is an in progress patroller chasing / tracing someone.
 
 
 }

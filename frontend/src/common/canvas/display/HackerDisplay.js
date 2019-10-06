@@ -1,9 +1,19 @@
 import {fabric} from "fabric";
-import {animate, calcLine, easeLinear, easeOutSine} from "../CanvasUtils";
+import {animate, calcLine, calcLineStart, calcLineWithOffset, easeLinear, easeOutSine} from "../CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalActions";
 import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS} from "../../../hacker/run/model/HackActions";
 import Schedule from "../../Schedule";
-import {IDENTIFICATION_SIZE_LARGE, IDENTIFICATION_SIZE_NORMAL, OFFSET, COLOR_PATROLLER_LINE, SIZE_LARGE, SIZE_NORMAL, SIZE_SMALL} from "./util/DisplayConstants";
+import {
+    IDENTIFICATION_SIZE_LARGE,
+    IDENTIFICATION_SIZE_NORMAL,
+    OFFSET,
+    COLOR_PATROLLER_LINE,
+    SIZE_LARGE,
+    SIZE_NORMAL,
+    SIZE_SMALL,
+    TICKS_HACKER_MOVE_END, TICKS_HACKER_MOVE_MAIN, TICKS_HACKER_MOVE_START, COLOR_HACKER_LINE
+} from "./util/DisplayConstants";
+import LineElement from "./util/LineElement";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
@@ -290,35 +300,59 @@ export default class HackerDisplay {
 
     moveStart(nodeDisplay) {
         this.inTransit = true;
-        this.schedule.run(4, () => {
+        this.schedule.run(TICKS_HACKER_MOVE_START, () => {
             this.currentNodeDisplay.unregisterHacker(this);
-            this.moveStep(this.currentNodeDisplay, 0, 0, 4);
+            this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_START);
         });
-        this.schedule.run(16, () => {
+        this.schedule.run(TICKS_HACKER_MOVE_MAIN, () => {
             if (this.captured) {
                 this.undoMoveStartAndCaptureComplete(nodeDisplay)
             } else {
-                this.moveStep(nodeDisplay, 0, 0, 16);
+                this.moveStep(nodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
+                this.lineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay);
             }
         });
         this.schedule.run(0, () => {
             if (this.captured) {
-                this.moveStep(this.currentNodeDisplay, 0, 0, 4);
-                this.schedule.wait(4);
-                this.undoMoveStartAndCaptureComplete(nodeDisplay)
-            } else if (this.you) {
-                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
+                this.snapBackAndCapture(this.currentNodeDisplay, nodeDisplay);
+            }
+            else {
+                if (this.lineElement) {
+                    this.lineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
+                    this.lineElement = null;
+                }
+                if (this.you) {
+                    this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
+                }
             }
         });
     }
 
     undoMoveStartAndCaptureComplete(nodeDisplay) {
         const {xOffset, yOffset} = this.processOffset(nodeDisplay);
-        this.moveStep(this.currentNodeDisplay, xOffset, yOffset, 4);
+        this.schedule.run(TICKS_HACKER_MOVE_START, () => {
+            this.moveStep(this.currentNodeDisplay, xOffset, yOffset, TICKS_HACKER_MOVE_START);
+        });
         this.schedule.run(4, () => {
             this.capturedByLeashComplete();
         });
     }
+
+    snapBackAndCapture(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
+        this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
+
+        if (!this.lineElement) {
+            const lineEndData = calcLineWithOffset(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0, 0);
+            this.lineElement = new LineElement(lineEndData, COLOR_HACKER_LINE, this.canvas);
+            this.lineElement.setColor(COLOR_PATROLLER_LINE);
+        }
+
+        const lineStartData = calcLineStart(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0);
+        this.lineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
+        this.schedule.wait(TICKS_HACKER_MOVE_MAIN);
+        this.undoMoveStartAndCaptureComplete(snapBackToNodeDisplay);
+    }
+
 
     moveArrive(nodeDisplay) {
         this.currentNodeDisplay = nodeDisplay;
@@ -354,6 +388,18 @@ export default class HackerDisplay {
             this.moveStep(this.currentNodeDisplay, -OFFSET, yOffset, 4)
         });
     }
+
+    animateMoveStepLine(fromNodeDisplay, toNodeDisplay) {
+        const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 0, 0);
+        const lineEndData = calcLineWithOffset(fromNodeDisplay, toNodeDisplay, 0, 0, 0);
+
+        const lineElement = new LineElement(lineStartData, COLOR_HACKER_LINE, this.canvas);
+        lineElement.extendTo(lineEndData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
+
+        return lineElement
+    }
+
+
 
     hackerProbeLayers(nodeDisplay) {
         this.schedule.run(50, () => {
@@ -422,7 +468,10 @@ export default class HackerDisplay {
 
     capturedByLeash() {
         if (this.inTransit) {
-            this.locked = true;
+            this.captured = true;
+            if (this.lineElement) {
+                this.lineElement.setColor(COLOR_PATROLLER_LINE);
+            }
             // Undo the move animation first.
         } else {
             this.capturedByLeashComplete();
@@ -448,5 +497,6 @@ export default class HackerDisplay {
         animate(this.canvas, this.lockIcon, "opacity", 1, 20);
 
     }
+
 
 }

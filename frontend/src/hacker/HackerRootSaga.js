@@ -46,11 +46,11 @@ import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/i
 import {
     serverStartPatrollerSaga,
     serverPatrollerLocksHackerSaga,
-    serverFlashPatrollerSaga, serverPatrollerMoveSaga
+    serverFlashPatrollerSaga, serverPatrollerMoveSaga, serverPatrollerSnapsBackHackerSaga
 } from "./run/coundown/CountdownSagas";
 import {
     SERVER_FLASH_PATROLLER,
-    SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE,
+    SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE, SERVER_PATROLLER_SNAPS_BACK_HACKER,
     SERVER_START_PATROLLER,
 } from "./run/coundown/CountdownActions";
 
@@ -121,6 +121,7 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_START_PATROLLER, serverStartPatrollerSaga);
         yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);
         yield takeEvery(SERVER_PATROLLER_MOVE, serverPatrollerMoveSaga);
+
     }
 
     function* scanRootSaga() {

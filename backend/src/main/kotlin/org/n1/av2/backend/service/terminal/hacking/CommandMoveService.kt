@@ -39,7 +39,6 @@ class CommandMoveService(
         connectionService.findConnection(position.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         val fromNode = nodeService.getById(position.currentNodeId)
-        if (position.locked) return reportLocked()
         if (hasActiveIce(fromNode, runId)) return reportProtected()
 
 
@@ -56,9 +55,6 @@ class CommandMoveService(
 
     fun reportNoPath(networkId: String) {
         stompService.terminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
-    }
-    fun reportLocked() {
-        stompService.terminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
 
     private fun hasActiveIce(node: Node, runId: String): Boolean {
