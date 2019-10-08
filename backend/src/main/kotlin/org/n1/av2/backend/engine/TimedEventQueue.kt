@@ -27,8 +27,8 @@ class TimedEventQueue {
         }
     }
 
-    fun queueInTicks(ticks: Int, event: GameEvent) {
-        val due = System.currentTimeMillis() + TICK_MILLIS * ticks
+    fun queueInTicks(event: TicksGameEvent) {
+        val due = System.currentTimeMillis() + TICK_MILLIS * event.ticks.total
         add(due, event)
     }
 

@@ -286,9 +286,8 @@ class RunCanvas {
         this.displayById[userId].moveArrive(nodeDisplay);
     }
 
-    hackerProbeLayersSaga(userId, nodeId) {
-        const nodeDisplay = this.displayById[nodeId];
-        this.displayById[userId].hackerProbeLayers(nodeDisplay);
+    hackerProbeLayersSaga({userId, ticks}) {
+        this.displayById[userId].hackerProbeLayers(ticks);
     }
 
     hackerProbeConnections(userId, nodeId) {
@@ -322,8 +321,8 @@ class RunCanvas {
         patroller.lock(hackerId);
     }
 
-    movePatroller({patrollerId, fromNodeId, toNodeId, moveTicks}) {
-        this.displayById[patrollerId].move(fromNodeId, toNodeId, moveTicks);
+    movePatroller({patrollerId, fromNodeId, toNodeId, ticks}) {
+        this.displayById[patrollerId].move(fromNodeId, toNodeId, ticks);
     }
 
 }

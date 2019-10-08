@@ -28,7 +28,7 @@ class HackerPositionService(
         return hackerPositionRepo.findByUserId(userId) ?: error("HackerPosition not found for ${userId}")
     }
 
-    fun startRun(runId: String) {
+    fun startRun(runId: String): HackerPosition {
         val userId = currentUserService.userId
         val scan = scanService.getByRunId(runId)
         val siteData = siteDataService.getBySiteId(scan.siteId)
@@ -45,6 +45,8 @@ class HackerPositionService(
                 inTransit = true,
                 locked = false)
         hackerPositionRepo.save(newPosition)
+
+        return newPosition
     }
 
     fun saveInTransit(position: HackerPosition, toNodeId: String) {

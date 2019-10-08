@@ -5,8 +5,8 @@ import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.model.hacker.HackerActivity
 import org.n1.av2.backend.model.hacker.HackerActivityType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
@@ -16,8 +16,8 @@ val runActivities = listOf(HackerActivityType.SCANNING, HackerActivityType.HACKI
 
 @Service
 class HackerActivityService(
-        private val currentUserService: CurrentUserService
-) {
+        private val currentUserService: CurrentUserService,
+        private val userService: UserService) {
 
     companion object: KLogging()
 
@@ -56,9 +56,9 @@ class HackerActivityService(
         hackerActivitiesById[user.id] = HackerActivity(user, HackerActivityType.SCANNING, runId)
     }
 
-    fun startActivityHacking(runId: String) {
-        val user = currentUserService.user
-        hackerActivitiesById[user.id] = HackerActivity(user, HackerActivityType.HACKING, runId)
+    fun startActivityHacking(userId: String, runId: String) {
+        val user = userService.getById(userId)
+        hackerActivitiesById[userId] = HackerActivity(user, HackerActivityType.HACKING, runId)
     }
 
     fun stopActivityScanning(runId: String) {

@@ -1,7 +1,10 @@
 import {all, takeEvery} from 'redux-saga/effects'
 import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../common/enums/CommonActions";
 import {
-    AUTO_SCAN, PROBE_SCAN_NODE, SERVER_DISCOVER_NODES, SERVER_HACKER_ENTER_SCAN,
+    AUTO_SCAN,
+    PROBE_SCAN_NODE,
+    SERVER_DISCOVER_NODES,
+    SERVER_HACKER_ENTER_SCAN,
     SERVER_HACKER_LEAVE_SCAN,
     SERVER_PROBE_LAUNCH,
     SERVER_SCAN_FULL,
@@ -23,36 +26,23 @@ import {
     serverScanFullSaga
 } from "./run/saga/ScanSagas";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga, serverTimeSync} from "../common/saga/ServerSagas";
+import {moveStartSaga, serverHackerProbeConnectionsSaga, serverHackerProbeLayersSaga, serverMoveArriveSaga, startAttackSaga} from "./run/saga/HackSagas";
 import {
-    hackerProbedConnectionsSaga,
-    moveArriveSaga,
-    moveStartSaga,
-    probeLayersSaga,
-    serverHackerProbeConnectionsSaga,
-    serverHackerProbeLayersSaga,
-    serverMoveArriveSaga,
-    startAttackSaga
-} from "./run/saga/HackSagas";
-import {
-    FINISH_HACKING_ICE, HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS,
-    SERVER_HACKER_MOVE_ARRIVE, SERVER_HACKER_MOVE_START, SERVER_HACKER_PROBE_CONNECTIONS,
-    SERVER_HACKER_PROBE_LAYERS, SERVER_HACKER_START_ATTACK, SERVER_NODE_HACKED
+    FINISH_HACKING_ICE,
+    SERVER_HACKER_MOVE_ARRIVE,
+    SERVER_HACKER_MOVE_START,
+    SERVER_HACKER_PROBE_CONNECTIONS,
+    SERVER_HACKER_PROBE_LAYERS,
+    SERVER_HACKER_START_ATTACK,
+    SERVER_NODE_HACKED
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
 import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 import {ICE_TANGLE_MOVE_POINT, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./run/ice/tangle/TangleIceActions";
 import {tangleIcePointMoved, tangleIceStartHack, tanglePointMoved} from "./run/ice/tangle/TangleIceSagas";
-import {
-    serverStartPatrollerSaga,
-    serverPatrollerLocksHackerSaga,
-    serverFlashPatrollerSaga, serverPatrollerMoveSaga,
-} from "./run/coundown/CountdownSagas";
-import {
-    SERVER_FLASH_PATROLLER,
-    SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE,
-    SERVER_START_TRACING_PATROLLER,
-} from "./run/coundown/CountdownActions";
+import {serverFlashPatrollerSaga, serverPatrollerLocksHackerSaga, serverPatrollerMoveSaga, serverStartPatrollerSaga,} from "./run/coundown/CountdownSagas";
+import {SERVER_FLASH_PATROLLER, SERVER_PATROLLER_LOCKS_HACKER, SERVER_PATROLLER_MOVE, SERVER_START_TRACING_PATROLLER,} from "./run/coundown/CountdownActions";
 
 
 const createHackerRootSaga = () => {
@@ -97,14 +87,11 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_HACKER_START_ATTACK, startAttackSaga);
 
         yield takeEvery(SERVER_HACKER_MOVE_START, moveStartSaga);
-        yield takeEvery(HACKER_MOVE_ARRIVE, moveArriveSaga);
         yield takeEvery(SERVER_HACKER_MOVE_ARRIVE, serverMoveArriveSaga);
 
         yield takeEvery(SERVER_HACKER_PROBE_LAYERS, serverHackerProbeLayersSaga);
-        yield takeEvery(HACKER_PROBED_LAYERS, probeLayersSaga);
 
         yield takeEvery(SERVER_HACKER_PROBE_CONNECTIONS, serverHackerProbeConnectionsSaga);
-        yield takeEvery(HACKER_PROBED_CONNECTIONS, hackerProbedConnectionsSaga);
 
         yield takeEvery(SERVER_START_HACKING_ICE_PASSWORD, passwordIceStartHack);
         yield takeEvery(ICE_PASSWORD_SUBMIT, passwordIceSubmit);

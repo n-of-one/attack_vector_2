@@ -1,7 +1,6 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, calcLineWithOffset, easeLinear, easeOutSine} from "../CanvasUtils";
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalActions";
-import {HACKER_MOVE_ARRIVE, HACKER_PROBED_CONNECTIONS, HACKER_PROBED_LAYERS} from "../../../hacker/run/model/HackActions";
 import Schedule from "../../Schedule";
 import {
     IDENTIFICATION_SIZE_LARGE,
@@ -11,7 +10,7 @@ import {
     SIZE_LARGE,
     SIZE_NORMAL,
     SIZE_SMALL,
-    TICKS_HACKER_MOVE_END, TICKS_HACKER_MOVE_MAIN, TICKS_HACKER_MOVE_START, COLOR_HACKER_LINE
+     TICKS_HACKER_MOVE_MAIN, TICKS_HACKER_MOVE_START, COLOR_HACKER_LINE
 } from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 
@@ -230,7 +229,8 @@ export default class HackerDisplay {
         this.schedule.run(0, () => {
             if (this.you) {
                 this.echo(0, "[info]Persona established, hack started.");
-                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
+                //FIXME
+                // this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
             }
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
         });
@@ -281,9 +281,10 @@ export default class HackerDisplay {
             this.echo(20, "- Persona creation [info]complete");
             this.echo(0, "");
             this.echo(80, "Entering node");
-            this.schedule.run(0, () => {
-                this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
-            });
+            //FIXME
+            // this.schedule.run(0, () => {
+            //     this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
+            // });
             this.echo(0, "Persona accepted by node OS.");
             this.schedule.run(0, () => {
                 this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
@@ -297,7 +298,7 @@ export default class HackerDisplay {
                 this.animateOpacity(0.1, 100, easeOutSine);
                 this.canvas.bringToFront(this.hackerIcon);
             });
-            this.schedule.run(0, () => {
+            this.schedule.run(100, () => {
                 this.animateOpacity(1, 100);
             });
         }
@@ -365,7 +366,6 @@ export default class HackerDisplay {
         this.undoMoveStartAndCaptureComplete(snapBackToNodeDisplay);
     }
 
-
     moveArrive(nodeDisplay) {
         this.currentNodeDisplay = nodeDisplay;
         this.schedule.run(4, () => {
@@ -410,19 +410,12 @@ export default class HackerDisplay {
         return lineElement
     }
 
-
-
-    hackerProbeLayers(nodeDisplay) {
-        this.schedule.run(50, () => {
-            this.animateZoom(SIZE_SMALL, 50);
+    hackerProbeLayers(ticks) {
+        this.schedule.run(ticks.start, () => {
+            this.animateZoom(SIZE_SMALL, ticks.start);
         });
-        this.schedule.run(45, () => {
-            this.animateZoom(SIZE_NORMAL, 50);
-        });
-        this.schedule.run(5, () => {
-            if (this.you) {
-                this.dispatch({type: HACKER_PROBED_LAYERS, nodeId: nodeDisplay.id});
-            }
+        this.schedule.run(ticks.end, () => {
+            this.animateZoom(SIZE_NORMAL, ticks.end);
         });
     }
 
@@ -438,11 +431,6 @@ export default class HackerDisplay {
         this.schedule.run(45, () => {
             this.animateZoom(SIZE_NORMAL, 50);
             this.animateOpacity(1, 50)
-        });
-        this.schedule.run(5, () => {
-            if (this.you) {
-                this.dispatch({type: HACKER_PROBED_CONNECTIONS, nodeId: nodeDisplay.id});
-            }
         });
         this.schedule.run(4, () => {
             this.moveStep(nodeDisplay, OFFSET, OFFSET, 4);

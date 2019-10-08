@@ -3,6 +3,7 @@ package org.n1.av2.backend.service.terminal
 import org.n1.av2.backend.config.MyEnvironment
 import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackingService
 import org.n1.av2.backend.service.scan.ScanningService
@@ -11,10 +12,11 @@ import org.springframework.stereotype.Service
 @Service
 class ScanTerminalService(
         private val scanningService: ScanningService,
-        private val stompService: StompService,
         private val socialTerminalService: SocialTerminalService,
         private val hackingService: HackingService,
-        private val environment: MyEnvironment) {
+        private val currentUser: CurrentUserService,
+        private val environment: MyEnvironment,
+        private val stompService: StompService) {
 
     init {
         scanningService.scanTerminalService = this
@@ -101,7 +103,7 @@ class ScanTerminalService(
         map["view"] = Syntax("error s", "error s")
         map["hack"] = Syntax("error s", "error s")
 
-        sendSyntaxHighlighting(map, stompService)
+        sendSyntaxHighlighting(map, currentUser.userId, stompService)
     }
 
 

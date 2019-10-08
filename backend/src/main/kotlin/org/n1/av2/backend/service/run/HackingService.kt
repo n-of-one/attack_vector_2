@@ -1,40 +1,41 @@
 package org.n1.av2.backend.service.run
 
 import mu.KLogging
-import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
-import org.n1.av2.backend.model.db.run.NodeScanStatus
-import org.n1.av2.backend.model.db.run.NodeScanStatus.*
+import org.n1.av2.backend.engine.TicksGameEvent
+import org.n1.av2.backend.engine.TimedEventQueue
+import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.repo.LayerStatusRepo
 import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layer.TimerTriggerLayerService
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
-import org.n1.av2.backend.service.scan.ScanProbeService
-import org.n1.av2.backend.service.scan.ScanService
-import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.service.terminal.HackTerminalService
+import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
+import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
 import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
 
-val STATUSES_NEEDING_PROBE_LAYERS = listOf(DISCOVERED, TYPE, CONNECTIONS)
+private val START_ATTACK_SLOW = Ticks("total" to 250)
+private val NO_TICKS = Ticks("total" to 0)
+private val START_ATTACK_FAST = NO_TICKS
+
+class StartAttackArriveGameEvent(val userId: String, val runId: String, ticks: Ticks) : TicksGameEvent(ticks)
+
 
 @Service
 class HackingService(
         private val hackerPositionService: HackerPositionService,
         private val currentUserService: CurrentUserService,
-        private val scanService: ScanService,
-        private val nodeService: NodeService,
-        private val probeService: ScanProbeService,
         private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
-        private val alarmService: TimerTriggerLayerService,
         private val layerStatusRepo: LayerStatusRepo,
         private val nodeStatusRepo: NodeStatusRepo,
         private val iceStatusRepo: IceStatusRepo,
         private val tracingPatrollerService: TracingPatrollerService,
+        private val timedEventQueue: TimedEventQueue,
+        private val commandMoveService: CommandMoveService,
         private val stompService: StompService) {
 
     companion object : KLogging()
@@ -43,50 +44,26 @@ class HackingService(
     data class StartRun(val userId: String, val quick: Boolean)
 
     fun startAttack(runId: String, quick: Boolean) {
-        userActivityService.startActivityHacking(runId)
-        hackTerminalService.sendSyntaxHighlighting()
-        hackerPositionService.startRun(runId)
-        val data = StartRun(currentUserService.userId, quick)
+        val userId = currentUserService.userId
+
+        val data = StartRun(userId, quick)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
+
+        val ticks = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
+
+        val next = StartAttackArriveGameEvent(userId, runId, ticks)
+        timedEventQueue.queueInTicks(next)
     }
 
-    private fun triggerLayersAtArrive(nodeId: String, userId: String, runId: String) {
-        val node = nodeService.getById(nodeId)
-        node.layers.forEach { layer ->
-            when (layer) {
-                is TimerTriggerLayer -> alarmService.hackerTriggers(layer, nodeId, userId, runId)
-                else -> { } // do nothing
-            }
-        }
+    fun startAttackArrive(event: StartAttackArriveGameEvent) {
+        userActivityService.startActivityHacking(event.userId, event.runId)
+        hackTerminalService.sendSyntaxHighlighting(event.userId)
+        val position = hackerPositionService.startRun(event.runId)
+
+        val arrive = MoveArriveGameEvent(position.currentNodeId, event.userId, event.runId, NO_TICKS)
+        commandMoveService.moveArrive(arrive)
     }
 
-    fun probedLayers(nodeId: String, runId: String) {
-        val scan = scanService.getByRunId(runId)
-        val nodeScan = scan.nodeScanById[nodeId]!!
-
-        val newNodeStatus = when (nodeScan.status) {
-            DISCOVERED, NodeScanStatus.TYPE -> NodeScanStatus.LAYERS_NO_CONNECTIONS
-            CONNECTIONS -> NodeScanStatus.LAYERS
-            else -> nodeScan.status
-        }
-        if (newNodeStatus != nodeScan.status) {
-            probeService.probeScanSingleNode(nodeScan, scan, nodeId, newNodeStatus)
-        }
-
-        val data = MoveArrive(nodeId, currentUserService.userId)
-        val position = hackerPositionService.retrieveForCurrentUser()
-        hackerPositionService.arriveAt(position, nodeId)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
-    }
-
-    fun probedConnections(nodeId: String, runId: String) {
-        val scan = scanService.getByRunId(runId)
-        val nodeScan = scan.nodeScanById[nodeId]!!
-        val node = nodeService.getById(nodeId)
-        val layer = node.layers.first()
-        val prefix = "Hacked: [pri]0[/] ${layer.name}"
-        probeService.probeScanConnection(scan, node, nodeScan, prefix)
-    }
 
     fun purgeAll() {
         layerStatusRepo.deleteAll()

@@ -41,7 +41,7 @@ class HackTerminalService(
         if (position.inTransit) return reportInTransit()
 
         when (commandAction) {
-            "move" -> commandMoveService.process(runId, tokens, position)
+            "move" -> commandMoveService.processCommand(runId, tokens, position)
             "hack" -> commandHackService.process(runId, tokens, position)
             "view" -> commandViewService.process(runId, position)
             "/share" -> socialTerminalService.processShare(runId, tokens)
@@ -76,7 +76,7 @@ class HackTerminalService(
     }
 
 
-    fun sendSyntaxHighlighting() {
+    fun sendSyntaxHighlighting(userId: String) {
         val map = HashMap<String, Syntax>()
 
         map["help"] = Syntax("u", "error s")
@@ -86,7 +86,7 @@ class HackTerminalService(
         map["dc"] = Syntax("u", "error s")
         map["/share"] = Syntax("u warn", "info", "error s")
 
-        sendSyntaxHighlighting(map, stompService)
+        sendSyntaxHighlighting(map, userId, stompService)
     }
 
 
