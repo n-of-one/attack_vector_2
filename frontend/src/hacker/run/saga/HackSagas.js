@@ -10,7 +10,7 @@ function* startAttackSaga(action) {
 }
 
 function* moveStartSaga(action) {
-    runCanvas.moveStart(action.data.userId, action.data.nodeId);
+    runCanvas.moveStart(action.data);
     yield
 }
 

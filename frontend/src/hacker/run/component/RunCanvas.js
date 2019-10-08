@@ -276,9 +276,9 @@ class RunCanvas {
         });
     }
 
-    moveStart(userId, nodeId) {
+    moveStart({userId, nodeId, ticks}) {
         const nodeDisplay = this.displayById[nodeId];
-        this.displayById[userId].moveStart(nodeDisplay);
+        this.displayById[userId].moveStart(nodeDisplay, ticks);
     }
 
     moveArrive(userId, nodeId) {

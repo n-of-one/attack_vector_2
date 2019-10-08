@@ -7,8 +7,6 @@ import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.TracingPatrollerRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.layer.PATROLLER_ARRIVE_FIRST_TICKS
-import org.n1.av2.backend.service.layer.PATROLLER_MOVE_TICKS
 import org.n1.av2.backend.service.run.HackerPositionService
 import org.n1.av2.backend.service.scan.TraverseNode
 import org.n1.av2.backend.service.scan.TraverseNodeService
@@ -17,6 +15,9 @@ import org.springframework.stereotype.Service
 
 
 class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String): GameEvent
+
+const val PATROLLER_ARRIVE_FIRST_TICKS = 20
+const val PATROLLER_MOVE_TICKS = 15
 
 
 @Service

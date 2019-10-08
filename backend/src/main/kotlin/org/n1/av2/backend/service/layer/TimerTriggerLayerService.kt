@@ -14,9 +14,6 @@ import java.time.ZonedDateTime
 class TimerActivatesGameEvent(val runId: String, val nodeId: String, val userId: String): GameEvent
 
 
-const val PATROLLER_ARRIVE_FIRST_TICKS = 20
-const val PATROLLER_MOVE_TICKS = 15
-
 @Service
 class TimerTriggerLayerService(
         val timedEventQueue: TimedEventQueue,

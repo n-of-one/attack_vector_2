@@ -314,34 +314,30 @@ export default class HackerDisplay {
         animate(this.canvas, this.hackerIcon, "top", node.y + offsetY, time, easing);
     }
 
-    moveStart(nodeDisplay) {
+    moveStart(nodeDisplay, ticks) {
         this.inTransit = true;
-        this.schedule.run(TICKS_HACKER_MOVE_START, () => {
+        this.schedule.run(ticks.start, () => {
             this.currentNodeDisplay.unregisterHacker(this);
-            this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_START);
+            this.moveStep(this.currentNodeDisplay, 0, 0, ticks.start);
         });
-        this.schedule.run(TICKS_HACKER_MOVE_MAIN, () => {
-            if (this.locked) {
-                this.undoMoveStartAndCaptureComplete(nodeDisplay)
-            } else {
-                this.moveStep(nodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
-                this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay);
-            }
+        this.schedule.run(ticks.main, () => {
+            this.moveStep(nodeDisplay, 0, 0, ticks.main);
+            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main);
         });
-        this.schedule.run(0, () => {
-            if (this.locked) {
-                this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay);
-            }
-            else {
-                if (this.moveLineElement) {
-                    this.moveLineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
-                    this.moveLineElement = null;
-                }
-                if (this.you) {
-                    this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
-                }
-            }
-        });
+        // this.schedule.run(0, () => {
+        //     if (this.locked) {
+        //         this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay);
+        //     }
+        //     else {
+        //         if (this.moveLineElement) {
+        //             this.moveLineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
+        //             this.moveLineElement = null;
+        //         }
+        //         if (this.you) {
+        //             this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
+        //         }
+        //     }
+        // });
     }
 
     undoMoveStartAndCaptureComplete(nodeDisplay) {
@@ -404,12 +400,12 @@ export default class HackerDisplay {
         });
     }
 
-    animateMoveStepLine(fromNodeDisplay, toNodeDisplay) {
+    animateMoveStepLine(fromNodeDisplay, toNodeDisplay, ticks) {
         const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 0, 0);
         const lineEndData = calcLineWithOffset(fromNodeDisplay, toNodeDisplay, 0, 0, 0);
 
         const lineElement = new LineElement(lineStartData, COLOR_HACKER_LINE, this.canvas);
-        lineElement.extendTo(lineEndData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
+        lineElement.extendTo(lineEndData, ticks, fabric.util.ease.easeInOutSine);
 
         return lineElement
     }

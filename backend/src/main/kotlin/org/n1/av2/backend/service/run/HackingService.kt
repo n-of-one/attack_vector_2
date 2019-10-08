@@ -50,33 +50,6 @@ class HackingService(
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
     }
 
-    private data class MoveArrive(val nodeId: String, val userId: String)
-
-    fun moveArrive(nodeId: String, runId: String) {
-        val position = hackerPositionService.retrieveForCurrentUser()
-        if (position.locked) {
-
-            class ActionSnapBack(val hackerId: String, val nodeId: String)
-            stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_SNAPS_BACK_HACKER, ActionSnapBack(position.userId, position.currentNodeId))
-            return
-        }
-
-
-        val scan = scanService.getByRunId(runId)
-        val nodeStatus = scan.nodeScanById[nodeId]!!.status
-
-        val userId = currentUserService.userId
-
-        val data = MoveArrive(nodeId, userId)
-        if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
-            stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
-        } else {
-            hackerPositionService.arriveAt(position, nodeId)
-            triggerLayersAtArrive(nodeId, userId, runId)
-            stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
-        }
-    }
-
     private fun triggerLayersAtArrive(nodeId: String, userId: String, runId: String) {
         val node = nodeService.getById(nodeId)
         node.layers.forEach { layer ->
