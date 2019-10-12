@@ -91,7 +91,7 @@ class ScanProbeService(
     data class ProbeResultSingleNode(val nodeId: String, val newStatus: NodeScanStatus)
 
     private fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
-        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.layers.size} ${"layer".s(node.layers.size)}.")
+        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${node.layers.size} ${"layer".s(node.layers.size)}.")
 
         probeScanSingleNode(nodeScan, scan, node, NodeScanStatus.TYPE)
         return false
@@ -99,7 +99,7 @@ class ScanProbeService(
 
     fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan, prefix: String? = null): Boolean {
         if (nodeScan.status != NodeScanStatus.TYPE && nodeScan.status != NodeScanStatus.LAYERS_NO_CONNECTIONS) {
-            stompService.terminalReceive("Scanning node ${node.networkId} did not find new connections.")
+            stompService.terminalReceiveCurrentUser("Scanning node ${node.networkId} did not find new connections.")
             return false
         }
 
@@ -141,17 +141,17 @@ class ScanProbeService(
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         val start = if (prefix != null) prefix else "Scanned node ${node.networkId}"
-        stompService.terminalReceive("${start} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
+        stompService.terminalReceiveCurrentUser("${start} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
         return discoveredNodeIds.isNotEmpty()
     }
 
     private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
         if (nodeScan.status != NodeScanStatus.CONNECTIONS) {
-            stompService.terminalReceive("Scanning node ${node.networkId} did not find anything.")
+            stompService.terminalReceiveCurrentUser("Scanning node ${node.networkId} did not find anything.")
             return false
         }
 
-        stompService.terminalReceive("Scanned node ${node.networkId} - discovered ${node.layers.size} layer details")
+        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${node.layers.size} layer details")
 
         probeScanSingleNode(nodeScan, scan, node, NodeScanStatus.LAYERS)
         return false

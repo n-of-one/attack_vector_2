@@ -60,12 +60,12 @@ class StompService(
     }
 
     data class TerminalReceive(val terminalId: String, val lines: Array<out String>)
-    fun terminalReceive(vararg lines: String) {
+    fun terminalReceiveCurrentUser(vararg lines: String) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
     }
 
     data class TerminalReceiveLinesAsCollection(val terminalId: String, val lines: Collection<String>)
-    fun terminalReceive(lines: Collection<String>) {
+    fun terminalReceiveCurrentUser(lines: Collection<String>) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceiveLinesAsCollection("main", lines))
     }
 

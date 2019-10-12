@@ -46,7 +46,7 @@ class OsLayerService(
             timedEventQueue.queueInTicks(event)
         }
         else {
-            stompService.terminalReceive("Hacking ${layer.name} reveals nothing new.")
+            stompService.terminalReceiveCurrentUser("Hacking ${layer.name} reveals nothing new.")
         }
     }
 

@@ -32,7 +32,7 @@ class CommandViewService(
             lines.add("${blocked}[pri]${layer.level}[/] ${layer.name}${iceSuffix}${hacked}")
         }
 
-        stompService.terminalReceive(lines)
+        stompService.terminalReceiveCurrentUser(lines)
     }
 
 }

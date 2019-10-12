@@ -26,7 +26,7 @@ class HackTerminalService(
 
         when (commandAction) {
             "help" -> processHelp()
-            "dc" -> stompService.terminalReceive("[warn]Not implemented. Yet...")
+            "dc" -> stompService.terminalReceiveCurrentUser("[warn]Not implemented. Yet...")
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
             else -> processPrivilegedCommand(runId, tokens, commandAction)
@@ -43,12 +43,12 @@ class HackTerminalService(
             "view" -> commandViewService.process(runId, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
-            else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
+            else -> stompService.terminalReceiveCurrentUser("Unknown command, try [u]help[/].")
         }
     }
 
     private fun processHelp() {
-        stompService.terminalReceive(
+        stompService.terminalReceiveCurrentUser(
                 "Command options:",
                 " [u]move [ok]<network id>[/]     -- for example: [u]mv[ok] 00",
                 " [u]view",
@@ -65,7 +65,7 @@ class HackTerminalService(
     }
 
     fun reportLocked() {
-        stompService.terminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
+        stompService.terminalReceiveCurrentUser("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
 
     fun sendSyntaxHighlighting(userId: String) {

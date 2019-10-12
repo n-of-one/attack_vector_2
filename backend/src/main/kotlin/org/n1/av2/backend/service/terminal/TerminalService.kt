@@ -33,7 +33,7 @@ class TerminalService(
     }
 
     private fun reportInTransit() {
-        stompService.terminalReceive("[error]busy[/] current move not finished.")
+        stompService.terminalReceiveCurrentUser("[error]busy[/] current move not finished.")
     }
 
 

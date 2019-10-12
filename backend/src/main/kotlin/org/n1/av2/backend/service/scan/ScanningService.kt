@@ -104,10 +104,10 @@ class ScanningService(private val scanService: ScanService,
 
     private fun reportNodeNotFound(networkId: String) {
         if (networkId.length == 1) {
-            stompService.terminalReceive("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
+            stompService.terminalReceiveCurrentUser("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
 
         } else {
-            stompService.terminalReceive("Node [ok]${networkId}[/] not found.")
+            stompService.terminalReceiveCurrentUser("Node [ok]${networkId}[/] not found.")
         }
     }
 
@@ -151,11 +151,11 @@ class ScanningService(private val scanService: ScanService,
 
     fun shareScan(runId: String, user: User) {
         if (scanService.hasUserScan(user, runId)) {
-            stompService.terminalReceive("[info]${user.name}[/] already has this scan.")
+            stompService.terminalReceiveCurrentUser("[info]${user.name}[/] already has this scan.")
             return
         }
         scanService.createUserScan(runId, user)
-        stompService.terminalReceive("Shared scan with [info]${user.name}[/].")
+        stompService.terminalReceiveCurrentUser("Shared scan with [info]${user.name}[/].")
 
         val myUserName = currentUserService.user.name
 
@@ -216,7 +216,7 @@ class ScanningService(private val scanService: ScanService,
                 completeScan(scan)
             }
             else {
-                stompService.terminalReceive("Scan complete.")
+                stompService.terminalReceiveCurrentUser("Scan complete.")
             }
         }
     }
@@ -235,7 +235,7 @@ class ScanningService(private val scanService: ScanService,
         scan.duration = (durationMillis / 1000.0).roundToInt()
         scan.efficiency = calculateEfficiency(scan, durationMillis)
         scanService.save(scan)
-        stompService.terminalReceive("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${scan.efficiency}%")
+        stompService.terminalReceiveCurrentUser("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${scan.efficiency}%")
         updateScanInfoToPlayers(scan)
     }
 

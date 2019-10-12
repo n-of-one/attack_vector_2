@@ -1,5 +1,6 @@
 package org.n1.av2.backend.service
 
+import org.n1.av2.backend.engine.SYSTEM_USER_ID
 import org.n1.av2.backend.model.db.user.User
 import org.springframework.stereotype.Service
 
@@ -12,13 +13,21 @@ class CurrentUserService {
     }
 
     val user: User
-    get () {
-        return userStore.get()
-    }
+        get () {
+            return userStore.get()
+        }
 
     val userId: String
         get () {
-            return userStore.get().id
+            val userId = userStore.get().id
+            if (userId == SYSTEM_USER_ID) error("Tried to access the current user from a game event context.")
+            return userId
+        }
+
+    val isSystemUser: Boolean
+        get() {
+            val user = userStore.get() ?: return true
+            return user.id == SYSTEM_USER_ID
         }
 
     fun remove() {

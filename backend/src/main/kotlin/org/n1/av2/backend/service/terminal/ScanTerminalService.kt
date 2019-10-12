@@ -35,16 +35,16 @@ class ScanTerminalService(
             "attack" -> processAttack(runId, false)
             "quickattack", "qa" -> processAttack(runId, true)
             "move", "view", "hack" -> reportHackCommand()
-            else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
+            else -> stompService.terminalReceiveCurrentUser("Unknown command, try [u]help[/].")
         }
     }
 
     private fun reportHackCommand() {
-        stompService.terminalReceive("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
+        stompService.terminalReceiveCurrentUser("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
     }
 
     private fun processAutoScan(runId: String) {
-        stompService.terminalReceive("Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
+        stompService.terminalReceiveCurrentUser("Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
         scanningService.launchProbe(runId, true)
     }
 
@@ -53,7 +53,7 @@ class ScanTerminalService(
     }
 
     private fun processHelp() {
-        stompService.terminalReceive(
+        stompService.terminalReceiveCurrentUser(
                 "Command options:",
                 " [u]autoscan",
                 " [u]attack",
@@ -61,7 +61,7 @@ class ScanTerminalService(
                 " [u]dc",
                 " [u]/share [info]<user name>")
         if (environment.dev) {
-            stompService.terminalReceive(
+            stompService.terminalReceiveCurrentUser(
                     "",
                     "[i]Available only during development and testing:[/]",
                     " [u]quickscan[/] or [u]qs",
@@ -72,7 +72,7 @@ class ScanTerminalService(
 
     fun processScan(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
-            stompService.terminalReceive("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
+            stompService.terminalReceiveCurrentUser("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
             return
         }
         val networkId = tokens[1]

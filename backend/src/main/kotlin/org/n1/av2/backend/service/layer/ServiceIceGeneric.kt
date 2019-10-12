@@ -18,7 +18,7 @@ class ServiceIceGeneric(
     fun hack(layer: Layer, runId: String) {
         val holder = layerStatusService.getOrCreate(layer.id, runId)
         if (holder.hacked) {
-            stompService.terminalReceive("[info]not required[/] Ice already hacked.")
+            stompService.terminalReceiveCurrentUser("[info]not required[/] Ice already hacked.")
             return
         }
 

@@ -23,7 +23,7 @@ class TimerTriggerLayerService(
 
 
     fun hack(layer: TimerTriggerLayer) {
-        stompService.terminalReceive("${layer.name} resists hack.",
+        stompService.terminalReceiveCurrentUser("${layer.name} resists hack.",
                 "Analysis: this layer will monitor network traffic to find irregularities. It will detect your persona's mask in ${detectTime(layer)}. " +
                 "Then it will launch a patroller to lock your persona and will attempt to trace back your network origin.")
     }
@@ -35,9 +35,9 @@ class TimerTriggerLayerService(
         val alarmTime = time.now()
                 .plusMinutes(layer.minutes)
                 .plusSeconds(layer.seconds)
-        stompService.toUser(ReduxActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
+        stompService.toUser(userId, ReduxActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
 
-        stompService.terminalReceive("[pri]${layer.level}[/] Network sniffer : analyzing traffic. Persona mask will fail in [error]${detectTime(layer)}[/].")
+        stompService.terminalReceiveForUser(userId, "[pri]${layer.level}[/] Network sniffer : analyzing traffic. Persona mask will fail in [error]${detectTime(layer)}[/].")
 
         class FlashPatroller(val nodeId: String)
         stompService.toRun(runId, ReduxActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))

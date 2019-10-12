@@ -42,7 +42,7 @@ class CommandMoveService(
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
-            stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
+            stompService.terminalReceiveCurrentUser("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
             return
         }
         val networkId = tokens[1]
@@ -64,15 +64,15 @@ class CommandMoveService(
     }
 
     private fun reportAtTargetNode(networkId: String) {
-        stompService.terminalReceive("[error]error[/] already at [ok]${networkId}[/].")
+        stompService.terminalReceiveCurrentUser("[error]error[/] already at [ok]${networkId}[/].")
     }
 
     fun reportNodeNotFound(networkId: String) {
-        stompService.terminalReceive("[error]error[/] node [ok]${networkId}[/] not found.")
+        stompService.terminalReceiveCurrentUser("[error]error[/] node [ok]${networkId}[/] not found.")
     }
 
     fun reportNoPath(networkId: String) {
-        stompService.terminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
+        stompService.terminalReceiveCurrentUser("[error]error[/] no path from current node to [ok]${networkId}[/].")
     }
 
     private fun hasActiveIce(node: Node, runId: String): Boolean {
@@ -85,7 +85,7 @@ class CommandMoveService(
     }
 
     private fun reportProtected() {
-        stompService.terminalReceive("[warn b]blocked[/] ICE in current node is blocking your move.")
+        stompService.terminalReceiveCurrentUser("[warn b]blocked[/] ICE in current node is blocking your move.")
     }
 
 
