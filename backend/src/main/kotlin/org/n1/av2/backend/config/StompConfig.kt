@@ -1,9 +1,10 @@
 package org.n1.av2.backend.config
 
 import mu.KLogging
+import org.n1.av2.backend.engine.SerializingExecutor
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.user.HackerActivityService
+import org.n1.av2.backend.service.StompConnectionEventService
+import org.n1.av2.backend.service.user.UserConnectionService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.config.ChannelRegistration
@@ -22,7 +23,9 @@ import javax.annotation.PostConstruct
 @Configuration
 @EnableWebSocketMessageBroker
 @Component
-class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketMessageBrokerConfigurer {
+class StompConfig(
+        val assignPrincipalHandshakeHandler: AssignPrincipalHandshakeHandler,
+        val stompConnectionEventService: StompConnectionEventService) : WebSocketMessageBrokerConfigurer {
 
     companion object : KLogging()
 
@@ -30,7 +33,7 @@ class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketM
         registry
                 .addEndpoint("/attack_vector_websocket")
                 .setAllowedOrigins("*")
-                .setHandshakeHandler(AssignPrincipalHandshakeHandler())
+                .setHandshakeHandler(assignPrincipalHandshakeHandler)
                 .addInterceptors(CsrfTokenHandshakeInterceptor())
     }
 
@@ -49,35 +52,45 @@ class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketM
 //        registration.interceptors(MessageOut())
 //    }
 
-    @EventListener
-    fun handleSubscribeEvent(event: SessionSubscribeEvent) {
-        logger.debug { "<==> handleSubscribeEvent: connection=${event.user!!.name} ${event.message.headers["nativeHeaders"]}" }
-        val principal = event.user!! as UserPrincipal
-        hackerActivityService.sendTime(principal.name)
-    }
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
         val principal = event.user!! as UserPrincipal
-        hackerActivityService.connect(principal)
-        logger.debug { "===> handleConnectEvent: connection=${event.user!!.name}" }
+//        val validConnection = stompConnectionEventService.connect(principal)
+//        if (!validConnection) {
+//            principal.invalidate()
+//        }
+        logger.debug { "<= connect ${event.user!!.name}" }
     }
 
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
-        hackerActivityService.disconnect(event.user!! as UserPrincipal)
-        logger.debug { "<=== handleDisconnectEvent: connection=${event.user!!.name}" }
+        val userPrincipal = event.user!! as UserPrincipal
+        if (!userPrincipal.invalidated) {
+            stompConnectionEventService.disconnect(userPrincipal)
+            logger.debug { "<= disconnect ${userPrincipal.name}" }
+        }
+
+    }
+
+    @EventListener
+    fun handleSubscribeEvent(event: SessionSubscribeEvent) {
+        logger.debug { "<= subscribe ${event.user!!.name} ${event.message.headers["nativeHeaders"]}" }
+        val principal = event.user!! as UserPrincipal
+        stompConnectionEventService.sendTime(principal)
     }
 }
 
 @Configuration
-class ConfigStompServiceAndHackerActivityService(
-        val stompService: StompService,
-        val hackerActivityService: HackerActivityService) {
+class ConfigureStompServiceAndHackerActivityService(
+        val executor: SerializingExecutor,
+        val userConnectionService: UserConnectionService,
+        val stompConnectionEventService: StompConnectionEventService) {
 
     @PostConstruct
     fun postConstruct() {
-        hackerActivityService.stompService = stompService
+        stompConnectionEventService.executor = executor
+        stompConnectionEventService.userConnectionService = userConnectionService
     }
 
 }

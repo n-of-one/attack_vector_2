@@ -4,7 +4,7 @@ import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.engine.TimedEventQueue
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.run.HackerPosition
+import org.n1.av2.backend.model.db.run.HackerStateRunning
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -33,16 +33,16 @@ class OsLayerService(
         private val stompService: StompService) {
 
 
-    fun hack(layer: Layer, node: Node, position: HackerPosition) {
-        val scan = scanService.getByRunId(position.runId)
+    fun hack(layer: Layer, node: Node, state: HackerStateRunning) {
+        val scan = scanService.getByRunId(state.runId)
         val nodeStatus = scan.nodeScanById[node.id]!!.status
 
         if (nodeStatus != NodeScanStatus.LAYERS) {
             class ProbeConnections(val nodeId: String, val userId: String)
-            val data = ProbeConnections(node.id, position.userId)
-            stompService.toRun(position.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
+            val data = ProbeConnections(node.id, state.userId)
+            stompService.toRun(state.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
 
-            val event = HackedOsGameEvent(layer.id, node.id, currentUser.userId, position.runId)
+            val event = HackedOsGameEvent(layer.id, node.id, currentUser.userId, state.runId)
             timedEventQueue.queueInTicks(event)
         }
         else {

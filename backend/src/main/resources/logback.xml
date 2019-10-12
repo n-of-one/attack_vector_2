@@ -35,8 +35,8 @@
     <logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
 
 
+    <logger name="org.springframework.web.socket.config" level="WARN" />
     <logger name="org.springframework.web.socket.config.annotation" level="WARN" />
-
 
 
     <logger name="org" level="INFO" />

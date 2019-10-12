@@ -43,7 +43,7 @@ class ScanningController(
 
     @MessageMapping("/scan/leaveScan")
     fun leaveScan(runId: String, principal: Principal) {
-        executor.run(principal) { scanningService.leaveScan(runId) }
+        executor.run(principal) { scanningService.leaveRun(runId) }
     }
 
     @MessageMapping("/scan/autoScan")

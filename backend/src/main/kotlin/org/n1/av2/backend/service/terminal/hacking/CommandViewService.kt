@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service.terminal.hacking
 
-import org.n1.av2.backend.model.db.run.HackerPosition
+import org.n1.av2.backend.model.db.run.HackerStateRunning
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.LayerStatusService
 import org.n1.av2.backend.service.site.NodeService
@@ -14,8 +14,8 @@ class CommandViewService(
         private val layerStatusService: LayerStatusService
 ) {
 
-    fun process(runId: String, position: HackerPosition) {
-        val node = nodeService.getById(position.currentNodeId)
+    fun process(runId: String, state: HackerStateRunning) {
+        val node = nodeService.getById(state.currentNodeId)
 
         val blockingIceLevel = commandServiceUtil.findBlockingIceLayer(node, runId)?.level ?: -1
 

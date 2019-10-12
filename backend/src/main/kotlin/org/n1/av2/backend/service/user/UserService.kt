@@ -100,5 +100,9 @@ class UserService(
         return userRepo.findById(userId).orElseGet { error("${userId} not found") }
     }
 
+    fun findAll(): List<User> {
+        return userRepo.findAll().toList()
+    }
+
 
 }

@@ -2,10 +2,13 @@ package org.n1.av2.backend.engine
 
 import org.n1.av2.backend.model.db.user.HackerIcon
 import org.n1.av2.backend.model.db.user.User
-import org.n1.av2.backend.model.iam.UserPrincipal
 import java.util.concurrent.LinkedBlockingQueue
 
 const val SLEEP_MILLIS_NO_EVENTS = 20L
+
+const val SYSTEM_USER_ID = "user-system"
+
+val systemUser = User(id = SYSTEM_USER_ID, name = "System", icon = HackerIcon.BEAR)
 
 
 class TimedEventRunner(
@@ -14,10 +17,10 @@ class TimedEventRunner(
         private val gameEventService: GameEventService) : Runnable {
 
 
-    private val systemPrincipal = UserPrincipal(User(id = "user-system", name = "System", icon = HackerIcon.BEAR))
+    private var running = true
 
     override fun run() {
-        while(true) {
+        while(running) {
             processEvent()
         }
     }
@@ -42,7 +45,11 @@ class TimedEventRunner(
             gameEventService.run(event)
         }
 
-        return Task(action, systemPrincipal)
+        return Task(action, systemUser)
 
+    }
+
+    fun terminate() {
+        running = false
     }
 }

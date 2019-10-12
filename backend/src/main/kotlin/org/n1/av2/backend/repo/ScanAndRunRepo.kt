@@ -20,9 +20,10 @@ interface UserScanRepo : PagingAndSortingRepository<UserScan, String> {
 
 
 @Repository
-interface HackerPositionRepo : PagingAndSortingRepository<HackerPosition, String> {
-    fun findByUserId(userId: String): HackerPosition?
-    fun findByCurrentNodeIdAndRunId(currentNodeId: String, runId: String): List<HackerPosition>
+interface HackerStateRepo : PagingAndSortingRepository<HackerState, String> {
+    fun findByUserId(userId: String): HackerState?
+    fun findByCurrentNodeIdAndRunId(currentNodeId: String, runId: String): List<HackerState>
+    fun findByRunId(runId: String):List<HackerState>
 }
 
 @Repository

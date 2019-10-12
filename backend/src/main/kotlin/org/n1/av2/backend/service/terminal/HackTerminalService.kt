@@ -2,9 +2,8 @@ package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
 import org.n1.av2.backend.model.Syntax
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.HackerPositionService
+import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.terminal.hacking.CommandHackService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.CommandViewService
@@ -13,12 +12,11 @@ import org.springframework.stereotype.Service
 @Service
 class HackTerminalService(
         private val stompService: StompService,
-        private val currentUserService: CurrentUserService,
         private val socialTerminalService: SocialTerminalService,
         private val commandHackService: CommandHackService,
         private val commandMoveService: CommandMoveService,
         private val commandViewService: CommandViewService,
-        private val hackerPositionService: HackerPositionService,
+        private val hackerStateService: HackerStateService,
         private val environment: MyEnvironment) {
 
     fun processCommand(runId: String, command: String) {
@@ -36,14 +34,13 @@ class HackTerminalService(
     }
 
     private fun processPrivilegedCommand(runId: String, tokens: List<String>, commandAction: String) {
-        val position = hackerPositionService.retrieveForCurrentUser()
-        if (position.locked) return reportLocked()
-        if (position.inTransit) return reportInTransit()
+        val state = hackerStateService.retrieveForCurrentUser().toRunState()
+        if (state.locked) return reportLocked()
 
         when (commandAction) {
-            "move" -> commandMoveService.processCommand(runId, tokens, position)
-            "hack" -> commandHackService.process(runId, tokens, position)
-            "view" -> commandViewService.process(runId, position)
+            "move" -> commandMoveService.processCommand(runId, tokens, state)
+            "hack" -> commandHackService.process(runId, tokens, state)
+            "view" -> commandViewService.process(runId, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
             else -> stompService.terminalReceive("Unknown command, try [u]help[/].")
@@ -70,11 +67,6 @@ class HackTerminalService(
     fun reportLocked() {
         stompService.terminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
-
-    private fun reportInTransit() {
-        stompService.terminalReceive("[error]busy[/] current move not finished.")
-    }
-
 
     fun sendSyntaxHighlighting(userId: String) {
         val map = HashMap<String, Syntax>()

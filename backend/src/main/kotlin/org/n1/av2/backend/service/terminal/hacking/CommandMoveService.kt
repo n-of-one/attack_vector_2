@@ -4,14 +4,14 @@ import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.engine.TimedEventQueue
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
-import org.n1.av2.backend.model.db.run.HackerPosition
+import org.n1.av2.backend.model.db.run.HackerStateRunning
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layer.TimerTriggerLayerService
-import org.n1.av2.backend.service.run.HackerPositionService
+import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService
 import org.n1.av2.backend.service.site.ConnectionService
@@ -32,7 +32,7 @@ class ArriveProbeLayersGameEvent(val nodeId: String, val userId: String, val run
 class CommandMoveService(
         private val nodeService: NodeService,
         private val connectionService: ConnectionService,
-        private val hackerPositionService: HackerPositionService,
+        private val hackerStateService: HackerStateService,
         private val scanService: ScanService,
         private val nodeStatusRepo: NodeStatusRepo,
         private val timedEventQueue: TimedEventQueue,
@@ -40,27 +40,27 @@ class CommandMoveService(
         private val probeService: ScanProbeService,
         private val stompService: StompService) {
 
-    fun processCommand(runId: String, tokens: List<String>, position: HackerPosition) {
+    fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
             stompService.terminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
             return
         }
         val networkId = tokens[1]
 
-        val toNode = nodeService.findByNetworkId(position.siteId, networkId) ?: return reportNodeNotFound(networkId)
+        val toNode = nodeService.findByNetworkId(state.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
-        if (toNode.id == position.currentNodeId) return reportAtTargetNode(networkId)
+        if (toNode.id == state.currentNodeId) return reportAtTargetNode(networkId)
 
-        if (position.previousNodeId == toNode.id) return handleMove(runId, toNode, position)
+        if (state.previousNodeId == toNode.id) return handleMove(runId, toNode, state)
         val scan = scanService.getByRunId(runId)
         if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
-        connectionService.findConnection(position.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
+        connectionService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
-        val fromNode = nodeService.getById(position.currentNodeId)
+        val fromNode = nodeService.getById(state.currentNodeId)
         if (hasActiveIce(fromNode, runId)) return reportProtected()
 
 
-        handleMove(runId, toNode, position)
+        handleMove(runId, toNode, state)
     }
 
     private fun reportAtTargetNode(networkId: String) {
@@ -89,13 +89,13 @@ class CommandMoveService(
     }
 
 
-    private fun handleMove(runId: String, toNode: Node, position: HackerPosition) {
-        hackerPositionService.saveInTransit(position, toNode.id)
+    private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
+        hackerStateService.saveInTransit(state, toNode.id)
 
         class StartMove(val userId: String, val nodeId: String, val ticks: Ticks)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(position.userId, toNode.id, MOVE_START_TICKS))
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_TICKS))
 
-        val moveArriveEvent = MoveArriveGameEvent(toNode.id, position.userId, runId)
+        val moveArriveEvent = MoveArriveGameEvent(toNode.id, state.userId, runId)
         timedEventQueue.queueInTicks(moveArriveEvent)
     }
 
@@ -104,10 +104,10 @@ class CommandMoveService(
         val userId = event.userId
         val nodeId = event.nodeId
 
-        val position = hackerPositionService.retrieve(userId)
-        if (position.locked) {
+        val state = hackerStateService.retrieve(userId).toRunState()
+        if (state.locked) {
             class ActionSnapBack(val hackerId: String, val nodeId: String)
-            stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_SNAPS_BACK_HACKER, ActionSnapBack(position.userId, position.currentNodeId))
+            stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_SNAPS_BACK_HACKER, ActionSnapBack(state.userId, state.currentNodeId))
             return
         }
 
@@ -123,7 +123,7 @@ class CommandMoveService(
             val data = ProbeLayers(userId, PROBE_LAYERS_TICKS)
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
         } else {
-            arriveComplete(position, nodeId, userId, runId)
+            arriveComplete(state, nodeId, userId, runId)
         }
     }
 
@@ -145,13 +145,13 @@ class CommandMoveService(
             probeService.probeScanSingleNode(nodeScan, scan, nodeId, newNodeStatus)
         }
 
-        val position = hackerPositionService.retrieve(userId)
-        arriveComplete(position, nodeId, userId, runId)
+        val state = hackerStateService.retrieve(userId).toRunState()
+        arriveComplete(state, nodeId, userId, runId)
     }
 
 
-    private fun arriveComplete(position: HackerPosition, nodeId: String, userId: String, runId: String) {
-        hackerPositionService.arriveAt(position, nodeId)
+    private fun arriveComplete(state: HackerStateRunning, nodeId: String, userId: String, runId: String) {
+        hackerStateService.arriveAt(state, nodeId)
         triggerLayersAtArrive(nodeId, userId, runId)
 
         class MoveArrive(val nodeId: String, val userId: String)

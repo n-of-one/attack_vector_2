@@ -1,25 +1,22 @@
 package org.n1.av2.backend.service.scan
 
 import mu.KLogging
+import org.n1.av2.backend.model.db.run.HackerState
 import org.n1.av2.backend.model.db.run.NodeScan
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.Scan
 import org.n1.av2.backend.model.db.user.User
-import org.n1.av2.backend.model.hacker.HackerActivityType
-import org.n1.av2.backend.model.hacker.HackerPresence
-import org.n1.av2.backend.model.hacker.HackerPresenceHacking
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.run.HackerPositionService
+import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.run.LayerStatusService
 import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.service.site.SiteDataService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.terminal.ScanTerminalService
-import org.n1.av2.backend.service.user.HackerActivityService
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -33,12 +30,11 @@ class ScanningService(private val scanService: ScanService,
                       private val siteService: SiteService,
                       private val stompService: StompService,
                       private val nodeService: NodeService,
-                      private val hackerActivityService: HackerActivityService,
+                      private val hackerStateService: HackerStateService,
                       private val currentUserService: CurrentUserService,
                       private val traverseNodeService: TraverseNodeService,
                       private val scanProbeService: ScanProbeService,
                       private val time: TimeService,
-                      private val hackerPositionService: HackerPositionService,
                       private val userService: UserService,
                       private val layerStatusService: LayerStatusService,
                       private val nodeStatusRepo: NodeStatusRepo
@@ -84,40 +80,24 @@ class ScanningService(private val scanService: ScanService,
     }
 
 
-    data class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: Collection<HackerPresence>)
 
     fun enterScan(runId: String) {
-        hackerActivityService.startActivityScanning(runId)
-        scanTerminalService.sendSyntaxHighlighting()
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, createPresenceForScanning(currentUserService.user))
-
         val scan = scanService.getByRunId(runId)
+        val thisHackerState = hackerStateService.enterScan(scan.siteId, runId)
+        scanTerminalService.sendSyntaxHighlighting()
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, thisHackerState)
+
         val siteFull = siteService.getSiteFull(scan.siteId)
         siteFull.sortNodeByDistance(scan)
 
         siteFull.nodeStatuses = nodeStatusRepo.findByRunId(runId)
         siteFull.layerStatuses = layerStatusService.getForRun(runId)
 
-        val userPresenceScanning = hackerActivityService
-                .getAll(scan.runId, HackerActivityType.SCANNING)
-                .map { activity -> createPresenceForScanning(activity.user) }
+        val hackersInRun = hackerStateService.getHackersInRun(runId)
 
-        val userPresenceHacking = hackerActivityService
-                .getAll(scan.runId, HackerActivityType.HACKING)
-                .map { activity -> createPresenceForHacking(activity.user) }
-
-        val userPresence = userPresenceScanning.union(userPresenceHacking)
-        val scanAndSite = ScanAndSite(scan, siteFull, userPresence)
+        class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerState>)
+        val scanAndSite = ScanAndSite(scan, siteFull, hackersInRun)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
-    }
-
-    private fun createPresenceForHacking(user: User): HackerPresenceHacking {
-        val position = hackerPositionService.retrieve(user.id)
-        return HackerPresenceHacking(user.id, user.name, user.icon, position.currentNodeId, position.targetNodeId, position.inTransit, position.locked)
-    }
-
-    private fun createPresenceForScanning(user: User): HackerPresence {
-        return HackerPresence(user.id, user.name, user.icon)
     }
 
     private fun reportNodeNotFound(networkId: String) {
@@ -185,8 +165,8 @@ class ScanningService(private val scanService: ScanService,
         sendScanInfosOfPlayer(user.id)
     }
 
-    fun leaveScan(runId: String) {
-        hackerActivityService.stopActivityScanning(runId)
+    fun leaveRun(runId: String) {
+        hackerStateService.leaveRun()
     }
 
     fun purgeAll() {

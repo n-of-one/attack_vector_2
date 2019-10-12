@@ -1,40 +1,28 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.model.db.user.User
-import org.n1.av2.backend.model.iam.UserPrincipal
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 @Service
 class CurrentUserService {
-    private val principalStore = ThreadLocal<UserPrincipal>()
+    private val userStore = ThreadLocal<User>()
 
-    fun set(principal: Principal) {
-        if (principal is UserPrincipal) {
-            principalStore.set(principal)
-        }
-        else {
-            throw IllegalArgumentException("Principal is not a UserPrincipal, but a ${principal.javaClass} and has value: ${principal}")
-        }
-    }
-
-    val principal: UserPrincipal
-    get() {
-        return principalStore.get()
+    fun set(user: User) {
+        userStore.set(user)
     }
 
     val user: User
     get () {
-        return principalStore.get().user
+        return userStore.get()
     }
 
     val userId: String
         get () {
-            return principalStore.get().userId
+            return userStore.get().id
         }
 
     fun remove() {
-        principalStore.remove()
+        userStore.remove()
     }
 
 

@@ -34,7 +34,7 @@ class JwtAuthenticationFilter(
                     val user = userService.getByName(userName)
                     val authentication = UserPrincipal(user)
                     SecurityContextHolder.getContext().authentication = authentication
-                    currentUserService.set(authentication)
+                    currentUserService.set(user)
                 }
             }
         } catch (exception: Exception) {

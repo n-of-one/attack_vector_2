@@ -14,7 +14,6 @@ import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.terminal.HackTerminalService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
-import org.n1.av2.backend.service.user.HackerActivityService
 import org.springframework.stereotype.Service
 
 private val START_ATTACK_SLOW = Ticks("total" to 250)
@@ -26,9 +25,8 @@ class StartAttackArriveGameEvent(val userId: String, val runId: String, ticks: T
 
 @Service
 class HackingService(
-        private val hackerPositionService: HackerPositionService,
+        private val hackerStateService: HackerStateService,
         private val currentUserService: CurrentUserService,
-        private val userActivityService: HackerActivityService,
         private val hackTerminalService: HackTerminalService,
         private val layerStatusRepo: LayerStatusRepo,
         private val nodeStatusRepo: NodeStatusRepo,
@@ -46,6 +44,8 @@ class HackingService(
     fun startAttack(runId: String, quick: Boolean) {
         val userId = currentUserService.userId
 
+        hackerStateService.startRun(userId, runId)
+
         val data = StartRun(userId, quick)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
 
@@ -56,11 +56,10 @@ class HackingService(
     }
 
     fun startAttackArrive(event: StartAttackArriveGameEvent) {
-        userActivityService.startActivityHacking(event.userId, event.runId)
         hackTerminalService.sendSyntaxHighlighting(event.userId)
-        val position = hackerPositionService.startRun(event.userId, event.runId)
+        val state = hackerStateService.startedRun(event.userId, event.runId)
 
-        val arrive = MoveArriveGameEvent(position.currentNodeId, event.userId, event.runId, NO_TICKS)
+        val arrive = MoveArriveGameEvent(state.currentNodeId, event.userId, event.runId, NO_TICKS)
         commandMoveService.moveArrive(arrive)
     }
 
@@ -68,7 +67,7 @@ class HackingService(
     fun purgeAll() {
         layerStatusRepo.deleteAll()
         iceStatusRepo.deleteAll()
-        hackerPositionService.purgeAll()
+        hackerStateService.purgeAll()
         tracingPatrollerService.purgeAll()
     }
 

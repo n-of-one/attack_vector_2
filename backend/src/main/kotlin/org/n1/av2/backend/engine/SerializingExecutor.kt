@@ -1,5 +1,7 @@
 package org.n1.av2.backend.engine
 
+import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Component
@@ -20,9 +22,11 @@ class SerializingExecutor(
         gameEventService: GameEventService)  {
 
     private val queue = LinkedBlockingQueue<Task>()
-    val runner = TaskRunner(queue, stompService, currentUserService)
-    val eventRunner = TimedEventRunner(timedEventQueue, queue, gameEventService)
+
+    private final val runner = TaskRunner(queue, stompService, currentUserService)
     val executorThread = Thread(runner)
+
+    private final val eventRunner = TimedEventRunner(timedEventQueue, queue, gameEventService)
     val timedEventThread = Thread(eventRunner)
 
     @PostConstruct
@@ -33,12 +37,21 @@ class SerializingExecutor(
 
     @PreDestroy
     fun destroy() {
-        // unlike shutdown() shutdownNow() sends interruption to running tasks
         runner.terminate()
+        eventRunner.terminate()
     }
 
     fun run(principal: Principal, action: () -> Unit) {
-        val task = Task(action, principal)
+
+        if (principal is UserPrincipal) {
+            run(principal.user, action)
+        } else {
+            throw IllegalArgumentException("Principal is not a UserPrincipal, but a ${principal.javaClass} and has value: ${principal}")
+        }
+    }
+
+    fun run(user: User, action: () -> Unit) {
+        val task = Task(action, user)
         queue.put(task)
     }
 

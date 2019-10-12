@@ -32,7 +32,7 @@ class TaskRunner(val queue: LinkedBlockingQueue<Task>,
     private fun runTask() {
         val task = queue.take()
         try {
-            currentUserService.set(task.principal)
+            currentUserService.set(task.user)
             task.action()
             currentUserService.remove()
         }
@@ -47,12 +47,12 @@ class TaskRunner(val queue: LinkedBlockingQueue<Task>,
             if (exception is FatalException) {
                 val event = ServerFatal(false, exception.message ?: "-")
                 stompService.toUser(ReduxActions.SERVER_ERROR, event)
-                logger.warn("${task.principal.name}: ${exception}")
+                logger.warn("${task.user.name}: ${exception}")
                 return
             }
             val event = ServerFatal(true, exception.message ?: "-")
             stompService.toUser(ReduxActions.SERVER_ERROR, event)
-            logger.info("${task.principal.name} - task triggered exception. ", exception)
+            logger.info("${task.user.name} - task triggered exception. ", exception)
         }
     }
 

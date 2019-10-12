@@ -4,10 +4,13 @@ import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.layer.OsLayer
 import org.n1.av2.backend.model.db.layer.TextLayer
 import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
-import org.n1.av2.backend.model.db.run.HackerPosition
+import org.n1.av2.backend.model.db.run.HackerStateRunning
 import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layer.*
+import org.n1.av2.backend.service.layer.OsLayerService
+import org.n1.av2.backend.service.layer.ServiceIceGeneric
+import org.n1.av2.backend.service.layer.TextLayerService
+import org.n1.av2.backend.service.layer.TimerTriggerLayerService
 import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
@@ -22,11 +25,11 @@ class CommandHackService(
         private val commandServiceUtil: CommandServiceUtil
 ) {
 
-    fun process(runId: String, tokens: List<String>, position: HackerPosition) {
+    fun process(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
             return stompService.terminalReceive("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
         }
-        val node = nodeService.getById(position.currentNodeId)
+        val node = nodeService.getById(state.currentNodeId)
 
         val level = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])
         if (level < 0 || level >= node.layers.size) return reportLayerUnknown(node, tokens[1])
@@ -34,17 +37,17 @@ class CommandHackService(
         val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, runId)
         if (blockingIceLayer != null && blockingIceLayer.level > level) return reportBlockingIce(blockingIceLayer)
 
-        handleHack(node, level, position)
+        handleHack(node, level, state)
     }
 
-    private fun handleHack(node: Node, level: Int, position: HackerPosition) {
+    private fun handleHack(node: Node, level: Int, state: HackerStateRunning) {
         val layer = node.layers.find { it.level == level }!!
 
         when  {
-            layer is OsLayer-> osLayerService.hack(layer, node, position)
-            layer is TextLayer -> textLayerService.hack(layer, node, position.runId)
+            layer is OsLayer-> osLayerService.hack(layer, node, state)
+            layer is TextLayer -> textLayerService.hack(layer, node, state.runId)
             layer is TimerTriggerLayer -> snifferLayerService.hack(layer)
-            layer.type.ice -> serviceIceGeneric.hack(layer, position.runId)
+            layer.type.ice -> serviceIceGeneric.hack(layer, state.runId)
             else -> stompService.terminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }

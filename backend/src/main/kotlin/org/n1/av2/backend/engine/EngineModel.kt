@@ -1,9 +1,9 @@
 package org.n1.av2.backend.engine
 
 import org.n1.av2.backend.model.Ticks
-import java.security.Principal
+import org.n1.av2.backend.model.db.user.User
 
-class Task(val action: () -> Unit, val principal: Principal)
+class Task(val action: () -> Unit, val user: User)
 
 data class TimedEvent(val due: Long, val event: GameEvent)
 
