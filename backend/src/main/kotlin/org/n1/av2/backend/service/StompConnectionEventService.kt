@@ -13,9 +13,10 @@ class StompConnectionEventService {
     lateinit var executor: SerializingExecutor
     lateinit var userConnectionService: UserConnectionService
 
-
     companion object : KLogging()
 
+
+    // FIXME cleanup - remove if not needed
 //
 //    fun currentActivity(): HackerActivityType  {
 //        return hackerActivitiesById[currentUserService.userId]!!.type
@@ -26,22 +27,7 @@ class StompConnectionEventService {
 //    }
 //
 
-    /** Returns validity of connection. False means this is a duplicate connection */
-    fun connect(userPrincipal: UserPrincipal): Boolean {
-
-        // run immediate because we need to immediately check if this is a duplicate connection,
-        // and report that back to on this connection request
-        return userConnectionService.connect(userPrincipal)
-    }
-
-    fun disconnect(userPrincipal: UserPrincipal) {
-        executor.run(userPrincipal) {
-            userConnectionService.disconnect(userPrincipal)
-        }
-    }
-
-
-//
+    //
 //    fun startActivityScanning(runId: String) {
 //        val user = currentUserService.user
 //        hackerActivitiesById[user.id] = HackerActivity(user, HackerActivityType.SCANNING, runId)
@@ -58,7 +44,23 @@ class StompConnectionEventService {
 //        notifyLeaveRun(runId, user)
 //    }
 
+//    data class HackerLeaveNotification(val userId: String)
 
+
+
+    /** Returns validity of connection. False means this is a duplicate connection */
+    fun connect(userPrincipal: UserPrincipal): Boolean {
+
+        // run immediate because we need to immediately check if this is a duplicate connection,
+        // and report that back to on this connection request
+        return userConnectionService.connect(userPrincipal)
+    }
+
+    fun disconnect(userPrincipal: UserPrincipal) {
+        executor.run(userPrincipal) {
+            userConnectionService.disconnect(userPrincipal)
+        }
+    }
 
     fun sendTime(principal: UserPrincipal) {
         executor.run(principal) {
@@ -66,7 +68,4 @@ class StompConnectionEventService {
         }
     }
 
-
-
-    data class HackerLeaveNotification(val userId: String)
 }
