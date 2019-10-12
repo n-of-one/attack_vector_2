@@ -17,8 +17,6 @@ enum class UserType(vararg authorizationsInput: GrantedAuthority) {
     NOT_LOGGED_IN(),
     // regular player
     HACKER(ROLE_USER, ROLE_HACKER),
-    // Player with additional rights such as managing other players.
-    HACKER_MANAGER(ROLE_USER, ROLE_HACKER, ROLE_HACKER_MANAGER),
     // Regular GM
     GM(ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_USER_MANAGER, ROLE_HACKER_MANAGER, ROLE_LOGS),
     // For preparing system, backups, etc.

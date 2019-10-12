@@ -15,39 +15,6 @@ class StompConnectionEventService {
 
     companion object : KLogging()
 
-
-    // FIXME cleanup - remove if not needed
-//
-//    fun currentActivity(): HackerActivityType  {
-//        return hackerActivitiesById[currentUserService.userId]!!.type
-//    }
-//
-//    fun getAll(runId: String, activity: HackerActivityType): Collection<HackerActivity> {
-//        return hackerActivitiesById.values.filter { activity == it.type && it.runId == runId }
-//    }
-//
-
-    //
-//    fun startActivityScanning(runId: String) {
-//        val user = currentUserService.user
-//        hackerActivitiesById[user.id] = HackerActivity(user, HackerActivityType.SCANNING, runId)
-//    }
-//
-//    fun startActivityHacking(userId: String, runId: String) {
-//        val user = userService.getById(userId)
-//        hackerActivitiesById[userId] = HackerActivity(user, HackerActivityType.HACKING, runId)
-//    }
-//
-//    fun stopActivityScanning(runId: String) {
-//        val user = currentUserService.user
-//        hackerActivitiesById[user.id] = HackerActivity(user , HackerActivityType.ONLINE, "-")
-//        notifyLeaveRun(runId, user)
-//    }
-
-//    data class HackerLeaveNotification(val userId: String)
-
-
-
     /** Returns validity of connection. False means this is a duplicate connection */
     fun connect(userPrincipal: UserPrincipal): Boolean {
 

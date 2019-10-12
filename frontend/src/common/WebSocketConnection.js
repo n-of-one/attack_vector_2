@@ -36,8 +36,8 @@ class WebSocketConnection {
 
         this.client.connect({}, (event) => {
             this.onWsOpen(event, additionalOnWsOpen);
-        }, () => {
-            this.onWsConnectError();
+        }, (event) => {
+            this.onWsConnectError(event);
         });
     }
 

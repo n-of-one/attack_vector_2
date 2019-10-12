@@ -1,5 +1,6 @@
 package org.n1.av2.backend.config
 
+import org.n1.av2.backend.model.db.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.StompConnectionEventService
 import org.springframework.http.server.ServerHttpRequest
@@ -23,9 +24,14 @@ class AssignPrincipalHandshakeHandler(
 
         val principal = SecurityContextHolder.getContext().authentication as? UserPrincipal ?: throw RuntimeException("Login please")
 
-        val validConnection = stompConnectionEventService.connect(principal)
-        if (!validConnection) {
-            principal.invalidate()
+        if (principal.user.type == UserType.HACKER) {
+            val validConnection = stompConnectionEventService.connect(principal)
+            if (!validConnection) {
+                // Throwing an error here would cause the client to receive a 500. We want to do more: convey the problem.
+                // By invalidating the pricipal, it will return a user-name that indicates the problem. And it will allow us to treat this
+                // as an invalid connection from now on.
+                principal.invalidate()
+            }
         }
 
         return principal

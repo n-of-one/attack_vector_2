@@ -6,6 +6,7 @@ import org.n1.av2.backend.model.db.run.HackerGeneralActivity
 import org.n1.av2.backend.model.db.run.HackerSpecificActivity
 import org.n1.av2.backend.model.db.run.HackerState
 import org.n1.av2.backend.model.db.run.HackerStateRunning
+import org.n1.av2.backend.model.db.user.UserType
 import org.n1.av2.backend.repo.HackerStateRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.scan.ScanService
@@ -32,8 +33,10 @@ class HackerStateService(
         // If the server starts, all hackers are logged out by definition.
 
         userService.findAll().forEach { user ->
-            val newState = createLoggedOutState(user.id)
-            hackerStateRepo.save(newState)
+            if (user.type ==  UserType.HACKER || user.type ==  UserType.HACKER) {
+                val newState = createLoggedOutState(user.id)
+                hackerStateRepo.save(newState)
+            }
         }
     }
 
@@ -121,6 +124,7 @@ class HackerStateService(
 
     fun purgeAll() {
         hackerStateRepo.deleteAll()
+        init()
     }
 
     fun lockHacker(hackerId: String) {
