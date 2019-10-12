@@ -5,7 +5,6 @@ import org.n1.av2.backend.model.db.site.Connection
 import org.n1.av2.backend.model.ui.AddConnection
 import org.n1.av2.backend.repo.ConnectionRepo
 import org.n1.av2.backend.util.createId
-import org.n1.av2.backend.util.logNanoTime
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,10 +14,10 @@ class ConnectionService(
     companion object: KLogging()
 
     fun findConnection(startId: String, endId: String): Connection? {
-        return logNanoTime("findConnection", logger) {
+//        return logNanoTime("findConnection", logger) {
             val startConnections = findByNodeId(startId)
-            startConnections.find { it.fromId == endId || it.toId == endId }
-        }
+            return startConnections.find { it.fromId == endId || it.toId == endId }
+//        }
     }
 
     fun createConnection(command: AddConnection): Connection {

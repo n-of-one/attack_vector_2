@@ -255,7 +255,7 @@ export default class HackerDisplay {
         });
 
         if (this.you) {
-            this.dispatch({type: TERMINAL_LOCK, id: "main"});
+            this.dispatch({type: TERMINAL_LOCK, terminalId: "main"});
             const random = (max) => {
                 return Math.floor(Math.random() * max);
             };
@@ -265,43 +265,47 @@ export default class HackerDisplay {
             this.echo(20, "");
             this.echo(20, "Persona v2.3 booting");
             this.echo(10, "- unique ID: " + personaId);
-            this.schedule.run(0, () => {
-                this.animateOpacity(0.1, 100, easeOutSine);
-                this.canvas.bringToFront(this.hackerIcon);
-            });
+        }
+        else {
+            this.schedule.wait(50);
+        }
+        this.schedule.run(0, () => {
+            this.animateOpacity(0.1, 100, easeOutSine);
+            this.canvas.bringToFront(this.hackerIcon);
+        });
+
+        if (this.you) {
             this.echo(10, "- Matching fingerprint with OS deamon");
             this.echo(10, "  - [ok]ok[/] Suppressing persona signature");
             this.echo(10, "  - [ok]ok[/] Connection bandwidth adjusted");
             this.echo(10, "  - [ok]ok[/] Content masked.");
             this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon");
             this.echo(30, "  - [ok]ok[/] Network origin obfuscated ");
-            this.schedule.run(0, () => {
-                this.animateOpacity(1, 100);
-            });
+        }
+        else {
+            this.schedule.wait(100);
+        }
+
+        this.schedule.run(0, () => {
+            this.animateOpacity(1, 100);
+        });
+
+        if (this.you) {
             this.echo(20, "- Persona creation [info]complete");
             this.echo(0, "");
             this.echo(80, "Entering node");
-            //FIXME
-            // this.schedule.run(0, () => {
-            //     this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
-            // });
             this.echo(0, "Persona accepted by node OS.");
             this.schedule.run(0, () => {
-                this.dispatch({type: TERMINAL_UNLOCK, id: "main"});
-            });
-        } else {
-            this.schedule.run(0, () => {
-                this.canvas.bringToFront(this.hackerIcon);
-            });
-            this.schedule.wait(50);
-            this.schedule.run(100, () => {
-                this.animateOpacity(0.1, 100, easeOutSine);
-                this.canvas.bringToFront(this.hackerIcon);
-            });
-            this.schedule.run(100, () => {
-                this.animateOpacity(1, 100);
+                this.dispatch({type: TERMINAL_UNLOCK, terminalId: "main"});
             });
         }
+        else {
+            this.schedule.wait(100);
+        }
+
+        // this.schedule.run(0, () => {
+        //     this.canvas.bringToFront(this.hackerIcon);
+        // });
     }
 
     echo(time, message) {

@@ -20,8 +20,9 @@ import org.springframework.stereotype.Service
 
 private val STATUSES_NEEDING_PROBE_LAYERS = listOf(NodeScanStatus.DISCOVERED, NodeScanStatus.TYPE, NodeScanStatus.CONNECTIONS)
 
-private val ARRIVE_TICKS = Ticks("start" to 4, "main" to 16)
-class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = ARRIVE_TICKS): TicksGameEvent(ticks)
+
+private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 16)
+class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_START_TICKS): TicksGameEvent(ticks)
 
 private val PROBE_LAYERS_TICKS = Ticks("start" to 50, "end" to 50)
 class ArriveProbeLayersGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks): TicksGameEvent(ticks)
@@ -91,8 +92,8 @@ class CommandMoveService(
     private fun handleMove(runId: String, toNode: Node, position: HackerPosition) {
         hackerPositionService.saveInTransit(position, toNode.id)
 
-        class StartMove(val userId: String, val nodeId: String)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(position.userId, toNode.id))
+        class StartMove(val userId: String, val nodeId: String, val ticks: Ticks)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(position.userId, toNode.id, MOVE_START_TICKS))
 
         val moveArriveEvent = MoveArriveGameEvent(toNode.id, position.userId, runId)
         timedEventQueue.queueInTicks(moveArriveEvent)

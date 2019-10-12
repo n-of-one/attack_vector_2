@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service
 
-import org.n1.av2.backend.model.db.user.User
+import mu.KLogging
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ReduxEvent
@@ -13,6 +13,8 @@ class StompService(
         val stompTemplate: SimpMessageSendingOperations,
         val currentUserService: CurrentUserService) {
 
+    companion object : KLogging()
+
     @Value("\${ENVIRONMENT ?: default}")
     lateinit var environment: String
 
@@ -24,25 +26,28 @@ class StompService(
 
     fun toSite(siteId: String, actionType: ReduxActions, data: Any? = null) {
         simulateNonLocalhost()
+        logger.debug("-> ${siteId} ${actionType}")
         val event = ReduxEvent(actionType, data)
         stompTemplate.convertAndSend("/topic/site/${siteId}", event)
     }
 
     fun toRun(runId: String, actionType: ReduxActions, data: Any? = null) {
         simulateNonLocalhost()
+        logger.debug("-> ${runId} ${actionType}")
         val event = ReduxEvent(actionType, data)
         stompTemplate.convertAndSend("/topic/run/${runId}", event)
+    }
+
+    fun toUser(userId: String, actionType: ReduxActions, data: Any) {
+        simulateNonLocalhost()
+        logger.debug("-> ${userId} ${actionType}")
+        val event = ReduxEvent(actionType, data)
+        stompTemplate.convertAndSendToUser(userId, "/reply", event)
     }
 
     fun toUser(actionType: ReduxActions, data: Any) {
         val userId = currentUserService.userId
         toUser(userId, actionType, data)
-    }
-
-    fun toUser(userId: String, actionType: ReduxActions, data: Any) {
-        simulateNonLocalhost()
-        val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSendToUser(userId, "/reply", event)
     }
 
     fun toUser(message: NotyMessage) {

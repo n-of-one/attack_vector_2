@@ -28,8 +28,7 @@ class HackerPositionService(
         return hackerPositionRepo.findByUserId(userId) ?: error("HackerPosition not found for ${userId}")
     }
 
-    fun startRun(runId: String): HackerPosition {
-        val userId = currentUserService.userId
+    fun startRun(userId: String, runId: String): HackerPosition {
         val scan = scanService.getByRunId(runId)
         val siteData = siteDataService.getBySiteId(scan.siteId)
         val nodes = nodeService.getAll(scan.siteId)

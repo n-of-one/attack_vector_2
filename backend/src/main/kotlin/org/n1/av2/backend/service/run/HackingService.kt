@@ -58,7 +58,7 @@ class HackingService(
     fun startAttackArrive(event: StartAttackArriveGameEvent) {
         userActivityService.startActivityHacking(event.userId, event.runId)
         hackTerminalService.sendSyntaxHighlighting(event.userId)
-        val position = hackerPositionService.startRun(event.runId)
+        val position = hackerPositionService.startRun(event.userId, event.runId)
 
         val arrive = MoveArriveGameEvent(position.currentNodeId, event.userId, event.runId, NO_TICKS)
         commandMoveService.moveArrive(arrive)

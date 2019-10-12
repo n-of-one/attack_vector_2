@@ -41,8 +41,13 @@ class StompConfig(val hackerActivityService: HackerActivityService) : WebSocketM
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration?) {
-        registration!!.interceptors(StompMessageLogInterceptor())
+        registration!!.interceptors(MessageIn())
     }
+
+    // Have the StompService log this, as we get better info there: user-ids and run-ids instead of stomp channel ids.
+//    override fun configureClientOutboundChannel(registration: ChannelRegistration) {
+//        registration.interceptors(MessageOut())
+//    }
 
     @EventListener
     fun handleSubscribeEvent(event: SessionSubscribeEvent) {
