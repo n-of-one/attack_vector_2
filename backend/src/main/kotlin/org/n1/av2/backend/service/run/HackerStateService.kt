@@ -3,9 +3,9 @@ package org.n1.av2.backend.service.run
 import mu.KLogging
 import org.n1.av2.backend.engine.SYSTEM_USER_ID
 import org.n1.av2.backend.model.db.run.HackerGeneralActivity
-import org.n1.av2.backend.model.db.run.HackerSpecificActivity
 import org.n1.av2.backend.model.db.run.HackerState
 import org.n1.av2.backend.model.db.run.HackerStateRunning
+import org.n1.av2.backend.model.db.run.RunActivity
 import org.n1.av2.backend.model.db.user.UserType
 import org.n1.av2.backend.repo.HackerStateRepo
 import org.n1.av2.backend.service.CurrentUserService
@@ -51,7 +51,7 @@ class HackerStateService(
                 previousNodeId = null,
                 targetNodeId = null,
                 generalActivity = HackerGeneralActivity.RUNNING,
-                specificActivity = HackerSpecificActivity.SCANNING,
+                runActivity = RunActivity.SCANNING,
                 locked = false)
         hackerStateRepo.save(newState)
         return newState
@@ -86,7 +86,7 @@ class HackerStateService(
                 previousNodeId = null,
                 targetNodeId = null,
                 generalActivity = HackerGeneralActivity.RUNNING,
-                specificActivity = HackerSpecificActivity.STARTING,
+                runActivity = RunActivity.STARTING,
                 locked = false)
         hackerStateRepo.save(newState)
     }
@@ -105,7 +105,7 @@ class HackerStateService(
                 previousNodeId = null,
                 targetNodeId = null,
                 generalActivity = HackerGeneralActivity.RUNNING,
-                specificActivity = HackerSpecificActivity.STARTING,
+                runActivity = RunActivity.STARTING,
                 locked = false)
         hackerStateRepo.save(newState)
 
@@ -113,12 +113,12 @@ class HackerStateService(
     }
 
     fun saveInTransit(runState: HackerStateRunning, toNodeId: String) {
-        val newPosition = runState.toState().copy(specificActivity = HackerSpecificActivity.MOVING, targetNodeId = toNodeId)
+        val newPosition = runState.toState().copy(runActivity = RunActivity.MOVING, targetNodeId = toNodeId)
         hackerStateRepo.save(newPosition)
     }
 
     fun arriveAt(position: HackerStateRunning, nodeId: String) {
-        val newPosition = position.toState().copy(specificActivity = HackerSpecificActivity.AT_NODE, currentNodeId = nodeId, previousNodeId = position.currentNodeId, targetNodeId = null)
+        val newPosition = position.toState().copy(runActivity = RunActivity.AT_NODE, currentNodeId = nodeId, previousNodeId = position.currentNodeId, targetNodeId = null)
         hackerStateRepo.save(newPosition)
     }
 
@@ -129,7 +129,7 @@ class HackerStateService(
 
     fun lockHacker(hackerId: String) {
         val position = retrieve(hackerId)
-        val newPosition = position.copy(locked = true, specificActivity = HackerSpecificActivity.AT_NODE, targetNodeId = null)
+        val newPosition = position.copy(locked = true, runActivity = RunActivity.AT_NODE, targetNodeId = null)
         hackerStateRepo.save(newPosition)
     }
 
@@ -145,7 +145,7 @@ class HackerStateService(
                 runId = null, siteId = null,
                 currentNodeId = null, previousNodeId = null, targetNodeId = null,
                 generalActivity = HackerGeneralActivity.RUNNING,
-                specificActivity = HackerSpecificActivity.STARTING,
+                runActivity = RunActivity.STARTING,
                 locked = false)
         hackerStateRepo.save(newState)
     }
@@ -156,7 +156,7 @@ class HackerStateService(
                 runId = null, siteId = null,
                 currentNodeId = null, previousNodeId = null, targetNodeId = null,
                 generalActivity = HackerGeneralActivity.ONLINE,
-                specificActivity = HackerSpecificActivity.NA,
+                runActivity = RunActivity.NA,
                 locked = false)
         hackerStateRepo.save(newState)
     }
@@ -168,7 +168,7 @@ class HackerStateService(
 
     private fun createLoggedOutState(userId: String): HackerState {
         return HackerState(userId = userId, runId = null, siteId = null, currentNodeId = null, previousNodeId = null, targetNodeId = null,
-                generalActivity = HackerGeneralActivity.OFFLINE, specificActivity = HackerSpecificActivity.NA, locked = false)
+                generalActivity = HackerGeneralActivity.OFFLINE, runActivity = RunActivity.NA, locked = false)
     }
 
 

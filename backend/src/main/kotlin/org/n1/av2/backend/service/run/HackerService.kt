@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.run
 
-import org.n1.av2.backend.model.db.run.HackerSpecificActivity
 import org.n1.av2.backend.model.db.run.HackerState
+import org.n1.av2.backend.model.db.run.RunActivity
 import org.n1.av2.backend.model.db.user.HackerIcon
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
@@ -11,7 +11,7 @@ class HackerPresence(val userId: String,
                      val icon: HackerIcon,
                      val nodeId: String?,
                      val targetNodeId: String?,
-                     val activity: HackerSpecificActivity,
+                     val activity: RunActivity,
                      val locked: Boolean)
 
 @Service
@@ -28,7 +28,7 @@ class HackerService(
     fun toPresence(state: HackerState): HackerPresence {
         val user = userService.getById(state.userId)
 
-        return HackerPresence(user.id, user.name, user.icon, state.currentNodeId, state.targetNodeId, state.specificActivity, state.locked)
+        return HackerPresence(user.id, user.name, user.icon, state.currentNodeId, state.targetNodeId, state.runActivity, state.locked)
 
     }
 

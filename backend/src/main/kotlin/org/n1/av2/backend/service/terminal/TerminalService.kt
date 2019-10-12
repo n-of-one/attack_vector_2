@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
 import mu.KLogging
-import org.n1.av2.backend.model.db.run.HackerSpecificActivity.*
+import org.n1.av2.backend.model.db.run.RunActivity.*
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerStateService
 import org.springframework.stereotype.Service
@@ -19,7 +19,7 @@ class TerminalService(
         if (command.trim().isBlank()) {
             return
         }
-        val type = hackerStateService.retrieveForCurrentUser().specificActivity
+        val type = hackerStateService.retrieveForCurrentUser().runActivity
         when (type) {
             SCANNING -> scanTerminalService.processCommand(runId, command)
             AT_NODE -> hackTerminalService.processCommand(runId, command)

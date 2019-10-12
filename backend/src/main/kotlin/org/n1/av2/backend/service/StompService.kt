@@ -76,5 +76,4 @@ class StompService(
     fun terminalReceiveForUserForTerminal(userId: String, terminalId: String, vararg lines: String) {
         toUser(userId, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }
-
 }

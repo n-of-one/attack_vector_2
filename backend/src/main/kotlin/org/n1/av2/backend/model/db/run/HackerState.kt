@@ -9,7 +9,7 @@ enum class HackerGeneralActivity {
     RUNNING,    // this hacker is in a run
 }
 
-enum class HackerSpecificActivity {
+enum class RunActivity {
     NA,         // not in a run
     SCANNING,   // hacker has not yet started the attack
     STARTING,   // hacker is starting the attack (moving to the start node)
@@ -26,7 +26,7 @@ data class HackerState(
         val previousNodeId: String?,
         val targetNodeId: String?,
         val generalActivity: HackerGeneralActivity,
-        val specificActivity: HackerSpecificActivity,
+        val runActivity: RunActivity,
         val locked: Boolean = false) {
 
     fun toRunState(): HackerStateRunning {
@@ -36,13 +36,13 @@ data class HackerState(
                 currentNodeId ?: error("currentNodeId null for ${userId}"),
                 previousNodeId,
                 targetNodeId,
-                specificActivity,
+                runActivity,
                 locked
         )
     }
 }
 
-/** Convenience class that mimicks HackerState but enforces non-nullness of all fields that are used in a run */
+/** Convenience class that mimicks HackerState but enforces non-null state of all fields that are used in a run */
 class HackerStateRunning(
         val userId: String,
         val runId: String,
@@ -50,10 +50,10 @@ class HackerStateRunning(
         val currentNodeId: String,
         val previousNodeId: String?,
         val targetNodeId: String?,
-        val specificActivity: HackerSpecificActivity,
+        val runActivity: RunActivity,
         val locked: Boolean) {
 
     fun toState(): HackerState {
-        return HackerState(userId, runId, siteId, currentNodeId, previousNodeId, targetNodeId, HackerGeneralActivity.RUNNING, specificActivity, locked)
+        return HackerState(userId, runId, siteId, currentNodeId, previousNodeId, targetNodeId, HackerGeneralActivity.RUNNING, runActivity, locked)
     }
 }

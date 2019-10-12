@@ -29,7 +29,7 @@ class UserConnectionService(
             true
         }
         else {
-            logger.warn("Rejected duplicate session from: " + userPrincipal.user.name )
+            logger.info("Rejected duplicate session from: " + userPrincipal.user.name )
             false
         }
     }

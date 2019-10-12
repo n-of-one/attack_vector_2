@@ -13,6 +13,7 @@ import {
      TICKS_HACKER_MOVE_MAIN, TICKS_HACKER_MOVE_START, COLOR_HACKER_LINE
 } from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
+import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
@@ -63,38 +64,36 @@ export default class HackerDisplay {
 
         this.addHackerIdentificationIcons();
 
-        this.schedule.run(3, () => {
-            if (hackerData.hacking) {
-                this.locked = hackerData.locked;
+        if (hackerData.activity === HACKER_RUN_ACTIVITY_SCANNING) {
+            this.currentNodeDisplay = startNodeDisplay;
 
-                // even if the hacker is in transit, we are not displaying it.
-                // because it becomes a mess if the hacker is also locked during this transit.
-                // Better to have the hacker icon jump from the current node to the target node.
-                this.inTransit = false;
-                this.addHackingHacker(currentNodeDisplay);
+            animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_SCANNING, APPEAR_TIME);
+            animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_SCANNING, 40);
+            animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_SCANNING, APPEAR_TIME);
+        }
+        else {
+            this.locked = hackerData.locked;
 
-                animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, APPEAR_TIME);
-                animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 40);
-                animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, APPEAR_TIME);
+            // If the hacker is in transit or still starting the run, then we are displaying them as arrived at the node.
+            // For simplicity
+            this.inTransit = false;
 
+            const moveIncomplete = (hackerData.activity === HACKER_RUN_ACTIVITY_STARTING || hackerData.activity === HACKER_RUN_ACTIVITY_MOVING);
+            this.addHackingHacker(currentNodeDisplay, moveIncomplete);
 
-            } else {
-                this.currentNodeDisplay = startNodeDisplay;
+            animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, APPEAR_TIME);
+            animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 40);
+            animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, APPEAR_TIME);
 
-                animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_SCANNING, APPEAR_TIME);
-                animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_SCANNING, 40);
-                animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_SCANNING, APPEAR_TIME);
-            }
-        });
+        }
+        this.schedule.wait(3);
     }
 
-    addHackingHacker(currentNodeDisplay) {
-        // even if the hacker is in transit, we are not displaying it.
+    addHackingHacker(currentNodeDisplay, moveIncomplete) {
         const nodeDisplay = currentNodeDisplay;
-
         this.currentNodeDisplay = nodeDisplay;
 
-        const {xOffset, yOffset} = this.processOffset(nodeDisplay);
+        const {xOffset, yOffset} = this.processOffset(nodeDisplay, moveIncomplete);
         this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, nodeDisplay, xOffset, yOffset);
         this.canvas.add(this.hackerIcon);
 
@@ -388,7 +387,11 @@ export default class HackerDisplay {
         });
     }
 
-    processOffset(nodeDisplay) {
+    processOffset(nodeDisplay, moveIncomplete) {
+        if (moveIncomplete) {
+            return {xOffset: 0, yOffset: 0}
+        }
+
         if (this.you) {
             return {xOffset: OFFSET, yOffset: OFFSET};
         } else {
