@@ -69,7 +69,7 @@ class HackerStateService(
         return hackerStateRepo.findByUserId(userId) ?: error("HackerPosition not found for ${userId}")
     }
 
-    fun startRun(userId: String, runId: String): HackerStateRunning {
+    fun startRun(userId: String, runId: String) {
         val scan = scanService.getByRunId(runId)
         val siteData = siteDataService.getBySiteId(scan.siteId)
         val nodes = nodeService.getAll(scan.siteId)
@@ -86,8 +86,6 @@ class HackerStateService(
                 specificActivity = HackerSpecificActivity.STARTING,
                 locked = false)
         hackerStateRepo.save(newState)
-
-        return newState.toRunState()
     }
 
     fun startedRun(userId: String, runId: String): HackerStateRunning {

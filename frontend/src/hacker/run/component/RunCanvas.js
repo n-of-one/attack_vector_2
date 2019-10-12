@@ -307,7 +307,7 @@ class RunCanvas {
 
     flashTracingPatroller({nodeId}) {
         const patrollerData = {
-            patrollerId: null, nodeId, appearTicks: 20
+            patrollerId: null, nodeId, ticks: {appear: 20 }
         };
         new TracingPatrollerDisplay(patrollerData, this.canvas, null, this.displayById).disappear(20);
     }

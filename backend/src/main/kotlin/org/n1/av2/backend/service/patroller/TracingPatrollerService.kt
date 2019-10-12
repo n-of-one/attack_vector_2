@@ -15,7 +15,7 @@ import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 
 
-val PATROLLER_ARRIVE_FIRST_TICKS = Ticks( "arrive" to 20)
+val PATROLLER_ARRIVE_FIRST_TICKS = Ticks( "appear" to 20)
 val PATROLLER_MOVE_TICKS = Ticks( "move" to 15)
 
 class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String, ticks: Ticks): TicksGameEvent(ticks)

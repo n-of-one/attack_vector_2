@@ -34,7 +34,7 @@ data class HackerState(
                 runId ?: error("runId null for ${userId}"),
                 siteId ?: error("siteId null for ${userId}"),
                 currentNodeId ?: error("currentNodeId null for ${userId}"),
-                previousNodeId ?: error("previousNodeId null for ${userId}"),
+                previousNodeId,
                 targetNodeId,
                 specificActivity,
                 locked
@@ -48,7 +48,7 @@ class HackerStateRunning(
         val runId: String,
         val siteId: String,
         val currentNodeId: String,
-        val previousNodeId: String,
+        val previousNodeId: String?,
         val targetNodeId: String?,
         val specificActivity: HackerSpecificActivity,
         val locked: Boolean) {

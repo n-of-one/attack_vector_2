@@ -1,7 +1,6 @@
 package org.n1.av2.backend.service.scan
 
 import mu.KLogging
-import org.n1.av2.backend.model.db.run.HackerState
 import org.n1.av2.backend.model.db.run.NodeScan
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.Scan
@@ -11,6 +10,8 @@ import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
+import org.n1.av2.backend.service.run.HackerPresence
+import org.n1.av2.backend.service.run.HackerService
 import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.run.LayerStatusService
 import org.n1.av2.backend.service.site.NodeService
@@ -31,6 +32,7 @@ class ScanningService(private val scanService: ScanService,
                       private val stompService: StompService,
                       private val nodeService: NodeService,
                       private val hackerStateService: HackerStateService,
+                      private val hackerService: HackerService,
                       private val currentUserService: CurrentUserService,
                       private val traverseNodeService: TraverseNodeService,
                       private val scanProbeService: ScanProbeService,
@@ -84,19 +86,19 @@ class ScanningService(private val scanService: ScanService,
     fun enterScan(runId: String) {
         val scan = scanService.getByRunId(runId)
         val thisHackerState = hackerStateService.enterScan(scan.siteId, runId)
+
         scanTerminalService.sendSyntaxHighlighting()
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, thisHackerState)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, hackerService.toPresence(thisHackerState))
 
         val siteFull = siteService.getSiteFull(scan.siteId)
         siteFull.sortNodeByDistance(scan)
 
         siteFull.nodeStatuses = nodeStatusRepo.findByRunId(runId)
         siteFull.layerStatuses = layerStatusService.getForRun(runId)
+        val hackerPresences = hackerService.getPresenceInRun(runId)
 
-        val hackersInRun = hackerStateService.getHackersInRun(runId)
-
-        class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerState>)
-        val scanAndSite = ScanAndSite(scan, siteFull, hackersInRun)
+        class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerPresence>)
+        val scanAndSite = ScanAndSite(scan, siteFull, hackerPresences)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 
