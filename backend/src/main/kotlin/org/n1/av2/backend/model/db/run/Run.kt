@@ -24,7 +24,13 @@ data class TracingPatroller(
         val siteId: String,
         val originatingNodeId: String,
         val targetUserId: String,
-        var currentNodeId: String
+        var currentNodeId: String,
+        val path: MutableList<PatrollerPathSegment>
+)
+
+class PatrollerPathSegment (
+        val fromNodeId: String,
+        val toNodeId: String
 )
 
 

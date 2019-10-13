@@ -30,6 +30,10 @@ export default class LineElement {
         this.line.set('stroke', value);
     }
 
+    appear(ticks) {
+        animate(this.canvas, this.line, "opacity", 1, ticks);
+    }
+
     extendTo(lineData, time, ease = easeLinear) {
         animate(this.canvas, this.line, null, lineData.asCoordinates(), time, ease);
     }
@@ -42,9 +46,5 @@ export default class LineElement {
         this.canvas.remove(this.line);
     }
 
-    disappearAndRemove(ticks) {
-        this.disappear(ticks);
-        setTimeout( () => this.remove,ticks * TICK_MILLIS);
-    }
 
 }

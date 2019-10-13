@@ -18,7 +18,7 @@ export default class TracingPatrollerDisplay {
 
     lineElements = [];
 
-    constructor({patrollerId, nodeId, ticks}, canvas, dispatch, displayById) {
+    constructor({patrollerId, nodeId, path, ticks}, canvas, dispatch, displayById) {
         this.patrollerId = patrollerId;
         this.currentNodeId = nodeId;
 
@@ -43,8 +43,23 @@ export default class TracingPatrollerDisplay {
         this.canvas.add(this.patrollerIcon);
         this.canvas.bringToFront(this.patrollerIcon);
 
+        if (path) {
+            path.forEach((segment) => {
+                const fromNodeDisplay = this.displayById[segment.fromNodeId];
+                const toNodeDisplay = this.displayById[segment.toNodeId];
+                const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
+                const styling = {"opacity": 0}
+                const lineElement = new LineElement(lineEndData, COLOR_PATROLLER_LINE, this.canvas, styling);
+                this.lineElements.push(lineElement);
+
+                lineElement.appear(ticks.appear * 2);
+            });
+        }
+
         animate(this.canvas, this.patrollerIcon, "opacity", 1, ticks.appear);
         this.schedule.wait(ticks.appear);
+
+
     }
 
     move(fromNodeId, toNodeId, ticks) {
