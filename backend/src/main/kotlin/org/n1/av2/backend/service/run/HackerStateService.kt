@@ -52,7 +52,7 @@ class HackerStateService(
                 targetNodeId = null,
                 generalActivity = HackerGeneralActivity.RUNNING,
                 runActivity = RunActivity.SCANNING,
-                locked = false)
+                hookPatrollerId = null)
         hackerStateRepo.save(newState)
         return newState
     }
@@ -82,31 +82,18 @@ class HackerStateService(
                 runId = runId,
                 siteId = scan.siteId,
                 userId = userId,
-                currentNodeId = startNode.id,
+                currentNodeId = null,
                 previousNodeId = null,
-                targetNodeId = null,
+                targetNodeId = startNode.id,
                 generalActivity = HackerGeneralActivity.RUNNING,
                 runActivity = RunActivity.STARTING,
-                locked = false)
+                hookPatrollerId = null)
         hackerStateRepo.save(newState)
     }
 
     fun startedRun(userId: String, runId: String): HackerStateRunning {
-        val scan = scanService.getByRunId(runId)
-        val siteData = siteDataService.getBySiteId(scan.siteId)
-        val nodes = nodeService.getAll(scan.siteId)
-        val startNode = nodes.find { it.networkId == siteData.startNodeNetworkId }!!
-
-        val newState = HackerState(
-                runId = runId,
-                siteId = scan.siteId,
-                userId = userId,
-                currentNodeId = startNode.id,
-                previousNodeId = null,
-                targetNodeId = null,
-                generalActivity = HackerGeneralActivity.RUNNING,
-                runActivity = RunActivity.STARTING,
-                locked = false)
+        val oldState = retrieve(userId)
+        val newState = oldState.copy(runActivity = RunActivity.STARTING, currentNodeId = oldState.targetNodeId, targetNodeId = null)
         hackerStateRepo.save(newState)
 
         return newState.toRunState()
@@ -118,7 +105,8 @@ class HackerStateService(
     }
 
     fun arriveAt(position: HackerStateRunning, nodeId: String) {
-        val newPosition = position.toState().copy(runActivity = RunActivity.AT_NODE, currentNodeId = nodeId, previousNodeId = position.currentNodeId, targetNodeId = null)
+        val newPosition = position.toState().copy(runActivity = RunActivity.AT_NODE,
+                currentNodeId = nodeId, previousNodeId = position.currentNodeId, targetNodeId = null)
         hackerStateRepo.save(newPosition)
     }
 
@@ -127,16 +115,10 @@ class HackerStateService(
         init()
     }
 
-    fun lockHacker(hackerId: String) {
+    fun hookHacker(hackerId: String, patrollerId: String) {
         val position = retrieve(hackerId)
-        val newPosition = position.copy(locked = true, runActivity = RunActivity.AT_NODE, targetNodeId = null)
+        val newPosition = position.copy(hookPatrollerId = patrollerId, runActivity = RunActivity.AT_NODE, targetNodeId = null)
         hackerStateRepo.save(newPosition)
-    }
-
-    fun hackersAt(nodeId: String, runId: String): List<String> {
-        return hackerStateRepo
-                .findByCurrentNodeIdAndRunId(nodeId, runId)
-                .map { it.userId }
     }
 
     fun leaveRun() {
@@ -146,7 +128,7 @@ class HackerStateService(
                 currentNodeId = null, previousNodeId = null, targetNodeId = null,
                 generalActivity = HackerGeneralActivity.RUNNING,
                 runActivity = RunActivity.STARTING,
-                locked = false)
+                hookPatrollerId = null)
         hackerStateRepo.save(newState)
     }
 
@@ -157,7 +139,7 @@ class HackerStateService(
                 currentNodeId = null, previousNodeId = null, targetNodeId = null,
                 generalActivity = HackerGeneralActivity.ONLINE,
                 runActivity = RunActivity.NA,
-                locked = false)
+                hookPatrollerId = null)
         hackerStateRepo.save(newState)
     }
 
@@ -168,7 +150,12 @@ class HackerStateService(
 
     private fun createLoggedOutState(userId: String): HackerState {
         return HackerState(userId = userId, runId = null, siteId = null, currentNodeId = null, previousNodeId = null, targetNodeId = null,
-                generalActivity = HackerGeneralActivity.OFFLINE, runActivity = RunActivity.NA, locked = false)
+                generalActivity = HackerGeneralActivity.OFFLINE, runActivity = RunActivity.NA, hookPatrollerId = null)
+    }
+
+    fun snapBack(oldState: HackerStateRunning) {
+        val newState = oldState.toState().copy(runActivity = RunActivity.MOVING, currentNodeId = oldState.targetNodeId, targetNodeId = null)
+        hackerStateRepo.save(newState)
     }
 
 

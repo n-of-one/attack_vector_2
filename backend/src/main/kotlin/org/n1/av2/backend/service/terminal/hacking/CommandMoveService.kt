@@ -11,6 +11,7 @@ import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layer.TimerTriggerLayerService
+import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.n1.av2.backend.service.scan.ScanService
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service
 private val STATUSES_NEEDING_PROBE_LAYERS = listOf(NodeScanStatus.DISCOVERED, NodeScanStatus.TYPE, NodeScanStatus.CONNECTIONS)
 
 
-private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 16)
+private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 80)
 class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_START_TICKS): TicksGameEvent(ticks)
 
 private val PROBE_LAYERS_TICKS = Ticks("start" to 50, "end" to 50)
@@ -38,6 +39,7 @@ class CommandMoveService(
         private val timedEventQueue: TimedEventQueue,
         private val timerTriggerLayerService: TimerTriggerLayerService,
         private val probeService: ScanProbeService,
+        private val tracingPatrollerService: TracingPatrollerService,
         private val stompService: StompService) {
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -105,9 +107,8 @@ class CommandMoveService(
         val nodeId = event.nodeId
 
         val state = hackerStateService.retrieve(userId).toRunState()
-        if (state.locked) {
-            class ActionSnapBack(val hackerId: String, val nodeId: String)
-            stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_SNAPS_BACK_HACKER, ActionSnapBack(state.userId, state.currentNodeId))
+        if (state.hookPatrollerId != null) {
+            tracingPatrollerService.snapBack(state, event)
             return
         }
 

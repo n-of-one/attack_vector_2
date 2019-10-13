@@ -66,7 +66,7 @@ export default class TracingPatrollerDisplay {
 
 
     lock(hackerId) {
-        this.displayById[hackerId].lockByPatrollerStart(this);
+        this.displayById[hackerId].lockByPatroller(this);
     }
 
     disappear() {

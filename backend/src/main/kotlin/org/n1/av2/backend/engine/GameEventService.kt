@@ -4,6 +4,7 @@ import org.n1.av2.backend.service.layer.TimerActivatesGameEvent
 import org.n1.av2.backend.service.layer.TimerTriggerLayerService
 import org.n1.av2.backend.service.patroller.TracingPatrollerArrivesGameEvent
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
+import org.n1.av2.backend.service.patroller.TracingPatrollerSnappedBackHackerGameEvent
 import org.n1.av2.backend.service.run.HackingService
 import org.n1.av2.backend.service.run.StartAttackArriveGameEvent
 import org.n1.av2.backend.service.terminal.hacking.ArriveProbeLayersGameEvent
@@ -26,6 +27,7 @@ class GameEventService(
             is MoveArriveGameEvent -> commandMoveService.moveArrive(event)
             is ArriveProbeLayersGameEvent -> commandMoveService.probedLayers(event)
             is StartAttackArriveGameEvent -> hackingService.startAttackArrive(event)
+            is TracingPatrollerSnappedBackHackerGameEvent -> tracingPatrollerService.processLockHacker(event)
 
             else -> error("don't know how to process " + event.javaClass)
         }

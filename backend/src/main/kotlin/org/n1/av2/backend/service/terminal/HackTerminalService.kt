@@ -35,7 +35,7 @@ class HackTerminalService(
 
     private fun processPrivilegedCommand(runId: String, tokens: List<String>, commandAction: String) {
         val state = hackerStateService.retrieveForCurrentUser().toRunState()
-        if (state.locked) return reportLocked()
+        if (state.hookPatrollerId != null) return reportLocked()
 
         when (commandAction) {
             "move" -> commandMoveService.processCommand(runId, tokens, state)

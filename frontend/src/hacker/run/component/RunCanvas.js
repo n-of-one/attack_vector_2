@@ -154,9 +154,7 @@ class RunCanvas {
 
     addHackerDisplay(hacker, offset) {
         const you = hacker.userId === this.userId;
-        const currentNodeDisplay = (hacker.hacking) ? this.displayById[hacker.nodeId] : null;
-        const targetNodeDisplay = (hacker.hacking && hacker.targetNodeId) ? this.displayById[hacker.targetNodeId] : null;
-        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, currentNodeDisplay, targetNodeDisplay);
+        this.displayById[hacker.userId] = new HackerIcon(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, this.displayById);
     }
 
     removeHackerDisplay(hacker) {
@@ -314,6 +312,15 @@ class RunCanvas {
 
     activateTracingPatroller(patrollerData) {
         this.displayById[patrollerData.patrollerId] = new TracingPatrollerDisplay(patrollerData, this.canvas, this.dispatch, this.displayById);
+    }
+
+
+    patrollerHooksHacker({hackerId}) {
+        this.displayById[hackerId].hookByPatroller();
+    }
+
+    patrollerSnacksBackHacker({hackerId, ticks}) {
+        this.displayById[hackerId].snapBack(ticks);
     }
 
     patrollerLocksHacker({patrollerId, hackerId}) {

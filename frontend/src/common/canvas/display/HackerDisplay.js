@@ -10,15 +10,13 @@ import {
     SIZE_LARGE,
     SIZE_NORMAL,
     SIZE_SMALL,
-     TICKS_HACKER_MOVE_MAIN, TICKS_HACKER_MOVE_START, COLOR_HACKER_LINE
+    TICKS_HACKER_MOVE_MAIN, TICKS_HACKER_MOVE_START, COLOR_HACKER_LINE
 } from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;
-
-
 
 
 const IDENTIFIER_OPACITY_SCANNING = 0.1;
@@ -33,6 +31,7 @@ export default class HackerDisplay {
     canvas = null;
     schedule = null;
     dispatch = null;
+    displayById = null;
 
     hackerIcon = null;
     hackerIdentifierIcon = null;
@@ -43,43 +42,48 @@ export default class HackerDisplay {
 
     hackerData = null;
     you = false;
-    startNodeDisplay = null;
+    siteStartNodeDisplay = null;
     currentNodeDisplay = null;
+    targetNodeDisplay = null;
     y = null;
     x = null;
-    inTransit = false;
     locked = false;
+    hooked = false;
 
-    constructor(canvas, startNodeDisplay, hackerData, offset, you, dispatch, currentNodeDisplay, targetNodeDisplay) {
+    constructor(canvas, siteStartNodeDisplay, hackerData, offset, you, dispatch, displayById) {
         this.canvas = canvas;
         this.schedule = new Schedule();
         this.hackerData = hackerData;
+
         this.you = you;
-        this.startNodeDisplay = startNodeDisplay;
+        this.siteStartNodeDisplay = siteStartNodeDisplay;
 
         this.dispatch = dispatch;
+        this.displayById = displayById;
 
         this.x = offset;
         this.y = 810 - 20;
 
         this.addHackerIdentificationIcons();
 
+
+        // If the hacker is in transit or still starting the run, then we are displaying them as arrived at the node.
+        // For simplicity
+
         if (hackerData.activity === HACKER_RUN_ACTIVITY_SCANNING) {
-            this.currentNodeDisplay = startNodeDisplay;
+            this.currentNodeDisplay = null;
 
             animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_SCANNING, APPEAR_TIME);
             animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_SCANNING, 40);
             animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_SCANNING, APPEAR_TIME);
-        }
-        else {
+        } else {
             this.locked = hackerData.locked;
 
-            // If the hacker is in transit or still starting the run, then we are displaying them as arrived at the node.
-            // For simplicity
-            this.inTransit = false;
-
             const moveIncomplete = (hackerData.activity === HACKER_RUN_ACTIVITY_STARTING || hackerData.activity === HACKER_RUN_ACTIVITY_MOVING);
-            this.addHackingHacker(currentNodeDisplay, moveIncomplete);
+            const nodeId = (moveIncomplete) ? hackerData.targetNodeId : hackerData.nodeId;
+            this.currentNodeDisplay = this.displayById[nodeId];
+
+            this.addHackingHacker(moveIncomplete);
 
             animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, APPEAR_TIME);
             animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 40);
@@ -89,12 +93,9 @@ export default class HackerDisplay {
         this.schedule.wait(3);
     }
 
-    addHackingHacker(currentNodeDisplay, moveIncomplete) {
-        const nodeDisplay = currentNodeDisplay;
-        this.currentNodeDisplay = nodeDisplay;
-
-        const {xOffset, yOffset} = this.processOffset(nodeDisplay, moveIncomplete);
-        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, nodeDisplay, xOffset, yOffset);
+    addHackingHacker(moveIncomplete) {
+        const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay, moveIncomplete);
+        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, this.currentNodeDisplay, xOffset, yOffset);
         this.canvas.add(this.hackerIcon);
 
         if (this.locked) {
@@ -147,7 +148,7 @@ export default class HackerDisplay {
             selectable: false,
             hoverCursor: "default",
         });
-        const lineData = calcLine(this, this.startNodeDisplay);
+        const lineData = calcLine(this, this.siteStartNodeDisplay);
         this.startLineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#bb8",
@@ -177,7 +178,7 @@ export default class HackerDisplay {
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME);
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME);
-            const lineData = calcLine(this, this.startNodeDisplay);
+            const lineData = calcLine(this, this.siteStartNodeDisplay);
             animate(this.canvas, this.startLineIcon, null, lineData.asCoordinates(), APPEAR_TIME);
         });
     }
@@ -218,7 +219,7 @@ export default class HackerDisplay {
     }
 
     startRunQuick() {
-        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, this.startNodeDisplay);
+        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, this.siteStartNodeDisplay);
         this.canvas.add(this.hackerIcon);
         this.canvas.bringToFront(this.hackerIcon);
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 10);
@@ -228,8 +229,6 @@ export default class HackerDisplay {
         this.schedule.run(0, () => {
             if (this.you) {
                 this.echo(0, "[info]Persona established, hack started.");
-                //FIXME
-                // this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: this.startNodeDisplay.id});
             }
             animate(this.canvas, this.hackerIcon, 'opacity', 1, 5);
         });
@@ -243,7 +242,7 @@ export default class HackerDisplay {
         this.canvas.sendToBack(this.hackerIcon);
 
         this.schedule.run(0, () => {
-            this.moveStep(this.startNodeDisplay, 0, 0, 200, easeLinear);
+            this.moveStep(this.siteStartNodeDisplay, 0, 0, 200, easeLinear);
             this.animateZoom(SIZE_NORMAL, 100);
             this.animateOpacity(0.7, 20);
 
@@ -264,8 +263,7 @@ export default class HackerDisplay {
             this.echo(20, "");
             this.echo(20, "Persona v2.3 booting");
             this.echo(10, "- unique ID: " + personaId);
-        }
-        else {
+        } else {
             this.schedule.wait(50);
         }
         this.schedule.run(0, () => {
@@ -280,8 +278,7 @@ export default class HackerDisplay {
             this.echo(10, "  - [ok]ok[/] Content masked.");
             this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon");
             this.echo(30, "  - [ok]ok[/] Network origin obfuscated ");
-        }
-        else {
+        } else {
             this.schedule.wait(100);
         }
 
@@ -297,8 +294,7 @@ export default class HackerDisplay {
             this.schedule.run(0, () => {
                 this.dispatch({type: TERMINAL_UNLOCK, terminalId: "main"});
             });
-        }
-        else {
+        } else {
             this.schedule.wait(100);
         }
 
@@ -319,71 +315,48 @@ export default class HackerDisplay {
     }
 
     moveStart(nodeDisplay, ticks) {
-        this.inTransit = true;
+        this.targetNodeDisplay = nodeDisplay;
         this.schedule.run(ticks.start, () => {
             this.currentNodeDisplay.unregisterHacker(this);
             this.moveStep(this.currentNodeDisplay, 0, 0, ticks.start);
         });
         this.schedule.run(ticks.main, () => {
             this.moveStep(nodeDisplay, 0, 0, ticks.main);
-            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main);
-        });
-        // this.schedule.run(0, () => {
-        //     if (this.locked) {
-        //         this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay);
-        //     }
-        //     else {
-        //         if (this.moveLineElement) {
-        //             this.moveLineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
-        //             this.moveLineElement = null;
-        //         }
-        //         if (this.you) {
-        //             this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
-        //         }
-        //     }
-        // });
-    }
-
-    undoMoveStartAndCaptureComplete(nodeDisplay) {
-        const {xOffset, yOffset} = this.processOffset(nodeDisplay);
-        this.schedule.run(TICKS_HACKER_MOVE_START, () => {
-            this.moveStep(this.currentNodeDisplay, xOffset, yOffset, TICKS_HACKER_MOVE_START);
-        });
-        this.schedule.run(4, () => {
-            this.lockByPatrollerComplete();
+            if (this.you) {
+                this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main);
+            }
         });
     }
 
-    snapBackAndLock(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
-        this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
-
-        if (!this.moveLineElement) {
-            const lineEndData = calcLineWithOffset(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0, 0);
-            this.moveLineElement = new LineElement(lineEndData, COLOR_HACKER_LINE, this.canvas);
+    hookByPatroller() {
+        this.hooked = true;
+        if (this.moveLineElement) {
             this.moveLineElement.setColor(COLOR_PATROLLER_LINE);
         }
+    }
 
-        const lineStartData = calcLineStart(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0);
-        this.moveLineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
-        this.schedule.wait(TICKS_HACKER_MOVE_MAIN);
-        this.undoMoveStartAndCaptureComplete(snapBackToNodeDisplay);
+    snapBack(ticks) {
+        this.schedule.run(ticks.snapBack, () => {
+            this.moveStep(this.currentNodeDisplay, 0, 0, ticks.snapBack);
+
+            if (this.you) {
+                const lineStartData = calcLineStart(this.currentNodeDisplay, this.targetNodeDisplay, 0, 0);
+                this.moveLineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
+            }
+        });
+        this.schedule.run(ticks.arrive, () => {
+            const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay);
+            this.moveStep(this.currentNodeDisplay, xOffset, yOffset, ticks.arrive);
+        });
     }
 
     moveArrive(nodeDisplay) {
         this.currentNodeDisplay = nodeDisplay;
+        this.targetNodeDisplay = null;
         this.schedule.run(4, () => {
 
             const {xOffset, yOffset} = this.processOffset(nodeDisplay);
             this.moveStep(nodeDisplay, xOffset, yOffset, 4);
-        });
-        this.inTransit = false;
-        this.schedule.run(0, () => {
-            if (this.locked) {
-                this.schedule.wait(4);
-                this.schedule.run(0, () => {
-                    this.lockByPatrollerComplete();
-                });
-            }
         });
     }
 
@@ -411,7 +384,9 @@ export default class HackerDisplay {
         const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 0, 0);
         const lineEndData = calcLineWithOffset(fromNodeDisplay, toNodeDisplay, 0, 0, 0);
 
-        const lineElement = new LineElement(lineStartData, COLOR_HACKER_LINE, this.canvas);
+        const color = (this.hooked) ? COLOR_PATROLLER_LINE : COLOR_HACKER_LINE;
+
+        const lineElement = new LineElement(lineStartData, color, this.canvas);
         lineElement.extendTo(lineEndData, ticks, fabric.util.ease.easeInOutSine);
 
         return lineElement
@@ -444,7 +419,6 @@ export default class HackerDisplay {
         });
     }
 
-
     animateZoom(size, time) {
         animate(this.canvas, this.hackerIcon, 'width', size, time);
         animate(this.canvas, this.hackerIcon, 'height', size, time);
@@ -458,35 +432,68 @@ export default class HackerDisplay {
         this.schedule.terminate();
     }
 
-    lockByPatrollerStart() {
-        this.locked = true;
-        if (this.inTransit) {
-            if (this.moveLineElement) {
-                this.moveLineElement.setColor(COLOR_PATROLLER_LINE);
-            }
-            // Wait for the the move animation to complete. At that point we will detect we are locked, and trigger lockByPatrollerComplete().
-        } else {
-            this.lockByPatrollerComplete();
-        }
-    }
 
-    lockByPatrollerComplete() {
-        this.lockIcon = new fabric.Rect({
-            width: 34,
-            height: 34,
-            fill: COLOR_PATROLLER_LINE,
-            left: this.hackerIcon.left,
-            top: this.hackerIcon.top -1,
-            opacity: 0,
-            hoverCursor: 'default',
-            selectable: false,
+    // this.schedule.run(0, () => {
+    //     if (this.locked) {
+    //         this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay);
+    //     }
+    //     else {
+    //         if (this.moveLineElement) {
+    //             this.moveLineElement.disappearAndRemove(TICKS_HACKER_MOVE_END);
+    //             this.moveLineElement = null;
+    //         }
+    //         if (this.you) {
+    //             this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id});
+    //         }
+    //     }
+    // });
+    // snapBackAndLock(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
+    //     this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN);
+    //
+    //     if (!this.moveLineElement) {
+    //         const lineEndData = calcLineWithOffset(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0, 0);
+    //         this.moveLineElement = new LineElement(lineEndData, COLOR_HACKER_LINE, this.canvas);
+    //         this.moveLineElement.setColor(COLOR_PATROLLER_LINE);
+    //     }
+    //
+    //     const lineStartData = calcLineStart(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0);
+    //     this.moveLineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine);
+    //     this.schedule.wait(TICKS_HACKER_MOVE_MAIN);
+    //     this.undoMoveStartAndCaptureComplete(snapBackToNodeDisplay);
+    // }
+    //
+    //
+    //
+    // undoMoveStartAndCaptureComplete(nodeDisplay) {
+    //     const {xOffset, yOffset} = this.processOffset(nodeDisplay);
+    //     this.schedule.run(TICKS_HACKER_MOVE_START, () => {
+    //         this.moveStep(this.currentNodeDisplay, xOffset, yOffset, TICKS_HACKER_MOVE_START);
+    //     });
+    //     this.schedule.run(4, () => {
+    //         this.lockByPatrollerComplete();
+    //     });
+    // }
+
+
+    lockByPatroller() {
+        this.schedule.run(0, () => {
+            this.lockIcon = new fabric.Rect({
+                width: 35,
+                height: 35,
+                fill: COLOR_PATROLLER_LINE,
+                left: this.hackerIcon.left,
+                top: this.hackerIcon.top - 1,
+                opacity: 0,
+                hoverCursor: 'default',
+                selectable: false,
+            });
+            this.lockIcon.rotate(45);
+            this.canvas.add(this.lockIcon);
+            this.canvas.bringToFront(this.lockIcon);
+            this.canvas.bringToFront(this.hackerIcon);
+
+            animate(this.canvas, this.lockIcon, "opacity", 1, 20);
         });
-        this.lockIcon.rotate(45);
-        this.canvas.add(this.lockIcon);
-        this.canvas.bringToFront(this.lockIcon);
-        this.canvas.bringToFront(this.hackerIcon);
-
-        animate(this.canvas, this.lockIcon, "opacity", 1, 20);
     }
 
 
