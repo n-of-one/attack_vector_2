@@ -42,7 +42,8 @@ class TimerTriggerLayerService(
         class FlashPatroller(val nodeId: String)
         stompService.toRun(runId, ReduxActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
 
-        timedEventQueue.queueInMinutesAndSeconds(layer.minutes, layer.seconds, TimerActivatesGameEvent(runId, nodeId, userId))
+        val event = TimerActivatesGameEvent(runId, nodeId, userId)
+        timedEventQueue.queueInMinutesAndSeconds(userId, layer.minutes, layer.seconds, event)
     }
 
     private fun detectTime(layer: TimerTriggerLayer): String {

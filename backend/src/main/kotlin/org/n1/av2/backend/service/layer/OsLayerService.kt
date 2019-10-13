@@ -43,7 +43,7 @@ class OsLayerService(
             stompService.toRun(state.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
 
             val event = HackedOsGameEvent(layer.id, node.id, currentUser.userId, state.runId)
-            timedEventQueue.queueInTicks(event)
+            timedEventQueue.queueInTicks(currentUser.userId, event)
         }
         else {
             stompService.terminalReceiveCurrentUser("Hacking ${layer.name} reveals nothing new.")

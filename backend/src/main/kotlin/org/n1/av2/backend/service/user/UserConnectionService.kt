@@ -1,11 +1,13 @@
 package org.n1.av2.backend.service.user
 
 import mu.KLogging
+import org.n1.av2.backend.engine.TimedEventQueue
 import org.n1.av2.backend.model.db.run.HackerGeneralActivity
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.run.HackerStateService
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
@@ -17,6 +19,8 @@ import java.time.ZonedDateTime
 class UserConnectionService(
         private val hackerStateService: HackerStateService,
         private val currentUserService: CurrentUserService,
+        private val tracingPatrollerService: TracingPatrollerService,
+        private val timedEventQueue: TimedEventQueue,
         private val stompService: StompService) {
 
     companion object: KLogging()
@@ -38,20 +42,24 @@ class UserConnectionService(
         stompService.toUser(currentUserService.userId, ReduxActions.SERVER_TIME_SYNC, ZonedDateTime.now())
     }
 
-    fun disconnect(userPrincipal: UserPrincipal) {
+    fun disconnect() {
         val state = hackerStateService.retrieveForCurrentUser()
 
         if (state.generalActivity == HackerGeneralActivity.RUNNING) {
             notifyLeaveRun(state.userId, state.runId!!)
         }
 
+        timedEventQueue.removeAllFor(state.userId)
+        tracingPatrollerService.disconnected(state.userId)
+
         hackerStateService.goOffline(state)
     }
 
     private fun notifyLeaveRun(userId: String, runId: String) {
+        class HackerLeaveNotification(val userId: String)
+
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(userId))
     }
 
-    data class HackerLeaveNotification(val userId: String)
 
 }

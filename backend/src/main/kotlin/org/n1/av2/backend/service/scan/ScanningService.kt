@@ -10,6 +10,8 @@ import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
+import org.n1.av2.backend.service.patroller.PatrollerUiData
+import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.run.HackerPresence
 import org.n1.av2.backend.service.run.HackerService
 import org.n1.av2.backend.service.run.HackerStateService
@@ -39,6 +41,7 @@ class ScanningService(private val scanService: ScanService,
                       private val time: TimeService,
                       private val userService: UserService,
                       private val layerStatusService: LayerStatusService,
+                      private val tracingPatrollerService: TracingPatrollerService,
                       private val nodeStatusRepo: NodeStatusRepo
 ) {
 
@@ -96,9 +99,10 @@ class ScanningService(private val scanService: ScanService,
         siteFull.nodeStatuses = nodeStatusRepo.findByRunId(runId)
         siteFull.layerStatuses = layerStatusService.getForRun(runId)
         val hackerPresences = hackerService.getPresenceInRun(runId)
+        val patrollers = tracingPatrollerService.getAllForRun(runId)
 
-        class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerPresence>)
-        val scanAndSite = ScanAndSite(scan, siteFull, hackerPresences)
+        class ScanAndSite(val scan: Scan, val site: SiteFull, val hackers: List<HackerPresence>, val patrollers: List<PatrollerUiData>)
+        val scanAndSite = ScanAndSite(scan, siteFull, hackerPresences, patrollers)
         stompService.toUser(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
     }
 

@@ -1,5 +1,6 @@
 package org.n1.av2.backend.engine
 
+import mu.KLogging
 import org.n1.av2.backend.model.db.user.HackerIcon
 import org.n1.av2.backend.model.db.user.User
 import java.util.concurrent.LinkedBlockingQueue
@@ -16,6 +17,7 @@ class TimedEventRunner(
         private val queue: LinkedBlockingQueue<Task>,
         private val gameEventService: GameEventService) : Runnable {
 
+    companion object : KLogging()
 
     private var running = true
 
@@ -29,20 +31,21 @@ class TimedEventRunner(
         val due = timedEventQueue.nextDue() ?: System.currentTimeMillis() + SLEEP_MILLIS_NO_EVENTS
         val now = System.currentTimeMillis()
         if (now >= due) {
-            val event = timedEventQueue.nextEvent() ?: return
-            val task = createTimedTask(event)
+            val timedEvent = timedEventQueue.nextEvent() ?: return
+            val task = createTimedTask(timedEvent)
             queue.add(task)
         }
         else {
             val sleepTime = Math.min(SLEEP_MILLIS_NO_EVENTS, due - now)
             Thread.sleep(sleepTime)
         }
-
     }
 
-    private fun createTimedTask(event: GameEvent): Task {
+    private fun createTimedTask(timedEvent: TimedEvent): Task {
         val action: () -> Unit = {
-            gameEventService.run(event)
+            logger.debug("== ${timedEvent.omniId} ${timedEvent.event.javaClass.simpleName}")
+            val gameEvent = timedEvent.event
+            gameEventService.run(gameEvent)
         }
 
         return Task(action, systemUser)

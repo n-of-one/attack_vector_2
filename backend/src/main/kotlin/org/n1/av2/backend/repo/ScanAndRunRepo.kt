@@ -47,4 +47,6 @@ interface IceStatusRepo: PagingAndSortingRepository<IceStatus, String> {
 
 @Repository
 interface TracingPatrollerRepo: PagingAndSortingRepository<TracingPatroller, String> {
+    fun findAllByRunId(runId: String): List<TracingPatroller>
+    fun findAllByTargetUserId(userId: String): List<TracingPatroller>
 }

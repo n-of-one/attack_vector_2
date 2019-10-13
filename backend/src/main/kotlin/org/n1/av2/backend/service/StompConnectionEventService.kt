@@ -25,7 +25,7 @@ class StompConnectionEventService {
 
     fun disconnect(userPrincipal: UserPrincipal) {
         executor.run(userPrincipal) {
-            userConnectionService.disconnect(userPrincipal)
+            userConnectionService.disconnect()
         }
     }
 

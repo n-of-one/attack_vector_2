@@ -16,11 +16,15 @@ export function* serverPatrollerHooksHackerSaga(action) {
     yield runCanvas.patrollerHooksHacker(action.data);
 }
 
+export function* serverPatrollerSnacksBackHackerSaga(action) {
+    yield runCanvas.patrollerSnacksBackHacker(action.data);
+}
+
 export function* serverPatrollerLocksHackerSaga(action) {
     yield runCanvas.patrollerLocksHacker(action.data);
 }
 
-export function* serverPatrollerSnacksBackHackerSaga(action) {
-    yield runCanvas.patrollerSnacksBackHacker(action.data);
+export function* serverRemovePatrollerSaga(action) {
+    yield runCanvas.removePatroller(action.data);
 }
 

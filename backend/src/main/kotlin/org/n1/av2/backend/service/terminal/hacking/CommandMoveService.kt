@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service
 private val STATUSES_NEEDING_PROBE_LAYERS = listOf(NodeScanStatus.DISCOVERED, NodeScanStatus.TYPE, NodeScanStatus.CONNECTIONS)
 
 
-private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 80)
+private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 16)
 class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_START_TICKS): TicksGameEvent(ticks)
 
 private val PROBE_LAYERS_TICKS = Ticks("start" to 50, "end" to 50)
@@ -98,7 +98,7 @@ class CommandMoveService(
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_TICKS))
 
         val moveArriveEvent = MoveArriveGameEvent(toNode.id, state.userId, runId)
-        timedEventQueue.queueInTicks(moveArriveEvent)
+        timedEventQueue.queueInTicks(state.userId, moveArriveEvent)
     }
 
     fun moveArrive(event: MoveArriveGameEvent) {
@@ -118,7 +118,7 @@ class CommandMoveService(
 
         if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
             val probeEvent = ArriveProbeLayersGameEvent(nodeId, userId, runId, PROBE_LAYERS_TICKS)
-            timedEventQueue.queueInTicks(probeEvent)
+            timedEventQueue.queueInTicks(userId, probeEvent)
 
             class ProbeLayers(val userId: String, ticks: Ticks)
             val data = ProbeLayers(userId, PROBE_LAYERS_TICKS)

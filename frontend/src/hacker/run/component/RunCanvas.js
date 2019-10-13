@@ -81,7 +81,7 @@ class RunCanvas {
         this.canvas.renderAll();
     }
 
-    loadScan({scan, site, hackers}) {
+    loadScan({scan, site, hackers, patrollers}) {
         const {nodes, connections, nodeStatuses, layerStatuses} = site;
         this.nodeDataById = {};
         this.sortAndAddHackers(hackers);
@@ -134,6 +134,8 @@ class RunCanvas {
 
         this.startNodeDisplay = this.displayById[nodes[0].id];
         this.addHackersDisplays();
+
+        patrollers.forEach((patrollerData) => {this.activateTracingPatroller(patrollerData)});
     }
 
     sortAndAddHackers(hackers) {
@@ -332,6 +334,10 @@ class RunCanvas {
         this.displayById[patrollerId].move(fromNodeId, toNodeId, ticks);
     }
 
+    removePatroller({patrollerId}) {
+        this.displayById[patrollerId].disappear();
+        delete this.displayById[patrollerId];
+    }
 }
 
 const runCanvas = new RunCanvas();

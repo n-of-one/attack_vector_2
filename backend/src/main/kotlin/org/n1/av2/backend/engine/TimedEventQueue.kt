@@ -27,35 +27,39 @@ class TimedEventQueue {
         }
     }
 
-    fun queueInTicks(event: TicksGameEvent) {
+    fun queueInTicks(omniId: String, event: TicksGameEvent) {
         val due = System.currentTimeMillis() + TICK_MILLIS * event.ticks.total
-        add(due, event)
+        add(omniId, due, event)
     }
 
-    fun queueInSeconds(seconds: Int, event: GameEvent) {
+    fun queueInSeconds(omniId: String, seconds: Int, event: GameEvent) {
         val due = System.currentTimeMillis() + SECOND_MILLIS * seconds
-        add(due, event)
+        add(omniId, due, event)
     }
 
-    fun queueInMinutesAndSeconds(minutes: Long, seconds: Long, event: GameEvent) {
+    fun queueInMinutesAndSeconds(omniId: String, minutes: Long, seconds: Long, event: GameEvent) {
         val due = System.currentTimeMillis() + SECOND_MILLIS * seconds + MINUTE_MILLIS * minutes
-        add(due, event)
+        add(omniId, due, event)
     }
 
-    fun add(due: Long, event: GameEvent) {
+    fun add(omniId: String, due: Long, event: GameEvent) {
         lock.withLock {
-            events.add(TimedEvent(due, event))
+            events.add(TimedEvent(omniId, due, event))
             events.sortBy { it.due }
         }
     }
 
-    fun nextEvent(): GameEvent? {
+    fun nextEvent(): TimedEvent? {
         lock.withLock {
             if (events.isEmpty()) {
                 return null
             }
-            return events.removeAt(0).event
+            return events.removeAt(0)
         }
+    }
+
+    fun removeAllFor(omniId: String) {
+        events.removeIf { it.omniId == omniId }
     }
 
 }

@@ -58,12 +58,13 @@ enum class ReduxActions {
     SERVER_START_COUNTDOWN,             // The client can show the countdown clock
     SERVER_COMPLETE_COUNTDOWN,          // The countdown completes
 
-    SERVER_START_TRACING_PATROLLER,             // Client shows a patroller (for example as a result of an alarm countdown)
-    SERVER_PATROLLER_HOOKS_HACKER,      // Client can show the move line turning red
-    SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
+    SERVER_START_TRACING_PATROLLER,     // Client shows a patroller (for example as a result of an alarm countdown)
     SERVER_PATROLLER_MOVE,              // Client can show this
-
+    SERVER_PATROLLER_HOOKS_HACKER,      // Client can show the move line turning red
     SERVER_PATROLLER_SNAPS_BACK_HACKER, // Show hacker display snapped back to node it was trying to leave.
+    SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
+    SERVER_PATROLLER_REMOVE,            // Client can remove it
+
 
 }

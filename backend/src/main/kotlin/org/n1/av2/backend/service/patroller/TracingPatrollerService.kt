@@ -16,17 +16,20 @@ import org.n1.av2.backend.service.scan.TraverseNodeService
 import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
 
 
 val PATROLLER_ARRIVE_FIRST_TICKS = Ticks("appear" to 20)
-val PATROLLER_MOVE_TICKS = Ticks("move" to 130)
-//FIXME
-//val PATROLLER_MOVE_TICKS = Ticks( "move" to 15)
+val PATROLLER_MOVE_TICKS = Ticks("move" to 15)
 
 val SNAPBACK_TICKS = Ticks("snapBack" to 8, "arrive" to 4)
 
 class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String, ticks: Ticks) : TicksGameEvent(ticks)
 class TracingPatrollerSnappedBackHackerGameEvent(val patrollerId: String, ticks: Ticks = SNAPBACK_TICKS) : TicksGameEvent(ticks)
+
+
+class PatrollerUiData(val patrollerId: String, val nodeId: String, val ticks: Ticks = PATROLLER_ARRIVE_FIRST_TICKS)
+
 
 @Service
 class TracingPatrollerService(
@@ -37,8 +40,22 @@ class TracingPatrollerService(
         val time: TimeService,
         val stompService: StompService) {
 
+    @PostConstruct
+    fun init() {
+        // After a reboot, all users are logged out by default, so all remaining patrollers need to be removed.
+        tracingPatrollerRepo.deleteAll()
+    }
+
     private fun getPatroller(patrollerId: String): TracingPatroller {
         return tracingPatrollerRepo.findById(patrollerId).orElseThrow { RuntimeException("Patroller ${patrollerId} not found.") }
+    }
+
+    fun getAllForRun(runId: String): List<PatrollerUiData> {
+        return tracingPatrollerRepo
+                .findAllByRunId(runId)
+                .map { patroller ->
+                    PatrollerUiData(patroller.id, patroller.originatingNodeId)
+                }
     }
 
     fun activatePatroller(nodeId: String, userId: String, runId: String) {
@@ -55,7 +72,7 @@ class TracingPatrollerService(
         messageStartPatroller(patroller, nodeId, runId)
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_TICKS)
-        timedEventQueue.queueInTicks(next)
+        queueEvent(patroller, next)
     }
 
     fun patrollerArrives(event: TracingPatrollerArrivesGameEvent) {
@@ -81,7 +98,11 @@ class TracingPatrollerService(
         messagePatrollerMove(patroller, nextNodeToTarget.id, runId)
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nextNodeToTarget.id, PATROLLER_MOVE_TICKS)
-        timedEventQueue.queueInTicks(next)
+        queueEvent(patroller, next)
+    }
+
+    private fun queueEvent(patroller: TracingPatroller, event: TracingPatrollerArrivesGameEvent) {
+        timedEventQueue.queueInTicks(patroller.id, event)
     }
 
 
@@ -90,7 +111,7 @@ class TracingPatrollerService(
         messageSnapBack(state)
 
         val nextEvent = TracingPatrollerSnappedBackHackerGameEvent(state.hookPatrollerId!!)
-        timedEventQueue.queueInTicks(nextEvent)
+        timedEventQueue.queueInTicks(state.userId, nextEvent)
     }
 
 
@@ -100,12 +121,11 @@ class TracingPatrollerService(
     }
 
     private fun lockHacker(patroller: TracingPatroller) {
-        hackerStateService.hookHacker(patroller.targetUserId, patroller.id)
+        hackerStateService.lockHacker(patroller.targetUserId, patroller.id)
         messageCatchHacker(patroller)
         stompService.terminalReceiveForUser(patroller.targetUserId, "[error]critical[/] OS privileges revoked.")
 
         // TODO start tracing
-        // TODO schedule removal of patroller from view
     }
 
     private fun findMoveNextNode(patroller: TracingPatroller): TraverseNode {
@@ -120,6 +140,19 @@ class TracingPatrollerService(
     fun purgeAll() {
         tracingPatrollerRepo.deleteAll()
     }
+
+    fun disconnected(userId: String) {
+        tracingPatrollerRepo
+                .findAllByTargetUserId(userId)
+                .forEach { remove(it) }
+    }
+
+    private fun remove(patroller: TracingPatroller) {
+        tracingPatrollerRepo.delete(patroller)
+        timedEventQueue.removeAllFor(patroller.id)
+        messageRemovePatroller(patroller.id, patroller.runId)
+    }
+
 
     // -- Messages to UI -- //
 
@@ -157,5 +190,13 @@ class TracingPatrollerService(
         val action = PatrollerHooksHackerAction(patroller.targetUserId)
         stompService.toUser(patroller.targetUserId, ReduxActions.SERVER_PATROLLER_HOOKS_HACKER, action)
     }
+
+    private fun messageRemovePatroller(patrollerId: String, runId: String) {
+        class RemovePatroller(val patrollerId: String)
+
+        val action = RemovePatroller(patrollerId)
+        stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_REMOVE, action)
+    }
+
 
 }

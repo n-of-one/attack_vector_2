@@ -45,13 +45,13 @@ import {
     serverFlashPatrollerSaga, serverPatrollerHooksHackerSaga,
     serverPatrollerLocksHackerSaga,
     serverPatrollerMoveSaga,
-    serverPatrollerSnacksBackHackerSaga,
+    serverPatrollerSnacksBackHackerSaga, serverRemovePatrollerSaga,
     serverStartPatrollerSaga,
 } from "./run/coundown/CountdownSagas";
 import {
     SERVER_FLASH_PATROLLER, SERVER_PATROLLER_HOOKS_HACKER,
     SERVER_PATROLLER_LOCKS_HACKER,
-    SERVER_PATROLLER_MOVE,
+    SERVER_PATROLLER_MOVE, SERVER_PATROLLER_REMOVE,
     SERVER_PATROLLER_SNAPS_BACK_HACKER,
     SERVER_START_TRACING_PATROLLER,
 } from "./run/coundown/CountdownActions";
@@ -118,11 +118,11 @@ const createHackerRootSaga = () => {
 
         yield takeEvery(SERVER_FLASH_PATROLLER, serverFlashPatrollerSaga);
         yield takeEvery(SERVER_START_TRACING_PATROLLER, serverStartPatrollerSaga);
-        yield takeEvery(SERVER_PATROLLER_HOOKS_HACKER, serverPatrollerHooksHackerSaga);
-        yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);
         yield takeEvery(SERVER_PATROLLER_MOVE, serverPatrollerMoveSaga);
+        yield takeEvery(SERVER_PATROLLER_HOOKS_HACKER, serverPatrollerHooksHackerSaga);
         yield takeEvery(SERVER_PATROLLER_SNAPS_BACK_HACKER, serverPatrollerSnacksBackHackerSaga);
-
+        yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);
+        yield takeEvery(SERVER_PATROLLER_REMOVE, serverRemovePatrollerSaga);
 
 
     }

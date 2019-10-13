@@ -70,8 +70,17 @@ export default class TracingPatrollerDisplay {
     }
 
     disappear() {
-        this.schedule.run(0, () => {
+        this.schedule.run(20, () => {
             animate(this.canvas, this.patrollerIcon, "opacity", 0, 20);
+            this.lineElements.forEach( (element) => {
+                element.disappear(20);
+            });
+        });
+        this.schedule.run(0, () => {
+            this.canvas.remove(this.patrollerIcon);
+            this.lineElements.forEach( (element) => {
+                element.remove();
+            });
         });
     }
 

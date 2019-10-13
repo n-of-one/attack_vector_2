@@ -52,7 +52,7 @@ class HackingService(
         val ticks = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
 
         val next = StartAttackArriveGameEvent(userId, runId, ticks)
-        timedEventQueue.queueInTicks(next)
+        timedEventQueue.queueInTicks(userId, next)
     }
 
     fun startAttackArrive(event: StartAttackArriveGameEvent) {

@@ -27,7 +27,8 @@ data class HackerState(
         val targetNodeId: String?,
         val generalActivity: HackerGeneralActivity,
         val runActivity: RunActivity,
-        val hookPatrollerId: String? // Hooked means that a patroller has either locked the hacker, is about to lock the hacker and they cannot escape.
+        val hookPatrollerId: String?, // Hooked means that a patroller has either locked the hacker, is about to lock the hacker and they cannot escape.
+        val locked: Boolean
 ) {
 
     fun toRunState(): HackerStateRunning {
@@ -38,7 +39,8 @@ data class HackerState(
                 previousNodeId,
                 targetNodeId,
                 runActivity,
-                hookPatrollerId
+                hookPatrollerId,
+                locked
         )
     }
 }
@@ -52,9 +54,11 @@ class HackerStateRunning(
         val previousNodeId: String?,
         val targetNodeId: String?,
         val runActivity: RunActivity,
-        val hookPatrollerId: String?) {
+        val hookPatrollerId: String?,
+        val locked: Boolean) {
 
     fun toState(): HackerState {
-        return HackerState(userId, runId, siteId, currentNodeId, previousNodeId, targetNodeId, HackerGeneralActivity.RUNNING, runActivity, hookPatrollerId)
+        return HackerState(userId, runId, siteId, currentNodeId, previousNodeId, targetNodeId,
+                HackerGeneralActivity.RUNNING, runActivity, hookPatrollerId, locked)
     }
 }
