@@ -29,7 +29,8 @@ class EditorCanvas {
         fabric.Object.prototype.originY = 'center';
 
         this.canvas.on('object:modified', (event) => { this.canvasObjectModified(event); });
-        this.canvas.on('object:selected', (event) => { this.canvasObjectSelected(event); });
+        this.canvas.on('selection:created', (event) => { this.canvasObjectSelected(event); });
+        this.canvas.on('selection:updated', (event) => { this.canvasObjectSelected(event); });
         this.canvas.on('selection:cleared', (event) => { this.canvasObjectDeSelected(event); });
 
 
@@ -38,10 +39,9 @@ class EditorCanvas {
     }
 
     loadSite(siteState) {
-        let allObjectsArray = this.canvas.getObjects();
-        while(allObjectsArray.length !== 0){
-            allObjectsArray[0].remove();
-        }
+        this.canvas.getObjects().forEach( oldObject => {
+            this.canvas.remove(oldObject);
+        });
 
         this.nodeDisplayById = {};
         this.connections = [];
@@ -65,7 +65,7 @@ class EditorCanvas {
         nodeDisplay.show();
 
         this.nodeDisplayById[nodeData.id] = nodeDisplay;
-        this.canvas.deactivateAll();
+        this.canvas.discardActiveObject();
         this.render();
 
         return nodeDisplay;
@@ -134,7 +134,14 @@ class EditorCanvas {
    }
 
     canvasObjectSelected(event) {
-        let selectedObject  =  event.target;
+        let selectedObjects  =  event.selected;
+
+        if (!selectedObjects || selectedObjects.length === 0) {
+            console.log("Selected nothing?: ");
+            return;
+        }
+
+        const selectedObject = selectedObjects[0];
 
         if (!selectedObject.data || !selectedObject.data.id) {
             console.log("somehow selected a non-node: " + selectedObject);

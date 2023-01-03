@@ -45,9 +45,10 @@ class RunCanvas {
         fabric.Object.prototype.originY = 'center';
 
         this.canvas.selection = false;
-        this.canvas.on('object:selected', (event) => { this.canvasObjectSelected(event); });
-        this.canvas.on('selection:cleared', (event) => { this.canvasObjectDeSelected(event); });
 
+        this.canvas.on('selection:created', (event) => { this.canvasObjectSelected(event); });
+        this.canvas.on('selection:updated', (event) => { this.canvasObjectSelected(event); });
+        this.canvas.on('selection:cleared', (event) => { this.canvasObjectDeSelected(event); });
     }
 
     reset() {
@@ -239,9 +240,15 @@ class RunCanvas {
     }
 
     canvasObjectSelected(event) {
-        if (event.target && event.target.type === "node") {
-            this.selectedObject = event.target;
-            this.dispatch({type: DISPLAY_NODE_INFO, nodeId: event.target.data.id});
+        let selectedObjects  =  event.selected;
+        if (!selectedObjects || selectedObjects.length === 0) {
+            return;
+        }
+        const selectedObject = selectedObjects[0];
+
+        if (selectedObject.type === "node") {
+            this.selectedObject = selectedObject;
+            this.dispatch({type: DISPLAY_NODE_INFO, nodeId: selectedObject.data.id});
         }
     }
 
@@ -251,7 +258,8 @@ class RunCanvas {
     }
 
     unSelect() {
-        this.canvas.deactivateAll().renderAll();
+        this.canvas.discardActiveObject();
+        this.canvas.requestRenderAll();
         this.canvasObjectDeSelected();
     }
 

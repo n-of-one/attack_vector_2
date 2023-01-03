@@ -57,7 +57,7 @@ class TangleIceCanvas {
         Object.values(this.pointDisplayById).forEach(pointDisplay => pointDisplay.show());
 
 
-        this.canvas.deactivateAll();
+        this.canvas.discardActiveObject();
         this.canvas.renderAll();
     }
 
