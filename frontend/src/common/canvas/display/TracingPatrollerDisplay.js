@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart} from "../CanvasUtils";
 import Schedule from "../../Schedule";
-import {COLOR_PATROLLER_LINE, SIZE_NORMAL} from "./util/DisplayConstants";
+import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 
 
@@ -35,8 +35,10 @@ export default class TracingPatrollerDisplay {
         this.patrollerIcon = new fabric.Image(image, {
             left: this.currentNodeDisplay.x,
             top: this.currentNodeDisplay.y,
-            height: SIZE_NORMAL,
-            width: SIZE_NORMAL,
+            height: IMAGE_SIZE,
+            width: IMAGE_SIZE,
+            scaleX: SCALE_NORMAL,
+            scaleY: SCALE_NORMAL,
             opacity: 0,
             selectable: false,
         });

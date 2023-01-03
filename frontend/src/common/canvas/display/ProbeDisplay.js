@@ -7,11 +7,13 @@ import Schedule from "../../Schedule";
 import LineElement from "./util/LineElement";
 import {COLOR_PROBE_LINE} from "./util/DisplayConstants";
 
-const SIZE_SMALL = 20;
-const SIZE_SMALL_MEDIUM = 30;
-const SIZE_MEDIUM = 40;
-const SIZE_LARGE = 80;
-const SIZE_MEDIUM_LARGE = 58;
+const SIZE_SMALL = (20/40);
+const SIZE_SMALL_MEDIUM = (30/40);
+const SIZE_MEDIUM = (40/40);
+const SIZE_LARGE = (80/40);
+const SIZE_MEDIUM_LARGE = (58/40);
+
+const PROBE_IMAGE_SIZE = 40;
 
 export default class ConnectionDisplay {
 
@@ -41,8 +43,10 @@ export default class ConnectionDisplay {
         this.probeIcon = new fabric.Image(image, {
             left: hackerDisplay.x,
             top: hackerDisplay.y,
-            height: SIZE_MEDIUM,
-            width: SIZE_MEDIUM,
+            height: PROBE_IMAGE_SIZE,
+            width: PROBE_IMAGE_SIZE,
+            scaleX: SIZE_MEDIUM,
+            scaleY: SIZE_MEDIUM,
             opacity: 0,
             selectable: false,
         });
@@ -77,8 +81,8 @@ export default class ConnectionDisplay {
 
 
     processProbeArrive(scanType, nodeId, currentDisplay) {
-        this.probeIcon.setLeft(currentDisplay.x + 5);
-        this.probeIcon.setTop(currentDisplay.y + 5);
+        this.probeIcon.left = (currentDisplay.x + 5);
+        this.probeIcon.top = (currentDisplay.y + 5);
 
         switch (scanType) {
             case SCAN_NODE_INITIAL:
@@ -154,7 +158,7 @@ export default class ConnectionDisplay {
 
     probeError(scanType, nodeId) {
         this.schedule.run(30, () => {
-            animate(this.canvas, this.probeIcon, "height", 0, 30)
+            animate(this.canvas, this.probeIcon, "scaleY", 0, 30)
         });
         this.schedule.run(0, () => {
             this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + scanType + "[/] unknown. nodeId: [info]" + nodeId})
@@ -168,9 +172,9 @@ export default class ConnectionDisplay {
         });
     }
 
-    animateZoom(size, time) {
-        animate(this.canvas, this.probeIcon, 'width', size, time);
-        animate(this.canvas, this.probeIcon, 'height', size, time);
+    animateZoom(scale, time) {
+        animate(this.canvas, this.probeIcon, 'scaleX', scale, time);
+        animate(this.canvas, this.probeIcon, 'scaleY', scale, time);
     }
     animateOpacity(opacity, time) {
         animate(this.canvas, this.probeIcon, 'opacity', opacity, time);

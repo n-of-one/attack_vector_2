@@ -1,11 +1,13 @@
-export const SIZE_NORMAL = 40;
-export const SIZE_SMALL = 20;
-export const SIZE_LARGE = 100;
+export const IMAGE_SIZE = 80;
+
+export const SCALE_NORMAL = 0.5;
+export const SCALE_SMALL = 0.25;
+export const SCALE_LARGE = 1.25;
 
 export const OFFSET = 20;
 
-export const IDENTIFICATION_SIZE_LARGE = 60;
-export const IDENTIFICATION_SIZE_NORMAL = SIZE_NORMAL;
+export const IDENTIFICATION_SCALE_LARGE = 0.75;
+export const IDENTIFICATION_SCALE_NORMAL = SCALE_NORMAL;
 
 
 export const COLOR_PROBE_LINE = "#285ba0";

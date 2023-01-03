@@ -3,14 +3,14 @@ import {animate, calcLine, calcLineStart, calcLineWithOffset, easeLinear, easeOu
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalActions";
 import Schedule from "../../Schedule";
 import {
-    IDENTIFICATION_SIZE_LARGE,
-    IDENTIFICATION_SIZE_NORMAL,
+    IDENTIFICATION_SCALE_LARGE,
+    IDENTIFICATION_SCALE_NORMAL,
     OFFSET,
     COLOR_PATROLLER_LINE,
-    SIZE_LARGE,
-    SIZE_NORMAL,
-    SIZE_SMALL,
-    TICKS_HACKER_MOVE_MAIN, COLOR_HACKER_LINE
+    SCALE_LARGE,
+    SCALE_NORMAL,
+    SCALE_SMALL,
+    TICKS_HACKER_MOVE_MAIN, COLOR_HACKER_LINE, IMAGE_SIZE
 } from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState";
@@ -97,7 +97,7 @@ export default class HackerDisplay {
         this.currentNodeDisplay = this.displayById[nodeId];
 
         const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay, moveIncomplete);
-        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, this.currentNodeDisplay, xOffset, yOffset);
+        this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.currentNodeDisplay, xOffset, yOffset);
         this.canvas.add(this.hackerIcon);
 
         this.locked = hackerData.locked;
@@ -106,7 +106,7 @@ export default class HackerDisplay {
         }
     }
 
-    createHackerIcon(size, opacity, position, offsetX, offsetY) {
+    createHackerIcon(scale, opacity, position, offsetX, offsetY) {
         offsetX = (offsetX) ? offsetX : 0;
         offsetY = (offsetY) ? offsetY : 0;
 
@@ -115,8 +115,10 @@ export default class HackerDisplay {
         const icon = new fabric.Image(image, {
             left: position.x + offsetX,
             top: position.y + offsetY,
-            height: size,
-            width: size,
+            height: IMAGE_SIZE,
+            width: IMAGE_SIZE,
+            scaleX: scale,
+            scaleY: scale,
             opacity: opacity,
             selectable: false,
             hoverCursor: "default",
@@ -126,7 +128,7 @@ export default class HackerDisplay {
     }
 
     addHackerIdentificationIcons() {
-        const size = this.you ? IDENTIFICATION_SIZE_LARGE : IDENTIFICATION_SIZE_NORMAL;
+        const size = this.you ? IDENTIFICATION_SCALE_LARGE : IDENTIFICATION_SCALE_NORMAL;
         this.hackerIdentifierIcon = this.createHackerIcon(size, 0, this);
         this.hackerHider = new fabric.Rect({
             left: this.x,
@@ -224,7 +226,7 @@ export default class HackerDisplay {
     }
 
     startRunQuick() {
-        this.hackerIcon = this.createHackerIcon(SIZE_NORMAL, 1, this.siteStartNodeDisplay);
+        this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.siteStartNodeDisplay);
         this.canvas.add(this.hackerIcon);
         this.canvas.bringToFront(this.hackerIcon);
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 10);
@@ -242,13 +244,13 @@ export default class HackerDisplay {
 
 
     startRunSlow() {
-        this.hackerIcon = this.createHackerIcon(IDENTIFICATION_SIZE_LARGE, 0, this);
+        this.hackerIcon = this.createHackerIcon(IDENTIFICATION_SCALE_LARGE, 0, this);
         this.canvas.add(this.hackerIcon);
         this.canvas.sendToBack(this.hackerIcon);
 
         this.schedule.run(0, () => {
             this.moveStep(this.siteStartNodeDisplay, 0, 0, 200, easeLinear);
-            this.animateZoom(SIZE_NORMAL, 100);
+            this.animateZoom(SCALE_NORMAL, 100);
             this.animateOpacity(0.7, 20);
 
             animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200);
@@ -399,10 +401,10 @@ export default class HackerDisplay {
 
     hackerProbeLayers(ticks) {
         this.schedule.run(ticks.start, () => {
-            this.animateZoom(SIZE_SMALL, ticks.start);
+            this.animateZoom(SCALE_SMALL, ticks.start);
         });
         this.schedule.run(ticks.end, () => {
-            this.animateZoom(SIZE_NORMAL, ticks.end);
+            this.animateZoom(SCALE_NORMAL, ticks.end);
         });
     }
 
@@ -412,11 +414,11 @@ export default class HackerDisplay {
         });
 
         this.schedule.run(50, () => {
-            this.animateZoom(SIZE_LARGE, 50);
+            this.animateZoom(SCALE_LARGE, 50);
             this.animateOpacity(0.6, 50)
         });
         this.schedule.run(45, () => {
-            this.animateZoom(SIZE_NORMAL, 50);
+            this.animateZoom(SCALE_NORMAL, 50);
             this.animateOpacity(1, 50)
         });
         this.schedule.run(4, () => {
@@ -424,9 +426,9 @@ export default class HackerDisplay {
         });
     }
 
-    animateZoom(size, time) {
-        animate(this.canvas, this.hackerIcon, 'width', size, time);
-        animate(this.canvas, this.hackerIcon, 'height', size, time);
+    animateZoom(scale, time) {
+        animate(this.canvas, this.hackerIcon, 'scaleX', scale, time);
+        animate(this.canvas, this.hackerIcon, 'scaleY', scale, time);
     }
 
     animateOpacity(opacity, time, easing) {

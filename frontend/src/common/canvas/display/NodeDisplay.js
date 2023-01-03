@@ -2,6 +2,7 @@ import {fabric} from "fabric";
 import {toType} from "../../enums/NodeTypesNames";
 import {CONNECTIONS, DISCOVERED, FREE, HACKED, PROTECTED, LAYERS, TYPE} from "../../enums/NodeStatus";
 import {animate, easeInSine, easeOutSine} from "../CanvasUtils";
+import {IMAGE_SIZE} from "./util/DisplayConstants";
 
 const SCAN_OPACITY = 0.4;
 const HACK_OPACITY = 1;
@@ -78,11 +79,11 @@ export default class NodeDisplay {
         const image = this.getNodeIconImage();
         const cursor = staticDisplay ? "pointer" : "move";
 
-         const nodeIcon = new fabric.Image(image, {
+        const nodeIcon = new fabric.Image(image, {
             left: this.nodeData.x,
             top: this.nodeData.y,
-            height: image.height,
-            width: image.width,
+            height: IMAGE_SIZE,
+            width: IMAGE_SIZE,
             opacity: 0,
             data: this.nodeData,
             type: "node",
@@ -123,12 +124,10 @@ export default class NodeDisplay {
         if (this.nodeData.ice) {
             if (this.nodeData.hacked) {
                 return HACKED;
-            }
-            else {
+            } else {
                 return PROTECTED;
             }
-        }
-        else {
+        } else {
             return FREE;
         }
     }
@@ -143,7 +142,7 @@ export default class NodeDisplay {
     }
 
     transitionToHack(quick) {
-        const delay = (quick) ? 0: 5;
+        const delay = (quick) ? 0 : 5;
         this.hacking = true;
         if (this.nodeData.status === LAYERS) {
             this.crossFadeToNewIcon(delay);
@@ -197,7 +196,7 @@ export default class NodeDisplay {
     }
 
 
-    updateNodeIcon(canvasSelectedIcon)  {
+    updateNodeIcon(canvasSelectedIcon) {
         this.crossFadeToNewIcon(5);
         this.cleanUpAfterCrossFade(canvasSelectedIcon);
 
@@ -212,8 +211,7 @@ export default class NodeDisplay {
                 default:
                     return SCAN_OPACITY;
             }
-        }
-        else {
+        } else {
             return SCAN_OPACITY;
         }
     }
@@ -233,7 +231,7 @@ export default class NodeDisplay {
     }
 
     move(action) {
-        this.nodeIcon.set({ left: action.x, top: action.y});
+        this.nodeIcon.set({left: action.x, top: action.y});
         this.nodeIcon.setCoords();
     }
 
