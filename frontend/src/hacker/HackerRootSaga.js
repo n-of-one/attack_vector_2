@@ -110,11 +110,9 @@ const createHackerRootSaga = () => {
         yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
         yield takeEvery(FINISH_HACKING_ICE, passwordIceFinish);
 
+
         yield takeEvery(SERVER_NODE_HACKED, serverNodeHacked);
 
-        yield takeEvery(SERVER_START_HACKING_ICE_TANGLE, tangleIceStartHack);
-        yield takeEvery(ICE_TANGLE_MOVE_POINT, tangleIcePointMoved);
-        yield takeEvery(SERVER_TANGLE_POINT_MOVED, tanglePointMoved);
 
         yield takeEvery(SERVER_FLASH_PATROLLER, serverFlashPatrollerSaga);
         yield takeEvery(SERVER_START_TRACING_PATROLLER, serverStartPatrollerSaga);

@@ -37,7 +37,7 @@ class HackerRoot extends Component {
 
         terminalManager.init(this.store);
         passwordIceManager.init(this.store);
-        tangleIceManager.init(this.store);
+        tangleIceManager.init(this.store, webSocketConnection);
     }
 
     renderIfAuthenticated() {

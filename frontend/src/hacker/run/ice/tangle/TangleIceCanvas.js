@@ -2,18 +2,21 @@ import {fabric} from "fabric";
 import TanglePointDisplay from "./display/TanglePointDisplay";
 import TangleLineDisplay from "./display/TangleLineDisplay";
 import {ICE_TANGLE_MOVE_POINT} from "./TangleIceActions";
+import webSocketConnection from "../../../../common/WebSocketConnection";
 
 class TangleIceCanvas {
 
     currentSelected = null;
     canvas = null;
     pointDisplayById = null;
+    store = null;
     dispatch = null;
 
 
-    init(puzzleData, dispatch) {
+    init(puzzleData, dispatch, store) {
 
         this.dispatch = dispatch;
+        this.store = store;
 
         this.canvas = new fabric.Canvas('untangleCanvas', {
             width: 1200,
@@ -34,14 +37,14 @@ class TangleIceCanvas {
         }, 100);
 
         // this.canvas.on('object:modified', (event) => { this.canvasObjectModified(event); });
-        this.canvas.on('object:selected', (event) => {
-            this.canvasObjectSelected(event);
+        this.canvas.on('selection:created', (event) => {
+            this.canvasSelectionCreated(event);
         });
         this.canvas.on('selection:cleared', (event) => {
-            this.canvasObjectDeSelected(event);
+            this.canvasSelectionCleared(event);
         });
         this.canvas.on('mouse:up', (event) => {
-            this.canvasObjectDeSelected(event);
+            this.canvasSelectionCleared(event);
         });
         this.canvas.on('object:moving', (event) => {
             this.canvasObjectMoved(event);
@@ -77,22 +80,32 @@ class TangleIceCanvas {
         lineDisplay.show();
     }
 
-    canvasObjectSelected(event) {
-        const image = event.target;
-        if (image.display) {
-            this.currentSelected = image.display;
+    canvasSelectionCreated(event) {
+        const selectedObject = event.selected[0];
+        if (selectedObject.display) {
+            this.currentSelected = selectedObject.display;
             this.currentSelected.highLight();
             this.canvas.renderAll();
         }
     }
 
-    canvasObjectDeSelected(event) {
+    canvasSelectionCleared(event) {
         if (this.currentSelected) {
             const icon = this.currentSelected.icon;
-            this.dispatch({type: ICE_TANGLE_MOVE_POINT, id: this.currentSelected.id, x: icon.left, y: icon.top});
+            // this.dispatch({type: ICE_TANGLE_MOVE_POINT, id: this.currentSelected.id, x: icon.left, y: icon.top});
+
+            const state = this.store.getState();
+
+            const runId = state.run.scan.runId;
+            const currentIce = state.run.ice.currentIce;
+
+            const payload = {layerId: currentIce.layerId, runId: runId, id: this.currentSelected.id, x: icon.left, y: icon.top};
+            webSocketConnection.send("/av/ice/tangle/moved", JSON.stringify(payload));
+
+
             this.currentSelected.unHighlight();
             this.currentSelected = null;
-            this.canvas.deactivateAll().renderAll();
+            this.canvas.discardActiveObject().renderAll();
         }
     }
 

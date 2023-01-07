@@ -43,6 +43,8 @@ class UserConnectionService(
     }
 
     fun disconnect() {
+        if (currentUserService.isSystemUser || currentUserService.isAdmin) return;
+
         val state = hackerStateService.retrieveForCurrentUser()
 
         if (state.generalActivity == HackerGeneralActivity.RUNNING) {

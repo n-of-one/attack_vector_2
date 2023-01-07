@@ -15,6 +15,8 @@ class WebSocketConnection {
 
     subscriptions = [];
 
+    actions = {};
+
     constructor() {
         let port = window.location.port;
         let hostName = window.location.hostname;
@@ -107,6 +109,11 @@ class WebSocketConnection {
 
         this.store.dispatch(action);
 
+        const actionMethod = this.actions[action.type]
+        if (actionMethod) {
+            actionMethod(action.data);
+        }
+
         /* Our server (Spring simple broker) does not support ACK , so we keep our network logs clean */
         // wsMessage.ack();
     };
@@ -147,6 +154,10 @@ class WebSocketConnection {
 
     abort() {
         this.client.disconnect();
+    }
+
+    addAction(actionName, actionMethod) {
+        this.actions[actionName] = actionMethod;
     }
 }
 

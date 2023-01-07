@@ -77,8 +77,8 @@ export default class TanglePointDisplay {
     }
 
     moved(x, y) {
-        this.icon.setTop(y);
-        this.icon.setLeft(x);
+        this.icon.top = y;
+        this.icon.left = x;
         this.icon.setCoords();
 
         // this.idIcon.setTop(y+10);

@@ -2,6 +2,8 @@ package org.n1.av2.backend.service
 
 import org.n1.av2.backend.engine.SYSTEM_USER_ID
 import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.model.db.user.UserType
+import org.n1.av2.backend.model.db.user.UserType.ADMIN
 import org.springframework.stereotype.Service
 
 @Service
@@ -28,6 +30,12 @@ class CurrentUserService {
         get() {
             val user = userStore.get() ?: return true
             return user.id == SYSTEM_USER_ID
+        }
+
+    val isAdmin: Boolean
+        get() {
+            val user = userStore.get() ?: return false
+            return user.type == ADMIN
         }
 
     fun remove() {
