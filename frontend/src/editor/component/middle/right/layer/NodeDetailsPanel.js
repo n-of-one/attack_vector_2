@@ -28,7 +28,8 @@ let mapStateToProps = (state) => {
     return {
         node: node,
         layers: node.layers,
-        currentLayer: layer};
+        currentLayer: layer
+    };
 };
 
 const renderLayer = (node, layer) => {
@@ -53,12 +54,14 @@ const renderLayer = (node, layer) => {
 
 
 const renderTab = (layer, currentLayer, selectLayer) => {
-    const activeClassName = (layer === currentLayer) ? "active" : "";
+    const activeLinkClassName = (layer === currentLayer) ? "nav-link active" : "nav-link";
 
     return (
-        <li role="presentation" className={activeClassName} key={layer.id}>
-            <SilentLink onClick={() => selectLayer(layer)} aria-controls="home" role="tab" data-toggle="tab">
-                <Glyphicon type={layer.type} size="18px" />
+        <li role="presentation" className="nav-item" key={layer.id}>
+            {/*<a href="#" className="nav-link"><Glyphicon type={layer.type} size="18px" /></a>*/}
+            <SilentLink classNameInput={activeLinkClassName} onClick={() => selectLayer(layer)} aria-controls="home"
+                        role="tab" data-toggle="tab">
+                <Glyphicon type={layer.type} size="18px"/>
             </SilentLink>
         </li>
     );
@@ -67,14 +70,13 @@ const renderTab = (layer, currentLayer, selectLayer) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({node, layers, currentLayer, selectLayer}) => {
         if (!currentLayer) {
-            return  <div className="row form-horizontal darkWell layerLayerPanel" />;
+            return <div className="row form-horizontal darkWell layerLayerPanel"/>;
         }
         return (
-            <div className="row form-horizontal darkWell layerLayerPanel">
-                <div className="row">&nbsp;</div>
+            <div className="row darkWell layerLayerPanel">
+                <div className="col-lg-12" style={{marginTop: "20px"}}>
 
-                <div className="col-lg-12">
-                    <ul className="nav nav-tabs" role="tablist" id="node-layers-tab-list">
+                    <ul className="nav nav-tabs" role="tablist" id="node-layers-tab-list" style={{marginLeft: "7px"}}>
                         {layers.map(layer => renderTab(layer, currentLayer, selectLayer))}
                     </ul>
                     <br/>

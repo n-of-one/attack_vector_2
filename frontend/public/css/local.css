@@ -77,6 +77,10 @@ body {
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
 }
 
+/* Overrider Bootstrap when it's overriding the font size for inputs */
+.form-control {
+    font-size: inherit !important;
+}
 
 .navbar-av .navbar-nav .nav-link {
     color: #666;
@@ -194,6 +198,16 @@ body {
     padding-top: 0.5em;
     padding-right: 0;
     /*font-weight: bold;*/
+}
+
+.form-control-feedback {
+    position: absolute;
+    top: .5rem;
+    right: 1.5rem;
+    z-index: 2;
+    display: block;
+    text-align: center;
+    pointer-events: none;
 }
 
 .noRightPadding {

@@ -34,8 +34,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             <div className="row form-group layerFieldTopRow">
                 <div className="col-lg-3 control-label layerLabel">Layer</div>
                 <div className="col-lg-8">
-                    <div className="text-muted strong layer_text_label text_gold">{type}
-                        {renderRemove(node, layer, remove)}
+                    <div className="strong layer_text_label text_gold d-flex justify-content-between">
+                        <span>{type}</span>
+                        <span>{renderRemove(node, layer, remove)}</span>
                     </div>
                 </div>
             </div>

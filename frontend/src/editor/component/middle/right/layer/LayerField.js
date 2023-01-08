@@ -27,7 +27,7 @@ export default ({name, size, readOnly, value, save, placeholder, help}) => {
                     {renderInput(value, readOnly, save, placeholder)}
                 </div>
                 <div className="col-lg-1 layerHelpColumn">
-                    <span className="badge helpBadge" title={help}>?
+                    <span className="badge badge-secondary helpBadge" title={help}>?
                     </span>
                 </div>
             </div>

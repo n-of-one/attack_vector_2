@@ -245,7 +245,7 @@ export default class NodeDisplay {
     }
 
     updateNetworkId(networkId) {
-        this.labelIcon.setText(networkId);
+        this.labelIcon.text = networkId;
         this.canvas.renderAll();
     }
 

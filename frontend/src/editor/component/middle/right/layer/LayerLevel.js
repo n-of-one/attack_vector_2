@@ -29,12 +29,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         let downClickable = (level > 1);
         let downHtml = downClickable ? (
-            <SilentLink className="textLink" onClick={() => up(node, layer)}>◀</SilentLink>) : (<span>◀</span>
+            <SilentLink classNameInput="textLink" onClick={() => up(node, layer)}>◀</SilentLink>) : (<span>◀</span>
         );
 
         let upClickable = (level !== 0 && level < (node.layers.length-1));
         let upHtml = upClickable ? (
-            <SilentLink className="textLink" onClick={() => down(node, layer)}>▶</SilentLink>) : (<span>▶</span>
+            <SilentLink classNameInput="textLink" onClick={() => down(node, layer)}>▶</SilentLink>) : (<span>▶</span>
         );
 
         return (

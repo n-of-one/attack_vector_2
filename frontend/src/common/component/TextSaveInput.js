@@ -75,7 +75,7 @@ export default class TextSaveInput extends Component {
             text = '';
         }
 
-        let icon = (this.state.saving) ? (<span className="glyphicon glyphicon-floppy-save form-control-feedback" aria-hidden="true"/>) : '';
+        let icon = (this.state.saving) ? (<span className="form-control-feedback"><span className="glyphicon glyphicon-floppy-save" aria-hidden="true"/></span>) : ''; ;
 
         if (this.props.type === "textArea") {
             return (
