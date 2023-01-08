@@ -36,7 +36,8 @@ const renderMessage = (message, index, navigateToLayer) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({siteState, navigateToLayer}) => {
 
-        let statusElement = (siteState.ok) ? <span className="label label-success">Ok</span> :  <span className="label label-warning">Error</span>;
+        let statusElement = (siteState.ok) ? <span className="badge badge-success" style={{fontSize: "100%"}}>Ok</span> :
+            <span className="badge badge-warning" style={{fontSize: "100%"}}>Error</span>;
 
         return (
             <div className="site-state">

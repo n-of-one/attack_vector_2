@@ -25,6 +25,7 @@ class EditorRoot extends Component {
         }
         document.body.style.backgroundColor = "#f5f5f5";
 
+        document.body.style.fontSize = "14px";
         const preLoadedState = { siteData: { ...siteDataDefaultState, id: this.siteId} };
         const sagaMiddleware = createSagaMiddleware();
 

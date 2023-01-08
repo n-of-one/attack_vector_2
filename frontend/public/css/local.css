@@ -104,6 +104,11 @@ body {
     border-radius: 3px 3px 3px 3px;
 }
 
+.editorRow {
+    width: 1530px;
+    margin-left: 20px
+}
+
 .siteMap {
     background-color: #333333;
     border-radius: 3px 3px 3px 3px;
@@ -277,6 +282,7 @@ a.textLink {
 .thin-hr {
     margin-top: 4px;
     margin-bottom: 4px;
+    border-color: white;
 }
 
 .btn-grey {

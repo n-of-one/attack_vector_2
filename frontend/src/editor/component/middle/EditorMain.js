@@ -19,12 +19,12 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({dragAndDropState, dispatch}) => {
         return (
-        <span>
-            <div className="row">
+        <>
+            <div className="row editorRow">
                 <NodesPanel />
                 <EditCanvasPanel dragAndDropState={dragAndDropState} dispatch={dispatch} />
                 <DetailPanel/>
             </div>
-        </span>
+        </>
         );
     });

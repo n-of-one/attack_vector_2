@@ -14,7 +14,7 @@ let mapStateToProps = (state) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
-            <span>
+            <>
                 <div className="col-lg-5" id="node-library">
                     <ActionsPanel/>
                     <div className="row">&nbsp;</div>
@@ -22,6 +22,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="row">&nbsp;</div>
                     <NodeDetailsPanel />
                 </div>
-            </span>
+            </>
         );
     });

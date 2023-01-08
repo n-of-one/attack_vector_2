@@ -13,7 +13,7 @@ let mapStateToProps = (state) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
-            <div className="row">
+            <div className="row editorRow">
                 <div className="col-lg-12 darkWell" >
                     <br/>
                     <div className="row">
