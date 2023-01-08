@@ -47,8 +47,8 @@ class UserConnectionService(
 
         val state = hackerStateService.retrieveForCurrentUser()
 
-        if (state.generalActivity == HackerGeneralActivity.RUNNING) {
-            notifyLeaveRun(state.userId, state.runId!!)
+        if (state.generalActivity == HackerGeneralActivity.RUNNING && state.runId != null) {
+            notifyLeaveRun(state.userId, state.runId)
         }
 
         timedEventQueue.removeAllFor(state.userId)

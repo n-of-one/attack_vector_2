@@ -121,7 +121,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
                                         <div className="siteMap rightPaneDimensions">
                                             <div className="rightPanePadLeftRight">
-                                                <table className="table table-condensed text-muted text" id="mails">
+                                                <table className="table table-sm text-muted text" id="mails">
                                                     <thead>
                                                     <tr>
                                                         <td className="strong">From</td>

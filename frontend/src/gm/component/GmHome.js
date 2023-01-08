@@ -91,7 +91,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                         <div className="siteMap rightPaneDimensions">
                             <div>&nbsp;</div>
                             <div className="rightPanePadLeftRight">
-                                <table className="table table-condensed text-muted text" id="sitesTable">
+                                <table className="table table-sm text-muted text" id="sitesTable">
                                     <thead>
                                     <tr>
                                         {/*<td className="text-strong">Link</td>*/}

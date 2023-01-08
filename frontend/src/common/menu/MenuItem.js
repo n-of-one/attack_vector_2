@@ -35,14 +35,15 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         if (roles.includes(requriesRole)) {
             if (currentPage === targetPage) {
-                return <li className="active"><SilentLink onClick={(e) => { e.preventDefault();}}>{label}</SilentLink></li>
+                return <li className="nav-item active"><a className="nav-link">{label}</a></li>
+                // return <li className="nav-item active"><SilentLink onClick={(e) => { e.preventDefault();}}>{label}</SilentLink></li>
             }
             else {
-                return <li><SilentLink onClick={(e) => navigateTo(e, targetPage, currentPage)}>{label}</SilentLink></li>
+                return <li className="nav-item"><a className="nav-link" onClick={(e) => navigateTo(e, targetPage, currentPage)}>{label}</a></li>
             }
         }
         else {
-            return <span>{label} </span>
+            return <></>
         }
 
     });

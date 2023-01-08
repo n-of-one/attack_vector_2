@@ -77,6 +77,28 @@ body {
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
 }
 
+
+.navbar-av .navbar-nav .nav-link {
+    color: #666;
+}
+
+.navbar-av .navbar-nav .nav-link:hover, .navbar-av .navbar-nav .nav-link:focus {
+    color: #17a2b8;
+}
+
+.navbar-av .navbar-nav .nav-link.disabled {
+    color: #aaa;
+}
+
+.navbar-av .navbar-nav .show > .nav-link,
+.navbar-av .navbar-nav .active > .nav-link,
+.navbar-av .navbar-nav .nav-link.show,
+.navbar-av .navbar-nav .nav-link.active {
+    color: #ccc;
+}
+
+
+
 .darkWell {
     background-color: #333333;
     border-radius: 3px 3px 3px 3px;
@@ -91,13 +113,6 @@ body {
     margin-bottom: 10px;
 }
 
-.rightPane {
-    background-color: #111111;
-}
-
-.backgroundLight {
-    background-color: #333333;
-}
 
 .nodeInfo {
     background-color: #041a21e8;
@@ -298,3 +313,4 @@ a.textLink {
     position: absolute;
     z-index: 100;
 }
+

@@ -8,7 +8,9 @@ import MenuBar from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
 import RunPageChooser from "./run/component/RunPageChooser";
 
-const dismissScanInfo = (event) => {
+const dismissScanInfo = (renderScanInfoDismiss, event) => {
+    if (!renderScanInfoDismiss) return;
+
     let current = event.target;
     while (current) {
         if (current.id === "canvas-container" || current.id === "scanInfo") {
@@ -42,47 +44,36 @@ const renderCurrentPage = (currentPage) => {
         case MAIL:
             return <MailHome/>;
         case SCAN:
-            return <RunPageChooser />;
+            return <RunPageChooser/>;
         default:
-            return <HackerHome />;
+            return <HackerHome/>;
     }
-};
-
-const renderMain = (currentPage, messageTerminal) => {
-    return (
-        <>
-            <div className="row">
-                <div className="col-lg-2">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <span className="text">&nbsp;</span>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <Terminal terminal={messageTerminal} height="300px"/>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-10">
-                    {renderCurrentPage(currentPage)}
-                </div>
-            </div>
-            <MenuBar/>
-        </>
-    );
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({currentPage, messageTerminal, dispatch, renderScanInfoDismiss, dismissScanInfo}) => {
 
-        if (renderScanInfoDismiss) {
-            return <div className="container" onClick={(event) => dismissScanInfo(event)}>
-                {renderMain(currentPage, messageTerminal, dispatch)}
-            </div>;
-        }
-        return <div className="container">
-            {renderMain(currentPage, messageTerminal, dispatch)}
-        </div>;
+        return (
+            <div className="container-fluid" onClick={(event) => dismissScanInfo(renderScanInfoDismiss, event)}>
+                <div className="row">
+                    <div className="col-lg-2">
+                        <div className="row">
+                            <div className="col-lg-12">
+                                <span className="text">&nbsp;</span>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-lg-12">
+                                <Terminal terminal={messageTerminal} height="300px"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-lg-10">
+                        {renderCurrentPage(currentPage)}
+                    </div>
+                </div>
+                <MenuBar/>
+            </div>
+        );
     });
 

@@ -16,7 +16,7 @@ let mapStateToProps = (state) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
-            <div className="container">
+            <div className="container-xl">
                 <br />
                 <EditorTop />
                 <br />

@@ -36,31 +36,32 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         return (
             <div className="row">
                 <div className="col-lg-6">
-                    <div className="row backgroundLight">
-                        &nbsp;
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <span className="text"><strong>🜁 Verdant OS 🜃</strong></span>
+                        </div>
                     </div>
                     <div className="row">
-                        <div className="text">
-                            <strong>🜁 Verdant OS 🜃</strong><br/>
-                            <br/>
-                            Choose site to investigate or attack<br/>
-                            <br/>
-                            <br/>
-                        </div>
-                        <div id="actions">
+                        <div className="col-lg-12">
                             <div className="text">
-                                <TextInput placeholder="Site name"
-                                           buttonLabel="Scan"
-                                           buttonClass="btn-info"
-                                           save={(siteName) => scanSite(siteName)}
-                                           clearAfterSubmit="true"/>
-
+                                <br/>
+                                Choose site to investigate or attack<br/>
+                                <br/>
+                                <br/>
+                            </div>
+                            <div id="actions">
+                                <div className="text">
+                                    <TextInput placeholder="Site name"
+                                               buttonLabel="Scan"
+                                               buttonClass="btn-info"
+                                               save={(siteName) => scanSite(siteName)}
+                                               clearAfterSubmit="true"/>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="col-lg-6 rightPane">
-
+                <div className="col-lg-6">
                     <div className="row">
                         <div className="col-lg-12">
                             <span className="text">Scans</span>
@@ -68,10 +69,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     </div>
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="siteMap rightPaneDimensions">
+                            <div className="siteMap">
                                 <div>&nbsp;</div>
                                 <div className="rightPanePadLeftRight">
-                                    <table className="table table-condensed text-muted text" id="sitesTable">
+                                    <table className="table table-borderless table-sm text-muted text" id="sitesTable">
                                         <thead>
                                         <tr>
                                             <td className="strong">Site Name</td>

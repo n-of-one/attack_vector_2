@@ -39,14 +39,14 @@ export default class TextSaveInput extends Component {
         return (
             <div className="form-inline">
                 <div className="form-group">
-                    <input type="text" className="form-control"
+                    <input type="text" className="form-control" style={{fontSize: "12px"}}
                            placeholder={placeholder}
                            value={text}
                            onChange={(event) => this.handleChange(event)}
                            onKeyDown={(event) => this.handleKeyDown(event)}
                     />
-                </div>
-                <button type="button" className={totalButtonClass} onClick={() => this.save()}>{buttonLabel}</button>
+                </div>&nbsp;
+                <button type="button" className={totalButtonClass} style={{fontSize: "12px"}} onClick={() => this.save()}>{buttonLabel}</button>
             </div>
         );
     }
