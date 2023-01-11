@@ -5,7 +5,6 @@ import {findElementById} from "../../../../common/Immutable";
 import NodeScanInfoByStatus from "./NodeScanInfoByStatus";
 import {CONNECTIONS, DISCOVERED, LAYERS, LAYERS_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
 import Pad from "../../../../common/component/Pad";
-import CloseButton from "../../../../common/component/CloseButton";
 
 const mapDispatchToProps = (dispatch) => {
     return {

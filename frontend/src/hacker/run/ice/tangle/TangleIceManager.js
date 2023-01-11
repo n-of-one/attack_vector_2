@@ -4,7 +4,6 @@ import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTermina
 import GenericIceManager from "../GenericIceManager";
 import {
     ICE_TANGLE_BEGIN,
-    ICE_TANGLE_MOVE_POINT,
     SERVER_START_HACKING_ICE_TANGLE,
     SERVER_TANGLE_POINT_MOVED
 } from "./TangleIceActions";
