@@ -28,7 +28,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         const regular = (type) => {
             return (
                 <span className="btn btn-info btn-spaced" onClick={() => { add(type, currentNodeId, true) }}>
-                    <Glyphicon type={type} size="18px"/>
+                    <Glyphicon type={type} size="18px" color="white"/>
                 </span>
             );
         };

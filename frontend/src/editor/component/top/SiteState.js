@@ -20,7 +20,7 @@ const mapStateToProps = (state) => {
 };
 
 const renderMessage = (message, index, navigateToLayer) => {
-    const label = (message.type === "INFO") ? <span className="label label-info">Info&nbsp;</span> : <span className="label label-warning">Error</span>;
+    const label = (message.type === "INFO") ? <span className="badge bg-info">Info&nbsp;</span> : <span className="badge bg-warning">Error</span>;
     const link = (message.layerId) ? (<>&nbsp;<SilentLink onClick={() => {navigateToLayer(message.nodeId, message.layerId)}}>
         <span className="glyphicon glyphicon-share-alt" /></SilentLink></>) : <></>;
 
@@ -36,8 +36,8 @@ const renderMessage = (message, index, navigateToLayer) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({siteState, navigateToLayer}) => {
 
-        let statusElement = (siteState.ok) ? <span className="badge badge-success" style={{fontSize: "100%"}}>Ok</span> :
-            <span className="badge badge-warning" style={{fontSize: "100%"}}>Error</span>;
+        let statusElement = (siteState.ok) ? <span className="badge bg-success" style={{fontSize: "100%"}}>Ok</span> :
+            <span className="badge bg-warning" style={{fontSize: "100%"}}>Error</span>;
 
         return (
             <div className="site-state">

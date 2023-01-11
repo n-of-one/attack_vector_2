@@ -32,7 +32,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
 
         return (
             <div className="row form-group layerFieldTopRow">
-                <div className="col-lg-3 control-label layerLabel">Layer</div>
+                <div className="col-lg-3 control-label layerLabel">Type</div>
                 <div className="col-lg-8">
                     <div className="strong layer_text_label text_gold d-flex justify-content-between">
                         <span>{type}</span>

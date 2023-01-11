@@ -23,7 +23,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="row form-group" >
                         <label htmlFor="site_description" className="col-lg-3 control-label text-muted">Description</label>
                         <div className="col-lg-8">
-                            <TextSaveInput type="textArea" id="site_description" rows="2" className="form-control" placeholder="For GM only" value={siteData.description} save={ (value) => save("description", value) } />
+                            <TextSaveInput type="textArea" id="site_description" rows="2" className="form-control editorDescription" placeholder="For GM only" value={siteData.description} save={ (value) => save("description", value) } />
                         </div>
                     </div>
                 </div>

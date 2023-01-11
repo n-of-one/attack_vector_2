@@ -54,7 +54,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     ({currentPage, messageTerminal, dispatch, renderScanInfoDismiss, dismissScanInfo}) => {
 
         return (
-            <div className="container-fluid" onClick={(event) => dismissScanInfo(renderScanInfoDismiss, event)}>
+            <div className="container-fluid" data-bs-theme="dark" onClick={(event) => dismissScanInfo(renderScanInfoDismiss, event)}>
                 <div className="row">
                     <div className="col-lg-2">
                         <div className="row">

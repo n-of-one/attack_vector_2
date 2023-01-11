@@ -49,17 +49,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                 <br/>
                                 <br/>
                             </div>
-                            <div id="actions">
-                                <div className="text">
-                                    <TextInput placeholder="Site name"
-                                               buttonLabel="Scan"
-                                               buttonClass="btn-info"
-                                               save={(siteName) => scanSite(siteName)}
-                                               clearAfterSubmit="true"/>
-                                </div>
-                            </div>
                         </div>
                     </div>
+                    <TextInput placeholder="Site name"
+                               buttonLabel="Scan"
+                               buttonClass="btn-info"
+                               save={(siteName) => scanSite(siteName)}
+                               clearAfterSubmit="true"/>
                 </div>
                 <div className="col-lg-6">
                     <div className="row">
@@ -70,44 +66,41 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="siteMap">
-                                <div>&nbsp;</div>
-                                <div className="rightPanePadLeftRight">
-                                    <table className="table table-borderless table-sm text-muted text" id="sitesTable">
-                                        <thead>
-                                        <tr>
-                                            <td className="strong">Site Name</td>
-                                            <td className="strong">Nodes</td>
-                                            <td className="strong">Initiator</td>
-                                            <td className="strong">Efficiency</td>
-                                            <td className="strong">&nbsp;</td>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {
-                                            scans.map((scanInfo) => {
-                                                return (
-                                                    <tr key={scanInfo.runId}>
-                                                        <td className="table-very-condensed">
-                                                            <SilentLink title={scanInfo.runId} onClick={() => {
-                                                                enterScan(scanInfo);
-                                                            }}>{scanInfo.siteName}</SilentLink>
-                                                        </td>
-                                                        <td className="table-very-condensed">{scanInfo.nodes}</td>
-                                                        <td className="table-very-condensed">{scanInfo.initiatorName}</td>
-                                                        <td className="table-very-condensed">{scanInfo.efficiency}</td>
-                                                        <td className="table-very-condensed">
-                                                            <SilentLink onClick={() => {
-                                                                deleteScan(scanInfo);
-                                                            }}>
-                                                                <span className="glyphicon glyphicon-remove-circle" />
-                                                            </SilentLink>
-                                                        </td>
-                                                    </tr>);
-                                            })
-                                        }
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <table className="table table-borderless table-sm text-muted text" id="sitesTable">
+                                    <thead>
+                                    <tr>
+                                        <td className="strong">Site Name</td>
+                                        <td className="strong">Nodes</td>
+                                        <td className="strong">Initiator</td>
+                                        <td className="strong">Efficiency</td>
+                                        <td className="strong">&nbsp;</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        scans.map((scanInfo) => {
+                                            return (
+                                                <tr key={scanInfo.runId}>
+                                                    <td className="table-very-condensed">
+                                                        <SilentLink title={scanInfo.runId} onClick={() => {
+                                                            enterScan(scanInfo);
+                                                        }}>{scanInfo.siteName}</SilentLink>
+                                                    </td>
+                                                    <td className="table-very-condensed">{scanInfo.nodes}</td>
+                                                    <td className="table-very-condensed">{scanInfo.initiatorName}</td>
+                                                    <td className="table-very-condensed">{scanInfo.efficiency}</td>
+                                                    <td className="table-very-condensed">
+                                                        <SilentLink onClick={() => {
+                                                            deleteScan(scanInfo);
+                                                        }}>
+                                                            <span className="glyphicon glyphicon-remove-circle"/>
+                                                        </SilentLink>
+                                                    </td>
+                                                </tr>);
+                                        })
+                                    }
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

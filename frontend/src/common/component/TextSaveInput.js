@@ -48,8 +48,8 @@ export default class TextSaveInput extends Component {
         this.setState({value: newValue, initialized: true, saving: false});
     };
 
-    handleKeyDown = (event) => {
-        if (event.keyCode === ENTER_KEY) {
+    handleKeyDown = (event, defocusOnEnter) => {
+        if (event.keyCode === ENTER_KEY && defocusOnEnter) {
             event.target.blur();
         }
     };
@@ -84,7 +84,7 @@ export default class TextSaveInput extends Component {
                        placeholder={placeholder}
                        value={text}
                        onChange={(event) => this.handleChange(event)}
-                       onKeyDown={(event) => this.handleKeyDown(event)}
+                       onKeyDown={(event) => this.handleKeyDown(event, false)}
                        onBlur={(event) => this.handleBlur(event)}
                        rows={this.props.rows}
                 />
@@ -99,7 +99,7 @@ export default class TextSaveInput extends Component {
                            placeholder={placeholder}
                            value={text}
                            onChange={(event) => this.handleChange(event)}
-                           onKeyDown={(event) => this.handleKeyDown(event)}
+                           onKeyDown={(event) => this.handleKeyDown(event, true)}
                            onBlur={(event) => this.handleBlur(event)}
                     />
                     {icon}

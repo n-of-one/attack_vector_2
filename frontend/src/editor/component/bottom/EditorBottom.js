@@ -13,7 +13,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
             <div className="row editorRow">
-                <div className="col-lg-12 darkWell" >
+                <div className="col-lg-12 darkWell editorBottomPanel" >
                     <br/>
                     <SiteDataAdditional />
                 </div>

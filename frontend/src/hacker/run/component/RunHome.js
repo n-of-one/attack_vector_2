@@ -21,6 +21,15 @@ let mapStateToProps = (state) => {
     };
 };
 
+const terminalAndScanResultPanel = (infoNodeId, terminal, dispatch, submit) => {
+    if (infoNodeId) {
+        return (<NodeScanInfo/>)
+    }
+    return (<div className="row">
+        <Terminal terminal={terminal} dispatch={dispatch} submit={submit} height="780px"/>
+    </div>)
+};
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({terminal, messageTerminal, infoNodeId, siteName, dispatch, submit}) => {
@@ -29,10 +38,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             <>
                 <div className="row">
                     <div className="col-lg-6">
-                        <NodeScanInfo/>
-                        <div className="row">
-                            <Terminal terminal={terminal} dispatch={dispatch} submit={submit} height="780px"/>
-                        </div>
+                        { terminalAndScanResultPanel(infoNodeId, terminal, dispatch, submit)}
                     </div>
                     <div className="col-lg-6 rightPane">
 

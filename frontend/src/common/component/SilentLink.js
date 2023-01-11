@@ -24,6 +24,7 @@ let mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({href, classNameInput, children, onClick, title}) => {
+        if (!classNameInput) classNameInput = '';
 
         const onClickLocal = (e) => {
             if (onClick) {

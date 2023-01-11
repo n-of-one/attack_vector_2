@@ -2,7 +2,6 @@ import React from 'react';
 import {connect} from "react-redux";
 import Cookies from "js-cookie";
 import {NAVIGATE_PAGE} from "../enums/CommonActions";
-import SilentLink from "../component/SilentLink";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

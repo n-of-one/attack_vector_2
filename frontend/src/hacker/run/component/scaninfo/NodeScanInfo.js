@@ -14,19 +14,11 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 let mapStateToProps = (state) => {
-
-
-    if (state.run.infoNodeId) {
-        const node = findElementById(state.run.site.nodes, state.run.infoNodeId);
-        const status = state.run.scan.nodeScanById[node.id].status;
-        return {
-            node: node,
-            status: status,
-        };
-    }
-
+    const node = findElementById(state.run.site.nodes, state.run.infoNodeId);
+    const status = state.run.scan.nodeScanById[node.id].status;
     return {
-        node: null,
+        node: node,
+        status: status,
     };
 };
 
@@ -52,21 +44,31 @@ const statusText = (status) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({node, status, dismiss}) => {
 
-        if (!node) {
-            return <div className="row backgroundLight">&nbsp;</div>
-        }
-
         return (
             <>
-                <div className="row backgroundLight">&nbsp;</div>
                 <div className="row nodeInfo text" id="scanInfo">
-                    <CloseButton closeAction={dismiss} />
                     <div className="col-lg-12">
-                        <br/>
-                        Scan info on <span className="networkId">{node.networkId}</span><Pad p="10" t={node.networkId} />
-                        <span className="text-muted">scan progress: {statusText(status)}</span><br/>
-                        <br/>
-                        <NodeScanInfoByStatus node={node} status={status}/>
+                        <div className="row">&nbsp;</div>
+                        <div className="row">
+                            <div className="col-lg-12">
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-lg-12">
+                                <div className="d-flex justify-content-between">
+                                    <div className="">
+                                        Scan info on <span className="networkId">{node.networkId}</span><Pad p="10" t={node.networkId}/>
+                                        <span className="text-muted">scan progress: {statusText(status)}</span><br/>
+                                        <br/>
+                                        <NodeScanInfoByStatus node={node} status={status}/>
+                                    </div>
+
+                                    <div className="nodeInfoClose text-end" onClick={() => dismiss()}>
+                                        <span className="close-x-position glyphicon glyphicon-remove"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </>

@@ -37,16 +37,18 @@ export default class TextSaveInput extends Component {
         const text = this.state.value ? this.state.value : '';
 
         return (
-            <div className="form-inline">
-                <div className="form-group">
-                    <input type="text" className="form-control" style={{fontSize: "12px"}}
+            <div className="row">
+                <div className="col-lg-6" style={{fontSize: "12px"}}>
+                    <input type="text" className="form-control"
                            placeholder={placeholder}
                            value={text}
                            onChange={(event) => this.handleChange(event)}
                            onKeyDown={(event) => this.handleKeyDown(event)}
                     />
-                </div>&nbsp;
-                <button type="button" className={totalButtonClass} style={{fontSize: "12px"}} onClick={() => this.save()}>{buttonLabel}</button>
+                </div>
+                <div className="col-lg-6">
+                    <button type="button" className={totalButtonClass} style={{fontSize: "12px"}} onClick={() => this.save()}>{buttonLabel}</button>
+                </div>
             </div>
         );
     }

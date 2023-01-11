@@ -16,14 +16,13 @@ let mapStateToProps = (state) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     () => {
         return (
-            <div className="container-fluid">
+            <div className="container-fluid" data-bs-theme="dark">
                 <br />
                 <EditorTop />
                 <br />
                 <EditorMain />
                 <br />
                 <EditorBottom />
-                {/*<h2>Editor for { this.store.getState().siteLink }</h2>*/}
 
             </div>
         );

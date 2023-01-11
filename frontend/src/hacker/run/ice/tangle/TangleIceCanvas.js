@@ -1,7 +1,6 @@
 import {fabric} from "fabric";
 import TanglePointDisplay from "./display/TanglePointDisplay";
 import TangleLineDisplay from "./display/TangleLineDisplay";
-import {ICE_TANGLE_MOVE_POINT} from "./TangleIceActions";
 import webSocketConnection from "../../../../common/WebSocketConnection";
 
 class TangleIceCanvas {

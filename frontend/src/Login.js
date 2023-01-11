@@ -92,7 +92,7 @@ class Login extends Component {
     render() {
 
         return (
-            <div className="container">
+            <div className="container" data-bs-theme="dark">
                 <br/>
                 <br/>
                 <br/>
