@@ -17,3 +17,10 @@ nnpm install --save react-bootstrap bootstrap
 add the line
   ,"proxy": "http://localhost:8080"
 to package.json
+
+
+Notes:
+
+Use npm audit --production to check for vulnerabilities.
+See: https://github.com/facebook/create-react-app/issues/11174
+

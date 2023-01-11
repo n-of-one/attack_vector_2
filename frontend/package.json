@@ -6,7 +6,7 @@
     "bootstrap": "^5.2.3",
     "fabric": "^5.3.0",
     "izitoast": "^1.4.0",
-    "js-cookie": "^2.2.1",
+    "js-cookie": "^3.0.1",
     "react": "^16.13.1",
     "react-bootstrap": "^2.7.0",
     "react-dom": "^16.13.1",
