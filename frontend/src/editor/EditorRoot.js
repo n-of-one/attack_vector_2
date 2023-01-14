@@ -16,7 +16,7 @@ class EditorRoot extends Component {
         super(props);
         this.state = { initSuccess: null };
         this.errorMessage = null;
-        this.siteId = props.match.params.siteId;
+        this.siteId = props.siteId;
 
         if (!this.siteId.startsWith("site-")) {
             this.errorMessage = "Cannot enter site name directly in URL";

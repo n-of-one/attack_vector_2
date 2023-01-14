@@ -95,7 +95,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                                 {
                                     sites.map((site) => {
                                         return (
-                                            <tr key="1">
+                                            <tr key={site.id}>
                                                 <td className="table-very-condensed"><SilentLink onClick={() => {
                                                     window.open("/edit/" + site.id, site.id);
                                                 }}>{site.name}</SilentLink>
