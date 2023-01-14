@@ -10,6 +10,7 @@ import {
 import tangleIceCanvas from "./TangleIceCanvas";
 import {notify} from "../../../../common/Notification";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
+import delay from "../../../../common/Util";
 
 class TangleIceManager extends GenericIceManager {
 
@@ -28,7 +29,7 @@ class TangleIceManager extends GenericIceManager {
 
 
     startHack(data) {
-        tangleIceCanvas.init(data, this.dispatch, this.store);
+        delay (() => {tangleIceCanvas.init(data, this.dispatch, this.store)});
         this.schedule.clear();
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
         this.displayTerminal(20, "↼ Connecting to ice, initiating attack.");

@@ -1,5 +1,5 @@
 import React from 'react';
-import {render} from 'react-dom'
+import { createRoot } from 'react-dom/client';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import GmRoot from "./gm/GmRoot";
 import EditorRoot from "./editor/EditorRoot";
@@ -31,7 +31,10 @@ let ReRoute = (props) => {
     window.document.location.href = "/login"
 };
 
-render(
+const container = document.getElementById('app');
+const root = createRoot(container);
+
+root.render(
     <BrowserRouter>
         <Switch>
             <Route path="/login" component={Login} />
@@ -41,6 +44,5 @@ render(
             <Route path="/edit/:siteId?" component={EditorRoot} />
             <Route path="/" render={ReRoute} />
         </Switch>
-    </BrowserRouter>,
-    document.getElementById('root')
+    </BrowserRouter>
 );
