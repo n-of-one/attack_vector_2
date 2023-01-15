@@ -3,7 +3,7 @@ import {DISCOVERED} from "../../../common/enums/NodeStatus";
 
 const defaultState = {};
 
-export default (state = defaultState, action) => {
+const scanReducer = (state = defaultState, action) => {
     switch (action.type) {
         case SERVER_SCAN_FULL:
             return action.data.scan;
@@ -35,3 +35,5 @@ const updateDiscoveredNodes = (scan, {nodeIds}) => {
     });
     return {...scan, nodeScanById: intermediateNodeScanById};
 };
+
+export default scanReducer;

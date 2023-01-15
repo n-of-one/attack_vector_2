@@ -1,10 +1,10 @@
 import {combineReducers} from 'redux'
 import pageReducer from "../common/menu/pageReducer";
-import sitesReducer from "./GmSitesReducer"
+import gmSitesReducer from "./GmSitesReducer"
 
 const gmReducer = combineReducers({
     currentPage: pageReducer,
-    sites: sitesReducer,
+    sites: gmSitesReducer,
 });
 
 export default gmReducer;

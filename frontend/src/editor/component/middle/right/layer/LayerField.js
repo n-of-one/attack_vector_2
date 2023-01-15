@@ -16,7 +16,7 @@ const renderInput = (value, readOnly, save, placeholder) => {
     );
 };
 
-export default ({name, size, readOnly, value, save, placeholder, help}) => {
+const LayerField = ({name, size, readOnly, value, save, placeholder, help}) => {
     if (!readOnly) {
         readOnly = false;
     }
@@ -40,8 +40,9 @@ export default ({name, size, readOnly, value, save, placeholder, help}) => {
                 >
                     <span className="badge bg-secondary helpBadge">?</span>
                 </OverlayTrigger>
+            </div>
         </div>
-</div>
-)
-    ;
-};
+    );
+}
+
+export default LayerField;

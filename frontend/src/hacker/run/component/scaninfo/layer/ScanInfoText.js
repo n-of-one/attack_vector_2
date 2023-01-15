@@ -1,7 +1,9 @@
 import React from "react";
 
-export default ({layer}) => {
+const ScanInfoText = ({layer}) => {
     return (
         <></>
     );
 };
+
+export default ScanInfoText;

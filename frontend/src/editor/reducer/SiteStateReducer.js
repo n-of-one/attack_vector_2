@@ -5,7 +5,7 @@ const defaultState = {
     messages: []
 };
 
-export default (state = defaultState, action) => {
+const siteStateReducer = (state = defaultState, action) => {
     switch(action.type) {
         case SERVER_SITE_FULL: return action.data.state;
         case SERVER_UPDATE_SITE_STATE: return action.data;
@@ -13,5 +13,4 @@ export default (state = defaultState, action) => {
     }
 };
 
-
-
+export default siteStateReducer;

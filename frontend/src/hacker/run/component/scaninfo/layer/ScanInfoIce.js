@@ -1,7 +1,7 @@
 import React from "react";
 import Pad from "../../../../../common/component/Pad";
 
-export default ({layer, iceDescription}) => {
+const ScanInfoIce =({layer, iceDescription}) => {
 
     const hackedText = layer.hacked ? "Yes" : "No";
     return (
@@ -12,3 +12,5 @@ export default ({layer, iceDescription}) => {
         </>
     );
 };
+
+export default ScanInfoIce;

@@ -3,8 +3,7 @@ import {findElementById, updateArrayById} from "../../../common/Immutable";
 import {SERVER_LAYER_HACKED} from "../model/HackActions";
 
 const defaultState = {};
-
-export default (state = defaultState, action) => {
+const siteReducer = (state = defaultState, action) => {
     switch (action.type) {
         case SERVER_SCAN_FULL:
             return action.data.site;
@@ -13,7 +12,7 @@ export default (state = defaultState, action) => {
         default:
             return state;
     }
-}
+};
 
 
 const serverIceHacked = (update, site) => {
@@ -26,3 +25,5 @@ const serverIceHacked = (update, site) => {
     const newSite = { ...site, nodes: newNodes };
     return newSite;
 };
+
+export default siteReducer;

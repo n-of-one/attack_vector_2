@@ -1,10 +1,10 @@
 import {combineReducers} from 'redux'
-import MailReducer from "./MailsReducer";
-import CurrentMailReducer from "./CurrentMailReducer";
+import mailReducer from "./MailsReducer";
+import currentMailReducer from "./CurrentMailReducer";
 
 const mailRootReducer = combineReducers({
-    mails: MailReducer,
-    currentMail: CurrentMailReducer,
+    mails: mailReducer,
+    currentMail: currentMailReducer,
 });
 
 export default mailRootReducer;

@@ -45,7 +45,7 @@ const renderPart = (part, i, mapping) => {
     return <span className={style} key={i}>{part}</span>
 };
 
-export default ({input, prompt, syntaxHighlighting}) => {
+const TerminalInput = ({input, prompt, syntaxHighlighting}) => {
     // return (
     //     <div className="terminalLine terminal_input">{prompt} {input}<span className="terminalCaret">&nbsp;</span></div>
     // )
@@ -57,3 +57,5 @@ export default ({input, prompt, syntaxHighlighting}) => {
         </div>
     )
 }
+
+export default TerminalInput;

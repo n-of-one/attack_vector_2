@@ -37,7 +37,7 @@ const renderSpaces = (count) => {
  *
  * 12nbsp;nbsp;
  */
-export default ({ n, p, t}) => {
+const Pad = ({ n, p, t}) => {
 
     if (n !== 0 && !(n) && (!t)) {
         return renderSpaces(p);
@@ -71,3 +71,5 @@ export const zeroPad = (number, totalPositions) => {
 
     return ZEROES.substr(0, (totalPositions - numberPositions)) + number;
 };
+
+export default Pad;

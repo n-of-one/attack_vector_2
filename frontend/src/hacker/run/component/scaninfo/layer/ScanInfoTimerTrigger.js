@@ -1,7 +1,7 @@
 import React from "react";
 import Pad, {zeroPad} from "../../../../../common/component/Pad";
 
-export default ({layer}) => {
+const ScanInfoTimerTrigger =({layer}) => {
 
     const hours = Math.floor(layer.minutes / 60);
     const minutes = layer.minutes % 60;
@@ -18,3 +18,5 @@ export default ({layer}) => {
         </>
     );
 };
+
+export default ScanInfoTimerTrigger;

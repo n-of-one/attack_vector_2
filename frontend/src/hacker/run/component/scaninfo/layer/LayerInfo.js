@@ -7,29 +7,31 @@ import ScanInfoIce from "./ScanInfoIce";
 import ScanInfoTimerTrigger from "./ScanInfoTimerTrigger";
 
 
-const renderLayer = (layer) =>{
+const renderLayer = (layer) => {
     switch (layer.type) {
         case OS:
             return <ScanInfoOs layer={layer}/>;
         case ICE_PASSWORD:
-            return <ScanInfoIce layer={layer} iceDescription="static password" />;
+            return <ScanInfoIce layer={layer} iceDescription="static password"/>;
         case ICE_TANGLE:
-            return <ScanInfoIce layer={layer} iceDescription="tangle" />;
+            return <ScanInfoIce layer={layer} iceDescription="tangle"/>;
         case TEXT:
-            return <ScanInfoText layer={layer} />;
+            return <ScanInfoText layer={layer}/>;
         case TIMER_TRIGGER:
-            return <ScanInfoTimerTrigger layer={layer} />;
+            return <ScanInfoTimerTrigger layer={layer}/>;
         default:
             return <><span className="text-danger">Unknown layer</span></>;
     }
 };
 
-export default ({layer}) => {
+const LayerInfo = ({layer}) => {
     return (
         <>
             <Pad p="3" n={layer.level}/>
             <span className="text-primary">{layer.level}</span>
-            <Pad p="3" />{layer.name}{renderLayer(layer)}<br/>
+            <Pad p="3"/>{layer.name}{renderLayer(layer)}<br/>
         </>
     );
 };
+
+export default LayerInfo;

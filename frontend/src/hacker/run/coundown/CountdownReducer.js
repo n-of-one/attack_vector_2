@@ -8,8 +8,7 @@ const defaultState = {
     eventTriggered: false
 };
 
-
-export default (state = defaultState, action) => {
+const countdownReducer = (state = defaultState, action) => {
 
     switch (action.type) {
         case SERVER_START_COUNTDOWN:
@@ -45,3 +44,5 @@ const processExpireTimer = (state) => {
         eventTriggered: true
     };
 };
+
+export default countdownReducer;

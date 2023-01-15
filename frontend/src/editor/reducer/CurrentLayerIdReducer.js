@@ -1,7 +1,7 @@
 import {SELECT_NODE, SELECT_LAYER, SERVER_ADD_LAYER, SERVER_NODE_UPDATED} from "../EditorActions";
 import {findElementById} from "../../common/Immutable";
 
-export default (state = null, action, currentNodeId, nodes) => {
+const currentLayerIdReducer = (state = null, action, currentNodeId, nodes) => {
     switch(action.type) {
         case SELECT_NODE : return selectLayerFromSelectNode(action.data, nodes);
         case SERVER_ADD_LAYER : return action.data.layer.id;
@@ -26,5 +26,4 @@ const serverNodeUpdated = (layerId, state) => {
     return layerId ? layerId : state;
 };
 
-
-
+export default currentLayerIdReducer;

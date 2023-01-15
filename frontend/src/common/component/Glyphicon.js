@@ -8,10 +8,12 @@ const determineClassName = ({type, name}) => {
     return "glyphicon " + glyphiconFromType(type);
 };
 
-export default (props) => {
+const Glyphicon = (props) => {
     const className = determineClassName(props);
     const size = (props.size) ? props.size : "14px";
     const display = (props.display) ? props.display : "inherit";
 
     return (<span className={className} style={{"fontSize": size, display: display, zIndex: "100", color: props.color }}/>);
 };
+
+export default Glyphicon;

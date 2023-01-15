@@ -3,7 +3,7 @@ import {updateArrayById} from "../../common/Immutable";
 
 const defaultState = [];
 
-export default (state = defaultState, action) => {
+const scansReducer = (state = defaultState, action) => {
     switch(action.type) {
         case SERVER_RECEIVE_USER_SCANS : return action.data;
         case SERVER_UPDATE_SCAN_INFO: return processScanInfoUpdate(state, action.data);
@@ -14,3 +14,5 @@ export default (state = defaultState, action) => {
 const processScanInfoUpdate = (state, scanInfo) => {
     return updateArrayById(scanInfo, state, scanInfo.runId, "runId")
 };
+
+export default scansReducer;

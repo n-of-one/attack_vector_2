@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux'
-import ScansReducer from "./ScansReducer";
+import scansReducer from "./ScansReducer";
 
 const homeRootReducer = combineReducers({
-    scans: ScansReducer,
+    scans: scansReducer,
 });
 
 export default homeRootReducer;

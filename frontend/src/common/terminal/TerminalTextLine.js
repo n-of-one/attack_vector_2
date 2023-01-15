@@ -2,7 +2,7 @@ import React from "react";
 
 
 // const renderLine = (line, index) => {
-export default ({line, index}) => {
+const TerminalTextLine = ({line, index}) => {
     let lineClasses = (line.class) ? line.class : [];
     let classNames = "terminalLine";
     lineClasses.forEach(name => {
@@ -81,3 +81,5 @@ const parseLine = (line) => {
 
     return blocks;
 }
+
+export default TerminalTextLine;

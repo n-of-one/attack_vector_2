@@ -12,7 +12,7 @@ function findProtectedLayer(layers) {
     return -1;
 }
 
-export default ({node}) => {
+const NodeScanInfoLayers = ({node}) => {
 
     const layers = node.layers;
     const rendered = [];
@@ -29,3 +29,5 @@ export default ({node}) => {
     }
     return rendered;
 };
+
+export default NodeScanInfoLayers;

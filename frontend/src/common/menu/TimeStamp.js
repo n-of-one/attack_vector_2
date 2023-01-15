@@ -22,7 +22,7 @@ const renderDate = (timestamp) => {
     return "" + year + "-" + month + "-" + day;
 };
 
-export default ({timestamp}) => {
+const TimeStamp = ({timestamp}) => {
 
     const now = new Date();
     const diffMs = (now - timestamp);
@@ -36,3 +36,5 @@ export default ({timestamp}) => {
 
     return <span>{renderDate(timestamp)} {hours}:{minutes}</span>
 };
+
+export default TimeStamp;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import {BrowserRouter, Routes, Route, Switch, useParams} from 'react-router-dom'
+import {BrowserRouter, Routes, Route, useParams} from 'react-router-dom'
 import GmRoot from "./gm/GmRoot";
 import EditorRoot from "./editor/EditorRoot";
 import Login from "./Login";

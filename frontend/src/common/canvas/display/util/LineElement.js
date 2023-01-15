@@ -1,6 +1,5 @@
 import {fabric} from "fabric";
 import {animate, easeLinear} from "../../CanvasUtils";
-import {TICK_MILLIS} from "../../../Schedule";
 
 
 export default class LineElement {

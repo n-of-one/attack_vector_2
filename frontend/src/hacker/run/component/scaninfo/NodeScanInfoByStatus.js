@@ -49,7 +49,7 @@ function renderError(node, status) {
     return <>Unknown node status: {status} for node: {node.id}.<br/></>
 }
 
-export default ({node, status}) => {
+const NodeScanInfoByStatus = ({node, status}) => {
     switch (status) {
         case DISCOVERED:
             return renderDiscovered();
@@ -65,3 +65,5 @@ export default ({node, status}) => {
             return renderError(node, status);
     }
 };
+
+export default NodeScanInfoByStatus;

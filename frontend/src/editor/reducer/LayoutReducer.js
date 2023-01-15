@@ -6,7 +6,7 @@ const defaultLayout = {
     connectionIds: []
 };
 
-export default (state = defaultLayout, action) => {
+const layoutReducer = (state = defaultLayout, action) => {
     switch(action.type) {
         case SERVER_SITE_FULL: return action.data.layout;
         case SERVER_ADD_NODE: return addNode(action.data, state);
@@ -18,3 +18,5 @@ let addNode = (data, state) => {
     let newNodeIds = [...state.nodeIds, data.id];
     return { ...state, nodeIds: newNodeIds };
 };
+
+export default layoutReducer;
