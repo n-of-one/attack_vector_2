@@ -1,4 +1,3 @@
-import connect from "react-redux/es/connect/connect";
 import {MAIL, SCAN} from "./HackerPages";
 import MailHome from "./mail/MailHome";
 import HackerHome from "./home/HackerHome";
@@ -7,6 +6,7 @@ import Terminal from "../common/terminal/Terminal";
 import MenuBar from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
 import RunPageChooser from "./run/component/RunPageChooser";
+import {connect} from "react-redux";
 
 const dismissScanInfo = (renderScanInfoDismiss, event) => {
     if (!renderScanInfoDismiss) return;

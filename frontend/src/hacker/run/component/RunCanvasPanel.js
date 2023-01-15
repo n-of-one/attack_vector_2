@@ -7,8 +7,8 @@ import {
 import ScanNodeImage from "./RunNodeImage";
 import HackerImage from "../../../common/component/HackerImage";
 import ScanProbeImages from "./ScanProbeImages";
-import connect from "react-redux/es/connect/connect";
 import PatrollerImage from "../../../common/component/PatrollerImage";
+import {connect} from "react-redux";
 
 class RunCanvasPanel extends Component {
 
