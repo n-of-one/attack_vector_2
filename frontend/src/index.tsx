@@ -3,7 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {BrowserRouter, Routes, Route, useParams} from 'react-router-dom'
 import GmRoot from "./gm/GmRoot";
 import EditorRoot from "./editor/EditorRoot";
-import Login from "./Login";
+import {Login} from "./Login";
 import HackerRoot from "./hacker/HackerRoot";
 import Cookies from "js-cookie";
 
@@ -35,18 +35,18 @@ const container = document.getElementById('app') as HTMLDivElement;
 const root = createRoot(container);
 
 const Editor = () => {
-    const { siteId } = useParams();
+    const {siteId} = useParams();
     return (<EditorRoot siteId={siteId}/>);
 }
 
 root.render(
     <BrowserRouter>
         <Routes>
-            <Route path="/login" element = {<Login/>} />
-            <Route path="/hacker" element = {<HackerRoot/>} />
-            <Route path="/gm" element = {<GmRoot/>} />
-            <Route path="/edit/:siteId" element={<Editor />} />
-            <Route path="/" element={<ReRoute />} />
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/hacker" element={<HackerRoot/>}/>
+            <Route path="/gm" element={<GmRoot/>}/>
+            <Route path="/edit/:siteId" element={<Editor/>}/>
+            <Route path="/" element={<ReRoute/>}/>
         </Routes>
     </BrowserRouter>
 );
