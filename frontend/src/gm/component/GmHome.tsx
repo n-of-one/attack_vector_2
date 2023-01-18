@@ -1,23 +1,31 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useSelector} from "react-redux";
 import MenuBar from "../../common/menu/MenuBar";
 import TextInput from "../../common/component/TextInput";
 import {post} from "../../common/RestClient";
 import {notify_fatal} from "../../common/Notification";
-import {fetchSites} from "../FetchSites";
 import SilentLink from "../../common/component/SilentLink";
 import {GmState, useGmDispatch} from "../GmRoot";
 import {GmSite} from "../GmSitesReducer";
+import {RECEIVE_SITES} from "../GmActions";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 
-
 const GmHome = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
-    const dispatch = useGmDispatch;
+    const dispatch = useGmDispatch();
+
+
+    useEffect(() => {
+        fetch("/api/site/")
+            .then(response => response.json())
+            .then(sites => {
+                dispatch({type: RECEIVE_SITES, sites: sites})
+            })
+    });
 
     const edit = (siteName: string) => {
         post({
@@ -25,18 +33,15 @@ const GmHome = () => {
             body: {siteName: siteName},
             ok: ({id}: { id: string }) => {
                 window.open("/edit/" + id);
-                fetchSites(dispatch);
             },
             notok: () => {
                 notify_fatal("Connection to server failed, unable to continue.");
             },
             error: () => {
+                notify_fatal("Connection to server failed, unable to continue.");
             }
         });
     };
-
-
-    document.body.style.backgroundColor = "#222222";
 
 
     return (
@@ -97,7 +102,8 @@ const GmHome = () => {
                                         <tr key={site.id}>
                                             <td className="table-very-condensed"><SilentLink onClick={() => {
                                                 window.open("/edit/" + site.id, site.id);
-                                            }}><>{site.name}</></SilentLink>
+                                            }}><>{site.name}</>
+                                            </SilentLink>
                                             </td>
                                         </tr>);
                                 })
