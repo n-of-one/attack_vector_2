@@ -8,30 +8,30 @@ import HackerRoot from "./hacker/HackerRoot";
 import Cookies from "js-cookie";
 
 
-let ReRoute = (props) => {
+const ReRoute = (): JSX.Element => {
 
     let type = Cookies.get("type");
     if (type === "ADMIN") {
         window.document.location.href = "/gm/";
-        return
+        return (<></>)
     }
     if (type === "GM") {
         window.document.location.href = "/gm/";
-        return
+        return (<></>)
     }
     if (type === "HACKER" || type === "HACKER_MANAGER") {
         window.document.location.href = "/hacker/";
-        return
+        return (<></>)
     }
     console.log("Unknown user type: " + type);
     Cookies.remove("jwt");
     Cookies.remove("type");
     Cookies.remove("roles");
     window.document.location.href = "/login"
-    return (<div />)
+    return (<></>)
 };
 
-const container = document.getElementById('app');
+const container = document.getElementById('app') as HTMLDivElement;
 const root = createRoot(container);
 
 const Editor = () => {

@@ -1,7 +1,13 @@
 The following commands were used to set up the development environment:
 
 npx create-react-app frontend --template typescript --use-npm
+
+npm install --save @types/jest
+npm install --save @types/react
+npm install --save @types/react-dom
+npm install --save @types/node
 npm install --save redux
+npm install --save @reduxjs/toolkit
 npm install --save react-redux
 npm install --save react-router-dom
 npm install --save @types/react-router-dom
