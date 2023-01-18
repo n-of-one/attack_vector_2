@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import pageReducer from "../common/menu/pageReducer";
+import {pageReducer} from "../common/menu/pageReducer";
 import homeRootReducer from "./home/HomeRootReducer";
 import mailRootReducer from "./mail/MailRootReducer";
 import runRootReducer from "./run/RunRootReducer";

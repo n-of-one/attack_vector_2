@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import TextInput from "../../common/component/TextInput";
+import {TextInput} from "../../common/component/TextInput";
 import SilentLink from "../../common/component/SilentLink";
 import {DELETE_SCAN, ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 

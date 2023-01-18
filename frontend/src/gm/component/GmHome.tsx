@@ -1,19 +1,14 @@
 import React, {useEffect} from 'react';
 import {useSelector} from "react-redux";
 import MenuBar from "../../common/menu/MenuBar";
-import TextInput from "../../common/component/TextInput";
+import {TextInput} from "../../common/component/TextInput";
 import {post} from "../../common/RestClient";
 import {notify_fatal} from "../../common/Notification";
 import SilentLink from "../../common/component/SilentLink";
 import {GmState, useGmDispatch} from "../GmRoot";
-import {GmSite} from "../GmSitesReducer";
-import {RECEIVE_SITES} from "../GmActions";
+import {GmSite, RECEIVE_SITES} from "../GmSitesReducer";
 
-/* eslint jsx-a11y/accessible-emoji: 0 */
-/* eslint jsx-a11y/anchor-is-valid: 0*/
-
-
-const GmHome = () => {
+export const GmHome = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
     const dispatch = useGmDispatch();
@@ -79,7 +74,7 @@ const GmHome = () => {
                                        buttonLabel="Create or edit"
                                        buttonClass="btn-info"
                                        save={(siteName: string) => edit(siteName)}
-                                       clearAfterSubmit="true"/>
+                                       clearAfterSubmit={true}/>
 
                         </div>
                     </div>
@@ -119,6 +114,3 @@ const GmHome = () => {
 
     );
 };
-
-
-export default GmHome;

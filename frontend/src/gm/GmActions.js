@@ -1,3 +1,0 @@
-const RECEIVE_SITES = "RECEIVE_SITES";
-
-export {RECEIVE_SITES}

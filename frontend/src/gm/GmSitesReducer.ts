@@ -1,13 +1,10 @@
-import {RECEIVE_SITES} from "./GmActions";
+import {AnyAction} from "redux";
+
+export const RECEIVE_SITES = "RECEIVE_SITES";
 
 export interface GmSite { id: string, name: string }
 
-interface ReceiveSites {
-    type: string,
-    sites: Array<GmSite>
-}
-
-const gmSitesReducer = (state: Array<GmSite> = [], action: ReceiveSites) => {
+export const gmSitesReducer = (state: Array<GmSite> = [], action: AnyAction) => {
     switch (action.type) {
         case RECEIVE_SITES :
             return action.sites;
@@ -15,6 +12,3 @@ const gmSitesReducer = (state: Array<GmSite> = [], action: ReceiveSites) => {
             return state;
     }
 }
-
-
-export default gmSitesReducer;

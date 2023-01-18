@@ -1,14 +1,17 @@
 import React from 'react'
-import GmHome from "./component/GmHome";
+import { GmHome } from "./component/GmHome";
 import {Provider, useDispatch} from 'react-redux'
 import RequiresRole from "../common/RequiresRole";
-import gmReducer from "./GmReducer";
 import {GM_SITES} from "./GmPages";
 import {configureStore} from "@reduxjs/toolkit";
-import {NAVIGATE_PAGE} from "../common/enums/CommonActions";
+import {pageReducer, NAVIGATE_PAGE} from "../common/menu/pageReducer";
+import {gmSitesReducer} from "./GmSitesReducer";
 
 const gmStore = configureStore({
-    reducer: gmReducer
+    reducer: {
+        currentPage: pageReducer,
+        sites: gmSitesReducer,
+    }
 });
 
 export type GmState = ReturnType<typeof gmStore.getState>
@@ -22,10 +25,10 @@ gmStore.dispatch({type: NAVIGATE_PAGE, to: GM_SITES})
 document.body.style.backgroundColor = "#222222";
 
 const GmRoot = () => {
-    return(
+    return (
         <RequiresRole requires="ROLE_SITE_MANAGER">
             <Provider store={gmStore}>
-                <GmHome />
+                <GmHome/>
             </Provider>
         </RequiresRole>
     )

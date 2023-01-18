@@ -1,5 +1,5 @@
 import {all, takeEvery} from 'redux-saga/effects'
-import {NAVIGATE_PAGE, SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../common/enums/CommonActions";
+import { SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../common/enums/CommonActions";
 import {
     AUTO_SCAN,
     PROBE_SCAN_NODE,
@@ -53,6 +53,7 @@ import {
     SERVER_PATROLLER_SNAPS_BACK_HACKER,
     SERVER_START_TRACING_PATROLLER,
 } from "./run/coundown/CountdownActions";
+import {NAVIGATE_PAGE} from "../common/menu/pageReducer";
 
 
 const createHackerRootSaga = () => {

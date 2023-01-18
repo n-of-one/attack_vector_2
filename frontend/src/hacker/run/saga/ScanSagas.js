@@ -1,11 +1,11 @@
 import runCanvas from "../component/RunCanvas"
 import webSocketConnection from "../../../common/WebSocketConnection";
-import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {SCAN} from "../../HackerPages";
 import { select, put } from 'redux-saga/effects'
 import {HIDE_NODE_INFO, SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../model/ScanActions";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalActions";
 import terminalManager from "../../../common/terminal/TerminalManager";
+import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
 const getCurrentPage = (state) => state.currentPage;
 

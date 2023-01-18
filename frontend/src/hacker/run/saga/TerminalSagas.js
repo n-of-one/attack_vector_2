@@ -1,7 +1,7 @@
 import webSocketConnection from "../../../common/WebSocketConnection";
 import {select, put} from 'redux-saga/effects'
-import {NAVIGATE_PAGE} from "../../../common/enums/CommonActions";
 import {HACKER_HOME, SCAN} from "../../HackerPages";
+import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
 const getRunId = (state) => state.run.scan.runId;
 const getCurrentPage = (state) => state.currentPage;
