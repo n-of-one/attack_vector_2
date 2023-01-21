@@ -1,20 +1,27 @@
-import React, {useEffect} from 'react';
-import {useSelector} from "react-redux";
+import React, {useState} from 'react';
+import {useDispatch, useSelector} from "react-redux";
 import MenuBar from "../../common/menu/MenuBar";
 import {TextInput} from "../../common/component/TextInput";
 import {post} from "../../common/RestClient";
 import {notify_fatal} from "../../common/Notification";
 import SilentLink from "../../common/component/SilentLink";
-import {GmState, useGmDispatch} from "../GmRoot";
+import {GmState} from "../GmRoot";
 import {GmSite, RECEIVE_SITES} from "../GmSitesReducer";
+
+const useConstructor = (callBack: () => void) => {
+    const [hasBeenCalled, setHasBeenCalled] = useState(false);
+    if (hasBeenCalled) return;
+    callBack();
+    setHasBeenCalled(true);
+}
 
 export const GmHome = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
-    const dispatch = useGmDispatch();
+    const dispatch = useDispatch();
 
 
-    useEffect(() => {
+    useConstructor(() => {
         fetch("/api/site/")
             .then(response => response.json())
             .then(sites => {

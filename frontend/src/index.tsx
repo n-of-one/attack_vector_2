@@ -2,7 +2,7 @@ import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter, Routes, Route, useParams} from 'react-router-dom'
 import GmRoot from "./gm/GmRoot";
-import EditorRoot from "./editor/EditorRoot";
+import {EditorRoot} from "./editor/EditorRoot";
 import {Login} from "./Login";
 import HackerRoot from "./hacker/HackerRoot";
 import Cookies from "js-cookie";
@@ -36,7 +36,7 @@ const root = createRoot(container);
 
 const Editor = () => {
     const {siteId} = useParams();
-    return (<EditorRoot siteId={siteId}/>);
+    return (<EditorRoot siteId={siteId as string}/>);
 }
 
 root.render(

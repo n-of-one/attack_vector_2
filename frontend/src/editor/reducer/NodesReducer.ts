@@ -8,8 +8,54 @@ import {
     SERVER_UPDATE_LAYER
 } from "../EditorActions";
 import {findElementById, updateArrayById} from "../../common/Immutable";
+import {AnyAction} from "redux";
 
-const NodesReducer = (state = [], action) => {
+export enum NodeType {
+    TRANSIT_1 = "TRANSIT_1",
+    TRANSIT_2 = "TRANSIT_2",
+    TRANSIT_3 = "TRANSIT_3",
+    TRANSIT_4 = "TRANSIT_4",
+    SYSCON = "SYSCON",
+    DATA_STORE = "DATA_STORE",
+    PASSCODE_STORE = "PASSCODE_STORE",
+    RESOURCE_STORE = "RESOURCE_STORE",
+    ICE_1 = "ICE_1",
+    ICE_2 = "ICE_2",
+    ICE_3 = "ICE_3",
+    UNHACKABLE = "UNHACKABLE",
+    MANUAL_1 = "MANUAL_1",
+    MANUAL_2 = "MANUAL_2",
+    MANUAL_3 = "MANUAL_3",
+}
+
+export enum LayerType {
+    OS= "OS",
+    TEXT= "TEXT",
+    TIMER_TRIGGER= "TIMER_TRIGGER",
+    ICE_PASSWORD= "ICE_PASSWORD",
+    ICE_TANGLE= "ICE_TANGLE",
+}
+
+export interface Layer {
+    id: string
+    type: LayerType
+    level: number
+    name: string
+    note: string
+}
+
+export interface Node {
+    id: String,
+    siteId: String,
+    type: NodeType,
+    x: number,
+    y: number,
+    ice: boolean,
+    layers: Array<Layer>,
+    networkId: String
+}
+
+const NodesReducer = (state: Array<Node> = [], action: AnyAction) => {
     switch (action.type) {
         case SERVER_SITE_FULL:
             return action.data.nodes;
@@ -31,19 +77,20 @@ const NodesReducer = (state = [], action) => {
     }
 };
 
-const addNode = (data, nodeList) => {
+const addNode = (data: Node, nodeList: Array<Node>): Array<Node> => {
     const node = {...data, connections: []};
     return [...nodeList, node];
 };
 
 
-const moveNode = (data, nodeList) => {
+
+const moveNode = (data: {nodeId: string, x: number, y: number}, nodeList: Array<Node>) => {
     const newNodeData = {x: data.x, y: data.y};
     return updateArrayById(newNodeData, nodeList, data.nodeId);
 };
 
 
-const serverUpdateLayer = (update, nodes) => {
+const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: Layer}, nodes: Array<Node>) => {
     const node = findElementById(nodes, update.nodeId);
     const newLayers = updateArrayById(update.layer, node.layers, update.layerId);
 
@@ -54,15 +101,13 @@ const serverUpdateLayer = (update, nodes) => {
 };
 
 
-
-
-const serverUpdateNetworkId = (update, nodes) => {
+const serverUpdateNetworkId = (update: {nodeId: string,  networkId: string}, nodes: Array<Node>) => {
     const newNodeData = {networkId: update.networkId};
     const newNodes = updateArrayById(newNodeData, nodes, update.nodeId);
     return newNodes;
 };
 
-const serverAddLayer = (data, nodes) => {
+const serverAddLayer = (data: {nodeId: string, layer: Layer}, nodes: Array<Node>) => {
     const node = findElementById(nodes, data.nodeId);
     const layer = data.layer;
     const newLayers = [...node.layers, layer];
@@ -74,10 +119,10 @@ const serverAddLayer = (data, nodes) => {
 
 };
 
-const serverRemoveLayer = (node, nodes) => {
+const serverRemoveLayer = (node: Node, nodes: Array<Node>) => {
     const newNodes = updateArrayById(node, nodes, node.id);
     return newNodes;
 };
 
 
-export { NodesReducer }
+export {NodesReducer}

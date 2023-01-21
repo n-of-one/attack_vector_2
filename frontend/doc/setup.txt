@@ -18,7 +18,9 @@ npm install --save webstomp-client
 npm install --save js-cookie
 npm install --save @types/js-cookie
 npm install --save react-redux-datatable
-nnpm install --save react-bootstrap bootstrap
+npm install --save react-bootstrap bootstrap
+npm install --save-dev redux-devtools-extension
+npm install --save-dev @types/webpack-env
 
 add the line
   ,"proxy": "http://localhost:8080"
