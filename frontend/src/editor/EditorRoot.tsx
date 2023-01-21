@@ -1,21 +1,14 @@
 import React, {Component} from 'react';
 import {Provider} from "react-redux";
-import EditorHome from "./component/EditorHome";
+import {EditorHome} from "./component/EditorHome";
 import createSagas from "./EditorRootSaga";
 import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import editorRootReducer, {editorRootDefaultState, EditorState} from "./EditorRootReducer";
-import {applyMiddleware, compose, createStore, Reducer, Store} from "redux";
+import {Reducer, Store} from "redux";
 import {REQUEST_SITE_FULL, SERVER_SITE_FULL} from "./EditorActions";
 import RequiresRole from "../common/RequiresRole";
 import webSocketConnection from "../common/WebSocketConnection";
-import {configureStore, getDefaultMiddleware} from "@reduxjs/toolkit";
-import {composeWithDevTools} from "redux-devtools-extension";
-
-// declare global {
-//     interface Window {
-//         __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
-//     }
-// }
+import {configureStore} from "@reduxjs/toolkit";
 
 interface Props {
     siteId: string,
@@ -44,7 +37,7 @@ export class EditorRoot extends Component<Props> {
         document.body.style.fontSize = "14px";
 
         const initState = editorRootDefaultState
-        initState.siteData.id = props.siteId
+        initState.siteData.siteId = props.siteId
 
         const sagaMiddleware = createSagaMiddleware() as SagaMiddleware<EditorState>;
         const developmentServer: boolean = process.env.NODE_ENV === "development";

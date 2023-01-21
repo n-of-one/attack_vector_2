@@ -23,8 +23,8 @@ export interface EditorState {
 
 }
 
-export const editorRootDefaultState = {
-    siteData: { ...siteDataDefaultState, id: "to be overwritten"},
+export const editorRootDefaultState: EditorState = {
+    siteData: { ...siteDataDefaultState},
     layout: defaultLayout,
     dragAndDrop: defaultDragAndDropState,
     theme: "frontier",
