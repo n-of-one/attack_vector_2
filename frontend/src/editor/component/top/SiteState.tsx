@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect, useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import SilentLink from "../../../common/component/SilentLink";
 import editorCanvas from "../middle/middle/EditorCanvas";
 import {SELECT_LAYER} from "../../EditorActions";

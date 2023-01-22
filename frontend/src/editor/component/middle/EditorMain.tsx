@@ -1,23 +1,15 @@
 import React from 'react';
-import {connect} from "react-redux";
-import NodesPanel from "./left/NodesPanel";
+import {useDispatch, useSelector} from "react-redux";
+import {NodesPanel} from "./left/NodesPanel";
 import EditCanvasPanel from "./middle/EditCanvasPanel";
 import DetailPanel from "./right/DetailPanel";
+import {EditorState} from "../../EditorRootReducer";
 
-let mapStateToProps = (state) => {
-    return {
-        dragAndDropState: state.dragAndDrop,
-    };
-};
+export const EditorMain = () =>{
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        dispatch: dispatch
-    }
-};
+        const dragAndDropState = useSelector((state: EditorState) => state.dragAndDrop );
+        const dispatch = useDispatch();
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-    ({dragAndDropState, dispatch}) => {
         return (
         <>
             <div className="row editorRow">
@@ -27,4 +19,4 @@ export default connect(mapStateToProps, mapDispatchToProps)(
             </div>
         </>
         );
-    });
+    }

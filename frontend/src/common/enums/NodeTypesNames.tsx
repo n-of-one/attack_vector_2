@@ -1,3 +1,9 @@
+
+export interface NodeFileType {
+    name: string,
+    dir: string
+}
+
 const TRANSIT_1 = { name: "transit_1", dir: "reg"};
 const TRANSIT_2 = { name: "transit_2", dir: "reg"};
 const TRANSIT_3 = { name: "transit_3", dir: "reg"};
@@ -19,7 +25,7 @@ const all = {
     PASSCODE_STORE, RESOURCE_STORE, ICE_1, ICE_2, ICE_3,
     UNHACKABLE, MANUAL_1, MANUAL_2, MANUAL_3};
 
-const toType = (name) => {
+const toType = (name: string) => {
     const match = Object.entries(all).find(
         ([key, _]) => { return key === name }
     );

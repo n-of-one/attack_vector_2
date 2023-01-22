@@ -1,5 +1,5 @@
 import React from 'react';
-import EditorMain from "./middle/EditorMain";
+import {EditorMain} from "./middle/EditorMain";
 import {EditorTop} from "./top/EditorTop";
 import EditorBottom from "./bottom/EditorBottom";
 
