@@ -58,6 +58,7 @@ export const TextSaveInput = (props: Props) => {
     };
 
     const handleBlur = () => {
+        console.log("Blur, value:" + value + " , props.value:" + props.value);
         if (value !== props.value) {
             props.save(value);
             setSaving(true);

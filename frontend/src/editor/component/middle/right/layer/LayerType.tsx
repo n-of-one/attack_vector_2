@@ -4,9 +4,9 @@ import SilentLink from "../../../../../common/component/SilentLink";
 import Glyphicon from "../../../../../common/component/Glyphicon";
 import {OS} from "../../../../../common/enums/LayerTypes";
 import {REMOVE_LAYER} from "../../../../EditorActions";
-import {EditorLayerDetails, Node} from "../../../../reducer/NodesReducer";
+import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
 
-const renderRemove = (node: Node, layer: EditorLayerDetails, remove: (nodeId: string, layerId: string) => void) => {
+const renderRemove = (node: NodeI, layer: EditorLayerDetails, remove: (nodeId: string, layerId: string) => void) => {
     if (layer.type === OS) {
         return null;
     }
@@ -20,7 +20,7 @@ const renderRemove = (node: Node, layer: EditorLayerDetails, remove: (nodeId: st
 };
 
 interface Props {
-    node: Node,
+    node: NodeI,
     layer: EditorLayerDetails,
     typeDisplay: string
 }

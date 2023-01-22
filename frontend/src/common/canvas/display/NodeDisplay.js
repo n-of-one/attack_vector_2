@@ -250,7 +250,7 @@ export default class NodeDisplay {
     }
 
     select() {
-        this.canvas.setActiveObject(this.nodeIcon);
+        this.canvas.setActiveObject(this.nodeIcon).requestRenderAll();
     }
 
     registerHacker(hackerDisplay) {

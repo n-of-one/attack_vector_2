@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.model.db.layer.Layer
+import org.n1.av2.backend.model.db.site.Layout
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.site.*
 
@@ -39,12 +40,16 @@ class EditorService(
     }
 
     fun deleteConnections(siteId: String, nodeId: String) {
+        deleteConnectionsInternal(siteId, nodeId)
+
+        sendSiteFull(siteId)
+    }
+
+    private fun deleteConnectionsInternal(siteId: String, nodeId: String) {
         val layout = layoutService.getBySiteId(siteId)
         val connections = connectionService.findByNodeId(nodeId)
         connectionService.deleteAll(connections)
         layoutService.deleteConnections(layout, connections)
-
-        sendSiteFull(layout.siteId)
     }
 
 
@@ -66,7 +71,7 @@ class EditorService(
     }
 
     fun deleteNode(siteId: String, nodeId: String) {
-        deleteConnections(siteId, nodeId)
+        deleteConnectionsInternal(siteId, nodeId)
         layoutService.deleteNode(siteId, nodeId)
         nodeService.deleteNode(nodeId)
 

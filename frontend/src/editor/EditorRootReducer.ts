@@ -3,7 +3,7 @@ import ThemeReducer from "../common/reducer/ThemeReducer";
 import connectionsReducer, {Connection} from "./reducer/ConnectionsReducer";
 import layoutReducer, {defaultLayout, Layout} from "./reducer/LayoutReducer";
 import {SiteData, siteDataDefaultState, SiteDataReducer} from "./reducer/SiteDataReducer";
-import {Node, NodesReducer} from "./reducer/NodesReducer";
+import {NodeI, NodesReducer} from "./reducer/NodesReducer";
 import currentNodeIdReducer from "./reducer/CurrentNodeIdReducer";
 import currentLayerIdReducer from "./reducer/CurrentLayerIdReducer";
 import siteStateReducer, {defaultState, SiteStateI} from "./reducer/SiteStateReducer";
@@ -14,7 +14,7 @@ export interface EditorState {
     layout: Layout,
     dragAndDrop: DragAndDropState,
     theme: string,
-    nodes: Array<Node>,
+    nodes: Array<NodeI>,
     connections: Array<Connection>,
     currentNodeId: string | null,
     currentLayerId: string | null,

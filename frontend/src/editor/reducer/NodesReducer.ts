@@ -44,7 +44,7 @@ export interface EditorLayerDetails {
     note: string
 }
 
-export interface Node {
+export interface NodeI {
     id: string,
     siteId: string,
     type: NodeType,
@@ -55,7 +55,9 @@ export interface Node {
     networkId: string
 }
 
-const NodesReducer = (state: Array<Node> = [], action: AnyAction) => {
+export interface MoveNodeI {nodeId: string, x: number, y: number}
+
+const NodesReducer = (state: Array<NodeI> = [], action: AnyAction) => {
     switch (action.type) {
         case SERVER_SITE_FULL:
             return action.data.nodes;
@@ -77,20 +79,20 @@ const NodesReducer = (state: Array<Node> = [], action: AnyAction) => {
     }
 };
 
-const addNode = (data: Node, nodeList: Array<Node>): Array<Node> => {
+const addNode = (data: NodeI, nodeList: Array<NodeI>): Array<NodeI> => {
     const node = {...data, connections: []};
     return [...nodeList, node];
 };
 
 
 
-const moveNode = (data: {nodeId: string, x: number, y: number}, nodeList: Array<Node>) => {
+const moveNode = (data: MoveNodeI, nodeList: Array<NodeI>) => {
     const newNodeData = {x: data.x, y: data.y};
     return updateArrayById(newNodeData, nodeList, data.nodeId);
 };
 
 
-const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: EditorLayerDetails}, nodes: Array<Node>) => {
+const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: EditorLayerDetails}, nodes: Array<NodeI>) => {
     const node = findElementById(nodes, update.nodeId);
     const newLayers = updateArrayById(update.layer, node.layers, update.layerId);
 
@@ -101,13 +103,13 @@ const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: Edit
 };
 
 
-const serverUpdateNetworkId = (update: {nodeId: string,  networkId: string}, nodes: Array<Node>) => {
+const serverUpdateNetworkId = (update: {nodeId: string,  networkId: string}, nodes: Array<NodeI>) => {
     const newNodeData = {networkId: update.networkId};
     const newNodes = updateArrayById(newNodeData, nodes, update.nodeId);
     return newNodes;
 };
 
-const serverAddLayer = (data: {nodeId: string, layer: EditorLayerDetails}, nodes: Array<Node>) => {
+const serverAddLayer = (data: {nodeId: string, layer: EditorLayerDetails}, nodes: Array<NodeI>) => {
     const node = findElementById(nodes, data.nodeId);
     const layer = data.layer;
     const newLayers = [...node.layers, layer];
@@ -119,7 +121,7 @@ const serverAddLayer = (data: {nodeId: string, layer: EditorLayerDetails}, nodes
 
 };
 
-const serverRemoveLayer = (node: Node, nodes: Array<Node>) => {
+const serverRemoveLayer = (node: NodeI, nodes: Array<NodeI>) => {
     const newNodes = updateArrayById(node, nodes, node.id);
     return newNodes;
 };

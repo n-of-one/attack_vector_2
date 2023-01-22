@@ -3,10 +3,10 @@ import { useDispatch} from "react-redux";
 import {LayerPanel} from "./LayerPanel";
 import {LayerStrength} from "../../LayerStrength";
 import LayerIceTangle from "../../../../../../../common/model/layer/LayerIceTangle";
-import {EditorLayerDetails, Node} from "../../../../../../reducer/NodesReducer";
+import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer";
 
 interface Props {
-    node: Node,
+    node: NodeI,
     layer: EditorLayerDetails
 }
 

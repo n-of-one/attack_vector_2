@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import MenuBar from "../../common/menu/MenuBar";
 import {TextInput} from "../../common/component/TextInput";
@@ -7,13 +7,9 @@ import {notify_fatal} from "../../common/Notification";
 import SilentLink from "../../common/component/SilentLink";
 import {GmState} from "../GmRoot";
 import {GmSite, RECEIVE_SITES} from "../GmSitesReducer";
+import {useRunOnce} from "../../common/Util";
 
-const useConstructor = (callBack: () => void) => {
-    const [hasBeenCalled, setHasBeenCalled] = useState(false);
-    if (hasBeenCalled) return;
-    callBack();
-    setHasBeenCalled(true);
-}
+
 
 export const GmHome = () => {
 
@@ -21,7 +17,7 @@ export const GmHome = () => {
     const dispatch = useDispatch();
 
 
-    useConstructor(() => {
+    useRunOnce(() => {
         fetch("/api/site/")
             .then(response => response.json())
             .then(sites => {

@@ -3,14 +3,12 @@ import {animate, calcLine} from "../CanvasUtils";
 
 export default class ConnectionDisplay {
 
-    canvas = null;
-    schedule = null;
-
-    connectionIcon = null;
-
-    connectionData = null;
-    fromDisplay= null;
-    toDisplay = null;
+    canvas;
+    schedule;
+    connectionIcon;
+    connectionData;
+    fromDisplay;
+    toDisplay;
 
     constructor(canvas, schedule, connectionData, fromDisplay, toDisplay) {
         this.canvas = canvas;

@@ -31,7 +31,7 @@ export const SiteState = () => {
     const siteState = useSelector((state: EditorState) => state.state)
     const dispatch = useDispatch()
     const navigateToLayer = (nodeId: string, layerId: string) => {
-        editorCanvas.openLayer(nodeId, layerId);
+        editorCanvas.selectNode(nodeId);
         dispatch({type: SELECT_LAYER, layerId: layerId})
     }
 

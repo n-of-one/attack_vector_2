@@ -11,12 +11,12 @@ import {LayerIcePasswordPanel} from "./type/panel/LayerIcePasswordPanel";
 import {LayerIceTanglePanel} from "./type/panel/LayerIceTanglePanel";
 import {LayerTimerTriggerPanel} from "./type/panel/LayerTimerTriggerPanel";
 import {EditorState} from "../../../../EditorRootReducer";
-import {EditorLayerDetails, Node} from "../../../../reducer/NodesReducer";
+import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 
-const renderLayer = (node: Node, layer: EditorLayerDetails) => {
+const renderLayer = (node: NodeI, layer: EditorLayerDetails) => {
 
     switch (layer.type) {
         case null:
@@ -56,7 +56,7 @@ export const NodeDetailsPanel = () => {
         if (state.currentNodeId == null) {
             return {layers: [], currentLayer: null};
         }
-        const node: Node = findElementById(state.nodes, state.currentNodeId);
+        const node: NodeI = findElementById(state.nodes, state.currentNodeId);
         const layer: EditorLayerDetails = findElementById(node.layers, state.currentLayerId);
         return {
             node: node,
