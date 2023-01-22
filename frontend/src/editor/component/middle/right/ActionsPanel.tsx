@@ -1,31 +1,29 @@
 import React from 'react';
-import {useDispatch} from "react-redux";
-import {DELETE_CONNECTIONS, DELETE_NODE, SNAP} from "../../../EditorActions";
 import editorCanvas from "../middle/EditorCanvas";
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
+import {sendDeleteConnections, sendDeleteNode, sendSnap} from "../../../server/ServerClient";
 
 
 export const ActionsPanel = () => {
 
-    const dispatch = useDispatch();
-
     const deleteConnections = () => {
-        let nodeId = editorCanvas.getNodeSelectedId();
+        let nodeId = editorCanvas.getNodeSelectedId()
+
         if (nodeId) {
-            dispatch({type: DELETE_CONNECTIONS, nodeId: nodeId});
+            sendDeleteConnections({nodeId})
         }
-    };
+    }
 
     const deleteNode = () => {
-        let nodeId = editorCanvas.getNodeSelectedId();
+        let nodeId = editorCanvas.getNodeSelectedId()
         if (nodeId) {
-            dispatch({type: DELETE_NODE, nodeId: nodeId});
+            sendDeleteNode({nodeId})
         }
-    };
+    }
 
     const snap = () => {
-        dispatch({type: SNAP});
-    };
+        sendSnap()
+    }
 
     return (
         <span>

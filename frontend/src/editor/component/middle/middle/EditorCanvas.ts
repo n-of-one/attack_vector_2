@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {ADD_CONNECTION, MOVE_NODE, SELECT_NODE} from "../../../EditorActions";
+import {SELECT_NODE} from "../../../EditorActions";
 import {assertNotNullUndef} from "../../../../common/Assert";
 import NodeDisplay from "../../../../common/canvas/display/NodeDisplay";
 import ConnectionDisplay from "../../../../common/canvas/display/ConnectionDisplay";
@@ -8,6 +8,7 @@ import {Connection} from "../../../reducer/ConnectionsReducer";
 import {MoveNodeI, NodeI} from "../../../reducer/NodesReducer";
 import {IEvent} from "fabric/fabric-impl";
 import {delay} from "../../../../common/Util";
+import {sendAddConnection, sendMoveNode} from "../../../server/ServerClient";
 
 interface DisplayNodesById {
     [key: string]: NodeDisplay
@@ -18,10 +19,11 @@ interface DisplayNodesById {
  */
 class EditorCanvas {
 
-    nodeDisplayById:DisplayNodesById = {};
+    siteId: string = "";
+    nodeDisplayById: DisplayNodesById = {};
     connections: ConnectionDisplay[] = [];
     dispatch: Dispatch | null = null;
-    nodeSelected: { data: {id: string } }| null = null;
+    nodeSelected: { data: { id: string } } | null = null;
     canvas: fabric.Canvas | null = null;
 
 
@@ -37,32 +39,43 @@ class EditorCanvas {
         fabric.Object.prototype.originX = "center";
         fabric.Object.prototype.originY = 'center';
 
-        this.canvas.on('object:modified', (event: IEvent<MouseEvent>) => { this.canvasObjectModified(event); });
-        this.canvas.on('selection:created', (event: IEvent<MouseEvent>) => { this.canvasObjectSelected(event); });
-        this.canvas.on('selection:updated', (event: IEvent<MouseEvent>) => { this.canvasObjectSelected(event); });
-        this.canvas.on('selection:cleared', (event: IEvent<MouseEvent>) => { this.canvasObjectDeSelected(event); });
+        this.canvas.on('object:modified', (event: IEvent<MouseEvent>) => {
+            this.canvasObjectModified(event);
+        });
+        this.canvas.on('selection:created', (event: IEvent<MouseEvent>) => {
+            this.canvasObjectSelected(event);
+        });
+        this.canvas.on('selection:updated', (event: IEvent<MouseEvent>) => {
+            this.canvasObjectSelected(event);
+        });
+        this.canvas.on('selection:cleared', () => {
+            this.canvasObjectDeSelected();
+        });
 
 
-        this.canvas.on('object:moving', (event: IEvent<MouseEvent>) => { this.movingNode(event.target?.data.id); });
+        this.canvas.on('object:moving', (event: IEvent<MouseEvent>) => {
+            this.movingNode(event.target?.data.id);
+        });
         this.canvas.selection = false;
     }
 
-    loadSite(siteState: { nodes: NodeI[], connections: Connection[] }) {
-        this.canvas!.getObjects().forEach( (oldObject: any) => {
+    loadSite(siteState: { id: string, nodes: NodeI[], connections: Connection[] }) {
+        this.canvas!.getObjects().forEach((oldObject: any) => {
             this.canvas!.remove(oldObject);
         });
 
         this.nodeDisplayById = {};
         this.connections = [];
         this.nodeSelected = null;
+        this.siteId = siteState.id;
 
-        let { nodes, connections } = siteState;
+        const {nodes, connections} = siteState;
 
-        nodes.forEach( node => {
+        nodes.forEach(node => {
             this.addNode(node);
         });
 
-        connections.forEach( connection => {
+        connections.forEach(connection => {
             this.addConnection(connection);
         });
 
@@ -103,14 +116,15 @@ class EditorCanvas {
     }
 
     canvasObjectModified(event: IEvent<MouseEvent>) {
-        if (!event.target) { return; }
+        if (!event.target) {
+            return;
+        }
 
-        this.dispatch!({type: MOVE_NODE,
-            id: event.target.data.id,
-            x: event.target.left,
-            y: event.target.top
-        });
-        // leads to moveNode
+        const nodeId = event.target.data.id;
+        const x = event.target.left!;
+        const y = event.target.top!
+
+        sendMoveNode({nodeId, x, y});
     }
 
     moveNode(action: MoveNodeI) {
@@ -123,31 +137,33 @@ class EditorCanvas {
         this.movingNode(nodeId);
     }
 
-    movingNode(nodeId? : string) {
-        if (!nodeId) { return; }
+    movingNode(nodeId?: string) {
+        if (!nodeId) {
+            return;
+        }
 
         const nodeDisplay = this.nodeDisplayById[nodeId];
         nodeDisplay.moving();
 
-        this.connections.forEach( connection => {
+        this.connections.forEach(connection => {
             if (connection.connectionData.fromId === nodeId || connection.connectionData.toId === nodeId) {
                 connection.endPointsMoved();
             }
         });
 
         this.render();
-   }
+    }
 
-   getNodeSelectedId() {
+    getNodeSelectedId() {
         let selectedObject = this.canvas!.getActiveObject();
         if (selectedObject && selectedObject.get("type") === "node") {
             return selectedObject.data.id;
         }
         return null;
-   }
+    }
 
     canvasObjectSelected(event: IEvent<MouseEvent>) {
-        let selectedObjects  =  event.selected;
+        let selectedObjects = event.selected;
 
         if (!selectedObjects || selectedObjects.length === 0) {
             console.log("Selected nothing?: ");
@@ -162,22 +178,25 @@ class EditorCanvas {
         }
 
         if (this.nodeSelected != null && event.e && event.e.ctrlKey) {
-            this.dispatch!({type: ADD_CONNECTION, fromId: this.nodeSelected.data.id, toId: selectedObject.data.id });
-            this.nodeSelected = selectedObject as { data: {id: string}}
-        }
-        else {
-            this.nodeSelected = selectedObject as { data: {id: string}}
+
+            sendAddConnection({
+                fromId: this.nodeSelected.data.id,
+                toId: selectedObject.data.id
+            })
+            this.nodeSelected = selectedObject as { data: { id: string } }
+        } else {
+            this.nodeSelected = selectedObject as { data: { id: string } }
         }
 
         this.dispatch!({type: SELECT_NODE, data: selectedObject.data.id})
     }
 
-    canvasObjectDeSelected(event: IEvent<MouseEvent>) {
+    canvasObjectDeSelected() {
         this.nodeSelected = null;
-        delay(() => this.dispatch!({type: SELECT_NODE, data: null}) )
+        delay(() => this.dispatch!({type: SELECT_NODE, data: null}))
     }
 
-    updateNetworkId({nodeId, value} : {nodeId: string, value: string}) {
+    updateNetworkId({nodeId, value}: { nodeId: string, value: string }) {
         const display = this.nodeDisplayById[nodeId];
         display.updateNetworkId(value);
     }

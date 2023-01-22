@@ -11,7 +11,7 @@ export const SiteData = () => {
     const siteData = useSelector((state: EditorState) => state.siteData)
 
     const save = (field: string, value: string) => {
-        sendSiteDataChanged(siteData.siteId, field, value);
+        sendSiteDataChanged({ field, value});
     }
 
     return (

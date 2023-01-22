@@ -1,4 +1,4 @@
-import {EDIT_LAYER_DATA} from "../../../editor/EditorActions";
+import {sendEditLayerData} from "../../../editor/server/ServerClient";
 
 const NOTE = "note";
 const NAME = "name";
@@ -16,7 +16,7 @@ export default class Layer {
 
 
     _save(key, value) {
-        this.dispatch({type: EDIT_LAYER_DATA, nodeId: this.node.id, layerId: this.layer.id, key: key, value: value});
+        sendEditLayerData( {nodeId: this.node.id, layerId: this.layer.id, key: key, value: value})
     }
 
     saveNote(value) {

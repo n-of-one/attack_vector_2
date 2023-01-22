@@ -1,20 +1,4 @@
 import editorCanvas from "../component/middle/middle/EditorCanvas";
-import webSocketConnection from "../../common/WebSocketConnection";
-import {select} from 'redux-saga/effects'
-
-const getSiteId = (state) => state.siteData.siteId;
-
-
-function* dropNodeSaga(action) {
-    const siteId = yield select(getSiteId);
-    let x = action.x - action.dragAndDropState.dx;
-    let y = action.y - action.dragAndDropState.dy;
-    let nodeType = action.dragAndDropState.type.name.toUpperCase();
-    let payload = {siteId: siteId, x, y, type: nodeType};
-    let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/editor/addNode", body);
-    yield
-}
 
 function* serverNodeAddedSaga(action) {
     editorCanvas.addNode(action.data);
@@ -22,60 +6,17 @@ function* serverNodeAddedSaga(action) {
     yield
 }
 
-
-function* moveNodeSaga(action) {
-    const siteId = yield select(getSiteId);
-    let payload = {siteId: siteId, nodeId: action.id, x: action.x, y: action.y};
-    let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/editor/moveNode", body);
-    yield
-}
-
 function* serverMoveNodeSaga(action) {
     yield editorCanvas.moveNode(action.data);
-}
-
-function* addConnectionSaga(action) {
-    const siteId = yield select(getSiteId);
-    let payload = {siteId: siteId, fromId: action.fromId, toId: action.toId};
-    let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/editor/addConnection", body);
-    yield
 }
 
 function* serverAddConnectionSaga(action) {
     yield editorCanvas.addConnection(action.data);
 }
 
-function* deleteConnections(action) {
-    const siteId = yield select(getSiteId);
-    let payload = {siteId: siteId, nodeId: action.nodeId};
-    let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/editor/deleteConnections", body);
-    yield
-}
-
-function* deleteNode(action) {
-    const siteId = yield select(getSiteId);
-    let payload = {siteId: siteId, nodeId: action.nodeId};
-    let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/editor/deleteNode", body);
-    yield
-}
-
-function* snap(action) {
-    const siteId = yield select(getSiteId);
-    let payload = {siteId: siteId};
-    let body = JSON.stringify(payload);
-    webSocketConnection.send("/av/editor/snap", body);
-    yield
-}
-
 
 export {
-    dropNodeSaga, serverNodeAddedSaga,
-    moveNodeSaga, serverMoveNodeSaga,
-    addConnectionSaga, serverAddConnectionSaga,
-    deleteConnections, deleteNode, snap
+    serverNodeAddedSaga,
+    serverMoveNodeSaga,
+    serverAddConnectionSaga
 };
-

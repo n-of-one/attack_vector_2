@@ -1,5 +1,6 @@
-import {EDIT_NETWORK_ID} from "../../../editor/EditorActions";
 import Layer from "./Layer";
+import editorCanvas from "../../../editor/component/middle/middle/EditorCanvas";
+import {sendEditNetworkId} from "../../../editor/server/ServerClient";
 
 const NODE_NAME = "nodeName";
 
@@ -13,7 +14,8 @@ export default class LayerOs extends Layer {
     }
 
     saveNetworkId(value) {
-        this.dispatch({type: EDIT_NETWORK_ID, nodeId: this.node.id, value: value});
+        sendEditNetworkId({nodeId: this.node.id, value})
+        editorCanvas.updateNetworkId({nodeId: this.node.id, value})
     };
 
     saveNodeName(value) {

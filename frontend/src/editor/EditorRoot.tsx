@@ -14,10 +14,11 @@ interface Props {
     siteId: string,
 }
 
+export let editorSiteId: string = null as unknown as string;
+
 export class EditorRoot extends Component<Props> {
 
     errorMessage: string | null
-    siteId: string ;
     store: Store;
 
     constructor(props: Props) {
@@ -25,9 +26,9 @@ export class EditorRoot extends Component<Props> {
 
         console.log("constructing editorRoot")
         this.errorMessage = null;
-        this.siteId = props.siteId;
+        editorSiteId = props.siteId;
 
-        if (!this.siteId.startsWith("site-")) {
+        if (!props.siteId.startsWith("site-")) {
             this.errorMessage = "Cannot enter site name directly in URL";
             this.state = { initSuccess: false };
             this.store = null as unknown as Store;
@@ -50,8 +51,8 @@ export class EditorRoot extends Component<Props> {
         });
 
         webSocketConnection.create(this.store, () => {
-            webSocketConnection.subscribe('/topic/site/' + this.siteId);
-            webSocketConnection.send("/av/editor/siteFull", this.siteId);
+            webSocketConnection.subscribe('/topic/site/' + props.siteId);
+            webSocketConnection.send("/av/editor/siteFull", props.siteId);
         }, SERVER_SITE_FULL);
 
         const editorRootSaga = createSagas();

@@ -1,8 +1,7 @@
 import React from 'react';
-import {useDispatch} from "react-redux";
-import {SWAP_LAYERS} from "../../../../EditorActions";
 import SilentLink from "../../../../../common/component/SilentLink";
 import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
+import {sendSwapLayers} from "../../../../server/ServerClient";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -13,10 +12,8 @@ interface Props {
 
 export const LayerLevel = ({node, layer}: Props) => {
 
-    const dispatch = useDispatch()
-
     const swap = (node: NodeI, layer: EditorLayerDetails, level: number) => {
-        dispatch({type: SWAP_LAYERS, nodeId: node.id, fromId: layer.id, toId: node.layers[level].id});
+        sendSwapLayers({nodeId: node.id, fromId: layer.id, toId: node.layers[level].id})
     };
 
     const up = (node: NodeI, layer: EditorLayerDetails) => swap(node, layer, layer.level - 1)

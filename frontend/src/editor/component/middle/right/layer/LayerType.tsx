@@ -1,18 +1,17 @@
 import React from 'react';
-import { useDispatch} from "react-redux";
 import SilentLink from "../../../../../common/component/SilentLink";
 import Glyphicon from "../../../../../common/component/Glyphicon";
 import {OS} from "../../../../../common/enums/LayerTypes";
-import {REMOVE_LAYER} from "../../../../EditorActions";
 import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
+import {sendRemoveLayer} from "../../../../server/ServerClient";
 
-const renderRemove = (node: NodeI, layer: EditorLayerDetails, remove: (nodeId: string, layerId: string) => void) => {
+const renderRemove = (layer: EditorLayerDetails, remove: () => void) => {
     if (layer.type === OS) {
         return null;
     }
     return (
         <span className="pull-right" style={{display: "block"}}>
-            <SilentLink onClick={() => remove(node.id, layer.id)}>
+            <SilentLink onClick={() => remove()}>
                 <Glyphicon name="glyphicon-remove" size="18px" display="block"/>
             </SilentLink>
         </span>
@@ -26,8 +25,9 @@ interface Props {
 }
 export const LayerType = ({node, layer, typeDisplay}: Props) => {
 
-    const dispatch = useDispatch();
-    const remove = (nodeId: string, layerId: string) => dispatch({type: REMOVE_LAYER, nodeId: nodeId, layerId: layerId});
+    const remove = () => {
+        sendRemoveLayer({nodeId: node.id, layerId: layer.id})
+    }
 
     return (
         <div className="row form-group layerFieldTopRow">
@@ -35,7 +35,7 @@ export const LayerType = ({node, layer, typeDisplay}: Props) => {
             <div className="col-lg-8">
                 <div className="strong layer_text_label text_gold d-flex justify-content-between">
                     <span>{typeDisplay}</span>
-                    <span>{renderRemove(node, layer, remove)}</span>
+                    <span>{renderRemove(layer, remove)}</span>
                 </div>
             </div>
         </div>

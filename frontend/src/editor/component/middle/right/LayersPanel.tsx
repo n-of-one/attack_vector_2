@@ -1,21 +1,20 @@
 import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {ADD_LAYER} from "../../../EditorActions";
+import {useSelector} from "react-redux";
 import {
     CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH, ICE_TANGLE,
     ICE_UNHACKABLE, ICE_WORD_SEARCH, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER
 } from "../../../../common/enums/LayerTypes";
 import Glyphicon from "../../../../common/component/Glyphicon";
 import {EditorState} from "../../../EditorRootReducer";
+import {sendAddLayer} from "../../../server/ServerClient";
 
 export const LayersPanel = () => {
 
-    const dispatch = useDispatch()
     const currentNodeId = useSelector((state: EditorState) => state.currentNodeId)
 
     const add = (type: string, implemented?: boolean) => {
         if (implemented && currentNodeId != null) {
-            dispatch({type: ADD_LAYER, layerType: type, nodeId: currentNodeId})
+            sendAddLayer({layerType: type, nodeId: currentNodeId})
         }
     }
 

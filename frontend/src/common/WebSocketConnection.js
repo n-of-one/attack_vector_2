@@ -134,7 +134,8 @@ class WebSocketConnection {
     }
 
     send(path, data) {
-        this.client.send(path, data);
+        const payload =  (typeof data === 'object') ? JSON.stringify(data) : data
+        this.client.send(path, payload);
     }
 
     /** Ignore certain actions until an action with a specific type is received.
