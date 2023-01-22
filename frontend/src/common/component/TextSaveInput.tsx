@@ -19,7 +19,7 @@ The key needs to be set at a higher level, where we have context to base this ke
  */
 
 interface Props {
-    id: string,
+    id?: string,
     value: string,
     placeholder?: string,
     type?: string, // textArea or undefined for textInput

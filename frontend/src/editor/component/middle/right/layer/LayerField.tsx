@@ -3,7 +3,7 @@ import {TextSaveInput} from "../../../../../common/component/TextSaveInput";
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 
-const renderInput = (value, readOnly, save, placeholder) => {
+const renderInput = (value: string, readOnly: boolean, save: (value: string) => void, placeholder?: string) => {
     if (readOnly) {
         return (
             <span><input type="text" className="form-control input-sm" disabled={readOnly} value={value}/></span>
@@ -16,7 +16,17 @@ const renderInput = (value, readOnly, save, placeholder) => {
     );
 };
 
-const LayerField = ({name, size, readOnly, value, save, placeholder, help}) => {
+interface Props {
+    name: string,
+    size: string,
+    readOnly?: boolean,
+    value: string,
+    save: (value: string) => void,
+    placeholder?: string,
+    help: string
+}
+
+const LayerField = ({name, size, readOnly, value, save, placeholder, help} : Props) => {
     if (!readOnly) {
         readOnly = false;
     }
