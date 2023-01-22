@@ -9,7 +9,6 @@ import {
     EDIT_LAYER_DATA,
     EDIT_SITE_DATA,
     MOVE_NODE, REMOVE_LAYER,
-    REQUEST_SITE_FULL,
     SERVER_ADD_CONNECTION,
     SERVER_ADD_NODE,
     SERVER_MOVE_NODE,
@@ -20,7 +19,7 @@ import {
     addConnectionSaga, deleteConnections, deleteNode, dropNodeSaga, moveNodeSaga, serverAddConnectionSaga,
     serverMoveNodeSaga, serverNodeAddedSaga, snap
 } from "./saga/NodeSagas";
-import {editSiteDataSaga, requestSiteFullSaga, serverSiteFullSaga} from "./saga/SiteDataSagas";
+import {serverSiteFullSaga} from "./saga/SiteDataSagas";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION} from "../common/enums/CommonActions";
 import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga} from "../common/saga/ServerSagas";
 import {addLayer, editNetworkId, editLayerData, removeLayer, swapLayers} from "./saga/LayerSagas";
@@ -34,7 +33,6 @@ const createSagas = () => {
         yield takeEvery(SERVER_FORCE_DISCONNECT, serverForceDisconnectSaga);
         yield takeEvery(SERVER_ERROR, serverErrorSaga);
 
-        yield takeEvery(REQUEST_SITE_FULL, requestSiteFullSaga);
         yield takeEvery(SERVER_SITE_FULL, serverSiteFullSaga);
 
         yield takeEvery(DRAG_DROP_END, dropNodeSaga);
@@ -45,8 +43,6 @@ const createSagas = () => {
 
         yield takeEvery(ADD_CONNECTION, addConnectionSaga);
         yield takeEvery(SERVER_ADD_CONNECTION, serverAddConnectionSaga);
-
-        yield takeEvery(EDIT_SITE_DATA, editSiteDataSaga);
 
         yield takeEvery(DELETE_CONNECTIONS, deleteConnections);
         yield takeEvery(DELETE_NODE, deleteNode);

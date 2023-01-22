@@ -2,7 +2,10 @@ import {DRAG_DROP_START} from "../EditorActions";
 import {AnyAction} from "redux";
 
 export interface DragAndDropState {
-
+    type: string,
+    dx: number,
+    dy: number,
+    ice: boolean
 }
 
 export const defaultDragAndDropState: DragAndDropState = {

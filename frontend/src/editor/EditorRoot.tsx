@@ -5,7 +5,7 @@ import createSagas from "./EditorRootSaga";
 import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import editorRootReducer, {editorRootDefaultState, EditorState} from "./EditorRootReducer";
 import {Reducer, Store} from "redux";
-import {REQUEST_SITE_FULL, SERVER_SITE_FULL} from "./EditorActions";
+import {SERVER_SITE_FULL} from "./EditorActions";
 import RequiresRole from "../common/RequiresRole";
 import webSocketConnection from "../common/WebSocketConnection";
 import {configureStore} from "@reduxjs/toolkit";
@@ -51,7 +51,7 @@ export class EditorRoot extends Component<Props> {
 
         webSocketConnection.create(this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + this.siteId);
-            this.store.dispatch({type: REQUEST_SITE_FULL, siteId: this.siteId});
+            webSocketConnection.send("/av/editor/siteFull", this.siteId);
         }, SERVER_SITE_FULL);
 
         const editorRootSaga = createSagas();

@@ -19,8 +19,6 @@ export interface EditorState {
     currentNodeId: string | null,
     currentLayerId: string | null,
     state : SiteStateI
-
-
 }
 
 export const editorRootDefaultState: EditorState = {
@@ -34,7 +32,6 @@ export const editorRootDefaultState: EditorState = {
     currentLayerId: null,
     state : defaultState
 };
-
 
 const editorRootReducer = (state:EditorState, action: AnyAction): EditorState => {
     const nodes = (state.nodes) ? state.nodes : []
@@ -50,6 +47,5 @@ const editorRootReducer = (state:EditorState, action: AnyAction): EditorState =>
         state: siteStateReducer(state.state, action)
     }
 };
-
 
 export default editorRootReducer;

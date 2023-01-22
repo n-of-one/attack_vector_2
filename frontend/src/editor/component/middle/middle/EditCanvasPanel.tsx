@@ -1,14 +1,15 @@
 import React from 'react';
 import EditorCanvas from "./EditorCanvas";
-import { DRAG_DROP_END } from "../../../EditorActions"
 import {useDispatch, useSelector} from "react-redux";
 import {EditorState} from "../../../EditorRootReducer";
 import {useRunOnceDelayed} from "../../../../common/Util";
+import {sendAddNode} from "../../../server/ServerClient";
 
 
 export const EditCanvasPanel = () => {
 
     const dragAndDropState = useSelector((state: EditorState) => state.dragAndDrop );
+    const siteId = useSelector((state: EditorState) => state.siteData.siteId );
     const dispatch = useDispatch();
 
     useRunOnceDelayed( () => {
@@ -23,7 +24,9 @@ export const EditCanvasPanel = () => {
         let event = syntheticEvent.nativeEvent;
         let x = event.offsetX;
         let y = event.offsetY;
-        dispatch({type: DRAG_DROP_END, x: x, y: y, dragAndDropState: dragAndDropState});
+
+        sendAddNode(x, y, dragAndDropState, siteId);
+        // dispatch({type: DRAG_DROP_END, x: x, y: y, dragAndDropState: dragAndDropState});
         event.preventDefault();
     }
 

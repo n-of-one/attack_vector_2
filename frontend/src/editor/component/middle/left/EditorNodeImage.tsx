@@ -27,7 +27,7 @@ export const EditorNodeImage = (props: Props) => {
         let dx = x - halfWidth;
         let dy = y - halfHeight;
 
-        dispatch({type: DRAG_DROP_START, data: {type: props.type, dx: dx, dy: dy, ice: props.ice}});
+        dispatch({type: DRAG_DROP_START, data: {type: props.type.name, dx: dx, dy: dy, ice: props.ice}});
     };
 
     const dirAndName = props.type.dir + "/" + props.type.name + ".png";

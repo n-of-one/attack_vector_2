@@ -1,17 +1,18 @@
 import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {EDIT_SITE_DATA} from "../../EditorActions";
+import {useSelector} from "react-redux";
 import {TextSaveInput} from "../../../common/component/TextSaveInput";
 import CheckboxSaveInput from "../../../common/component/CheckBoxSaveInput";
 import {EditorState} from "../../EditorRootReducer";
+import {sendSiteDataChanged} from "../../server/ServerClient";
+
 
 export const SiteData = () => {
-    const dispatch = useDispatch()
-    const save = (field: string, value: string) => {
-        dispatch({type: EDIT_SITE_DATA, field: field, value: value});
-    }
 
     const siteData = useSelector((state: EditorState) => state.siteData)
+
+    const save = (field: string, value: string) => {
+        sendSiteDataChanged(siteData.siteId, field, value);
+    }
 
     return (
         <span>

@@ -6,7 +6,7 @@ export interface SiteData {
     siteId: string,
     name: string,
     description: string,
-    creator: string | null
+    creator: string
     hackTime: string
     startNodeNetworkId: string
     hackable: boolean
@@ -17,7 +17,7 @@ const siteDataDefaultState: SiteData = {
     siteId: "",
     name: "non name yet",
     description: "",
-    creator: null,
+    creator: "",
     hackTime: "-",
     startNodeNetworkId: "00",
     hackable: false
