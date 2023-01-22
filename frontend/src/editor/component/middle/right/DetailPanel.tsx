@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActionsPanel} from "./ActionsPanel";
-import NodeDetailsPanel from "./layer/NodeDetailsPanel";
+import {NodeDetailsPanel} from "./layer/NodeDetailsPanel";
 import {LayersPanel} from "./LayersPanel";
 
 export const DetailPanel = () => {

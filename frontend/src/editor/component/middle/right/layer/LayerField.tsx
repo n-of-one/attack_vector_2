@@ -3,7 +3,7 @@ import {TextSaveInput} from "../../../../../common/component/TextSaveInput";
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 
-const renderInput = (value: string, readOnly: boolean, save: (value: string) => void, placeholder?: string) => {
+const renderInput = (value: string, readOnly: boolean, save?: (value: string) => void, placeholder?: string) => {
     if (readOnly) {
         return (
             <span><input type="text" className="form-control input-sm" disabled={readOnly} value={value}/></span>
@@ -11,7 +11,7 @@ const renderInput = (value: string, readOnly: boolean, save: (value: string) => 
     }
     return (
         <TextSaveInput className="form-control input-sm" placeholder={placeholder} value={value}
-                       save={value => save(value)}/>
+                       save={value => save!(value)}/>
 
     );
 };
@@ -21,7 +21,7 @@ interface Props {
     size: string,
     readOnly?: boolean,
     value: string,
-    save: (value: string) => void,
+    save?: (value: string) => void,
     placeholder?: string,
     help: string
 }

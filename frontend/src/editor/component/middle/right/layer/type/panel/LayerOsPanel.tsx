@@ -1,27 +1,25 @@
 import React from 'react';
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import LayerField from "../../LayerField";
-import LayerPanel from "./LayerPanel";
+import {LayerPanel} from "./LayerPanel";
 import LayerOs from "../../../../../../../common/model/layer/LayerOs";
+import {EditorLayerDetails, Node} from "../../../../../../reducer/NodesReducer";
 
-const mapDispatchToProps = (dispatch) => {
-    return {dispatch: dispatch}
-};
+interface Props {
+    node: Node,
+    layer: EditorLayerDetails
+}
+export const LayerOsPanel = ({node, layer} : Props) => {
 
-let mapStateToProps = (state) => {
-    return {};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(
-    ({node, layer, dispatch}) => {
+    const dispatch = useDispatch()
 
     const os = new LayerOs(layer, node, dispatch);
 
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-    const key = param => layer.id + ":" + param;
+    const key = (param: string) => layer.id + ":" + param;
 
     return (
-        <LayerPanel type="OS" layerObject={os}>
+        <LayerPanel typeDisplay="OS" layerObject={os}>
             <LayerField key={key("network")} size="small" name="Network ▣" value={os.networkId} save={value => os.saveNetworkId(value)}
                           help="This is the number shown next to the node icon.
                           It is used by the hacker to navigate through the site."  placeholder="<xx>" />
@@ -30,4 +28,4 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                           It can be used to give a node extra meaning."/>
         </LayerPanel>
     );
-});
+}

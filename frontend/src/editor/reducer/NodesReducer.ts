@@ -36,7 +36,7 @@ export enum LayerType {
     ICE_TANGLE= "ICE_TANGLE",
 }
 
-export interface Layer {
+export interface EditorLayerDetails {
     id: string
     type: LayerType
     level: number
@@ -45,14 +45,14 @@ export interface Layer {
 }
 
 export interface Node {
-    id: String,
-    siteId: String,
+    id: string,
+    siteId: string,
     type: NodeType,
     x: number,
     y: number,
     ice: boolean,
-    layers: Array<Layer>,
-    networkId: String
+    layers: Array<EditorLayerDetails>,
+    networkId: string
 }
 
 const NodesReducer = (state: Array<Node> = [], action: AnyAction) => {
@@ -90,7 +90,7 @@ const moveNode = (data: {nodeId: string, x: number, y: number}, nodeList: Array<
 };
 
 
-const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: Layer}, nodes: Array<Node>) => {
+const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: EditorLayerDetails}, nodes: Array<Node>) => {
     const node = findElementById(nodes, update.nodeId);
     const newLayers = updateArrayById(update.layer, node.layers, update.layerId);
 
@@ -107,7 +107,7 @@ const serverUpdateNetworkId = (update: {nodeId: string,  networkId: string}, nod
     return newNodes;
 };
 
-const serverAddLayer = (data: {nodeId: string, layer: Layer}, nodes: Array<Node>) => {
+const serverAddLayer = (data: {nodeId: string, layer: EditorLayerDetails}, nodes: Array<Node>) => {
     const node = findElementById(nodes, data.nodeId);
     const layer = data.layer;
     const newLayers = [...node.layers, layer];
