@@ -1,16 +1,16 @@
 import React from 'react';
 
-const LayerStrength = ({value, save}) => {
-
-    const saveInternal = (event) => {
-        save(event.target.value);
-    };
+interface Props {
+    value: string,
+    save:(newValue: string) => void
+}
+export const LayerStrength = ({value, save}: Props) => {
 
     return (
         <div className="row form-group layerFieldRow">
             <div className="col-lg-3 layerLabel">Strength</div>
             <div className="col-lg-5 noRightPadding">
-                <select className="form-control" onChange={saveInternal} value={value}>
+                <select className="form-control" onChange={(event) => save(event.target.value)} value={value}>
                     <option value="VERY_WEAK">Very weak</option>
                     <option value="WEAK">Weak</option>
                     <option value="AVERAGE">Average</option>
@@ -26,6 +26,4 @@ const LayerStrength = ({value, save}) => {
         </div>
     );
 };
-
-export default LayerStrength;
 

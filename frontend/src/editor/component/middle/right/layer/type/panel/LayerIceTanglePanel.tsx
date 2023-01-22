@@ -1,10 +1,9 @@
 import React from 'react';
-import {connect, useDispatch} from "react-redux";
+import { useDispatch} from "react-redux";
 import {LayerPanel} from "./LayerPanel";
-import LayerStrength from "../../LayerStrength";
+import {LayerStrength} from "../../LayerStrength";
 import LayerIceTangle from "../../../../../../../common/model/layer/LayerIceTangle";
 import {EditorLayerDetails, Node} from "../../../../../../reducer/NodesReducer";
-import LayerText from "../../../../../../../common/model/layer/LayerText";
 
 interface Props {
     node: Node,

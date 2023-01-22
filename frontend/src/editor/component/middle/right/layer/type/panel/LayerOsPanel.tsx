@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect, useDispatch} from "react-redux";
+import { useDispatch} from "react-redux";
 import LayerField from "../../LayerField";
 import {LayerPanel} from "./LayerPanel";
 import LayerOs from "../../../../../../../common/model/layer/LayerOs";

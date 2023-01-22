@@ -1,5 +1,5 @@
-import React, {ReactChildren, ReactNode} from 'react';
-import {connect, useDispatch, useSelector} from "react-redux";
+import React, {ReactNode} from 'react';
+import {useSelector} from "react-redux";
 import {findElementById} from "../../../../../../../common/Immutable";
 import {LayerType} from "../../LayerType";
 import {LayerLevel} from "../../LayerLevel";
