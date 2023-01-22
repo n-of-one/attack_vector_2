@@ -3,7 +3,7 @@ import {AnyAction} from "redux";
 
 export interface SiteStateI {
     ok: boolean,
-    messages: string[]
+    messages: SiteStateMessage[]
 }
 
 export enum SiteStateMessageType { ERROR = "ERROR", INFO = "INFO" }

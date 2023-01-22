@@ -1,6 +1,6 @@
 import React from 'react';
 import {SiteData} from "./SiteData";
-import SiteState from "./SiteState";
+import {SiteState} from "./SiteState";
 
 export const EditorTop = () => {
     console.log("render EditorTop");
@@ -20,4 +20,3 @@ export const EditorTop = () => {
         </div>
     );
 };
-
