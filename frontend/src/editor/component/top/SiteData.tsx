@@ -1,9 +1,9 @@
-import React from 'react';
-import {useSelector} from "react-redux";
-import {TextSaveInput} from "../../../common/component/TextSaveInput";
-import CheckboxSaveInput from "../../../common/component/CheckBoxSaveInput";
-import {EditorState} from "../../EditorRootReducer";
-import {sendSiteDataChanged} from "../../server/EditorServerClient";
+import React from 'react'
+import {useSelector} from "react-redux"
+import {TextSaveInput} from "../../../common/component/TextSaveInput"
+import CheckboxSaveInput from "../../../common/component/CheckBoxSaveInput"
+import {EditorState} from "../../EditorRootReducer"
+import {sendSiteDataChanged} from "../../server/EditorServerClient"
 
 
 export const SiteData = () => {
@@ -11,7 +11,7 @@ export const SiteData = () => {
     const siteData = useSelector((state: EditorState) => state.siteData)
 
     const save = (field: string, value: string) => {
-        sendSiteDataChanged({ field, value});
+        sendSiteDataChanged({ field, value})
     }
 
     return (
@@ -56,5 +56,5 @@ export const SiteData = () => {
                 </div>
             </div>
     </span>
-    );
-};
+    )
+}

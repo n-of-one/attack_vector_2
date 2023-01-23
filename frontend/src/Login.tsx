@@ -1,5 +1,5 @@
-import React, {FormEvent, useState} from 'react';
-import {post} from "./common/RestClient";
+import React, {FormEvent, useState} from 'react'
+import {post} from "./common/RestClient"
 
 interface SimpleLogin {
     name: string,
@@ -21,56 +21,56 @@ const simpleLogins = [
     {name: "*unclaimed* N1X", login: "N1X"},
     {name: "*unclaimed* Face.dread", login: "Face.dread"},
     {name: "*unclaimed* .Specter.", login: ".Specter."},
-];
+]
 
 export const Login = () =>  {
 
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
+    const [name, setName] = useState("")
+    const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
 
 
 
     const onNameChange = (value: string) => {
-        setName(value);
+        setName(value)
     }
 
     const onPasswordChange = (value: string) => {
-        setPassword(value);
+        setPassword(value)
     }
 
     const submit = (event: FormEvent) => {
-        event.preventDefault();
+        event.preventDefault()
         login(name, password)
     }
 
 
     const login = (name: string, password: string) => {
-        const loginInput = {name: name, password: password};
-        setMessage("Logging in");
+        const loginInput = {name: name, password: password}
+        setMessage("Logging in")
 
         post({
             url: "/api/login",
             body: loginInput,
             ok: ({success, message} : {success: boolean, message: string}) => {
                 if (success) {
-                    const search = document.location.search;
+                    const search = document.location.search
                     if (search.length <= 5) {
-                        document.location.href = "/";
+                        document.location.href = "/"
                     } else {
-                        document.location.href = search.substring(search.indexOf('=') + 1);
+                        document.location.href = search.substring(search.indexOf('=') + 1)
                     }
                 } else {
-                    setMessage(message);
+                    setMessage(message)
                 }
             },
             notok: () => {
-                setMessage("Connection to server failed, unable to continue.");
+                setMessage("Connection to server failed, unable to continue.")
             },
             error: () => {
-                setMessage("Connection to server failed, unable to continue.");
+                setMessage("Connection to server failed, unable to continue.")
             }
-        });
+        })
     }
 
 
@@ -82,15 +82,15 @@ export const Login = () =>  {
                         {/*eslint-disable-next-line*/}
                         <a href="#" onClick={
                             (event) => {
-                                login(simpleLogin.login, "");
-                                event.preventDefault();
-                                return false;
+                                login(simpleLogin.login, "")
+                                event.preventDefault()
+                                return false
                             }}>{simpleLogin.name}</a>
                     </div>
                 </div>
             </div>
         )
-    };
+    }
 
     return (
         <div className="container" data-bs-theme="dark">

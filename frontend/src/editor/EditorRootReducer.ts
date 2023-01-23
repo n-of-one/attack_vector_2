@@ -1,13 +1,13 @@
-import dragAndDropReducer, {defaultDragAndDropState, DragAndDropState} from "./reducer/DragAndDropReducer";
-import ThemeReducer from "../common/reducer/ThemeReducer";
-import connectionsReducer, {Connection} from "./reducer/ConnectionsReducer";
-import layoutReducer, {defaultLayout, Layout} from "./reducer/LayoutReducer";
-import {SiteData, siteDataDefaultState, SiteDataReducer} from "./reducer/SiteDataReducer";
-import {NodeI, NodesReducer} from "./reducer/NodesReducer";
-import {currentNodeIdReducer} from "./reducer/CurrentNodeIdReducer";
-import {currentLayerIdReducer} from "./reducer/CurrentLayerIdReducer";
-import {siteStateReducer, defaultState, SiteStateI} from "./reducer/SiteStateReducer";
-import {AnyAction} from "redux";
+import {dragAndDropReducer, defaultDragAndDropState, DragAndDropState} from "./reducer/DragAndDropReducer"
+import {themeReducer} from "../common/reducer/ThemeReducer"
+import {connectionsReducer, Connection} from "./reducer/ConnectionsReducer"
+import {layoutReducer, defaultLayout, Layout} from "./reducer/LayoutReducer"
+import {SiteData, siteDataDefaultState, SiteDataReducer} from "./reducer/SiteDataReducer"
+import {NodeI, nodesReducer} from "./reducer/NodesReducer"
+import {currentNodeIdReducer} from "./reducer/CurrentNodeIdReducer"
+import {currentLayerIdReducer} from "./reducer/CurrentLayerIdReducer"
+import {siteStateReducer, defaultState, SiteStateI} from "./reducer/SiteStateReducer"
+import {AnyAction} from "redux"
 
 export interface EditorState {
     siteData: SiteData,
@@ -31,21 +31,19 @@ export const editorRootDefaultState: EditorState = {
     currentNodeId: null,
     currentLayerId: null,
     state : defaultState
-};
+}
 
-const editorRootReducer = (state:EditorState, action: AnyAction): EditorState => {
+export const editorRootReducer = (state:EditorState, action: AnyAction): EditorState => {
     const nodes = (state.nodes) ? state.nodes : []
     return {
         siteData: SiteDataReducer(state.siteData, action),
         layout: layoutReducer(state.layout, action),
         dragAndDrop: dragAndDropReducer(state.dragAndDrop, action),
-        theme: ThemeReducer(state.theme, action),
-        nodes: NodesReducer(state.nodes, action),
+        theme: themeReducer(state.theme, action),
+        nodes: nodesReducer(state.nodes, action),
         connections: connectionsReducer(state.connections, action),
         currentNodeId: currentNodeIdReducer(state.currentNodeId, action),
         currentLayerId: currentLayerIdReducer(state.currentLayerId, action, state.currentNodeId, nodes),
         state: siteStateReducer(state.state, action)
     }
-};
-
-export default editorRootReducer;
+}

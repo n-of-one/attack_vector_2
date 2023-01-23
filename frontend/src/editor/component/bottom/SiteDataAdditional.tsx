@@ -1,15 +1,15 @@
-import React from 'react';
-import {useSelector} from "react-redux";
-import {TextSaveInput} from "../../../common/component/TextSaveInput";
-import {sendSiteDataChanged} from "../../server/EditorServerClient";
-import {EditorState} from "../../EditorRootReducer";
+import React from 'react'
+import {useSelector} from "react-redux"
+import {TextSaveInput} from "../../../common/component/TextSaveInput"
+import {sendSiteDataChanged} from "../../server/EditorServerClient"
+import {EditorState} from "../../EditorRootReducer"
 
 export const SiteDataAdditional = () => {
 
     const siteData = useSelector((state: EditorState) => state.siteData)
 
     const save = (field: string, value: string) => {
-        sendSiteDataChanged({field, value});
+        sendSiteDataChanged({field, value})
     }
 
     return (
@@ -37,5 +37,5 @@ export const SiteDataAdditional = () => {
                 </div>
             </div>
         </div>
-    );
+    )
 }

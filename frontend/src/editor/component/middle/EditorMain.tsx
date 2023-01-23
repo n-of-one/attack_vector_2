@@ -1,7 +1,7 @@
-import React from 'react';
-import {NodesPanel} from "./left/NodesPanel";
-import {EditCanvasPanel} from "./middle/EditCanvasPanel";
-import {DetailPanel} from "./right/DetailPanel";
+import React from 'react'
+import {NodesPanel} from "./left/NodesPanel"
+import {EditCanvasPanel} from "./middle/EditCanvasPanel"
+import {DetailPanel} from "./right/DetailPanel"
 
 export const EditorMain = () =>{
 
@@ -14,5 +14,5 @@ export const EditorMain = () =>{
                 <DetailPanel/>
             </div>
         </>
-        );
+        )
     }

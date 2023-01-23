@@ -1,4 +1,4 @@
-import {AnyAction} from "redux";
+import {AnyAction} from "redux"
 
 export const DRAG_DROP_START = "DRAG_DROP_START"
 
@@ -16,13 +16,11 @@ export const defaultDragAndDropState: DragAndDropState = {
     ice: false
 }
 
-const dragAndDropReducer = (state: DragAndDropState, action: AnyAction) => {
+export const dragAndDropReducer = (state: DragAndDropState, action: AnyAction) => {
     switch (action.type) {
         case DRAG_DROP_START :
-            return action.data;
+            return action.data
         default:
-            return state;
+            return state
     }
 }
-
-export default dragAndDropReducer;

@@ -1,11 +1,11 @@
-import React, {ReactNode} from 'react';
-import {useSelector} from "react-redux";
-import {findElementById} from "../../../../../../../common/Immutable";
-import {LayerType} from "../../LayerType";
-import {LayerLevel} from "../../LayerLevel";
-import Layer from "../../../../../../../common/model/layer/Layer";
-import {EditorState} from "../../../../../../EditorRootReducer";
-import LayerField from "../../LayerField";
+import React, {ReactNode} from 'react'
+import {useSelector} from "react-redux"
+import {findElementById} from "../../../../../../../common/Immutable"
+import {LayerType} from "../../LayerType"
+import {LayerLevel} from "../../LayerLevel"
+import Layer from "../../../../../../../common/model/layer/Layer"
+import {EditorState} from "../../../../../../EditorRootReducer"
+import {LayerField} from "../../LayerField"
 
 interface Props {
     layerObject: Layer,
@@ -19,13 +19,13 @@ export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
         if (!state.currentNodeId) {
             return {}
         }
-        const node = findElementById(state.nodes, state.currentNodeId);
-        const layer = findElementById(node.layers, state.currentLayerId);
+        const node = findElementById(state.nodes, state.currentNodeId)
+        const layer = findElementById(node.layers, state.currentLayerId)
 
         return {
             node: node,
             layerData: layer,
-        };
+        }
     })
 
     if (!node) {
@@ -33,7 +33,7 @@ export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
     }
 
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-    const key = (param: string) => layerData.id + ":" + param;
+    const key = (param: string) => layerData.id + ":" + param
 
     return (
         <div className="tab-content" id="node-layers-tab-content ">
@@ -49,6 +49,5 @@ export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
                             placeholder="" help="Players will never see this. Notes can help to understand the design of a site."/>
             </div>
         </div>
-    );
+    )
 }
-

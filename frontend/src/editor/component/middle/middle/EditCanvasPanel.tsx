@@ -1,18 +1,18 @@
-import React from 'react';
-import EditorCanvas from "./EditorCanvas";
-import {useDispatch, useSelector} from "react-redux";
-import {EditorState} from "../../../EditorRootReducer";
-import {useRunOnceDelayed} from "../../../../common/Util";
-import {sendAddNode} from "../../../server/EditorServerClient";
+import React from 'react'
+import {editorCanvas} from "./EditorCanvas"
+import {useDispatch, useSelector} from "react-redux"
+import {EditorState} from "../../../EditorRootReducer"
+import {useRunOnceDelayed} from "../../../../common/Util"
+import {sendAddNode} from "../../../server/EditorServerClient"
 
 
 export const EditCanvasPanel = () => {
 
-    const dragAndDropState = useSelector((state: EditorState) => state.dragAndDrop);
-    const dispatch = useDispatch();
+    const dragAndDropState = useSelector((state: EditorState) => state.dragAndDrop)
+    const dispatch = useDispatch()
 
     useRunOnceDelayed(() => {
-        EditorCanvas.init(dispatch);
+        editorCanvas.init(dispatch)
     })
 
     const allowDrop = (event: any) => {
@@ -21,13 +21,13 @@ export const EditCanvasPanel = () => {
 
 
     const drop_image_and_create_node = (syntheticEvent: any) => {
-        let event = syntheticEvent.nativeEvent;
+        let event = syntheticEvent.nativeEvent
         const x = event.offsetX - dragAndDropState.dx
         const y = event.offsetY - dragAndDropState.dy
         const type = dragAndDropState.type.toUpperCase()
 
-        sendAddNode({x, y, type});
-        event.preventDefault();
+        sendAddNode({x, y, type})
+        event.preventDefault()
     }
 
     return (
@@ -37,5 +37,5 @@ export const EditCanvasPanel = () => {
                 <canvas id="canvas" width="607" height="715" style={{"borderRadius": "3px 3px 3px 3px"}}/>
             </div>
         </div>
-    );
+    )
 }

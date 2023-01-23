@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 interface Props {
     value: string,
@@ -24,6 +24,6 @@ export const LayerStrength = ({value, save}: Props) => {
                       title="Stronger Ice takes longer to hack or require scripts to overcome.">?</span>
             </div>
         </div>
-    );
-};
+    )
+}
 

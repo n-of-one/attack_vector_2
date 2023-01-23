@@ -1,5 +1,5 @@
-import {findElementById, updateArrayById} from "../../common/Immutable";
-import {AnyAction} from "redux";
+import {findElementById, updateArrayById} from "../../common/Immutable"
+import {AnyAction} from "redux"
 import {
     SERVER_ADD_LAYER,
     SERVER_ADD_NODE,
@@ -8,7 +8,7 @@ import {
     SERVER_SITE_FULL,
     SERVER_UPDATE_LAYER,
     SERVER_UPDATE_NETWORK_ID
-} from "../server/EditorServerActionProcessor";
+} from "../server/EditorServerActionProcessor"
 
 export enum NodeType {
     TRANSIT_1 = "TRANSIT_1",
@@ -57,74 +57,71 @@ export interface NodeI {
 
 export interface MoveNodeI {nodeId: string, x: number, y: number}
 
-const NodesReducer = (state: Array<NodeI> = [], action: AnyAction) => {
+export const nodesReducer = (state: Array<NodeI> = [], action: AnyAction) => {
     switch (action.type) {
         case SERVER_SITE_FULL:
-            return action.data.nodes;
+            return action.data.nodes
         case SERVER_ADD_NODE:
-            return addNode(action.data, state);
+            return addNode(action.data, state)
         case SERVER_MOVE_NODE:
-            return moveNode(action.data, state);
+            return moveNode(action.data, state)
         case SERVER_UPDATE_NETWORK_ID:
-            return serverUpdateNetworkId(action.data, state);
+            return serverUpdateNetworkId(action.data, state)
         case SERVER_UPDATE_LAYER :
-            return serverUpdateLayer(action.data, state);
+            return serverUpdateLayer(action.data, state)
         case SERVER_ADD_LAYER :
-            return serverAddLayer(action.data, state);
+            return serverAddLayer(action.data, state)
         case SERVER_NODE_UPDATED :
-            return serverRemoveLayer(action.data.node, state);
+            return serverRemoveLayer(action.data.node, state)
 
         default:
-            return state;
+            return state
     }
-};
+}
 
 const addNode = (data: NodeI, nodeList: Array<NodeI>): Array<NodeI> => {
-    const node = {...data, connections: []};
-    return [...nodeList, node];
-};
+    const node = {...data, connections: []}
+    return [...nodeList, node]
+}
 
 
 
 const moveNode = (data: MoveNodeI, nodeList: Array<NodeI>) => {
-    const newNodeData = {x: data.x, y: data.y};
-    return updateArrayById(newNodeData, nodeList, data.nodeId);
-};
+    const newNodeData = {x: data.x, y: data.y}
+    return updateArrayById(newNodeData, nodeList, data.nodeId)
+}
 
 
 const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: EditorLayerDetails}, nodes: Array<NodeI>) => {
-    const node = findElementById(nodes, update.nodeId);
-    const newLayers = updateArrayById(update.layer, node.layers, update.layerId);
+    const node = findElementById(nodes, update.nodeId)
+    const newLayers = updateArrayById(update.layer, node.layers, update.layerId)
 
-    const newNodeLayers = {layers: newLayers};
+    const newNodeLayers = {layers: newLayers}
 
-    const newNodes = updateArrayById(newNodeLayers, nodes, update.nodeId);
-    return newNodes;
-};
+    const newNodes = updateArrayById(newNodeLayers, nodes, update.nodeId)
+    return newNodes
+}
 
 
 const serverUpdateNetworkId = (update: {nodeId: string,  networkId: string}, nodes: Array<NodeI>) => {
-    const newNodeData = {networkId: update.networkId};
-    const newNodes = updateArrayById(newNodeData, nodes, update.nodeId);
-    return newNodes;
-};
+    const newNodeData = {networkId: update.networkId}
+    const newNodes = updateArrayById(newNodeData, nodes, update.nodeId)
+    return newNodes
+}
 
 const serverAddLayer = (data: {nodeId: string, layer: EditorLayerDetails}, nodes: Array<NodeI>) => {
-    const node = findElementById(nodes, data.nodeId);
-    const layer = data.layer;
-    const newLayers = [...node.layers, layer];
+    const node = findElementById(nodes, data.nodeId)
+    const layer = data.layer
+    const newLayers = [...node.layers, layer]
 
-    const newNodeLayers = {layers: newLayers};
+    const newNodeLayers = {layers: newLayers}
 
-    const newNodes = updateArrayById(newNodeLayers, nodes, data.nodeId);
-    return newNodes;
+    const newNodes = updateArrayById(newNodeLayers, nodes, data.nodeId)
+    return newNodes
 
-};
+}
 
 const serverRemoveLayer = (node: NodeI, nodes: Array<NodeI>) => {
-    const newNodes = updateArrayById(node, nodes, node.id);
-    return newNodes;
-};
-
-
-export {NodesReducer}
+    const newNodes = updateArrayById(node, nodes, node.id)
+    return newNodes
+}

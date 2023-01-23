@@ -1,10 +1,10 @@
 import Layer from "./Layer";
-import editorCanvas from "../../../editor/component/middle/middle/EditorCanvas";
+import {editorCanvas} from "../../../editor/component/middle/middle/EditorCanvas";
 import {sendEditNetworkId} from "../../../editor/server/EditorServerClient";
 
 const NODE_NAME = "nodeName";
 
-export default class LayerOs extends Layer {
+export class LayerOs extends Layer {
 
     constructor(layer, node, dispatch) {
         super(layer, node, dispatch);
@@ -21,6 +21,4 @@ export default class LayerOs extends Layer {
     saveNodeName(value) {
         super._save(NODE_NAME, value );
     }
-
-
 }

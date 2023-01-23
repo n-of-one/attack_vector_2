@@ -1,42 +1,42 @@
-import React from 'react';
-import {createRoot} from 'react-dom/client';
+import React from 'react'
+import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Routes, Route, useParams} from 'react-router-dom'
-import GmRoot from "./gm/GmRoot";
-import {EditorRoot} from "./editor/EditorRoot";
-import {Login} from "./Login";
-import HackerRoot from "./hacker/HackerRoot";
-import Cookies from "js-cookie";
+import GmRoot from "./gm/GmRoot"
+import {EditorRoot} from "./editor/EditorRoot"
+import {Login} from "./Login"
+import HackerRoot from "./hacker/HackerRoot"
+import Cookies from "js-cookie"
 
 
 const ReRoute = (): JSX.Element => {
 
-    let type = Cookies.get("type");
+    let type = Cookies.get("type")
     if (type === "ADMIN") {
-        window.document.location.href = "/gm/";
+        window.document.location.href = "/gm/"
         return (<></>)
     }
     if (type === "GM") {
-        window.document.location.href = "/gm/";
+        window.document.location.href = "/gm/"
         return (<></>)
     }
     if (type === "HACKER" || type === "HACKER_MANAGER") {
-        window.document.location.href = "/hacker/";
+        window.document.location.href = "/hacker/"
         return (<></>)
     }
-    console.log("Unknown user type: " + type);
-    Cookies.remove("jwt");
-    Cookies.remove("type");
-    Cookies.remove("roles");
+    console.log("Unknown user type: " + type)
+    Cookies.remove("jwt")
+    Cookies.remove("type")
+    Cookies.remove("roles")
     window.document.location.href = "/login"
     return (<></>)
-};
+}
 
-const container = document.getElementById('app') as HTMLDivElement;
-const root = createRoot(container);
+const container = document.getElementById('app') as HTMLDivElement
+const root = createRoot(container)
 
 const Editor = () => {
-    const {siteId} = useParams();
-    return (<EditorRoot siteId={siteId as string} />);
+    const {siteId} = useParams()
+    return (<EditorRoot siteId={siteId as string} />)
 }
 
 root.render(
@@ -49,5 +49,5 @@ root.render(
             <Route path="/" element={<ReRoute/>}/>
         </Routes>
     </BrowserRouter>
-);
+)
 

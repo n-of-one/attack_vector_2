@@ -1,12 +1,12 @@
-import React from 'react';
-import {useSelector} from "react-redux";
+import React from 'react'
+import {useSelector} from "react-redux"
 import {
     CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH, ICE_TANGLE,
     ICE_UNHACKABLE, ICE_WORD_SEARCH, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER
-} from "../../../../common/enums/LayerTypes";
-import Glyphicon from "../../../../common/component/Glyphicon";
-import {EditorState} from "../../../EditorRootReducer";
-import {sendAddLayer} from "../../../server/EditorServerClient";
+} from "../../../../common/enums/LayerTypes"
+import Glyphicon from "../../../../common/component/Glyphicon"
+import {EditorState} from "../../../EditorRootReducer"
+import {sendAddLayer} from "../../../server/EditorServerClient"
 
 export const LayersPanel = () => {
 
@@ -25,8 +25,8 @@ export const LayersPanel = () => {
             }}>
                 <Glyphicon type={type} size="18px" color="white"/>
             </span>
-        );
-    };
+        )
+    }
 
     const ice = (type: string) => {
         return (
@@ -35,16 +35,16 @@ export const LayersPanel = () => {
             }}>
                     <Glyphicon type={type} size="18px" color="NavajoWhite"/>
             </span>
-        );
-    };
+        )
+    }
 
     const unImplemented = (type: string) => {
         return (
             <span className="btn btn-grey btn-spaced">
                 <Glyphicon type={type} size="18px"/>
             </span>
-        );
-    };
+        )
+    }
 
     return (
         <div className="row">
@@ -77,5 +77,5 @@ export const LayersPanel = () => {
                 <br/>
             </div>
         </div>
-    );
+    )
 }

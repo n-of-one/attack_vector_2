@@ -1,22 +1,22 @@
-import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import SilentLink from "../../../common/component/SilentLink";
-import editorCanvas from "../middle/middle/EditorCanvas";
-import {EditorState} from "../../EditorRootReducer";
-import {SiteStateMessage} from "../../reducer/SiteStateReducer";
-import {SELECT_LAYER} from "../../reducer/CurrentLayerIdReducer";
+import React from 'react'
+import {useDispatch, useSelector} from "react-redux"
+import SilentLink from "../../../common/component/SilentLink"
+import {editorCanvas} from "../middle/middle/EditorCanvas"
+import {EditorState} from "../../EditorRootReducer"
+import {SiteStateMessage} from "../../reducer/SiteStateReducer"
+import {SELECT_LAYER} from "../../reducer/CurrentLayerIdReducer"
 
 const renderMessage = (
     message: SiteStateMessage,
     index: number,
     navigateToLayer: (nodeId: string, layerId: string) => void) => {
 
-    const label = (message.type === "INFO") ? <span className="badge bg-info">Info&nbsp;</span> : <span className="badge bg-warning">Error</span>;
+    const label = (message.type === "INFO") ? <span className="badge bg-info">Info&nbsp;</span> : <span className="badge bg-warning">Error</span>
     const link = (message.layerId) ? (
             <>&nbsp;<SilentLink onClick={() => {
                 navigateToLayer(message.nodeId!, message.layerId!)
             }}><span className="glyphicon glyphicon-share-alt"/></SilentLink></>) :
-        <></>;
+        <></>
 
     return (
         <div className="row" key={index}>
@@ -24,19 +24,19 @@ const renderMessage = (
                 {label}{link}&nbsp;{message.text}
             </div>
         </div>
-    );
-};
+    )
+}
 
 export const SiteState = () => {
     const siteState = useSelector((state: EditorState) => state.state)
     const dispatch = useDispatch()
     const navigateToLayer = (nodeId: string, layerId: string) => {
-        editorCanvas.selectNode(nodeId);
+        editorCanvas.selectNode(nodeId)
         dispatch({type: SELECT_LAYER, layerId: layerId})
     }
 
     let statusElement = (siteState.ok) ? <span className="badge bg-success" style={{fontSize: "100%"}}>Ok</span> :
-        <span className="badge bg-warning" style={{fontSize: "100%"}}>Error</span>;
+        <span className="badge bg-warning" style={{fontSize: "100%"}}>Error</span>
 
     return (
         <div className="site-state">
@@ -50,5 +50,5 @@ export const SiteState = () => {
                 return renderMessage(message, index, navigateToLayer)
             })}
         </div>
-    );
+    )
 }

@@ -17,8 +17,8 @@ export const sendMoveNode = ({nodeId, x, y}: { nodeId: string, x: number, y: num
 }
 
 export const sendAddConnection = ({fromId, toId}: { fromId: string, toId: string }) => {
-    const payload = {siteId: editorSiteId, fromId, toId};
-    webSocketConnection.send("/av/editor/addConnection", payload);
+    const payload = {siteId: editorSiteId, fromId, toId}
+    webSocketConnection.send("/av/editor/addConnection", payload)
 }
 
 export const sendDeleteConnections = ({nodeId}: { nodeId: string }) => {
@@ -58,6 +58,6 @@ export const sendRemoveLayer = ({nodeId, layerId}: { nodeId: string, layerId: st
 
 export const sendSwapLayers = ({nodeId, fromId, toId}: {nodeId: string, fromId: string, toId: string}) => {
     const payload = {siteId: editorSiteId, nodeId, fromId, toId}
-    webSocketConnection.send("/av/editor/swapLayers", payload);
+    webSocketConnection.send("/av/editor/swapLayers", payload)
 }
 

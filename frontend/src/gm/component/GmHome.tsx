@@ -1,20 +1,20 @@
-import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import MenuBar from "../../common/menu/MenuBar";
-import {TextInput} from "../../common/component/TextInput";
-import {post} from "../../common/RestClient";
-import {notify_fatal} from "../../common/Notification";
-import SilentLink from "../../common/component/SilentLink";
-import {GmState} from "../GmRoot";
-import {GmSite, RECEIVE_SITES} from "../GmSitesReducer";
-import {useRunOnce} from "../../common/Util";
+import React from 'react'
+import {useDispatch, useSelector} from "react-redux"
+import MenuBar from "../../common/menu/MenuBar"
+import {TextInput} from "../../common/component/TextInput"
+import {post} from "../../common/RestClient"
+import {notify_fatal} from "../../common/Notification"
+import SilentLink from "../../common/component/SilentLink"
+import {GmState} from "../GmRoot"
+import {GmSite, RECEIVE_SITES} from "../GmSitesReducer"
+import {useRunOnce} from "../../common/Util"
 
 
 
 export const GmHome = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
 
 
     useRunOnce(() => {
@@ -23,23 +23,23 @@ export const GmHome = () => {
             .then(sites => {
                 dispatch({type: RECEIVE_SITES, sites: sites})
             })
-    });
+    })
 
     const edit = (siteName: string) => {
         post({
             url: "/api/site/edit",
             body: {siteName: siteName},
             ok: ({id}: { id: string }) => {
-                window.open("/edit/" + id);
+                window.open("/edit/" + id)
             },
             notok: () => {
-                notify_fatal("Connection to server failed, unable to continue.");
+                notify_fatal("Connection to server failed, unable to continue.")
             },
             error: () => {
-                notify_fatal("Connection to server failed, unable to continue.");
+                notify_fatal("Connection to server failed, unable to continue.")
             }
-        });
-    };
+        })
+    }
 
 
     return (
@@ -99,11 +99,11 @@ export const GmHome = () => {
                                     return (
                                         <tr key={site.id}>
                                             <td className="table-very-condensed"><SilentLink onClick={() => {
-                                                window.open("/edit/" + site.id, site.id);
+                                                window.open("/edit/" + site.id, site.id)
                                             }}><>{site.name}</>
                                             </SilentLink>
                                             </td>
-                                        </tr>);
+                                        </tr>)
                                 })
                             }
                             </tbody>
@@ -115,5 +115,5 @@ export const GmHome = () => {
         </div>
 
 
-    );
-};
+    )
+}

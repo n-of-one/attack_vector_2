@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
-import { GmHome } from "./component/GmHome";
+import { GmHome } from "./component/GmHome"
 import {Provider} from 'react-redux'
-import RequiresRole from "../common/RequiresRole";
-import {GM_SITES} from "./GmPages";
-import {configureStore} from "@reduxjs/toolkit";
-import {pageReducer, NAVIGATE_PAGE} from "../common/menu/pageReducer";
-import {GmSite, gmSitesReducer} from "./GmSitesReducer";
-import {Store} from "redux";
+import RequiresRole from "../common/RequiresRole"
+import {GM_SITES} from "./GmPages"
+import {configureStore} from "@reduxjs/toolkit"
+import {pageReducer, NAVIGATE_PAGE} from "../common/menu/pageReducer"
+import {GmSite, gmSitesReducer} from "./GmSitesReducer"
+import {Store} from "redux"
 
 
 export interface GmState {
@@ -21,7 +21,7 @@ export class GmRoot extends Component<Props>{
     gmStore: Store
 
     constructor(props: Props) {
-        super(props);
+        super(props)
         console.log("configure gm store")
 
         this.gmStore = configureStore({
@@ -29,13 +29,13 @@ export class GmRoot extends Component<Props>{
                 currentPage: pageReducer,
                 sites: gmSitesReducer,
             }
-        });
+        })
 
 
         // set up initial state:
         this.gmStore.dispatch({type: NAVIGATE_PAGE, to: GM_SITES})
 
-        document.body.style.backgroundColor = "#222222";
+        document.body.style.backgroundColor = "#222222"
     }
 
     render() {

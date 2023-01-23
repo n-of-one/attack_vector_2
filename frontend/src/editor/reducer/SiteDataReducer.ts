@@ -1,6 +1,6 @@
-import {SERVER_SCAN_FULL} from "../../hacker/run/model/ScanActions";
-import {AnyAction} from "redux";
-import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../server/EditorServerActionProcessor";
+import {SERVER_SCAN_FULL} from "../../hacker/run/model/ScanActions"
+import {AnyAction} from "redux"
+import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../server/EditorServerActionProcessor"
 
 export interface SiteData {
     siteId: string,
@@ -13,7 +13,7 @@ export interface SiteData {
 }
 
 
-const siteDataDefaultState: SiteData = {
+export  const siteDataDefaultState: SiteData = {
     siteId: "",
     name: "non name yet",
     description: "",
@@ -21,22 +21,20 @@ const siteDataDefaultState: SiteData = {
     hackTime: "-",
     startNodeNetworkId: "00",
     hackable: false
-};
+}
 
-const SiteDataReducer = (state: SiteData = siteDataDefaultState, action: AnyAction) => {
+export const SiteDataReducer = (state: SiteData = siteDataDefaultState, action: AnyAction) => {
     switch (action.type) {
         case SERVER_SITE_FULL:
-            return action.data.siteData;
+            return action.data.siteData
         case SERVER_SCAN_FULL:
-            return action.data.site.siteData;
+            return action.data.site.siteData
         case SERVER_UPDATE_SITE_DATA:
-            return action.data;
+            return action.data
         default:
-            return state;
+            return state
     }
-};
-
-export {SiteDataReducer, siteDataDefaultState};
+}
 
 
 

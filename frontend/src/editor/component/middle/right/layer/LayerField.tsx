@@ -1,20 +1,20 @@
-import React from 'react';
-import {TextSaveInput} from "../../../../../common/component/TextSaveInput";
-import {OverlayTrigger, Tooltip} from "react-bootstrap";
+import React from 'react'
+import {TextSaveInput} from "../../../../../common/component/TextSaveInput"
+import {OverlayTrigger, Tooltip} from "react-bootstrap"
 
 
 const renderInput = (value: string, readOnly: boolean, save?: (value: string) => void, placeholder?: string) => {
     if (readOnly) {
         return (
             <span><input type="text" className="form-control input-sm" disabled={readOnly} value={value}/></span>
-        );
+        )
     }
     return (
         <TextSaveInput className="form-control input-sm" placeholder={placeholder} value={value}
                        save={value => save!(value)}/>
 
-    );
-};
+    )
+}
 
 interface Props {
     name: string,
@@ -26,12 +26,12 @@ interface Props {
     help: string
 }
 
-const LayerField = ({name, size, readOnly, value, save, placeholder, help} : Props) => {
+export const LayerField = ({name, size, readOnly, value, save, placeholder, help} : Props) => {
     if (!readOnly) {
-        readOnly = false;
+        readOnly = false
     }
 
-    let colSize = (size === "large") ? "col-lg-8 noRightPadding" : "col-lg-5 noRightPadding";
+    let colSize = (size === "large") ? "col-lg-8 noRightPadding" : "col-lg-5 noRightPadding"
     return (
         <div className="row form-group layerFieldRow">
             <div className="col-lg-3 layerLabel">{name}</div>
@@ -52,7 +52,5 @@ const LayerField = ({name, size, readOnly, value, save, placeholder, help} : Pro
                 </OverlayTrigger>
             </div>
         </div>
-    );
+    )
 }
-
-export default LayerField;

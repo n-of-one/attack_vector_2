@@ -1,5 +1,5 @@
-import {AnyAction} from "redux";
-import {SERVER_ADD_NODE, SERVER_SITE_FULL} from "../server/EditorServerActionProcessor";
+import {AnyAction} from "redux"
+import {SERVER_ADD_NODE, SERVER_SITE_FULL} from "../server/EditorServerActionProcessor"
 
 export interface Layout {
     id: string,
@@ -15,19 +15,17 @@ export const defaultLayout: Layout = {
     id: "unknown",
     nodeIds: [],
     connectionIds: []
-};
+}
 
-const layoutReducer = (state: Layout = defaultLayout, action: AnyAction) => {
+export const layoutReducer = (state: Layout = defaultLayout, action: AnyAction) => {
     switch(action.type) {
-        case SERVER_SITE_FULL: return action.data.layout;
-        case SERVER_ADD_NODE: return addNode(action.data as AddNodeData, state);
-        default: return state;
+        case SERVER_SITE_FULL: return action.data.layout
+        case SERVER_ADD_NODE: return addNode(action.data as AddNodeData, state)
+        default: return state
     }
 }
 
 let addNode = (data: AddNodeData, state: Layout) => {
-    let newNodeIds = [...state.nodeIds, data.id];
-    return { ...state, nodeIds: newNodeIds };
-};
-
-export default layoutReducer;
+    let newNodeIds = [...state.nodeIds, data.id]
+    return { ...state, nodeIds: newNodeIds }
+}

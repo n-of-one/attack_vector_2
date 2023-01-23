@@ -1,7 +1,7 @@
-import React from 'react';
-import editorCanvas from "../middle/EditorCanvas";
-import {OverlayTrigger, Tooltip} from "react-bootstrap";
-import {sendDeleteConnections, sendDeleteNode, sendSnap} from "../../../server/EditorServerClient";
+import React from 'react'
+import {editorCanvas} from "../middle/EditorCanvas"
+import {OverlayTrigger, Tooltip} from "react-bootstrap"
+import {sendDeleteConnections, sendDeleteNode, sendSnap} from "../../../server/EditorServerClient"
 
 
 export const ActionsPanel = () => {
@@ -53,5 +53,5 @@ export const ActionsPanel = () => {
                 </div>
             </div>
         </span>
-    );
+    )
 }

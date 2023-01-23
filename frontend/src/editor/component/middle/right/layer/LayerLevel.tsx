@@ -1,7 +1,7 @@
-import React from 'react';
-import SilentLink from "../../../../../common/component/SilentLink";
-import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
-import {sendSwapLayers} from "../../../../server/EditorServerClient";
+import React from 'react'
+import SilentLink from "../../../../../common/component/SilentLink"
+import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer"
+import {sendSwapLayers} from "../../../../server/EditorServerClient"
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -14,22 +14,22 @@ export const LayerLevel = ({node, layer}: Props) => {
 
     const swap = (node: NodeI, layer: EditorLayerDetails, level: number) => {
         sendSwapLayers({nodeId: node.id, fromId: layer.id, toId: node.layers[level].id})
-    };
+    }
 
     const up = (node: NodeI, layer: EditorLayerDetails) => swap(node, layer, layer.level - 1)
     const down = (node: NodeI, layer: EditorLayerDetails) => swap(node, layer, layer.level + 1)
 
-    const level = layer.level;
+    const level = layer.level
 
-    let downClickable = (level > 1);
+    let downClickable = (level > 1)
     let downHtml = downClickable ? (
         <SilentLink classNameInput="textLink" onClick={() => up(node, layer)}><>◀</></SilentLink>) : (<span>◀</span>
-    );
+    )
 
-    let upClickable = (level !== 0 && level < (node.layers.length - 1));
+    let upClickable = (level !== 0 && level < (node.layers.length - 1))
     let upHtml = upClickable ? (
         <SilentLink classNameInput="textLink" onClick={() => down(node, layer)}><>▶</></SilentLink>) : (<span>▶</span>
-    );
+    )
 
     return (
         <div className="row form-group layerFieldRow">
@@ -40,5 +40,5 @@ export const LayerLevel = ({node, layer}: Props) => {
                 </div>
             </div>
         </div>
-    );
+    )
 }

@@ -1,9 +1,9 @@
-import React from 'react';
-import {useDispatch} from "react-redux";
-import LayerField from "../../LayerField";
-import {LayerPanel} from "./LayerPanel";
-import LayerTimerTrigger from "../../../../../../../common/model/layer/LayerTimerTrigger";
-import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer";
+import React from 'react'
+import {useDispatch} from "react-redux"
+import {LayerField} from "../../LayerField"
+import {LayerPanel} from "./LayerPanel"
+import LayerTimerTrigger from "../../../../../../../common/model/layer/LayerTimerTrigger"
+import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 interface Props {
     node: NodeI,
@@ -14,10 +14,10 @@ export const LayerTimerTriggerPanel = ({node, layer}: Props) => {
 
     const dispatch = useDispatch()
 
-    const layerObject = new LayerTimerTrigger(layer, node, dispatch);
+    const layerObject = new LayerTimerTrigger(layer, node, dispatch)
 
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-    const key = (param: string) => layer.id + ":" + param;
+    const key = (param: string) => layer.id + ":" + param
 
     return (
         <LayerPanel typeDisplay="Timer Trigger" layerObject={layerObject}>
@@ -26,5 +26,5 @@ export const LayerTimerTriggerPanel = ({node, layer}: Props) => {
             <LayerField key={key("seconds")} size="large" name="Seconds" value={layerObject.seconds} save={value => layerObject.saveSeconds(value)}
                         placeholder="(Seconds part of time until alarm)" help="Seconds part of time until alarm."/>
         </LayerPanel>
-    );
+    )
 }

@@ -1,13 +1,13 @@
-import React from 'react';
-import SilentLink from "../../../../../common/component/SilentLink";
-import Glyphicon from "../../../../../common/component/Glyphicon";
-import {OS} from "../../../../../common/enums/LayerTypes";
-import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
-import {sendRemoveLayer} from "../../../../server/EditorServerClient";
+import React from 'react'
+import SilentLink from "../../../../../common/component/SilentLink"
+import Glyphicon from "../../../../../common/component/Glyphicon"
+import {OS} from "../../../../../common/enums/LayerTypes"
+import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer"
+import {sendRemoveLayer} from "../../../../server/EditorServerClient"
 
 const renderRemove = (layer: EditorLayerDetails, remove: () => void) => {
     if (layer.type === OS) {
-        return null;
+        return null
     }
     return (
         <span className="pull-right" style={{display: "block"}}>
@@ -15,8 +15,8 @@ const renderRemove = (layer: EditorLayerDetails, remove: () => void) => {
                 <Glyphicon name="glyphicon-remove" size="18px" display="block"/>
             </SilentLink>
         </span>
-    );
-};
+    )
+}
 
 interface Props {
     node: NodeI,
@@ -39,5 +39,5 @@ export const LayerType = ({node, layer, typeDisplay}: Props) => {
                 </div>
             </div>
         </div>
-    );
+    )
 }

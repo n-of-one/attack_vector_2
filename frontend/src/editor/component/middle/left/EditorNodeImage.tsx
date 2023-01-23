@@ -1,8 +1,8 @@
-import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {EditorState} from "../../../EditorRootReducer";
-import {NodeFileType} from "../../../../common/enums/NodeTypesNames";
-import {DRAG_DROP_START} from "../../../reducer/DragAndDropReducer";
+import React from 'react'
+import {useDispatch, useSelector} from "react-redux"
+import {EditorState} from "../../../EditorRootReducer"
+import {NodeFileType} from "../../../../common/enums/NodeTypesNames"
+import {DRAG_DROP_START} from "../../../reducer/DragAndDropReducer"
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -15,29 +15,29 @@ interface Props {
 export const EditorNodeImage = (props: Props) => {
 
     const dispatch = useDispatch()
-    const theme = useSelector((state: EditorState) => state.theme);
+    const theme = useSelector((state: EditorState) => state.theme)
 
     let dragStart = (syntheticEvent: any) => {
-        let event = syntheticEvent.nativeEvent;
-        let x = event.offsetX;
-        let y = event.offsetY;
-        let halfWidth = event.target.width / 2;
-        let halfHeight = event.target.height / 2;
+        let event = syntheticEvent.nativeEvent
+        let x = event.offsetX
+        let y = event.offsetY
+        let halfWidth = event.target.width / 2
+        let halfHeight = event.target.height / 2
 
-        let dx = x - halfWidth;
-        let dy = y - halfHeight;
+        let dx = x - halfWidth
+        let dy = y - halfHeight
 
-        dispatch({type: DRAG_DROP_START, data: {type: props.type.name, dx: dx, dy: dy, ice: props.ice}});
-    };
+        dispatch({type: DRAG_DROP_START, data: {type: props.type.name, dx: dx, dy: dy, ice: props.ice}})
+    }
 
-    const dirAndName = props.type.dir + "/" + props.type.name + ".png";
+    const dirAndName = props.type.dir + "/" + props.type.name + ".png"
 
-    const root = "/img/" + theme + "/nodes/run/";
-    const pathRegular = root + "free/" + dirAndName;
-    const pathIce = root + "protected/" + dirAndName;
+    const root = "/img/" + theme + "/nodes/run/"
+    const pathRegular = root + "free/" + dirAndName
+    const pathIce = root + "protected/" + dirAndName
 
-    const idFree = props.type.name + "_FREE";
-    const idProtected = props.type.name + "_PROTECTED";
+    const idFree = props.type.name + "_FREE"
+    const idProtected = props.type.name + "_PROTECTED"
 
     if (props.ice) {
         return (
@@ -58,7 +58,7 @@ export const EditorNodeImage = (props: Props) => {
                      onLoad={() => props.onLoad()}/>
                 <img style={{display: 'none'}} src={pathIce} height="80" width="80" id={idProtected}/>
             </span>
-        );
+        )
 
     }
 

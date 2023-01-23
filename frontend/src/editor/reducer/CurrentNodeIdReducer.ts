@@ -10,4 +10,4 @@ export const currentNodeIdReducer = (state: string | null = null, action: AnyAct
         default: return state
 
     }
-};
+}

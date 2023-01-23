@@ -3,7 +3,7 @@ import LayerIce from "./LayerIce";
 const PASSWORD = "password";
 const HINT = "hint";
 
-export default class LayerIcePassword extends LayerIce {
+export class LayerIcePassword extends LayerIce {
 
     constructor(layer, node, dispatch) {
         super(layer, node, dispatch);
@@ -19,5 +19,4 @@ export default class LayerIcePassword extends LayerIce {
     saveHint(value) {
         super._save(HINT, value );
     }
-
 }

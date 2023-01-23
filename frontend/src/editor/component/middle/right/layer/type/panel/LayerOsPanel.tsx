@@ -1,9 +1,9 @@
-import React from 'react';
-import { useDispatch} from "react-redux";
-import LayerField from "../../LayerField";
-import {LayerPanel} from "./LayerPanel";
-import LayerOs from "../../../../../../../common/model/layer/LayerOs";
-import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer";
+import React from 'react'
+import { useDispatch} from "react-redux"
+import {LayerField} from "../../LayerField"
+import {LayerPanel} from "./LayerPanel"
+import {LayerOs} from "../../../../../../../common/model/layer/LayerOs"
+import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 interface Props {
     node: NodeI,
@@ -13,10 +13,10 @@ export const LayerOsPanel = ({node, layer} : Props) => {
 
     const dispatch = useDispatch()
 
-    const os = new LayerOs(layer, node, dispatch);
+    const os = new LayerOs(layer, node, dispatch)
 
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-    const key = (param: string) => layer.id + ":" + param;
+    const key = (param: string) => layer.id + ":" + param
 
     return (
         <LayerPanel typeDisplay="OS" layerObject={os}>
@@ -27,5 +27,5 @@ export const LayerOsPanel = ({node, layer} : Props) => {
                           placeholder="Optional name" help="When a node has a name, this is shown in the scan and when a hacker enters the node.
                           It can be used to give a node extra meaning."/>
         </LayerPanel>
-    );
+    )
 }
