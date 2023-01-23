@@ -1,4 +1,4 @@
-import {sendEditLayerData} from "../../../editor/server/ServerClient";
+import {sendEditLayerData} from "../../../editor/server/EditorServerClient";
 
 const NOTE = "note";
 const NAME = "name";

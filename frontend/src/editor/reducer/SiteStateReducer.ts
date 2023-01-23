@@ -1,5 +1,5 @@
-import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_STATE} from "../EditorActions";
 import {AnyAction} from "redux";
+import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_STATE} from "../server/EditorServerActionProcessor";
 
 export interface SiteStateI {
     ok: boolean,
@@ -20,12 +20,10 @@ export const defaultState: SiteStateI = {
     messages: []
 };
 
-const siteStateReducer = (state: SiteStateI = defaultState, action: AnyAction) => {
+export const siteStateReducer = (state: SiteStateI = defaultState, action: AnyAction) => {
     switch(action.type) {
-        case SERVER_SITE_FULL: return action.data.state;
-        case SERVER_UPDATE_SITE_STATE: return action.data;
-        default: return state;
+        case SERVER_SITE_FULL: return action.data.state
+        case SERVER_UPDATE_SITE_STATE: return action.data
+        default: return state
     }
-};
-
-export default siteStateReducer;
+}

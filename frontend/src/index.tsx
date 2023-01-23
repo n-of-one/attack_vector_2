@@ -36,7 +36,7 @@ const root = createRoot(container);
 
 const Editor = () => {
     const {siteId} = useParams();
-    return (<EditorRoot siteId={siteId as string}/>);
+    return (<EditorRoot siteId={siteId as string} />);
 }
 
 root.render(

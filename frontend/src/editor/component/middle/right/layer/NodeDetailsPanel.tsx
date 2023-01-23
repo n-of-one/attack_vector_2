@@ -5,13 +5,13 @@ import {findElementById} from "../../../../../common/Immutable";
 import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes";
 import {LayerTextPanel} from "./type/panel/LayerTextPanel";
 import SilentLink from "../../../../../common/component/SilentLink";
-import {SELECT_LAYER} from "../../../../EditorActions";
 import Glyphicon from "../../../../../common/component/Glyphicon";
 import {LayerIcePasswordPanel} from "./type/panel/LayerIcePasswordPanel";
 import {LayerIceTanglePanel} from "./type/panel/LayerIceTanglePanel";
 import {LayerTimerTriggerPanel} from "./type/panel/LayerTimerTriggerPanel";
 import {EditorState} from "../../../../EditorRootReducer";
 import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
+import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

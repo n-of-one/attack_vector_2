@@ -1,8 +1,8 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {DRAG_DROP_START} from "../../../EditorActions";
 import {EditorState} from "../../../EditorRootReducer";
 import {NodeFileType} from "../../../../common/enums/NodeTypesNames";
+import {DRAG_DROP_START} from "../../../reducer/DragAndDropReducer";
 
 /* eslint jsx-a11y/alt-text: 0*/
 

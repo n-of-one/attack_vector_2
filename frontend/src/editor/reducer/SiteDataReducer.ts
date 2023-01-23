@@ -1,6 +1,6 @@
-import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../EditorActions";
 import {SERVER_SCAN_FULL} from "../../hacker/run/model/ScanActions";
 import {AnyAction} from "redux";
+import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../server/EditorServerActionProcessor";
 
 export interface SiteData {
     siteId: string,

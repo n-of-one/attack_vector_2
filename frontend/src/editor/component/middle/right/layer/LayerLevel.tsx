@@ -1,7 +1,7 @@
 import React from 'react';
 import SilentLink from "../../../../../common/component/SilentLink";
 import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
-import {sendSwapLayers} from "../../../../server/ServerClient";
+import {sendSwapLayers} from "../../../../server/EditorServerClient";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

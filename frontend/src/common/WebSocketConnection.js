@@ -59,9 +59,11 @@ class WebSocketConnection {
         additionalOnWsOpen();
     }
 
-
     onWsConnectError(event) {
-        this.dispatch({type: SERVER_DISCONNECT});
+        this.dispatch({type: SERVER_DISCONNECT})
+        if (this.actions[SERVER_DISCONNECT]) {
+            this.actions[SERVER_DISCONNECT]()
+        }
     }
 
     setupHeartbeat() {
@@ -90,8 +92,7 @@ class WebSocketConnection {
     handleEvent(wsMessage) {
         const action = JSON.parse(wsMessage.body);
 
-        if (action.type === SERVER_FORCE_DISCONNECT ||
-            action.type === SERVER_ERROR) {
+        if (action.type === SERVER_FORCE_DISCONNECT) {
             this.client.disconnect();
         }
 

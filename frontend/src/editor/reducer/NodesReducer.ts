@@ -1,14 +1,14 @@
+import {findElementById, updateArrayById} from "../../common/Immutable";
+import {AnyAction} from "redux";
 import {
-    SERVER_ADD_NODE,
     SERVER_ADD_LAYER,
+    SERVER_ADD_NODE,
     SERVER_MOVE_NODE,
     SERVER_NODE_UPDATED,
     SERVER_SITE_FULL,
-    SERVER_UPDATE_NETWORK_ID,
-    SERVER_UPDATE_LAYER
-} from "../EditorActions";
-import {findElementById, updateArrayById} from "../../common/Immutable";
-import {AnyAction} from "redux";
+    SERVER_UPDATE_LAYER,
+    SERVER_UPDATE_NETWORK_ID
+} from "../server/EditorServerActionProcessor";
 
 export enum NodeType {
     TRANSIT_1 = "TRANSIT_1",

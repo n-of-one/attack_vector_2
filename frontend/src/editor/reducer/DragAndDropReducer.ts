@@ -1,5 +1,6 @@
-import {DRAG_DROP_START} from "../EditorActions";
 import {AnyAction} from "redux";
+
+export const DRAG_DROP_START = "DRAG_DROP_START"
 
 export interface DragAndDropState {
     type: string,

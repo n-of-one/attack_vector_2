@@ -1,7 +1,7 @@
 import React from 'react';
 import {useSelector} from "react-redux";
 import {TextSaveInput} from "../../../common/component/TextSaveInput";
-import {sendSiteDataChanged} from "../../server/ServerClient";
+import {sendSiteDataChanged} from "../../server/EditorServerClient";
 import {EditorState} from "../../EditorRootReducer";
 
 export const SiteDataAdditional = () => {

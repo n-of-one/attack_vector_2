@@ -3,7 +3,7 @@ import SilentLink from "../../../../../common/component/SilentLink";
 import Glyphicon from "../../../../../common/component/Glyphicon";
 import {OS} from "../../../../../common/enums/LayerTypes";
 import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer";
-import {sendRemoveLayer} from "../../../../server/ServerClient";
+import {sendRemoveLayer} from "../../../../server/EditorServerClient";
 
 const renderRemove = (layer: EditorLayerDetails, remove: () => void) => {
     if (layer.type === OS) {

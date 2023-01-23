@@ -1,5 +1,5 @@
-import {SERVER_SITE_FULL, SERVER_ADD_CONNECTION} from "../EditorActions";
 import {AnyAction} from "redux";
+import {SERVER_ADD_CONNECTION, SERVER_SITE_FULL} from "../server/EditorServerActionProcessor";
 
 export interface Connection {
     id: string,

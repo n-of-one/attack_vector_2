@@ -6,7 +6,7 @@ import {
 } from "../../../../common/enums/LayerTypes";
 import Glyphicon from "../../../../common/component/Glyphicon";
 import {EditorState} from "../../../EditorRootReducer";
-import {sendAddLayer} from "../../../server/ServerClient";
+import {sendAddLayer} from "../../../server/EditorServerClient";
 
 export const LayersPanel = () => {
 

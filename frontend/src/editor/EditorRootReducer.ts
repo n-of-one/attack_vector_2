@@ -4,9 +4,9 @@ import connectionsReducer, {Connection} from "./reducer/ConnectionsReducer";
 import layoutReducer, {defaultLayout, Layout} from "./reducer/LayoutReducer";
 import {SiteData, siteDataDefaultState, SiteDataReducer} from "./reducer/SiteDataReducer";
 import {NodeI, NodesReducer} from "./reducer/NodesReducer";
-import currentNodeIdReducer from "./reducer/CurrentNodeIdReducer";
-import currentLayerIdReducer from "./reducer/CurrentLayerIdReducer";
-import siteStateReducer, {defaultState, SiteStateI} from "./reducer/SiteStateReducer";
+import {currentNodeIdReducer} from "./reducer/CurrentNodeIdReducer";
+import {currentLayerIdReducer} from "./reducer/CurrentLayerIdReducer";
+import {siteStateReducer, defaultState, SiteStateI} from "./reducer/SiteStateReducer";
 import {AnyAction} from "redux";
 
 export interface EditorState {

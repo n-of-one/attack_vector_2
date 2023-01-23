@@ -1,6 +1,6 @@
 import Layer from "./Layer";
 import editorCanvas from "../../../editor/component/middle/middle/EditorCanvas";
-import {sendEditNetworkId} from "../../../editor/server/ServerClient";
+import {sendEditNetworkId} from "../../../editor/server/EditorServerClient";
 
 const NODE_NAME = "nodeName";
 

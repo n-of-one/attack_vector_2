@@ -1,5 +1,4 @@
 import {fabric} from "fabric";
-import {SELECT_NODE} from "../../../EditorActions";
 import {assertNotNullUndef} from "../../../../common/Assert";
 import NodeDisplay from "../../../../common/canvas/display/NodeDisplay";
 import ConnectionDisplay from "../../../../common/canvas/display/ConnectionDisplay";
@@ -8,12 +7,18 @@ import {Connection} from "../../../reducer/ConnectionsReducer";
 import {MoveNodeI, NodeI} from "../../../reducer/NodesReducer";
 import {IEvent} from "fabric/fabric-impl";
 import {delay} from "../../../../common/Util";
-import {sendAddConnection, sendMoveNode} from "../../../server/ServerClient";
+import {sendAddConnection, sendMoveNode} from "../../../server/EditorServerClient";
+import {SELECT_NODE} from "../../../reducer/CurrentNodeIdReducer";
 
 interface DisplayNodesById {
     [key: string]: NodeDisplay
 }
 
+export interface LoadSiteData {
+    id: string,
+    nodes: NodeI[],
+    connections: Connection[]
+}
 /**
  * This class provides editor map like actions to the fabric canvas.
  */
@@ -59,7 +64,7 @@ class EditorCanvas {
         this.canvas.selection = false;
     }
 
-    loadSite(siteState: { id: string, nodes: NodeI[], connections: Connection[] }) {
+    loadSite(loadSiteData: LoadSiteData) {
         this.canvas!.getObjects().forEach((oldObject: any) => {
             this.canvas!.remove(oldObject);
         });
@@ -67,9 +72,9 @@ class EditorCanvas {
         this.nodeDisplayById = {};
         this.connections = [];
         this.nodeSelected = null;
-        this.siteId = siteState.id;
+        this.siteId = loadSiteData.id;
 
-        const {nodes, connections} = siteState;
+        const {nodes, connections} = loadSiteData;
 
         nodes.forEach(node => {
             this.addNode(node);

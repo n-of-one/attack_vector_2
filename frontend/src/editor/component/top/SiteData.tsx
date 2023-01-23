@@ -3,7 +3,7 @@ import {useSelector} from "react-redux";
 import {TextSaveInput} from "../../../common/component/TextSaveInput";
 import CheckboxSaveInput from "../../../common/component/CheckBoxSaveInput";
 import {EditorState} from "../../EditorRootReducer";
-import {sendSiteDataChanged} from "../../server/ServerClient";
+import {sendSiteDataChanged} from "../../server/EditorServerClient";
 
 
 export const SiteData = () => {

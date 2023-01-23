@@ -1,5 +1,5 @@
-import {SERVER_ADD_NODE, SERVER_SITE_FULL} from "../EditorActions";
 import {AnyAction} from "redux";
+import {SERVER_ADD_NODE, SERVER_SITE_FULL} from "../server/EditorServerActionProcessor";
 
 export interface Layout {
     id: string,

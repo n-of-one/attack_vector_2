@@ -1,14 +1,12 @@
 import React, {Component} from 'react';
 import {Provider} from "react-redux";
 import {EditorHome} from "./component/EditorHome";
-import createSagas from "./EditorRootSaga";
-import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import editorRootReducer, {editorRootDefaultState, EditorState} from "./EditorRootReducer";
 import {Reducer, Store} from "redux";
-import {SERVER_SITE_FULL} from "./EditorActions";
 import RequiresRole from "../common/RequiresRole";
 import webSocketConnection from "../common/WebSocketConnection";
 import {configureStore} from "@reduxjs/toolkit";
+import {initEditorServerActions, SERVER_SITE_FULL} from "./server/EditorServerActionProcessor";
 
 interface Props {
     siteId: string,
@@ -40,13 +38,11 @@ export class EditorRoot extends Component<Props> {
         const initState = editorRootDefaultState
         initState.siteData.siteId = props.siteId
 
-        const sagaMiddleware = createSagaMiddleware() as SagaMiddleware<EditorState>;
         const developmentServer: boolean = process.env.NODE_ENV === "development";
 
         this.store = configureStore({
             reducer: editorRootReducer as Reducer<EditorState>,
             preloadedState: initState,
-            middleware: (getDefaultMiddleware) =>  [sagaMiddleware, ...getDefaultMiddleware()],
             devTools: developmentServer
         });
 
@@ -55,8 +51,7 @@ export class EditorRoot extends Component<Props> {
             webSocketConnection.send("/av/editor/siteFull", props.siteId);
         }, SERVER_SITE_FULL);
 
-        const editorRootSaga = createSagas();
-        sagaMiddleware.run(editorRootSaga);
+        initEditorServerActions(webSocketConnection, this.store.dispatch);
     }
 
     render() {

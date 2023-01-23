@@ -3,7 +3,7 @@ import EditorCanvas from "./EditorCanvas";
 import {useDispatch, useSelector} from "react-redux";
 import {EditorState} from "../../../EditorRootReducer";
 import {useRunOnceDelayed} from "../../../../common/Util";
-import {sendAddNode} from "../../../server/ServerClient";
+import {sendAddNode} from "../../../server/EditorServerClient";
 
 
 export const EditCanvasPanel = () => {

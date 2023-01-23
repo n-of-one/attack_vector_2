@@ -1,10 +1,12 @@
-import {SELECT_NODE, SELECT_LAYER, SERVER_ADD_LAYER, SERVER_NODE_UPDATED} from "../EditorActions";
 import {findElementById} from "../../common/Immutable";
 import {AnyAction} from "redux";
 import {NodeI} from "./NodesReducer";
+import {SERVER_ADD_LAYER, SERVER_NODE_UPDATED} from "../server/EditorServerActionProcessor";
+import {SELECT_NODE} from "./CurrentNodeIdReducer";
 
+export const SELECT_LAYER = "SELECT_LAYER"
 
-const currentLayerIdReducer = (state: string | null = null, action: AnyAction, currentNodeId: string | null | undefined, nodes: Array<NodeI>) => {
+export const currentLayerIdReducer = (state: string | null = null, action: AnyAction, currentNodeId: string | null | undefined, nodes: Array<NodeI>) => {
     switch(action.type) {
         case SELECT_NODE : return selectLayerFromSelectNode(action.data, nodes);
         case SERVER_ADD_LAYER : return action.data.layer.id;
@@ -29,5 +31,3 @@ const selectLayerFromSelectNode = (nodeId: string, nodes: Array<NodeI>) => {
 const serverNodeUpdated = (layerId: string | null, state: string | null) => {
     return layerId ? layerId : state;
 };
-
-export default currentLayerIdReducer;
