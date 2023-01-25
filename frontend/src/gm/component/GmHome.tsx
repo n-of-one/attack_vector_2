@@ -1,6 +1,6 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import MenuBar from "../../common/menu/MenuBar"
+import {MenuBar} from "../../common/menu/MenuBar"
 import {TextInput} from "../../common/component/TextInput"
 import {post} from "../../common/RestClient"
 import {notify_fatal} from "../../common/Notification"

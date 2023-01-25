@@ -2,8 +2,7 @@ import React, {Component} from 'react'
 import {Provider} from 'react-redux'
 import RequiresRole from "../common/RequiresRole";
 import {Reducer, Store} from "redux";
-import {HACKER_HOME} from "./HackerPages";
-import HackerPageChooser from "./HackerPageChooser";
+import {HackerPageChooser} from "./HackerPageChooser";
 import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import createHackerRootSaga from "./HackerRootSaga";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
@@ -13,6 +12,7 @@ import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 import passwordIceManager from "./run/ice/password/PasswordIceManager";
 import tangleIceManager from "./run/ice/tangle/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
+import {HACKER_HOME} from "../common/menu/pageReducer";
 
 export class HackerRoot extends Component {
 
@@ -22,7 +22,6 @@ export class HackerRoot extends Component {
         super(props)
         const preLoadedState = {currentPage: HACKER_HOME};
         const sagaMiddleware = createSagaMiddleware() as SagaMiddleware<HackerState>;
-
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
         // const defaultMiddlewareOptions = isDevelopmentServer ? {

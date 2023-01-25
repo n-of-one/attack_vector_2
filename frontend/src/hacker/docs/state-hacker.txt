@@ -1,9 +1,0 @@
-Redux state
-
-{
-    currentPage: "HACKER"   // see HackerPages.js
-    scanning: (site)
-
-}
-
-

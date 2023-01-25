@@ -1,10 +1,8 @@
 import {combineReducers} from 'redux'
-import scansReducer from "./ScansReducer";
-import {Scan} from "../run/reducer/ScanReducer";
-
+import {ScanInfo, scansReducer} from "./ScansReducer";
 
 export interface HomeState {
-    scans: Scan[]
+    scans: ScanInfo[]
 }
 
 export const homeRootReducer = combineReducers({
