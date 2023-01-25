@@ -1,10 +1,28 @@
-// import {RECEIVE_SCANS} from "../HackerActions";
+import {AnyAction} from "redux";
 
-const defaultState = {
+export interface MailState {
+    [key: string] : Mail
+}
+
+export interface Mail {
+    id: string,
+    timestamp: string,
+    read: boolean,
+    from: string,
+    title: string,
+    lines: MailLine[],
+}
+
+export interface MailLine {
+    type: string,
+    data: string
+}
+
+const defaultState: MailState = {
     "mail-1234-2144":
         {
             id: "mail-1234-2144",
-            timestamp: new Date(),
+            timestamp: new Date().toDateString(),
             read: false,
             from: "overlord12",
             title: "scan for hiveboats-pradza.edu.gov",
@@ -17,7 +35,7 @@ const defaultState = {
     "mail-2233-fd99":
         {
             id: "mail-2233-fd99",
-            timestamp: new Date(),
+            timestamp: new Date().toDateString(),
             read: false,
             from: "system",
             title: "hardware error detected",
@@ -29,11 +47,10 @@ const defaultState = {
         }
 };
 
-const mailReducer = (state = defaultState, action) => {
+export const mailReducer = (state: MailState | undefined = defaultState, action: AnyAction): MailState => {
+
     switch (action.type) {
         default:
             return state;
     }
 }
-
-export default mailReducer;

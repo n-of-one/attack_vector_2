@@ -15,12 +15,12 @@ export interface SiteStateMessage {
     layerId: string | null
 }
 
-export const defaultState: SiteStateI = {
+export const siteStateDefault: SiteStateI = {
     ok: true,
     messages: []
 };
 
-export const siteStateReducer = (state: SiteStateI = defaultState, action: AnyAction) => {
+export const siteStateReducer = (state: SiteStateI = siteStateDefault, action: AnyAction) => {
     switch(action.type) {
         case SERVER_SITE_FULL: return action.data.state
         case SERVER_UPDATE_SITE_STATE: return action.data

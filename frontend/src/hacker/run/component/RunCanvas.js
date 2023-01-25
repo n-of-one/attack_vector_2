@@ -82,8 +82,17 @@ class RunCanvas {
         this.canvas.renderAll();
     }
 
-    loadScan({scan, site, hackers, patrollers}) {
-        const {nodes, connections, nodeStatuses, layerStatuses} = site;
+    loadScan(actionData) {
+        const scan = structuredClone(actionData.scan)
+        const site = structuredClone(actionData.site)
+        const hackers = structuredClone(actionData.hackers)
+        const patrollers = structuredClone(actionData.patrollers)
+
+        const nodes = site.nodes
+        const connections = site.connections
+        const nodeStatuses = site.nodeStatuses
+        const layerStatuses = site.layerStatuses
+
         this.nodeDataById = {};
         this.sortAndAddHackers(hackers);
 

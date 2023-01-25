@@ -2,11 +2,11 @@ import {dragAndDropReducer, defaultDragAndDropState, DragAndDropState} from "./r
 import {themeReducer} from "../common/reducer/ThemeReducer"
 import {connectionsReducer, Connection} from "./reducer/ConnectionsReducer"
 import {layoutReducer, defaultLayout, Layout} from "./reducer/LayoutReducer"
-import {SiteData, siteDataDefaultState, SiteDataReducer} from "./reducer/SiteDataReducer"
+import {SiteData, siteDataDefault, SiteDataReducer} from "./reducer/SiteDataReducer"
 import {NodeI, nodesReducer} from "./reducer/NodesReducer"
 import {currentNodeIdReducer} from "./reducer/CurrentNodeIdReducer"
 import {currentLayerIdReducer} from "./reducer/CurrentLayerIdReducer"
-import {siteStateReducer, defaultState, SiteStateI} from "./reducer/SiteStateReducer"
+import {siteStateReducer, siteStateDefault, SiteStateI} from "./reducer/SiteStateReducer"
 import {AnyAction} from "redux"
 
 export interface EditorState {
@@ -22,7 +22,7 @@ export interface EditorState {
 }
 
 export const editorRootDefaultState: EditorState = {
-    siteData: { ...siteDataDefaultState},
+    siteData: { ...siteDataDefault},
     layout: defaultLayout,
     dragAndDrop: defaultDragAndDropState,
     theme: "frontier",
@@ -30,7 +30,7 @@ export const editorRootDefaultState: EditorState = {
     connections: [],
     currentNodeId: null,
     currentLayerId: null,
-    state : defaultState
+    state : siteStateDefault
 }
 
 export const editorRootReducer = (state:EditorState, action: AnyAction): EditorState => {

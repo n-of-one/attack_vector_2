@@ -4,7 +4,7 @@ import {BrowserRouter, Routes, Route, useParams} from 'react-router-dom'
 import GmRoot from "./gm/GmRoot"
 import {EditorRoot} from "./editor/EditorRoot"
 import {Login} from "./Login"
-import HackerRoot from "./hacker/HackerRoot"
+import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
 
 

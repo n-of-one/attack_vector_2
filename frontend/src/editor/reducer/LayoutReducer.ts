@@ -17,7 +17,7 @@ export const defaultLayout: Layout = {
     connectionIds: []
 }
 
-export const layoutReducer = (state: Layout = defaultLayout, action: AnyAction) => {
+export const layoutReducer = (state: Layout = defaultLayout, action: AnyAction):Layout  => {
     switch(action.type) {
         case SERVER_SITE_FULL: return action.data.layout
         case SERVER_ADD_NODE: return addNode(action.data as AddNodeData, state)

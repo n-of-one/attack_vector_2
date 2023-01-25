@@ -1,11 +1,12 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
+import {delay} from "../Util";
 
 class TerminalManager {
 
     store = null;
     dispatch = null;
-    terminalTickIntervalId = null;
+    // terminalTickIntervalId = null;
     running = false;
 
     terminals = {};
@@ -13,9 +14,13 @@ class TerminalManager {
     init(store) {
         this.store = store;
         this.dispatch = store.dispatch;
-        this.terminalTickIntervalId = setInterval(() => {
-            this.dispatch({type: TERMINAL_TICK});
-        }, 50);
+        // this.terminalTickIntervalId =
+        delay(() => {
+
+            setInterval(() => {
+                this.dispatch({type: TERMINAL_TICK});
+            }, 50);
+        })
 
         window.onkeydown = (event) => {
             if (this.running) {
@@ -44,8 +49,7 @@ class TerminalManager {
 
         if (keyCode === ENTER_KEY) {
             this.terminals[terminalId].submit(key);
-        }
-        else {
+        } else {
             this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId});
         }
     }

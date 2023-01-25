@@ -13,7 +13,7 @@ export interface SiteData {
 }
 
 
-export  const siteDataDefaultState: SiteData = {
+export const siteDataDefault: SiteData = {
     siteId: "",
     name: "non name yet",
     description: "",
@@ -23,7 +23,7 @@ export  const siteDataDefaultState: SiteData = {
     hackable: false
 }
 
-export const SiteDataReducer = (state: SiteData = siteDataDefaultState, action: AnyAction) => {
+export const SiteDataReducer = (state: SiteData = siteDataDefault, action: AnyAction) => {
     switch (action.type) {
         case SERVER_SITE_FULL:
             return action.data.siteData

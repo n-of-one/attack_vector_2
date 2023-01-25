@@ -1,31 +1,39 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
 import RequiresRole from "../common/RequiresRole";
-import {applyMiddleware, compose, createStore} from "redux";
+import {Reducer, Store} from "redux";
 import {HACKER_HOME} from "./HackerPages";
 import HackerPageChooser from "./HackerPageChooser";
-import createSagaMiddleware from 'redux-saga'
+import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import createHackerRootSaga from "./HackerRootSaga";
-import hackerRootReducer from "./HackerRootReducer";
+import {hackerRootReducer, HackerState} from "./HackerRootReducer";
 import webSocketConnection from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 import passwordIceManager from "./run/ice/password/PasswordIceManager";
 import tangleIceManager from "./run/ice/tangle/TangleIceManager";
+import {configureStore} from "@reduxjs/toolkit";
 
-class HackerRoot extends Component {
+export class HackerRoot extends Component {
 
-    constructor(props) {
-        super(props);
-        this.init();
-    }
+    store: Store
 
-    init() {
+    constructor(props: {}) {
+        super(props)
         const preLoadedState = {currentPage: HACKER_HOME};
-        const sagaMiddleware = createSagaMiddleware();
+        const sagaMiddleware = createSagaMiddleware() as SagaMiddleware<HackerState>;
 
-        const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-        this.store = createStore(hackerRootReducer, preLoadedState, composeEnhancers(applyMiddleware(sagaMiddleware)));
+
+        const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
+
+        this.store = configureStore({
+            reducer: hackerRootReducer as Reducer<HackerState>,
+            preloadedState: preLoadedState,
+            middleware: (getDefaultMiddleware) =>  [sagaMiddleware, ...getDefaultMiddleware()],
+            devTools: isDevelopmentServer
+        })
+
+        // this.store = createStore(hackerRootReducer, preLoadedState, composeEnhancers(applyMiddleware(sagaMiddleware)));
         // this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         webSocketConnection.create(this.store, () => {
@@ -40,23 +48,13 @@ class HackerRoot extends Component {
         tangleIceManager.init(this.store, webSocketConnection);
     }
 
-    renderIfAuthenticated() {
-        return (
-            <Provider store={this.store}>
-                <HackerPageChooser />
-            </Provider>
-        );
-    }
-
     render() {
         return(
             <RequiresRole requires="ROLE_HACKER">
-                {this.renderIfAuthenticated()}
+                <Provider store={this.store}>
+                    <HackerPageChooser />
+                </Provider>
             </RequiresRole>
         )
     }
-
 }
-
-export default HackerRoot
-

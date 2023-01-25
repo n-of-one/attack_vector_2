@@ -4,20 +4,30 @@ import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import serverTime from "../../../../common/ServerTime";
+import {AnyAction} from "redux";
+import {CurrentIce} from "../CurrentIceReducer";
 
-// const defaultState = {
-//     layerId: "svc-7baa-4572-cde0",
-//     lockedUntil: "2019-08-26T15:38:40.9179757+02:00",
-//     attempts: ["zwaardvis", "secret"],
-//     uiState: "UNLOCKED",
-//     waitSeconds: 7,
-//     hacked: false,
-//     hint: "mother's name",
-// };
+export interface PasswordIceI {
+    layerId: string,
+    lockedUntil: string,
+    attempts: string[],
+    uiState: string,
+    waitSeconds: number,
+    hacked: boolean,
+    hint?: string,
+}
 
-const defaultState = {};
+const defaultState = {
+    layerId: "svc-7baa-4572-cde0",
+    lockedUntil: "2019-08-26T15:38:40.9179757+02:00",
+    attempts: ["zwaardvis", "secret"],
+    uiState: "UNLOCKED",
+    waitSeconds: 7,
+    hacked: false,
+    hint: "mother's name",
+};
 
-const PasswordIceReducer = (state = defaultState, action, currentIce) => {
+export const passwordIceReducer = (state : PasswordIceI= defaultState, action: AnyAction, currentIce:CurrentIce) => {
     if (!currentIce || currentIce.type !== ICE_PASSWORD) {
         return state;
     }
@@ -42,7 +52,7 @@ const PasswordIceReducer = (state = defaultState, action, currentIce) => {
     }
 };
 
-const processTick = (state) => {
+const processTick = (state: PasswordIceI) => {
     if (!state.waitSeconds || state.waitSeconds <= 0 ) {
         return state;
     }
@@ -51,13 +61,21 @@ const processTick = (state) => {
     return {...state, waitSeconds: waitSeconds, locked: false};
 };
 
+interface ServerStatus {
+    message?: string,
+    hacked: boolean,
+    hint?: string,
+    layerId: string,
+    attempts: string[]
+    lockedUntil: string
+}
 
-const processStartHacking = (serverStatus) => {
+const processStartHacking = (serverStatus: ServerStatus): PasswordIceI => {
     const waitSeconds = calculateWaitSeconds(serverStatus);
     return {...serverStatus, waitSeconds: waitSeconds, uiState: HIDDEN };
 };
 
-const processServerUpdate = (serverStatus, currentIce, oldState) => {
+const processServerUpdate = (serverStatus: ServerStatus, currentIce: CurrentIce, oldState: PasswordIceI) => {
     // disregard updates for password ice that this player is not hacking.
     if (currentIce.layerId !== serverStatus.layerId) {
         return oldState;
@@ -68,10 +86,6 @@ const processServerUpdate = (serverStatus, currentIce, oldState) => {
 };
 
 
-const calculateWaitSeconds = (serverStatus) => {
+const calculateWaitSeconds = (serverStatus: ServerStatus) => {
     return serverTime.secondsLeft(serverStatus.lockedUntil);
 };
-
-
-
-export default PasswordIceReducer

@@ -39,7 +39,7 @@ export enum LayerType {
 export interface EditorLayerDetails {
     id: string
     type: LayerType
-    level: number
+    level: number       // height of the layer. level 0 is always OS. Hack top level first.
     name: string
     note: string
 }

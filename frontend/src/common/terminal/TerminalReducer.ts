@@ -11,12 +11,41 @@ import {
 } from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
 import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes";
+import {AnyAction} from "redux";
 
 const LINE_LIMIT = 100;
 
+export interface TerminalLine {
+    type: string,
+    data: string,
+    class?: string[]
+}
 
+export interface Syntax {
+    first: string,
+    second: string,
+    rest: string
+}
 
-const defaultStateTemplate = {
+export interface TerminalState {
+    id: string,
+    lines: TerminalLine[],
+    prompt: string,
+    readOnly: boolean,
+    renderOutput: boolean,
+    autoScroll: boolean,
+    input: string,
+    renderingLine: TerminalLine | null,
+    receivingLine: TerminalLine | null,
+    receiveBuffer: TerminalLine[],
+    receiving: boolean,
+    syntaxHighlighting: { [key: string]: Syntax },
+    history: TerminalLine[],
+    historyIndex: number
+}
+
+export const terminalStateDefault: TerminalState = {
+    id: "",
     lines: [],              // lines that are fully shown
     prompt: "⇋ ",
     readOnly: false,        // only allow user input if true
@@ -32,14 +61,24 @@ const defaultStateTemplate = {
     historyIndex: 0         // which history item was last selected. When historyIndex == history then no history item is selected
 };
 
-const createTerminalReducer = (id, config) => {
-    const defaultState = {...defaultStateTemplate, ...config, id: id};
+interface CreatTerminalConfig {
+    readOnly?: boolean,
+    receiveBuffer?: TerminalLine[],
+    autoScroll?: boolean,
+    renderOutput?: boolean,
+}
 
-    return (terminal = defaultState, action) => {
+type TerminalReducer = (state: TerminalState | undefined, action: AnyAction) => TerminalState
+
+export const createTerminalReducer = (id: string, config: CreatTerminalConfig): TerminalReducer => {
+    const defaultState = {...terminalStateDefault, ...config, id: id};
+
+    return (terminal: TerminalState | undefined = defaultState , action: AnyAction) => {
         if (action.type === TERMINAL_TICK) {
             return processTick(processTick(processTick(processTick(terminal))));
         }
 
+        // TODO: FIx mess
         if (action.terminalId) {
             if (action.terminalId !== terminal.id) {
                 return terminal;
@@ -75,7 +114,7 @@ const createTerminalReducer = (id, config) => {
     };
 };
 
-function processTick(terminal) {
+function processTick(terminal: TerminalState) {
     if (!terminal.receiving) {
         return terminal;
     }
@@ -85,7 +124,7 @@ function processTick(terminal) {
 
     let nextReceiveBuffer = [...terminal.receiveBuffer];
     let nextLines = [...terminal.lines];
-    let nextRenderingLine = (terminal.renderingLine) ? {...terminal.renderingLine} : {type: "text", data: ""};
+    let nextRenderingLine: TerminalLine | null = (terminal.renderingLine) ? {...terminal.renderingLine} : {type: "text", data: ""};
 
     let nextReceivingLine;
     if (terminal.receivingLine !== null) {
@@ -131,7 +170,7 @@ function processTick(terminal) {
 }
 
 
-const receive = (terminal, action) => {
+const receive = (terminal: TerminalState, action: AnyAction) => {
     const buffer = (terminal.receiveBuffer) ? terminal.receiveBuffer : [];
 
     const line = {type: "text", data: action.data};
@@ -143,8 +182,8 @@ const receive = (terminal, action) => {
     };
 };
 
-const receiveFromServer = (terminal, action) => {
-    const lines = action.data.lines.map((line) => {
+const receiveFromServer = (terminal: TerminalState, action: AnyAction) => {
+    const lines = action.data.lines.map((line: TerminalLine) => {
         return {type: "text", data: line}
     });
 
@@ -156,7 +195,7 @@ const receiveFromServer = (terminal, action) => {
     }
 };
 
-const handlePressKey = (terminal, action) => {
+const handlePressKey = (terminal: TerminalState, action: AnyAction): TerminalState => {
     const {keyCode, key} = action;
     if (keyCode === UP || keyCode === DOWN) {
         return handleHistory(terminal, keyCode);
@@ -166,7 +205,7 @@ const handlePressKey = (terminal, action) => {
     return {...terminal, input: newInput}
 };
 
-const determineInput = (input, keyCode, key) => {
+const determineInput = (input: string, keyCode: number, key: string) => {
     if (keyCode === BACKSPACE && input.length > 0) {
         return input.substr(0, input.length - 1);
     }
@@ -180,7 +219,7 @@ const determineInput = (input, keyCode, key) => {
     }
 };
 
-const handleHistory = (terminal, keyCode) => {
+const handleHistory = (terminal: TerminalState, keyCode: number): TerminalState => {
     const index = terminal.historyIndex + ((keyCode === UP) ? -1 : 1);
     if (index < 0) {
         return terminal;
@@ -188,11 +227,11 @@ const handleHistory = (terminal, keyCode) => {
     if  (index >= terminal.history.length) {
         return {...terminal, historyIndex: terminal.history.length, input: "" }
     }
-    return {...terminal, historyIndex: index, input: terminal.history[index] }
+    return {...terminal, historyIndex: index, input: terminal.history[index].data }
 
 };
 
-const handlePressEnter = (terminal, action) => {
+const handlePressEnter = (terminal: TerminalState, action: AnyAction): TerminalState => {
     const line = terminal.prompt + action.command;
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
 
@@ -202,14 +241,14 @@ const handlePressEnter = (terminal, action) => {
 };
 
 /* Only call on mutable array */
-const limitLines = (lines) => {
+const limitLines = (lines: TerminalLine[]) => {
     while (lines.length > LINE_LIMIT) {
         lines.shift();
     }
     return lines;
 };
 
-const handleServerError = (terminal, action) => {
+const handleServerError = (terminal: TerminalState, action: AnyAction) => {
     const retryLines = (action.data.recoverable) ? [
             {type: "text", data: " "},
             {type: "text", data: "[warn b]A server error occurred. Please refresh browser."}]
@@ -232,17 +271,15 @@ const handleServerError = (terminal, action) => {
     };
 };
 
-const handleTerminalClear = (terminal, action, defaultState) => {
+const handleTerminalClear = (terminal: TerminalState, action: AnyAction, defaultState: TerminalState) => {
     return defaultState;
 };
 
-const terminalSetReadonly = (terminal, id, readOnly) => {
+// TODO: remove unused id parameter
+const terminalSetReadonly = (terminal: TerminalState, id: string, readOnly: boolean) => {
     return {...terminal, readOnly: readOnly}
 };
 
-const processSyntaxHighlighting = (terminal, data) => {
+const processSyntaxHighlighting = (terminal: TerminalState, data: any) => {
     return {...terminal, syntaxHighlighting: data.highlighting}
 };
-
-
-export default createTerminalReducer;
