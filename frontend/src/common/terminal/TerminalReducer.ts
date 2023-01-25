@@ -40,7 +40,7 @@ export interface TerminalState {
     receiveBuffer: TerminalLine[],
     receiving: boolean,
     syntaxHighlighting: { [key: string]: Syntax },
-    history: TerminalLine[],
+    history: string[]
     historyIndex: number
 }
 
@@ -76,6 +76,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
     return (terminal: TerminalState | undefined = defaultState , action: AnyAction) => {
         if (action.type === TERMINAL_TICK) {
             return processTick(processTick(processTick(processTick(terminal))));
+            // return processTick(terminal);
         }
 
         // TODO: FIx mess
@@ -227,7 +228,7 @@ const handleHistory = (terminal: TerminalState, keyCode: number): TerminalState 
     if  (index >= terminal.history.length) {
         return {...terminal, historyIndex: terminal.history.length, input: "" }
     }
-    return {...terminal, historyIndex: index, input: terminal.history[index].data }
+    return {...terminal, historyIndex: index, input: terminal.history[index] }
 
 };
 
@@ -235,13 +236,13 @@ const handlePressEnter = (terminal: TerminalState, action: AnyAction): TerminalS
     const line = terminal.prompt + action.command;
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
 
-    const newHistory = limitLines([...terminal.history, action.command]);
+    const newHistory = limitLines([...terminal.history, (action.command as string)]);
 
     return {...terminal, lines: lines, input: "", receiving: true, history: newHistory, historyIndex: newHistory.length};
 };
 
 /* Only call on mutable array */
-const limitLines = (lines: TerminalLine[]) => {
+const limitLines = (lines: any[]) => {
     while (lines.length > LINE_LIMIT) {
         lines.shift();
     }

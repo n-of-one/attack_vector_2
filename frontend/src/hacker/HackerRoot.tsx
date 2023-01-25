@@ -25,11 +25,22 @@ export class HackerRoot extends Component {
 
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
+        // const defaultMiddlewareOptions = isDevelopmentServer ? {
+        //     immutableCheck: { warnAfter: 2 },
+        //     serializableCheck: { warnAfter: 2 },
+        // } : {
+        //     immutableCheck: false,
+        //     serializableCheck: false,
+        // }
+
 
         this.store = configureStore({
             reducer: hackerRootReducer as Reducer<HackerState>,
             preloadedState: preLoadedState,
+
             middleware: (getDefaultMiddleware) =>  [sagaMiddleware, ...getDefaultMiddleware()],
+            // TODO: check if we ever got high values for the immutableCheck (> 32 ms)
+            // middleware: (getDefaultMiddleware) =>  [sagaMiddleware, ...getDefaultMiddleware(defaultMiddlewareOptions)],
             devTools: isDevelopmentServer
         })
 
