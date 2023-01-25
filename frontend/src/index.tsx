@@ -47,6 +47,7 @@ root.render(
             <Route path="/gm" element={<GmRoot/>}/>
             <Route path="/edit/:siteId" element={<Editor/>}/>
             <Route path="/" element={<ReRoute/>}/>
+            <Route path="*" element={<ReRoute/>}/>
         </Routes>
     </BrowserRouter>
 )

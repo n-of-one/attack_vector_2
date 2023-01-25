@@ -57,7 +57,7 @@ export const NodeDetailsPanel = () => {
             return {layers: [], currentLayer: null}
         }
         const node: NodeI = findElementById(state.nodes, state.currentNodeId)
-        const layer: EditorLayerDetails = findElementById(node.layers, state.currentLayerId)
+        const layer: EditorLayerDetails = findElementById(node.layers, state.currentLayerId!)
         return {
             node: node,
             layers: node.layers,

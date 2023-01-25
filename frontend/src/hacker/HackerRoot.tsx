@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import RequiresRole from "../common/RequiresRole";
+import {RequiresRole} from "../common/RequiresRole";
 import {Reducer, Store} from "redux";
 import {HackerPageChooser} from "./HackerPageChooser";
 import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'

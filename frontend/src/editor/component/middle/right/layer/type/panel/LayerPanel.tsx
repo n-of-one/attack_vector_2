@@ -20,7 +20,7 @@ export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
             return {}
         }
         const node = findElementById(state.nodes, state.currentNodeId)
-        const layer = findElementById(node.layers, state.currentLayerId)
+        const layer = findElementById(node.layers, state.currentLayerId!)
 
         return {
             node: node,

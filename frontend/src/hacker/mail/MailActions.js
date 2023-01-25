@@ -1,3 +1,0 @@
-const SELECT_MAIL = "SELECT_MAIL";
-
-export { SELECT_MAIL };

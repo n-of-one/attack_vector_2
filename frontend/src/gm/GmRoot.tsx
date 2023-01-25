@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { GmHome } from "./component/GmHome"
 import {Provider} from 'react-redux'
-import RequiresRole from "../common/RequiresRole"
+import {RequiresRole} from "../common/RequiresRole"
 import {GM_SITES} from "./GmPages"
 import {configureStore} from "@reduxjs/toolkit"
 import {pageReducer, NAVIGATE_PAGE} from "../common/menu/pageReducer"
