@@ -6,6 +6,7 @@ import {EditorRoot} from "./editor/EditorRoot"
 import {Login} from "./Login"
 import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
+import {ToasterConfig} from "./common/Notification";
 
 
 const ReRoute = (): JSX.Element => {
@@ -36,19 +37,22 @@ const root = createRoot(container)
 
 const Editor = () => {
     const {siteId} = useParams()
-    return (<EditorRoot siteId={siteId as string} />)
+    return (<EditorRoot siteId={siteId as string}/>)
 }
 
 root.render(
-    <BrowserRouter>
-        <Routes>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/hacker" element={<HackerRoot/>}/>
-            <Route path="/gm" element={<GmRoot/>}/>
-            <Route path="/edit/:siteId" element={<Editor/>}/>
-            <Route path="/" element={<ReRoute/>}/>
-            <Route path="*" element={<ReRoute/>}/>
-        </Routes>
-    </BrowserRouter>
+    <>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/hacker" element={<HackerRoot/>}/>
+                <Route path="/gm" element={<GmRoot/>}/>
+                <Route path="/edit/:siteId" element={<Editor/>}/>
+                <Route path="/" element={<ReRoute/>}/>
+                <Route path="*" element={<ReRoute/>}/>
+            </Routes>
+        </BrowserRouter>
+        <ToasterConfig/>
+    </>
 )
 

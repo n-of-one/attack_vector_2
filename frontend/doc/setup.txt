@@ -13,7 +13,7 @@ npm install --save react-router-dom
 npm install --save @types/react-router-dom
 npm install --save fabric
 npm install --save redux-saga
-npm install --save izitoast
+npm install --save react-hot-toast
 npm install --save webstomp-client
 npm install --save js-cookie
 npm install --save @types/js-cookie

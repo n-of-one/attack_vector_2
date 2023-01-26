@@ -1,6 +1,6 @@
 import WebSocketConnection from "../../common/WebSocketConnection"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../../common/enums/CommonActions"
-import {notify, notify_fatal} from "../../common/Notification"
+import {NotificationType, notify} from "../../common/Notification"
 import {Dispatch} from "redux"
 import {TERMINAL_RECEIVE} from "../../common/terminal/TerminalActions"
 import serverTime from "../../common/ServerTime"
@@ -34,12 +34,12 @@ export const initEditorServerActions = (webSocketConnection: typeof WebSocketCon
     })
 
     webSocketConnection.addAction(SERVER_DISCONNECT, () => {
-        notify_fatal('Connection with server lost. Please refresh browser.')
+        notify({type: 'fatal', message: 'Connection with server lost. Please refresh browser.'})
         dispatch({type: TERMINAL_RECEIVE, data: "[b warn]Connection with server lost. Please refresh browser."})
     })
 
     webSocketConnection.addAction(SERVER_ERROR, (data: { message: string }) => {
-        notify_fatal(data.message)
+        notify({type: 'error', message: data.message})
     })
 
     webSocketConnection.addAction(SERVER_SITE_FULL, (data: LoadSiteData) => {
@@ -62,7 +62,7 @@ export const initEditorServerActions = (webSocketConnection: typeof WebSocketCon
 }
 
 export interface ServerNotification {
-    type: string,
+    type: NotificationType,
     title: string,
     message: string
 }

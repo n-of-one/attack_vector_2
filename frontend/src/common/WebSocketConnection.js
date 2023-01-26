@@ -1,7 +1,7 @@
 import webstomp from 'webstomp-client';
 import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
-import {notify_fatal} from "./Notification";
+import {notify} from "./Notification";
 
 class WebSocketConnection {
 
@@ -46,7 +46,7 @@ class WebSocketConnection {
     onWsOpen(event, additionalOnWsOpen) {
         const userId = event.headers["user-name"];
         if (!userId || userId === "error") {
-            notify_fatal("Please close this browser tab, hackers can only use one browser tab at a time..");
+            notify ({type: "fatal", message:"Please close this browser tab, hackers can only use one browser tab at a time.."});
             return
         }
 

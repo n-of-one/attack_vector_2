@@ -5,11 +5,11 @@
   "dependencies": {
     "bootstrap": "^5.2.3",
     "fabric": "^5.3.0",
-    "izitoast": "^1.4.0",
     "js-cookie": "^3.0.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.2",
     "redux": "^4.2.0",
@@ -18,14 +18,14 @@
     "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
-    "@types/fabric": "^4.5.15",
-    "@types/webpack-env": "^1.18.0",
     "@reduxjs/toolkit": "^1.9.1",
+    "@types/fabric": "^4.5.15",
     "@types/jest": "^29.2.5",
     "@types/js-cookie": "^3.0.2",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
+    "@types/webpack-env": "^1.18.0",
     "react-scripts": "^5.0.1",
     "redux-devtools-extension": "^2.13.9"
   },

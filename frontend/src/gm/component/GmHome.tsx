@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {MenuBar} from "../../common/menu/MenuBar"
 import {TextInput} from "../../common/component/TextInput"
 import {post} from "../../common/RestClient"
-import {notify_fatal} from "../../common/Notification"
+import {notify} from "../../common/Notification"
 import SilentLink from "../../common/component/SilentLink"
 import {GmState} from "../GmRoot"
 import {GmSite, RECEIVE_SITES} from "../GmSitesReducer"
@@ -33,10 +33,10 @@ export const GmHome = () => {
                 window.open("/edit/" + id)
             },
             notok: () => {
-                notify_fatal("Connection to server failed, unable to continue.")
+                notify({type: "fatal", message: "Connection to server failed, unable to continue."})
             },
             error: () => {
-                notify_fatal("Connection to server failed, unable to continue.")
+                notify({type: "fatal", message: "Connection to server failed, unable to continue."})
             }
         })
     }

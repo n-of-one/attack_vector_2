@@ -1,5 +1,5 @@
 import {put} from 'redux-saga/effects'
-import {notify, notify_fatal} from "../Notification";
+import {notify} from "../Notification";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
 import serverTime from "../ServerTime";
 
@@ -14,7 +14,7 @@ export function* serverNotificationSaga(action) {
 }
 
 export function* serverDisconnectSaga() {
-    notify_fatal('Connection with server lost. Please refresh browser.');
+    notify({type: 'fatal', message: 'Connection with server lost. Please refresh browser.'});
     yield put({type: TERMINAL_RECEIVE, data: "[b warn]Connection with server lost. Please refresh browser."});
 }
 
@@ -24,6 +24,6 @@ export function* serverForceDisconnectSaga(action) {
 }
 
 export function* serverErrorSaga(action) {
-    notify_fatal(action.data.message);
+    notify({type: "error", message: action.data.message});
     yield
 }
