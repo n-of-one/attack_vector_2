@@ -4,7 +4,7 @@ import React from "react";
 import Terminal from "../common/terminal/Terminal";
 import {MenuBar} from "../common/menu/MenuBar";
 import runCanvas from "./run/component/RunCanvas";
-import RunPageChooser from "./run/component/RunPageChooser";
+import {RunPageChooser} from "./run/component/RunPageChooser";
 import {useSelector} from "react-redux";
 import {HackerState} from "./HackerRootReducer";
 import {TerminalState} from "../common/terminal/TerminalReducer";

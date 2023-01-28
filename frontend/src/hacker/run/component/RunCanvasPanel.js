@@ -4,9 +4,9 @@ import {
     DATA_STORE, MANUAL_1, MANUAL_2, MANUAL_3, PASSCODE_STORE, RESOURCE_STORE, SYSCON,
     ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
 } from "../../../common/enums/NodeTypesNames";
-import ScanNodeImage from "./RunNodeImage";
+import {RunNodeImage} from "./RunNodeImage";
 import HackerImage from "../../../common/component/HackerImage";
-import ScanProbeImages from "./ScanProbeImages";
+import {ScanProbeImages} from "./ScanProbeImages";
 import PatrollerImage from "../../../common/component/PatrollerImage";
 import {connect} from "react-redux";
 
@@ -37,21 +37,21 @@ class RunCanvasPanel extends Component {
                     "marginBottom": "10px",
                 }}/>
                 <div className="dontDisplay">
-                    <ScanNodeImage type={SYSCON} onLoad={onLoad}/>
-                    <ScanNodeImage type={DATA_STORE} onLoad={onLoad}/>
-                    <ScanNodeImage type={PASSCODE_STORE} onLoad={onLoad}/>
-                    <ScanNodeImage type={RESOURCE_STORE} onLoad={onLoad}/>
-                    <ScanNodeImage type={TRANSIT_1} onLoad={onLoad}/>
-                    <ScanNodeImage type={TRANSIT_2} onLoad={onLoad}/>
-                    <ScanNodeImage type={TRANSIT_3} onLoad={onLoad}/>
-                    <ScanNodeImage type={TRANSIT_4} onLoad={onLoad}/>
-                    <ScanNodeImage type={ICE_1} onLoad={onLoad}/>
-                    <ScanNodeImage type={ICE_2} onLoad={onLoad}/>
-                    <ScanNodeImage type={ICE_3} onLoad={onLoad}/>
-                    <ScanNodeImage type={UNHACKABLE} onLoad={onLoad}/>
-                    <ScanNodeImage type={MANUAL_1} ice={true} onLoad={onLoad}/>
-                    <ScanNodeImage type={MANUAL_2} ice={true} onLoad={onLoad}/>
-                    <ScanNodeImage type={MANUAL_3} ice={true} onLoad={onLoad}/>
+                    <RunNodeImage type={SYSCON} onLoad={onLoad}/>
+                    <RunNodeImage type={DATA_STORE} onLoad={onLoad}/>
+                    <RunNodeImage type={PASSCODE_STORE} onLoad={onLoad}/>
+                    <RunNodeImage type={RESOURCE_STORE} onLoad={onLoad}/>
+                    <RunNodeImage type={TRANSIT_1} onLoad={onLoad}/>
+                    <RunNodeImage type={TRANSIT_2} onLoad={onLoad}/>
+                    <RunNodeImage type={TRANSIT_3} onLoad={onLoad}/>
+                    <RunNodeImage type={TRANSIT_4} onLoad={onLoad}/>
+                    <RunNodeImage type={ICE_1} onLoad={onLoad}/>
+                    <RunNodeImage type={ICE_2} onLoad={onLoad}/>
+                    <RunNodeImage type={ICE_3} onLoad={onLoad}/>
+                    <RunNodeImage type={UNHACKABLE} onLoad={onLoad}/>
+                    <RunNodeImage type={MANUAL_1} ice={true} onLoad={onLoad}/>
+                    <RunNodeImage type={MANUAL_2} ice={true} onLoad={onLoad}/>
+                    <RunNodeImage type={MANUAL_3} ice={true} onLoad={onLoad}/>
                     <HackerImage type="BEAR" fileName="animal-bear4-sc44.png" onLoad={onLoad}/>
                     <HackerImage type="BIRD_1" fileName="animal-bird2.png" onLoad={onLoad}/>
                     <HackerImage type="CAT" fileName="animal-cat3.png" onLoad={onLoad}/>
