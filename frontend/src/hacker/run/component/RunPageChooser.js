@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import RunHome from "./RunHome";
 import {IceGame} from "../ice/IceGame";
-import AlarmTimer from "../coundown/CountdownTimer";
+import {CountdownTimer} from "../coundown/CountdownTimer";
 
 const mapDispatchToProps = (dispatch) => {
     return {}
@@ -28,7 +28,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
         const runHomeStyle = (currentIce.type) ? "none" : "inline";
 
         return <>
-            <AlarmTimer />
+            <CountdownTimer />
             {ice(currentIce)}
             <span style={{"display": runHomeStyle}}>
                     <RunHome/>
