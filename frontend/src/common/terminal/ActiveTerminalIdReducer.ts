@@ -1,6 +1,6 @@
-import {SERVER_START_HACKING_ICE_PASSWORD} from "../../hacker/run/ice/password/PasswordIceActions";
 import {FINISH_HACKING_ICE} from "../../hacker/run/model/HackActions";
 import {AnyAction} from "redux";
+import {SERVER_START_HACKING_ICE_PASSWORD} from "../../hacker/run/ice/password/PasswordIceReducer";
 
 export const MAIN_TERMINAL_ID = "main"
 export const ICE_INPUT_TERMINAL_ID = "iceInput"

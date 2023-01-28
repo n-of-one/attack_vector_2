@@ -37,7 +37,6 @@ import {
     SERVER_NODE_HACKED
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
-import {ICE_PASSWORD_SUBMIT, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceActions";
 import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
 import {
     serverFlashPatrollerSaga, serverPatrollerHooksHackerSaga,
@@ -54,6 +53,8 @@ import {
     SERVER_START_TRACING_PATROLLER,
 } from "./run/coundown/CountdownActions";
 import {NAVIGATE_PAGE} from "../common/menu/pageReducer";
+import {ICE_PASSWORD_SUBMIT} from "./run/ice/password/PasswordIceHome";
+import {SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceReducer";
 
 
 const createHackerRootSaga = () => {

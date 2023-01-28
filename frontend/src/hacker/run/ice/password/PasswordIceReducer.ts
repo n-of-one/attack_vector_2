@@ -1,4 +1,3 @@
-import {ICE_PASSWORD_BEGIN, ICE_PASSWORD_LOCK, SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./PasswordIceActions";
 import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
 import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
@@ -6,6 +5,12 @@ import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import serverTime from "../../../../common/ServerTime";
 import {AnyAction} from "redux";
 import {CurrentIce} from "../CurrentIceReducer";
+
+export const SERVER_START_HACKING_ICE_PASSWORD = "SERVER_START_HACKING_ICE_PASSWORD";
+export const SERVER_ICE_PASSWORD_UPDATE = "SERVER_ICE_PASSWORD_UPDATE";
+export const ICE_PASSWORD_LOCK = "ICE_PASSWORD_LOCK";
+export const ICE_PASSWORD_BEGIN = "ICE_PASSWORD_BEGIN";
+
 
 export interface PasswordIceI {
     layerId: string,

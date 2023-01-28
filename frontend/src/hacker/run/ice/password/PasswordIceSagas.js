@@ -1,8 +1,8 @@
 import {put, select} from 'redux-saga/effects'
 import {webSocketConnection} from "../../../../common/WebSocketConnection";
-import {ICE_PASSWORD_LOCK} from "./PasswordIceActions";
 import {UNLOCKED} from "../IceUiState";
 import passwordIceManager from "./PasswordIceManager";
+import {ICE_PASSWORD_LOCK} from "./PasswordIceReducer";
 
 
 const getRunId = (state) => state.run.scan.runId;
@@ -13,7 +13,7 @@ export function* passwordIceStartHack(action) {
 }
 
 export function* serverPasswordIceUpdate(action) {
-    yield passwordIceManager.serverPasswordIceUpdate(action);
+    yield passwordIceManager.serverPasswordIceUpdate(action.data);
 }
 
 export function* passwordIceFinish() {

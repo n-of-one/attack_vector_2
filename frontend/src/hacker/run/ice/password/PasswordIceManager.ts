@@ -1,14 +1,28 @@
-import {TERMINAL_CLEAR, TERMINAL_RECEIVE} from "../../../../common/terminal/TerminalActions";
+import {TERMINAL_CLEAR} from "../../../../common/terminal/TerminalActions";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
-import {ICE_PASSWORD_BEGIN} from "./PasswordIceActions";
 import Schedule from "../../../../common/Schedule";
 import {notify} from "../../../../common/Notification";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
+import {Dispatch, Store} from "redux";
+import GenericIceManager from "../GenericIceManager";
+import {ICE_PASSWORD_BEGIN} from "./PasswordIceReducer";
 
+export interface PasswordIceState {
+    message?: string,
+    hacked: boolean,
+    hint?: string,
+    layerId: string,
+    attempts: String[],
+    lockedUntil: string
+}
 
-class PasswordIceManager {
+class PasswordIceManager extends GenericIceManager {
 
-    init(store) {
+    store: Store = null as unknown as Store
+    dispatch: Dispatch = null as unknown as Dispatch
+    schedule: Schedule = null as unknown as Schedule
+
+    init(store: Store) {
         this.store = store;
         this.dispatch = store.dispatch;
         this.schedule = new Schedule(store.dispatch);
@@ -29,34 +43,28 @@ class PasswordIceManager {
         this.schedule.dispatch(0, {type: ICE_PASSWORD_BEGIN});
     }
 
-    displayTerminal(wait, message) {
-        this.schedule.dispatch(wait, {type: TERMINAL_RECEIVE, terminalId: ICE_DISPLAY_TERMINAL_ID, data: message})
-    }
-
     close() {
         this.schedule.clear();
     }
 
-    serverPasswordIceUpdate(action) {
+    serverPasswordIceUpdate(data: PasswordIceState) {
         const currentIce = this.store.getState().run.ice.currentIce;
-        if (currentIce.layerId === action.data.layerId) {
-            if (action.data.hacked) {
-                this.processSuccess(action.data.message);
+        if (currentIce.layerId === data.layerId) {
+            if (data.hacked) {
+                this.processSuccess(data.message!);
             } else {
-                notify({type: "neutral", title: "Result", message: action.data.message})
+                notify({type: "neutral", title: "Result", message: data.message!})
             }
         }
     }
 
-    processSuccess(message) {
+    processSuccess(message: string) {
         notify({type: "ok", title: "Result", message: message});
         this.displayTerminal(0, "");
         this.displayTerminal(20, "Password accepted");
         this.displayTerminal(40, "ICE grants access.");
         this.schedule.dispatch(0, {type: FINISH_HACKING_ICE});
     }
-
-
 
 }
 

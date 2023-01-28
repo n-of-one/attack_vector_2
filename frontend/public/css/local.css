@@ -113,11 +113,14 @@ body {
     background-color:#337ab7;
     border-radius: 3px 3px 3px 3px;
     border-color: #000000;
-    padding: 3px 5px 0px 0px;
+    /*padding: 3px 5px 0px 0px;*/
+    padding: 3px 5px 1px 4px;
     z-index: 100;
     cursor: pointer;
     width: 18px;
     height: 18px;
+    position: relative;
+    top: -2px
 
 }
 
