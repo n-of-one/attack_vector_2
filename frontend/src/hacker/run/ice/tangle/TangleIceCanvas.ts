@@ -1,32 +1,35 @@
 import {fabric} from "fabric";
 import TanglePointDisplay from "./display/TanglePointDisplay";
 import TangleLineDisplay from "./display/TangleLineDisplay";
-import webSocketConnection from "../../../../common/WebSocketConnection";
+import {webSocketConnection} from "../../../../common/WebSocketConnection";
+import {TanglePointMoved, TanglePuzzle} from "./TangleIceManager";
+import {Dispatch, Store} from "redux";
+import {Canvas} from "fabric/fabric-impl";
+import {TangleLine, TanglePoint} from "./TangleIceReducer";
 
 class TangleIceCanvas {
 
-    currentSelected = null;
-    canvas = null;
-    pointDisplayById = null;
-    store = null;
-    dispatch = null;
+    currentSelected: TanglePointDisplay | null = null
+    canvas: Canvas = null as unknown as Canvas
+    pointDisplayById: {[ key: string]: TanglePointDisplay} = {}
+    store: Store = null as unknown as Store
+    dispatch: Dispatch = null as unknown as Dispatch
 
 
-    init(puzzleData, dispatch, store) {
+    init(puzzleData: TanglePuzzle, dispatch: Dispatch, store: Store) {
 
         this.dispatch = dispatch;
         this.store = store;
 
-        this.canvas = new fabric.Canvas('untangleCanvas', {
+        const canvas = new fabric.Canvas('untangleCanvas', {
             width: 1200,
             height: 680,
             backgroundColor: "#aaa",
         });
+        this.canvas = canvas
 
         fabric.Object.prototype.originX = "center";
         fabric.Object.prototype.originY = 'center';
-
-        const canvas = this.canvas;
 
         setTimeout(function() {
             fabric.Image.fromURL("/img/frontier/ice/tangle/fractal-untangle-1200x680.png", (img) => {
@@ -36,19 +39,19 @@ class TangleIceCanvas {
         }, 100);
 
         // this.canvas.on('object:modified', (event) => { this.canvasObjectModified(event); });
-        this.canvas.on('selection:created', (event) => {
+        canvas.on('selection:created', (event) => {
             this.canvasSelectionCreated(event);
         });
-        this.canvas.on('selection:cleared', (event) => {
-            this.canvasSelectionCleared(event);
+        canvas.on('selection:cleared', () => {
+            this.canvasSelectionCleared();
         });
-        this.canvas.on('mouse:up', (event) => {
-            this.canvasSelectionCleared(event);
+        canvas.on('mouse:up', () => {
+            this.canvasSelectionCleared();
         });
-        this.canvas.on('object:moving', (event) => {
+        canvas.on('object:moving', (event) => {
             this.canvasObjectMoved(event);
         });
-        this.canvas.selection = false;
+        canvas.selection = false;
 
         const {points, lines} = puzzleData;
 
@@ -63,12 +66,12 @@ class TangleIceCanvas {
         this.canvas.renderAll();
     }
 
-    addPoint(pointData) {
+    addPoint(pointData: TanglePoint) {
         const pointDisplay = new TanglePointDisplay(this.canvas, pointData);
         this.pointDisplayById[pointData.id] = pointDisplay;
     }
 
-    addLine(lineData) {
+    addLine(lineData: TangleLine) {
         const fromDisplay = this.pointDisplayById[lineData.fromId];
         const toDisplay = this.pointDisplayById[lineData.toId];
 
@@ -79,17 +82,17 @@ class TangleIceCanvas {
         lineDisplay.show();
     }
 
-    canvasSelectionCreated(event) {
+    canvasSelectionCreated(event: any) {
         const selectedObject = event.selected[0];
         if (selectedObject.display) {
+            selectedObject.display.highLight();
             this.currentSelected = selectedObject.display;
-            this.currentSelected.highLight();
             this.canvas.renderAll();
         }
     }
 
-    canvasSelectionCleared(event) {
-        if (this.currentSelected) {
+    canvasSelectionCleared() {
+        if (this.currentSelected != null) {
             const icon = this.currentSelected.icon;
             // this.dispatch({type: ICE_TANGLE_MOVE_POINT, id: this.currentSelected.id, x: icon.left, y: icon.top});
 
@@ -108,14 +111,14 @@ class TangleIceCanvas {
         }
     }
 
-    canvasObjectMoved(event) {
+    canvasObjectMoved(event: any) {
         const id = event.target.display.id;
         const pointDisplay = this.pointDisplayById[id];
         pointDisplay.updateLines();
         this.canvas.renderAll();
     }
 
-    serverMovedPoint(actionData) {
+    serverMovedPoint(actionData: TanglePointMoved) {
         this.pointDisplayById[actionData.id].moved(actionData.x, actionData.y);
         this.canvas.renderAll();
     }

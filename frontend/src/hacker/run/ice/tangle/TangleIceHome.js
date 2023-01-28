@@ -28,10 +28,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 <div className="col-lg-12">
                     <div className="row">
                         <div className="col-lg-12">
-                            <CloseButton closeAction={close} />
                             <h4 className="text-success">
                                 <strong>
-                                    Ice: <span className="text-info">Reva</span><br/>
+                                    Ice: <span className="text-info">Reva</span>&nbsp;<CloseButton closeAction={close} /><br/>
                                     Strength: <span className="text-info">{ice.strength}</span><br/>
                                 </strong>
                             </h4>

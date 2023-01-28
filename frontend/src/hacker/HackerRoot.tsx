@@ -6,7 +6,7 @@ import {HackerPageChooser} from "./HackerPageChooser";
 import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import createHackerRootSaga from "./HackerRootSaga";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
-import webSocketConnection from "../common/WebSocketConnection";
+import {webSocketConnection} from "../common/WebSocketConnection";
 import terminalManager from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 import passwordIceManager from "./run/ice/password/PasswordIceManager";
@@ -55,7 +55,7 @@ export class HackerRoot extends Component {
 
         terminalManager.init(this.store);
         passwordIceManager.init(this.store);
-        tangleIceManager.init(this.store, webSocketConnection);
+        tangleIceManager.init(this.store);
     }
 
     render() {

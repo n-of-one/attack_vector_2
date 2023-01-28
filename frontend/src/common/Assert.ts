@@ -1,5 +1,5 @@
 import {notify} from "./Notification"
-import webSocketConnection from "./WebSocketConnection"
+import {webSocketConnection} from "./WebSocketConnection"
 
 let assertNotNullUndef = (toCheck: any, debugInfo: Object) => {
     if (toCheck === null || toCheck === undefined) {

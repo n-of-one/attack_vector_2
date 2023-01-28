@@ -1,9 +1,16 @@
 import {fabric} from "fabric";
+import {Canvas, Circle} from "fabric/fabric-impl";
+import {TanglePoint} from "../TangleIceReducer";
+import TangleLineDisplay from "./TangleLineDisplay";
 
 export default class TanglePointDisplay {
 
+    canvas: Canvas
+    id: string
+    lines: TangleLineDisplay[]
+    icon: Circle
 
-    constructor(canvas, pointData) {
+    constructor(canvas: Canvas, pointData: TanglePoint) {
         this.canvas = canvas;
         this.id = pointData.id;
         this.lines = [];
@@ -24,8 +31,8 @@ export default class TanglePointDisplay {
             hoverCursor: "auto",
             moveCursor: "auto",
             hasBorders: false,
-            display: this,
         });
+        (this.icon as any).display = this
 
         this.icon.setControlsVisibility({
             tl: false,
@@ -54,7 +61,7 @@ export default class TanglePointDisplay {
         // this.canvas.add(this.idIcon);
     }
 
-    addLine(tangleLine) {
+    addLine(tangleLine: TangleLineDisplay) {
         this.lines.push(tangleLine);
     }
 
@@ -76,7 +83,7 @@ export default class TanglePointDisplay {
         this.icon.set("fill", "#337ab7");
     }
 
-    moved(x, y) {
+    moved(x: number, y: number) {
         this.icon.top = y;
         this.icon.left = x;
         this.icon.setCoords();

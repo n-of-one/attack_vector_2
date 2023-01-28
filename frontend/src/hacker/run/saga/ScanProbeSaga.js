@@ -1,5 +1,5 @@
 import runCanvas from "../component/RunCanvas"
-import webSocketConnection from "../../../common/WebSocketConnection";
+import {webSocketConnection} from "../../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
 
 const getRunId = (state) => state.run.scan.runId;

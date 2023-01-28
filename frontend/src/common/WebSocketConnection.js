@@ -3,7 +3,7 @@ import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
 import {notify} from "./Notification";
 
-class WebSocketConnection {
+export class WebSocketConnection {
 
     client = null;
     url = null;
@@ -163,6 +163,4 @@ class WebSocketConnection {
     }
 }
 
-const webSocketConnection = new WebSocketConnection();
-
-export default webSocketConnection;
+export const webSocketConnection = new WebSocketConnection();

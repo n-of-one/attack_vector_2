@@ -9,7 +9,7 @@ const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {r
 const inputTerminalReducer = createTerminalReducer(ICE_INPUT_TERMINAL_ID, {renderOutput: false});
 
 export interface SiteIce {
-    currentIce?: CurrentIce,
+    currentIce: CurrentIce,
     password?: PasswordIceI,
     tangle?: TangleIceState,
     displayTerminal: TerminalState,

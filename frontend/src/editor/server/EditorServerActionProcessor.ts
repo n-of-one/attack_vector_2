@@ -1,4 +1,4 @@
-import WebSocketConnection from "../../common/WebSocketConnection"
+import {webSocketConnection} from "../../common/WebSocketConnection"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../../common/enums/CommonActions"
 import {NotificationType, notify} from "../../common/Notification"
 import {Dispatch} from "redux"
@@ -19,7 +19,7 @@ export const SERVER_UPDATE_SITE_STATE = "SERVER_UPDATE_SITE_STATE"
 export const SERVER_ADD_LAYER = "SERVER_ADD_LAYER"
 export const SERVER_NODE_UPDATED = "SERVER_NODE_UPDATED"
 
-export const initEditorServerActions = (webSocketConnection: typeof WebSocketConnection, dispatch: Dispatch) => {
+export const initEditorServerActions = (dispatch: Dispatch) => {
 
     webSocketConnection.addAction(SERVER_TIME_SYNC, (timeOnServer: string) => {
         serverTime.init(timeOnServer)

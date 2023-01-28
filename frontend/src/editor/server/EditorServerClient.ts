@@ -1,4 +1,4 @@
-import webSocketConnection from "../../common/WebSocketConnection"
+import {webSocketConnection} from "../../common/WebSocketConnection"
 import {editorSiteId} from "../EditorRoot"
 
 export const sendSiteDataChanged = ({field, value}: { field: string, value: string }) => {
