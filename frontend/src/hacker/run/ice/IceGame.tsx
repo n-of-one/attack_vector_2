@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector} from "react-redux";
 import PasswordIceHome from "./password/PasswordIceHome";
 import {ICE_PASSWORD, ICE_TANGLE} from "../../../common/enums/LayerTypes";
-import TangleIceHome from "./tangle/TangleIceHome";
+import {TangleIceHome} from "./tangle/TangleIceHome";
 import {HackerState} from "../../HackerRootReducer";
 
 

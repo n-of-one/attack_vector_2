@@ -1,8 +1,11 @@
 import {HIDDEN, UNLOCKED} from "../IceUiState";
-import {ICE_TANGLE_BEGIN, SERVER_START_HACKING_ICE_TANGLE} from "./TangleIceActions";
 import {ICE_TANGLE} from "../../../../common/enums/LayerTypes";
 import {AnyAction} from "redux";
 import {CurrentIce} from "../CurrentIceReducer";
+
+export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
+export const SERVER_START_HACKING_ICE_TANGLE = "SERVER_START_HACKING_ICE_TANGLE";
+export const SERVER_TANGLE_POINT_MOVED = "SERVER_TANGLE_POINT_MOVED";
 
 export interface TangleIceState {
     layerId: string,
