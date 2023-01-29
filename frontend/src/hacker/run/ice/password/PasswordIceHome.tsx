@@ -4,11 +4,11 @@ import Terminal from "../../../../common/terminal/Terminal"
 import {HIDDEN, LOCKED} from "../IceUiState"
 import CloseButton from "../../../../common/component/CloseButton"
 import {FINISH_HACKING_ICE} from "../../model/HackActions"
-import serverTime from "../../../../common/ServerTime"
 import {PasswordIceI} from "./PasswordIceReducer"
 import {HackerState} from "../../../HackerRootReducer"
 import {TerminalState} from "../../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
+import {formatTimeInterval} from "../../../../common/Util";
 
 export const ICE_PASSWORD_SUBMIT = "ICE_PASSWORD_SUBMIT";
 
@@ -19,7 +19,7 @@ const renderInput = (inputTerminal: TerminalState, enterPassword: (attempt: stri
     }
     if (ice.waitSeconds && ice.waitSeconds > 0) {
 
-        const wait = serverTime.format(ice.waitSeconds)
+        const wait = formatTimeInterval(ice.waitSeconds)
 
         return <h4 className="text-warning">
             <strong>

@@ -2,7 +2,7 @@ import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
 import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
-import serverTime from "../../../../common/ServerTime";
+import {serverTime} from "../../../../common/ServerTime";
 import {AnyAction} from "redux";
 import {CurrentIce} from "../CurrentIceReducer";
 

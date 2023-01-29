@@ -3,37 +3,38 @@
  *
  * An event can set a wait time (in 50ms units). The next event will wait that time before firing.
  *
- * The 50ms time units correspond to a frame-rate of 20 FPS. This is tied to the TICK event that is also fired every 50ms.
+ * The 50ms time units correspond to a frame-rate of 20 FPS. This is tied to the TERMINAL_TICK event that is also fired every 50ms.
  * When the TICK and Scheduler use the same time units, it becomes easier to reason about times in the system
  * 20 TICKs per second is already putting some strain on a 2017-high-end-PC, so it is deemed that this is good enough for now.
  *
  * The event loop will auto-clear if there are no events in the queue, no need to externally stop/clear the interval.
  */
+import {AnyAction, Dispatch} from "redux";
 
 export const TICK_MILLIS = 50;
 
 export default class Schedule {
 
-    queue = [];
+    queue: Array<() => void> = []
 
     /** Time in millis at which time the wait time is over and the next event can be started. */
-    waitEnd = null;
+    waitEnd: number | null = null
 
     /** The interval-id of the main loop schedule.
      * If it is null, then there is no current main loop, and a new one needs to be started */
-    intervalId = null;
+    intervalId: null | number = null
 
-    active = true;
+    active = true
 
     /** You can give the scheduler the dispatch to allow using the schedule.dispatch(wait, event) function. */
-    dispatcher = null;
+    dispatcher: Dispatch
 
-    constructor(dispatch) {
+    constructor(dispatch: Dispatch) {
         this.queue = [];
         this.dispatcher = dispatch;
     }
 
-    run(wait, functionToRun) {
+    run(wait: number, functionToRun: () => void) {
         let that = this;
         this._schedule( () => {
             functionToRun();
@@ -41,15 +42,15 @@ export default class Schedule {
         });
     }
 
-    dispatch(wait, event) {
+    dispatch(wait: number, action: AnyAction) {
         let that = this;
         this._schedule( () => {
-            this.dispatcher(event);
+            this.dispatcher(action);
             that._setWait(wait);
         });
     }
 
-    wait(wait) {
+    wait(wait: number) {
         if (!this.active) {
             return;
         }
@@ -68,19 +69,19 @@ export default class Schedule {
         this.waitEnd = null;
     }
 
-    _schedule(event) {
+    _schedule(event: () => void) {
         if (!this.active) {
             return;
         }
 
         if (this.intervalId === null) {
             const that = this;
-            this.intervalId = setInterval( () => { that._mainLoop(); }, 5);
+            this.intervalId = window.setInterval( () => { that._mainLoop(); }, 5);
         }
         this.queue.push(event);
     }
 
-    _setWait(wait) {
+    _setWait(wait: number) {
         this.waitEnd = Date.now() + TICK_MILLIS * wait;
     }
 
@@ -99,7 +100,7 @@ export default class Schedule {
         }
         else {
             /* Schedule cleans up interval if there is no more event in the queue. */
-            clearInterval(this.intervalId);
+            window.clearInterval(this.intervalId!);
             this.intervalId = null;
         }
     }

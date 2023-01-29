@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector} from "react-redux";
-import serverTime from "../../../common/ServerTime";
 import {HackerState} from "../../HackerRootReducer";
+import {formatTimeInterval} from "../../../common/Util";
 
 export const CountdownTimer = () => {
 
@@ -10,7 +10,7 @@ export const CountdownTimer = () => {
 
     if (showCountdown) {
         return (
-            <span className="countdown">{serverTime.format(secondsLeft)}</span>
+            <span className="countdown">{formatTimeInterval(secondsLeft)}</span>
         );
     } else {
         return <></>;

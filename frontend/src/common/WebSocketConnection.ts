@@ -1,34 +1,36 @@
-import webstomp from 'webstomp-client';
+import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client';
 import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
 import {notify} from "./Notification";
+import {Store} from "redux";
+import {ActionType} from "./Util";
 
 export class WebSocketConnection {
 
-    client = null;
-    url = null;
-    developmentServer = false;
-    store = null;
+    client: Client = null as unknown as Client
+    url: string
+    developmentServer: boolean
+    store: Store = null as unknown as Store
 
-    waitingForType = null;
-    waitingIgnoreList = [];
+    waitingForType: string | null = null
+    waitingIgnoreList: string[] | null = [];
 
-    subscriptions = [];
+    subscriptions: Subscription[] = [];
 
-    actions = {};
+    actions: {[key: string]: (action: ActionType) => void} = {};
 
     constructor() {
-        let port = window.location.port;
-        let hostName = window.location.hostname;
+        let port: string = window.location.port;
+        const hostName: string = window.location.hostname;
         this.developmentServer = (port === "3000");
         // During development connect directly to backend, websocket proxying does not work with create-react-app.
         port = this.developmentServer ? "80" : port;
-        let protocol = (window.location.protocol === "http:") ? "ws" : "wss";
+        const protocol = (window.location.protocol === "http:") ? "ws" : "wss";
         this.url = protocol + "://" + hostName + ":" + port + "/attack_vector_websocket";
 
     }
 
-    create(store, additionalOnWsOpen, waitForType) {
+    create(store: Store, additionalOnWsOpen: () => void, waitForType: string | null = null) {
         this.store = store;
         this.client = webstomp.client(this.url, {debug: false, heartbeat: {incoming: 0, outgoing: 0}});
 
@@ -37,13 +39,13 @@ export class WebSocketConnection {
         }
 
         this.client.connect({}, (event) => {
-            this.onWsOpen(event, additionalOnWsOpen);
+            this.onWsOpen(event!, additionalOnWsOpen);
         }, (event) => {
             this.onWsConnectError(event);
         });
     }
 
-    onWsOpen(event, additionalOnWsOpen) {
+    onWsOpen(event: Frame, additionalOnWsOpen: () => void) {
         const userId = event.headers["user-name"];
         if (!userId || userId === "error") {
             notify ({type: "fatal", message:"Please close this browser tab, hackers can only use one browser tab at a time.."});
@@ -51,18 +53,25 @@ export class WebSocketConnection {
         }
 
         // notify_neutral('Status','Connection with server established (' + userName + ")");
-        this.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"});
-        this.dispatch({type: SET_USER_ID, userId: userId});
+        this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"});
+        this.store.dispatch({type: SET_USER_ID, userId: userId});
 
         this.setupHeartbeat();
         this.subscribe('/user/reply', false);
         additionalOnWsOpen();
     }
 
-    onWsConnectError(event) {
-        this.dispatch({type: SERVER_DISCONNECT})
+    onWsConnectError(event: CloseEvent | Frame) {
+        if ( event instanceof CloseEvent) {
+            console.error("Connect failed: "+ event.reason)
+        }
+        else {
+            console.error("Connection failed: " + event.toString())
+        }
+
+        this.store.dispatch({type: SERVER_DISCONNECT})
         if (this.actions[SERVER_DISCONNECT]) {
-            this.actions[SERVER_DISCONNECT]()
+            this.actions[SERVER_DISCONNECT]({})
         }
     }
 
@@ -80,7 +89,7 @@ export class WebSocketConnection {
     }
 
 
-    subscribe(path, canUnsubscribe) {
+    subscribe(path: string, canUnsubscribe: boolean = false) {
         const subscription = this.client.subscribe(path, (wsMessage) => {
             this.handleEvent(wsMessage);
         });
@@ -89,7 +98,7 @@ export class WebSocketConnection {
         }
     }
 
-    handleEvent(wsMessage) {
+    handleEvent(wsMessage: Message) {
         const action = JSON.parse(wsMessage.body);
 
         if (action.type === SERVER_FORCE_DISCONNECT) {
@@ -119,22 +128,17 @@ export class WebSocketConnection {
         // wsMessage.ack();
     };
 
-    dispatch(body) {
-        let event = {...body, globalState: this.store.getState()};
-        this.store.dispatch(event);
-    }
-
-    subscribeForRun(runId, siteId) {
+    subscribeForRun(runId: string, siteId: string) {
         this.subscribe('/topic/run/' + runId, true);
         this.subscribe('/topic/site/' + siteId, true);
     }
 
-    sendObject(path, payload) {
+    sendObject(path: string, payload: ActionType) {
         let data = JSON.stringify(payload);
         this.send(path, data);
     }
 
-    send(path, data) {
+    send(path: string, data: string | ActionType) {
         const payload =  (typeof data === 'object') ? JSON.stringify(data) : data
         this.client.send(path, payload);
     }
@@ -142,7 +146,7 @@ export class WebSocketConnection {
     /** Ignore certain actions until an action with a specific type is received.
      * For example: make sure we get the init scan event before we start parsing changes to the site.
      * if ignoreList is null, then all events are ignored that are not the specified type.*/
-    waitFor(type, ignoreList) {
+    waitFor(type: string, ignoreList: string[] | null) {
         this.waitingForType = type;
         this.waitingIgnoreList = ignoreList;
     }
@@ -158,7 +162,7 @@ export class WebSocketConnection {
         this.client.disconnect();
     }
 
-    addAction(actionName, actionMethod) {
+    addAction(actionName: string, actionMethod: (action: ActionType) => void) {
         this.actions[actionName] = actionMethod;
     }
 }

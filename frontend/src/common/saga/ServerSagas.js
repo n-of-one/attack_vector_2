@@ -1,7 +1,7 @@
 import {put} from 'redux-saga/effects'
 import {notify} from "../Notification";
 import {TERMINAL_RECEIVE} from "../terminal/TerminalActions";
-import serverTime from "../ServerTime";
+import {serverTime} from "../ServerTime";
 
 export function* serverTimeSync(action) {
     serverTime.init(action.data);

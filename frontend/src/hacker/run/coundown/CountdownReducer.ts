@@ -1,4 +1,4 @@
-import serverTime from "../../../common/ServerTime";
+import {serverTime} from "../../../common/ServerTime";
 import {TERMINAL_TICK} from "../../../common/terminal/TerminalActions";
 import {AnyAction} from "redux";
 

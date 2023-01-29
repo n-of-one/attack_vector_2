@@ -6,13 +6,12 @@
  *
  * NOTE: Do not use: Date.now() OR new Date() instead use: serverTime.now()
  */
-import {zeroPad} from "./component/Pad";
 
 class ServerTime {
 
-    timeDifference = null;
+    timeDifference: number | null = null
 
-    init(serverTime) {
+    init(serverTime: string) {
         const clientSync = Date.now();
         const serverSync = new Date(serverTime).getTime();
 
@@ -20,25 +19,20 @@ class ServerTime {
     }
 
     now() {
+        if (!this.timeDifference) {
+            return Date.now() // not initialized yet, assume 0 difference
+        }
+
         return Date.now() + this.timeDifference
     }
 
-    secondsLeft(serverTime) {
+    secondsLeft(serverTime: string) {
         const nowMillis = this.now();
         const serverMillis = new Date(serverTime).getTime();
 
-        return Math.ceil((serverMillis - nowMillis)/1000);
+        return Math.ceil((serverMillis - nowMillis) / 1000);
     }
 
-    format(totalSecondsLeft) {
-        const waitHours = Math.floor(totalSecondsLeft / (60 * 60));
-        const secondsLeftForMinutes = totalSecondsLeft % (60 * 60);
-        const waitMinutes = Math.floor(secondsLeftForMinutes / 60);
-        const waitSeconds = secondsLeftForMinutes % 60;
-
-        return zeroPad(waitHours, 2) + ":" + zeroPad(waitMinutes, 2) + ":" + zeroPad(waitSeconds, 2);
-    }
 }
 
-const serverTime = new ServerTime();
-export default serverTime;
+export const serverTime = new ServerTime();

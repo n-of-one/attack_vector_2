@@ -3,7 +3,7 @@ import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFIC
 import {NotificationType, notify} from "../../common/Notification"
 import {Dispatch} from "redux"
 import {TERMINAL_RECEIVE} from "../../common/terminal/TerminalActions"
-import serverTime from "../../common/ServerTime"
+import {serverTime} from "../../common/ServerTime"
 import {editorCanvas, LoadSiteData} from "../component/middle/middle/EditorCanvas"
 import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
 import {Connection} from "../reducer/ConnectionsReducer"
