@@ -1,10 +1,10 @@
-import {TERMINAL_TICK} from "../../../../common/terminal/TerminalActions";
 import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
 import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import {serverTime} from "../../../../common/ServerTime";
 import {AnyAction} from "redux";
 import {CurrentIce} from "../CurrentIceReducer";
+import {TERMINAL_TICK} from "../../../../common/terminal/TerminalReducer";
 
 export const SERVER_START_HACKING_ICE_PASSWORD = "SERVER_START_HACKING_ICE_PASSWORD";
 export const SERVER_ICE_PASSWORD_UPDATE = "SERVER_ICE_PASSWORD_UPDATE";

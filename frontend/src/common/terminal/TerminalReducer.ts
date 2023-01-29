@@ -1,19 +1,20 @@
-import {
-    SERVER_TERMINAL_RECEIVE,
-    SERVER_TERMINAL_SYNTAX_HIGHLIGHTING,
-    TERMINAL_CLEAR,
-    TERMINAL_KEY_PRESS,
-    TERMINAL_LOCK,
-    TERMINAL_RECEIVE,
-    TERMINAL_SUBMIT,
-    TERMINAL_TICK,
-    TERMINAL_UNLOCK
-} from "./TerminalActions";
 import {SERVER_ERROR} from "../enums/CommonActions";
 import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes";
 import {AnyAction} from "redux";
 
 const LINE_LIMIT = 100;
+
+export const SERVER_TERMINAL_SYNTAX_HIGHLIGHTING = "SERVER_TERMINAL_SYNTAX_HIGHLIGHTING";
+export const TERMINAL_KEY_PRESS = "TERMINAL_KEY_PRESS";
+export const TERMINAL_SUBMIT = "TERMINAL_SUBMIT";
+export const TERMINAL_TICK = "TERMINAL_TICK";
+export const TERMINAL_RECEIVE = "TERMINAL_RECEIVE";
+export const SERVER_TERMINAL_RECEIVE = "SERVER_TERMINAL_RECEIVE";
+export const TERMINAL_CLEAR = "TERMINAL_CLEAR";
+export const TERMINAL_LOCK = "TERMINAL_LOCK";
+export const TERMINAL_UNLOCK = "TERMINAL_UNLOCK";
+export const CHANGE_ACTIVE_TERMINAL = "CHANGE_ACTIVE_TERMINAL";
+export const SERVER_USER_DC = "SERVER_USER_DC";
 
 export interface TerminalLine {
     type: string,

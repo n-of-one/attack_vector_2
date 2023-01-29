@@ -1,6 +1,5 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, calcLineWithOffset, easeLinear, easeOutSine} from "../CanvasUtils";
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalActions";
 import Schedule from "../../Schedule";
 import {
     IDENTIFICATION_SCALE_LARGE,
@@ -14,6 +13,7 @@ import {
 } from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
 import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState";
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalReducer";
 
 const APPEAR_TIME = 20;
 const DISAPPEAR_TIME = 10;

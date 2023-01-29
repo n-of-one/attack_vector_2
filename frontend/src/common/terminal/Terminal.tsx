@@ -2,8 +2,7 @@ import React, {Component, createRef} from 'react';
 import {TerminalInput} from "./TerminalInput";
 import {TerminalTextLine} from "./TerminalTextLine";
 import {terminalManager} from "./TerminalManager";
-import {TERMINAL_SUBMIT} from "./TerminalActions";
-import {TerminalLine, TerminalState} from "./TerminalReducer";
+import {TERMINAL_SUBMIT, TerminalLine, TerminalState} from "./TerminalReducer";
 import {Dispatch} from "redux";
 
 interface Props {

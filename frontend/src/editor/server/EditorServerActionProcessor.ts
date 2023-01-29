@@ -2,7 +2,6 @@ import {webSocketConnection} from "../../common/WebSocketConnection"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../../common/enums/CommonActions"
 import {NotificationType, notify} from "../../common/Notification"
 import {Dispatch} from "redux"
-import {TERMINAL_RECEIVE} from "../../common/terminal/TerminalActions"
 import {serverTime} from "../../common/ServerTime"
 import {editorCanvas, LoadSiteData} from "../component/middle/middle/EditorCanvas"
 import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
@@ -35,7 +34,6 @@ export const initEditorServerActions = (dispatch: Dispatch) => {
 
     webSocketConnection.addAction(SERVER_DISCONNECT, () => {
         notify({type: 'fatal', message: 'Connection with server lost. Please refresh browser.'})
-        dispatch({type: TERMINAL_RECEIVE, data: "[b warn]Connection with server lost. Please refresh browser."})
     })
 
     webSocketConnection.addAction(SERVER_ERROR, (data: { message: string }) => {

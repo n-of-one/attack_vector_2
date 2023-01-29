@@ -1,6 +1,6 @@
 import {serverTime} from "../../../common/ServerTime";
-import {TERMINAL_TICK} from "../../../common/terminal/TerminalActions";
 import {AnyAction} from "redux";
+import {TERMINAL_TICK} from "../../../common/terminal/TerminalReducer";
 
 export const SERVER_START_COUNTDOWN = "SERVER_START_COUNTDOWN";
 export const SERVER_COMPLETE_COUNTDOWN = "SERVER_COMPLETE_COUNTDOWN";

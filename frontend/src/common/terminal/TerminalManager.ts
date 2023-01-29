@@ -1,8 +1,8 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
 import {delay} from "../Util";
 import {Dispatch, Store} from "redux";
 import Terminal from "./Terminal";
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalReducer";
 
 class TerminalManager {
 

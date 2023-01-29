@@ -1,5 +1,4 @@
 import Schedule from "../../../../common/Schedule";
-import {TERMINAL_CLEAR} from "../../../../common/terminal/TerminalActions";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import GenericIceManager from "../GenericIceManager";
 import tangleIceCanvas from "./TangleIceCanvas";
@@ -9,6 +8,7 @@ import {delay} from "../../../../common/Util";
 import {Dispatch, Store} from "redux";
 import {ICE_TANGLE_BEGIN, SERVER_START_HACKING_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED, TangleLine, TanglePoint} from "./TangleIceReducer";
 import {webSocketConnection} from "../../../../common/WebSocketConnection";
+import {TERMINAL_CLEAR} from "../../../../common/terminal/TerminalReducer";
 
 
 export interface TanglePuzzle {

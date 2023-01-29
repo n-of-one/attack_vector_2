@@ -1,4 +1,3 @@
-import {TERMINAL_CLEAR} from "../../../../common/terminal/TerminalActions";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import Schedule from "../../../../common/Schedule";
 import {notify} from "../../../../common/Notification";
@@ -6,6 +5,7 @@ import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import {Dispatch, Store} from "redux";
 import GenericIceManager from "../GenericIceManager";
 import {ICE_PASSWORD_BEGIN} from "./PasswordIceReducer";
+import {TERMINAL_CLEAR} from "../../../../common/terminal/TerminalReducer";
 
 export interface PasswordIceState {
     message?: string,

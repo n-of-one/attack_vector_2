@@ -14,7 +14,6 @@ import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE
 import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
 import {discoverNodesSaga, serverNodeHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
 import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
-import {SERVER_USER_DC} from "../common/terminal/TerminalActions";
 import {
     deleteScanSaga,
     enterScanSaga,
@@ -56,6 +55,7 @@ import {
     SERVER_PATROLLER_SNAPS_BACK_HACKER,
     SERVER_START_TRACING_PATROLLER
 } from "./run/coundown/CountdownReducer";
+import {SERVER_USER_DC} from "../common/terminal/TerminalReducer";
 
 
 const createHackerRootSaga = () => {

@@ -1,9 +1,9 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client';
-import {TERMINAL_RECEIVE} from "./terminal/TerminalActions";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
 import {notify} from "./Notification";
 import {Store} from "redux";
 import {ActionType} from "./Util";
+import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer";
 
 export class WebSocketConnection {
 
