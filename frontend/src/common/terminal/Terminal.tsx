@@ -1,36 +1,43 @@
-import React, {Component} from 'react';
-import TerminalInput from "./TerminalInput";
-import TerminalTextLine from "./TerminalTextLine";
-import terminalManager from "./TerminalManager";
+import React, {Component, createRef} from 'react';
+import {TerminalInput} from "./TerminalInput";
+import {TerminalTextLine} from "./TerminalTextLine";
+import {terminalManager} from "./TerminalManager";
 import {TERMINAL_SUBMIT} from "./TerminalActions";
+import {TerminalLine, TerminalState} from "./TerminalReducer";
+import {Dispatch} from "redux";
 
-class Terminal extends Component {
+interface Props {
+    terminal: TerminalState,
+    height?: number | string
+    submit?: (input: string) => void
+    dispatch?: Dispatch | null
+    className?: string
+}
 
-    state = {};
-    bottomRef = React.createRef();
-    height = "200px";
-    submitMethod = (input) => {
-        console.log("Ingored terminal input: " + input);
-    };
-    dispatch = null;
+class Terminal extends Component<Props> {
 
-    constructor(props) {
+    state: TerminalState
+    bottomRef = createRef<HTMLDivElement>()
+    height: number | string = 200
+
+    submitMethod: (input: string) => void
+    dispatch: Dispatch | null = null
+
+    constructor(props: Props) {
         super(props);
         this.state = {...props.terminal};
-        this.height = props.height;
+        if (props.height) this.height = props.height;
         terminalManager.registerTerminal(this.state.id, this);
-        if (props.submit) {
-            this.submitMethod = props.submit;
-        }
-        this.dispatch = props.dispatch;
+        this.submitMethod = (props.submit) ? props.submit : (input: string) => console.log("Ingored terminal input: " + input)
+        if (props.dispatch) this.dispatch = props.dispatch;
     }
 
-    submit(key) {
+    submit(key: string) {
         this.submitMethod(this.state.input);
-        this.dispatch({type: TERMINAL_SUBMIT, key: key, command: this.state.input, terminalId: this.state.id});
+        this.dispatch!({type: TERMINAL_SUBMIT, key: key, command: this.state.input, terminalId: this.state.id});
     }
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props: Props) {
         this.setState({...props.terminal});
     }
 
@@ -43,13 +50,13 @@ class Terminal extends Component {
     }
 
     scrollToBottom() {
-        if (this.state.autoScroll) {
+        if (this.state.autoScroll && this.bottomRef.current != null) {
             this.bottomRef.current.scrollIntoView();
         }
     }
 
-    renderLine(line, index) {
-        return <TerminalTextLine line={line} index={index} key={index}/>
+    renderLine(line: TerminalLine, index: string | number) {
+        return <TerminalTextLine line={line} index={index}/>
     }
 
     /** The line that is being displayed one character at a time */
@@ -77,8 +84,7 @@ class Terminal extends Component {
                 {this.renderInput()}
                 <div ref={this.bottomRef}/>
             </div>;
-        }
-        else {
+        } else {
             return <div className="terminalPanel" style={{height: this.height}}>
                 {this.renderInput()}
             </div>;

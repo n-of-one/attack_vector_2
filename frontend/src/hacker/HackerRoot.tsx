@@ -7,7 +7,7 @@ import createSagaMiddleware, {SagaMiddleware} from 'redux-saga'
 import createHackerRootSaga from "./HackerRootSaga";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
 import {webSocketConnection} from "../common/WebSocketConnection";
-import terminalManager from "../common/terminal/TerminalManager";
+import {terminalManager} from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 import passwordIceManager from "./run/ice/password/PasswordIceManager";
 import tangleIceManager from "./run/ice/tangle/TangleIceManager";

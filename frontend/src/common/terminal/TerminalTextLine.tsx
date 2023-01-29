@@ -1,8 +1,13 @@
 import React from "react";
+import {TerminalLine} from "./TerminalReducer";
 
+interface Props {
+    line: TerminalLine,
+    index: string | number,
+}
 
 // const renderLine = (line, index) => {
-const TerminalTextLine = ({line, index}) => {
+export const TerminalTextLine = ({line, index}: Props) => {
     let lineClasses = (line.class) ? line.class : [];
     let classNames = "terminalLine";
     lineClasses.forEach(name => {
@@ -14,23 +19,28 @@ const TerminalTextLine = ({line, index}) => {
         <div className={classNames} key={index}>{blocks.map((block, index) => renderBlock(block, index))}
             &nbsp;
         </div>)
-};
+}
 
-const renderBlock = (block, index) => {
+interface Block {
+    text: string,
+    className: string,
+    type: string
+}
+
+const renderBlock = (block: Block, index: string | number) => {
     if (block.type === "text") {
         return <span className={block.className} key={index}>{block.text}</span>
-    }
-    else {
+    } else {
         return <span key={index}>&nbsp;</span>
     }
 };
 
-const parseLine = (line) => {
-    let blocks = [];
+const spaceBlock = {text: "", className: "", type: "space"};
+const textBlockTemplate = {text: "", className: "", type: "text"};
 
+const parseLine = (line: TerminalLine): Block[] => {
+    let blocks = [];
     let mode = "text";
-    const spaceBlock = {text: "", className: "", type: "space"};
-    const textBlockTemplate = {text: "", className: "", type: "text"};
     let block = {...textBlockTemplate};
     let currentClassName = "";
     for (let i = 0; i < line.data.length; i++) {
@@ -45,8 +55,7 @@ const parseLine = (line) => {
                 }
                 block = {...textBlockTemplate};
                 continue;
-            }
-            else {
+            } else {
                 // escaped '[' character
                 mode = "text";
                 block.text += c;
@@ -81,5 +90,3 @@ const parseLine = (line) => {
 
     return blocks;
 }
-
-export default TerminalTextLine;

@@ -22,10 +22,11 @@ export interface TerminalLine {
 }
 
 export interface Syntax {
-    first: string,
-    second: string,
+    main: string[],
     rest: string
 }
+
+export type SyntaxMap = { [key: string]: Syntax }
 
 export interface TerminalState {
     id: string,
@@ -39,7 +40,7 @@ export interface TerminalState {
     receivingLine: TerminalLine | null,
     receiveBuffer: TerminalLine[],
     receiving: boolean,
-    syntaxHighlighting: { [key: string]: Syntax },
+    syntaxHighlighting: SyntaxMap,
     history: string[]
     historyIndex: number
 }

@@ -1,17 +1,18 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalActions";
 import {delay} from "../Util";
+import {Dispatch, Store} from "redux";
+import Terminal from "./Terminal";
 
 class TerminalManager {
 
-    store = null;
-    dispatch = null;
-    // terminalTickIntervalId = null;
-    running = false;
+    store: Store = null as unknown as Store
+    dispatch = null as unknown as Dispatch
+    running: boolean = false
 
-    terminals = {};
+    terminals: {[key: string]: Terminal} = {};
 
-    init(store) {
+    init(store: Store) {
         this.store = store;
         this.dispatch = store.dispatch;
         // this.terminalTickIntervalId =
@@ -22,7 +23,7 @@ class TerminalManager {
             }, 50);
         })
 
-        window.onkeydown = (event) => {
+        window.onkeydown = (event: KeyboardEvent) => {
             if (this.running) {
                 this.handleKeyDown(event);
             }
@@ -37,7 +38,7 @@ class TerminalManager {
         this.running = false;
     }
 
-    handleKeyDown(event) {
+    handleKeyDown(event: KeyboardEvent) {
         let {keyCode, key} = event;
         if (keyCode >= F2_KEY && keyCode <= F12_KEY) {
             return;
@@ -54,12 +55,9 @@ class TerminalManager {
         }
     }
 
-    registerTerminal(terminalId, terminal) {
+    registerTerminal(terminalId: string, terminal: Terminal) {
         this.terminals[terminalId] = terminal;
     }
-
 }
 
-const terminalManager = new TerminalManager();
-
-export default terminalManager;
+export const terminalManager = new TerminalManager();
