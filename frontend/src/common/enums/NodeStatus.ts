@@ -1,0 +1,9 @@
+export const UNDISCOVERED = "UNDISCOVERED";
+export const DISCOVERED = "DISCOVERED";
+export const TYPE = "TYPE";
+export const LAYERS_NO_CONNECTIONS = "LAYERS_NO_CONNECTIONS";
+export const CONNECTIONS = "CONNECTIONS";
+export const LAYERS = "LAYERS";
+export const FREE = "FREE";
+export const PROTECTED = "PROTECTED";
+export const HACKED = "HACKED";

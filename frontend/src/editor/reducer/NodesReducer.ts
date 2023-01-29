@@ -42,6 +42,17 @@ export interface EditorLayerDetails {
     level: number       // height of the layer. level 0 is always OS. Hack top level first.
     name: string
     note: string
+
+    nodeName?: string   // OS layer
+    text?: string       // Text layer
+    minutes?: number    // Layer Timer Trigger
+    seconds?: number    // Layer Timer Trigger
+
+    strength? : "VERY_WEAK" | "WEAK" | "AVERAGE" | "STRONG" | "VERY_STRONG" | "IMPENETRABLE" | "UNKNOWN"
+    password? : string  // Password Ice layer
+    hint?: string       // password Ice layer
+
+
 }
 
 export interface NodeI {

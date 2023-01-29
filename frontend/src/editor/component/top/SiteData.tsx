@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {TextSaveInput} from "../../../common/component/TextSaveInput"
-import CheckboxSaveInput from "../../../common/component/CheckBoxSaveInput"
+import {CheckboxSaveInput} from "../../../common/component/CheckBoxSaveInput"
 import {EditorState} from "../../EditorRootReducer"
 import {sendSiteDataChanged} from "../../server/EditorServerClient"
 
@@ -10,7 +10,7 @@ export const SiteData = () => {
 
     const siteData = useSelector((state: EditorState) => state.siteData)
 
-    const save = (field: string, value: string) => {
+    const save = (field: string, value: string| boolean) => {
         sendSiteDataChanged({ field, value})
     }
 
@@ -50,7 +50,7 @@ export const SiteData = () => {
                             <div className="col-lg-2">
                                 <CheckboxSaveInput id="site_hackable" className="form-check-input input-checkbox"
                                                    checked={siteData.hackable}
-                                                   save={(value: string) => save("hackable", value)}/>
+                                                   save={(value: boolean) => save("hackable", value)}/>
                             </div>
                     </div>
                 </div>

@@ -1,11 +1,20 @@
 import {sendEditLayerData} from "../../../editor/server/EditorServerClient";
+import {EditorLayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
+import {Dispatch} from "redux";
 
 const NOTE = "note";
 const NAME = "name";
 
 export default class Layer {
 
-    constructor(layer, node, dispatch) {
+    layer: EditorLayerDetails
+    node: NodeI
+    dispatch: Dispatch
+    id: string
+    name: string
+    note: string
+
+    constructor(layer: EditorLayerDetails, node: NodeI, dispatch: Dispatch) {
         this.layer = layer;
         this.node = node;
         this.dispatch = dispatch;
@@ -15,15 +24,15 @@ export default class Layer {
     }
 
 
-    _save(key, value) {
+    _save(key: string, value: string) {
         sendEditLayerData( {nodeId: this.node.id, layerId: this.layer.id, key: key, value: value})
     }
 
-    saveNote(value) {
+    saveNote(value: string) {
         this._save(NOTE, value );
     }
 
-    saveName(value) {
+    saveName(value: string) {
         this._save(NAME, value );
     }
 

@@ -18,7 +18,7 @@ export const ICE_PASSWORD_SEARCH = "ICE_PASSWORD_SEARCH";
 export const ICE_ALTERNATE = "ICE_ALTERNATE";
 export const ICE_UNHACKABLE = "ICE_UNHACKABLE";
 export const ICE_TANGLE = "ICE_TANGLE";
-export const glyphiconFromType = (type) => {
+export const glyphiconFromType = (type: string) => {
     switch(type) {
         case OS : return "glyphicon-home";
         case TEXT : return "glyphicon-file";
@@ -43,6 +43,5 @@ export const glyphiconFromType = (type) => {
         default:
             console.log("unknown type:" + type);
             return "glyphicon-thumbs-down";
-
     }
 };

@@ -20,7 +20,7 @@ The key needs to be set at a higher level, where we have context to base this ke
 
 interface Props {
     id?: string,
-    value: string,
+    value: string | number,
     placeholder?: string,
     type?: string, // textArea or undefined for textInput
     save: (value: string) => void,
@@ -32,16 +32,19 @@ interface Props {
 
 export const TextSaveInput = (props: Props) => {
 
-    const [value, setValue] = useState(props.value);
+    // convert potential number values to string, otherwise equals detection does not work
+    const valueString = "" + props.value
+
+    const [value, setValue] = useState(valueString);
 
     const [editing, setEditing] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    if (!editing && props.value !== value) {
-        setValue(props.value);
+    if (!editing && valueString !== value) {
+        setValue(valueString);
     }
 
-    if (props.value === value && saving) {
+    if (valueString === value && saving) {
         setSaving(false);
     }
     const handleChange = (event: any) => {
