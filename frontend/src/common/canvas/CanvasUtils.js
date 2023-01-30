@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 
 
-const animate = (canvas, toAnimate, attribute, value, duration, easing) => {
+export const animate = (canvas, toAnimate, attribute, value, duration, easing) => {
 
     const easingFunction = (easing) ? easing : fabric.util.ease.easeInOutSine;
     if (attribute) {
@@ -49,7 +49,7 @@ const calcDistance = (from, to) => {
     return {xSpan: xSpan, ySpan: ySpan, distance: distance};
 };
 
-const calcLine = (from, to, padding) => {
+export const calcLine = (from, to, padding) => {
     const fromOffset = from.size();
     const toOffset = to.size();
 
@@ -96,21 +96,15 @@ const expandPadding = (xSpan, ySpan, padding) => {
     }
 };
 
-const calcLineStart = (from, to, fromOffset, padding) => {
+export const calcLineStart = (from, to, fromOffset, padding) => {
     const {distance} = calcDistance(from, to);
     const toOffset = distance - fromOffset;
     return calcLineWithOffset(from, to, fromOffset, toOffset, padding);
 };
 
-function easeLinear (t, b, c, d) {
+export function easeLinear (t, b, c, d) {
     return b + (t/d) * c;
 }
 
-const easeInSine = fabric.util.ease.easeInSine;
-const easeOutSine = fabric.util.ease.easeOutSine;
-
-
-
-export {animate, calcLine, calcLineStart,
-    easeLinear, easeInSine, easeOutSine,
-};
+export const easeInSine = fabric.util.ease.easeInSine;
+export const easeOutSine = fabric.util.ease.easeOutSine;

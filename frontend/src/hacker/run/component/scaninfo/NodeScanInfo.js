@@ -4,7 +4,7 @@ import runCanvas from "../RunCanvas";
 import {findElementById} from "../../../../common/Immutable";
 import NodeScanInfoByStatus from "./NodeScanInfoByStatus";
 import {CONNECTIONS, DISCOVERED, LAYERS, LAYERS_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
-import Pad from "../../../../common/component/Pad";
+import {Pad} from "../../../../common/component/Pad";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -13,6 +13,9 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 let mapStateToProps = (state) => {
+    if (state.run.infoNodeId === null) {
+        return {node: null, status: null}
+    }
     const node = findElementById(state.run.site.nodes, state.run.infoNodeId);
     const status = state.run.scan.nodeScanById[node.id].status;
     return {
@@ -43,6 +46,10 @@ const statusText = (status) => {
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({node, status, dismiss}) => {
 
+        if (node === null) {
+            return <></>
+        }
+
         return (
             <>
                 <div className="row nodeInfo text" id="scanInfo">
@@ -56,7 +63,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                             <div className="col-lg-12">
                                 <div className="d-flex justify-content-between">
                                     <div className="">
-                                        Scan info on <span className="networkId">{node.networkId}</span><Pad p="10" t={node.networkId}/>
+                                        Scan info on <span className="networkId">{node.networkId}</span><Pad length="10" textValue={node.networkId}/>
                                         <span className="text-muted">scan progress: {statusText(status)}</span><br/>
                                         <br/>
                                         <NodeScanInfoByStatus node={node} status={status}/>

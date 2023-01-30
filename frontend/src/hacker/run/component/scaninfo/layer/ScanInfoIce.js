@@ -1,5 +1,5 @@
 import React from "react";
-import Pad from "../../../../../common/component/Pad";
+import {Pad} from "../../../../../common/component/Pad";
 
 const ScanInfoIce =({layer, iceDescription}) => {
 
@@ -7,8 +7,8 @@ const ScanInfoIce =({layer, iceDescription}) => {
     return (
         <>
             &nbsp;ICE ({iceDescription})<br/>
-            <Pad p="8" />Strength: <span className="text-info">{layer.strength}</span><br/>
-            <Pad p="8" />Hacked: <span className="text-danger">{hackedText}</span>
+            <Pad length="8" />Strength: <span className="text-info">{layer.strength}</span><br/>
+            <Pad length="8" />Hacked: <span className="text-danger">{hackedText}</span>
         </>
     );
 };

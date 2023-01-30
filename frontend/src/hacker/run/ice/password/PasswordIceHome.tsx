@@ -1,8 +1,8 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import Terminal from "../../../../common/terminal/Terminal"
+import {Terminal} from "../../../../common/terminal/Terminal"
 import {HIDDEN, LOCKED} from "../IceUiState"
-import CloseButton from "../../../../common/component/CloseButton"
+import {CloseButton} from "../../../../common/component/CloseButton"
 import {FINISH_HACKING_ICE} from "../../model/HackActions"
 import {PasswordIceI} from "./PasswordIceReducer"
 import {HackerState} from "../../../HackerRootReducer"

@@ -5,7 +5,7 @@ import {mailRootReducer, MailRootState} from "./mail/MailRootReducer";
 import {runRootReducer, RunState} from "./run/RunRootReducer";
 import {createTerminalReducer, TerminalState} from "../common/terminal/TerminalReducer";
 import {themeReducer} from "../common/reducer/ThemeReducer";
-import {userIdReducer, UserIdState} from "../common/reducer/UserIdReducer";
+import {userIdReducer} from "../common/reducer/UserIdReducer";
 import {HackerPresence, hackersReducer} from "./run/reducer/HackersReducer";
 import {ActiveTerminalId, activeTerminalIdReducer, MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
 
@@ -18,7 +18,7 @@ export interface HackerState {
     terminal: TerminalState,
     activeTerminalId:ActiveTerminalId,
     theme: string,
-    userId: UserIdState
+    userId: string
 }
 
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true})

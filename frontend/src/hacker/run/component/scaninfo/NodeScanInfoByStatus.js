@@ -1,7 +1,7 @@
 import React from "react";
 import {CONNECTIONS, DISCOVERED, LAYERS, LAYERS_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus";
 import NodeScanInfoLayers from "./NodeScanInfoLayers";
-import Pad from "../../../../common/component/Pad";
+import {Pad} from "../../../../common/component/Pad";
 
 function renderDiscovered() {
     return <>
@@ -32,9 +32,9 @@ function renderStatusConnections(node) {
 function renderLayerIsIce(layer) {
     const text = layer.ice ? "ICE" : "layer";
     return <span key={layer.level}>
-        <Pad p="3" n={layer.level}/>
+        <Pad length="3" numberValue={layer.level}/>
         <span className="text-primary">{layer.level}</span>
-        <Pad p="3" />unknown {text}<br/>
+        <Pad length="3" />unknown {text}<br/>
     </span>
 }
 

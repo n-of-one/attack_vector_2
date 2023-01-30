@@ -2,7 +2,7 @@ import React from 'react';
 import ScanInfoOs from "./ScanInfoOs";
 import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes";
 import ScanInfoText from "./ScanInfoText";
-import Pad from "../../../../../common/component/Pad";
+import {Pad} from "../../../../../common/component/Pad";
 import ScanInfoIce from "./ScanInfoIce";
 import ScanInfoTimerTrigger from "./ScanInfoTimerTrigger";
 
@@ -27,9 +27,9 @@ const renderLayer = (layer) => {
 const LayerInfo = ({layer}) => {
     return (
         <>
-            <Pad p="3" n={layer.level}/>
+            <Pad length="3" numberValue={layer.level}/>
             <span className="text-primary">{layer.level}</span>
-            <Pad p="3"/>{layer.name}{renderLayer(layer)}<br/>
+            <Pad length="3"/>{layer.name}{renderLayer(layer)}<br/>
         </>
     );
 };

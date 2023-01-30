@@ -1,4 +1,0 @@
-const CANVAS_WIDTH = 607;
-const CANVAS_HEIGHT = 815;
-
-export { CANVAS_WIDTH, CANVAS_HEIGHT };

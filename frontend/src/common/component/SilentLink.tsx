@@ -21,7 +21,7 @@ interface Props {
     title?: string
 }
 
-const SilentLink = ({href, classNameInput, children, onClick, title}: Props) => {
+export const SilentLink = ({href, classNameInput, children, onClick, title}: Props) => {
     if (!classNameInput) classNameInput = '';
 
     const onClickLocal = (e: any) => {
@@ -39,5 +39,3 @@ const SilentLink = ({href, classNameInput, children, onClick, title}: Props) => 
     // eslint-disable-next-line
     return (<a onClick={(e) => onClickLocal(e)} className={className} title={title}>{children}</a>)
 };
-
-export default SilentLink

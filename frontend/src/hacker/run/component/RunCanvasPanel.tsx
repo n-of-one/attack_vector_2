@@ -5,12 +5,19 @@ import {
     ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
 } from "../../../common/enums/NodeTypesNames";
 import {RunNodeImage} from "./RunNodeImage";
-import HackerImage from "../../../common/component/HackerImage";
+import {HackerImage} from "../../../common/component/HackerImage";
 import {ScanProbeImages} from "./ScanProbeImages";
-import PatrollerImage from "../../../common/component/PatrollerImage";
+import {PatrollerImage} from "../../../common/component/PatrollerImage";
 import {connect} from "react-redux";
+import {HackerState} from "../../HackerRootReducer";
+import {Dispatch} from "redux";
 
-class RunCanvasPanel extends Component {
+interface Props {
+    dispatch: Dispatch,
+    userId: string
+}
+
+export class RunCanvasPanel extends Component<Props> {
 
     componentWillMount() {
         // dispatch some actions if you use Redux
@@ -20,7 +27,7 @@ class RunCanvasPanel extends Component {
         runCanvas.init(this.props.userId, this.props.dispatch);
     }
 
-    allowDrop(event) {
+    allowDrop(event: any) {
         event.preventDefault();
     }
 
@@ -49,9 +56,9 @@ class RunCanvasPanel extends Component {
                     <RunNodeImage type={ICE_2} onLoad={onLoad}/>
                     <RunNodeImage type={ICE_3} onLoad={onLoad}/>
                     <RunNodeImage type={UNHACKABLE} onLoad={onLoad}/>
-                    <RunNodeImage type={MANUAL_1} ice={true} onLoad={onLoad}/>
-                    <RunNodeImage type={MANUAL_2} ice={true} onLoad={onLoad}/>
-                    <RunNodeImage type={MANUAL_3} ice={true} onLoad={onLoad}/>
+                    <RunNodeImage type={MANUAL_1} onLoad={onLoad}/>
+                    <RunNodeImage type={MANUAL_2} onLoad={onLoad}/>
+                    <RunNodeImage type={MANUAL_3} onLoad={onLoad}/>
                     <HackerImage type="BEAR" fileName="animal-bear4-sc44.png" onLoad={onLoad}/>
                     <HackerImage type="BIRD_1" fileName="animal-bird2.png" onLoad={onLoad}/>
                     <HackerImage type="CAT" fileName="animal-cat3.png" onLoad={onLoad}/>
@@ -103,17 +110,3 @@ class RunCanvasPanel extends Component {
         );
     }
 }
-
-let mapStateToProps = (state) => {
-    return {
-        userId: state.userId
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        dispatch: dispatch
-    }
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(RunCanvasPanel);

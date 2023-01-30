@@ -1,5 +1,5 @@
 import React from "react";
-import Pad, {zeroPad} from "../../../../../common/component/Pad";
+import {Pad, zeroPad} from "../../../../../common/component/Pad";
 
 const ScanInfoTimerTrigger =({layer}) => {
 
@@ -14,7 +14,7 @@ const ScanInfoTimerTrigger =({layer}) => {
     return (
         <>
             <br/>
-            <Pad p="8" />Time until detection: <span className="text-info">{hoursText}:{minutesText}:{secondsText}</span><br/>
+            <Pad length="8" />Time until detection: <span className="text-info">{hoursText}:{minutesText}:{secondsText}</span><br/>
         </>
     );
 };

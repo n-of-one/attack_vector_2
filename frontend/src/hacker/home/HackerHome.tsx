@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {TextInput} from "../../common/component/TextInput";
-import SilentLink from "../../common/component/SilentLink";
+import {SilentLink} from "../../common/component/SilentLink";
 import {DELETE_SCAN, ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 import {HackerState} from "../HackerRootReducer";
 import {ScanInfo} from "./ScansReducer";

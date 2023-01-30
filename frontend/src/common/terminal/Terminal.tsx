@@ -2,7 +2,7 @@ import React, {Component, createRef} from 'react';
 import {TerminalInput} from "./TerminalInput";
 import {TerminalTextLine} from "./TerminalTextLine";
 import {terminalManager} from "./TerminalManager";
-import {TERMINAL_SUBMIT, TerminalLine, TerminalState} from "./TerminalReducer";
+import {TERMINAL_SUBMIT, TerminalState} from "./TerminalReducer";
 import {Dispatch} from "redux";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
     className?: string
 }
 
-class Terminal extends Component<Props> {
+export class Terminal extends Component<Props> {
 
     state: TerminalState
     bottomRef = createRef<HTMLDivElement>()
@@ -54,16 +54,13 @@ class Terminal extends Component<Props> {
         }
     }
 
-    renderLine(line: TerminalLine, index: string | number) {
-        return <TerminalTextLine line={line} index={index}/>
-    }
 
     /** The line that is being displayed one character at a time */
     renderRenderingLine() {
         if (!this.state.renderingLine) {
             return <div/>
         }
-        return this.renderLine(this.state.renderingLine, "renderingLine");
+        return <TerminalTextLine line={this.state.renderingLine} />
     }
 
     renderInput() {
@@ -76,9 +73,10 @@ class Terminal extends Component<Props> {
     }
 
     render() {
+
         if (this.state.renderOutput) {
             return <div className="terminalPanel terminal_scrollbar" style={{height: this.height}}>
-                {this.state.lines.map((line, index) => this.renderLine(line, index))}
+                {this.state.lines.map((line, index) => <TerminalTextLine line={line} key={index}/>)}
                 {this.renderRenderingLine()}
                 {this.renderInput()}
                 <div ref={this.bottomRef}/>
@@ -90,5 +88,3 @@ class Terminal extends Component<Props> {
         }
     }
 }
-
-export default Terminal;

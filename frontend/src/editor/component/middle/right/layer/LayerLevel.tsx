@@ -1,5 +1,5 @@
 import React from 'react'
-import SilentLink from "../../../../../common/component/SilentLink"
+import {SilentLink} from "../../../../../common/component/SilentLink"
 import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {sendSwapLayers} from "../../../../server/EditorServerClient"
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import Terminal from "../../../common/terminal/Terminal"
-import ScanCanvasPanel from "./RunCanvasPanel"
+import {Terminal} from "../../../common/terminal/Terminal"
+import {RunCanvasPanel} from "./RunCanvasPanel"
 import NodeScanInfo from "./scaninfo/NodeScanInfo"
 import {SUBMIT_TERMINAL_COMMAND} from "../model/RunActions"
 import {HackerState} from "../../HackerRootReducer"
@@ -29,6 +29,7 @@ export const RunHome = () => {
     })
     const terminal = useSelector((state: HackerState) => state.terminal)
     const infoNodeId = useSelector((state: HackerState) => state.run.infoNodeId)
+    const userId = useSelector((state: HackerState) => state.userId)
 
     return (
         <div className="row">
@@ -44,7 +45,7 @@ export const RunHome = () => {
                 </div>
                 <div className="row">
                     <div className="col-lg-12">
-                        <ScanCanvasPanel/>
+                        <RunCanvasPanel dispatch={dispatch} userId={userId}/>
                     </div>
                 </div>
             </div>

@@ -29,7 +29,7 @@ interface Props {
     timestamp: string
 }
 
-const TimeStamp = (props: Props) => {
+export const TimeStamp = (props: Props) => {
 
     const timestamp = new Date(props.timestamp)
 
@@ -45,5 +45,3 @@ const TimeStamp = (props: Props) => {
 
     return <span>{renderDate(timestamp)} {hours}:{minutes}</span>
 };
-
-export default TimeStamp;

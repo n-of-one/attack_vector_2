@@ -1,7 +1,7 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import Terminal from "../../../../common/terminal/Terminal"
-import CloseButton from "../../../../common/component/CloseButton"
+import {Terminal} from "../../../../common/terminal/Terminal"
+import {CloseButton} from "../../../../common/component/CloseButton"
 import {FINISH_HACKING_ICE} from "../../model/HackActions"
 import {HIDDEN} from "../IceUiState"
 import {HackerState} from "../../../HackerRootReducer"

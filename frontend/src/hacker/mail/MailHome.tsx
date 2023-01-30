@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import TimeStamp from "../../common/menu/TimeStamp";
-import SilentLink from "../../common/component/SilentLink";
+import {TimeStamp} from "../../common/menu/TimeStamp";
+import {SilentLink} from "../../common/component/SilentLink";
 import {HackerState} from "../HackerRootReducer";
 import {MailLine, MailState} from "./MailsReducer";
 import {SELECT_MAIL} from "./CurrentMailReducer";
