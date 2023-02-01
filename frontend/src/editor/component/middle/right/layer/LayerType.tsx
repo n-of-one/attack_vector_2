@@ -2,10 +2,10 @@ import React from 'react'
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {Glyphicon} from "../../../../../common/component/Glyphicon"
 import {OS} from "../../../../../common/enums/LayerTypes"
-import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {sendRemoveLayer} from "../../../../server/EditorServerClient"
 
-const renderRemove = (layer: EditorLayerDetails, remove: () => void) => {
+const renderRemove = (layer: LayerDetails, remove: () => void) => {
     if (layer.type === OS) {
         return null
     }
@@ -20,7 +20,7 @@ const renderRemove = (layer: EditorLayerDetails, remove: () => void) => {
 
 interface Props {
     node: NodeI,
-    layer: EditorLayerDetails,
+    layer: LayerDetails,
     typeDisplay: string
 }
 export const LayerType = ({node, layer, typeDisplay}: Props) => {

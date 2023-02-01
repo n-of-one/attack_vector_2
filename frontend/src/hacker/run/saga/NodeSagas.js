@@ -2,8 +2,7 @@ import runCanvas from "../component/RunCanvas";
 import {delay} from "../../../common/saga/SagaUtil";
 
 function* updateNodeStatusSaga(action) {
-    const {nodeId, newStatus} = action.data;
-    runCanvas.updateNodeStatus(nodeId, newStatus);
+    runCanvas.updateNodeStatus(action.data);
     yield
 }
 
@@ -15,7 +14,7 @@ function* discoverNodesSaga(action) {
 
 export function* serverNodeHacked(action) {
     yield delay(action.data.delay);
-    runCanvas.nodeHacked(action.data.nodeId);
+    runCanvas.nodeHacked(action.data);
     yield
 }
 

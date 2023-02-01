@@ -1,37 +1,60 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart} from "../CanvasUtils";
+import {animate, calcLine, calcLineStart, getHtmlImage} from "../CanvasUtils";
 import Schedule from "../../Schedule";
 import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
 import LineElement from "./util/LineElement";
+import {Display} from "./Display";
+import {PatrollerData} from "../../../hacker/run/component/RunCanvas";
+import {Canvas} from "fabric/fabric-impl";
+import {Dispatch} from "redux";
+import {DisplayCollection} from "./util/DisplayCollection";
+import NodeDisplay from "./NodeDisplay";
+import {Ticks} from "../../model/Ticks";
+import HackerDisplay from "./HackerDisplay";
 
 
-export default class TracingPatrollerDisplay {
+export default class TracingPatrollerDisplay implements Display {
 
-    canvas = null;
-    dispatch = null;
-    displayById = null;
+    canvas : Canvas
+    dispatch : Dispatch
+    nodeDisplays : DisplayCollection<NodeDisplay>
+    hackerDisplays: DisplayCollection<HackerDisplay>
 
-    patrollerId = null;
-    currentNodeId = null;
+    patrollerId: string | null
+    currentNodeId: string
+    currentNodeDisplay: Display
 
-    schedule = null;
+    schedule: Schedule
 
-    lineElements = [];
+    patrollerIcon: fabric.Image
+    lineElements: LineElement[] = []
 
-    constructor({patrollerId, nodeId, path, ticks}, canvas, dispatch, displayById) {
+    aborted = false;
+
+    x: number
+    y: number
+    size = 0
+
+    constructor({patrollerId, nodeId, path, ticks}: PatrollerData, canvas: Canvas, dispatch: Dispatch,
+                nodeDisplays: DisplayCollection<NodeDisplay>,
+                hackerDisplays: DisplayCollection<HackerDisplay>) {
+
         this.patrollerId = patrollerId;
         this.currentNodeId = nodeId;
 
         this.canvas = canvas;
-        this.schedule = new Schedule();
+        this.schedule = new Schedule(dispatch);
         this.dispatch = dispatch;
-        this.displayById = displayById;
+        this.nodeDisplays = nodeDisplays;
+        this.hackerDisplays = hackerDisplays
 
 
-        this.currentNodeDisplay = displayById[nodeId];
+        this.currentNodeDisplay = nodeDisplays.get(nodeId)
 
-        const image = document.getElementById("PATROLLER_3");
+        this.x = this.currentNodeDisplay.x
+        this.y = this.currentNodeDisplay.y
 
+        const image = getHtmlImage("PATROLLER_3")
         this.patrollerIcon = new fabric.Image(image, {
             left: this.currentNodeDisplay.x,
             top: this.currentNodeDisplay.y,
@@ -47,8 +70,8 @@ export default class TracingPatrollerDisplay {
 
         if (path) {
             path.forEach((segment) => {
-                const fromNodeDisplay = this.displayById[segment.fromNodeId];
-                const toNodeDisplay = this.displayById[segment.toNodeId];
+                const fromNodeDisplay = this.nodeDisplays.get(segment.fromNodeId);
+                const toNodeDisplay = this.nodeDisplays.get(segment.toNodeId);
                 const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
                 const styling = {"opacity": 0}
                 const lineElement = new LineElement(lineEndData, COLOR_PATROLLER_LINE, this.canvas, styling);
@@ -60,15 +83,19 @@ export default class TracingPatrollerDisplay {
 
         animate(this.canvas, this.patrollerIcon, "opacity", 1, ticks.appear);
         this.schedule.wait(ticks.appear);
-
-
     }
 
-    move(fromNodeId, toNodeId, ticks) {
+    getAllIcons(): fabric.Object[] {
+        const objects: fabric.Object[] =  [this.patrollerIcon]
+        this.lineElements.forEach( element => objects.push(element.line))
+        return objects
+    }
+
+    move(fromNodeId: string, toNodeId: string, ticks: Ticks) {
 
         this.schedule.run(ticks.move, () => {
-            const fromNodeDisplay = this.displayById[fromNodeId];
-            const toNodeDisplay = this.displayById[toNodeId];
+            const fromNodeDisplay = this.nodeDisplays.get(fromNodeId)
+            const toNodeDisplay = this.nodeDisplays.get(toNodeId)
 
             const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 22, 4);
             const lineElement = new LineElement(lineStartData, COLOR_PATROLLER_LINE, this.canvas);
@@ -82,8 +109,8 @@ export default class TracingPatrollerDisplay {
     }
 
 
-    lock(hackerId) {
-        this.displayById[hackerId].lockByPatroller(this);
+    lock(hackerId: string) {
+        this.hackerDisplays.get(hackerId).lockByPatroller();
     }
 
     disappear() {
@@ -101,6 +128,8 @@ export default class TracingPatrollerDisplay {
         });
     }
 
-
+    terminate() {
+        this.schedule.terminate()
+    }
 
 }

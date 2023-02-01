@@ -18,7 +18,16 @@ export interface NodeScan {
     distance?: number
 }
 
+export type NodeStatus = "UNDISCOVERED" | "DISCOVERED" | "TYPE" | "LAYERS_NO_CONNECTIONS" | "CONNECTIONS" | "LAYERS"
+
+export interface UpdateNodeStatusAction {
+    nodeId: string,
+    newStatus: NodeStatus
+}
+
 interface NodeScanById { [key: string] : NodeScan }
+
+
 
 const defaultState = {
     runId: "",
@@ -28,6 +37,7 @@ const defaultState = {
     startTime: "",
     nodeScanById: {}
 }
+
 
 export const scanReducer = (state: Scan = defaultState, action: AnyAction) => {
     switch (action.type) {
@@ -42,12 +52,9 @@ export const scanReducer = (state: Scan = defaultState, action: AnyAction) => {
     }
 }
 
-interface UpdateNodeStatus {
-    nodeId: string,
-    newStatus: string
-}
 
-const updateNodeStatus = (scan: Scan, {nodeId, newStatus}: UpdateNodeStatus) => {
+
+const updateNodeStatus = (scan: Scan, {nodeId, newStatus}: UpdateNodeStatusAction) => {
     const newNodeScanById = updateNodeScanById(scan.nodeScanById, nodeId, newStatus);
     return {...scan, nodeScanById: newNodeScanById};
 };

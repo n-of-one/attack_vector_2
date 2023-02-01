@@ -3,12 +3,12 @@ import {useDispatch} from "react-redux"
 import LayerText from "../../../../../../../common/model/layer/LayerText"
 import {LayerField} from "../../LayerField"
 import {LayerPanel} from "./LayerPanel"
-import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 
 interface Props {
     node: NodeI,
-    layer: EditorLayerDetails
+    layer: LayerDetails
 }
 
 export const LayerTextPanel = ({node, layer}: Props) => {

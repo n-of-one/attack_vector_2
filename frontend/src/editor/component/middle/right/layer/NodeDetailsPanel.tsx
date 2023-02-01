@@ -10,13 +10,13 @@ import {LayerIcePasswordPanel} from "./type/panel/LayerIcePasswordPanel"
 import {LayerIceTanglePanel} from "./type/panel/LayerIceTanglePanel"
 import {LayerTimerTriggerPanel} from "./type/panel/LayerTimerTriggerPanel"
 import {EditorState} from "../../../../EditorRootReducer"
-import {EditorLayerDetails, NodeI} from "../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 
-const renderLayer = (node: NodeI, layer: EditorLayerDetails) => {
+const renderLayer = (node: NodeI, layer: LayerDetails) => {
 
     switch (layer.type) {
         case null:
@@ -37,7 +37,7 @@ const renderLayer = (node: NodeI, layer: EditorLayerDetails) => {
 }
 
 
-const renderTab = (layer: EditorLayerDetails, currentLayer: EditorLayerDetails, selectLayer: (layer: EditorLayerDetails) => void) => {
+const renderTab = (layer: LayerDetails, currentLayer: LayerDetails, selectLayer: (layer: LayerDetails) => void) => {
     const activeLinkClassName = (layer === currentLayer) ? "nav-link active" : "nav-link"
 
     return (
@@ -57,7 +57,7 @@ export const NodeDetailsPanel = () => {
             return {layers: [], currentLayer: null}
         }
         const node: NodeI = findElementById(state.nodes, state.currentNodeId)
-        const layer: EditorLayerDetails = findElementById(node.layers, state.currentLayerId!)
+        const layer: LayerDetails = findElementById(node.layers, state.currentLayerId!)
         return {
             node: node,
             layers: node.layers,
@@ -66,7 +66,7 @@ export const NodeDetailsPanel = () => {
     })
 
     const dispatch = useDispatch()
-    const selectLayer = (layer: EditorLayerDetails) => dispatch({type: SELECT_LAYER, layerId: layer.id})
+    const selectLayer = (layer: LayerDetails) => dispatch({type: SELECT_LAYER, layerId: layer.id})
 
 
     if (!currentLayer) {

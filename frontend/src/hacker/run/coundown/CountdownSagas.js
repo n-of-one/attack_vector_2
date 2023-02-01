@@ -13,7 +13,7 @@ export function* serverPatrollerMoveSaga(action) {
 }
 
 export function* serverPatrollerHooksHackerSaga(action) {
-    yield runCanvas.patrollerHooksHacker(action.data);
+    yield runCanvas.patrollerHooksHacker(action.data.hackerId);
 }
 
 export function* serverPatrollerSnacksBackHackerSaga(action) {
@@ -25,6 +25,6 @@ export function* serverPatrollerLocksHackerSaga(action) {
 }
 
 export function* serverRemovePatrollerSaga(action) {
-    yield runCanvas.removePatroller(action.data);
+    yield runCanvas.removePatroller(action.data.patrollerId);
 }
 

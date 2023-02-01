@@ -9,6 +9,7 @@ import {
     SERVER_UPDATE_LAYER,
     SERVER_UPDATE_NETWORK_ID
 } from "../server/EditorServerActionProcessor"
+import {NodeStatus} from "../../hacker/run/reducer/SiteReducer";
 
 export enum NodeType {
     TRANSIT_1 = "TRANSIT_1",
@@ -36,7 +37,7 @@ export enum LayerType {
     ICE_TANGLE= "ICE_TANGLE",
 }
 
-export interface EditorLayerDetails {
+export interface LayerDetails {
     id: string
     type: LayerType
     level: number       // height of the layer. level 0 is always OS. Hack top level first.
@@ -62,8 +63,13 @@ export interface NodeI {
     x: number,
     y: number,
     ice: boolean,
-    layers: Array<EditorLayerDetails>,
+    layers: Array<LayerDetails>,
     networkId: string
+
+    // only used during a run, not in edit
+    hacked? : boolean
+    status?: string
+    distance?: number
 }
 
 export interface MoveNodeI {nodeId: string, x: number, y: number}
@@ -103,7 +109,7 @@ const moveNode = (data: MoveNodeI, nodeList: Array<NodeI>) => {
 }
 
 
-const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: EditorLayerDetails}, nodes: Array<NodeI>) => {
+const serverUpdateLayer = (update: {nodeId: string, layerId: string, layer: LayerDetails}, nodes: Array<NodeI>) => {
     const node = findElementById(nodes, update.nodeId)
     const newLayers = updateArrayById(update.layer, node.layers, update.layerId)
 
@@ -120,7 +126,7 @@ const serverUpdateNetworkId = (update: {nodeId: string,  networkId: string}, nod
     return newNodes
 }
 
-const serverAddLayer = (data: {nodeId: string, layer: EditorLayerDetails}, nodes: Array<NodeI>) => {
+const serverAddLayer = (data: {nodeId: string, layer: LayerDetails}, nodes: Array<NodeI>) => {
     const node = findElementById(nodes, data.nodeId)
     const layer = data.layer
     const newLayers = [...node.layers, layer]

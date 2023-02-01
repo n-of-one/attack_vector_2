@@ -3,11 +3,11 @@ import {useDispatch} from "react-redux"
 import {LayerField} from "../../LayerField"
 import {LayerPanel} from "./LayerPanel"
 import LayerTimerTrigger from "../../../../../../../common/model/layer/LayerTimerTrigger"
-import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 interface Props {
     node: NodeI,
-    layer: EditorLayerDetails
+    layer: LayerDetails
 }
 
 export const LayerTimerTriggerPanel = ({node, layer}: Props) => {

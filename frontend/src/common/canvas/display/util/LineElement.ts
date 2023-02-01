@@ -1,14 +1,15 @@
 import {fabric} from "fabric";
-import {animate, easeLinear} from "../../CanvasUtils";
+import {animate, easeLinear, LinePositions} from "../../CanvasUtils";
+import {Canvas} from "fabric/fabric-impl";
 
 
 export default class LineElement {
 
-    canvas = null;
-    line = null;
+    canvas: Canvas
+    line: fabric.Line
 
 
-    constructor(lineData, color, canvas, styling) {
+    constructor(lineData: LinePositions, color: string, canvas: Canvas, styling: any = {}) {
         this.canvas = canvas;
 
         this.line = new fabric.Line(
@@ -25,19 +26,23 @@ export default class LineElement {
         this.canvas.sendToBack(this.line);
     }
 
-    setColor(value) {
+    getIcon(): fabric.Line {
+        return this.line
+    }
+
+    setColor(value: string) {
         this.line.set('stroke', value);
     }
 
-    appear(ticks) {
+    appear(ticks: number) {
         animate(this.canvas, this.line, "opacity", 1, ticks);
     }
 
-    extendTo(lineData, time, ease = easeLinear) {
+    extendTo(lineData: LinePositions, time: number, ease = easeLinear) {
         animate(this.canvas, this.line, null, lineData.asCoordinates(), time, ease);
     }
 
-    disappear(ticks) {
+    disappear(ticks: number) {
         animate(this.canvas, this.line, 'opacity', 0, ticks);
     }
 

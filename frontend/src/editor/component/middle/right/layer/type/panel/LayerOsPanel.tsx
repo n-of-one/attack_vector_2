@@ -3,11 +3,11 @@ import { useDispatch} from "react-redux"
 import {LayerField} from "../../LayerField"
 import {LayerPanel} from "./LayerPanel"
 import {LayerOs} from "../../../../../../../common/model/layer/LayerOs"
-import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 interface Props {
     node: NodeI,
-    layer: EditorLayerDetails
+    layer: LayerDetails
 }
 export const LayerOsPanel = ({node, layer} : Props) => {
 

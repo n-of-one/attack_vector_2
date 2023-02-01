@@ -1,5 +1,5 @@
 import {sendEditLayerData} from "../../../editor/server/EditorServerClient";
-import {EditorLayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
+import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 
 const NOTE = "note";
@@ -7,14 +7,14 @@ const NAME = "name";
 
 export default class Layer {
 
-    layer: EditorLayerDetails
+    layer: LayerDetails
     node: NodeI
     dispatch: Dispatch
     id: string
     name: string
     note: string
 
-    constructor(layer: EditorLayerDetails, node: NodeI, dispatch: Dispatch) {
+    constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         this.layer = layer;
         this.node = node;
         this.dispatch = dispatch;

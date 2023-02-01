@@ -1,5 +1,5 @@
 import LayerIce from "./LayerIce";
-import {EditorLayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
+import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 
 const PASSWORD = "password";
@@ -10,7 +10,7 @@ export class LayerIcePassword extends LayerIce {
     password: string
     hint: string
 
-    constructor(layer: EditorLayerDetails, node: NodeI, dispatch: Dispatch) {
+    constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch);
 
         this.password = layer.password!;

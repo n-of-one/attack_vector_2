@@ -5,31 +5,26 @@ import ConnectionDisplay from "../../../../common/canvas/display/ConnectionDispl
 import {Dispatch} from "redux"
 import {Connection} from "../../../reducer/ConnectionsReducer"
 import {MoveNodeI, NodeI} from "../../../reducer/NodesReducer"
-import {IEvent} from "fabric/fabric-impl"
+import {Canvas, IEvent} from "fabric/fabric-impl"
 import {delay} from "../../../../common/Util"
 import {sendAddConnection, sendMoveNode} from "../../../server/EditorServerClient"
 import {SELECT_NODE} from "../../../reducer/CurrentNodeIdReducer"
-
-interface DisplayNodesById {
-    [key: string]: NodeDisplay
-}
+import {DisplayCollection} from "../../../../common/canvas/display/util/DisplayCollection";
 
 export interface LoadSiteData {
     id: string,
     nodes: NodeI[],
     connections: Connection[]
 }
-/**
- * This class provides editor map like actions to the fabric canvas.
- */
+
 class EditorCanvas {
 
     siteId: string = ""
-    nodeDisplayById: DisplayNodesById = {}
+    nodeDisplays = new DisplayCollection<NodeDisplay>("NodeDisplay")
     connections: ConnectionDisplay[] = []
-    dispatch: Dispatch | null = null
-    nodeSelected: { data: { id: string } } | null = null
-    canvas: fabric.Canvas | null = null
+    dispatch: Dispatch = null as unknown as Dispatch // lateinit
+    nodeSelected: NodeDisplay | null = null
+    canvas: fabric.Canvas = null as unknown as Canvas // lateinit
 
 
     init(dispatch: Dispatch) {
@@ -69,9 +64,6 @@ class EditorCanvas {
             this.canvas!.remove(oldObject)
         })
 
-        this.nodeDisplayById = {}
-        this.connections = []
-        this.nodeSelected = null
         this.siteId = loadSiteData.id
 
         const {nodes, connections} = loadSiteData
@@ -88,10 +80,10 @@ class EditorCanvas {
     }
 
     addNode(nodeData: NodeI) {
-        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, false)
+        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, false, false)
         nodeDisplay.show()
 
-        this.nodeDisplayById[nodeData.id] = nodeDisplay
+        this.nodeDisplays.add(nodeData.id, nodeDisplay)
         this.canvas!.discardActiveObject()
         this.render()
 
@@ -99,15 +91,15 @@ class EditorCanvas {
     }
 
     selectNode(nodeId: string) {
-        const nodeDisplay = this.nodeDisplayById[nodeId]
+        const nodeDisplay = this.nodeDisplays.get(nodeId)
         nodeDisplay.select()
-        this.nodeSelected = nodeDisplay.nodeIcon
+        this.nodeSelected = nodeDisplay
         this.dispatch!({type: SELECT_NODE, data: nodeId})
     }
 
     addConnection(connectionData: Connection) {
-        let fromDisplay = this.nodeDisplayById[connectionData.fromId]
-        let toDisplay = this.nodeDisplayById[connectionData.toId]
+        let fromDisplay = this.nodeDisplays.get(connectionData.fromId)
+        let toDisplay = this.nodeDisplays.get(connectionData.toId)
 
         let connectionDisplay = new ConnectionDisplay(this.canvas, null, connectionData, fromDisplay, toDisplay)
         connectionDisplay.show()
@@ -134,7 +126,7 @@ class EditorCanvas {
 
     moveNode(action: MoveNodeI) {
         let nodeId = action.nodeId
-        let nodeDisplay = this.nodeDisplayById[nodeId]
+        let nodeDisplay = this.nodeDisplays.get(nodeId)
         assertNotNullUndef(nodeDisplay, action)
 
         nodeDisplay.move(action)
@@ -147,7 +139,7 @@ class EditorCanvas {
             return
         }
 
-        const nodeDisplay = this.nodeDisplayById[nodeId]
+        const nodeDisplay = this.nodeDisplays.get(nodeId)
         nodeDisplay.moving()
 
         this.connections.forEach(connection => {
@@ -171,10 +163,9 @@ class EditorCanvas {
         let selectedObjects = event.selected
 
         if (!selectedObjects || selectedObjects.length === 0) {
-            console.log("Selected nothing?: ")
+            console.log("Selected nothing? ")
             return
         }
-
         const selectedObject = selectedObjects[0]
 
         if (!selectedObject.data || !selectedObject.data.id) {
@@ -182,18 +173,18 @@ class EditorCanvas {
             return
         }
 
+        const newNodeSelected = this.nodeDisplays.get(selectedObject.data.id)
+
         if (this.nodeSelected != null && event.e && event.e.ctrlKey) {
 
             sendAddConnection({
-                fromId: this.nodeSelected.data.id,
-                toId: selectedObject.data.id
+                fromId: this.nodeSelected.id,
+                toId: newNodeSelected.id
             })
-            this.nodeSelected = selectedObject as { data: { id: string } }
-        } else {
-            this.nodeSelected = selectedObject as { data: { id: string } }
         }
+        this.nodeSelected = newNodeSelected
 
-        this.dispatch!({type: SELECT_NODE, data: selectedObject.data.id})
+        this.dispatch!({type: SELECT_NODE, data: newNodeSelected.id})
     }
 
     canvasObjectDeSelected() {
@@ -202,7 +193,7 @@ class EditorCanvas {
     }
 
     updateNetworkId({nodeId, value}: { nodeId: string, value: string }) {
-        const display = this.nodeDisplayById[nodeId]
+        const display = this.nodeDisplays.get(nodeId)
         display.updateNetworkId(value)
     }
 }

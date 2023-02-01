@@ -1,5 +1,5 @@
 import Layer from "./Layer";
-import {EditorLayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
+import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 
 const MINUTES = "minutes";
@@ -10,7 +10,7 @@ export default class LayerTimerTrigger extends Layer {
     minutes: number
     seconds: number
 
-    constructor(layer: EditorLayerDetails, node: NodeI, dispatch: Dispatch) {
+    constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch);
 
         this.minutes = layer.minutes!;

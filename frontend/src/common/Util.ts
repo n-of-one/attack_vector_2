@@ -32,3 +32,7 @@ export const formatTimeInterval = (totalSecondsLeft: number | null) => {
 
   return zeroPad(waitHours, 2) + ":" + zeroPad(waitMinutes, 2) + ":" + zeroPad(waitSeconds, 2);
 }
+
+export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined
+}

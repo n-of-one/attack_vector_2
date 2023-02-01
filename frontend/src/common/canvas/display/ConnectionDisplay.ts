@@ -1,16 +1,26 @@
 import {fabric} from "fabric";
 import {animate, calcLine} from "../CanvasUtils";
+import {Canvas} from "fabric/fabric-impl";
+import Schedule from "../../Schedule";
+import {Connection} from "../../../editor/reducer/ConnectionsReducer";
+import NodeDisplay from "./NodeDisplay";
+import {Display} from "./Display";
 
-export default class ConnectionDisplay {
+export default class ConnectionDisplay implements Display {
 
-    canvas;
-    schedule;
-    connectionIcon;
-    connectionData;
-    fromDisplay;
-    toDisplay;
+    canvas: Canvas
+    schedule: Schedule | null
+    connectionIcon: fabric.Line
+    fromDisplay: NodeDisplay
+    toDisplay: NodeDisplay
 
-    constructor(canvas, schedule, connectionData, fromDisplay, toDisplay) {
+    size = 0
+
+    connectionData: Connection
+    x: number
+    y: number
+
+    constructor(canvas: Canvas, schedule: Schedule | null , connectionData: Connection, fromDisplay: NodeDisplay, toDisplay: NodeDisplay) {
         this.canvas = canvas;
         this.schedule = schedule;
 
@@ -32,9 +42,17 @@ export default class ConnectionDisplay {
 
         this.canvas.add(this.connectionIcon);
         this.canvas.sendToBack(this.connectionIcon);
+
+        this.x = (fromDisplay.x + toDisplay.x) / 2
+        this.y = (fromDisplay.y + toDisplay.y) / 2
+    }
+
+    getAllIcons() {
+        return [this.connectionIcon]
     }
 
     appear() {
+        if (!this.schedule) throw Error("schedule not initialized")
         this.schedule.run(3, () => {
             animate(this.canvas, this.connectionIcon, "opacity", 0.5, 40);
         });
@@ -62,6 +80,7 @@ export default class ConnectionDisplay {
     }
 
     terminate() {
+        if (!this.schedule) throw Error("schedule not initialized")
         this.schedule.terminate();
     }
 

@@ -25,14 +25,14 @@ const all = {
     PASSCODE_STORE, RESOURCE_STORE, ICE_1, ICE_2, ICE_3,
     UNHACKABLE, MANUAL_1, MANUAL_2, MANUAL_3};
 
-const toType = (name: string) => {
+const toType = (name: string): NodeFileType => {
     const match = Object.entries(all).find(
         ([key, _]) => { return key === name }
     );
     if (match) {
        return match[1];
     }
-    return null;
+    throw new Error("No node type exists for: " + name)
 };
 
 export { toType,

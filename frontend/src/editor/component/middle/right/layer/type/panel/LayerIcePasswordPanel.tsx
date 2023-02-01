@@ -3,12 +3,12 @@ import {useDispatch} from "react-redux"
 import {LayerField} from "../../LayerField"
 import {LayerPanel} from "./LayerPanel"
 import {LayerIcePassword} from "../../../../../../../common/model/layer/LayerIcePassword"
-import {EditorLayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 
 interface Props {
     node: NodeI,
-    layer: EditorLayerDetails
+    layer: LayerDetails
 }
 
 export const LayerIcePasswordPanel = ({node, layer}: Props) => {

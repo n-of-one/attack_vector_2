@@ -59,7 +59,7 @@ function* hackerEnterScanSaga(action) {
 }
 
 function* hackerLeaveScanSaga(action) {
-    runCanvas.hackerLeave(action.data);
+    runCanvas.hackerLeave(action.data.userId);
     yield
 }
 

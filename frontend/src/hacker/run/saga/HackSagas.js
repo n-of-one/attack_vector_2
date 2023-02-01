@@ -11,7 +11,7 @@ export function* moveStartSaga(action) {
 }
 
 export function* serverMoveArriveSaga(action) {
-    runCanvas.moveArrive(action.data.userId, action.data.nodeId);
+    runCanvas.moveArrive(action.data);
     yield
 }
 
@@ -25,7 +25,7 @@ export function* serverHackerProbeLayersSaga(action) {
 
 
 export function* serverHackerProbeConnectionsSaga(action) {
-    runCanvas.hackerProbeConnections(action.data.userId, action.data.nodeId);
+    runCanvas.hackerProbeConnections(action.data);
     yield
 }
 
