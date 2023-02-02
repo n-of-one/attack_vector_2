@@ -1,7 +1,7 @@
-import Schedule from "../../../../common/Schedule";
+import {Schedule} from "../../../../common/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
-import GenericIceManager from "../GenericIceManager";
-import tangleIceCanvas from "./TangleIceCanvas";
+import {GenericIceManager} from "../GenericIceManager";
+import {tangleIceCanvas} from "./TangleIceCanvas";
 import {notify} from "../../../../common/Notification";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import {delay} from "../../../../common/Util";
@@ -79,5 +79,4 @@ class TangleIceManager extends GenericIceManager {
 
 }
 
-const tangleIceManager = new TangleIceManager();
-export default tangleIceManager
+export const tangleIceManager = new TangleIceManager();

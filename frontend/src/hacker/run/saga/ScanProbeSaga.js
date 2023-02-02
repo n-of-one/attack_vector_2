@@ -1,4 +1,4 @@
-import runCanvas from "../component/RunCanvas"
+import {runCanvas} from "../component/RunCanvas"
 import {webSocketConnection} from "../../../common/WebSocketConnection";
 import {select} from 'redux-saga/effects'
 

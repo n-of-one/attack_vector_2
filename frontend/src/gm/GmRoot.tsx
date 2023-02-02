@@ -48,5 +48,3 @@ export class GmRoot extends Component<Props>{
         )
     }
 }
-
-export default GmRoot

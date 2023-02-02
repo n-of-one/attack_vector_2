@@ -1,8 +1,8 @@
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import Schedule from "../../../common/Schedule";
+import {Schedule} from "../../../common/Schedule";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalReducer";
 
-export default class GenericIceManager{
+export class GenericIceManager{
 
     schedule: Schedule = null as unknown as Schedule
 

@@ -1,4 +1,4 @@
-import Layer from "./Layer";
+import {Layer} from "./Layer";
 import {editorCanvas} from "../../../editor/component/middle/middle/EditorCanvas";
 import {sendEditNetworkId} from "../../../editor/server/EditorServerClient";
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";

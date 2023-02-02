@@ -1,13 +1,12 @@
 import {fabric} from "fabric"
-import Schedule from "../../../common/Schedule"
+import {Schedule} from "../../../common/Schedule"
 import {DISCOVERED, UNDISCOVERED} from "../../../common/enums/NodeStatus"
-import NodeDisplay from "../../../common/canvas/display/NodeDisplay"
-import ConnectionIcon from "../../../common/canvas/display/ConnectionDisplay"
-import HackerDisplay from "../../../common/canvas/display/HackerDisplay"
-import ProbeDisplay from "../../../common/canvas/display/ProbeDisplay"
+import {NodeDisplay} from "../../../common/canvas/display/NodeDisplay"
+import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
+import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions"
-import TracingPatrollerDisplay from "../../../common/canvas/display/TracingPatrollerDisplay"
+import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPatrollerDisplay"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackersReducer"
@@ -15,7 +14,7 @@ import {Scan, UpdateNodeStatusAction} from "../reducer/ScanReducer"
 import {Site} from "../reducer/SiteReducer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
-import ConnectionDisplay from "../../../common/canvas/display/ConnectionDisplay";
+import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
 import {Ticks} from "../../../common/model/Ticks";
 
@@ -294,7 +293,7 @@ class RunCanvas {
     }
 
     addConnectionDisplay(connection: Connection, fromDisplay: NodeDisplay, toDisplay: NodeDisplay) {
-        const connectionDisplay = new ConnectionIcon(this.canvas, this.iconSchedule, connection, fromDisplay, toDisplay)
+        const connectionDisplay = new ConnectionDisplay(this.canvas, this.iconSchedule, connection, fromDisplay, toDisplay)
         this.connectionDisplays.add(connection.id, connectionDisplay)
         connectionDisplay.appear()
     }
@@ -479,5 +478,4 @@ class RunCanvas {
     }
 }
 
-const runCanvas = new RunCanvas()
-export default runCanvas
+export const runCanvas = new RunCanvas()

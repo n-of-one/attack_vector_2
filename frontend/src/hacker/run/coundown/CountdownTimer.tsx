@@ -8,11 +8,14 @@ export const CountdownTimer = () => {
     const showCountdown = useSelector((state: HackerState) => state.run.countdown.finishAt !== null)
     const secondsLeft = useSelector((state: HackerState) => state.run.countdown.secondsLeft)
 
+    // const showCountdown = true
+    // const secondsLeft =  173
+
     if (showCountdown) {
         return (
             <span className="countdown">{formatTimeInterval(secondsLeft)}</span>
         );
     } else {
-        return <></>;
+        return <span>&nbsp;</span>;
     }
 }

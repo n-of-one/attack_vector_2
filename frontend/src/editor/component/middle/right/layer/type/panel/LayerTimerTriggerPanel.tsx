@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch} from "react-redux"
 import {LayerField} from "../../LayerField"
 import {LayerPanel} from "./LayerPanel"
-import LayerTimerTrigger from "../../../../../../../common/model/layer/LayerTimerTrigger"
+import {LayerTimerTrigger} from "../../../../../../../common/model/layer/LayerTimerTrigger"
 import {LayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
 
 interface Props {

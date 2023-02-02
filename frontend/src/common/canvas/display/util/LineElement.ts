@@ -2,8 +2,7 @@ import {fabric} from "fabric";
 import {animate, easeLinear, LinePositions} from "../../CanvasUtils";
 import {Canvas} from "fabric/fabric-impl";
 
-
-export default class LineElement {
+export class LineElement {
 
     canvas: Canvas
     line: fabric.Line

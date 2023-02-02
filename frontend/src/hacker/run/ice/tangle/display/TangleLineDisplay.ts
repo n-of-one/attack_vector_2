@@ -1,8 +1,8 @@
 import {fabric} from "fabric";
 import {Canvas, Line} from "fabric/fabric-impl";
-import TanglePointDisplay from "./TanglePointDisplay";
+import {TanglePointDisplay} from "./TanglePointDisplay";
 
-export default class TangleLineDisplay {
+export class TangleLineDisplay {
 
     canvas: Canvas
     id: string
@@ -66,5 +66,4 @@ export default class TangleLineDisplay {
         this.icon.set(newCoordinates);
         this.icon.setCoords();
     }
-
 }

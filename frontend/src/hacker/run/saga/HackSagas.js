@@ -1,4 +1,4 @@
-import runCanvas from "../component/RunCanvas";
+import {runCanvas} from "../component/RunCanvas";
 
 export function* startAttackSaga(action) {
     runCanvas.startAttack(action.data.userId, action.data.quick);

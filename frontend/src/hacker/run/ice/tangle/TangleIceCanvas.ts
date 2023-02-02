@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
-import TanglePointDisplay from "./display/TanglePointDisplay";
-import TangleLineDisplay from "./display/TangleLineDisplay";
+import {TanglePointDisplay} from "./display/TanglePointDisplay";
+import {TangleLineDisplay} from "./display/TangleLineDisplay";
 import {webSocketConnection} from "../../../../common/WebSocketConnection";
 import {TanglePointMoved, TanglePuzzle} from "./TangleIceManager";
 import {Dispatch, Store} from "redux";
@@ -125,5 +125,4 @@ class TangleIceCanvas {
 }
 
 
-const tangleIceCanvas = new TangleIceCanvas();
-export default tangleIceCanvas
+export const tangleIceCanvas = new TangleIceCanvas();

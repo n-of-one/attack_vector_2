@@ -1,19 +1,19 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, getHtmlImage} from "../CanvasUtils";
-import Schedule from "../../Schedule";
+import {Schedule} from "../../Schedule";
 import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
-import LineElement from "./util/LineElement";
+import {LineElement} from "./util/LineElement";
 import {Display} from "./Display";
 import {PatrollerData} from "../../../hacker/run/component/RunCanvas";
 import {Canvas} from "fabric/fabric-impl";
 import {Dispatch} from "redux";
 import {DisplayCollection} from "./util/DisplayCollection";
-import NodeDisplay from "./NodeDisplay";
+import {NodeDisplay} from "./NodeDisplay";
 import {Ticks} from "../../model/Ticks";
-import HackerDisplay from "./HackerDisplay";
+import {HackerDisplay} from "./HackerDisplay";
 
 
-export default class TracingPatrollerDisplay implements Display {
+export class TracingPatrollerDisplay implements Display {
 
     canvas : Canvas
     dispatch : Dispatch

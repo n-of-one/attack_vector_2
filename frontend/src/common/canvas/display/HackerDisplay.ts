@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {animate, calcLine, calcLineStart, calcLineWithOffset, easeLinear, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
-import Schedule from "../../Schedule"
+import {Schedule} from "../../Schedule"
 import {
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
@@ -11,14 +11,13 @@ import {
     SCALE_SMALL,
     TICKS_HACKER_MOVE_MAIN, COLOR_HACKER_LINE, IMAGE_SIZE
 } from "./util/DisplayConstants"
-import LineElement from "./util/LineElement"
+import {LineElement} from "./util/LineElement"
 import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState"
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalReducer"
-import {NodeI} from "../../../editor/reducer/NodesReducer"
 import {Display} from "./Display"
 import {Dispatch} from "redux"
 import {DisplayCollection} from "./util/DisplayCollection"
-import NodeDisplay from "./NodeDisplay"
+import {NodeDisplay} from "./NodeDisplay"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
 import {HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
 import {Ticks} from "../../model/Ticks"
@@ -35,7 +34,7 @@ const LINE_OPACITY_SCANNING = 0.5
 const LINE_OPACITY_HACKING = 1
 
 
-export default class HackerDisplay implements Display {
+export class HackerDisplay implements Display {
 
     canvas: fabric.Canvas
     schedule: Schedule

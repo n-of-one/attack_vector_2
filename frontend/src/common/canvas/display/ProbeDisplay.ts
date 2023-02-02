@@ -2,16 +2,16 @@ import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, getHtmlImage} from "../CanvasUtils";
 import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../../hacker/run/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes";
-import Schedule from "../../Schedule";
-import LineElement from "./util/LineElement";
+import {Schedule} from "../../Schedule";
+import {LineElement} from "./util/LineElement";
 import {COLOR_PROBE_LINE} from "./util/DisplayConstants";
 import {TERMINAL_RECEIVE} from "../../terminal/TerminalReducer";
 import {Canvas} from "fabric/fabric-impl";
 import {Dispatch} from "redux";
 import {NodeScanType} from "../../../hacker/run/component/RunCanvas";
-import HackerDisplay from "./HackerDisplay";
+import {HackerDisplay} from "./HackerDisplay";
 import {DisplayCollection} from "./util/DisplayCollection";
-import NodeDisplay from "./NodeDisplay";
+import {NodeDisplay} from "./NodeDisplay";
 import {Display} from "./Display";
 
 const SIZE_SMALL = (20/40);
@@ -22,7 +22,7 @@ const SIZE_MEDIUM_LARGE = (58/40);
 
 const PROBE_IMAGE_SIZE = 40;
 
-export default class ProbeDisplay implements Display {
+export class ProbeDisplay implements Display {
 
     canvas: Canvas
     dispatch: Dispatch

@@ -1,23 +1,21 @@
-import React from 'react';
-import {useSelector} from "react-redux";
-import Cookies from "js-cookie";
-import {MenuItem} from "./MenuItem";
-import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../../gm/GmPages";
-import {ME} from "./CommonPages";
-import {HACKER_COMMUNITY, HACKER_HOME, MAIL, SCAN} from "./pageReducer";
-import {HackerState} from "../../hacker/HackerRootReducer";
+import React from 'react'
+import {useSelector} from "react-redux"
+import Cookies from "js-cookie"
+import {MenuItem} from "./MenuItem"
+import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../../gm/GmPages"
+import {HACKER_COMMUNITY, HACKER_HOME, MAIL, ME, SCAN} from "./pageReducer"
+import {HackerState} from "../../hacker/HackerRootReducer"
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
-
 const logout = (event: any) => {
-    event.preventDefault();
-    Cookies.remove("jwt");
-    Cookies.remove("type");
-    Cookies.remove("roles");
-    Cookies.remove("userName");
-    document.location.href = "/login";
-};
+    event.preventDefault()
+    Cookies.remove("jwt")
+    Cookies.remove("type")
+    Cookies.remove("roles")
+    Cookies.remove("userName")
+    document.location.href = "/login"
+}
 
 const scanItem = (currentPage: string, runName: string | null) => {
     if (currentPage === SCAN && runName) {
@@ -27,11 +25,11 @@ const scanItem = (currentPage: string, runName: string | null) => {
     } else {
         return <span/>
     }
-};
+}
 
 export const MenuBar = () => {
 
-    const userName = Cookies.get("userName");
+    const userName = Cookies.get("userName")
     const siteName = useSelector( (state: HackerState ) =>  (state.run && state.run.site.siteData) ? state.run.site.siteData.name : "" )
     const currentPage =  useSelector( (state: HackerState) => state.currentPage )
 

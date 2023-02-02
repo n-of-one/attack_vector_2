@@ -6,6 +6,7 @@ export const SCRIPTS = "SCRIPTS";
 export const HACKER_COMMUNITY = "HACKER_COMMUNITY";
 export const SCAN = "SCAN";
 export const MAIL = "MAIL";
+export const ME = "ME";
 
 // ACTIONS:
 export const NAVIGATE_PAGE = "NAVIGATE_PAGE";

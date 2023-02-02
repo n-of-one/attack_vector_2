@@ -1,4 +1,4 @@
-import LayerIce from "./LayerIce";
+import {LayerIce} from "./LayerIce";
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 

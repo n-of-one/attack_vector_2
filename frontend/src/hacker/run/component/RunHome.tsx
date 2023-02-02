@@ -2,20 +2,27 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {RunCanvasPanel} from "./RunCanvasPanel"
-import NodeScanInfo from "./scaninfo/NodeScanInfo"
+import {NodeScanInfo} from "./scaninfo/NodeScanInfo"
 import {SUBMIT_TERMINAL_COMMAND} from "../model/RunActions"
 import {HackerState} from "../../HackerRootReducer"
 import {TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
+import {CountdownTimer} from "../coundown/CountdownTimer";
 
 
 const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, dispatch: Dispatch, submit: (command: string) => void) => {
     if (infoNodeId) {
         return (<NodeScanInfo/>)
     }
-    return (<div className="row">
-        <Terminal terminal={terminal} dispatch={dispatch} submit={submit} height="780px"/>
-    </div>)
+    return (<>
+            <div className="row">
+                <CountdownTimer/>
+            </div>
+            <div className="row">
+                <Terminal terminal={terminal} dispatch={dispatch} submit={submit} height="780px"/>
+            </div>
+        </>
+    )
 }
 
 

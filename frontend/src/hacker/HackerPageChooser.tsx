@@ -1,39 +1,39 @@
-import {MailHome} from "./mail/MailHome";
-import {HackerHome} from "./home/HackerHome";
-import React from "react";
-import {Terminal} from "../common/terminal/Terminal";
-import {MenuBar} from "../common/menu/MenuBar";
-import runCanvas from "./run/component/RunCanvas";
-import {RunPageChooser} from "./run/component/RunPageChooser";
-import {useSelector} from "react-redux";
-import {HackerState} from "./HackerRootReducer";
-import {TerminalState} from "../common/terminal/TerminalReducer";
-import {MAIL, SCAN} from "../common/menu/pageReducer";
+import {MailHome} from "./mail/MailHome"
+import {HackerHome} from "./home/HackerHome"
+import React from "react"
+import {Terminal} from "../common/terminal/Terminal"
+import {MenuBar} from "../common/menu/MenuBar"
+import {runCanvas} from "./run/component/RunCanvas"
+import {RunPageChooser} from "./run/component/RunPageChooser"
+import {useSelector} from "react-redux"
+import {HackerState} from "./HackerRootReducer"
+import {TerminalState} from "../common/terminal/TerminalReducer"
+import {MAIL, SCAN} from "../common/menu/pageReducer"
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
-    if (!infoNodeId) return;
+    if (!infoNodeId) return
 
-    let current = event.target;
+    let current = event.target
     while (current) {
         if (current.id === "canvas-container" || current.id === "scanInfo") {
             return
         }
-        current = current.parentElement;
+        current = current.parentElement
     }
 
     runCanvas.unSelect()
-};
+}
 
 
 
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
         case MAIL:
-            return <MailHome/>;
+            return <MailHome/>
         case SCAN:
-            return <RunPageChooser/>;
+            return <RunPageChooser/>
         default:
-            return <HackerHome/>;
+            return <HackerHome/>
     }
 }
 
@@ -65,6 +65,6 @@ export const HackerPageChooser = () => {
             </div>
             <MenuBar/>
         </div>
-    );
+    )
 }
 

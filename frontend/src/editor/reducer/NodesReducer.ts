@@ -9,7 +9,6 @@ import {
     SERVER_UPDATE_LAYER,
     SERVER_UPDATE_NETWORK_ID
 } from "../server/EditorServerActionProcessor"
-import {NodeStatus} from "../../hacker/run/reducer/SiteReducer";
 
 export enum NodeType {
     TRANSIT_1 = "TRANSIT_1",
@@ -43,6 +42,8 @@ export interface LayerDetails {
     level: number       // height of the layer. level 0 is always OS. Hack top level first.
     name: string
     note: string
+    ice: boolean
+    hacked: boolean
 
     nodeName?: string   // OS layer
     text?: string       // Text layer

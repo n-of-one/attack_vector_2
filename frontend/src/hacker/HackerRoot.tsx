@@ -9,8 +9,8 @@ import {hackerRootReducer, HackerState} from "./HackerRootReducer";
 import {webSocketConnection} from "../common/WebSocketConnection";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
-import passwordIceManager from "./run/ice/password/PasswordIceManager";
-import tangleIceManager from "./run/ice/tangle/TangleIceManager";
+import {passwordIceManager} from "./run/ice/password/PasswordIceManager";
+import {tangleIceManager} from "./run/ice/tangle/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
 import {HACKER_HOME} from "../common/menu/pageReducer";
 

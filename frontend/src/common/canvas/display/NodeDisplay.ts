@@ -1,18 +1,18 @@
 import {fabric} from "fabric";
 import {toType} from "../../enums/NodeTypesNames";
 import {CONNECTIONS, DISCOVERED, FREE, HACKED, PROTECTED, LAYERS, TYPE} from "../../enums/NodeStatus";
-import {animate, easeInSine, easeOutSine, getHtmlImage} from "../CanvasUtils";
+import {animate, getHtmlImage} from "../CanvasUtils";
 import {IMAGE_SIZE} from "./util/DisplayConstants";
 import {Display} from "./Display";
-import Schedule from "../../Schedule";
+import {Schedule} from "../../Schedule";
 import {MoveNodeI, NodeI} from "../../../editor/reducer/NodesReducer";
 import {NodeStatus} from "../../../hacker/run/reducer/ScanReducer";
-import HackerDisplay from "./HackerDisplay";
+import {HackerDisplay} from "./HackerDisplay";
 
 const SCAN_OPACITY = 0.4;
 const HACK_OPACITY = 1;
 
-export default class NodeDisplay implements Display {
+export class NodeDisplay implements Display {
 
     id: string
     nodeData: NodeI

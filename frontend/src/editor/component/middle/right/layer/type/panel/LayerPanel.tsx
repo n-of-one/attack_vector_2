@@ -3,7 +3,7 @@ import {useSelector} from "react-redux"
 import {findElementById} from "../../../../../../../common/Immutable"
 import {LayerType} from "../../LayerType"
 import {LayerLevel} from "../../LayerLevel"
-import Layer from "../../../../../../../common/model/layer/Layer"
+import {Layer} from "../../../../../../../common/model/layer/Layer"
 import {EditorState} from "../../../../../../EditorRootReducer"
 import {LayerField} from "../../LayerField"
 

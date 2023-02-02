@@ -1,4 +1,4 @@
-import runCanvas from "../component/RunCanvas";
+import {runCanvas} from "../component/RunCanvas";
 import {delay} from "../../../common/saga/SagaUtil";
 
 function* updateNodeStatusSaga(action) {

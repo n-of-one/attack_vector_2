@@ -1,4 +1,4 @@
-import runCanvas from "../component/RunCanvas";
+import {runCanvas} from "../component/RunCanvas";
 
 export function* serverFlashPatrollerSaga(action) {
     yield runCanvas.flashTracingPatroller(action.data)

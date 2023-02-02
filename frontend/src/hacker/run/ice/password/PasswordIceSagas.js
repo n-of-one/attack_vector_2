@@ -1,7 +1,7 @@
 import {put, select} from 'redux-saga/effects'
 import {webSocketConnection} from "../../../../common/WebSocketConnection";
 import {UNLOCKED} from "../IceUiState";
-import passwordIceManager from "./PasswordIceManager";
+import {passwordIceManager} from "./PasswordIceManager";
 import {ICE_PASSWORD_LOCK} from "./PasswordIceReducer";
 
 

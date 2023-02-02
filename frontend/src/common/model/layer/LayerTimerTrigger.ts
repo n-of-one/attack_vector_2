@@ -1,11 +1,11 @@
-import Layer from "./Layer";
+import {Layer} from "./Layer";
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 
 const MINUTES = "minutes";
 const SECONDS = "seconds";
 
-export default class LayerTimerTrigger extends Layer {
+export class LayerTimerTrigger extends Layer {
 
     minutes: number
     seconds: number

@@ -9,6 +9,7 @@ interface Props {
     save: (value: string) => void,
     placeholder?: string,
     clearAfterSubmit?: boolean
+    autofocus?: boolean
 }
 
 export const TextInput = (props: Props) => {
@@ -20,6 +21,8 @@ export const TextInput = (props: Props) => {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
     }
+
+    const autofocus = !!(props.autofocus) // undefined -> false
 
     const handleKeyDown = (event: any) => {
         if (event.code === ENTER_KEY) {
@@ -42,6 +45,7 @@ export const TextInput = (props: Props) => {
                        value={text}
                        onChange={(event) => handleChange(event)}
                        onKeyDown={(event) => handleKeyDown(event)}
+                       autoFocus={autofocus}
                 />
             </div>
             <div className="col-lg-6">

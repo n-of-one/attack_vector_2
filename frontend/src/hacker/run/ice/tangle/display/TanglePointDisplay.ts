@@ -1,9 +1,9 @@
 import {fabric} from "fabric";
 import {Canvas, Circle} from "fabric/fabric-impl";
 import {TanglePoint} from "../TangleIceReducer";
-import TangleLineDisplay from "./TangleLineDisplay";
+import {TangleLineDisplay} from "./TangleLineDisplay";
 
-export default class TanglePointDisplay {
+export class TanglePointDisplay {
 
     canvas: Canvas
     id: string

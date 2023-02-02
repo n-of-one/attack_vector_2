@@ -1,26 +1,26 @@
-import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {TimeStamp} from "../../common/menu/TimeStamp";
-import {SilentLink} from "../../common/component/SilentLink";
-import {HackerState} from "../HackerRootReducer";
-import {MailLine, MailState} from "./MailsReducer";
-import {SELECT_MAIL} from "./CurrentMailReducer";
+import React from 'react'
+import {useDispatch, useSelector} from "react-redux"
+import {TimeStamp} from "../../common/menu/TimeStamp"
+import {SilentLink} from "../../common/component/SilentLink"
+import {HackerState} from "../HackerRootReducer"
+import {MailLine, MailState} from "./MailsReducer"
+import {SELECT_MAIL} from "./CurrentMailReducer"
 
 
 const renderLines = (lines: MailLine[]) => {
-    let count = 0;
+    let count = 0
     return lines.map(line => {
         const key = "mailLine" + count
         count++
         return <div key={key}>{line.data}</div>
-    });
-};
+    })
+}
 
 const renderMail = (mails: MailState, currentMail: string | null) => {
     if (currentMail === null) {
         return <div> No mails selected</div>
     }
-    const mail = mails[currentMail];
+    const mail = mails[currentMail]
     if (mail === null) {
         return <div>Mail not found</div>
     }
@@ -34,10 +34,7 @@ const renderMail = (mails: MailState, currentMail: string | null) => {
     </div>
 
 
-};
-
-// export default connect(mapStateToProps, mapDispatchToProps)(
-//     ({mails, selectMail, currentMail}) => {
+}
 
 export const MailHome = () => {
 
@@ -47,7 +44,7 @@ export const MailHome = () => {
     }
 
     const mails: MailState = useSelector((state: HackerState) => state.mail.mails)
-    const mailList = Object.keys(mails).map((key, index) => mails[key]);
+    const mailList = Object.keys(mails).map((key, index) => mails[key])
     const currentMail: string | null = useSelector((state: HackerState) => state.mail.currentMail)
 
     return (
@@ -103,7 +100,7 @@ export const MailHome = () => {
                                                     <td className="table-very-condensed" style={{width: "122px"}}>
                                                         <TimeStamp timestamp={mail.timestamp}/>
                                                     </td>
-                                                </tr>);
+                                                </tr>)
                                         })
                                     }
                                     </tbody>
@@ -115,5 +112,5 @@ export const MailHome = () => {
             </div>
         </div>
 
-    );
+    )
 }

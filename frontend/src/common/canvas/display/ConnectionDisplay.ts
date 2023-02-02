@@ -1,12 +1,12 @@
 import {fabric} from "fabric";
 import {animate, calcLine} from "../CanvasUtils";
 import {Canvas} from "fabric/fabric-impl";
-import Schedule from "../../Schedule";
+import {Schedule} from "../../Schedule";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";
-import NodeDisplay from "./NodeDisplay";
+import {NodeDisplay} from "./NodeDisplay";
 import {Display} from "./Display";
 
-export default class ConnectionDisplay implements Display {
+export class ConnectionDisplay implements Display {
 
     canvas: Canvas
     schedule: Schedule | null

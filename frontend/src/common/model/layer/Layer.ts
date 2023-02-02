@@ -5,7 +5,7 @@ import {Dispatch} from "redux";
 const NOTE = "note";
 const NAME = "name";
 
-export default class Layer {
+export class Layer {
 
     layer: LayerDetails
     node: NodeI

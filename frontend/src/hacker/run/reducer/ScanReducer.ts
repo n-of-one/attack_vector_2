@@ -14,7 +14,7 @@ export interface Scan {
 }
 
 export interface NodeScan {
-    status: string,
+    status: NodeStatus,
     distance?: number
 }
 
@@ -59,7 +59,7 @@ const updateNodeStatus = (scan: Scan, {nodeId, newStatus}: UpdateNodeStatusActio
     return {...scan, nodeScanById: newNodeScanById};
 };
 
-const updateNodeScanById = (nodeScanById: NodeScanById, nodeId: string, newStatus: string) => {
+const updateNodeScanById = (nodeScanById: NodeScanById, nodeId: string, newStatus: NodeStatus) => {
     const newNodeScanById = {...nodeScanById};
     newNodeScanById[nodeId] = { status: newStatus, distance: nodeScanById[nodeId].distance};
     return newNodeScanById;

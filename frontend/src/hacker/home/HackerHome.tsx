@@ -49,7 +49,9 @@ export const HackerHome = () => {
                            buttonLabel="Scan"
                            buttonClass="btn-info"
                            save={(siteName) => scanSite(siteName)}
-                           clearAfterSubmit={true}/>
+                           clearAfterSubmit={true}
+                           autofocus={true}
+                />
             </div>
             <div className="col-lg-6">
                 <div className="row">

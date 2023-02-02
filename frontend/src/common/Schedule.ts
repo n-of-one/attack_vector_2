@@ -13,7 +13,7 @@ import {AnyAction, Dispatch} from "redux";
 
 export const TICK_MILLIS = 50;
 
-export default class Schedule {
+export class Schedule {
 
     queue: Array<() => void> = []
 
