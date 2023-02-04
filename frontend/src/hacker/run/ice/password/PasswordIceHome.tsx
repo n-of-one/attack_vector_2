@@ -1,17 +1,17 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {Terminal} from "../../../../common/terminal/Terminal"
-import {HIDDEN, LOCKED} from "../IceUiState"
+import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState"
 import {CloseButton} from "../../../../common/component/CloseButton"
 import {FINISH_HACKING_ICE} from "../../model/HackActions"
-import {PasswordIceI} from "./PasswordIceReducer"
+import {ICE_PASSWORD_LOCK, PasswordIceI} from "./PasswordIceReducer"
 import {HackerState} from "../../../HackerRootReducer"
 import {TERMINAL_SUBMIT, TerminalState} from "../../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
 import {formatTimeInterval} from "../../../../common/Util";
 import {ENTER_KEY} from "../../../../KeyCodes";
+import {webSocketConnection} from "../../../../common/WebSocketConnection";
 
-export const ICE_PASSWORD_SUBMIT = "ICE_PASSWORD_SUBMIT";
 
 
 const renderInput = (inputTerminal: TerminalState, enterPassword: () => void, dispatch: Dispatch, ice: PasswordIceI) => {
@@ -40,6 +40,7 @@ const renderHint = (ice: PasswordIceI) => {
     }
 }
 
+
 export const PasswordIceHome = () => {
 
     const dispatch = useDispatch()
@@ -51,9 +52,14 @@ export const PasswordIceHome = () => {
 
     const enterPassword = () => {
         const password = inputTerminal.input
-        dispatch({type: ICE_PASSWORD_SUBMIT, password: password})
-        dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: password, terminalId: inputTerminal.id});
+        dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: password, terminalId: inputTerminal.id})
+        if (ice.uiState !== UNLOCKED || ice.waitSeconds > 0 || password.trim().length === 0) {
+            return
+        }
 
+        const payload = {layerId: ice.layerId, password: password}
+        webSocketConnection.sendObjectWithRunId("/av/ice/password/submit", payload)
+        dispatch({type: ICE_PASSWORD_LOCK})
     }
     const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : ""
 

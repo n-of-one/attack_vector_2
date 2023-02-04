@@ -5,8 +5,6 @@ import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {NodeScanType,runCanvas} from "../run/component/RunCanvas";
 import {
-    AUTO_SCAN,
-    PROBE_SCAN_NODE,
     SERVER_DISCOVER_NODES,
     SERVER_HACKER_ENTER_SCAN,
     SERVER_HACKER_LEAVE_SCAN,
@@ -38,10 +36,8 @@ export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
 export const WAITING_FOR_SCAN_IGNORE_LIST =
     [
         SERVER_PROBE_LAUNCH,
-        PROBE_SCAN_NODE,
         SERVER_UPDATE_NODE_STATUS,
         SERVER_DISCOVER_NODES,
-        AUTO_SCAN,
     ]
 
 export interface SiteAndScan {

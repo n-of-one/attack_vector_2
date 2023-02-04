@@ -64,6 +64,7 @@ class PasswordIceManager extends GenericIceManager {
         this.displayTerminal(20, "Password accepted");
         this.displayTerminal(40, "ICE grants access.");
         this.schedule.dispatch(0, {type: FINISH_HACKING_ICE});
+        this.schedule.run(0, () => {passwordIceManager.close()});
     }
 
 }

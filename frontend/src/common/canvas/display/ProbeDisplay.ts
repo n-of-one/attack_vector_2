@@ -1,6 +1,5 @@
 import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, getHtmlImage} from "../CanvasUtils";
-import {AUTO_SCAN, PROBE_SCAN_NODE} from "../../../hacker/run/model/ScanActions";
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes";
 import {Schedule} from "../../Schedule";
 import {LineElement} from "./util/LineElement";
@@ -13,6 +12,7 @@ import {HackerDisplay} from "./HackerDisplay";
 import {DisplayCollection} from "./util/DisplayCollection";
 import {NodeDisplay} from "./NodeDisplay";
 import {Display} from "./Display";
+import {webSocketConnection} from "../../WebSocketConnection";
 
 const SIZE_SMALL = (20/40);
 const SIZE_SMALL_MEDIUM = (30/40);
@@ -138,7 +138,7 @@ export class ProbeDisplay implements Display {
         });
         const finishMethod = () => {
             if (this.yourProbe) {
-                this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: scanType});
+                this.probeArriveSaga(nodeId, scanType)
             }
         };
         this.finishProbe(finishMethod);
@@ -156,10 +156,15 @@ export class ProbeDisplay implements Display {
         });
         const finishMethod = () => {
             if (this.yourProbe) {
-                this.dispatch({type: PROBE_SCAN_NODE, nodeId: nodeId, action: SCAN_CONNECTIONS});
+                this.probeArriveSaga(nodeId, SCAN_CONNECTIONS)
             }
         };
         this.finishProbe(finishMethod)
+    }
+
+    probeArriveSaga(nodeId: string, scanType: NodeScanType) {
+        const payload = {nodeId: nodeId, action: scanType};
+        webSocketConnection.sendObjectWithRunId("/av/scan/probeArrive", payload);
     }
 
     finishProbe(finishMethod : () => void) {
@@ -181,7 +186,7 @@ export class ProbeDisplay implements Display {
 
     performAutoScan() {
         if (this.autoScan && this.yourProbe) {
-            this.dispatch({type: AUTO_SCAN});
+            webSocketConnection.sendObjectWithRunId("/av/scan/autoScan", {});
         }
     }
 
@@ -212,6 +217,4 @@ export class ProbeDisplay implements Display {
     terminate() {
         this.schedule.terminate();
     }
-
-
 }

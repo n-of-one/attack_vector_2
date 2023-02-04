@@ -46,9 +46,10 @@ class ScanningController(
         executor.run(principal) { scanningService.leaveRun(runId) }
     }
 
+    data class AutoScanActionInput(val runId: String)
     @MessageMapping("/scan/autoScan")
-    fun autoScan(runId: String, principal: Principal) {
-        executor.run(principal) { scanningService.autoScan(runId) }
+    fun autoScan(action: AutoScanActionInput, principal: Principal) {
+        executor.run(principal) { scanningService.autoScan(action.runId) }
     }
 
     data class ProbeScanActionInput(val runId: String, val nodeId: String, val action: NodeScanType)

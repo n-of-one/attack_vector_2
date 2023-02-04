@@ -139,6 +139,11 @@ export class WebSocketConnection {
         this.send(path, data);
     }
 
+    sendObjectWithRunId(path: string, payload: ActionType) {
+        payload.runId = this.store.getState().run.scan.runId
+        this.sendObject(path, payload)
+    }
+
     send(path: string, data: string | ActionType) {
         const payload =  (typeof data === 'object') ? JSON.stringify(data) : data
         this.client.send(path, payload);
