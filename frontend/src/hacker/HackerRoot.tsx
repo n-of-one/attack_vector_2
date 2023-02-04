@@ -8,7 +8,6 @@ import createHackerRootSaga from "./HackerRootSaga";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
 import {webSocketConnection} from "../common/WebSocketConnection";
 import {terminalManager} from "../common/terminal/TerminalManager";
-import {RETRIEVE_USER_SCANS} from "./home/HomeActions";
 import {passwordIceManager} from "./run/ice/password/PasswordIceManager";
 import {tangleIceManager} from "./run/ice/tangle/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
@@ -48,7 +47,7 @@ export class HackerRoot extends Component {
         // this.store = createStore(hackerRootReducer, preLoadedState, applyMiddleware(sagaMiddleware));
 
         webSocketConnection.create(this.store, () => {
-            this.store.dispatch({type: RETRIEVE_USER_SCANS});
+            webSocketConnection.send("/av/scan/scansOfPlayer", "")
         });
 
         const scanRootSaga = createHackerRootSaga();

@@ -2,7 +2,6 @@ import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {TextInput} from "../../common/component/TextInput";
 import {SilentLink} from "../../common/component/SilentLink";
-import {DELETE_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 import {HackerState} from "../HackerRootReducer";
 import {ScanInfo} from "./ScansReducer";
 import {webSocketConnection} from "../../common/WebSocketConnection";
@@ -25,7 +24,7 @@ export const HackerHome = () => {
 
     const scanSite = (siteName: string) => {
         if (siteName) {
-            dispatch({type: SCAN_FOR_NAME, siteName: siteName});
+            webSocketConnection.send("/av/scan/scanForName", siteName)
         }
     }
     const enterScanLink = (scanInfo: ScanInfo) => {
@@ -33,7 +32,7 @@ export const HackerHome = () => {
     }
 
     const deleteScan = (scanInfo: ScanInfo) => {
-        dispatch({type: DELETE_SCAN, runId: scanInfo.runId});
+        webSocketConnection.send("/av/scan/deleteScan", scanInfo.runId)
     }
 
     return (

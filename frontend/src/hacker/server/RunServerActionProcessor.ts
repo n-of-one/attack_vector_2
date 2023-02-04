@@ -4,7 +4,6 @@ import {initGenericServerActions} from "./GenericServerActionProcessor";
 import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {NodeScanType,runCanvas} from "../run/component/RunCanvas";
-import { SERVER_SITE_DISCOVERED} from "../home/HomeActions";
 import {
     AUTO_SCAN,
     PROBE_SCAN_NODE,
@@ -30,9 +29,10 @@ import {
 } from "../run/coundown/CountdownReducer";
 import {enterScan} from "../home/HackerHome";
 
-export const SERVER_HACKER_DC = "SERVER_HACKER_DC";
+export const SERVER_HACKER_DC = "SERVER_HACKER_DC"
 export const SERVER_SCAN_FULL = "SERVER_SCAN_FULL"
 export const SERVER_UPDATE_NODE_STATUS = "SERVER_UPDATE_NODE_STATUS"
+export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
 
 /** Event to ignore while waiting for the scan full result */
 export const WAITING_FOR_SCAN_IGNORE_LIST =

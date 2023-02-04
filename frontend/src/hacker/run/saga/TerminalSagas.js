@@ -3,7 +3,6 @@ import {select} from 'redux-saga/effects'
 import {SCAN} from "../../../common/menu/pageReducer";
 
 const getRunId = (state) => state.run.scan.runId;
-const getCurrentPage = (state) => state.currentPage;
 
 
 function* terminalSubmitCommandSaga(action) {
