@@ -7,7 +7,7 @@ export const ScanInfoIce =({layer, iceDescription}: {layer: LayerDetails, iceDes
     const hackedText = layer.hacked ? "Yes" : "No"
     return (
         <>
-            &nbspICE ({iceDescription})<br/>
+            &nbsp;ICE ({iceDescription})<br/>
             <Pad length={8} />Strength: <span className="text-info">{layer.strength}</span><br/>
             <Pad length={8} />Hacked: <span className="text-danger">{hackedText}</span>
         </>

@@ -18,7 +18,7 @@ export const NodeScanInfoLayers = ({node}: {node: NodeI}) => {
     const rendered = []
     const protectedLayer = findProtectedLayer(layers)
 
-    rendered.push(<span key="_0">Layer Layer<br/></span>)
+    rendered.push(<span key="_0">Level Layer<br/></span>)
 
     for (let i = 0; i < layers.length; i++) {
         const layer = layers[i]

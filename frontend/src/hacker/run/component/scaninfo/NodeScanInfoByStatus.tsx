@@ -9,27 +9,35 @@ function renderDiscovered() {
     return <>
         No information about layers discovered yet.<br/>
         <br/>
-        Neighbouring connections not scanned.<br/>
+        No information about additional neighbouring nodes discovered yet.<br/>
     </>
 }
 
 function renderStatusType(node: NodeI) {
     return <>
-        Layers discovered: {node.layers.length}.<br/>
+        {renderLayersAsUnknown(node)}
         <br/>
-        Neighbouring connections not scanned.<br/>
+        No information about additional neighbouring nodes discovered yet.<br/>
     </>
 }
 
-function renderStatusConnections(node: NodeI) {
+function renderLayersAsUnknown(node: NodeI) {
     const lines = []
-    lines.push(<span key="_0">Layer Layer<br/></span>)
+    lines.push(<span key="_0">Level Layer<br/></span>)
     node.layers.forEach(layer => {
         lines.push(renderLayerIsIce(layer))
     })
-
-    return <>lines</>
+    return <>{lines}</>
 }
+function renderStatusConnections(node: NodeI) {
+    return <>
+        {renderLayersAsUnknown(node)}
+        <br/>
+        Neighbouring nodes discovered.<br/>
+    </>
+}
+
+
 
 function renderLayerIsIce(layer: LayerDetails) {
     const text = layer.ice ? "ICE" : "layer"
