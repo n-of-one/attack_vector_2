@@ -5,12 +5,13 @@ import {RunCanvasPanel} from "./RunCanvasPanel"
 import {NodeScanInfo} from "./scaninfo/NodeScanInfo"
 import {SUBMIT_TERMINAL_COMMAND} from "../model/RunActions"
 import {HackerState} from "../../HackerRootReducer"
-import {TerminalState} from "../../../common/terminal/TerminalReducer"
+import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
 import {CountdownTimer} from "../coundown/CountdownTimer";
+import {ENTER_KEY} from "../../../KeyCodes";
 
 
-const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, dispatch: Dispatch, submit: (command: string) => void) => {
+const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
     if (infoNodeId) {
         return (<NodeScanInfo/>)
     }
@@ -19,7 +20,7 @@ const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: Termina
                 <CountdownTimer/>
             </div>
             <div className="row">
-                <Terminal terminal={terminal} dispatch={dispatch} submit={submit} height="780px"/>
+                <Terminal terminalState={terminal} submit={submit} height="780px"/>
             </div>
         </>
     )
@@ -29,19 +30,23 @@ const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: Termina
 export const RunHome = () => {
 
     const dispatch: Dispatch = useDispatch()
-    const submit = (command: string) => dispatch({type: SUBMIT_TERMINAL_COMMAND, command: command})
 
     const siteName = useSelector((state: HackerState) => {
         return (state.run.site.siteData) ? state.run.site.siteData.name : ""
     })
     const terminal = useSelector((state: HackerState) => state.terminal)
+    const submit = () => {
+        dispatch({type: SUBMIT_TERMINAL_COMMAND, command: terminal.input})
+        dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: terminal.input, terminalId: terminal.id});
+
+    }
     const infoNodeId = useSelector((state: HackerState) => state.run.infoNodeId)
     const userId = useSelector((state: HackerState) => state.userId)
 
     return (
         <div className="row">
             <div className="col-lg-6">
-                {terminalAndScanResultPanel(infoNodeId, terminal, dispatch, submit)}
+                {terminalAndScanResultPanel(infoNodeId, terminal, submit)}
             </div>
             <div className="col-lg-6 rightPane">
 

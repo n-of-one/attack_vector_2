@@ -55,7 +55,7 @@ export const HackerPageChooser = () => {
                     </div>
                     <div className="row">
                         <div className="col-lg-12">
-                            <Terminal terminal={messageTerminal} height="300px"/>
+                            <Terminal terminalState={messageTerminal} height="300px"/>
                         </div>
                     </div>
                 </div>

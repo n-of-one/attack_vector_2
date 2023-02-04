@@ -42,7 +42,7 @@ export const TangleIceHome = () => {
                         </div>
                     </div>
                     <div className="col-lg-9">
-                        <Terminal className="displayTerminal" terminal={displayTerminal} height={112}/>
+                        <Terminal terminalState={displayTerminal} height={112}/>
                     </div>
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>

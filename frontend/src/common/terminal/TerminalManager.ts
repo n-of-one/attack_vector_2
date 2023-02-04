@@ -1,8 +1,8 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {delay} from "../Util";
 import {Dispatch, Store} from "redux";
-import {Terminal} from "./Terminal";
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalReducer";
+import {TICK_MILLIS} from "../Schedule";
 
 class TerminalManager {
 
@@ -10,17 +10,16 @@ class TerminalManager {
     dispatch = null as unknown as Dispatch
     running: boolean = false
 
-    terminals: {[key: string]: Terminal} = {};
+    terminalSubmit: {[key: string]: () => void } = {}
 
     init(store: Store) {
         this.store = store;
         this.dispatch = store.dispatch;
-        // this.terminalTickIntervalId =
         delay(() => {
 
             setInterval(() => {
                 this.dispatch({type: TERMINAL_TICK});
-            }, 50);
+            }, TICK_MILLIS);
         })
 
         window.onkeydown = (event: KeyboardEvent) => {
@@ -49,15 +48,16 @@ class TerminalManager {
         const terminalId = this.store.getState().activeTerminalId;
 
         if (keyCode === ENTER_KEY) {
-            this.terminals[terminalId].submit(key);
+            const submit = this.terminalSubmit[terminalId]
+            if (submit) { submit() }
         } else {
             this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId});
         }
     }
 
-    registerTerminal(terminalId: string, terminal: Terminal) {
-        this.terminals[terminalId] = terminal;
+    registerTerminalSubmit(terminalId: string, submit: () => void) {
+        this.terminalSubmit[terminalId] = submit
     }
 }
 
-export const terminalManager = new TerminalManager();
+export const terminalManager = new TerminalManager()

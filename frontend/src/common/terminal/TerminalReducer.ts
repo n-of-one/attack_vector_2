@@ -33,7 +33,7 @@ export interface TerminalState {
     lines: TerminalLine[],
     prompt: string,
     readOnly: boolean,
-    renderOutput: boolean,
+    renderOutput: boolean,  /// if false it means input only TODO: refactor terminalInput into a separate component.
     autoScroll: boolean,
     input: string,
     renderingLine: TerminalLine | null,
@@ -99,7 +99,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
             case TERMINAL_KEY_PRESS:
                 return handlePressKey(terminal, action);
             case TERMINAL_SUBMIT:
-                return handlePressEnter(terminal, action);
+                return handlePressEnter(terminal, action as unknown as TerminalSubmitActionData);
             case SERVER_ERROR:
                 return handleServerError(terminal, action);
             case TERMINAL_CLEAR:
@@ -233,7 +233,10 @@ const handleHistory = (terminal: TerminalState, keyCode: number): TerminalState 
 
 };
 
-const handlePressEnter = (terminal: TerminalState, action: AnyAction): TerminalState => {
+export interface TerminalSubmitActionData {
+    command: string
+}
+const handlePressEnter = (terminal: TerminalState, action: TerminalSubmitActionData): TerminalState => {
     const line = terminal.prompt + action.command;
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}]);
 

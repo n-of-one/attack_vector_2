@@ -6,14 +6,15 @@ import {CloseButton} from "../../../../common/component/CloseButton"
 import {FINISH_HACKING_ICE} from "../../model/HackActions"
 import {PasswordIceI} from "./PasswordIceReducer"
 import {HackerState} from "../../../HackerRootReducer"
-import {TerminalState} from "../../../../common/terminal/TerminalReducer"
+import {TERMINAL_SUBMIT, TerminalState} from "../../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
 import {formatTimeInterval} from "../../../../common/Util";
+import {ENTER_KEY} from "../../../../KeyCodes";
 
 export const ICE_PASSWORD_SUBMIT = "ICE_PASSWORD_SUBMIT";
 
 
-const renderInput = (inputTerminal: TerminalState, enterPassword: (attempt: string) => void, dispatch: Dispatch, ice: PasswordIceI) => {
+const renderInput = (inputTerminal: TerminalState, enterPassword: () => void, dispatch: Dispatch, ice: PasswordIceI) => {
     if (ice.uiState === LOCKED) {
         return <></>
     }
@@ -28,7 +29,7 @@ const renderInput = (inputTerminal: TerminalState, enterPassword: (attempt: stri
         </h4>
     }
 
-    return <Terminal terminal={inputTerminal} submit={enterPassword} dispatch={dispatch}/>
+    return <Terminal terminalState={inputTerminal} submit={enterPassword} />
 }
 
 const renderHint = (ice: PasswordIceI) => {
@@ -48,7 +49,12 @@ export const PasswordIceHome = () => {
     const displayTerminal = useSelector((state: HackerState) => state.run.ice.displayTerminal)
     const inputTerminal = useSelector((state: HackerState) => state.run.ice.inputTerminal)
 
-    const enterPassword = (password: string) => dispatch({type: ICE_PASSWORD_SUBMIT, password: password})
+    const enterPassword = () => {
+        const password = inputTerminal.input
+        dispatch({type: ICE_PASSWORD_SUBMIT, password: password})
+        dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: password, terminalId: inputTerminal.id});
+
+    }
     const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : ""
 
 
@@ -77,7 +83,7 @@ export const PasswordIceHome = () => {
                         </div>
                     </div>
                     <div className="col-lg-9">
-                        <Terminal className="displayTerminal" terminal={displayTerminal} dispatch={dispatch} height={112}/>
+                        <Terminal terminalState={displayTerminal} height={112}/>
                     </div>
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
