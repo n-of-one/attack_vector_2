@@ -1,8 +1,11 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Cookies from "js-cookie";
-import {NAVIGATE_PAGE} from "./pageReducer";
+import {NAVIGATE_PAGE, SCAN} from "./pageReducer";
 import {HackerState} from "../../hacker/HackerRootReducer";
+import {webSocketConnection} from "../WebSocketConnection";
+import {terminalManager} from "../terminal/TerminalManager";
+import {runCanvas} from "../../hacker/run/component/RunCanvas";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -24,7 +27,14 @@ export const MenuItem = (props: Props) => {
         event.preventDefault();
         console.log("Navigating to page: " + targetPage);
         dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
-        return false;
+
+        if (currentPage === SCAN && targetPage !== SCAN) {
+            webSocketConnection.unsubscribe();
+            terminalManager.stop();
+            runCanvas.stop();
+        }
+
+        return false
     }
 
 

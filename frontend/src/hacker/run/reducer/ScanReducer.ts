@@ -1,6 +1,7 @@
-import {SERVER_DISCOVER_NODES, SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "../model/ScanActions";
+import {SERVER_DISCOVER_NODES} from "../model/ScanActions";
 import {DISCOVERED} from "../../../common/enums/NodeStatus";
 import {AnyAction} from "redux";
+import {SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "../../server/RunServerActionProcessor";
 
 export interface Scan {
     runId: string,

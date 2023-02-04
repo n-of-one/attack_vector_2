@@ -8,13 +8,13 @@ import {ICE_PASSWORD_LOCK} from "./PasswordIceReducer";
 const getRunId = (state) => state.run.scan.runId;
 const getPasswordIce = (state) => state.run.ice.password;
 
-export function* passwordIceStartHack(action) {
-    yield passwordIceManager.passwordIceStartHack();
-}
+// export function* passwordIceStartHack(action) {
+//     yield passwordIceManager.passwordIceStartHack();
+// }
 
-export function* serverPasswordIceUpdate(action) {
-    yield passwordIceManager.serverPasswordIceUpdate(action.data);
-}
+// export function* serverPasswordIceUpdate(action) {
+//     yield passwordIceManager.serverPasswordIceUpdate(action.data);
+// }
 
 export function* passwordIceFinish() {
     yield passwordIceManager.close();

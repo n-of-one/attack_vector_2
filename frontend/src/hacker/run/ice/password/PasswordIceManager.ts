@@ -47,13 +47,13 @@ class PasswordIceManager extends GenericIceManager {
         this.schedule.clear();
     }
 
-    serverPasswordIceUpdate(data: PasswordIceState) {
+    serverPasswordIceUpdate(serverIceState: PasswordIceState) {
         const currentIce = this.store.getState().run.ice.currentIce;
-        if (currentIce.layerId === data.layerId) {
-            if (data.hacked) {
-                this.processSuccess(data.message!);
+        if (currentIce.layerId === serverIceState.layerId) {
+            if (serverIceState.hacked) {
+                this.processSuccess(serverIceState.message!);
             } else {
-                notify({type: "neutral", title: "Result", message: data.message!})
+                notify({type: "neutral", title: "Result", message: serverIceState.message!})
             }
         }
     }

@@ -49,7 +49,8 @@ class ScanTerminalService(
     }
 
     private fun processDisconnect() {
-        stompService.toUser(ReduxActions.SERVER_USER_DC, "-")
+        // FIXME: Also inform other hackers that this one is leaving
+        stompService.toUser(ReduxActions.SERVER_HACKER_DC, "-")
     }
 
     private fun processHelp() {

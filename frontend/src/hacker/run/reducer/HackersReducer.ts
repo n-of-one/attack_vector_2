@@ -1,5 +1,5 @@
-import {SERVER_SCAN_FULL} from "../model/ScanActions";
 import {AnyAction} from "redux";
+import {SERVER_SCAN_FULL} from "../../server/RunServerActionProcessor";
 
 export interface HackerPresence {
     userId: string,

@@ -4,10 +4,10 @@ import {select} from 'redux-saga/effects'
 
 const getRunId = (state) => state.run.scan.runId;
 
-function* serverProbeLaunchSaga(action) {
-    runCanvas.launchProbe(action.data);
-    yield
-}
+// function* serverProbeLaunchSaga(action) {
+//     runCanvas.launchProbe(action.data);
+//     yield
+// }
 
 function* probeArriveSaga(action) {
     const runId = yield select(getRunId);
@@ -23,4 +23,4 @@ function* autoScanSaga() {
     yield
 }
 
-export {serverProbeLaunchSaga, probeArriveSaga, autoScanSaga};
+export { probeArriveSaga, autoScanSaga};

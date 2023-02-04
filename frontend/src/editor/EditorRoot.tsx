@@ -51,7 +51,7 @@ export class EditorRoot extends Component<Props> {
             webSocketConnection.send("/av/editor/siteFull", props.siteId)
         }, SERVER_SITE_FULL)
 
-        initEditorServerActions(this.store.dispatch)
+        initEditorServerActions()
     }
 
     render() {

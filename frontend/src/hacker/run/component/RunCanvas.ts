@@ -10,91 +10,32 @@ import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPat
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackersReducer"
-import {Scan, UpdateNodeStatusAction} from "../reducer/ScanReducer"
-import {Site} from "../reducer/SiteReducer"
+import {UpdateNodeStatusAction} from "../reducer/ScanReducer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
-import {Ticks} from "../../../common/model/Ticks";
+import {
+    ActionPatrollerCatchesHacker,
+    ActionPatrollerMove, ActionSnapBack,
+    HackerProbeConnectionsAction,
+    HackerProbeLayersAction,
+    MoveArriveAction,
+    MoveStartAction,
+    PatrollerData,
+    ProbeAction,
+    SiteAndScan
+} from "../../server/RunServerActionProcessor";
 
-interface SiteAndScan {
-    scan: Scan,
-    site: Site,
-    hackers: HackerPresence[],
-    patrollers: PatrollerData[],
-}
 
-export interface PatrollerData {
-    patrollerId: string | null,
-    nodeId: string,
-    path: PatrollerPathSegment[],
-    ticks: Ticks
-}
 
-interface PatrollerPathSegment {
-    fromNodeId: string,
-    toNodeId: string
-}
 
 export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"
-
-interface ProbeAction {
-    probeUserId: string,
-    path: string[],
-    scanType: NodeScanType,
-    autoScan: boolean
-}
-
-interface MoveStartAction {
-    userId: string,
-    nodeId: string,
-    ticks: Ticks
-}
-
-interface MoveArriveAction {
-    nodeId: string,
-    userId: string
-}
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.
 let probeDisplayIdSequence = 0
 
-interface HackerProbeLayersAction {
-    userId: string,
-    ticks: Ticks
-}
 
-interface HackerProbeConnectionsAction {
-    nodeId: string,
-    userId: string
-}
-
-interface NodeHacked {
-    nodeId: string,
-    delay: number
-}
-
-interface FlashPatrollerAction {
-    nodeId: string
-}
-
-interface ActionSnapBack {
-    hackerId: string,
-    ticks: Ticks
-}
-
-interface ActionPatrollerCatchesHacker {
-    patrollerId: string,
-    hackerId: string
-}
-
-interface ActionPatrollerMove {
-    patrollerId: string
-    fromNodeId: string,
-    toNodeId: string,
-    ticks: Ticks
-}
 
 
 /// This class renders the scan map on the JFabric Canvas
@@ -427,10 +368,9 @@ class RunCanvas {
         this.hackerDisplays.get(userId).hackerProbeConnections(nodeDisplay)
     }
 
-    nodeHacked({nodeId, delay}: NodeHacked) {
+    nodeHacked(nodeId: string) {
         this.nodeDataById[nodeId].hacked = true
         this.nodeDisplays.get(nodeId).hacked()
-        // TODO: Why did the server send us a delay?
     }
 
     stop() {
@@ -441,7 +381,7 @@ class RunCanvas {
         this.probeDisplays.removeAllAndTerminate(this.canvas)
     }
 
-    flashTracingPatroller({nodeId}: FlashPatrollerAction) {
+    flashTracingPatroller(nodeId: string) {
         const patrollerData = {
             patrollerId: null, nodeId, ticks: {appear: 20}, path: []
         }
@@ -453,7 +393,6 @@ class RunCanvas {
         this.patrollerDisplays.add(patrollerData.patrollerId!, patrollerDisplay)
     }
 
-
     patrollerHooksHacker(hackerId: string) {
         this.hackerDisplays.get(hackerId).hookByPatroller()
     }
@@ -461,7 +400,6 @@ class RunCanvas {
     patrollerSnacksBackHacker({hackerId, ticks}: ActionSnapBack) {
         this.hackerDisplays.get(hackerId).snapBack(ticks)
     }
-
 
     patrollerLocksHacker({patrollerId, hackerId}: ActionPatrollerCatchesHacker) {
         const patroller = this.patrollerDisplays.get(patrollerId)

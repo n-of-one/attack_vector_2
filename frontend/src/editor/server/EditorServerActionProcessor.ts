@@ -1,11 +1,9 @@
 import {webSocketConnection} from "../../common/WebSocketConnection"
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../../common/enums/CommonActions"
-import {NotificationType, notify} from "../../common/Notification"
-import {Dispatch} from "redux"
-import {serverTime} from "../../common/ServerTime"
+import {NotificationType} from "../../common/Notification"
 import {editorCanvas, LoadSiteData} from "../component/middle/middle/EditorCanvas"
 import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
 import {Connection} from "../reducer/ConnectionsReducer"
+import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 
 export const SERVER_SITE_FULL  = "SERVER_SITE_FULL"
 export const SERVER_UPDATE_SITE_DATA = "SERVER_UPDATE_SITE_DATA"
@@ -18,27 +16,9 @@ export const SERVER_UPDATE_SITE_STATE = "SERVER_UPDATE_SITE_STATE"
 export const SERVER_ADD_LAYER = "SERVER_ADD_LAYER"
 export const SERVER_NODE_UPDATED = "SERVER_NODE_UPDATED"
 
-export const initEditorServerActions = (dispatch: Dispatch) => {
+export const initEditorServerActions = () => {
 
-    webSocketConnection.addAction(SERVER_TIME_SYNC, (timeOnServer: string) => {
-        serverTime.init(timeOnServer)
-    })
-
-    webSocketConnection.addAction(SERVER_NOTIFICATION, (data: ServerNotification) => {
-        notify(data)
-    })
-
-    webSocketConnection.addAction(SERVER_FORCE_DISCONNECT, (data: ServerNotification) => {
-        notify(data)
-    })
-
-    webSocketConnection.addAction(SERVER_DISCONNECT, () => {
-        notify({type: 'fatal', message: 'Connection with server lost. Please refresh browser.'})
-    })
-
-    webSocketConnection.addAction(SERVER_ERROR, (data: { message: string }) => {
-        notify({type: 'error', message: data.message})
-    })
+    initGenericServerActions()
 
     webSocketConnection.addAction(SERVER_SITE_FULL, (data: LoadSiteData) => {
         editorCanvas.loadSite(data)

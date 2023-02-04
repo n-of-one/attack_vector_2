@@ -34,7 +34,7 @@ enum class ReduxActions {
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
 
-    SERVER_USER_DC,                 // Specific command that tells browser to move to another page.
+    SERVER_HACKER_DC,                 // Specific command that tells browser to move to another page.
 
     SERVER_HACKER_ENTER_SCAN,       // A hacker enters a scan (notify other hackers about this)
     SERVER_HACKER_LEAVE_SCAN,       // A hacker leaves a scan

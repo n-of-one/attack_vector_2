@@ -1,6 +1,6 @@
-import {SERVER_ERROR} from "../enums/CommonActions";
 import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes";
 import {AnyAction} from "redux";
+import {SERVER_ERROR} from "../../hacker/server/GenericServerActionProcessor";
 
 const LINE_LIMIT = 100;
 
@@ -14,7 +14,6 @@ export const TERMINAL_CLEAR = "TERMINAL_CLEAR";
 export const TERMINAL_LOCK = "TERMINAL_LOCK";
 export const TERMINAL_UNLOCK = "TERMINAL_UNLOCK";
 export const CHANGE_ACTIVE_TERMINAL = "CHANGE_ACTIVE_TERMINAL";
-export const SERVER_USER_DC = "SERVER_USER_DC";
 
 export interface TerminalLine {
     type: string,

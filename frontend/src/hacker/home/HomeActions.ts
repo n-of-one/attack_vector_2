@@ -1,4 +1,3 @@
-export const ENTER_SCAN = "ENTER_SCAN";
 export const DELETE_SCAN = "DELETE_SCAN";
 export const SCAN_FOR_NAME =  "SCAN_FOR_NAME";
 export const RETRIEVE_USER_SCANS = "RETRIEVE_USER_SCANS";

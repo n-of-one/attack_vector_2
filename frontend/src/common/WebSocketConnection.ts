@@ -1,9 +1,10 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client';
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SET_USER_ID} from "./enums/CommonActions";
 import {notify} from "./Notification";
 import {Store} from "redux";
 import {ActionType} from "./Util";
 import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer";
+import {SET_USER_ID} from "./reducer/UserIdReducer";
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT} from "../hacker/server/GenericServerActionProcessor";
 
 export class WebSocketConnection {
 

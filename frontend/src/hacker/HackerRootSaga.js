@@ -1,61 +1,25 @@
 import {all, takeEvery} from 'redux-saga/effects'
-import { SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_NOTIFICATION, SERVER_TIME_SYNC} from "../common/enums/CommonActions";
 import {
     AUTO_SCAN,
     PROBE_SCAN_NODE,
-    SERVER_DISCOVER_NODES,
-    SERVER_HACKER_ENTER_SCAN,
-    SERVER_HACKER_LEAVE_SCAN,
-    SERVER_PROBE_LAUNCH,
-    SERVER_SCAN_FULL,
-    SERVER_UPDATE_NODE_STATUS
+
 } from "./run/model/ScanActions";
-import {DELETE_SCAN, ENTER_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME, SERVER_SITE_DISCOVERED} from "./home/HomeActions";
-import {autoScanSaga, probeArriveSaga, serverProbeLaunchSaga} from "./run/saga/ScanProbeSaga";
-import {discoverNodesSaga, serverNodeHacked, updateNodeStatusSaga} from "./run/saga/NodeSagas";
-import {checkNavigateAwayFromScan, serverUserDcSaga, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
+import {DELETE_SCAN, RETRIEVE_USER_SCANS, SCAN_FOR_NAME} from "./home/HomeActions";
+import {autoScanSaga, probeArriveSaga} from "./run/saga/ScanProbeSaga";
+import {checkNavigateAwayFromScan, terminalSubmitCommandSaga} from "./run/saga/TerminalSagas";
 import {
     deleteScanSaga,
-    enterScanSaga,
-    hackerEnterScanSaga,
-    hackerLeaveScanSaga,
-    navigatePageSaga,
     retrieveUserScansSaga,
     scanForNameSaga,
-    serverScanFullSaga
-} from "./run/saga/ScanSagas";
-import {serverDisconnectSaga, serverErrorSaga, serverForceDisconnectSaga, serverNotificationSaga, serverTimeSync} from "../common/saga/ServerSagas";
-import {moveStartSaga, serverHackerProbeConnectionsSaga, serverHackerProbeLayersSaga, serverMoveArriveSaga, startAttackSaga} from "./run/saga/HackSagas";
+    } from "./run/saga/ScanSagas";
 import {
     FINISH_HACKING_ICE,
-    SERVER_HACKER_MOVE_ARRIVE,
-    SERVER_HACKER_MOVE_START,
-    SERVER_HACKER_PROBE_CONNECTIONS,
-    SERVER_HACKER_PROBE_LAYERS,
-    SERVER_HACKER_START_ATTACK,
-    SERVER_NODE_HACKED
 } from "./run/model/HackActions";
 import {SUBMIT_TERMINAL_COMMAND} from "./run/model/RunActions";
-import {passwordIceFinish, passwordIceStartHack, passwordIceSubmit, serverPasswordIceUpdate} from "./run/ice/password/PasswordIceSagas";
-import {
-    serverFlashPatrollerSaga, serverPatrollerHooksHackerSaga,
-    serverPatrollerLocksHackerSaga,
-    serverPatrollerMoveSaga,
-    serverPatrollerSnacksBackHackerSaga, serverRemovePatrollerSaga,
-    serverStartPatrollerSaga,
-} from "./run/coundown/CountdownSagas";
+import {passwordIceFinish,  passwordIceSubmit} from "./run/ice/password/PasswordIceSagas";
 
 import {NAVIGATE_PAGE} from "../common/menu/pageReducer";
 import {ICE_PASSWORD_SUBMIT} from "./run/ice/password/PasswordIceHome";
-import {SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "./run/ice/password/PasswordIceReducer";
-import {
-    SERVER_FLASH_PATROLLER,
-    SERVER_PATROLLER_HOOKS_HACKER, SERVER_PATROLLER_LOCKS_HACKER,
-    SERVER_PATROLLER_MOVE, SERVER_PATROLLER_REMOVE,
-    SERVER_PATROLLER_SNAPS_BACK_HACKER,
-    SERVER_START_TRACING_PATROLLER
-} from "./run/coundown/CountdownReducer";
-import {SERVER_USER_DC} from "../common/terminal/TerminalReducer";
 
 
 const createHackerRootSaga = () => {
@@ -63,63 +27,62 @@ const createHackerRootSaga = () => {
     function* allSagas() {
 
 
-        yield takeEvery(SERVER_TIME_SYNC, serverTimeSync);
+        // yield takeEvery(SERVER_TIME_SYNC, serverTimeSync);
+        // yield takeEvery(SERVER_NOTIFICATION, serverNotificationSaga);
+        // yield takeEvery(SERVER_DISCONNECT, serverDisconnectSaga);
+        // yield takeEvery(SERVER_FORCE_DISCONNECT, serverForceDisconnectSaga);
+        // yield takeEvery(SERVER_ERROR, serverErrorSaga);
 
-        yield takeEvery(SERVER_NOTIFICATION, serverNotificationSaga);
-        yield takeEvery(SERVER_DISCONNECT, serverDisconnectSaga);
-        yield takeEvery(SERVER_FORCE_DISCONNECT, serverForceDisconnectSaga);
-        yield takeEvery(SERVER_ERROR, serverErrorSaga);
-
-        yield takeEvery(NAVIGATE_PAGE, navigatePageSaga);
-        yield takeEvery(SERVER_USER_DC, serverUserDcSaga);
+        // yield takeEvery(NAVIGATE_PAGE, navigatePageSaga);
+        // yield takeEvery(SERVER_HACKER_DC, serverUserDcSaga);
 
         yield takeEvery(RETRIEVE_USER_SCANS, retrieveUserScansSaga);
         yield takeEvery(SCAN_FOR_NAME, scanForNameSaga);
         yield takeEvery(DELETE_SCAN, deleteScanSaga);
 
 
-        yield takeEvery(ENTER_SCAN, enterScanSaga);
+        // yield takeEvery(ENTER_SCAN, enterScanSaga);
         yield takeEvery(NAVIGATE_PAGE, checkNavigateAwayFromScan);
 
 
-        yield takeEvery(SERVER_SITE_DISCOVERED, enterScanSaga);
+        // yield takeEvery(SERVER_SITE_DISCOVERED, enterScanSaga);
 
-        yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
+        // yield takeEvery(SERVER_SCAN_FULL, serverScanFullSaga);
         yield takeEvery(SUBMIT_TERMINAL_COMMAND, terminalSubmitCommandSaga);
 
-        yield takeEvery(SERVER_UPDATE_NODE_STATUS, updateNodeStatusSaga);
-        yield takeEvery(SERVER_DISCOVER_NODES, discoverNodesSaga);
+        // yield takeEvery(SERVER_UPDATE_NODE_STATUS, updateNodeStatusSaga);
+        // yield takeEvery(SERVER_DISCOVER_NODES, discoverNodesSaga);
 
-        yield takeEvery(SERVER_PROBE_LAUNCH, serverProbeLaunchSaga);
+        // yield takeEvery(SERVER_PROBE_LAUNCH, serverProbeLaunchSaga);
         yield takeEvery(PROBE_SCAN_NODE, probeArriveSaga);
         yield takeEvery(AUTO_SCAN, autoScanSaga);
 
-        yield takeEvery(SERVER_HACKER_ENTER_SCAN, hackerEnterScanSaga);
-        yield takeEvery(SERVER_HACKER_LEAVE_SCAN, hackerLeaveScanSaga);
+        // yield takeEvery(SERVER_HACKER_ENTER_SCAN, hackerEnterScanSaga);
+        // yield takeEvery(SERVER_HACKER_LEAVE_SCAN, hackerLeaveScanSaga);
 
-        yield takeEvery(SERVER_HACKER_START_ATTACK, startAttackSaga);
+        // yield takeEvery(SERVER_HACKER_START_ATTACK, startAttackSaga);
 
-        yield takeEvery(SERVER_HACKER_MOVE_START, moveStartSaga);
-        yield takeEvery(SERVER_HACKER_MOVE_ARRIVE, serverMoveArriveSaga);
+        // yield takeEvery(SERVER_HACKER_MOVE_START, moveStartSaga);
+        // yield takeEvery(SERVER_HACKER_MOVE_ARRIVE, serverMoveArriveSaga);
 
-        yield takeEvery(SERVER_HACKER_PROBE_LAYERS, serverHackerProbeLayersSaga);
+        // yield takeEvery(SERVER_HACKER_PROBE_LAYERS, serverHackerProbeLayersSaga);
 
-        yield takeEvery(SERVER_HACKER_PROBE_CONNECTIONS, serverHackerProbeConnectionsSaga);
+        // yield takeEvery(SERVER_HACKER_PROBE_CONNECTIONS, serverHackerProbeConnectionsSaga);
 
-        yield takeEvery(SERVER_START_HACKING_ICE_PASSWORD, passwordIceStartHack);
+        // yield takeEvery(SERVER_START_HACKING_ICE_PASSWORD, passwordIceStartHack);
         yield takeEvery(ICE_PASSWORD_SUBMIT, passwordIceSubmit);
-        yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
+        // yield takeEvery(SERVER_ICE_PASSWORD_UPDATE, serverPasswordIceUpdate);
         yield takeEvery(FINISH_HACKING_ICE, passwordIceFinish);
 
-        yield takeEvery(SERVER_NODE_HACKED, serverNodeHacked);
+        // yield takeEvery(SERVER_NODE_HACKED, serverNodeHacked);
 
-        yield takeEvery(SERVER_FLASH_PATROLLER, serverFlashPatrollerSaga);
-        yield takeEvery(SERVER_START_TRACING_PATROLLER, serverStartPatrollerSaga);
-        yield takeEvery(SERVER_PATROLLER_MOVE, serverPatrollerMoveSaga);
-        yield takeEvery(SERVER_PATROLLER_HOOKS_HACKER, serverPatrollerHooksHackerSaga);
-        yield takeEvery(SERVER_PATROLLER_SNAPS_BACK_HACKER, serverPatrollerSnacksBackHackerSaga);
-        yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);
-        yield takeEvery(SERVER_PATROLLER_REMOVE, serverRemovePatrollerSaga);
+        // yield takeEvery(SERVER_FLASH_PATROLLER, serverFlashPatrollerSaga);
+        // yield takeEvery(SERVER_START_TRACING_PATROLLER, serverStartPatrollerSaga);
+        // yield takeEvery(SERVER_PATROLLER_MOVE, serverPatrollerMoveSaga);
+        // yield takeEvery(SERVER_PATROLLER_HOOKS_HACKER, serverPatrollerHooksHackerSaga);
+        // yield takeEvery(SERVER_PATROLLER_SNAPS_BACK_HACKER, serverPatrollerSnacksBackHackerSaga);
+        // yield takeEvery(SERVER_PATROLLER_LOCKS_HACKER, serverPatrollerLocksHackerSaga);
+        // yield takeEvery(SERVER_PATROLLER_REMOVE, serverRemovePatrollerSaga);
     }
 
     function* scanRootSaga() {

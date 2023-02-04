@@ -4,13 +4,13 @@ import {Schedule} from "../../Schedule";
 import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
 import {LineElement} from "./util/LineElement";
 import {Display} from "./Display";
-import {PatrollerData} from "../../../hacker/run/component/RunCanvas";
 import {Canvas} from "fabric/fabric-impl";
 import {Dispatch} from "redux";
 import {DisplayCollection} from "./util/DisplayCollection";
 import {NodeDisplay} from "./NodeDisplay";
 import {Ticks} from "../../model/Ticks";
 import {HackerDisplay} from "./HackerDisplay";
+import {PatrollerData} from "../../../hacker/server/RunServerActionProcessor";
 
 
 export class TracingPatrollerDisplay implements Display {

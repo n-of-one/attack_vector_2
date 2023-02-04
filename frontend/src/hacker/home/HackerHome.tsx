@@ -2,9 +2,17 @@ import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {TextInput} from "../../common/component/TextInput";
 import {SilentLink} from "../../common/component/SilentLink";
-import {DELETE_SCAN, ENTER_SCAN, SCAN_FOR_NAME} from "./HomeActions";
+import {DELETE_SCAN, SCAN_FOR_NAME} from "./HomeActions";
 import {HackerState} from "../HackerRootReducer";
 import {ScanInfo} from "./ScansReducer";
+import {webSocketConnection} from "../../common/WebSocketConnection";
+import {runCanvas} from "../run/component/RunCanvas";
+import {HIDE_NODE_INFO} from "../run/model/ScanActions";
+import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
+import {NAVIGATE_PAGE, SCAN} from "../../common/menu/pageReducer";
+import {terminalManager} from "../../common/terminal/TerminalManager";
+import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
+import {Dispatch} from "redux";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -13,14 +21,15 @@ export const HackerHome = () => {
 
     const dispatch = useDispatch()
     const scans: ScanInfo[] = useSelector((state: HackerState) => state.home.scans)
+    const currentPage: string = useSelector((state: HackerState) => state.currentPage)
 
     const scanSite = (siteName: string) => {
         if (siteName) {
             dispatch({type: SCAN_FOR_NAME, siteName: siteName});
         }
     }
-    const enterScan = (scanInfo: ScanInfo) => {
-        dispatch({type: ENTER_SCAN, data: {runId: scanInfo.runId, siteId: scanInfo.siteId}});
+    const enterScanLink = (scanInfo: ScanInfo) => {
+        enterScan(scanInfo.runId, scanInfo.siteId, dispatch, currentPage)
     }
 
     const deleteScan = (scanInfo: ScanInfo) => {
@@ -79,7 +88,7 @@ export const HackerHome = () => {
                                             <tr key={scanInfo.runId}>
                                                 <td className="table-very-condensed">
                                                     <SilentLink title={scanInfo.runId} onClick={() => {
-                                                        enterScan(scanInfo);
+                                                        enterScanLink(scanInfo);
                                                     }}><>{scanInfo.siteName}</>
                                                     </SilentLink>
                                                 </td>
@@ -104,4 +113,15 @@ export const HackerHome = () => {
             </div>
         </div>
     )
+}
+
+export const enterScan = (runId: string, siteId: string, dispatch: Dispatch, currentPage: string) => {
+    webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST)
+    webSocketConnection.subscribeForRun(runId, siteId)
+    runCanvas.reset()
+    dispatch({type: HIDE_NODE_INFO})
+    dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
+    dispatch({type: NAVIGATE_PAGE, to: SCAN, from: currentPage})
+    webSocketConnection.send("/av/scan/enterScan", runId)
+    terminalManager.start()
 }

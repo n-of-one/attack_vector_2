@@ -13,6 +13,7 @@ import {passwordIceManager} from "./run/ice/password/PasswordIceManager";
 import {tangleIceManager} from "./run/ice/tangle/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
 import {HACKER_HOME} from "../common/menu/pageReducer";
+import {initRunServerActions} from "./server/RunServerActionProcessor";
 
 export class HackerRoot extends Component {
 
@@ -56,6 +57,8 @@ export class HackerRoot extends Component {
         terminalManager.init(this.store);
         passwordIceManager.init(this.store);
         tangleIceManager.init(this.store);
+
+        initRunServerActions(this.store)
     }
 
     render() {
