@@ -59,12 +59,22 @@ class StompService(
         toUser(userId, ReduxActions.SERVER_NOTIFICATION, message)
     }
 
-    data class TerminalReceive(val terminalId: String, val lines: Array<out String>)
+    class TerminalReceive(val terminalId: String, val lines: Array<out String>, val locked : Boolean? = null)
+
+    fun terminalReceiveAndLockedCurrentUser(locked: Boolean, vararg lines: String) {
+        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines, locked))
+    }
+
     fun terminalReceiveCurrentUser(vararg lines: String) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
     }
 
-    data class TerminalReceiveLinesAsCollection(val terminalId: String, val lines: Collection<String>)
+    fun terminalLockCurrentUser(lock: Boolean) {
+        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", emptyArray(), lock))
+    }
+
+
+    class TerminalReceiveLinesAsCollection(val terminalId: String, val lines: Collection<String>)
     fun terminalReceiveCurrentUser(lines: Collection<String>) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceiveLinesAsCollection("main", lines))
     }
@@ -76,4 +86,5 @@ class StompService(
     fun terminalReceiveForUserForTerminal(userId: String, terminalId: String, vararg lines: String) {
         toUser(userId, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
     }
+
 }

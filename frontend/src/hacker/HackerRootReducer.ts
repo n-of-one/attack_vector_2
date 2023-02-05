@@ -21,7 +21,7 @@ export interface HackerState {
     userId: string
 }
 
-const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true})
+const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true})
 
 export const hackerRootReducer = combineReducers({
     currentPage: pageReducer,

@@ -72,34 +72,37 @@ class ScanProbeService(
 
     //---//
 
-    fun probeArrive(runId: String, nodeId: String, action: NodeScanType): Boolean {
+    fun probeArrive(runId: String, nodeId: String, action: NodeScanType, autoScan: Boolean): Boolean {
         val scan = scanService.getByRunId(runId)
         val node = nodeService.getById(nodeId)
-        return probeArrive(scan, node, action)
+        return probeArrive(scan, node, action, autoScan)
     }
 
-    fun probeArrive(scan: Scan, node: Node, action: NodeScanType): Boolean {
+    fun probeArrive(scan: Scan, node: Node, action: NodeScanType, autoScan: Boolean): Boolean {
         val nodeScan = scan.nodeScanById[node.id] ?: throw IllegalStateException("Node to scan ${node.id} not part of ${scan.siteId}")
 
         return when (action) {
-            NodeScanType.SCAN_NODE_INITIAL -> probeScanInitial(scan, node, nodeScan)
-            NodeScanType.SCAN_CONNECTIONS -> probeScanConnection(scan, node, nodeScan)
-            NodeScanType.SCAN_NODE_DEEP -> probeScanDeep(scan, node, nodeScan)
+            NodeScanType.SCAN_NODE_INITIAL -> probeScanInitial(scan, node, nodeScan, autoScan)
+            NodeScanType.SCAN_CONNECTIONS -> probeScanConnection(scan, node, nodeScan, null, autoScan)
+            NodeScanType.SCAN_NODE_DEEP -> probeScanDeep(scan, node, nodeScan, autoScan)
         }
     }
 
     data class ProbeResultSingleNode(val nodeId: String, val newStatus: NodeScanStatus)
 
-    private fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
-        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${node.layers.size} ${"layer".s(node.layers.size)}.")
+    private fun probeScanInitial(scan: Scan, node: Node, nodeScan: NodeScan, autoScan: Boolean): Boolean {
+        val locked = autoScan
+        stompService.terminalReceiveAndLockedCurrentUser(locked, "Scanned node ${node.networkId} - discovered ${node.layers.size} ${"layer".s(node.layers.size)}.")
 
         probeScanSingleNode(nodeScan, scan, node, NodeScanStatus.TYPE)
         return false
     }
 
-    fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan, prefix: String? = null): Boolean {
+    fun probeScanConnection(scan: Scan, node: Node, nodeScan: NodeScan, prefix: String?, autoScan: Boolean): Boolean {
+        val locked = autoScan
+
         if (nodeScan.status != NodeScanStatus.TYPE && nodeScan.status != NodeScanStatus.LAYERS_NO_CONNECTIONS) {
-            stompService.terminalReceiveCurrentUser("Scanning node ${node.networkId} did not find new connections.")
+            stompService.terminalReceiveAndLockedCurrentUser(locked,"Scanning node ${node.networkId} did not find new connections.")
             return false
         }
 
@@ -141,17 +144,18 @@ class ScanProbeService(
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         val start = if (prefix != null) prefix else "Scanned node ${node.networkId}"
-        stompService.terminalReceiveCurrentUser("${start} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
+        stompService.terminalReceiveAndLockedCurrentUser(locked,"${start} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
         return discoveredNodeIds.isNotEmpty()
     }
 
-    private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan): Boolean {
+    private fun probeScanDeep(scan: Scan, node: Node, nodeScan: NodeScan, autoScan: Boolean): Boolean {
         if (nodeScan.status != NodeScanStatus.CONNECTIONS) {
-            stompService.terminalReceiveCurrentUser("Scanning node ${node.networkId} did not find anything.")
+            val locked = autoScan
+            stompService.terminalReceiveAndLockedCurrentUser(locked,"Scanning node ${node.networkId} did not find anything.")
             return false
         }
 
-        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${node.layers.size} layer details")
+        stompService.terminalReceiveAndLockedCurrentUser(false,"Scanned node ${node.networkId} - discovered ${node.layers.size} layer details")
 
         probeScanSingleNode(nodeScan, scan, node, NodeScanStatus.LAYERS)
         return false
@@ -173,13 +177,13 @@ class ScanProbeService(
         val status = scan.nodeScanById[node.id]!!.status
         if (status == NodeScanStatus.LAYERS) return
         if (status == NodeScanStatus.UNDISCOVERED || status == NodeScanStatus.DISCOVERED) {
-            probeArrive(scan, node, NodeScanType.SCAN_NODE_INITIAL)
+            probeArrive(scan, node, NodeScanType.SCAN_NODE_INITIAL, false)
         }
 
         val newStatus = scan.nodeScanById[node.id]!!.status
         if (status == NodeScanStatus.TYPE || newStatus == NodeScanStatus.TYPE) {
-            probeArrive(scan, node, NodeScanType.SCAN_CONNECTIONS)
+            probeArrive(scan, node, NodeScanType.SCAN_CONNECTIONS, false)
         }
-        probeArrive(scan, node, NodeScanType.SCAN_NODE_DEEP)
+        probeArrive(scan, node, NodeScanType.SCAN_NODE_DEEP, false)
     }
 }

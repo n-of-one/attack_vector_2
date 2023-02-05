@@ -46,16 +46,10 @@ class ScanningController(
         taskRunner.runTask(principal) { scanningService.leaveRun(runId) }
     }
 
-    data class AutoScanActionInput(val runId: String)
-    @MessageMapping("/scan/autoScan")
-    fun autoScan(action: AutoScanActionInput, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.autoScan(action.runId) }
-    }
-
-    data class ProbeScanActionInput(val runId: String, val nodeId: String, val action: NodeScanType)
+    data class ProbeScanActionInput(val runId: String, val nodeId: String, val action: NodeScanType, val autoScan: Boolean)
     @MessageMapping("/scan/probeArrive")
     fun probeArrive(input: ProbeScanActionInput, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.probeArrive(input.runId, input.nodeId, input.action) }
+        taskRunner.runTask(principal) { scanningService.probeArrive(input.runId, input.nodeId, input.action, input.autoScan) }
     }
 //     --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 

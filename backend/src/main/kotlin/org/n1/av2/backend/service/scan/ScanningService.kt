@@ -201,10 +201,6 @@ class ScanningService(private val scanService: ScanService,
         stompService.toRun(scan.runId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 
-    fun autoScan(runId: String) {
-        launchProbe(runId, true)
-    }
-
     fun launchProbe(runId: String, autoScan: Boolean) {
         val scan = scanService.getByRunId(runId)
         if (scan.startTime == null) {
@@ -273,12 +269,20 @@ class ScanningService(private val scanService: ScanService,
         autoScan(runId)
    }
 
-    fun probeArrive(runId: String, nodeId: String, action: NodeScanType) {
-        val updateScanInfo = scanProbeService.probeArrive(runId, nodeId, action)
+    fun probeArrive(runId: String, nodeId: String, action: NodeScanType, autoScan: Boolean) {
+        val updateScanInfo = scanProbeService.probeArrive(runId, nodeId, action, autoScan)
         if (updateScanInfo) {
             val scan = scanService.getByRunId(runId)
             updateScanInfoToPlayers(scan)
         }
+        if (autoScan) {
+            autoScan(runId)
+        }
     }
+
+    fun autoScan(runId: String) {
+        launchProbe(runId, true)
+    }
+
 
 }

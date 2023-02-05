@@ -59,7 +59,7 @@ class OsLayerService(
         val nodeScan = scan.nodeScanById[event.nodeId]!!
         val layer = node.layers.first()
         val prefix = "Hacked: [pri]0[/] ${layer.name}"
-        probeService.probeScanConnection(scan, node, nodeScan, prefix)
+        probeService.probeScanConnection(scan, node, nodeScan, prefix, false)
     }
 
 }

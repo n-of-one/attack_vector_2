@@ -44,7 +44,7 @@ class ScanTerminalService(
     }
 
     private fun processAutoScan(runId: String) {
-        stompService.terminalReceiveCurrentUser("Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
+        stompService.terminalReceiveAndLockedCurrentUser(true, "Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
         scanningService.launchProbe(runId, true)
     }
 
@@ -77,16 +77,18 @@ class ScanTerminalService(
             return
         }
         val networkId = tokens[1]
+        stompService.terminalLockCurrentUser(true)
         scanningService.launchProbeAtNode(runId, networkId)
     }
 
     fun processQuickscan(runId: String) {
+        stompService.terminalLockCurrentUser(true)
         scanningService.quickScan(runId)
     }
 
     private fun processAttack(runId: String, quick: Boolean) {
+        stompService.terminalLockCurrentUser(true)
         hackingService.startAttack(runId, quick)
-
     }
 
 

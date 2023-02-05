@@ -87,6 +87,7 @@ export class ProbeDisplay implements Display {
         return objects
     }
 
+    // TODO: scans should be abortable if the hacker leaves the run where this scan is taking place.
     abort() {
         this.aborted = true
     }
@@ -105,7 +106,6 @@ export class ProbeDisplay implements Display {
         const lineData = calcLine(currentDisplay, nextDisplay, this.padding);
         lineElement.extendTo(lineData, duration);
     }
-
 
     processProbeArrive(scanType: NodeScanType, nodeId: string, currentDisplay: Display) {
         if (this.aborted) return
@@ -138,7 +138,7 @@ export class ProbeDisplay implements Display {
         });
         const finishMethod = () => {
             if (this.yourProbe) {
-                this.probeArriveSaga(nodeId, scanType)
+                this.probeArriveSaga(nodeId, scanType, this.autoScan)
             }
         };
         this.finishProbe(finishMethod);
@@ -156,14 +156,14 @@ export class ProbeDisplay implements Display {
         });
         const finishMethod = () => {
             if (this.yourProbe) {
-                this.probeArriveSaga(nodeId, SCAN_CONNECTIONS)
+                this.probeArriveSaga(nodeId, SCAN_CONNECTIONS, this.autoScan)
             }
         };
         this.finishProbe(finishMethod)
     }
 
-    probeArriveSaga(nodeId: string, scanType: NodeScanType) {
-        const payload = {nodeId: nodeId, action: scanType};
+    probeArriveSaga(nodeId: string, scanType: NodeScanType, autoScan: boolean) {
+        const payload = {nodeId: nodeId, action: scanType, autoScan: autoScan};
         webSocketConnection.sendObjectWithRunId("/av/scan/probeArrive", payload);
     }
 
@@ -180,15 +180,9 @@ export class ProbeDisplay implements Display {
                 lineElement.remove();
             });
             console.timeEnd("scan");
-            this.performAutoScan();
         });
     }
 
-    performAutoScan() {
-        if (this.autoScan && this.yourProbe) {
-            webSocketConnection.sendObjectWithRunId("/av/scan/autoScan", {});
-        }
-    }
 
     probeError(scanType: NodeScanType, nodeId: string) {
         this.schedule.run(30, () => {

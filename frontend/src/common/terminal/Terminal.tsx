@@ -12,14 +12,6 @@ const renderRenderingLine = (terminalState: TerminalState) => {
     return <TerminalTextLine line={terminalState.renderingLine}/>
 }
 
-const renderInput = (terminalState: TerminalState) => {
-    if (terminalState.readOnly) {
-        return <div/>
-    }
-    return (
-        <TerminalInput prompt={terminalState.prompt} input={terminalState.input} syntaxHighlighting={terminalState.syntaxHighlighting}/>
-    )
-}
 
 interface Props {
     terminalState: TerminalState,
@@ -45,12 +37,12 @@ export const Terminal = ({terminalState, height, submit}: Props) => {
         return <div className="terminalPanel terminal_scrollbar" style={{height: height}}>
             {terminalState.lines.map((line, index) => <TerminalTextLine line={line} key={index}/>)}
             {renderRenderingLine(terminalState)}
-            {renderInput(terminalState)}
+            <TerminalInput terminalState={terminalState} />
             <div ref={bottomRef}/>
         </div>;
     } else {
         return <div className="terminalPanel" style={{height: height}}>
-            {renderInput(terminalState)}
+            <TerminalInput terminalState={terminalState} />
         </div>;
     }
 

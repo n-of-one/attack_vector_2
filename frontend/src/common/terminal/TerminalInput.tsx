@@ -1,13 +1,16 @@
 import React from "react"
-import {Syntax, SyntaxMap} from "./TerminalReducer"
+import {Syntax, SyntaxMap, TerminalState} from "./TerminalReducer"
 
 interface Props {
-    prompt: string,
-    input: string,
-    syntaxHighlighting: SyntaxMap
+    terminalState: TerminalState
 }
 
-export const TerminalInput = ({input, prompt, syntaxHighlighting}: Props) => {
+export const TerminalInput = ({terminalState}: Props) => {
+    if (terminalState.readOnly || (terminalState.blockedWhileRendering && terminalState.receiving)) {
+        return <div/>
+    }
+
+    const {input, prompt, syntaxHighlighting} = terminalState
     // return (
     //     <div className="terminalLine terminal_input">{prompt} {input}<span className="terminalCaret">&nbsp;</span></div>
     // )
