@@ -1,6 +1,7 @@
 import {fabric} from "fabric";
 import {animate, easeLinear, LinePositions} from "../../CanvasUtils";
 import {Canvas} from "fabric/fabric-impl";
+import {delay} from "../../../Util";
 
 export class LineElement {
 
@@ -17,12 +18,14 @@ export class LineElement {
                 strokeWidth: 2,
                 selectable: false,
                 hoverCursor: 'default',
-                opacity: 1,
+                // opacity: 1,
                 ...styling
             });
 
         this.canvas.add(this.line);
-        this.canvas.sendToBack(this.line);
+        delay(() => {
+            this.canvas.sendToBack(this.line).renderAll()
+        })
     }
 
     getIcon(): fabric.Line {

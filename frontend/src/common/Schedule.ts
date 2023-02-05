@@ -34,19 +34,19 @@ export class Schedule {
         this.dispatcher = dispatch;
     }
 
-    run(wait: number, functionToRun: () => void) {
+    run(duration: number, functionToRun: () => void) {
         let that = this;
         this._schedule( () => {
             functionToRun();
-            that._setWait(wait);
+            that._setWait(duration);
         });
     }
 
-    dispatch(wait: number, action: AnyAction) {
+    dispatch(duration: number, action: AnyAction) {
         let that = this;
         this._schedule( () => {
             this.dispatcher(action);
-            that._setWait(wait);
+            that._setWait(duration);
         });
     }
 

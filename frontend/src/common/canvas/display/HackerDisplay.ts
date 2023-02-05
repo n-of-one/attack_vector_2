@@ -351,22 +351,6 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
     }
 
-    moveStart(nodeDisplay: NodeDisplay, ticks: Ticks) {
-        this.targetNodeDisplay = nodeDisplay
-        // this.schedule.run(ticks.start, () => {
-        //     if (!this.currentNodeDisplay) throw Error("Not in a node at start of move (this.currentNodeDisplay = null)")
-        //     this.currentNodeDisplay.unregisterHacker(this)
-        //     this.moveStep(this.currentNodeDisplay, 0, 0, ticks.start)
-        // })
-        this.schedule.run(ticks.main, () => {
-            // this.moveStep(nodeDisplay, 0, 0, ticks.main)
-            if (this.you) {
-                if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-                this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main)
-            }
-        })
-    }
-
     hookByPatroller() {
         this.hooked = true
         if (this.moveLineElement) {
@@ -395,6 +379,13 @@ export class HackerDisplay implements Display {
         })
     }
 
+
+    moveStart(nodeDisplay: NodeDisplay, ticks: Ticks) {
+        this.targetNodeDisplay = nodeDisplay
+        if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
+        this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main + 10, this.you)
+    }
+
     moveArrive(nodeDisplay: NodeDisplay, ticks: Ticks) {
 
         const oldNodeDisplay = this.currentNodeDisplay!
@@ -405,36 +396,28 @@ export class HackerDisplay implements Display {
 
         const newOffset = this.processOffset(nodeDisplay, false)
 
+        nodeDisplay.unregisterHacker(this)
+
+
+        this.hackerIcon!.left = nodeDisplay.x + newOffset.xOffset
+        this.hackerIcon!.top = nodeDisplay.y + newOffset.yOffset
+        this.hackerIcon!.opacity = 0
+
+        animate(this.canvas, this.hackerIcon!, 'opacity', 1, ticks.main)
+
+        if (!oldNodeDisplay) return
+
+        const afterImage = this.createHackerIcon(SCALE_NORMAL, 1, oldNodeDisplay, oldOffset.xOffset, oldOffset.yOffset)
+
+        this.canvas.add(afterImage).renderAll()
+
+        animate(this.canvas, afterImage, 'opacity', 0, ticks.main)
+        this.schedule.wait(ticks.main)
         this.schedule.run(0, () => {
-            nodeDisplay.unregisterHacker(this)
-
-
-            this.hackerIcon!.left = nodeDisplay.x + newOffset.xOffset
-            this.hackerIcon!.top = nodeDisplay.y + newOffset.yOffset
-            this.hackerIcon!.opacity = 0
-
-            animate(this.canvas, this.hackerIcon!, 'opacity', 1, ticks.main)
-
-            if (!oldNodeDisplay) return
-
-            const afterImage = this.createHackerIcon(SCALE_NORMAL, 1, oldNodeDisplay, oldOffset.xOffset, oldOffset.yOffset)
-
-            this.canvas.add(afterImage).renderAll()
-
-            this.schedule.run(ticks.main, () => {
-                animate(this.canvas, afterImage, 'opacity', 0, ticks.main)
-            })
-            this.schedule.run(0, () => {
-                this.canvas.remove(afterImage)
-            })
-
-
-            // this.moveStep(nodeDisplay, xOffset, yOffset, ticks.main)
+            this.canvas.remove(afterImage)
         })
 
-        this.schedule.run(0, () => {
-            this.moveLineElement?.disappear(ticks.main)
-        })
+        this.moveLineElement?.disappear(ticks.main)
 
         //
         // this.schedule.run(4, () => {
@@ -466,13 +449,14 @@ export class HackerDisplay implements Display {
         })
     }
 
-    animateMoveStepLine(fromNodeDisplay: NodeDisplay, toNodeDisplay: NodeDisplay, ticks: number): LineElement {
+    animateMoveStepLine(fromNodeDisplay: NodeDisplay, toNodeDisplay: NodeDisplay, ticks: number, you: boolean): LineElement {
         const lineStartData: LinePositions = calcLineStart(fromNodeDisplay, toNodeDisplay, 0, 0)
         const lineEndData: LinePositions = calcLineWithOffset(fromNodeDisplay, toNodeDisplay, 0, 0, 0)
 
         const color = (this.hooked) ? COLOR_PATROLLER_LINE : COLOR_HACKER_LINE
+        const opacity = (you) ? 1: 0.5
 
-        const lineElement = new LineElement(lineStartData, color, this.canvas)
+        const lineElement = new LineElement(lineStartData, color, this.canvas, {opacity: opacity})
         lineElement.extendTo(lineEndData, ticks, fabric.util.ease.easeInOutSine)
 
         return lineElement
