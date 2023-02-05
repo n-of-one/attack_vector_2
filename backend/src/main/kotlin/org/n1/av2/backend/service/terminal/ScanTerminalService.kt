@@ -77,17 +77,17 @@ class ScanTerminalService(
             return
         }
         val networkId = tokens[1]
-        stompService.terminalLockCurrentUser(true)
+        stompService.terminalSetLockedCurrentUser(true)
         scanningService.launchProbeAtNode(runId, networkId)
     }
 
     fun processQuickscan(runId: String) {
-        stompService.terminalLockCurrentUser(true)
+        stompService.terminalSetLockedCurrentUser(true)
         scanningService.quickScan(runId)
     }
 
     private fun processAttack(runId: String, quick: Boolean) {
-        stompService.terminalLockCurrentUser(true)
+        stompService.terminalSetLockedCurrentUser(true)
         hackingService.startAttack(runId, quick)
     }
 

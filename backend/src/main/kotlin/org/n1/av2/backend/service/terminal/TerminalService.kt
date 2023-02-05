@@ -23,17 +23,11 @@ class TerminalService(
         when (type) {
             SCANNING -> scanTerminalService.processCommand(runId, command)
             AT_NODE -> hackTerminalService.processCommand(runId, command)
-            MOVING,
-            STARTING -> reportInTransit()
 
             else -> {
                 logger.error("Received terminal command for user that is doing: ${type}")
             }
         }
-    }
-
-    private fun reportInTransit() {
-        stompService.terminalReceiveCurrentUser("[error]busy[/] current move not finished.")
     }
 
 

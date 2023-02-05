@@ -60,7 +60,7 @@ class HackingService(
 
         val arrive = MoveArriveGameEvent(state.currentNodeId, event.userId, event.runId )
         commandMoveService.moveArrive(arrive)
-        stompService.terminalLockCurrentUser(false)
+        stompService.terminalSetLockedCurrentUser(false)
     }
 
     fun purgeAll() {

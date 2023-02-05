@@ -12,9 +12,7 @@ enum class HackerGeneralActivity {
 enum class RunActivity {
     NA,         // not in a run
     SCANNING,   // hacker has not yet started the attack
-    STARTING,   // hacker is starting the attack (moving to the start node)
     AT_NODE,    // hacker is at rest at a node
-    MOVING,  // TODO Remove
 }
 
 @Document
@@ -24,7 +22,7 @@ data class HackerState(
         val siteId: String?,
         val currentNodeId: String?,
         val previousNodeId: String?,
-        val targetNodeId: String?,
+        val targetNodeId: String?, // target of current move
         val generalActivity: HackerGeneralActivity,
         val runActivity: RunActivity,
         val hookPatrollerId: String?, // Hooked means that a patroller has either locked the hacker, is about to lock the hacker and they cannot escape.

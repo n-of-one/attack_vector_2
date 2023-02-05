@@ -69,7 +69,7 @@ class StompService(
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
     }
 
-    fun terminalLockCurrentUser(lock: Boolean) {
+    fun terminalSetLockedCurrentUser(lock: Boolean) {
         toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", emptyArray(), lock))
     }
 

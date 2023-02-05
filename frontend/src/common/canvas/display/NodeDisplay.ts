@@ -304,4 +304,4 @@ export class NodeDisplay implements Display {
         if (this.schedule != null) this.schedule.terminate();
     }
 
-};
+}

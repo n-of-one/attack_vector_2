@@ -107,6 +107,7 @@ class CommandMoveService(
 
 
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
+        stompService.terminalSetLockedCurrentUser(true)
         class StartMove(val userId: String, val nodeId: String, val ticks: Ticks)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_TICKS))
 
@@ -120,10 +121,8 @@ class CommandMoveService(
         val nodeId = event.nodeId
 
         val state = hackerStateService.retrieve(userId).toRunState()
-//        if (state.hookPatrollerId != null) {
-//            tracingPatrollerService.snapBack(state, event)
-//            return
-//        }
+
+        if (state.locked) { return }
 
         val scan = scanService.getByRunId(runId)
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
@@ -139,7 +138,6 @@ class CommandMoveService(
         arriveComplete(state, nodeId, userId, runId)
 //        }
     }
-
 
     fun probedLayers(event: ArriveProbeLayersGameEvent) {
         val runId = event.runId
@@ -171,6 +169,7 @@ class CommandMoveService(
 
         val data = MoveArriveMessage(nodeId, userId, MOVE_ARRIVE_TICKS)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
+        stompService.terminalSetLockedCurrentUser(false)
     }
 
 

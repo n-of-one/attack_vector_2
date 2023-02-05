@@ -9,7 +9,7 @@ import {
     SCALE_LARGE,
     SCALE_NORMAL,
     SCALE_SMALL,
-    TICKS_HACKER_MOVE_MAIN, COLOR_HACKER_LINE, IMAGE_SIZE
+    COLOR_HACKER_LINE, IMAGE_SIZE
 } from "./util/DisplayConstants"
 import {LineElement} from "./util/LineElement"
 import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState"
@@ -66,7 +66,6 @@ export class HackerDisplay implements Display {
     y: number
     x: number
     locked = false
-    hooked = false
 
     size = 30
 
@@ -125,7 +124,6 @@ export class HackerDisplay implements Display {
         return potentials.filter(notEmpty)
     }
 
-
     addHackingHacker(hackerData: HackerPresence) {
         // If the hacker is in transit or still starting the run, then we are displaying them as arrived at the node.
         const moveIncomplete = (hackerData.activity === HACKER_RUN_ACTIVITY_STARTING || hackerData.activity === HACKER_RUN_ACTIVITY_MOVING)
@@ -146,9 +144,7 @@ export class HackerDisplay implements Display {
     }
 
     createHackerIcon(scale: number, opacity: number, display: Display, offsetX: number = 0, offsetY: number = 0) {
-
         const image = getHtmlImage(this.hackerData.icon)
-
         const icon = new fabric.Image(image, {
             left: display.x + offsetX,
             top: display.y + offsetY,
@@ -160,7 +156,6 @@ export class HackerDisplay implements Display {
             selectable: false,
             hoverCursor: "default",
         })
-
         return icon
     }
 
@@ -351,39 +346,16 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
     }
 
-    hookByPatroller() {
-        this.hooked = true
-        if (this.moveLineElement) {
-            this.moveLineElement.setColor(COLOR_PATROLLER_LINE)
-        }
-    }
-
-    snapBack(ticks: Ticks) {
-        this.schedule.run(ticks.snapBack, () => {
-            if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-            if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
-            if (!this.moveLineElement) throw Error("!this.moveLineElement")
-
-            this.moveStep(this.currentNodeDisplay, 0, 0, ticks.snapBack)
-
-            if (this.you) {
-                const lineStartData = calcLineStart(this.currentNodeDisplay, this.targetNodeDisplay, 0, 0)
-                this.moveLineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine)
-            }
-        })
-        this.schedule.run(ticks.arrive, () => {
-            if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-
-            const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay, false)
-            this.moveStep(this.currentNodeDisplay, xOffset, yOffset, ticks.arrive)
-        })
-    }
-
-
     moveStart(nodeDisplay: NodeDisplay, ticks: Ticks) {
         this.targetNodeDisplay = nodeDisplay
-        if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-        this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main + 10, this.you)
+
+        this.schedule.run(ticks.main, () => {
+            if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
+            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main + 10, this.you)
+        })
+        this.schedule.run(0, () => {
+            this.moveLineElement?.disappear(10)
+        })
     }
 
     moveArrive(nodeDisplay: NodeDisplay, ticks: Ticks) {
@@ -416,15 +388,6 @@ export class HackerDisplay implements Display {
         this.schedule.run(0, () => {
             this.canvas.remove(afterImage)
         })
-
-        this.moveLineElement?.disappear(ticks.main)
-
-        //
-        // this.schedule.run(4, () => {
-        //
-        //     const {xOffset, yOffset} = this.processOffset(nodeDisplay, false)
-        //     this.moveStep(nodeDisplay, xOffset, yOffset, 4)
-        // })
     }
 
     processOffset(nodeDisplay: NodeDisplay, moveIncomplete: boolean): { xOffset: number, yOffset: number } {
@@ -453,10 +416,9 @@ export class HackerDisplay implements Display {
         const lineStartData: LinePositions = calcLineStart(fromNodeDisplay, toNodeDisplay, 0, 0)
         const lineEndData: LinePositions = calcLineWithOffset(fromNodeDisplay, toNodeDisplay, 0, 0, 0)
 
-        const color = (this.hooked) ? COLOR_PATROLLER_LINE : COLOR_HACKER_LINE
         const opacity = (you) ? 1: 0.5
 
-        const lineElement = new LineElement(lineStartData, color, this.canvas, {opacity: opacity})
+        const lineElement = new LineElement(lineStartData, COLOR_HACKER_LINE, this.canvas, {opacity: opacity})
         lineElement.extendTo(lineEndData, ticks, fabric.util.ease.easeInOutSine)
 
         return lineElement
@@ -501,49 +463,6 @@ export class HackerDisplay implements Display {
     terminate() {
         this.schedule.terminate()
     }
-
-
-    // this.schedule.run(0, () => {
-    //     if (this.locked) {
-    //         this.snapBackAndLock(this.currentNodeDisplay, nodeDisplay)
-    //     }
-    //     else {
-    //         if (this.moveLineElement) {
-    //             this.moveLineElement.disappearAndRemove(TICKS_HACKER_MOVE_END)
-    //             this.moveLineElement = null
-    //         }
-    //         if (this.you) {
-    //             this.dispatch({type: HACKER_MOVE_ARRIVE, nodeId: nodeDisplay.id})
-    //         }
-    //     }
-    // })
-    // snapBackAndLock(snapBackToNodeDisplay, tempArrivedNodeDisplay) {
-    //     this.moveStep(this.currentNodeDisplay, 0, 0, TICKS_HACKER_MOVE_MAIN)
-    //
-    //     if (!this.moveLineElement) {
-    //         const lineEndData = calcLineWithOffset(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0, 0)
-    //         this.moveLineElement = new LineElement(lineEndData, COLOR_HACKER_LINE, this.canvas)
-    //         this.moveLineElement.setColor(COLOR_PATROLLER_LINE)
-    //     }
-    //
-    //     const lineStartData = calcLineStart(snapBackToNodeDisplay, tempArrivedNodeDisplay, 0, 0)
-    //     this.moveLineElement.extendTo(lineStartData, TICKS_HACKER_MOVE_MAIN, fabric.util.ease.easeInOutSine)
-    //     this.schedule.wait(TICKS_HACKER_MOVE_MAIN)
-    //     this.undoMoveStartAndCaptureComplete(snapBackToNodeDisplay)
-    // }
-    //
-    //
-    //
-    // undoMoveStartAndCaptureComplete(nodeDisplay) {
-    //     const {xOffset, yOffset} = this.processOffset(nodeDisplay)
-    //     this.schedule.run(TICKS_HACKER_MOVE_START, () => {
-    //         this.moveStep(this.currentNodeDisplay, xOffset, yOffset, TICKS_HACKER_MOVE_START)
-    //     })
-    //     this.schedule.run(4, () => {
-    //         this.lockByPatrollerComplete()
-    //     })
-    // }
-
 
     lockByPatroller() {
         this.schedule.run(0, () => {

@@ -3,7 +3,7 @@ import {webSocketConnection} from "../../common/WebSocketConnection";
 import {initGenericServerActions} from "./GenericServerActionProcessor";
 import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
-import {NodeScanType,runCanvas} from "../run/component/RunCanvas";
+import {NodeScanType, runCanvas} from "../run/component/RunCanvas";
 import {
     SERVER_DISCOVER_NODES,
     SERVER_HACKER_ENTER_SCAN,
@@ -20,9 +20,8 @@ import {passwordIceManager, PasswordIceState} from "../run/ice/password/Password
 import {delayTicks} from "../../common/Util";
 import {
     SERVER_FLASH_PATROLLER,
-    SERVER_PATROLLER_HOOKS_HACKER, SERVER_PATROLLER_LOCKS_HACKER,
+    SERVER_PATROLLER_LOCKS_HACKER,
     SERVER_PATROLLER_MOVE, SERVER_PATROLLER_REMOVE,
-    SERVER_PATROLLER_SNAPS_BACK_HACKER,
     SERVER_START_TRACING_PATROLLER
 } from "../run/coundown/CountdownReducer";
 import {enterScan} from "../home/HackerHome";
@@ -107,11 +106,6 @@ export interface PatrollerPathSegment {
     toNodeId: string
 }
 
-export interface ActionSnapBack {
-    hackerId: string,
-    ticks: Ticks
-}
-
 export interface ActionPatrollerCatchesHacker {
     patrollerId: string,
     hackerId: string
@@ -122,10 +116,6 @@ export interface ActionPatrollerMove {
     fromNodeId: string,
     toNodeId: string,
     ticks: Ticks
-}
-
-export interface PatrollerHooksHackerAction {
-    hackerId: string
 }
 
 interface RemovePatrollerAction {
@@ -206,7 +196,9 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_NODE_HACKED, (data: NodeHacked) => {
-        delayTicks(data.delay, () => {runCanvas.nodeHacked(data.nodeId) } )
+        delayTicks(data.delay, () => {
+            runCanvas.nodeHacked(data.nodeId)
+        })
     })
 
     webSocketConnection.addAction(SERVER_FLASH_PATROLLER, (data: FlashPatrollerAction) => {
@@ -219,14 +211,6 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_PATROLLER_MOVE, (data: ActionPatrollerMove) => {
         runCanvas.movePatroller(data)
-    })
-
-    webSocketConnection.addAction(SERVER_PATROLLER_HOOKS_HACKER, (data: PatrollerHooksHackerAction) => {
-        runCanvas.patrollerHooksHacker(data.hackerId)
-    })
-
-    webSocketConnection.addAction(SERVER_PATROLLER_SNAPS_BACK_HACKER, (data: ActionSnapBack) => {
-        runCanvas.patrollerSnacksBackHacker(data)
     })
 
     webSocketConnection.addAction(SERVER_PATROLLER_LOCKS_HACKER, (data: ActionPatrollerCatchesHacker) => {

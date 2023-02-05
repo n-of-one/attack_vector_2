@@ -105,9 +105,7 @@ export class TracingPatrollerDisplay implements Display {
             const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
             lineElement.extendTo(lineEndData, ticks.move);
         });
-
     }
-
 
     lock(hackerId: string) {
         this.hackerDisplays.get(hackerId).lockByPatroller();

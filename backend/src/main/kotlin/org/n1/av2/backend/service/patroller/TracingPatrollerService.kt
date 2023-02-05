@@ -23,11 +23,8 @@ import javax.annotation.PostConstruct
 val PATROLLER_ARRIVE_FIRST_TICKS = Ticks("appear" to 20)
 val PATROLLER_MOVE_TICKS = Ticks("move" to 15)
 
-val SNAPBACK_TICKS = Ticks("snapBack" to 8, "arrive" to 4)
 
 class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String, ticks: Ticks) : TicksGameEvent(ticks)
-class TracingPatrollerSnappedBackHackerGameEvent(val patrollerId: String)
-
 
 class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: List<PatrollerPathSegment>, val ticks: Ticks = PATROLLER_ARRIVE_FIRST_TICKS)
 
@@ -83,13 +80,7 @@ class TracingPatrollerService(
 
         val targetHackerState = hackerStateService.retrieve(patroller.targetUserId)
         if (targetHackerState.currentNodeId == patroller.currentNodeId) {
-            if (targetHackerState.runActivity == RunActivity.MOVING) {
-                hackerStateService.hookHacker(patroller.targetUserId, patroller.id)
-                messageHooked(patroller)
-                // the MoveArriveGameEvent will trigger the next step for the patroller, see snapBack()
-            } else {
-                lockHacker(patroller)
-            }
+            lockHacker(patroller)
         } else {
             patrollerMove(patroller, patroller.runId)
         }
@@ -106,20 +97,6 @@ class TracingPatrollerService(
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nextNodeToTarget.id, PATROLLER_MOVE_TICKS)
         taskRunner.queueInTicks(PATROLLER_MOVE_TICKS.total) { patrollerArrives(next) }
-    }
-
-    fun snapBack(state: HackerStateRunning, event: MoveArriveGameEvent) {
-        hackerStateService.snapBack(state)
-        messageSnapBack(state)
-
-        val nextEvent = TracingPatrollerSnappedBackHackerGameEvent(state.hookPatrollerId!!)
-        taskRunner.queueInTicks(SNAPBACK_TICKS.total) { processLockHacker(nextEvent) }
-    }
-
-
-    fun processLockHacker(event: TracingPatrollerSnappedBackHackerGameEvent) {
-        val patroller = getPatroller(event.patrollerId)
-        lockHacker(patroller)
     }
 
     private fun lockHacker(patroller: TracingPatroller) {
@@ -179,20 +156,6 @@ class TracingPatrollerService(
 
         val action = ActionPatrollerMove(patroller.id, segment.fromNodeId, segment.toNodeId, PATROLLER_MOVE_TICKS)
         stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_MOVE, action)
-    }
-
-    private fun messageSnapBack(state: HackerStateRunning) {
-        class ActionSnapBack(val hackerId: String, val ticks: Ticks)
-
-        val action = ActionSnapBack(state.userId, SNAPBACK_TICKS)
-        stompService.toRun(state.runId, ReduxActions.SERVER_PATROLLER_SNAPS_BACK_HACKER, action)
-    }
-
-    private fun messageHooked(patroller: TracingPatroller) {
-        class PatrollerHooksHackerAction(val hackerId: String)
-
-        val action = PatrollerHooksHackerAction(patroller.targetUserId)
-        stompService.toUser(patroller.targetUserId, ReduxActions.SERVER_PATROLLER_HOOKS_HACKER, action)
     }
 
     private fun messageRemovePatroller(patrollerId: String, runId: String) {

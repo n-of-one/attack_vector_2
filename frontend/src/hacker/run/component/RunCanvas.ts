@@ -17,7 +17,7 @@ import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDispla
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
 import {
     ActionPatrollerCatchesHacker,
-    ActionPatrollerMove, ActionSnapBack,
+    ActionPatrollerMove,
     HackerProbeConnectionsAction,
     HackerProbeLayersAction,
     MoveArriveAction,
@@ -28,17 +28,13 @@ import {
 } from "../../server/RunServerActionProcessor";
 
 
-
-
 export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.
 let probeDisplayIdSequence = 0
 
 
-
-
-/// This class renders the scan map on the JFabric Canvas
+/// This class renders the sit map on the JFabric Canvas
 class RunCanvas {
     nodeDataById: { [key: string]: NodeI } = {}
     connectionDataById: { [key: string]: Connection } = {}
@@ -391,14 +387,6 @@ class RunCanvas {
     activateTracingPatroller(patrollerData: PatrollerData) {
         const patrollerDisplay = new TracingPatrollerDisplay(patrollerData, this.canvas, this.dispatch, this.nodeDisplays, this.hackerDisplays)
         this.patrollerDisplays.add(patrollerData.patrollerId!, patrollerDisplay)
-    }
-
-    patrollerHooksHacker(hackerId: string) {
-        this.hackerDisplays.get(hackerId).hookByPatroller()
-    }
-
-    patrollerSnacksBackHacker({hackerId, ticks}: ActionSnapBack) {
-        this.hackerDisplays.get(hackerId).snapBack(ticks)
     }
 
     patrollerLocksHacker({patrollerId, hackerId}: ActionPatrollerCatchesHacker) {

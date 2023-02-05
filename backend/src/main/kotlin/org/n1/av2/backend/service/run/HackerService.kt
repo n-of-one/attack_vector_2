@@ -28,8 +28,14 @@ class HackerService(
     fun toPresence(state: HackerState): HackerPresence {
         val user = userService.getById(state.userId)
 
-        return HackerPresence(user.id, user.name, user.icon, state.currentNodeId, state.targetNodeId, state.runActivity, state.locked)
-
+        return HackerPresence(
+            userId = user.id,
+            userName = user.name,
+            icon = user.icon,
+            nodeId = state.currentNodeId,
+            targetNodeId = state.currentNodeId,
+            activity = state.runActivity,
+            locked = state.locked)
     }
 
 }

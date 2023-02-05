@@ -1,6 +1,7 @@
 import {AnyAction} from "redux"
 import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes"
 import {SERVER_ERROR} from "../../hacker/server/GenericServerActionProcessor"
+import {SERVER_HACKER_MOVE_START} from "../../hacker/run/model/HackActions";
 
 const LINE_LIMIT = 100
 
@@ -80,7 +81,6 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
         if (action.type === TERMINAL_TICK) {
             return processTick(processTick(processTick(processTick(terminal))))
         }
-
 
         // terminalId from server actions is in data part
         const terminalIdFromAction = (action.terminalId) ? action.terminalId : action.data?.terminalId
