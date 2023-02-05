@@ -22,9 +22,10 @@ import org.springframework.stereotype.Service
 private val STATUSES_NEEDING_PROBE_LAYERS = listOf(NodeScanStatus.DISCOVERED, NodeScanStatus.TYPE, NodeScanStatus.CONNECTIONS)
 
 
-private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 16)
+private val MOVE_START_TICKS = Ticks("main" to 30)
+private val MOVE_ARRIVE_TICKS = Ticks("main" to 8)
 
-class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_START_TICKS) : TicksGameEvent(ticks)
+class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_ARRIVE_TICKS) : TicksGameEvent(ticks)
 
 private val PROBE_LAYERS_TICKS = Ticks("start" to 50, "end" to 50)
 
@@ -51,33 +52,43 @@ class CommandMoveService(
             return
         }
         val networkId = tokens[1]
-
         val toNode = nodeService.findByNetworkId(state.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
+        if (checkMovePrerequisites(toNode, state, networkId, runId)) {
+            handleMove(runId, toNode, state)
+        }
+    }
+
+    private fun checkMovePrerequisites(toNode: Node, state: HackerStateRunning, networkId: String, runId: String): Boolean {
         if (toNode.id == state.currentNodeId) return reportAtTargetNode(networkId)
 
-        if (state.previousNodeId == toNode.id) return handleMove(runId, toNode, state) /// can always go back to previous node, regardless of ice
+        if (state.previousNodeId == toNode.id) return true /// can always go back to previous node, regardless of ice
 
         val scan = scanService.getByRunId(runId)
-        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
-        connectionService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
+        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED) {
+            reportNodeNotFound(networkId)
+            return false
+        }
 
+        connectionService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
         val fromNode = nodeService.getById(state.currentNodeId)
         if (hasActiveIce(fromNode, runId)) return reportProtected()
 
-        handleMove(runId, toNode, state)
+        return true
     }
 
-    private fun reportAtTargetNode(networkId: String) {
+    private fun reportAtTargetNode(networkId: String): Boolean {
         stompService.terminalReceiveCurrentUser("[error]error[/] already at [ok]${networkId}[/].")
+        return false
     }
 
     fun reportNodeNotFound(networkId: String) {
         stompService.terminalReceiveCurrentUser("[error]error[/] node [ok]${networkId}[/] not found.")
     }
 
-    fun reportNoPath(networkId: String) {
+    fun reportNoPath(networkId: String): Boolean {
         stompService.terminalReceiveCurrentUser("[error]error[/] no path from current node to [ok]${networkId}[/].")
+        return false
     }
 
     private fun hasActiveIce(node: Node, runId: String): Boolean {
@@ -89,14 +100,13 @@ class CommandMoveService(
         return (nodeStatus == null || !nodeStatus.hacked)
     }
 
-    private fun reportProtected() {
+    private fun reportProtected(): Boolean {
         stompService.terminalReceiveCurrentUser("[warn b]blocked[/] ICE in current node is blocking your move.")
+        return false
     }
 
 
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
-        hackerStateService.saveInTransit(state, toNode.id)
-
         class StartMove(val userId: String, val nodeId: String, val ticks: Ticks)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_TICKS))
 
@@ -110,25 +120,24 @@ class CommandMoveService(
         val nodeId = event.nodeId
 
         val state = hackerStateService.retrieve(userId).toRunState()
-        if (state.hookPatrollerId != null) {
-            tracingPatrollerService.snapBack(state, event)
-            return
-        }
+//        if (state.hookPatrollerId != null) {
+//            tracingPatrollerService.snapBack(state, event)
+//            return
+//        }
 
         val scan = scanService.getByRunId(runId)
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
-
-        if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
-            val probeEvent = ArriveProbeLayersGameEvent(nodeId, userId, runId)
-            taskRunner.queueInTicks(PROBE_LAYERS_TICKS.total) { probedLayers(probeEvent) }
-
-            class ProbeLayers(val userId: String, ticks: Ticks)
-            val data = ProbeLayers(userId, PROBE_LAYERS_TICKS)
-            stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
-        } else {
-            arriveComplete(state, nodeId, userId, runId)
-        }
+//        if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
+//            val probeEvent = ArriveProbeLayersGameEvent(nodeId, userId, runId)
+//            taskRunner.queueInTicks(PROBE_LAYERS_TICKS.total) { probedLayers(probeEvent) }
+//
+//            class ProbeLayers(val userId: String, ticks: Ticks)
+//            val data = ProbeLayers(userId, PROBE_LAYERS_TICKS)
+//            stompService.toRun(runId, ReduxActions.SERVER_HACKER_PROBE_LAYERS, data)
+//        } else {
+        arriveComplete(state, nodeId, userId, runId)
+//        }
     }
 
 
@@ -158,9 +167,9 @@ class CommandMoveService(
         hackerStateService.arriveAt(state, nodeId)
         triggerLayersAtArrive(nodeId, userId, runId)
 
-        class MoveArrive(val nodeId: String, val userId: String)
+        class MoveArriveMessage(val nodeId: String, val userId: String, val ticks: Ticks)
 
-        val data = MoveArrive(nodeId, userId)
+        val data = MoveArriveMessage(nodeId, userId, MOVE_ARRIVE_TICKS)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
     }
 

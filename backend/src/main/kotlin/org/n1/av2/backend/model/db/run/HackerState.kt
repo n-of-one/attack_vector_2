@@ -14,7 +14,7 @@ enum class RunActivity {
     SCANNING,   // hacker has not yet started the attack
     STARTING,   // hacker is starting the attack (moving to the start node)
     AT_NODE,    // hacker is at rest at a node
-    MOVING,     // hacker is moving to another node
+    MOVING,  // TODO Remove
 }
 
 @Document

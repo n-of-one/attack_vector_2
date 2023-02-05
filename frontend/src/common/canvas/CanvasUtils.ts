@@ -1,6 +1,7 @@
 import {fabric} from "fabric"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
 import {Display} from "./display/Display"
+import {TICK_MILLIS} from "../Schedule";
 
 
 export const animate = (canvas: Canvas, toAnimate: fabric.Object, attribute: string | null, value: any, duration: number, easing: IUtilAminEaseFunction | null = null) => {
@@ -9,14 +10,14 @@ export const animate = (canvas: Canvas, toAnimate: fabric.Object, attribute: str
     if (attribute) {
         toAnimate.animate(attribute, value, {
             onChange: canvas.renderAll.bind(canvas),
-            duration: duration * 50 - 25,
+            duration: (duration * TICK_MILLIS) - 25,
             easing: easingFunction
         })
     }
     else {
         toAnimate.animate(value, {
             onChange: canvas.renderAll.bind(canvas),
-            duration: duration * 50 - 25,
+            duration: (duration * TICK_MILLIS) - 25,
             easing: easingFunction
         })
     }

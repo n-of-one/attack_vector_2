@@ -354,9 +354,9 @@ class RunCanvas {
         this.hackerDisplays.get(userId).moveStart(nodeDisplay, ticks)
     }
 
-    moveArrive({userId, nodeId}: MoveArriveAction) {
+    moveArrive({userId, nodeId, ticks}: MoveArriveAction) {
         const nodeDisplay = this.nodeDisplays.get(nodeId)
-        this.hackerDisplays.get(userId).moveArrive(nodeDisplay)
+        this.hackerDisplays.get(userId).moveArrive(nodeDisplay, ticks)
     }
 
     hackerProbeLayersSaga({userId, ticks}: HackerProbeLayersAction) {

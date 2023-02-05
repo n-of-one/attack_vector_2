@@ -72,7 +72,8 @@ export interface MoveStartAction {
 
 export interface MoveArriveAction {
     nodeId: string,
-    userId: string
+    userId: string,
+    ticks: Ticks
 }
 
 export interface HackerProbeLayersAction {

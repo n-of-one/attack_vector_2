@@ -99,11 +99,6 @@ class HackerStateService(
         return newState.toRunState()
     }
 
-    fun saveInTransit(runState: HackerStateRunning, toNodeId: String) {
-        val newPosition = runState.toState().copy(runActivity = RunActivity.MOVING, targetNodeId = toNodeId)
-        hackerStateRepo.save(newPosition)
-    }
-
     fun arriveAt(position: HackerStateRunning, nodeId: String) {
         val newPosition = position.toState().copy(runActivity = RunActivity.AT_NODE,
                 currentNodeId = nodeId, previousNodeId = position.currentNodeId, targetNodeId = null)
