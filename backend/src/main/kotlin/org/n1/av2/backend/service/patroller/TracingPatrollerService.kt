@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.patroller
 
+import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
-import org.n1.av2.backend.engine.TimedEventQueue
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.db.run.HackerStateRunning
 import org.n1.av2.backend.model.db.run.PatrollerPathSegment
@@ -26,7 +26,7 @@ val PATROLLER_MOVE_TICKS = Ticks("move" to 15)
 val SNAPBACK_TICKS = Ticks("snapBack" to 8, "arrive" to 4)
 
 class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String, ticks: Ticks) : TicksGameEvent(ticks)
-class TracingPatrollerSnappedBackHackerGameEvent(val patrollerId: String, ticks: Ticks = SNAPBACK_TICKS) : TicksGameEvent(ticks)
+class TracingPatrollerSnappedBackHackerGameEvent(val patrollerId: String)
 
 
 class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: List<PatrollerPathSegment>, val ticks: Ticks = PATROLLER_ARRIVE_FIRST_TICKS)
@@ -35,7 +35,7 @@ class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: Lis
 @Service
 class TracingPatrollerService(
         val hackerStateService: HackerStateService,
-        val timedEventQueue: TimedEventQueue,
+        val taskRunner: TaskRunner,
         val tracingPatrollerRepo: TracingPatrollerRepo,
         val traverseNodeService: TraverseNodeService,
         val time: TimeService,
@@ -74,7 +74,7 @@ class TracingPatrollerService(
         messageStartPatroller(patroller, nodeId, runId)
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_TICKS)
-        queueEvent(patroller, next)
+        taskRunner.queueInTicks(PATROLLER_ARRIVE_FIRST_TICKS.total) { patrollerArrives(next) }
     }
 
     fun patrollerArrives(event: TracingPatrollerArrivesGameEvent) {
@@ -105,20 +105,15 @@ class TracingPatrollerService(
         messagePatrollerMove(patroller, segment, runId)
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nextNodeToTarget.id, PATROLLER_MOVE_TICKS)
-        queueEvent(patroller, next)
+        taskRunner.queueInTicks(PATROLLER_MOVE_TICKS.total) { patrollerArrives(next) }
     }
-
-    private fun queueEvent(patroller: TracingPatroller, event: TracingPatrollerArrivesGameEvent) {
-        timedEventQueue.queueInTicks(patroller.id, event)
-    }
-
 
     fun snapBack(state: HackerStateRunning, event: MoveArriveGameEvent) {
         hackerStateService.snapBack(state)
         messageSnapBack(state)
 
         val nextEvent = TracingPatrollerSnappedBackHackerGameEvent(state.hookPatrollerId!!)
-        timedEventQueue.queueInTicks(state.userId, nextEvent)
+        taskRunner.queueInTicks(SNAPBACK_TICKS.total) { processLockHacker(nextEvent) }
     }
 
 
@@ -156,7 +151,9 @@ class TracingPatrollerService(
 
     private fun remove(patroller: TracingPatroller) {
         tracingPatrollerRepo.delete(patroller)
-        timedEventQueue.removeAllFor(patroller.id)
+
+//      TODO: re-implement, rethink
+//        timedEventQueue.removeAllFor(patroller.id)
         messageRemovePatroller(patroller.id, patroller.runId)
     }
 

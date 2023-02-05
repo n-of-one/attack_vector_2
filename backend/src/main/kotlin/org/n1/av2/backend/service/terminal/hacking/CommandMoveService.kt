@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.terminal.hacking
 
+import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
-import org.n1.av2.backend.engine.TimedEventQueue
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.db.run.HackerStateRunning
@@ -23,24 +23,27 @@ private val STATUSES_NEEDING_PROBE_LAYERS = listOf(NodeScanStatus.DISCOVERED, No
 
 
 private val MOVE_START_TICKS = Ticks("start" to 4, "main" to 16)
-class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_START_TICKS): TicksGameEvent(ticks)
+
+class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_START_TICKS) : TicksGameEvent(ticks)
 
 private val PROBE_LAYERS_TICKS = Ticks("start" to 50, "end" to 50)
-class ArriveProbeLayersGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks): TicksGameEvent(ticks)
+
+class ArriveProbeLayersGameEvent(val nodeId: String, val userId: String, val runId: String)
 
 
 @Service
 class CommandMoveService(
-        private val nodeService: NodeService,
-        private val connectionService: ConnectionService,
-        private val hackerStateService: HackerStateService,
-        private val scanService: ScanService,
-        private val nodeStatusRepo: NodeStatusRepo,
-        private val timedEventQueue: TimedEventQueue,
-        private val timerTriggerLayerService: TimerTriggerLayerService,
-        private val probeService: ScanProbeService,
-        private val tracingPatrollerService: TracingPatrollerService,
-        private val stompService: StompService) {
+    private val nodeService: NodeService,
+    private val connectionService: ConnectionService,
+    private val hackerStateService: HackerStateService,
+    private val scanService: ScanService,
+    private val nodeStatusRepo: NodeStatusRepo,
+    private val timerTriggerLayerService: TimerTriggerLayerService,
+    private val probeService: ScanProbeService,
+    private val tracingPatrollerService: TracingPatrollerService,
+    private val taskRunner: TaskRunner,
+    private val stompService: StompService
+) {
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
@@ -53,14 +56,14 @@ class CommandMoveService(
 
         if (toNode.id == state.currentNodeId) return reportAtTargetNode(networkId)
 
-        if (state.previousNodeId == toNode.id) return handleMove(runId, toNode, state)
+        if (state.previousNodeId == toNode.id) return handleMove(runId, toNode, state) /// can always go back to previous node, regardless of ice
+
         val scan = scanService.getByRunId(runId)
         if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED) return reportNodeNotFound(networkId)
         connectionService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         val fromNode = nodeService.getById(state.currentNodeId)
         if (hasActiveIce(fromNode, runId)) return reportProtected()
-
 
         handleMove(runId, toNode, state)
     }
@@ -78,7 +81,7 @@ class CommandMoveService(
     }
 
     private fun hasActiveIce(node: Node, runId: String): Boolean {
-        if (node.layers.none{it.type.ice}) {
+        if (node.layers.none { it.type.ice }) {
             return false
         }
 
@@ -98,7 +101,7 @@ class CommandMoveService(
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_TICKS))
 
         val moveArriveEvent = MoveArriveGameEvent(toNode.id, state.userId, runId)
-        timedEventQueue.queueInTicks(state.userId, moveArriveEvent)
+        taskRunner.queueInTicks(MOVE_START_TICKS.total) { moveArrive(moveArriveEvent) }
     }
 
     fun moveArrive(event: MoveArriveGameEvent) {
@@ -117,8 +120,8 @@ class CommandMoveService(
 
 
         if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
-            val probeEvent = ArriveProbeLayersGameEvent(nodeId, userId, runId, PROBE_LAYERS_TICKS)
-            timedEventQueue.queueInTicks(userId, probeEvent)
+            val probeEvent = ArriveProbeLayersGameEvent(nodeId, userId, runId)
+            taskRunner.queueInTicks(PROBE_LAYERS_TICKS.total) { probedLayers(probeEvent) }
 
             class ProbeLayers(val userId: String, ticks: Ticks)
             val data = ProbeLayers(userId, PROBE_LAYERS_TICKS)
@@ -156,6 +159,7 @@ class CommandMoveService(
         triggerLayersAtArrive(nodeId, userId, runId)
 
         class MoveArrive(val nodeId: String, val userId: String)
+
         val data = MoveArrive(nodeId, userId)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
     }
@@ -166,7 +170,7 @@ class CommandMoveService(
         node.layers.forEach { layer ->
             when (layer) {
                 is TimerTriggerLayer -> timerTriggerLayerService.hackerTriggers(layer, nodeId, userId, runId)
-                else -> { } // do nothing
+                else -> {} // do nothing
             }
         }
     }

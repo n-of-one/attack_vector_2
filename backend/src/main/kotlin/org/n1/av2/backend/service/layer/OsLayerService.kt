@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.layer
 
+import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
-import org.n1.av2.backend.engine.TimedEventQueue
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.run.HackerStateRunning
@@ -24,13 +24,13 @@ class HackedOsGameEvent(val layerId: String, val nodeId: String, val userId: Str
 
 @org.springframework.stereotype.Service
 class OsLayerService(
-        private val scanService: ScanService,
-        private val hackedUtil: HackedUtil,
-        private val nodeService: NodeService,
-        private val probeService: ScanProbeService,
-        private val currentUser: CurrentUserService,
-        private val timedEventQueue: TimedEventQueue,
-        private val stompService: StompService) {
+    private val scanService: ScanService,
+    private val hackedUtil: HackedUtil,
+    private val nodeService: NodeService,
+    private val probeService: ScanProbeService,
+    private val currentUser: CurrentUserService,
+    private val taskRunner: TaskRunner,
+    private val stompService: StompService) {
 
 
     fun hack(layer: Layer, node: Node, state: HackerStateRunning) {
@@ -43,7 +43,7 @@ class OsLayerService(
             stompService.toRun(state.runId, ReduxActions.SERVER_HACKER_PROBE_CONNECTIONS, data)
 
             val event = HackedOsGameEvent(layer.id, node.id, currentUser.userId, state.runId)
-            timedEventQueue.queueInTicks(currentUser.userId, event)
+            taskRunner.queueInTicks(SCAN_CONNECTIONS_TICKS.total) { probedConnections(event)}
         }
         else {
             stompService.terminalReceiveCurrentUser("Hacking ${layer.name} reveals nothing new.")

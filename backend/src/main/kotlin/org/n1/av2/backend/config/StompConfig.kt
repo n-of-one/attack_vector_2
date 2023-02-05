@@ -1,7 +1,7 @@
 package org.n1.av2.backend.config
 
 import mu.KLogging
-import org.n1.av2.backend.engine.SerializingExecutor
+import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.StompConnectionEventService
 import org.n1.av2.backend.service.user.UserConnectionService
@@ -83,13 +83,13 @@ class StompConfig(
 
 @Configuration
 class ConfigureStompServiceAndHackerActivityService(
-        val executor: SerializingExecutor,
+        val taskRunner: TaskRunner,
         val userConnectionService: UserConnectionService,
         val stompConnectionEventService: StompConnectionEventService) {
 
     @PostConstruct
     fun postConstruct() {
-        stompConnectionEventService.executor = executor
+        stompConnectionEventService.taskRunner = taskRunner
         stompConnectionEventService.userConnectionService = userConnectionService
     }
 

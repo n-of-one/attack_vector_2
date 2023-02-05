@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.layer
 
 import org.n1.av2.backend.engine.GameEvent
-import org.n1.av2.backend.engine.TimedEventQueue
+import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
@@ -16,10 +16,10 @@ class TimerActivatesGameEvent(val runId: String, val nodeId: String, val userId:
 
 @Service
 class TimerTriggerLayerService(
-        val timedEventQueue: TimedEventQueue,
-        val time: TimeService,
-        val stompService: StompService,
-        val tracingPatrollerService: TracingPatrollerService) {
+    val taskRunner: TaskRunner,
+    val time: TimeService,
+    val stompService: StompService,
+    val tracingPatrollerService: TracingPatrollerService) {
 
 
     fun hack(layer: TimerTriggerLayer) {
@@ -43,7 +43,7 @@ class TimerTriggerLayerService(
         stompService.toRun(runId, ReduxActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
 
         val event = TimerActivatesGameEvent(runId, nodeId, userId)
-        timedEventQueue.queueInMinutesAndSeconds(userId, layer.minutes, layer.seconds, event)
+        taskRunner.queueInMinutesAndSeconds(layer.minutes, layer.seconds) { timerActivates(event) }
     }
 
     private fun detectTime(layer: TimerTriggerLayer): String {

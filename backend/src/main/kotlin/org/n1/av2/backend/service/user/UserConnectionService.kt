@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.user
 
 import mu.KLogging
-import org.n1.av2.backend.engine.TimedEventQueue
+import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.model.db.run.HackerGeneralActivity
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -19,8 +19,8 @@ import java.time.ZonedDateTime
 class UserConnectionService(
         private val hackerStateService: HackerStateService,
         private val currentUserService: CurrentUserService,
+        private val timedTaskRunner: TimedTaskRunner,
         private val tracingPatrollerService: TracingPatrollerService,
-        private val timedEventQueue: TimedEventQueue,
         private val stompService: StompService) {
 
     companion object: KLogging()
@@ -51,7 +51,7 @@ class UserConnectionService(
             notifyLeaveRun(state.userId, state.runId)
         }
 
-        timedEventQueue.removeAllFor(state.userId)
+        timedTaskRunner.removeAllFor(state.userId)
         tracingPatrollerService.disconnected(state.userId)
 
         hackerStateService.goOffline(state)

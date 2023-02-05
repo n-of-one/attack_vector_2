@@ -2,9 +2,9 @@ package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.model.db.site.SiteData
 import org.n1.av2.backend.model.ui.EditSiteData
+import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.repo.SiteDataRepo
-import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service

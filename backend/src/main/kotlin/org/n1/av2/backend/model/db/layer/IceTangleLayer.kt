@@ -3,8 +3,6 @@ package org.n1.av2.backend.model.db.layer
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.db.site.enums.IceStrength
 import org.n1.av2.backend.model.db.site.enums.LayerType
-import org.n1.av2.backend.model.ui.ValidationException
-import javax.security.sasl.Sasl.STRENGTH
 
 class IceTangleLayer(
         id: String,

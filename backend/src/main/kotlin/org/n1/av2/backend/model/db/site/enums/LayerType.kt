@@ -1,7 +1,5 @@
 package org.n1.av2.backend.model.db.site.enums
 
-import org.apache.tomcat.jni.OS
-
 enum class LayerType(
         val ice: Boolean = false
 ) {

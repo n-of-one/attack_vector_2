@@ -1,7 +1,6 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.site.Layout
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.site.*
 

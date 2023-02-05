@@ -31,6 +31,7 @@
     </root>
 
     <logger name="org.n1" level="DEBUG" />
+    <logger name="org.n1.av2.backend.service.CurrentUserService" level="TRACE" />
     <logger name="org.springframework" level="INFO" />
     <logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
 

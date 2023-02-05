@@ -22,7 +22,7 @@ export const MenuItem = (props: Props) => {
     let roles = (rolesValue) ? rolesValue.split("|") : []
 
     const currentPage =  useSelector( (state: HackerState) => state.currentPage )
-    const runId =  useSelector( (state: HackerState) => state.run.scan.runId )
+    const runId: string | null =  useSelector( (state: HackerState) => state.run?.scan?.runId )
 
     const navigateTo = (event: any, targetPage: string) => {
         event.preventDefault();

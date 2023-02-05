@@ -8,7 +8,6 @@ import org.n1.av2.backend.repo.NodeRepo
 import org.n1.av2.backend.service.ThemeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.createLayerId
-import java.util.*
 
 const val NODE_MIN_X = 35
 const val NODE_MAX_X = 607 - 35

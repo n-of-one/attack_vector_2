@@ -2,11 +2,7 @@ package org.n1.av2.backend.web.rest
 
 import org.n1.av2.backend.service.EditorService
 import org.n1.av2.backend.service.site.SiteDataService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/site/")
