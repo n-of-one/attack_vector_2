@@ -1,6 +1,6 @@
 import java.util.*
 
-fun main(args: Array<String>) {
+fun main() {
 
     val uuidPart = UUID.randomUUID().toString().substring(9, 18)
 

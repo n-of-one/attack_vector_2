@@ -1,10 +1,11 @@
 package org.n1.av2.backend.config.security
 
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 
@@ -13,14 +14,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter)
-    : WebSecurityConfigurerAdapter() {
+class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 
 
-
-
+    @Bean
     @Throws(Exception::class)
-    override fun configure(http: HttpSecurity) {
+    fun configure(http: HttpSecurity): SecurityFilterChain {
         http
 //                .exceptionHandling()
 //                .authenticationEntryPoint(unauthorizedHandler)
@@ -55,6 +54,8 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter)
                 .disable()
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+
+        return http.build()
     }
 
 //    @Throws(Exception::class)

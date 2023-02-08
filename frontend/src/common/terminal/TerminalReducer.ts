@@ -1,7 +1,6 @@
 import {AnyAction} from "redux"
 import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes"
 import {SERVER_ERROR} from "../../hacker/server/GenericServerActionProcessor"
-import {SERVER_HACKER_MOVE_START} from "../../hacker/run/model/HackActions";
 
 const LINE_LIMIT = 100
 
