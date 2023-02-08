@@ -1,8 +1,9 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {delay} from "../Util";
 import {Dispatch, Store} from "redux";
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK} from "./TerminalReducer";
+import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TerminalState} from "./TerminalReducer";
 import {TICK_MILLIS} from "../Schedule";
+import {HackerState} from "../../hacker/HackerRootReducer";
 
 class TerminalManager {
 
@@ -48,12 +49,27 @@ class TerminalManager {
         const terminalId = this.store.getState().activeTerminalId;
 
         if (keyCode === ENTER_KEY) {
+            const terminalState = this.terminalStateById(terminalId)
+            if (terminalState.readOnly) return
+
             const submit = this.terminalSubmit[terminalId]
             if (submit) { submit() }
         } else {
             this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId});
         }
     }
+
+    terminalStateById(terminalId: string): TerminalState {
+        const state:HackerState = this.store.getState()
+
+        switch (terminalId) {
+            case "main" : return state.terminal
+            case "iceInput": return state.run.ice.inputTerminal
+            case "iceDisplay": return state.run.ice.displayTerminal
+        }
+        throw new Error("Unknown terminalId: " + terminalId)
+    }
+
 
     registerTerminalSubmit(terminalId: string, submit: () => void) {
         this.terminalSubmit[terminalId] = submit
