@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service.layer.ice.password
 
-import mu.KLogging
 import org.n1.av2.backend.model.db.layer.IceTangleLayer
 import org.n1.av2.backend.model.db.layer.Layer
 import org.n1.av2.backend.model.db.run.IceTangleStatus
@@ -38,7 +37,7 @@ class IceTangleService(
             val lines: List<TangleLine>
     )
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     fun hack(layer: IceTangleLayer, runId: String) {
         val tangleStatus = getOrCreateStatus(layer, runId)
@@ -109,7 +108,7 @@ class IceTangleService(
 
         val segments = toSegments(tangleStatus)
 
-        var solved: Boolean? = null
+        var solved: Boolean?
         val nanos = measureNanoTime {
             solved = tangleSolvedInternal(segments)
         }

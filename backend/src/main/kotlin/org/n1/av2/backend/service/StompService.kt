@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service
 
-import mu.KLogging
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ReduxEvent
@@ -13,7 +12,7 @@ class StompService(
         val stompTemplate: SimpMessageSendingOperations,
         val currentUserService: CurrentUserService) {
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     @Value("\${ENVIRONMENT ?: default}")
     lateinit var environment: String

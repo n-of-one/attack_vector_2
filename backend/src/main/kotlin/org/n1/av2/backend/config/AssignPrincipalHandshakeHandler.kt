@@ -19,8 +19,8 @@ class AssignPrincipalHandshakeHandler(
         private val stompConnectionEventService: StompConnectionEventService
 ) : DefaultHandshakeHandler() {
 
-    override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler?,
-                               attributes: Map<String, Any>?): Principal {
+    override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler,
+                               attributes: Map<String, Any>): Principal {
 
         val principal = SecurityContextHolder.getContext().authentication as? UserPrincipal ?: throw RuntimeException("Login please")
 

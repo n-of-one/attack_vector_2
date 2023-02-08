@@ -1,5 +1,7 @@
 package org.n1.av2.backend.web.rest
 
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.config.security.JwtTokenProvider
 import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.service.user.UserService
@@ -8,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.servlet.http.Cookie
-import javax.servlet.http.HttpServletResponse
 
 
 @RestController
@@ -59,7 +59,7 @@ class LoginController(
     fun addCookie(name: String, value: String, response: HttpServletResponse) {
         val cookie = Cookie(name, value)
         cookie.path = "/"
-        cookie.maxAge = jwtTokenProvider.jwtEpirationInS
+        cookie.maxAge = jwtTokenProvider.jwtExpirationInS
         response.addCookie(cookie)
     }
 }

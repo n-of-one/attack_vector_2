@@ -3,9 +3,7 @@ package org.n1.av2.backend.service.patroller
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.model.Ticks
-import org.n1.av2.backend.model.db.run.HackerStateRunning
 import org.n1.av2.backend.model.db.run.PatrollerPathSegment
-import org.n1.av2.backend.model.db.run.RunActivity
 import org.n1.av2.backend.model.db.run.TracingPatroller
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.repo.TracingPatrollerRepo
@@ -14,7 +12,6 @@ import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.scan.TraverseNode
 import org.n1.av2.backend.service.scan.TraverseNodeService
-import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct

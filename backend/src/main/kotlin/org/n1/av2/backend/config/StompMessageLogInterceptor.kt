@@ -1,7 +1,6 @@
 package org.n1.av2.backend.config
 
 import mu.KLogger
-import mu.KLogging
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.stomp.StompCommand
@@ -11,7 +10,8 @@ import java.security.Principal
 
 
 class MessageIn : ChannelInterceptor {
-    companion object : KLogging()
+
+    private val logger = mu.KotlinLogging.logger {}
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*> {
         if (message.headers["stompCommand"] == null) {
@@ -27,10 +27,11 @@ class MessageIn : ChannelInterceptor {
 }
 
 class MessageOut : ChannelInterceptor {
-    companion object : KLogging()
+
+    private val logger = mu.KotlinLogging.logger {}
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*>? {
-        log(MessageIn.logger, message, "->")
+        log(logger, message, "->")
         return super.preSend(message, channel)
     }
 

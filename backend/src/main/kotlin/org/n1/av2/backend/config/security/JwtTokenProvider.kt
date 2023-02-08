@@ -1,24 +1,29 @@
 package org.n1.av2.backend.config.security
 
-import io.jsonwebtoken.*
-import mu.KLogging
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.security.Keys
 import org.n1.av2.backend.model.db.user.User
 import org.springframework.stereotype.Component
+import java.security.Key
 import java.security.SignatureException
 import java.util.*
+
 
 @Component
 class JwtTokenProvider {
 
+    private val logger = mu.KotlinLogging.logger {}
+
     private val jwtSecret: String = "SuperSecretKeyForHS512NeedsToBeLongEnoughToContainAtLeast512BitsOfEntropySoThisShouldDoIt"
+    private val key: Key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+    private val JwtParser = Jwts.parserBuilder().setSigningKey(key).build()
 
 
-    val jwtEpirationInS: Int = 60 * 60 * 5 // 5 hours
-    private val jwtExpirationInMs: Int = 1000 * jwtEpirationInS
-
-
-
-    companion object : KLogging()
+    val jwtExpirationInS: Int = 60 * 60 * 5 // 5 hours
+    private val jwtExpirationInMs: Int = 1000 * jwtExpirationInS
 
     fun generateJwt(user: User): String {
 
@@ -26,26 +31,25 @@ class JwtTokenProvider {
         val now = Date()
         val expiryDate = Date(now.time + jwtExpirationInMs)
 
+
         return Jwts.builder()
                 .setSubject(user.name)
                 .setIssuedAt(Date())
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(key)
                 .compact()
     }
 
     fun getUserNameFromJWT(token: String): String {
-        val claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        val claims = JwtParser
                 .parseClaimsJws(token)
                 .body
-
         return claims.subject
     }
 
     fun validateToken(authToken: String): Boolean {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken)
+            JwtParser. parseClaimsJws(authToken)
             return true
         } catch (ex: SignatureException) {
             logger.error("Invalid JWT signature")

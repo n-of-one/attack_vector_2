@@ -21,7 +21,7 @@ class HackTerminalService(
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.trim().split(" ")
-        val commandAction = tokens[0].toLowerCase()
+        val commandAction = tokens[0].lowercase()
 
 
         when (commandAction) {

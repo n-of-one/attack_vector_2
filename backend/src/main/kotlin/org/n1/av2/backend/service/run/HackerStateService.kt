@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service.run
 
-import mu.KLogging
 import org.n1.av2.backend.engine.SYSTEM_USER_ID
 import org.n1.av2.backend.model.db.run.HackerGeneralActivity
 import org.n1.av2.backend.model.db.run.HackerState
@@ -26,7 +25,7 @@ class HackerStateService(
         private val scanService: ScanService
 ) {
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     @PostConstruct
     fun init() {

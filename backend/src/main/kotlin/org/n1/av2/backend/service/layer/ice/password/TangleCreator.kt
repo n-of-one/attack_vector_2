@@ -138,10 +138,10 @@ class TangleCreator {
      * For debugging: layout the points as the original construction lines.
      */
     private fun layoutOriginalConstruction(idPoints: List<IdTPoint>): List<TanglePoint> {
-        val minX = idPoints.minBy { it.x }!!.x
-        val maxX = idPoints.maxBy { it.x }!!.x
-        val minY = idPoints.minBy { it.y }!!.y
-        val maxY = idPoints.maxBy { it.y }!!.y
+        val minX = idPoints.minBy { it.x }.x
+        val maxX = idPoints.maxBy { it.x }.x
+        val minY = idPoints.minBy { it.y }.y
+        val maxY = idPoints.maxBy { it.y }.y
         val xSize = maxX - minX
         val ySize = maxY - minY
 

@@ -27,15 +27,14 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-                .authorizeRequests()
-                .antMatchers("/**/*.{js,html,css,png,jpg,ico}").permitAll()
-                .antMatchers("/", "/health",
+                .authorizeHttpRequests()
+                .requestMatchers("/", "/health",
                         "/edit/**", "/api/**",
                         "/about", "/error", "/loginSubmit",
                         "/notChrome", "/login/*", "/manual/**", "/keepAlive", "/signUp").permitAll()
-                .antMatchers("/attack_vector_websocket").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
-                .antMatchers("/hacker/**").permitAll()
-                .antMatchers("/gm/**").permitAll()
+                .requestMatchers("/attack_vector_websocket").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
+                .requestMatchers("/hacker/**").permitAll()
+                .requestMatchers("/gm/**").permitAll()
 //
             .and()
                 .formLogin()

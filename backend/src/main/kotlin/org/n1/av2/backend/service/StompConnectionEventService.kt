@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service
 
-import mu.KLogging
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.UserConnectionService
@@ -12,7 +11,7 @@ class StompConnectionEventService {
     lateinit var taskRunner: TaskRunner
     lateinit var userConnectionService: UserConnectionService
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     /** Returns validity of connection. False means this is a duplicate connection */
     fun connect(userPrincipal: UserPrincipal): Boolean {

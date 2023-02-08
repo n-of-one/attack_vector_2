@@ -44,7 +44,7 @@ fun process(file: File) {
         file.renameTo(newFile)
     }
     else {
-        val newFile = File(file.parentFile, file.name.toLowerCase())
+        val newFile = File(file.parentFile, file.name.lowercase())
         println("renaming ${file} to ${newFile}")
         file.renameTo(newFile)
     }

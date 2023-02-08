@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service.user
 
-import mu.KLogging
 import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.model.db.run.HackerGeneralActivity
 import org.n1.av2.backend.model.iam.UserPrincipal
@@ -23,7 +22,7 @@ class UserConnectionService(
         private val tracingPatrollerService: TracingPatrollerService,
         private val stompService: StompService) {
 
-    companion object: KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     /** Returns validity of connection. False means this is a duplicate connection */
     fun connect(userPrincipal: UserPrincipal): Boolean {

@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service.run
 
-import mu.KLogging
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -35,7 +34,7 @@ class HackingService(
     private val commandMoveService: CommandMoveService,
     private val stompService: StompService) {
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
 
 

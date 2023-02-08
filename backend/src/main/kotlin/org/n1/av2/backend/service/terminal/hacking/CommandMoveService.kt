@@ -124,8 +124,8 @@ class CommandMoveService(
 
         if (state.locked) { return }
 
-        val scan = scanService.getByRunId(runId)
-        val nodeStatus = scan.nodeScanById[nodeId]!!.status
+//        val scan = scanService.getByRunId(runId)
+//        val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
 //        if (STATUSES_NEEDING_PROBE_LAYERS.contains(nodeStatus)) {
 //            val probeEvent = ArriveProbeLayersGameEvent(nodeId, userId, runId)

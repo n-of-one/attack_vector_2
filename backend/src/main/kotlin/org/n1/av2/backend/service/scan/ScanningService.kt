@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service.scan
 
-import mu.KLogging
 import org.n1.av2.backend.model.db.run.NodeScan
 import org.n1.av2.backend.model.db.run.NodeScanStatus
 import org.n1.av2.backend.model.db.run.Scan
@@ -45,7 +44,7 @@ class ScanningService(private val scanService: ScanService,
                       private val nodeStatusRepo: NodeStatusRepo
 ) {
 
-    companion object: KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     lateinit var scanTerminalService: ScanTerminalService
 

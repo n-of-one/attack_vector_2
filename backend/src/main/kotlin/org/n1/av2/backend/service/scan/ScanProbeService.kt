@@ -67,7 +67,7 @@ class ScanProbeService(
         val distanceSortedNodes = traverseNodes.sortedBy { it.distance }
         return distanceSortedNodes.minBy {
             scan.nodeScanById[it.id]!!.status.level
-        }!!
+        }
     }
 
     //---//

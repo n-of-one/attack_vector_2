@@ -1,6 +1,5 @@
 package org.n1.av2.backend.web.ws
 
-import mu.KLogging
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.ReduxEvent
@@ -18,7 +17,7 @@ class ScanningController(
     val scanningService: ScanningService
 ) {
 
-    companion object: KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
 
     @MessageMapping("/scan/scansOfPlayer")

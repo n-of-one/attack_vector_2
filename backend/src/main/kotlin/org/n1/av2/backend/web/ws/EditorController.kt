@@ -1,6 +1,5 @@
 package org.n1.av2.backend.web.ws
 
-import mu.KLogging
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.EditorService
@@ -17,7 +16,7 @@ class EditorController(
         val editorService: EditorService,
         val taskRunner: TaskRunner
 ) {
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     @MessageMapping("/editor/siteFull")
     fun siteFull(siteId: String, principal: Principal) {

@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service.site
 
-import mu.KLogging
 import org.n1.av2.backend.model.db.site.Connection
 import org.n1.av2.backend.model.ui.AddConnection
 import org.n1.av2.backend.repo.ConnectionRepo
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service
 class ConnectionService(
         val connectionRepo: ConnectionRepo) {
 
-    companion object: KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     fun findConnection(startId: String, endId: String): Connection? {
 //        return logNanoTime("findConnection", logger) {

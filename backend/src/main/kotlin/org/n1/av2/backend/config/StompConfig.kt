@@ -1,6 +1,5 @@
 package org.n1.av2.backend.config
 
-import mu.KLogging
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.StompConnectionEventService
@@ -27,7 +26,7 @@ class StompConfig(
         val assignPrincipalHandshakeHandler: AssignPrincipalHandshakeHandler,
         val stompConnectionEventService: StompConnectionEventService) : WebSocketMessageBrokerConfigurer {
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry
@@ -43,8 +42,8 @@ class StompConfig(
         registry.setUserDestinationPrefix("/user")
     }
 
-    override fun configureClientInboundChannel(registration: ChannelRegistration?) {
-        registration!!.interceptors(MessageIn())
+    override fun configureClientInboundChannel(registration: ChannelRegistration) {
+        registration.interceptors(MessageIn())
     }
 
     // Have the StompService log this, as we get better info there: user-ids and run-ids instead of stomp channel ids.
@@ -60,7 +59,7 @@ class StompConfig(
 //        if (!validConnection) {
 //            principal.invalidate()
 //        }
-        logger.debug { "<= connect ${event.user!!.name}" }
+        logger.debug { "<= connect ${principal.name}" }
     }
 
     @EventListener

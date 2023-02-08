@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
-import mu.KLogging
-import org.n1.av2.backend.model.db.run.RunActivity.*
+import org.n1.av2.backend.model.db.run.RunActivity.AT_NODE
+import org.n1.av2.backend.model.db.run.RunActivity.SCANNING
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.HackerStateService
 import org.springframework.stereotype.Service
@@ -13,7 +13,7 @@ class TerminalService(
         private val hackTerminalService: HackTerminalService,
         private val stompService: StompService) {
 
-    private companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     fun processCommand(runId: String, command: String) {
         if (command.trim().isBlank()) {

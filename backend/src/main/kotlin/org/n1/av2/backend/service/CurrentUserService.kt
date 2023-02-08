@@ -1,6 +1,5 @@
 package org.n1.av2.backend.service
 
-import mu.KLogging
 import org.n1.av2.backend.engine.SYSTEM_USER_ID
 import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.model.db.user.UserType.ADMIN
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service
 class CurrentUserService {
     private val userStore = ThreadLocal<User>()
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     fun set(user: User) {
         userStore.set(user)

@@ -1,6 +1,5 @@
 package org.n1.av2.backend.engine
 
-import mu.KLogging
 import org.n1.av2.backend.model.db.user.HackerIcon
 import org.n1.av2.backend.model.db.user.User
 import org.n1.av2.backend.model.iam.UserPrincipal
@@ -60,7 +59,7 @@ class TaskRunner(
 class TaskEngine (val stompService: StompService,
                  val currentUserService: CurrentUserService): Runnable {
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     private val queue = LinkedBlockingQueue<Task>()
     private var running = true

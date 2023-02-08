@@ -1,6 +1,5 @@
 package org.n1.av2.backend.engine
 
-import mu.KLogging
 import org.n1.av2.backend.model.db.user.User
 import org.springframework.stereotype.Component
 import java.util.*
@@ -27,7 +26,7 @@ class TimedTaskRunner(
     private val taskEngine: TaskEngine
 ) : Runnable {
 
-    companion object : KLogging()
+    private val logger = mu.KotlinLogging.logger {}
 
     private var running = true
     private val timedTasks = LinkedList<TimedEvent>()
