@@ -23,7 +23,7 @@ private val START_ATTACK_FAST = NO_TICKS
 class StartAttackArriveGameEvent(val userId: String, val runId: String)
 
 @Service
-class HackingService(
+class StartAttackService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val currentUserService: CurrentUserService,
     private val hackTerminalService: HackTerminalService,
@@ -36,8 +36,6 @@ class HackingService(
     private val stompService: StompService) {
 
     private val logger = mu.KotlinLogging.logger {}
-
-
 
     fun startAttack(runId: String, quick: Boolean) {
         val userId = currentUserService.userId
@@ -60,7 +58,6 @@ class HackingService(
 
         val arrive = MoveArriveGameEvent(state.currentNodeId, event.userId, event.runId )
         commandMoveService.moveArrive(arrive)
-//        stompService.terminalSetLockedCurrentUser(false)
     }
 
     fun purgeAll() {

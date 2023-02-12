@@ -10,7 +10,7 @@ import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layer.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.scan.ScanProbeService
 import org.springframework.stereotype.Service

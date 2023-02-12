@@ -128,13 +128,13 @@ class ScanningService(private val runEntityService: RunEntityService,
         stompService.toUser(userId, ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
     }
 
-    fun createScanInfo(run: Run): ScanningService.ScanInfo {
+    fun createScanInfo(run: Run): ScanInfo {
         val site = sitePropertiesEntityService.getBySiteId(run.siteId)
         val nodes = run.nodeScanById.filterValues { it.status != NodeScanStatus.UNDISCOVERED_0}.size
         val nodesText = if (run.duration != null) "${nodes}" else "${nodes}+"
         val userName = userEntityService.getById(run.initiatorId).name
         val efficiencyStatus = deriveEfficiencyStatus(run)
-        return ScanningService.ScanInfo(run.runId, site.name, site.siteId, userName, nodesText, efficiencyStatus)
+        return ScanInfo(run.runId, site.name, site.siteId, userName, nodesText, efficiencyStatus)
     }
 
     private fun deriveEfficiencyStatus(run: Run): String {

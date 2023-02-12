@@ -1,7 +1,7 @@
 package org.n1.av2.backend.web.rest
 
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.service.run.HackingService
+import org.n1.av2.backend.service.run.StartAttackService
 import org.n1.av2.backend.service.scan.ScanningService
 import org.n1.av2.backend.service.site.SiteService
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,7 +14,7 @@ class MainController(
     val siteService: SiteService,
     val scanningService: ScanningService,
     val userEntityService: UserEntityService,
-    val hackingService: HackingService
+    val startAttackService: StartAttackService
 ) {
 
     @GetMapping("/health")
@@ -27,14 +27,14 @@ class MainController(
         siteService.purgeAll()
         scanningService.purgeAll()
         userEntityService.purgeAll()
-        hackingService.purgeAll()
+        startAttackService.purgeAll()
 
         return "Purged!"
     }
 
     @RequestMapping("reset")
     fun reset(): String {
-        hackingService.reset()
+        startAttackService.reset()
 
         return "Reset."
     }

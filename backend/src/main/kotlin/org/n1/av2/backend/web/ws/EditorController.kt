@@ -2,7 +2,7 @@ package org.n1.av2.backend.web.ws
 
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.ui.*
-import org.n1.av2.backend.service.EditorService
+import org.n1.av2.backend.service.editor.EditorService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -13,8 +13,8 @@ import javax.annotation.security.RolesAllowed
 
 @Controller
 class EditorController(
-        val editorService: EditorService,
-        val taskRunner: TaskRunner
+    val editorService: EditorService,
+    val taskRunner: TaskRunner
 ) {
     private val logger = mu.KotlinLogging.logger {}
 

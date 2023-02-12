@@ -8,10 +8,10 @@ import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.TextLayer
 import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layer.OsLayerService
-import org.n1.av2.backend.service.layer.ServiceIceGeneric
-import org.n1.av2.backend.service.layer.TextLayerService
-import org.n1.av2.backend.service.layer.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.OsLayerService
+import org.n1.av2.backend.service.layerhacking.ServiceIceGeneric
+import org.n1.av2.backend.service.layerhacking.TextLayerService
+import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
 import org.springframework.stereotype.Service
 
 @Service

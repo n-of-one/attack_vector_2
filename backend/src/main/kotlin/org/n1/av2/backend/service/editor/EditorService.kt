@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.editor
 
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.LayoutEntityService
@@ -6,6 +6,7 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.ui.*
+import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.SiteValidationService
 
@@ -17,7 +18,8 @@ class EditorService(
     val nodeEntityService: NodeEntityService,
     val connectionEntityService: ConnectionEntityService,
     val siteValidationService: SiteValidationService,
-    val stompService: StompService) {
+    val stompService: StompService
+) {
 
     fun getByNameOrCreate(name: String): String {
         return sitePropertiesEntityService.findByName(name)?.siteId ?: siteService.createSite(name)

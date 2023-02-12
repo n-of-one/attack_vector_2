@@ -1,7 +1,7 @@
 package org.n1.av2.backend.web.rest
 
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.service.EditorService
+import org.n1.av2.backend.service.editor.EditorService
 import org.springframework.web.bind.annotation.*
 
 @RestController

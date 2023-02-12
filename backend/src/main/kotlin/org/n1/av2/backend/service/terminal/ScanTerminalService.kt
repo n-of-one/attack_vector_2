@@ -5,18 +5,18 @@ import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.HackingService
+import org.n1.av2.backend.service.run.StartAttackService
 import org.n1.av2.backend.service.scan.ScanningService
 import org.springframework.stereotype.Service
 
 @Service
 class ScanTerminalService(
-        private val scanningService: ScanningService,
-        private val socialTerminalService: SocialTerminalService,
-        private val hackingService: HackingService,
-        private val currentUser: CurrentUserService,
-        private val environment: MyEnvironment,
-        private val stompService: StompService) {
+    private val scanningService: ScanningService,
+    private val socialTerminalService: SocialTerminalService,
+    private val startAttackService: StartAttackService,
+    private val currentUser: CurrentUserService,
+    private val environment: MyEnvironment,
+    private val stompService: StompService) {
 
     init {
         scanningService.scanTerminalService = this
@@ -88,7 +88,7 @@ class ScanTerminalService(
 
     private fun processAttack(runId: String, quick: Boolean) {
         stompService.terminalSetLockedCurrentUser(true)
-        hackingService.startAttack(runId, quick)
+        startAttackService.startAttack(runId, quick)
     }
 
 

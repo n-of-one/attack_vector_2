@@ -39,5 +39,4 @@ class HackerService(
             activity = state.runActivity,
             locked = state.locked)
     }
-
 }
