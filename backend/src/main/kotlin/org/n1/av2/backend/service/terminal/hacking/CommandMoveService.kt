@@ -166,7 +166,6 @@ class CommandMoveService(
     private fun hackerScannedNodeAndConnections(scan: Scan, nodeId: String, nodeScan: NodeScan) {
         val node = nodeService.getById(nodeId)
         probeService.scannedConnections(scan, node, nodeScan, false)
-        probeService.scannedSingleNode(nodeScan, scan, nodeId, NodeScanStatus.FULLY_SCANNED_4)
     }
 
 

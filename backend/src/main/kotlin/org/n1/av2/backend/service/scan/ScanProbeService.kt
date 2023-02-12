@@ -139,8 +139,8 @@ class ScanProbeService(
         scanService.save(scan)
 
         data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
-        stompService.toRun(scan.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
         stompService.toRun(scan.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(node.id, nodeScan.status))
+        stompService.toRun(scan.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         stompService.terminalReceiveAndLockedCurrentUser(locked,"Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
