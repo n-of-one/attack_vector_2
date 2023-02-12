@@ -11,12 +11,13 @@ class SiteController(
     val editorService: EditorService
 ) {
 
-    data class SiteName(val siteName: String)
-    data class SiteDataId(val id: String)
+    data class SiteNameWrapper(val siteName: String)
+    data class SiteIdWrapper(val id: String)
 
     @PostMapping("edit")
-    fun post(@RequestBody data: SiteName): SiteDataId {
-        return SiteDataId(editorService.getByNameOrCreate(data.siteName))
+    fun post(@RequestBody wrapper: SiteNameWrapper): SiteIdWrapper {
+        val siteId = editorService.getByNameOrCreate(wrapper.siteName)
+        return SiteIdWrapper(siteId)
     }
 
     data class SiteListItem(val id: String, val name: String)

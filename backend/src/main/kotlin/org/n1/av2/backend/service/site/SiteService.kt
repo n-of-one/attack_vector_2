@@ -28,14 +28,14 @@ class SiteService(
 
 
     fun getSiteFull(siteId: String): SiteFull {
-        val siteData = sitePropertiesEntityService.getBySiteId(siteId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         val layout = layoutEntityService.getBySiteId(siteId)
         val nodes = nodeEntityService.getAll(siteId).toMutableList()
-        val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
+        val startNodeId = findStartNode(siteProperties.startNodeNetworkId, nodes)?.id
         val connections = connectionEntityService.getAll(siteId)
         val state = siteEditorStateEntityService.getById(siteId)
 
-        return SiteFull(siteId, siteData, layout, nodes, connections, state, startNodeId, null, null)
+        return SiteFull(siteId, siteProperties, layout, nodes, connections, state, startNodeId, null, null)
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
@@ -43,8 +43,8 @@ class SiteService(
     }
 
     fun purgeAll() {
-        sitePropertiesEntityService.findAll().forEach { siteData ->
-            stompService.toSite(siteData.siteId, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
+        sitePropertiesEntityService.findAll().forEach { siteProperties ->
+            stompService.toSite(siteProperties.siteId, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
         }
 
         sitePropertiesEntityService.purgeAll()

@@ -32,7 +32,7 @@ export const RunHome = () => {
     const dispatch: Dispatch = useDispatch()
 
     const siteName = useSelector((state: HackerState) => {
-        return (state.run.site.siteData) ? state.run.site.siteData.name : ""
+        return (state.run.site.siteProperties) ? state.run.site.siteProperties.name : ""
     })
     const terminal = useSelector((state: HackerState) => state.terminal)
     const submit = () => {

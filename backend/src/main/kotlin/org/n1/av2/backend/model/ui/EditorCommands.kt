@@ -42,7 +42,7 @@ data class MoveNode(
         val x: Int = 0,
         val y: Int = 0)
 
-data class EditSiteData(
+data class EditSiteProperty(
         val siteId: String = "",
         val field: String = "",
         val value: String = "")

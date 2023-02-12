@@ -67,9 +67,9 @@ class HackerStateEntityService(
 
     fun startRun(userId: String, runId: String) {
         val scan = runEntityService.getByRunId(runId)
-        val siteData = sitePropertiesEntityService.getBySiteId(scan.siteId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
         val nodes = nodeEntityService.getAll(scan.siteId)
-        val startNode = nodes.find { it.networkId == siteData.startNodeNetworkId }!!
+        val startNode = nodes.find { it.networkId == siteProperties.startNodeNetworkId }!!
 
         val newState = HackerState(
                 runId = runId,

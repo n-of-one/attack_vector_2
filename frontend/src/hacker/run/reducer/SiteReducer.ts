@@ -10,7 +10,7 @@ import {SERVER_LAYER_HACKED, SERVER_SCAN_FULL} from "../../server/RunServerActio
 
 export interface Site {
     id: string,
-    siteData: SiteProperties,
+    siteProperties: SiteProperties,
     layout: Layout,
     nodes: NodeI[],
     connections: Connection[],
@@ -37,7 +37,7 @@ export interface LayerStatus {
 
 const defaultState = {
     id: "",
-    siteData: sitePropertiesDefault,
+    siteProperties: sitePropertiesDefault,
     layout: defaultLayout,
     nodes: [],
     connections: [],

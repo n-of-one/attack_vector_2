@@ -15,7 +15,7 @@ export interface SiteProperties {
 
 export const sitePropertiesDefault: SiteProperties = {
     siteId: "",
-    name: "non name yet",
+    name: "",
     description: "",
     creator: "",
     hackTime: "-",

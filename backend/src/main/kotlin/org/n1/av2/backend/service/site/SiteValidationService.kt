@@ -17,16 +17,16 @@ class SiteValidationService(
 
     fun validate(id: String) {
         val messages = ArrayList<SiteStateMessage>()
-        val siteData = sitePropertiesEntityService.getBySiteId(id)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(id)
         val nodes = nodeEntityService.getAll(id)
 
-        validateSiteData(siteData, nodes, messages)
-        validateNodes(siteData, nodes, messages)
+        validateSiteProperties(siteProperties, nodes, messages)
+        validateNodes(siteProperties, nodes, messages)
 
         processValidationMessages(messages, id)
     }
 
-    private fun validateSiteData(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
+    private fun validateSiteProperties(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         validate(messages) { validateHackTime(siteProperties) }
         validate(messages) { validateSiteName(siteProperties)}
         validate(messages) { validateStartNode(siteProperties, nodes) }

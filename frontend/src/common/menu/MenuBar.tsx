@@ -30,7 +30,7 @@ const scanItem = (currentPage: string, runName: string | null) => {
 export const MenuBar = () => {
 
     const userName = Cookies.get("userName")
-    const siteName = useSelector( (state: HackerState ) =>  (state.run && state.run.site.siteData) ? state.run.site.siteData.name : "" )
+    const siteName = useSelector( (state: HackerState ) =>  (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "" )
     const currentPage =  useSelector( (state: HackerState) => state.currentPage )
 
     return (
@@ -41,15 +41,6 @@ export const MenuBar = () => {
             padding: "0 0 0 0"
         }}>
             <div className="container">
-                {/*<div className="navbar-header">*/}
-                {/*    <button type="button" className="navbar-toggle" data-toggle="collapse"*/}
-                {/*            data-target=".nav-collapse">*/}
-                {/*        <span className="icon-bar"/>*/}
-                {/*        <span className="icon-bar"/>*/}
-                {/*        <span className="icon-bar"/>*/}
-                {/*    </button>*/}
-                {/*    <a className="navbar-brand" href="#">↼ Attack Vector ⇁</a>*/}
-                {/*</div>*/}
                 <div className="navbar-collapse">
                     <div className="container-fluid">
                         <div className="d-flex justify-content-between">
@@ -68,7 +59,6 @@ export const MenuBar = () => {
                                           label="Hacker Community"/>
                             </ul>
                             <ul className="navbar-nav">
-                                {/*<MenuItem requriesRole="ROLE_USER" targetPage={MAIL} label="Mail"/>*/}
                                 <MenuItem requriesRole="ROLE_USER" targetPage={ME} label={"{" + userName + "}"}/>
                                 {/*<li>*/}
                                 {/*<a href="/manual" target="_blank">Manual</a>*/}

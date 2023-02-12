@@ -1,5 +1,5 @@
 import React from 'react'
-import {SiteData} from "./SiteData"
+import {SitePropertiesTop} from "./SitePropertiesTop"
 import {SiteState} from "./SiteState"
 
 export const EditorTop = () => {
@@ -10,7 +10,7 @@ export const EditorTop = () => {
                 <br/>
                 <div className="row">
                     <div className="col-lg-6">
-                        <SiteData/>
+                        <SitePropertiesTop/>
                     </div>
                     <div className="col-lg-6">
                         <SiteState/>

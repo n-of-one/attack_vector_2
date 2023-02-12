@@ -3,15 +3,15 @@ import {useSelector} from "react-redux"
 import {TextSaveInput} from "../../../common/component/TextSaveInput"
 import {CheckboxSaveInput} from "../../../common/component/CheckBoxSaveInput"
 import {EditorState} from "../../EditorRootReducer"
-import {sendSiteDataChanged} from "../../server/EditorServerClient"
+import {sendSitePropertyChanged} from "../../server/EditorServerClient"
 
 
-export const SiteData = () => {
+export const SitePropertiesTop = () => {
 
-    const siteData = useSelector((state: EditorState) => state.siteProperties)
+    const siteProperties = useSelector((state: EditorState) => state.siteProperties)
 
     const save = (field: string, value: string| boolean) => {
-        sendSiteDataChanged({ field, value})
+        sendSitePropertyChanged({ field, value})
     }
 
     return (
@@ -22,7 +22,7 @@ export const SiteData = () => {
                             <label htmlFor="site_name" className="col-lg-4 control-label text-muted">Name</label>
                             <div className="col-lg-8">
                                 <TextSaveInput id="site_name" className="form-control"
-                                               placeholder="Display name" value={siteData.name}
+                                               placeholder="Display name" value={siteProperties.name}
                                                save={(value: string) => save("name", value)}/>
                             </div>
                     </div>
@@ -30,7 +30,7 @@ export const SiteData = () => {
                             <label htmlFor="start_node" className="col-lg-4 control-label text-muted">Start node</label>
                             <div className="col-lg-5">
                                 <TextSaveInput id="start_node" className="form-control" placeholder="Network Id"
-                                               value={siteData.startNodeNetworkId}
+                                               value={siteProperties.startNodeNetworkId}
                                                save={(value: string) => save("startNode", value)}/>
                             </div>
                     </div>
@@ -40,7 +40,7 @@ export const SiteData = () => {
                             <label htmlFor="hack_time" className="col-lg-5 control-label text-muted">Hack time</label>
                             <div className="col-lg-5">
                                 <TextSaveInput id="hack_time" className="form-control" placeholder="(mm:ss)"
-                                               value={siteData.hackTime}
+                                               value={siteProperties.hackTime}
                                                save={(value: string) => save("hackTime", value)}/>
                             </div>
                     </div>
@@ -49,7 +49,7 @@ export const SiteData = () => {
                                    className="col-lg-5 control-label text-muted">Hackable</label>
                             <div className="col-lg-2">
                                 <CheckboxSaveInput id="site_hackable" className="form-check-input input-checkbox"
-                                                   checked={siteData.hackable}
+                                                   checked={siteProperties.hackable}
                                                    save={(value: boolean) => save("hackable", value)}/>
                             </div>
                     </div>

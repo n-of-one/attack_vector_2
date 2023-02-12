@@ -57,12 +57,12 @@ class EditorService(
     }
 
 
-    fun updateSiteData(command: EditSiteData) {
+    fun updateSiteProperties(command: EditSiteProperty) {
         update(command)
         siteValidationService.validate(command.siteId)
     }
 
-    fun update(command: EditSiteData) {
+    private fun update(command: EditSiteProperty) {
         val properties = sitePropertiesEntityService.getBySiteId(command.siteId)
         val value = command.value.trim()
 

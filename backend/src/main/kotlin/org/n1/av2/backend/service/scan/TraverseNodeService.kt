@@ -27,9 +27,9 @@ class TraverseNodeService(
     fun createTraverseNodesWithDistance(siteId: String): Map<String, TraverseNode> {
         val traverseNodesById = createTraverseNodesWithoutDistance(siteId)
 
-        val siteData = sitePropertiesEntityService.getBySiteId(siteId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         val nodes = nodeEntityService.getAll(siteId)
-        val startNodeId = siteService.findStartNode(siteData.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
+        val startNodeId = siteService.findStartNode(siteProperties.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
 
         val startTraverseNode = traverseNodesById[startNodeId]!!
         startTraverseNode.fillDistanceFromHere(1)

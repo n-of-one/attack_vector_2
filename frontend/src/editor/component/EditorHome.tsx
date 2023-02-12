@@ -1,7 +1,7 @@
 import React from 'react'
 import {EditorMain} from "./middle/EditorMain"
 import {EditorTop} from "./top/EditorTop"
-import {SiteDataAdditional} from "./bottom/SiteDataAdditional"
+import {SitePropertiesBottom} from "./bottom/SitePropertiesBottom"
 
 export const EditorHome = () => {
     return (
@@ -11,7 +11,7 @@ export const EditorHome = () => {
             <br/>
             <EditorMain/>
             <br/>
-            <SiteDataAdditional/>
+            <SitePropertiesBottom/>
         </div>
     )
 }

@@ -39,9 +39,9 @@ class EditorController(
         taskRunner.runTask(principal) { editorService.addConnection(command) }
     }
 
-    @MessageMapping("/editor/editSiteData")
-    fun editSiteData(command: EditSiteData, principal: Principal) {
-        taskRunner.runTask(principal) { editorService.updateSiteData(command) }
+    @MessageMapping("/editor/editSiteProperty")
+    fun editSiteData(command: EditSiteProperty, principal: Principal) {
+        taskRunner.runTask(principal) { editorService.updateSiteProperties(command) }
     }
 
     data class DeleteCommand(val siteId: String = "", val nodeId: String = "" )

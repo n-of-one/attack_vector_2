@@ -51,18 +51,18 @@ class ScanningService(private val runEntityService: RunEntityService,
     data class ScanSiteResponse(val runId: String, val siteId: String)
 
     fun scanSiteForName(siteName: String) {
-        val siteData = sitePropertiesEntityService.findByName(siteName)
-        if (siteData == null) {
+        val siteProperties = sitePropertiesEntityService.findByName(siteName)
+        if (siteProperties == null) {
             stompService.toUser(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
             return
         }
 
-        val nodeScans = createNodeScans(siteData.siteId)
+        val nodeScans = createNodeScans(siteProperties.siteId)
 
         val user = currentUserService.user
 
-        val runId = runEntityService.createScan(siteData, nodeScans, user)
-        val response = ScanSiteResponse(runId, siteData.siteId)
+        val runId = runEntityService.createScan(siteProperties, nodeScans, user)
+        val response = ScanSiteResponse(runId, siteProperties.siteId)
         stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
         sendScanInfosOfPlayer()
     }
@@ -158,10 +158,10 @@ class ScanningService(private val runEntityService: RunEntityService,
         val myUserName = currentUserService.user.name
 
         val scan = runEntityService.getByRunId(runId)
-        val siteData = sitePropertiesEntityService.getBySiteId(scan.siteId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
-        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteData.name}"))
-        stompService.terminalReceiveForUserForTerminal(user.id, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteData.name}[/]")
+        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
+        stompService.terminalReceiveForUserForTerminal(user.id, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]")
         sendScanInfosOfPlayer(user.id)
     }
 

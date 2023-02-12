@@ -1,9 +1,9 @@
 import {webSocketConnection} from "../../common/WebSocketConnection"
 import {editorSiteId} from "../EditorRoot"
 
-export const sendSiteDataChanged = ({field, value}: { field: string, value: string|boolean }) => {
+export const sendSitePropertyChanged = ({field, value}: { field: string, value: string|boolean }) => {
     const payload = {siteId: editorSiteId, field, value}
-    webSocketConnection.send("/av/editor/editSiteData", payload)
+    webSocketConnection.send("/av/editor/editSiteProperty", payload)
 }
 
 export const sendAddNode = ({x, y, type}: { x: number, y: number, type: string }) => {
