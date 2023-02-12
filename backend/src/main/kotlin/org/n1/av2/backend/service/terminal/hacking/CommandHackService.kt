@@ -44,7 +44,7 @@ class CommandHackService(
         val layer = node.layers.find { it.level == level }!!
 
         when  {
-            layer is OsLayer-> osLayerService.hack(layer, node, state)
+            layer is OsLayer-> osLayerService.hack(layer)
             layer is TextLayer -> textLayerService.hack(layer, node, state.runId)
             layer is TimerTriggerLayer -> snifferLayerService.hack(layer)
             layer.type.ice -> serviceIceGeneric.hack(layer, state.runId)

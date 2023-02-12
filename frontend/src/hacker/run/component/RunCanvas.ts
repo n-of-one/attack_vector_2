@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {Schedule} from "../../../common/Schedule"
-import {DISCOVERED, UNDISCOVERED} from "../../../common/enums/NodeStatus"
+import {DISCOVERED_1, UNDISCOVERED_0} from "../../../common/enums/NodeStatus"
 import {NodeDisplay} from "../../../common/canvas/display/NodeDisplay"
 import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
 import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
@@ -19,13 +19,15 @@ import {
     ActionPatrollerCatchesHacker,
     ActionPatrollerMove,
     HackerProbeConnectionsAction,
-    HackerProbeLayersAction,
-    MoveArriveAction,
+    HackerScansNodeAction,
+    MoveArriveAction, MoveArriveFailAction,
     MoveStartAction,
     PatrollerData,
     ProbeAction,
     SiteAndScan
 } from "../../server/RunServerActionProcessor";
+import {ProbeVisual} from "../../../common/canvas/visuals/ProbeVisual";
+import {Ticks} from "../../../common/model/Ticks";
 
 
 export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"
@@ -169,7 +171,7 @@ class RunCanvas {
             nodeData.distance = nodeScan.distance
         })
         nodes.forEach(node => {
-            if (node.status !== UNDISCOVERED) {
+            if (node.status !== UNDISCOVERED_0) {
                 this.addNodeDisplay(node)
             }
         })
@@ -242,7 +244,7 @@ class RunCanvas {
 
         const probeId = "probe-" + probeDisplayIdSequence++;
         const probeDisplay = new ProbeDisplay(this.canvas, this.dispatch, probeAction.path, probeAction.scanType,
-            probeAction.autoScan, hackerDisplay, yourProbe, this.nodeDisplays)
+            probeAction.autoScan, hackerDisplay, yourProbe, this.nodeDisplays, probeAction.ticks)
         this.probeDisplays.add(probeId, probeDisplay)
     }
 
@@ -255,7 +257,7 @@ class RunCanvas {
     discoverNodes(nodeIds: string[], connectionIds: string[]) {
         nodeIds.forEach((id) => {
             const nodeData = this.nodeDataById[id]
-            nodeData.status = DISCOVERED
+            nodeData.status = DISCOVERED_1
             this.addNodeDisplay(nodeData)
         })
 
@@ -327,7 +329,7 @@ class RunCanvas {
     }
 
     // TODO consider retyping string to UserIdType
-    startAttack(userId: string, quick: boolean) {
+    startAttack(userId: string, quick: boolean, ticks: Ticks) {
         this.hacking = true
         if (this.userId === userId) {
             if (!quick) {
@@ -341,7 +343,7 @@ class RunCanvas {
                 nodeDisplay.cleanUpAfterCrossFade(this.selectedObject)
             })
         }
-        this.hackerDisplays.get(userId).startRun(quick)
+        this.hackerDisplays.get(userId).startRun(quick, ticks)
     }
 
 
@@ -355,8 +357,13 @@ class RunCanvas {
         this.hackerDisplays.get(userId).moveArrive(nodeDisplay, ticks)
     }
 
-    hackerProbeLayersSaga({userId, ticks}: HackerProbeLayersAction) {
-        this.hackerDisplays.get(userId)!.hackerProbeLayers(ticks)
+    moveArriveFail(data: MoveArriveFailAction) {
+        this.hackerDisplays.get(data.userId).moveArriveFail()
+    }
+    hackerScansNode({userId, nodeId, ticks}: HackerScansNodeAction) {
+        const nodeDisplay = this.nodeDisplays.get(nodeId)
+        const probe = new ProbeVisual(this.canvas, nodeDisplay, new Schedule(this.dispatch))
+        probe.zoomInAndOutAndRemove(ticks)
     }
 
     hackerProbeConnections({userId, nodeId}: HackerProbeConnectionsAction) {
@@ -402,6 +409,8 @@ class RunCanvas {
         this.patrollerDisplays.get(patrollerId).disappear()
         this.patrollerDisplays.remove(patrollerId)
     }
+
+
 }
 
 export const runCanvas = new RunCanvas()

@@ -10,23 +10,24 @@ import {
     SERVER_UPDATE_NETWORK_ID
 } from "../server/EditorServerActionProcessor"
 
-export enum NodeType {
-    TRANSIT_1 = "TRANSIT_1",
-    TRANSIT_2 = "TRANSIT_2",
-    TRANSIT_3 = "TRANSIT_3",
-    TRANSIT_4 = "TRANSIT_4",
-    SYSCON = "SYSCON",
-    DATA_STORE = "DATA_STORE",
-    PASSCODE_STORE = "PASSCODE_STORE",
-    RESOURCE_STORE = "RESOURCE_STORE",
-    ICE_1 = "ICE_1",
-    ICE_2 = "ICE_2",
-    ICE_3 = "ICE_3",
-    UNHACKABLE = "UNHACKABLE",
-    MANUAL_1 = "MANUAL_1",
-    MANUAL_2 = "MANUAL_2",
-    MANUAL_3 = "MANUAL_3",
-}
+export const TRANSIT_1 = "transit_1"
+export const TRANSIT_2 = "transit_2"
+export const TRANSIT_3 = "transit_3"
+export const TRANSIT_4 = "transit_4"
+export const SYSCON = "syscon"
+export const DATA_STORE = "data_store"
+export const PASSCODE_STORE = "passcode_store"
+export const RESOURCE_STORE = "resource_store"
+export const ICE_1= "ice_1"
+export const ICE_2 = "ice_2"
+export const ICE_3 = "ice_3"
+export const UNHACKABLE = "unhackable"
+export const MANUAL_1 = "manual_1"
+export const MANUAL_2 = "manual_2"
+export const MANUAL_3 = "manual_3"
+
+export type NodeType = "transit_1" | "transit_2" | "transit_3" | "transit_4" | "syscon" | "data_store" | "passcode_store" | "resource_store" | "ice_1" | "ice_2" | "ice_3" | "unhackable" | "manual_1" | "manual_2" | "manual_3"
+
 
 export enum LayerType {
     OS= "OS",
@@ -67,9 +68,8 @@ export interface NodeI {
     layers: Array<LayerDetails>,
     networkId: string
 
-    // only used during a run, not in edit
-    hacked? : boolean
-    status?: string
+    hacked : boolean
+    status: string
     distance?: number
 }
 

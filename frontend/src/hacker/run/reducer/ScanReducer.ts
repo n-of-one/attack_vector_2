@@ -1,5 +1,5 @@
 import {SERVER_DISCOVER_NODES} from "../model/ScanActions";
-import {DISCOVERED} from "../../../common/enums/NodeStatus";
+import {DISCOVERED_1, NodeScanStatus} from "../../../common/enums/NodeStatus";
 import {AnyAction} from "redux";
 import {SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "../../server/RunServerActionProcessor";
 
@@ -15,15 +15,14 @@ export interface Scan {
 }
 
 export interface NodeScan {
-    status: NodeStatus,
+    status: NodeScanStatus,
     distance?: number
 }
 
-export type NodeStatus = "UNDISCOVERED" | "DISCOVERED" | "TYPE" | "LAYERS_NO_CONNECTIONS" | "CONNECTIONS" | "LAYERS"
 
 export interface UpdateNodeStatusAction {
     nodeId: string,
-    newStatus: NodeStatus
+    newStatus: NodeScanStatus
 }
 
 interface NodeScanById { [key: string] : NodeScan }
@@ -60,7 +59,7 @@ const updateNodeStatus = (scan: Scan, {nodeId, newStatus}: UpdateNodeStatusActio
     return {...scan, nodeScanById: newNodeScanById};
 };
 
-const updateNodeScanById = (nodeScanById: NodeScanById, nodeId: string, newStatus: NodeStatus) => {
+const updateNodeScanById = (nodeScanById: NodeScanById, nodeId: string, newStatus: NodeScanStatus) => {
     const newNodeScanById = {...nodeScanById};
     newNodeScanById[nodeId] = { status: newStatus, distance: nodeScanById[nodeId].distance};
     return newNodeScanById;
@@ -74,7 +73,7 @@ interface DiscoverNodes {
 const updateDiscoveredNodes = (scan: Scan, discoverNodes: DiscoverNodes) => {
     let intermediateNodeScanById = scan.nodeScanById;
     discoverNodes.nodeIds.forEach((nodeId: string) => {
-        intermediateNodeScanById = updateNodeScanById(intermediateNodeScanById, nodeId, DISCOVERED);
+        intermediateNodeScanById = updateNodeScanById(intermediateNodeScanById, nodeId, DISCOVERED_1);
     });
     return {...scan, nodeScanById: intermediateNodeScanById};
 };

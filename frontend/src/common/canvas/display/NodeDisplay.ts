@@ -1,12 +1,11 @@
 import {fabric} from "fabric";
 import {toType} from "../../enums/NodeTypesNames";
-import {CONNECTIONS, DISCOVERED, FREE, HACKED, PROTECTED, LAYERS, TYPE} from "../../enums/NodeStatus";
+import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FREE, HACKED, PROTECTED, FULLY_SCANNED_4, TYPE_KNOWN_2, NodeScanStatus} from "../../enums/NodeStatus";
 import {animate, getHtmlImage} from "../CanvasUtils";
 import {IMAGE_SIZE} from "./util/DisplayConstants";
 import {Display} from "./Display";
 import {Schedule} from "../../Schedule";
 import {MoveNodeI, NodeI} from "../../../editor/reducer/NodesReducer";
-import {NodeStatus} from "../../../hacker/run/reducer/ScanReducer";
 import {HackerDisplay} from "./HackerDisplay";
 
 const SCAN_OPACITY = 0.4;
@@ -140,17 +139,25 @@ export class NodeDisplay implements Display {
     }
 
     determineStatusForIcon() {
-        if (this.nodeData.status === DISCOVERED || this.nodeData.status === TYPE || this.nodeData.status === CONNECTIONS) {
-            return this.nodeData.status;
-        }
-        if (this.nodeData.ice) {
-            if (this.nodeData.hacked) {
-                return HACKED;
-            } else {
-                return PROTECTED;
-            }
-        } else {
-            return FREE;
+        switch (this.nodeData.status) {
+            case DISCOVERED_1:
+                return "DISCOVERED"
+            case TYPE_KNOWN_2:
+                return "TYPE"
+            case CONNECTIONS_KNOWN_3:
+                return "CONNECTIONS"
+            case FULLY_SCANNED_4:
+                if (this.nodeData.ice) {
+                    if (this.nodeData.hacked) {
+                        return HACKED;
+                    } else {
+                        return PROTECTED;
+                    }
+                } else {
+                    return FREE;
+                }
+            default:
+                throw Error("Unknown status for node: " + this.nodeData.status)
         }
     }
 
@@ -168,7 +175,7 @@ export class NodeDisplay implements Display {
     transitionToHack(quick: boolean) {
         const delay = (quick) ? 0 : 5;
         this.hacking = true;
-        if (this.nodeData.status === LAYERS) {
+        if (this.nodeData.status === FULLY_SCANNED_4) {
             this.crossFadeToNewIcon(delay);
         }
     }
@@ -218,7 +225,7 @@ export class NodeDisplay implements Display {
         this.canvas.remove(this.labelBackgroundIcon);
     }
 
-    updateStatus(newStatus: NodeStatus, canvasSelectedIcon: fabric.Image | null) {
+    updateStatus(newStatus: NodeScanStatus, canvasSelectedIcon: fabric.Image | null) {
         this.nodeData.status = newStatus;
         this.updateNodeIcon(canvasSelectedIcon);
     }
@@ -234,7 +241,7 @@ export class NodeDisplay implements Display {
     determineNodeIconOpacity() {
         if (this.hacking) {
             switch (this.nodeData.status) {
-                case LAYERS:
+                case FULLY_SCANNED_4:
                     return HACK_OPACITY;
                 default:
                     return SCAN_OPACITY;

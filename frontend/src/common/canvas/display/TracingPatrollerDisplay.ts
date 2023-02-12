@@ -2,7 +2,7 @@ import {fabric} from "fabric";
 import {animate, calcLine, calcLineStart, getHtmlImage} from "../CanvasUtils";
 import {Schedule} from "../../Schedule";
 import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
-import {LineElement} from "./util/LineElement";
+import {ConnectionVisual} from "../visuals/ConnectionVisual";
 import {Display} from "./Display";
 import {Canvas} from "fabric/fabric-impl";
 import {Dispatch} from "redux";
@@ -27,7 +27,7 @@ export class TracingPatrollerDisplay implements Display {
     schedule: Schedule
 
     patrollerIcon: fabric.Image
-    lineElements: LineElement[] = []
+    lineElements: ConnectionVisual[] = []
 
     aborted = false;
 
@@ -74,7 +74,7 @@ export class TracingPatrollerDisplay implements Display {
                 const toNodeDisplay = this.nodeDisplays.get(segment.toNodeId);
                 const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
                 const styling = {"opacity": 0}
-                const lineElement = new LineElement(lineEndData, COLOR_PATROLLER_LINE, this.canvas, styling);
+                const lineElement = new ConnectionVisual(lineEndData, COLOR_PATROLLER_LINE, this.canvas, styling);
                 this.lineElements.push(lineElement);
 
                 lineElement.appear(ticks.appear * 2);
@@ -98,7 +98,7 @@ export class TracingPatrollerDisplay implements Display {
             const toNodeDisplay = this.nodeDisplays.get(toNodeId)
 
             const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 22, 4);
-            const lineElement = new LineElement(lineStartData, COLOR_PATROLLER_LINE, this.canvas);
+            const lineElement = new ConnectionVisual(lineStartData, COLOR_PATROLLER_LINE, this.canvas);
 
             this.lineElements.push(lineElement);
 

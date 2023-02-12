@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {runCanvas} from "./RunCanvas";
 import {
-    DATA_STORE, MANUAL_1, MANUAL_2, MANUAL_3, PASSCODE_STORE, RESOURCE_STORE, SYSCON,
-    ICE_1, ICE_2, ICE_3, TRANSIT_1, TRANSIT_2, TRANSIT_3, TRANSIT_4, UNHACKABLE
+    TYPE_DATA_STORE, TYPE_MANUAL_1, TYPE_MANUAL_2, TYPE_MANUAL_3, TYPE_PASSCODE_STORE, TYPE_RESOURCE_STORE, TYPE_SYSCON,
+    TYPE_ICE_1, TYPE_ICE_2, TYPE_ICE_3, TYPE_TRANSIT_1, TYPE_TRANSIT_2, TYPE_TRANSIT_3, TYPE_TRANSIT_4, TYPE_UNHACKABLE
 } from "../../../common/enums/NodeTypesNames";
 import {RunNodeImage} from "./RunNodeImage";
 import {HackerImage} from "../../../common/component/HackerImage";
@@ -42,21 +42,21 @@ export class RunCanvasPanel extends Component<Props> {
                     "marginBottom": "10px",
                 }}/>
                 <div className="dontDisplay">
-                    <RunNodeImage type={SYSCON} onLoad={onLoad}/>
-                    <RunNodeImage type={DATA_STORE} onLoad={onLoad}/>
-                    <RunNodeImage type={PASSCODE_STORE} onLoad={onLoad}/>
-                    <RunNodeImage type={RESOURCE_STORE} onLoad={onLoad}/>
-                    <RunNodeImage type={TRANSIT_1} onLoad={onLoad}/>
-                    <RunNodeImage type={TRANSIT_2} onLoad={onLoad}/>
-                    <RunNodeImage type={TRANSIT_3} onLoad={onLoad}/>
-                    <RunNodeImage type={TRANSIT_4} onLoad={onLoad}/>
-                    <RunNodeImage type={ICE_1} onLoad={onLoad}/>
-                    <RunNodeImage type={ICE_2} onLoad={onLoad}/>
-                    <RunNodeImage type={ICE_3} onLoad={onLoad}/>
-                    <RunNodeImage type={UNHACKABLE} onLoad={onLoad}/>
-                    <RunNodeImage type={MANUAL_1} onLoad={onLoad}/>
-                    <RunNodeImage type={MANUAL_2} onLoad={onLoad}/>
-                    <RunNodeImage type={MANUAL_3} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_SYSCON} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_DATA_STORE} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_PASSCODE_STORE} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_RESOURCE_STORE} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_TRANSIT_1} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_TRANSIT_2} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_TRANSIT_3} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_TRANSIT_4} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_ICE_1} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_ICE_2} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_ICE_3} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_UNHACKABLE} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_MANUAL_1} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_MANUAL_2} onLoad={onLoad}/>
+                    <RunNodeImage type={TYPE_MANUAL_3} onLoad={onLoad}/>
                     <HackerImage type="BEAR" fileName="animal-bear4-sc44.png" onLoad={onLoad}/>
                     <HackerImage type="BIRD_1" fileName="animal-bird2.png" onLoad={onLoad}/>
                     <HackerImage type="CAT" fileName="animal-cat3.png" onLoad={onLoad}/>

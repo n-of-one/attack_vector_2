@@ -1,9 +1,9 @@
 import {fabric} from "fabric";
-import {animate, easeLinear, LinePositions} from "../../CanvasUtils";
+import {animate, easeLinear, LinePositions} from "../CanvasUtils";
 import {Canvas} from "fabric/fabric-impl";
-import {delay} from "../../../Util";
+import {delay, delayTicks} from "../../Util";
 
-export class LineElement {
+export class ConnectionVisual {
 
     canvas: Canvas
     line: fabric.Line
@@ -16,15 +16,16 @@ export class LineElement {
             lineData.asArray(), {
                 stroke: color,
                 strokeWidth: 2,
-                selectable: false,
+                selectable: true,
                 hoverCursor: 'default',
                 // opacity: 1,
                 ...styling
             });
 
         this.canvas.add(this.line);
+        this.canvas.sendToBack(this.line).renderAll()
         delay(() => {
-            this.canvas.sendToBack(this.line).renderAll()
+            this.line.selectable = false
         })
     }
 
@@ -46,6 +47,9 @@ export class LineElement {
 
     disappear(ticks: number) {
         animate(this.canvas, this.line, 'opacity', 0, ticks);
+        delayTicks(ticks, () => {
+            this.remove()
+        })
     }
 
     remove() {

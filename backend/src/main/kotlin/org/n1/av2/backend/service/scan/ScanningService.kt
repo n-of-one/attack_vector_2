@@ -76,8 +76,8 @@ class ScanningService(private val scanService: ScanService,
         val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId)
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
-                1 -> NodeScanStatus.DISCOVERED
-                else -> NodeScanStatus.UNDISCOVERED
+                1 -> NodeScanStatus.DISCOVERED_1
+                else -> NodeScanStatus.UNDISCOVERED_0
             }
             it.key to NodeScan(status = nodeStatus, distance = it.value.distance)
         }.toMap().toMutableMap()
@@ -135,7 +135,7 @@ class ScanningService(private val scanService: ScanService,
 
     fun createScanInfo(scan: Scan): ScanningService.ScanInfo {
         val site = siteDataService.getBySiteId(scan.siteId)
-        val nodes = scan.nodeScanById.filterValues { it.status != NodeScanStatus.UNDISCOVERED}.size
+        val nodes = scan.nodeScanById.filterValues { it.status != NodeScanStatus.UNDISCOVERED_0}.size
         val nodesText = if (scan.duration != null) "${nodes}" else "${nodes}+"
         val userName = userService.getById(scan.initiatorId).name
         val efficiencyStatus = deriveEfficiencyStatus(scan)
@@ -189,14 +189,14 @@ class ScanningService(private val scanService: ScanService,
         val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(scan)
         val targetNode = traverseNodesById[node.id]!!
         val status = scan.nodeScanById[targetNode.id]!!.status
-        if (status == NodeScanStatus.UNDISCOVERED) {
+        if (status == NodeScanStatus.UNDISCOVERED_0) {
             reportNodeNotFound(networkId)
             return
         }
         val scanType = scanProbeService.determineNodeScanType(status) ?: NodeScanType.SCAN_NODE_DEEP
         val path = scanProbeService.createNodePath(targetNode)
         val userId = currentUserService.userId
-        val probeAction = ScanProbeService.ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false)
+        val probeAction = ScanProbeService.ProbeAction(probeUserId = userId, path = path, scanType = scanType, autoScan = false, ticks = scanType.ticks)
         stompService.toRun(scan.runId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
     }
 

@@ -10,7 +10,7 @@ export interface DragAndDropState {
 }
 
 export const defaultDragAndDropState: DragAndDropState = {
-    type: "RESOURCE",
+    type: "RESOURCE_STORE",
     dx: 0,
     dy: 0,
     ice: false

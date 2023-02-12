@@ -1,8 +1,7 @@
 import React from "react"
-import {CONNECTIONS, DISCOVERED, LAYERS, LAYERS_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus"
+import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FULLY_SCANNED_4, NodeScanStatus, TYPE_KNOWN_2} from "../../../../common/enums/NodeStatus"
 import {NodeScanInfoLayers} from "./NodeScanInfoLayers"
 import {Pad} from "../../../../common/component/Pad"
-import {NodeStatus} from "../../reducer/ScanReducer"
 import {LayerDetails, NodeI} from "../../../../editor/reducer/NodesReducer"
 
 function renderDiscovered() {
@@ -48,28 +47,19 @@ function renderLayerIsIce(layer: LayerDetails) {
     </span>
 }
 
-function renderStatusLayersNoConnections(node: NodeI) {
-    return <>
-        <NodeScanInfoLayers node={node}/>
-        <br/>
-        Neighbouring connections not scanned.<br/>
-    </>}
-
-function renderError(node: NodeI, status: NodeStatus) {
+function renderError(node: NodeI, status: NodeScanStatus) {
     return <>Unknown node status: {status} for node: {node.id}.<br/></>
 }
 
-export const NodeScanInfoByStatus = ({node, status}: {node: NodeI, status: NodeStatus}) => {
+export const NodeScanInfoByStatus = ({node, status}: {node: NodeI, status: NodeScanStatus}) => {
     switch (status) {
-        case DISCOVERED:
+        case DISCOVERED_1:
             return renderDiscovered()
-        case TYPE:
+        case TYPE_KNOWN_2:
             return renderStatusType(node)
-        case CONNECTIONS:
+        case CONNECTIONS_KNOWN_3:
             return renderStatusConnections(node)
-        case LAYERS_NO_CONNECTIONS:
-            return renderStatusLayersNoConnections(node)
-        case LAYERS:
+        case FULLY_SCANNED_4:
             return <NodeScanInfoLayers node={node}/>
         default:
             return renderError(node, status)

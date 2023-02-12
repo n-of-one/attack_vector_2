@@ -27,9 +27,9 @@ export class Schedule {
     active = true
 
     /** You can give the scheduler the dispatch to allow using the schedule.dispatch(wait, event) function. */
-    dispatcher: Dispatch
+    dispatcher: Dispatch | null
 
-    constructor(dispatch: Dispatch) {
+    constructor(dispatch: Dispatch | null) {
         this.queue = [];
         this.dispatcher = dispatch;
     }
@@ -45,6 +45,7 @@ export class Schedule {
     dispatch(duration: number, action: AnyAction) {
         let that = this;
         this._schedule( () => {
+            if (!this.dispatcher) throw Error("Dispatch not initialized")
             this.dispatcher(action);
             that._setWait(duration);
         });

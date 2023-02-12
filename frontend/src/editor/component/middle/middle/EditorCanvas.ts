@@ -10,6 +10,7 @@ import {delay} from "../../../../common/Util"
 import {sendAddConnection, sendMoveNode} from "../../../server/EditorServerClient"
 import {SELECT_NODE} from "../../../reducer/CurrentNodeIdReducer"
 import {DisplayCollection} from "../../../../common/canvas/display/util/DisplayCollection";
+import {FULLY_SCANNED_4} from "../../../../common/enums/NodeStatus";
 
 export interface LoadSiteData {
     id: string,
@@ -79,7 +80,8 @@ class EditorCanvas {
         this.render()
     }
 
-    addNode(nodeData: NodeI) {
+    addNode(nodeDataInput: NodeI) {
+        const nodeData = { ...nodeDataInput, status: FULLY_SCANNED_4, hacked: false}
         const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, false, false)
         nodeDisplay.show()
 

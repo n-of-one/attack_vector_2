@@ -118,6 +118,7 @@ export function easeLinear (t: number, b: number, c: number, d: number) {
 
 export const easeInSine = fabric.util.ease.easeInSine
 export const easeOutSine = fabric.util.ease.easeOutSine
+export const easeInOutSine = fabric.util.ease.easeInOutSine
 
 export const getHtmlImage = (id: string): HTMLImageElement =>  {
     const image = document.getElementById(id)

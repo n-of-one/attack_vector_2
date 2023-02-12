@@ -3,23 +3,20 @@ import {useSelector} from "react-redux"
 import {runCanvas} from "../RunCanvas"
 import {findElementById} from "../../../../common/Immutable"
 import {NodeScanInfoByStatus} from "./NodeScanInfoByStatus"
-import {CONNECTIONS, DISCOVERED, LAYERS, LAYERS_NO_CONNECTIONS, TYPE} from "../../../../common/enums/NodeStatus"
+import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FULLY_SCANNED_4, NodeScanStatus, TYPE_KNOWN_2} from "../../../../common/enums/NodeStatus"
 import {Pad} from "../../../../common/component/Pad"
 import {HackerState} from "../../../HackerRootReducer"
-import {NodeStatus} from "../../reducer/ScanReducer"
 import {NodeI} from "../../../../editor/reducer/NodesReducer";
 
-const statusText = (status: NodeStatus) => {
+const statusText = (status: NodeScanStatus) => {
     switch (status) {
-        case DISCOVERED:
+        case DISCOVERED_1:
             return "0/3"
-        case TYPE:
+        case TYPE_KNOWN_2:
             return "1/3"
-        case CONNECTIONS:
+        case CONNECTIONS_KNOWN_3:
             return "2/3"
-        case LAYERS_NO_CONNECTIONS:
-            return "2/3"
-        case LAYERS:
+        case FULLY_SCANNED_4:
             return "3/3 (complete)"
         default:
             return "status unknown: " + status
@@ -41,7 +38,7 @@ const stateSelector = (state: HackerState) => {
 
 export const NodeScanInfo = () => {
 
-    const {node, status}: { node: NodeI | null, status: NodeStatus | null } = useSelector(stateSelector)
+    const {node, status}: { node: NodeI | null, status: NodeScanStatus | null } = useSelector(stateSelector)
 
     if (node === null || status === null) {
         return <></>

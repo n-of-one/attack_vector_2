@@ -39,12 +39,11 @@ When hacking, the situation is different. There are two situations that occur fo
     as the hacker already had access to all service details.
  */
 enum class NodeScanStatus(val level:Int) {
-    UNDISCOVERED(0),             // scan, run: the existence of this node has not been discovered      [ - no image - ]
-    DISCOVERED(1),               // scan, run: existence is known, but the type of node is not known   [discovered]
-    TYPE(2),                     // scan, run: type and number of services known                       [type]
-    LAYERS_NO_CONNECTIONS(3),    // scan, run: the connections of this node are known.                 [free, protected, hacked]
-    CONNECTIONS(4),              // scan, run: the connections of this node are known.                 [type]
-    LAYERS(5),                   // scan, run: the layers of this node are known                     [free, protected, hacked]
+    UNDISCOVERED_0(0),             // scan, run: the existence of this node has not been discovered      [ - no image - ]
+    DISCOVERED_1(1),               // scan, run: existence is known, but the type of node is not known   [discovered]
+    TYPE_KNOWN_2(2),                     // scan, run: type and number of services known                       [type]
+    CONNECTIONS_KNOWN_3(3),              // scan, run: the connections of this node are known.                 [type]
+    FULLY_SCANNED_4(4),                   // scan, run: the layers of this node are known                     [free, protected, hacked]
 
 
 }

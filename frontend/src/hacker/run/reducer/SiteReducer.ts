@@ -1,12 +1,11 @@
 import {findElementById, updateArrayById} from "../../../common/Immutable";
-import {SERVER_LAYER_HACKED} from "../model/HackActions";
 import {SiteData, siteDataDefault} from "../../../editor/reducer/SiteDataReducer";
 import {defaultLayout, Layout} from "../../../editor/reducer/LayoutReducer";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {siteStateDefault, SiteStateI} from "../../../editor/reducer/SiteStateReducer";
 import {NodeI} from "../../../editor/reducer/NodesReducer";
 import {AnyAction} from "redux";
-import {SERVER_SCAN_FULL} from "../../server/RunServerActionProcessor";
+import {SERVER_LAYER_HACKED, SERVER_SCAN_FULL} from "../../server/RunServerActionProcessor";
 
 
 export interface Site {

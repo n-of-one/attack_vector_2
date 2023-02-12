@@ -32,7 +32,7 @@ export const EditorNodeImage = (props: Props) => {
 
     const dirAndName = props.type.dir + "/" + props.type.name + ".png"
 
-    const root = "/img/" + theme + "/nodes/run/"
+    const root = "/img/" + theme + "/nodes/"
     const pathRegular = root + "free/" + dirAndName
     const pathIce = root + "protected/" + dirAndName
 

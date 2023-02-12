@@ -1,19 +1,17 @@
 import {fabric} from "fabric"
-import {animate, calcLine, calcLineStart, calcLineWithOffset, easeLinear, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
+import {animate, calcLine, easeInOutSine, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
 import {Schedule} from "../../Schedule"
 import {
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
     OFFSET,
     COLOR_PATROLLER_LINE,
-    SCALE_LARGE,
     SCALE_NORMAL,
     SCALE_SMALL,
     COLOR_HACKER_LINE, IMAGE_SIZE
 } from "./util/DisplayConstants"
-import {LineElement} from "./util/LineElement"
+import {ConnectionVisual} from "../visuals/ConnectionVisual"
 import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState"
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_UNLOCK} from "../../terminal/TerminalReducer"
 import {Display} from "./Display"
 import {Dispatch} from "redux"
 import {DisplayCollection} from "./util/DisplayCollection"
@@ -59,7 +57,7 @@ export class HackerDisplay implements Display {
     startLineIcon: fabric.Line = null as unknown as fabric.Line
 
     lockIcon: fabric.Rect | null = null
-    moveLineElement: LineElement | null = null
+    moveLineElement: ConnectionVisual | null = null
 
     targetNodeDisplay: NodeDisplay | null = null
 
@@ -245,11 +243,11 @@ export class HackerDisplay implements Display {
         })
     }
 
-    startRun(quick: boolean) {
+    startRun(quick: boolean, ticks: Ticks) {
         if (quick) {
             this.startRunQuick()
         } else {
-            this.startRunSlow()
+            this.startRunSlow(ticks)
         }
     }
 
@@ -261,90 +259,34 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 10)
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 10)
 
-        this.schedule.run(0, () => {
-            if (this.you) {
-                this.echo(0, "[info]Persona established, hack started.")
-            }
-            animate(this.canvas, this.hackerIcon!, 'opacity', 1, 5)
-        })
+        animate(this.canvas, this.hackerIcon!, 'opacity', 1, 5)
 
     }
 
-    startRunSlow() {
-        this.hackerIcon = this.createHackerIcon(IDENTIFICATION_SCALE_LARGE, 0, this)
+    startRunSlow(ticks: Ticks) {
+        this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 0, this)
         this.canvas.add(this.hackerIcon)
         this.canvas.sendToBack(this.hackerIcon)
+        this.hackerIcon.opacity = 0
+        this.targetNodeDisplay = this.siteStartNodeDisplay
 
-        this.schedule.run(0, () => {
-            this.moveStep(this.siteStartNodeDisplay, 0, 0, 200, easeLinear)
-            this.animateZoom(SCALE_NORMAL, 100)
-            this.animateOpacity(0.7, 20)
 
-            animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
-            animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)
-            animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 100)
-
+        this.schedule.run(ticks.main, () => {
+            if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
+            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, ticks.main - 50, this.you, easeOutSine)
         })
+        animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
+        animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)
+        animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 100)
+        // animate(this.canvas, this.hackerIcon!, 'opacity', 1, 5)
 
-        if (this.you) {
-            this.dispatch({type: TERMINAL_LOCK, terminalId: "main"})
-            const random = (max: number) => Math.floor(Math.random() * max)
-            const personaId = "" + random(10) + random(10) + random(10) + random(10) + random(10) + random(10) + '-' +
-                random(10) + random(10) + random(10) + random(10) + '/' + random(10)
-
-            this.echo(20, "")
-            this.echo(20, "Persona v2.3 booting")
-            this.echo(10, "- unique ID: " + personaId)
-        } else {
-            this.schedule.wait(50)
-        }
-        this.schedule.run(0, () => {
-            this.animateOpacity(0.1, 100, easeOutSine)
-            this.canvas.bringToFront(this.hackerIcon!)
-        })
-
-        if (this.you) {
-            this.echo(10, "- Matching fingerprint with OS deamon")
-            this.echo(10, "  - [ok]ok[/] Suppressing persona signature")
-            this.echo(10, "  - [ok]ok[/] Connection bandwidth adjusted")
-            this.echo(10, "  - [ok]ok[/] Content masked.")
-            this.echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon")
-            this.echo(30, "  - [ok]ok[/] Network origin obfuscated ")
-        } else {
-            this.schedule.wait(100)
-        }
-
-        this.schedule.run(0, () => {
-            this.animateOpacity(1, 100)
-        })
-
-        if (this.you) {
-            this.echo(20, "- Persona creation [info]complete")
-            this.echo(0, "")
-            this.echo(80, "Entering node")
-            this.echo(0, "Persona accepted by node OS.")
-            this.schedule.run(0, () => {
-                this.dispatch({type: TERMINAL_UNLOCK, terminalId: "main"})
-            })
-        } else {
-            this.schedule.wait(100)
-        }
-
-        // this.schedule.run(0, () => {
-        //     this.canvas.bringToFront(this.hackerIcon)
-        // })
     }
 
-    echo(time: number, message: string) {
-        this.schedule.run(time, () => {
-            this.dispatch({type: SERVER_TERMINAL_RECEIVE, data: {terminalId: "main", lines: [message]}})
-        })
-    }
 
-    moveStep(node: NodeDisplay, offsetX: number, offsetY: number, time: number, easing: IUtilAminEaseFunction | null = null) {
-        animate(this.canvas, this.hackerIcon!, "left", node.x + offsetX, time, easing)
-        animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
-    }
+    // moveStep(node: NodeDisplay, offsetX: number, offsetY: number, time: number, easing: IUtilAminEaseFunction | null = null) {
+    //     animate(this.canvas, this.hackerIcon!, "left", node.x + offsetX, time, easing)
+    //     animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
+    // }
 
     moveStart(nodeDisplay: NodeDisplay, ticks: Ticks) {
         this.targetNodeDisplay = nodeDisplay
@@ -353,12 +295,16 @@ export class HackerDisplay implements Display {
             if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
             this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main + 10, this.you)
         })
-        this.schedule.run(0, () => {
-            this.moveLineElement?.disappear(10)
-        })
+        // this.schedule.run(0, () => {
+        //     this.moveLineElement?.disappear(10)
+        // })
     }
 
     moveArrive(nodeDisplay: NodeDisplay, ticks: Ticks) {
+        // this.moveLineElement?.disappear(10)
+        this.schedule.run(0, () => {
+            this.moveLineElement?.disappear(10)
+        })
 
         const oldNodeDisplay = this.currentNodeDisplay!
         const oldOffset = this.processOffset(nodeDisplay, false)
@@ -374,6 +320,8 @@ export class HackerDisplay implements Display {
         this.hackerIcon!.left = nodeDisplay.x + newOffset.xOffset
         this.hackerIcon!.top = nodeDisplay.y + newOffset.yOffset
         this.hackerIcon!.opacity = 0
+        this.canvas.bringToFront(this.hackerIcon!)
+
 
         animate(this.canvas, this.hackerIcon!, 'opacity', 1, ticks.main)
 
@@ -383,11 +331,17 @@ export class HackerDisplay implements Display {
 
         this.canvas.add(afterImage).renderAll()
 
+
         animate(this.canvas, afterImage, 'opacity', 0, ticks.main)
         this.schedule.wait(ticks.main)
         this.schedule.run(0, () => {
             this.canvas.remove(afterImage)
         })
+
+    }
+
+    moveArriveFail() {
+        this.moveLineElement?.disappear(10)
     }
 
     processOffset(nodeDisplay: NodeDisplay, moveIncomplete: boolean): { xOffset: number, yOffset: number } {
@@ -405,21 +359,21 @@ export class HackerDisplay implements Display {
     }
 
     repositionInNode(yOffset: number) {
-        this.schedule.run(4, () => {
-            if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-
-            this.moveStep(this.currentNodeDisplay, -OFFSET, yOffset, 4)
-        })
+        // this.schedule.run(4, () => {
+        //     if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
+        //
+        //     this.moveStep(this.currentNodeDisplay, -OFFSET, yOffset, 4)
+        // })
     }
 
-    animateMoveStepLine(fromNodeDisplay: NodeDisplay, toNodeDisplay: NodeDisplay, ticks: number, you: boolean): LineElement {
-        const lineStartData: LinePositions = calcLineStart(fromNodeDisplay, toNodeDisplay, 0, 0)
-        const lineEndData: LinePositions = calcLineWithOffset(fromNodeDisplay, toNodeDisplay, 0, 0, 0)
+    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, ticks: number, you: boolean, ease: IUtilAminEaseFunction= easeInOutSine): ConnectionVisual {
+        const lineData: LinePositions = calcLine(fromNodeDisplay, toNodeDisplay, 0)
+        const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
 
         const opacity = (you) ? 1: 0.5
 
-        const lineElement = new LineElement(lineStartData, COLOR_HACKER_LINE, this.canvas, {opacity: opacity})
-        lineElement.extendTo(lineEndData, ticks, fabric.util.ease.easeInOutSine)
+        const lineElement = new ConnectionVisual(lineStart, COLOR_HACKER_LINE, this.canvas, {opacity: opacity})
+        lineElement.extendTo(lineData, ticks, ease)
 
         return lineElement
     }
@@ -434,21 +388,21 @@ export class HackerDisplay implements Display {
     }
 
     hackerProbeConnections(nodeDisplay: NodeDisplay) {
-        this.schedule.run(4, () => {
-            this.moveStep(nodeDisplay, 0, 0, 4)
-        })
-
-        this.schedule.run(50, () => {
-            this.animateZoom(SCALE_LARGE, 50)
-            this.animateOpacity(0.6, 50)
-        })
-        this.schedule.run(45, () => {
-            this.animateZoom(SCALE_NORMAL, 50)
-            this.animateOpacity(1, 50)
-        })
-        this.schedule.run(4, () => {
-            this.moveStep(nodeDisplay, OFFSET, OFFSET, 4)
-        })
+        // this.schedule.run(4, () => {
+        //     this.moveStep(nodeDisplay, 0, 0, 4)
+        // })
+        //
+        // this.schedule.run(50, () => {
+        //     this.animateZoom(SCALE_LARGE, 50)
+        //     this.animateOpacity(0.6, 50)
+        // })
+        // this.schedule.run(45, () => {
+        //     this.animateZoom(SCALE_NORMAL, 50)
+        //     this.animateOpacity(1, 50)
+        // })
+        // this.schedule.run(4, () => {
+        //     this.moveStep(nodeDisplay, OFFSET, OFFSET, 4)
+        // })
     }
 
     animateZoom(scale: number, duration: number) {
@@ -484,6 +438,5 @@ export class HackerDisplay implements Display {
             animate(this.canvas, this.lockIcon, "opacity", 1, 20)
         })
     }
-
 
 }

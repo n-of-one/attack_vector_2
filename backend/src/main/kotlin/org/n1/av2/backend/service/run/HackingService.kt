@@ -14,8 +14,8 @@ import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
 import org.springframework.stereotype.Service
 
-private val START_ATTACK_SLOW = Ticks("total" to 250)
-private val NO_TICKS = Ticks("total" to 0)
+private val START_ATTACK_SLOW = Ticks("main" to 250)
+private val NO_TICKS = Ticks("main" to 0)
 private val START_ATTACK_FAST = NO_TICKS
 
 
@@ -43,11 +43,11 @@ class HackingService(
 
         hackerStateService.startRun(userId, runId)
 
-        data class StartRun(val userId: String, val quick: Boolean)
-        val data = StartRun(userId, quick)
+        data class StartRun(val userId: String, val quick: Boolean, val ticks: Ticks)
+        val ticks = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
+        val data = StartRun(userId, quick, ticks)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
 
-        val ticks = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
 
         val next = StartAttackArriveGameEvent(userId, runId)
         taskRunner.queueInTicks(ticks.total) { startAttackArrive(next) }
@@ -59,7 +59,7 @@ class HackingService(
 
         val arrive = MoveArriveGameEvent(state.currentNodeId, event.userId, event.runId )
         commandMoveService.moveArrive(arrive)
-        stompService.terminalSetLockedCurrentUser(false)
+//        stompService.terminalSetLockedCurrentUser(false)
     }
 
     fun purgeAll() {
