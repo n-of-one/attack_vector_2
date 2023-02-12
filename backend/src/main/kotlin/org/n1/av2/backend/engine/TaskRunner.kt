@@ -1,7 +1,7 @@
 package org.n1.av2.backend.engine
 
-import org.n1.av2.backend.model.db.user.HackerIcon
-import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.entity.user.HackerIcon
+import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ValidationException

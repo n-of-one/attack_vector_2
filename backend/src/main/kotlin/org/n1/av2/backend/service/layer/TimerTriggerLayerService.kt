@@ -2,7 +2,7 @@ package org.n1.av2.backend.service.layer
 
 import org.n1.av2.backend.engine.GameEvent
 import org.n1.av2.backend.engine.TaskRunner
-import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
+import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService

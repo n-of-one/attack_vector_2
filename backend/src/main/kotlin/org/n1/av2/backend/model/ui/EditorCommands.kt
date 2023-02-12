@@ -1,25 +1,25 @@
 package org.n1.av2.backend.model.ui
 
-import org.n1.av2.backend.model.db.run.LayerStatus
-import org.n1.av2.backend.model.db.run.NodeStatus
-import org.n1.av2.backend.model.db.run.Scan
-import org.n1.av2.backend.model.db.site.*
-import org.n1.av2.backend.model.db.site.enums.LayerType
-import org.n1.av2.backend.model.db.site.enums.NodeType
+import org.n1.av2.backend.entity.run.LayerStatus
+import org.n1.av2.backend.entity.run.NodeStatus
+import org.n1.av2.backend.entity.run.Run
+import org.n1.av2.backend.entity.site.*
+import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.entity.site.enums.NodeType
 
 data class SiteFull(
         val id: String,
-        val siteData: SiteData,
+        val siteProperties: SiteProperties,
         val layout: Layout,
         val nodes: MutableList<Node>,
         val connections: List<Connection>,
-        val state: SiteState,
+        val state: SiteEditorState,
         val startNodeId: String?,
         var nodeStatuses: List<NodeStatus>?,
         var layerStatuses: List<LayerStatus>?) {
 
-    fun sortNodeByDistance(scan: Scan) {
-        nodes.sortBy { node -> scan.nodeScanById[node.id]!!.distance }
+    fun sortNodeByDistance(run: Run) {
+        nodes.sortBy { node -> run.nodeScanById[node.id]!!.distance }
     }
 }
 
@@ -63,7 +63,8 @@ data class EditLayerDataCommand(
 data class AddLayerCommand(
         val siteId: String,
         val nodeId: String,
-        val layerType: LayerType)
+        val layerType: LayerType
+)
 
 data class RemoveLayerCommand(
         val siteId: String,

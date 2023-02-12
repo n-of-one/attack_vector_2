@@ -1,14 +1,14 @@
 package org.n1.av2.backend.web.rest
 
+import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.service.EditorService
-import org.n1.av2.backend.service.site.SiteDataService
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/site/")
 class SiteController(
-        val siteDataService: SiteDataService,
-        val editorService: EditorService
+    val sitePropertiesEntityService: SitePropertiesEntityService,
+    val editorService: EditorService
 ) {
 
     data class SiteName(val siteName: String)
@@ -23,7 +23,7 @@ class SiteController(
 
     @GetMapping("")
     fun siteList(): List<SiteListItem> {
-        return siteDataService.findAll().map { SiteListItem(id = it.siteId, name = it.name) }
+        return sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name) }
     }
 
 }

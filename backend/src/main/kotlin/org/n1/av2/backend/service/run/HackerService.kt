@@ -1,9 +1,10 @@
 package org.n1.av2.backend.service.run
 
-import org.n1.av2.backend.model.db.run.HackerState
-import org.n1.av2.backend.model.db.run.RunActivity
-import org.n1.av2.backend.model.db.user.HackerIcon
-import org.n1.av2.backend.service.user.UserService
+import org.n1.av2.backend.entity.run.HackerState
+import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.run.RunActivity
+import org.n1.av2.backend.entity.user.HackerIcon
+import org.n1.av2.backend.entity.user.UserEntityService
 import org.springframework.stereotype.Service
 
 class HackerPresence(val userId: String,
@@ -16,17 +17,18 @@ class HackerPresence(val userId: String,
 
 @Service
 class HackerService(
-        private val hackerStateService: HackerStateService,
-        private val userService: UserService) {
+    private val hackerStateEntityService: HackerStateEntityService,
+    private val userEntityService: UserEntityService
+) {
 
     fun getPresenceInRun(runId: String): List<HackerPresence> {
-        val hackersInRun = hackerStateService.getHackersInRun(runId)
+        val hackersInRun = hackerStateEntityService.getHackersInRun(runId)
 
         return hackersInRun.map{ state -> toPresence(state) }
     }
 
     fun toPresence(state: HackerState): HackerPresence {
-        val user = userService.getById(state.userId)
+        val user = userEntityService.getById(state.userId)
 
         return HackerPresence(
             userId = user.id,

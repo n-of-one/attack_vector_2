@@ -4,9 +4,9 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.CurrentUserService
-import org.n1.av2.backend.service.user.UserService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -14,9 +14,9 @@ import java.io.IOException
 
 @Component
 class JwtAuthenticationFilter(
-        private val tokenProvider: JwtTokenProvider,
-        private val userService: UserService,
-        private val currentUserService: CurrentUserService
+    private val tokenProvider: JwtTokenProvider,
+    private val userEntityService: UserEntityService,
+    private val currentUserService: CurrentUserService
 ): OncePerRequestFilter() {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -30,7 +30,7 @@ class JwtAuthenticationFilter(
                 if (tokenProvider.validateToken(jwt)) {
                     val userName = tokenProvider.getUserNameFromJWT(jwt)
 
-                    val user = userService.getByName(userName)
+                    val user = userEntityService.getByName(userName)
                     val authentication = UserPrincipal(user)
                     SecurityContextHolder.getContext().authentication = authentication
                     currentUserService.set(user)

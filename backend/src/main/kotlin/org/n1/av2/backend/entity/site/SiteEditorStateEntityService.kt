@@ -1,0 +1,24 @@
+package org.n1.av2.backend.entity.site
+
+import org.springframework.stereotype.Service
+
+@Service
+class SiteEditorStateEntityService(val repo: SiteEditorStateRepo) {
+
+    fun getById(siteId: String): SiteEditorState {
+        return repo.findBySiteId(siteId) ?: error("Site not found: ${siteId}")
+    }
+
+    fun create(siteId: String) {
+        val state = SiteEditorState(siteId = siteId)
+        repo.save(state)
+    }
+
+    fun save(state: SiteEditorState) {
+        repo.save(state)
+    }
+
+    fun purgeAll() {
+        repo.deleteAll()
+    }
+}

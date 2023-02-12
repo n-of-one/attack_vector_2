@@ -1,9 +1,9 @@
 package org.n1.av2.backend.service.layer.ice.password
 
-import org.n1.av2.backend.model.db.run.TangleLine
-import org.n1.av2.backend.model.db.run.TangleLineType
-import org.n1.av2.backend.model.db.run.TanglePoint
-import org.n1.av2.backend.model.db.site.enums.IceStrength
+import org.n1.av2.backend.entity.run.TangleLine
+import org.n1.av2.backend.entity.run.TangleLineType
+import org.n1.av2.backend.entity.run.TanglePoint
+import org.n1.av2.backend.entity.site.enums.IceStrength
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.random.Random

@@ -36,7 +36,7 @@ export class EditorRoot extends Component<Props> {
         document.body.style.fontSize = "14px"
 
         const initState = editorRootDefaultState
-        initState.siteData.siteId = props.siteId
+        initState.siteProperties.siteId = props.siteId
 
         const developmentServer: boolean = process.env.NODE_ENV === "development"
 

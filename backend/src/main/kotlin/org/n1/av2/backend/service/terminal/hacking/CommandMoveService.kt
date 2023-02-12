@@ -2,23 +2,17 @@ package org.n1.av2.backend.service.terminal.hacking
 
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
+import org.n1.av2.backend.entity.run.*
+import org.n1.av2.backend.entity.site.ConnectionEntityService
+import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
 import org.n1.av2.backend.model.Ticks
-import org.n1.av2.backend.model.db.layer.TimerTriggerLayer
-import org.n1.av2.backend.model.db.run.HackerStateRunning
-import org.n1.av2.backend.model.db.run.NodeScan
-import org.n1.av2.backend.model.db.run.NodeScanStatus
-import org.n1.av2.backend.model.db.run.Scan
-import org.n1.av2.backend.model.db.site.Node
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layer.TimerTriggerLayerService
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
-import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.scan.ScanProbeService
-import org.n1.av2.backend.service.scan.ScanService
-import org.n1.av2.backend.service.site.ConnectionService
-import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
 
@@ -34,10 +28,10 @@ class HackerScannedNodeEvent(val nodeId: String, val userId: String, val runId: 
 
 @Service
 class CommandMoveService(
-    private val nodeService: NodeService,
-    private val connectionService: ConnectionService,
-    private val hackerStateService: HackerStateService,
-    private val scanService: ScanService,
+    private val nodeEntityService: NodeEntityService,
+    private val connectionEntityService: ConnectionEntityService,
+    private val hackerStateEntityService: HackerStateEntityService,
+    private val runEntityService: RunEntityService,
     private val nodeStatusRepo: NodeStatusRepo,
     private val timerTriggerLayerService: TimerTriggerLayerService,
     private val probeService: ScanProbeService,
@@ -52,7 +46,7 @@ class CommandMoveService(
             return
         }
         val networkId = tokens[1]
-        val toNode = nodeService.findByNetworkId(state.siteId, networkId) ?: return reportNodeNotFound(networkId)
+        val toNode = nodeEntityService.findByNetworkId(state.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
         if (checkMovePrerequisites(toNode, state, networkId, runId)) {
             handleMove(runId, toNode, state)
@@ -64,14 +58,14 @@ class CommandMoveService(
 
         if (state.previousNodeId == toNode.id) return true /// can always go back to previous node, regardless of ice
 
-        val scan = scanService.getByRunId(runId)
+        val scan = runEntityService.getByRunId(runId)
         if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED_0) {
             reportNodeNotFound(networkId)
             return false
         }
 
-        connectionService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
-        val fromNode = nodeService.getById(state.currentNodeId)
+        connectionEntityService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
+        val fromNode = nodeEntityService.getById(state.currentNodeId)
         if (hasActiveIce(fromNode, runId)) return reportProtected()
 
         return true
@@ -120,7 +114,7 @@ class CommandMoveService(
         val userId = arriveEvent.userId
         val nodeId = arriveEvent.nodeId
 
-        val state = hackerStateService.retrieve(userId).toRunState()
+        val state = hackerStateEntityService.retrieve(userId).toRunState()
 
         if (state.locked) {
             class MoveArriveFailAction(val userId: String)
@@ -128,7 +122,7 @@ class CommandMoveService(
             return
         }
 
-        val scan = scanService.getByRunId(runId)
+        val scan = runEntityService.getByRunId(runId)
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
         if (nodeStatus == NodeScanStatus.FULLY_SCANNED_4) {
@@ -148,7 +142,7 @@ class CommandMoveService(
         val userId = event.userId
         val nodeId = event.nodeId
 
-        val scan = scanService.getByRunId(runId)
+        val scan = runEntityService.getByRunId(runId)
         val nodeScan = scan.nodeScanById[nodeId]!!
 
         when (nodeScan.status) {
@@ -159,18 +153,18 @@ class CommandMoveService(
             else -> error("Unexpected status: " + nodeScan.status)
         }
 
-        val state = hackerStateService.retrieve(userId).toRunState()
+        val state = hackerStateEntityService.retrieve(userId).toRunState()
         arriveComplete(state, nodeId, userId, runId)
     }
 
-    private fun hackerScannedNodeAndConnections(scan: Scan, nodeId: String, nodeScan: NodeScan) {
-        val node = nodeService.getById(nodeId)
-        probeService.scannedConnections(scan, node, nodeScan, false)
+    private fun hackerScannedNodeAndConnections(run: Run, nodeId: String, nodeScan: NodeScan) {
+        val node = nodeEntityService.getById(nodeId)
+        probeService.scannedConnections(run, node, nodeScan, false)
     }
 
 
     private fun arriveComplete(state: HackerStateRunning, nodeId: String, userId: String, runId: String) {
-        hackerStateService.arriveAt(state, nodeId)
+        hackerStateEntityService.arriveAt(state, nodeId)
         triggerLayersAtArrive(nodeId, userId, runId)
 
         class MoveArriveMessage(val nodeId: String, val userId: String, val ticks: Ticks)
@@ -182,7 +176,7 @@ class CommandMoveService(
 
 
     private fun triggerLayersAtArrive(nodeId: String, userId: String, runId: String) {
-        val node = nodeService.getById(nodeId)
+        val node = nodeEntityService.getById(nodeId)
         node.layers.forEach { layer ->
             when (layer) {
                 is TimerTriggerLayer -> timerTriggerLayerService.hackerTriggers(layer, nodeId, userId, runId)

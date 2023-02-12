@@ -42,7 +42,7 @@ const defaultState = {
 export const scanReducer = (state: Scan = defaultState, action: AnyAction) => {
     switch (action.type) {
         case SERVER_SCAN_FULL:
-            return action.data.scan;
+            return action.data.run;
         case SERVER_UPDATE_NODE_STATUS:
             return updateNodeStatus(state, action.data);
         case SERVER_DISCOVER_NODES:

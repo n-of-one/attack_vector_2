@@ -128,7 +128,7 @@ class RunCanvas {
         console.log("Runcanvas.loadScan")
 
 
-        const scan = structuredClone(actionData.scan)
+        const scan = structuredClone(actionData.run)
         const site = structuredClone(actionData.site)
         const hackers = structuredClone(actionData.hackers)
         const patrollers = structuredClone(actionData.patrollers)

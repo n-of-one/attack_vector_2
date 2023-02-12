@@ -28,7 +28,7 @@ const stateSelector = (state: HackerState) => {
         return {node: null, status: null}
     }
     const node = findElementById(state.run.site.nodes, state.run.infoNodeId)
-    const status = state.run.scan.nodeScanById[node.id].status
+    const status = state.run.run.nodeScanById[node.id].status
     return {
         node: node,
         status: status,

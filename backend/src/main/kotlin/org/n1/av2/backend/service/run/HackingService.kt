@@ -1,11 +1,12 @@
 package org.n1.av2.backend.service.run
 
 import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.run.IceStatusRepo
+import org.n1.av2.backend.entity.run.LayerStatusRepo
+import org.n1.av2.backend.entity.run.NodeStatusRepo
 import org.n1.av2.backend.model.Ticks
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.IceStatusRepo
-import org.n1.av2.backend.repo.LayerStatusRepo
-import org.n1.av2.backend.repo.NodeStatusRepo
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
@@ -23,7 +24,7 @@ class StartAttackArriveGameEvent(val userId: String, val runId: String)
 
 @Service
 class HackingService(
-    private val hackerStateService: HackerStateService,
+    private val hackerStateEntityService: HackerStateEntityService,
     private val currentUserService: CurrentUserService,
     private val hackTerminalService: HackTerminalService,
     private val layerStatusRepo: LayerStatusRepo,
@@ -41,7 +42,7 @@ class HackingService(
     fun startAttack(runId: String, quick: Boolean) {
         val userId = currentUserService.userId
 
-        hackerStateService.startRun(userId, runId)
+        hackerStateEntityService.startRun(userId, runId)
 
         data class StartRun(val userId: String, val quick: Boolean, val ticks: Ticks)
         val ticks = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
@@ -55,7 +56,7 @@ class HackingService(
 
     fun startAttackArrive(event: StartAttackArriveGameEvent) {
         hackTerminalService.sendSyntaxHighlighting(event.userId)
-        val state = hackerStateService.startedRun(event.userId, event.runId)
+        val state = hackerStateEntityService.startedRun(event.userId, event.runId)
 
         val arrive = MoveArriveGameEvent(state.currentNodeId, event.userId, event.runId )
         commandMoveService.moveArrive(arrive)
@@ -65,7 +66,7 @@ class HackingService(
     fun purgeAll() {
         layerStatusRepo.deleteAll()
         iceStatusRepo.deleteAll()
-        hackerStateService.purgeAll()
+        hackerStateEntityService.purgeAll()
         tracingPatrollerService.purgeAll()
     }
 

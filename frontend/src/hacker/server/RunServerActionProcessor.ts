@@ -50,7 +50,7 @@ export const WAITING_FOR_SCAN_IGNORE_LIST =
     ]
 
 export interface SiteAndScan {
-    scan: Scan,
+    run: Scan,
     site: Site,
     hackers: HackerPresence[],
     patrollers: PatrollerData[],

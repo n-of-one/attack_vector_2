@@ -1,22 +1,22 @@
 package org.n1.av2.backend.service.layer
 
-import org.n1.av2.backend.model.db.layer.IceTangleLayer
-import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.site.enums.LayerType
+import org.n1.av2.backend.entity.run.LayerStatusEntityService
+import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.entity.site.layer.IceTangleLayer
+import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layer.ice.password.IcePasswordService
 import org.n1.av2.backend.service.layer.ice.password.IceTangleService
-import org.n1.av2.backend.service.run.LayerStatusService
 
 @org.springframework.stereotype.Service
 class ServiceIceGeneric(
-        private val layerStatusService: LayerStatusService,
-        private val icePasswordService: IcePasswordService,
-        private val iceTangleService: IceTangleService,
-        private val stompService: StompService) {
+    private val layerStatusEntityService: LayerStatusEntityService,
+    private val icePasswordService: IcePasswordService,
+    private val iceTangleService: IceTangleService,
+    private val stompService: StompService) {
 
     fun hack(layer: Layer, runId: String) {
-        val holder = layerStatusService.getOrCreate(layer.id, runId)
+        val holder = layerStatusEntityService.getOrCreate(layer.id, runId)
         if (holder.hacked) {
             stompService.terminalReceiveCurrentUser("[info]not required[/] Ice already hacked.")
             return

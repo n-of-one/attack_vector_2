@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service.site
 
-import org.n1.av2.backend.model.db.site.Node
+import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxActions
@@ -10,30 +10,30 @@ import org.springframework.stereotype.Service
 
 @Service
 class SiteService(
-        val stompService: StompService,
-        val layoutService: LayoutService,
-        val siteDataService: SiteDataService,
-        val nodeService: NodeService,
-        val connectionService: ConnectionService,
-        val siteStateService: SiteStateService
+    val stompService: StompService,
+    val layoutEntityService: LayoutEntityService,
+    val sitePropertiesEntityService: SitePropertiesEntityService,
+    val nodeEntityService: NodeEntityService,
+    val connectionEntityService: ConnectionEntityService,
+    val siteEditorStateEntityService: SiteEditorStateEntityService
 ) {
 
     fun createSite(name: String): String {
-        val id = siteDataService.createId()
-        siteDataService.create(id, name)
-        layoutService.create(id)
-        siteStateService.create(id)
+        val id = sitePropertiesEntityService.createId()
+        sitePropertiesEntityService.create(id, name)
+        layoutEntityService.create(id)
+        siteEditorStateEntityService.create(id)
         return id
     }
 
 
     fun getSiteFull(siteId: String): SiteFull {
-        val siteData = siteDataService.getBySiteId(siteId)
-        val layout = layoutService.getBySiteId(siteId)
-        val nodes = nodeService.getAll(siteId).toMutableList()
+        val siteData = sitePropertiesEntityService.getBySiteId(siteId)
+        val layout = layoutEntityService.getBySiteId(siteId)
+        val nodes = nodeEntityService.getAll(siteId).toMutableList()
         val startNodeId = findStartNode(siteData.startNodeNetworkId, nodes)?.id
-        val connections = connectionService.getAll(siteId)
-        val state = siteStateService.getById(siteId)
+        val connections = connectionEntityService.getAll(siteId)
+        val state = siteEditorStateEntityService.getById(siteId)
 
         return SiteFull(siteId, siteData, layout, nodes, connections, state, startNodeId, null, null)
     }
@@ -43,15 +43,15 @@ class SiteService(
     }
 
     fun purgeAll() {
-        siteDataService.findAll().forEach { siteData ->
+        sitePropertiesEntityService.findAll().forEach { siteData ->
             stompService.toSite(siteData.siteId, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
         }
 
-        siteDataService.purgeAll()
-        layoutService.purgeAll()
-        nodeService.purgeAll()
-        connectionService.purgeAll()
-        siteStateService.purgeAll()
+        sitePropertiesEntityService.purgeAll()
+        layoutEntityService.purgeAll()
+        nodeEntityService.purgeAll()
+        connectionEntityService.purgeAll()
+        siteEditorStateEntityService.purgeAll()
     }
 
 

@@ -1,6 +1,6 @@
 package org.n1.av2.backend.engine
 
-import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.entity.user.User
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock

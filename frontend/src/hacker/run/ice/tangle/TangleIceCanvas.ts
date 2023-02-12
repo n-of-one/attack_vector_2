@@ -98,7 +98,7 @@ class TangleIceCanvas {
 
             const state = this.store.getState();
 
-            const runId = state.run.scan.runId;
+            const runId = state.run.run.runId;
             const currentIce = state.run.ice.currentIce;
 
             const payload = {layerId: currentIce.layerId, runId: runId, id: this.currentSelected.id, x: icon.left, y: icon.top};

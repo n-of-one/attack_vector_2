@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Keys
-import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.entity.user.User
 import org.springframework.stereotype.Component
 import java.security.Key
 import java.security.SignatureException

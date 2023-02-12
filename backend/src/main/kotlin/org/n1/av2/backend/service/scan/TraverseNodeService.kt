@@ -1,9 +1,9 @@
 package org.n1.av2.backend.service.scan
 
-import org.n1.av2.backend.model.db.run.Scan
-import org.n1.av2.backend.service.site.ConnectionService
-import org.n1.av2.backend.service.site.NodeService
-import org.n1.av2.backend.service.site.SiteDataService
+import org.n1.av2.backend.entity.run.Run
+import org.n1.av2.backend.entity.site.ConnectionEntityService
+import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.service.site.SiteService
 import org.springframework.stereotype.Service
 
@@ -12,23 +12,23 @@ import org.springframework.stereotype.Service
  */
 @Service
 class TraverseNodeService(
-        val siteDataService: SiteDataService,
-        val siteService: SiteService,
-        val nodeService: NodeService,
-        val connectionService: ConnectionService
+    val sitePropertiesEntityService: SitePropertiesEntityService,
+    val siteService: SiteService,
+    val nodeEntityService: NodeEntityService,
+    val connectionEntityService: ConnectionEntityService
 ) {
 
-    fun createTraverseNodesWithDistance(scan: Scan): Map<String, TraverseNode> {
-        val traverseNodeById = createTraverseNodesWithoutDistance(scan.siteId)
-        traverseNodeById.values.forEach { it.distance = scan.nodeScanById[it.id]!!.distance }
+    fun createTraverseNodesWithDistance(run: Run): Map<String, TraverseNode> {
+        val traverseNodeById = createTraverseNodesWithoutDistance(run.siteId)
+        traverseNodeById.values.forEach { it.distance = run.nodeScanById[it.id]!!.distance }
         return traverseNodeById
     }
 
     fun createTraverseNodesWithDistance(siteId: String): Map<String, TraverseNode> {
         val traverseNodesById = createTraverseNodesWithoutDistance(siteId)
 
-        val siteData = siteDataService.getBySiteId(siteId)
-        val nodes = nodeService.getAll(siteId)
+        val siteData = sitePropertiesEntityService.getBySiteId(siteId)
+        val nodes = nodeEntityService.getAll(siteId)
         val startNodeId = siteService.findStartNode(siteData.startNodeNetworkId, nodes)?.id ?: throw IllegalStateException("Invalid start node network ID")
 
         val startTraverseNode = traverseNodesById[startNodeId]!!
@@ -38,8 +38,8 @@ class TraverseNodeService(
     }
 
     fun createTraverseNodesWithoutDistance(siteId: String): Map<String, TraverseNode> {
-        val nodes = nodeService.getAll(siteId)
-        val connections = connectionService.getAll(siteId)
+        val nodes = nodeEntityService.getAll(siteId)
+        val connections = connectionEntityService.getAll(siteId)
 
         val traverseNodes = nodes.map { TraverseNode(id = it.id, networkId = it.networkId) }
         val traverseNodesById = traverseNodes.map { it.id to it }.toMap()

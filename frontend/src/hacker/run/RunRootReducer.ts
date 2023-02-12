@@ -10,7 +10,7 @@ import {countdownReducer, CountDownState} from "./coundown/CountdownReducer";
 export interface RunState {
     messageTerminal: TerminalState
     site: Site,
-    scan: Scan,
+    run: Scan,
     infoNodeId: string | null, // Info panel of this node is currently being shown
     ice: SiteIce
     countdown: CountDownState
@@ -22,7 +22,7 @@ export const runRootReducer =
     combineReducers<RunState>({
         messageTerminal: chatTerminalReducer,
         site: siteReducer,
-        scan: scanReducer,
+        run: scanReducer,
         infoNodeId: infoNodeIdReducer,
         ice: iceRootReducer,
         countdown: countdownReducer

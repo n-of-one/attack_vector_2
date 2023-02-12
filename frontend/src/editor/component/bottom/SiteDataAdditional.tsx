@@ -6,7 +6,7 @@ import {EditorState} from "../../EditorRootReducer"
 
 export const SiteDataAdditional = () => {
 
-    const siteData = useSelector((state: EditorState) => state.siteData)
+    const siteData = useSelector((state: EditorState) => state.siteProperties)
 
     const save = (field: string, value: string) => {
         sendSiteDataChanged({field, value})

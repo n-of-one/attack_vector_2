@@ -8,7 +8,7 @@ import {sendSiteDataChanged} from "../../server/EditorServerClient"
 
 export const SiteData = () => {
 
-    const siteData = useSelector((state: EditorState) => state.siteData)
+    const siteData = useSelector((state: EditorState) => state.siteProperties)
 
     const save = (field: string, value: string| boolean) => {
         sendSiteDataChanged({ field, value})

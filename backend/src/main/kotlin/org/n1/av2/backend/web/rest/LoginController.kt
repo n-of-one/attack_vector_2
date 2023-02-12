@@ -3,8 +3,8 @@ package org.n1.av2.backend.web.rest
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.config.security.JwtTokenProvider
-import org.n1.av2.backend.model.db.user.User
-import org.n1.av2.backend.service.user.UserService
+import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntityService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api")
 class LoginController(
-                      private val userService: UserService,
-                      private val jwtTokenProvider: JwtTokenProvider) {
+    private val userEntityService: UserEntityService,
+    private val jwtTokenProvider: JwtTokenProvider) {
 
     data class LoginInput(val name: String = "", val password: String = "")
     data class LoginResponse(val success:Boolean, val message: String? = null)
@@ -24,7 +24,7 @@ class LoginController(
     @PostMapping("/login")
     fun login(@RequestBody input: LoginInput, response: HttpServletResponse): LoginResponse {
         try {
-            val user = userService.login(input.name, input.password)
+            val user = userEntityService.login(input.name, input.password)
             generateJwtCookie(user, response)
             generateUserNameCookie(user, response)
             generateTypeCookie(user, response)

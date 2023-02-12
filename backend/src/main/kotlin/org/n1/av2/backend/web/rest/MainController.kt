@@ -1,9 +1,9 @@
 package org.n1.av2.backend.web.rest
 
+import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.run.HackingService
 import org.n1.av2.backend.service.scan.ScanningService
 import org.n1.av2.backend.service.site.SiteService
-import org.n1.av2.backend.service.user.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api")
 class MainController(
-        val siteService: SiteService,
-        val scanningService: ScanningService,
-        val userService: UserService,
-        val hackingService: HackingService
+    val siteService: SiteService,
+    val scanningService: ScanningService,
+    val userEntityService: UserEntityService,
+    val hackingService: HackingService
 ) {
 
     @GetMapping("/health")
@@ -26,7 +26,7 @@ class MainController(
     fun purgeAll(): String {
         siteService.purgeAll()
         scanningService.purgeAll()
-        userService.purgeAll()
+        userEntityService.purgeAll()
         hackingService.purgeAll()
 
         return "Purged!"

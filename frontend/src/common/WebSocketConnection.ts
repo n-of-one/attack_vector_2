@@ -140,7 +140,7 @@ export class WebSocketConnection {
     }
 
     sendObjectWithRunId(path: string, payload: ActionType) {
-        payload.runId = this.store.getState().run.scan.runId
+        payload.runId = this.store.getState().run.run.runId
         this.sendObject(path, payload)
     }
 

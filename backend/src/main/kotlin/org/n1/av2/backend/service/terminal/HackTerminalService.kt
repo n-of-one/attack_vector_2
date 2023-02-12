@@ -1,9 +1,9 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.terminal.hacking.CommandHackService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.CommandViewService
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service
 
 @Service
 class HackTerminalService(
-        private val stompService: StompService,
-        private val socialTerminalService: SocialTerminalService,
-        private val commandHackService: CommandHackService,
-        private val commandMoveService: CommandMoveService,
-        private val commandViewService: CommandViewService,
-        private val hackerStateService: HackerStateService,
-        private val environment: MyEnvironment) {
+    private val stompService: StompService,
+    private val socialTerminalService: SocialTerminalService,
+    private val commandHackService: CommandHackService,
+    private val commandMoveService: CommandMoveService,
+    private val commandViewService: CommandViewService,
+    private val hackerStateEntityService: HackerStateEntityService,
+    private val environment: MyEnvironment) {
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.trim().split(" ")
@@ -34,7 +34,7 @@ class HackTerminalService(
     }
 
     private fun processPrivilegedCommand(runId: String, tokens: List<String>, commandAction: String) {
-        val state = hackerStateService.retrieveForCurrentUser().toRunState()
+        val state = hackerStateEntityService.retrieveForCurrentUser().toRunState()
         if (state.hookPatrollerId != null) return reportLocked()
 
         when (commandAction) {

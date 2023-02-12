@@ -1,22 +1,22 @@
 package org.n1.av2.backend.service.layer
 
-import org.n1.av2.backend.model.db.site.Node
+import org.n1.av2.backend.entity.run.LayerStatusEntityService
+import org.n1.av2.backend.entity.run.NodeStatusEntityService
+import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.LayerStatusService
-import org.n1.av2.backend.service.run.NodeStatusService
-import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.nodeIdFromServiceId
 
 
 @org.springframework.stereotype.Service
 class HackedUtil(
-        val layerStatusService: LayerStatusService,
-        val currentUser: CurrentUserService,
-        val nodeService: NodeService,
-        val nodeStatusService: NodeStatusService,
-        val stompService: StompService
+    val layerStatusEntityService: LayerStatusEntityService,
+    val currentUser: CurrentUserService,
+    val nodeEntityService: NodeEntityService,
+    val nodeStatusEntityService: NodeStatusEntityService,
+    val stompService: StompService
 ) {
 
     data class IceHackedUpdate(val layerId: String, val nodeId: String)
@@ -24,7 +24,7 @@ class HackedUtil(
 
     fun iceHacked(layerId: String, runId: String, delay: Int) {
         val nodeId = nodeIdFromServiceId(layerId)
-        val node = nodeService.getById(nodeId)
+        val node = nodeEntityService.getById(nodeId)
         iceHacked(layerId, node, runId, delay)
     }
 
@@ -36,7 +36,7 @@ class HackedUtil(
         stompService.toRun(runId, ReduxActions.SERVER_LAYER_HACKED, update)
 
         if (layerId == lastNonHackedIceLayerId) {
-            nodeStatusService.createHackedStatus(node.id, runId)
+            nodeStatusEntityService.createHackedStatus(node.id, runId)
             val nodeHackedUpdate = NodeHacked(node.id, delay)
             stompService.toRun(runId, ReduxActions.SERVER_NODE_HACKED, nodeHackedUpdate)
         }
@@ -49,15 +49,15 @@ class HackedUtil(
     }
 
     private fun saveLayerStatusHacked(layerId: String, runId: String) {
-        val layerStatus = layerStatusService.getOrCreate(layerId, runId)
+        val layerStatus = layerStatusEntityService.getOrCreate(layerId, runId)
         layerStatus.hackedBy.add(currentUser.userId)
         layerStatus.hacked = true
-        layerStatusService.save(layerStatus)
+        layerStatusEntityService.save(layerStatus)
     }
 
     private fun findLastNonHackedIceLayerId(node: Node, runId: String): String? {
         val iceLayerIds = node.layers.filter {it.type.ice }. map { it.id }
-        val layerStatuses = layerStatusService.getLayerStatuses(iceLayerIds, runId)
+        val layerStatuses = layerStatusEntityService.getLayerStatuses(iceLayerIds, runId)
         val hackedLayerIds = layerStatuses.filter { it.hacked } .map { it.layerId }
         val nonHackedIceLayerIds = iceLayerIds.subtract(hackedLayerIds)
 

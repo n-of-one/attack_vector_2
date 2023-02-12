@@ -1,27 +1,27 @@
 package org.n1.av2.backend.service.terminal.hacking
 
-import org.n1.av2.backend.model.db.run.HackerStateRunning
+import org.n1.av2.backend.entity.run.HackerStateRunning
+import org.n1.av2.backend.entity.run.LayerStatusEntityService
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.LayerStatusService
-import org.n1.av2.backend.service.site.NodeService
 import org.springframework.stereotype.Service
 
 @Service
 class CommandViewService(
-        private val stompService: StompService,
-        private val nodeService: NodeService,
-        private val commandServiceUtil: CommandServiceUtil,
-        private val layerStatusService: LayerStatusService
+    private val stompService: StompService,
+    private val nodeEntityService: NodeEntityService,
+    private val commandServiceUtil: CommandServiceUtil,
+    private val layerStatusEntityService: LayerStatusEntityService
 ) {
 
     fun process(runId: String, state: HackerStateRunning) {
-        val node = nodeService.getById(state.currentNodeId)
+        val node = nodeEntityService.getById(state.currentNodeId)
 
         val blockingIceLevel = commandServiceUtil.findBlockingIceLayer(node, runId)?.level ?: -1
 
         val lines = ArrayList<String>()
 
-        val layerStatuses = layerStatusService.getLayerStatuses(node, runId)
+        val layerStatuses = layerStatusEntityService.getLayerStatuses(node, runId)
         val hackedLayerIds = layerStatuses.filter { it.hacked }.map { it.layerId }
 
         lines.add("Node service layers:")

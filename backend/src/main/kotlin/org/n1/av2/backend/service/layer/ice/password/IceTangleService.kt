@@ -1,16 +1,16 @@
 package org.n1.av2.backend.service.layer.ice.password
 
-import org.n1.av2.backend.model.db.layer.IceTangleLayer
-import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.run.IceTangleStatus
-import org.n1.av2.backend.model.db.run.TangleLine
-import org.n1.av2.backend.model.db.run.TanglePoint
-import org.n1.av2.backend.model.db.site.enums.IceStrength
+import org.n1.av2.backend.entity.run.IceStatusRepo
+import org.n1.av2.backend.entity.run.IceTangleStatus
+import org.n1.av2.backend.entity.run.TangleLine
+import org.n1.av2.backend.entity.run.TanglePoint
+import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.enums.IceStrength
+import org.n1.av2.backend.entity.site.layer.IceTangleLayer
+import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layer.HackedUtil
-import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId
 import org.n1.av2.backend.web.ws.ice.IceTangleController
@@ -25,16 +25,16 @@ private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: I
 
 @Service
 class IceTangleService(
-        val iceStatusRepo: IceStatusRepo,
-        val nodeService: NodeService,
-        val hackedUtil: HackedUtil,
-        val stompService: StompService) {
+    val iceStatusRepo: IceStatusRepo,
+    val nodeEntityService: NodeEntityService,
+    val hackedUtil: HackedUtil,
+    val stompService: StompService) {
 
     data class UiTangleState(
-            val layerId: String,
-            val strength: IceStrength,
-            val points: MutableList<TanglePoint>,
-            val lines: List<TangleLine>
+        val layerId: String,
+        val strength: IceStrength,
+        val points: MutableList<TanglePoint>,
+        val lines: List<TangleLine>
     )
 
     private val logger = mu.KotlinLogging.logger {}
@@ -56,7 +56,7 @@ class IceTangleService(
 
     private fun createServiceStatus(layer: Layer, runId: String): IceTangleStatus {
         val nodeId = nodeIdFromServiceId(layer.id)
-        val node = nodeService.getById(nodeId)
+        val node = nodeEntityService.getById(nodeId)
 
         val iceConfig = node.layers.find {it.id == layer.id }!! as IceTangleLayer
 

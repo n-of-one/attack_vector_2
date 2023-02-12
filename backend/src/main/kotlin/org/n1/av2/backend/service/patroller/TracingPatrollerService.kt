@@ -2,14 +2,14 @@ package org.n1.av2.backend.service.patroller
 
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
+import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.run.PatrollerPathSegment
+import org.n1.av2.backend.entity.run.TracingPatroller
+import org.n1.av2.backend.entity.run.TracingPatrollerRepo
 import org.n1.av2.backend.model.Ticks
-import org.n1.av2.backend.model.db.run.PatrollerPathSegment
-import org.n1.av2.backend.model.db.run.TracingPatroller
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.TracingPatrollerRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.run.HackerStateService
 import org.n1.av2.backend.service.scan.TraverseNode
 import org.n1.av2.backend.service.scan.TraverseNodeService
 import org.n1.av2.backend.util.createId
@@ -28,12 +28,12 @@ class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: Lis
 
 @Service
 class TracingPatrollerService(
-        val hackerStateService: HackerStateService,
-        val taskRunner: TaskRunner,
-        val tracingPatrollerRepo: TracingPatrollerRepo,
-        val traverseNodeService: TraverseNodeService,
-        val time: TimeService,
-        val stompService: StompService) {
+    val hackerStateEntityService: HackerStateEntityService,
+    val taskRunner: TaskRunner,
+    val tracingPatrollerRepo: TracingPatrollerRepo,
+    val traverseNodeService: TraverseNodeService,
+    val time: TimeService,
+    val stompService: StompService) {
 
     @PostConstruct
     fun init() {
@@ -58,7 +58,7 @@ class TracingPatrollerService(
                 id = createId("tracingPatroller", tracingPatrollerRepo::findById),
                 runId = runId,
                 targetUserId = userId,
-                siteId = hackerStateService.retrieve(userId).toRunState().siteId,
+                siteId = hackerStateEntityService.retrieve(userId).toRunState().siteId,
                 currentNodeId = nodeId,
                 originatingNodeId = nodeId,
                 path = ArrayList<PatrollerPathSegment>(0)
@@ -75,7 +75,7 @@ class TracingPatrollerService(
         val patroller = getPatroller(event.patrollerId)
         patroller.currentNodeId = event.nodeId
 
-        val targetHackerState = hackerStateService.retrieve(patroller.targetUserId)
+        val targetHackerState = hackerStateEntityService.retrieve(patroller.targetUserId)
         if (targetHackerState.currentNodeId == patroller.currentNodeId) {
             lockHacker(patroller)
         } else {
@@ -97,7 +97,7 @@ class TracingPatrollerService(
     }
 
     private fun lockHacker(patroller: TracingPatroller) {
-        hackerStateService.lockHacker(patroller.targetUserId, patroller.id)
+        hackerStateEntityService.lockHacker(patroller.targetUserId, patroller.id)
         messageCatchHacker(patroller)
         stompService.terminalReceiveForUser(patroller.targetUserId, "[error]critical[/] OS privileges revoked.")
 
@@ -108,7 +108,7 @@ class TracingPatrollerService(
         val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId)
         val startTraverseNode = traverseNodesById[patroller.currentNodeId]!!
         startTraverseNode.fillDistanceFromHere(0)
-        val targetNodeId = hackerStateService.retrieve(patroller.targetUserId).toRunState().currentNodeId
+        val targetNodeId = hackerStateEntityService.retrieve(patroller.targetUserId).toRunState().currentNodeId
         val targetTraverseNode = traverseNodesById[targetNodeId]!!
         return targetTraverseNode.traceToDistance(1) ?: error("Cannot find path to hacker at ${targetNodeId} from ${patroller.currentNodeId}")
     }

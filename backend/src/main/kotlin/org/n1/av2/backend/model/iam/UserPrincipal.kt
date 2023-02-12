@@ -1,6 +1,6 @@
 package org.n1.av2.backend.model.iam
 
-import org.n1.av2.backend.model.db.user.User
+import org.n1.av2.backend.entity.user.User
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 

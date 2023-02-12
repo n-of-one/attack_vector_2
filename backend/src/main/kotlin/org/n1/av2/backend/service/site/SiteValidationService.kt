@@ -1,10 +1,7 @@
 package org.n1.av2.backend.service.site
 
+import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.db.site.Node
-import org.n1.av2.backend.model.db.site.SiteData
-import org.n1.av2.backend.model.db.site.SiteStateMessage
-import org.n1.av2.backend.model.db.site.SiteStateMessageType
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.StompService
@@ -12,16 +9,16 @@ import org.springframework.stereotype.Service
 
 @Service
 class SiteValidationService(
-        val stompService: StompService,
-        val siteDataService: SiteDataService,
-        val nodeService: NodeService,
-        val siteStateService: SiteStateService
+    val stompService: StompService,
+    val sitePropertiesEntityService: SitePropertiesEntityService,
+    val nodeEntityService: NodeEntityService,
+    val siteEditorStateEntityService: SiteEditorStateEntityService
 ) {
 
     fun validate(id: String) {
         val messages = ArrayList<SiteStateMessage>()
-        val siteData = siteDataService.getBySiteId(id)
-        val nodes = nodeService.getAll(id)
+        val siteData = sitePropertiesEntityService.getBySiteId(id)
+        val nodes = nodeEntityService.getAll(id)
 
         validateSiteData(siteData, nodes, messages)
         validateNodes(siteData, nodes, messages)
@@ -29,19 +26,19 @@ class SiteValidationService(
         processValidationMessages(messages, id)
     }
 
-    private fun validateSiteData(siteData: SiteData, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
-        validate(messages) { validateHackTime(siteData) }
-        validate(messages) { validateSiteName(siteData)}
-        validate(messages) { validateStartNode(siteData, nodes) }
+    private fun validateSiteData(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
+        validate(messages) { validateHackTime(siteProperties) }
+        validate(messages) { validateSiteName(siteProperties)}
+        validate(messages) { validateStartNode(siteProperties, nodes) }
     }
 
-    private fun validateSiteName(siteData: SiteData) {
-        if (siteData.name.length > 40) {
+    private fun validateSiteName(siteProperties: SiteProperties) {
+        if (siteProperties.name.length > 40) {
             throw ValidationException("Site name too long to be displayed nicely.")
         }
     }
 
-    private fun validateHackTime(data: SiteData) {
+    private fun validateHackTime(data: SiteProperties) {
         val errorText = "time must be in the format (minutes):(seconds) for example: 12:00 "
         val parts = data.hackTime.split(":")
         if (parts.size != 2) throw ValidationException(errorText)
@@ -50,7 +47,7 @@ class SiteValidationService(
     }
 
 
-    private fun validateStartNode(data: SiteData, nodes: List<Node>) {
+    private fun validateStartNode(data: SiteProperties, nodes: List<Node>) {
         if (data.startNodeNetworkId.isBlank()) {
             throw ValidationException("Set the start node network id.")
         }
@@ -58,10 +55,10 @@ class SiteValidationService(
                 ?: throw ValidationException("Start node network id not found: ${data.startNodeNetworkId}.")
     }
 
-    private fun validateNodes(siteData: SiteData, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
+    private fun validateNodes(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         if (nodes.isEmpty()) return
 
-        val siteRep = SiteRep(nodes[0], nodes, siteData)
+        val siteRep = SiteRep(nodes[0], nodes, siteProperties)
 
         val networkIds = HashSet<String>()
 
@@ -107,11 +104,11 @@ class SiteValidationService(
 
     private fun processValidationMessages(messages: ArrayList<SiteStateMessage>, id: String) {
         val ok = messages.filter { it.type == SiteStateMessageType.ERROR }.none()
-        val oldState = siteStateService.getById(id)
+        val oldState = siteEditorStateEntityService.getById(id)
         val newState = oldState.copy(ok = ok, messages = messages)
 
         if (oldState != newState) {
-            siteStateService.save(newState)
+            siteEditorStateEntityService.save(newState)
             stompService.toSite(id, ReduxActions.SERVER_UPDATE_SITE_STATE, newState)
         }
     }

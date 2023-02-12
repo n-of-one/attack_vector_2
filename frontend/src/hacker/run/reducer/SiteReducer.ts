@@ -1,5 +1,5 @@
 import {findElementById, updateArrayById} from "../../../common/Immutable";
-import {SiteData, siteDataDefault} from "../../../editor/reducer/SiteDataReducer";
+import {SiteProperties, sitePropertiesDefault} from "../../../editor/reducer/SitePropertiesReducer";
 import {defaultLayout, Layout} from "../../../editor/reducer/LayoutReducer";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {siteStateDefault, SiteStateI} from "../../../editor/reducer/SiteStateReducer";
@@ -10,7 +10,7 @@ import {SERVER_LAYER_HACKED, SERVER_SCAN_FULL} from "../../server/RunServerActio
 
 export interface Site {
     id: string,
-    siteData: SiteData,
+    siteData: SiteProperties,
     layout: Layout,
     nodes: NodeI[],
     connections: Connection[],
@@ -37,7 +37,7 @@ export interface LayerStatus {
 
 const defaultState = {
     id: "",
-    siteData: siteDataDefault,
+    siteData: sitePropertiesDefault,
     layout: defaultLayout,
     nodes: [],
     connections: [],

@@ -1,6 +1,6 @@
 package org.n1.av2.backend.util
 
-import org.n1.av2.backend.model.db.site.Node
+import org.n1.av2.backend.entity.site.Node
 import java.util.*
 
 

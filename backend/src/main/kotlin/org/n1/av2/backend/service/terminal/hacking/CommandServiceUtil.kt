@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.terminal.hacking
 
-import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.site.Node
-import org.n1.av2.backend.repo.LayerStatusRepo
+import org.n1.av2.backend.entity.run.LayerStatusRepo
+import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.layer.Layer
 import org.springframework.stereotype.Service
 
 @Service

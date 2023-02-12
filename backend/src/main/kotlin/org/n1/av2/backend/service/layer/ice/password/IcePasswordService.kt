@@ -1,15 +1,15 @@
 package org.n1.av2.backend.service.layer.ice.password
 
-import org.n1.av2.backend.model.db.layer.IcePasswordLayer
-import org.n1.av2.backend.model.db.layer.Layer
-import org.n1.av2.backend.model.db.run.IcePasswordStatus
-import org.n1.av2.backend.model.db.site.Node
+import org.n1.av2.backend.entity.run.IcePasswordStatus
+import org.n1.av2.backend.entity.run.IceStatusRepo
+import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.layer.IcePasswordLayer
+import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.ui.ReduxActions
-import org.n1.av2.backend.repo.IceStatusRepo
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.layer.HackedUtil
-import org.n1.av2.backend.service.site.NodeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromServiceId
 import java.time.ZonedDateTime
@@ -17,11 +17,11 @@ import java.util.*
 
 @org.springframework.stereotype.Service
 class IcePasswordService(
-        val nodeService: NodeService,
-        val iceStatusRepo: IceStatusRepo,
-        val time: TimeService,
-        val serviceIceUtil: HackedUtil,
-        val stompService: StompService) {
+    val nodeEntityService: NodeEntityService,
+    val iceStatusRepo: IceStatusRepo,
+    val time: TimeService,
+    val serviceIceUtil: HackedUtil,
+    val stompService: StompService) {
 
 
     data class UiState(val message: String?,
@@ -31,7 +31,7 @@ class IcePasswordService(
                        val attempts: MutableList<String>,
                        var lockedUntil: ZonedDateTime) {
 
-        constructor(message: String?, hacked: Boolean, hint: String?, status: IcePasswordStatus ) :
+        constructor(message: String?, hacked: Boolean, hint: String?, status: IcePasswordStatus) :
                 this(message, hacked, hint, status.layerId, status.attempts, status.lockedUntil)
     }
 
@@ -39,7 +39,7 @@ class IcePasswordService(
         val passwordStatus = getOrCreateStatus(layer.id, runId)
 
         val nodeId = nodeIdFromServiceId(layer.id)
-        val node = nodeService.getById(nodeId)
+        val node = nodeEntityService.getById(nodeId)
         val passwordService =  node.getLayerById(layer.id) as IcePasswordLayer
 
         val hintToDisplay = hintToDisplay(passwordStatus, passwordService)
@@ -67,7 +67,7 @@ class IcePasswordService(
     fun submitAttempt(command: SubmitPassword) {
         val status = getOrCreateStatus(command.layerId, command.runId)
         val nodeId = nodeIdFromServiceId(command.layerId)
-        val node = nodeService.getById(nodeId)
+        val node = nodeEntityService.getById(nodeId)
         val layer =  node.getLayerById(command.layerId) as IcePasswordLayer
 
         when {

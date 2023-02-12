@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.engine.SYSTEM_USER_ID
-import org.n1.av2.backend.model.db.user.User
-import org.n1.av2.backend.model.db.user.UserType.ADMIN
+import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserType.ADMIN
 import org.springframework.stereotype.Service
 
 @Service

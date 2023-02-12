@@ -1,6 +1,6 @@
 package org.n1.av2.backend.config
 
-import org.n1.av2.backend.model.db.user.UserType
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.StompConnectionEventService
 import org.springframework.http.server.ServerHttpRequest
