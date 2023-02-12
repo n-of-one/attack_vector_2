@@ -8,7 +8,7 @@ import {webSocketConnection} from "../../common/WebSocketConnection";
 import {runCanvas} from "../run/component/RunCanvas";
 import {HIDE_NODE_INFO} from "../run/model/ScanActions";
 import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
-import {NAVIGATE_PAGE, SCAN} from "../../common/menu/pageReducer";
+import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
 import {Dispatch} from "redux";
@@ -120,7 +120,7 @@ export const enterScan = (runId: string, siteId: string, dispatch: Dispatch, cur
     runCanvas.reset()
     dispatch({type: HIDE_NODE_INFO})
     dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
-    dispatch({type: NAVIGATE_PAGE, to: SCAN, from: currentPage})
+    dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
     webSocketConnection.send("/av/scan/enterScan", runId)
     terminalManager.start()
 }

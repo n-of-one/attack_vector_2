@@ -3,7 +3,7 @@ import {useSelector} from "react-redux"
 import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../../gm/GmPages"
-import {HACKER_COMMUNITY, HACKER_HOME, MAIL, ME, SCAN} from "./pageReducer"
+import {HACKER_COMMUNITY, HACKER_HOME, MAIL, ME, RUN} from "./pageReducer"
 import {HackerState} from "../../hacker/HackerRootReducer"
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -18,9 +18,9 @@ const logout = (event: any) => {
 }
 
 const scanItem = (currentPage: string, runName: string | null) => {
-    if (currentPage === SCAN && runName) {
+    if (currentPage === RUN && runName) {
         return (
-            <MenuItem requriesRole="ROLE_HACKER" targetPage={SCAN} label={"> " + runName}/>
+            <MenuItem requriesRole="ROLE_HACKER" targetPage={RUN} label={"> " + runName}/>
         )
     } else {
         return <span/>

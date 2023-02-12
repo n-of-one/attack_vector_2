@@ -2,16 +2,14 @@ import {AnyAction} from "redux";
 
 
 export const HACKER_HOME = "HACKER_HOME";
+export const RUN = "RUN";
+export const MAIL = "MAIL";
 export const SCRIPTS = "SCRIPTS";
 export const HACKER_COMMUNITY = "HACKER_COMMUNITY";
-export const SCAN = "SCAN";
-export const MAIL = "MAIL";
 export const ME = "ME";
 
 // ACTIONS:
 export const NAVIGATE_PAGE = "NAVIGATE_PAGE";
-
-
 
 
 const defaultState = "No page yet.";

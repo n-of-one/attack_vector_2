@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Cookies from "js-cookie";
-import {NAVIGATE_PAGE, SCAN} from "./pageReducer";
+import {NAVIGATE_PAGE, RUN} from "./pageReducer";
 import {HackerState} from "../../hacker/HackerRootReducer";
 import {webSocketConnection} from "../WebSocketConnection";
 import {terminalManager} from "../terminal/TerminalManager";
@@ -29,7 +29,7 @@ export const MenuItem = (props: Props) => {
         console.log("Navigating to page: " + targetPage);
         dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
 
-        if (currentPage === SCAN && targetPage !== SCAN) {
+        if (currentPage === RUN && targetPage !== RUN) {
             webSocketConnection.unsubscribe();
             terminalManager.stop();
             runCanvas.stop();

@@ -8,7 +8,7 @@ import {RunPageChooser} from "./run/component/RunPageChooser"
 import {useSelector} from "react-redux"
 import {HackerState} from "./HackerRootReducer"
 import {TerminalState} from "../common/terminal/TerminalReducer"
-import {MAIL, SCAN} from "../common/menu/pageReducer"
+import {MAIL, RUN} from "../common/menu/pageReducer"
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -30,7 +30,7 @@ const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
         case MAIL:
             return <MailHome/>
-        case SCAN:
+        case RUN:
             return <RunPageChooser/>
         default:
             return <HackerHome/>
