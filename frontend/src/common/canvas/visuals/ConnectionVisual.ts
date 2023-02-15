@@ -37,17 +37,17 @@ export class ConnectionVisual {
         this.line.set('stroke', value);
     }
 
-    appear(ticks: number) {
-        animate(this.canvas, this.line, "opacity", 1, ticks);
+    appear(durationTicks: number) {
+        animate(this.canvas, this.line, "opacity", 1, durationTicks);
     }
 
-    extendTo(lineData: LinePositions, time: number, ease = easeLinear) {
-        animate(this.canvas, this.line, null, lineData.asCoordinates(), time, ease);
+    extendTo(lineData: LinePositions, durationTicks: number, ease = easeLinear) {
+        animate(this.canvas, this.line, null, lineData.asCoordinates(), durationTicks, ease);
     }
 
-    disappear(ticks: number) {
-        animate(this.canvas, this.line, 'opacity', 0, ticks);
-        delayTicks(ticks, () => {
+    disappear(durationTicks: number) {
+        animate(this.canvas, this.line, 'opacity', 0, durationTicks);
+        delayTicks(durationTicks, () => {
             this.remove()
         })
     }

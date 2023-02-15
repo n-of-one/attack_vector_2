@@ -1,6 +1,9 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.entity.run.NodeScanStatus
+import org.n1.av2.backend.entity.run.RunEntityService
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
@@ -12,15 +15,15 @@ import org.springframework.stereotype.Service
 @Service
 class ScanTerminalService(
     private val scanningService: ScanningService,
+    private val runEntityService: RunEntityService,
+    private val nodeEntityService: NodeEntityService,
     private val socialTerminalService: SocialTerminalService,
     private val startAttackService: StartAttackService,
     private val currentUser: CurrentUserService,
     private val environment: MyEnvironment,
-    private val stompService: StompService) {
+    private val stompService: StompService,
+    ) {
 
-    init {
-        scanningService.scanTerminalService = this
-    }
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
@@ -45,7 +48,7 @@ class ScanTerminalService(
 
     private fun processAutoScan(runId: String) {
         stompService.terminalReceiveAndLockedCurrentUser(true, "Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
-        scanningService.launchProbe(runId, true)
+        scanningService.performAutoScan(runId)
     }
 
     private fun processDisconnect() {
@@ -77,8 +80,27 @@ class ScanTerminalService(
             return
         }
         val networkId = tokens[1]
+
+        val run = runEntityService.getByRunId(runId)
+
+        val node = nodeEntityService.findByNetworkId(run.siteId, networkId)
+            ?: if (networkId.length == 1) {
+                return stompService.terminalReceiveCurrentUser("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
+            } else {
+                return reportNodeNotFound(networkId)
+            }
+
+        val status: NodeScanStatus = run.nodeScanById[node.id]!!.status
+        if (status == NodeScanStatus.UNDISCOVERED_0) {
+            return reportNodeNotFound(networkId)
+        }
+
         stompService.terminalSetLockedCurrentUser(true)
-        scanningService.launchProbeAtNode(runId, networkId)
+        scanningService.performManualScan(run, node, status)
+    }
+
+    private fun reportNodeNotFound(networkId: String) {
+        stompService.terminalReceiveCurrentUser("Node [ok]${networkId}[/] not found.")
     }
 
     fun processQuickscan(runId: String) {

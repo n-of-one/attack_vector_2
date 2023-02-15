@@ -1,10 +1,16 @@
 package org.n1.av2.backend.model.ui
 
-import org.n1.av2.backend.model.Ticks
+import org.n1.av2.backend.model.Timings
 
-enum class NodeScanType(val ticks: Ticks) {
-    SCAN_NODE_INITIAL(Ticks("in" to 50, "out" to 25)),
-    SCAN_CONNECTIONS(Ticks("out" to 50, "in" to 25)),
-    SCAN_NODE_DEEP(Ticks("in" to 50, "out" to 25)),
+enum class NodeScanType(val timings: Timings) {
+    SCAN_NODE_INITIAL(Timings(
+        "in" to 50, "out" to 25, "connection" to 20
+    )),
+    SCAN_CONNECTIONS(Timings(
+        "out" to 50, "in" to 25, "connection" to 20
+    )),
+    SCAN_NODE_DEEP(Timings(
+        "in" to 50, "out" to 25, "connection" to 20
+    )),
 
 }

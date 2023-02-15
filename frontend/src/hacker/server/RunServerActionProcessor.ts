@@ -13,7 +13,7 @@ import {
 import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
 import {Site} from "../run/reducer/SiteReducer"
 import {HackerPresence} from "../run/reducer/HackersReducer"
-import {Ticks} from "../../common/model/Ticks"
+import {Timings} from "../../common/model/Ticks"
 import {SERVER_ICE_PASSWORD_UPDATE, SERVER_START_HACKING_ICE_PASSWORD} from "../run/ice/password/PasswordIceReducer"
 import {passwordIceManager, PasswordIceState} from "../run/ice/password/PasswordIceManager"
 import {delayTicks} from "../../common/Util"
@@ -65,26 +65,25 @@ export interface ProbeAction {
     probeUserId: string,
     path: string[],
     scanType: NodeScanType,
-    autoScan: boolean,
-    ticks: Ticks
+    timings: Timings
 }
 
 export interface StartRun {
     userId: string,
     quick: boolean,
-    ticks: Ticks
+    timings: Timings
 }
 
 export interface MoveStartAction {
     userId: string,
     nodeId: string,
-    ticks: Ticks
+    timings: Timings
 }
 
 export interface MoveArriveAction {
     nodeId: string,
     userId: string,
-    ticks: Ticks
+    timings: Timings
 }
 
 export interface MoveArriveFailAction {
@@ -94,7 +93,7 @@ export interface MoveArriveFailAction {
 export interface HackerScansNodeAction {
     userId: string,
     nodeId: string,
-    ticks: Ticks
+    timings: Timings
 }
 
 export interface HackerProbeConnectionsAction {
@@ -115,7 +114,7 @@ export interface PatrollerData {
     patrollerId: string | null,
     nodeId: string,
     path: PatrollerPathSegment[],
-    ticks: Ticks
+    timings: Timings
 }
 
 export interface PatrollerPathSegment {
@@ -132,7 +131,7 @@ export interface ActionPatrollerMove {
     patrollerId: string
     fromNodeId: string,
     toNodeId: string,
-    ticks: Ticks
+    timings: Timings
 }
 
 interface RemovePatrollerAction {
@@ -192,7 +191,7 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_HACKER_START_ATTACK, (data: StartRun) => {
-        runCanvas.startAttack(data.userId, data.quick, data.ticks)
+        runCanvas.startAttack(data.userId, data.quick, data.timings)
         if (data.userId === store.getState().userId) {
             dispatch({type: TERMINAL_LOCK, terminalId: "main"})
             const random = (max: number) => Math.floor(Math.random() * max)

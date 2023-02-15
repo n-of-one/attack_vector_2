@@ -27,7 +27,7 @@ import {
     SiteAndScan
 } from "../../server/RunServerActionProcessor";
 import {ProbeVisual} from "../../../common/canvas/visuals/ProbeVisual";
-import {Ticks} from "../../../common/model/Ticks";
+import {Timings} from "../../../common/model/Ticks";
 
 
 export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"
@@ -243,8 +243,8 @@ class RunCanvas {
         const yourProbe = probeAction.probeUserId === this.userId
 
         const probeId = "probe-" + probeDisplayIdSequence++;
-        const probeDisplay = new ProbeDisplay(this.canvas, this.dispatch, probeAction.path, probeAction.scanType,
-            probeAction.autoScan, hackerDisplay, yourProbe, this.nodeDisplays, probeAction.ticks)
+        const probeDisplay = new ProbeDisplay(this.canvas, probeAction.path, probeAction.scanType,
+            hackerDisplay, yourProbe, this.nodeDisplays, probeAction.timings)
         this.probeDisplays.add(probeId, probeDisplay)
     }
 
@@ -329,7 +329,7 @@ class RunCanvas {
     }
 
     // TODO consider retyping string to UserIdType
-    startAttack(userId: string, quick: boolean, ticks: Ticks) {
+    startAttack(userId: string, quick: boolean, timings: Timings) {
         this.hacking = true
         if (this.userId === userId) {
             if (!quick) {
@@ -343,27 +343,27 @@ class RunCanvas {
                 nodeDisplay.cleanUpAfterCrossFade(this.selectedObject)
             })
         }
-        this.hackerDisplays.get(userId).startRun(quick, ticks)
+        this.hackerDisplays.get(userId).startRun(quick, timings)
     }
 
 
-    moveStart({userId, nodeId, ticks}: MoveStartAction) {
+    moveStart({userId, nodeId, timings}: MoveStartAction) {
         const nodeDisplay = this.nodeDisplays.get(nodeId)
-        this.hackerDisplays.get(userId).moveStart(nodeDisplay, ticks)
+        this.hackerDisplays.get(userId).moveStart(nodeDisplay, timings)
     }
 
-    moveArrive({userId, nodeId, ticks}: MoveArriveAction) {
+    moveArrive({userId, nodeId, timings}: MoveArriveAction) {
         const nodeDisplay = this.nodeDisplays.get(nodeId)
-        this.hackerDisplays.get(userId).moveArrive(nodeDisplay, ticks)
+        this.hackerDisplays.get(userId).moveArrive(nodeDisplay, timings)
     }
 
     moveArriveFail(data: MoveArriveFailAction) {
         this.hackerDisplays.get(data.userId).moveArriveFail()
     }
-    hackerScansNode({userId, nodeId, ticks}: HackerScansNodeAction) {
+    hackerScansNode({userId, nodeId, timings}: HackerScansNodeAction) {
         const nodeDisplay = this.nodeDisplays.get(nodeId)
         const probe = new ProbeVisual(this.canvas, nodeDisplay, new Schedule(this.dispatch))
-        probe.zoomInAndOutAndRemove(ticks)
+        probe.zoomInAndOutAndRemove(timings)
     }
 
     hackerProbeConnections({userId, nodeId}: HackerProbeConnectionsAction) {
@@ -386,7 +386,7 @@ class RunCanvas {
 
     flashTracingPatroller(nodeId: string) {
         const patrollerData = {
-            patrollerId: null, nodeId, ticks: {appear: 20}, path: []
+            patrollerId: null, nodeId, timings: {appear: 20}, path: []
         }
         new TracingPatrollerDisplay(patrollerData, this.canvas, this.dispatch, this.nodeDisplays, this.hackerDisplays).disappear()
     }
@@ -401,8 +401,8 @@ class RunCanvas {
         patroller.lock(hackerId)
     }
 
-    movePatroller({patrollerId, fromNodeId, toNodeId, ticks}: ActionPatrollerMove) {
-        this.patrollerDisplays.get(patrollerId).move(fromNodeId, toNodeId, ticks)
+    movePatroller({patrollerId, fromNodeId, toNodeId, timings}: ActionPatrollerMove) {
+        this.patrollerDisplays.get(patrollerId).move(fromNodeId, toNodeId, timings)
     }
 
     removePatroller(patrollerId: string) {

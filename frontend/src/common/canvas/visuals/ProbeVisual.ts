@@ -3,7 +3,7 @@ import {Canvas} from "fabric/fabric-impl";
 import {animate, getHtmlImage} from "../CanvasUtils";
 import {Schedule} from "../../Schedule";
 import {NodeDisplay} from "../display/NodeDisplay";
-import {Ticks} from "../../model/Ticks";
+import {Timings} from "../../model/Ticks";
 
 const PROBE_IMAGE_SIZE = 40;
 const SIZE_MEDIUM = (40 / 40);
@@ -44,27 +44,27 @@ export class ProbeVisual {
 
     }
 
-    zoomInAndOutAndRemove(ticks: Ticks) {
-        this.schedule.run(ticks.in, () => {
+    zoomInAndOutAndRemove(timings: Timings) {
+        this.schedule.run(timings.in, () => {
             console.time("scan")
-            this.animateZoom(SIZE_SMALL, ticks.in)
-            this.animateOpacity(0.9, ticks.in)
+            this.animateZoom(SIZE_SMALL, timings.in)
+            this.animateOpacity(0.9, timings.in)
         })
-        this.schedule.run(ticks.out, () => {
-            this.animateZoom(SIZE_SMALL_MEDIUM, ticks.out)
-            this.animateOpacity(0, ticks.out + 10)
+        this.schedule.run(timings.out, () => {
+            this.animateZoom(SIZE_SMALL_MEDIUM, timings.out)
+            this.animateOpacity(0, timings.out + 10)
         })
         this.scheduleRemove()
     }
 
-    zoomOutAndInAndRemove(ticks: Ticks) {
-        this.schedule.run(ticks.out, () => {
-            this.animateZoom(SIZE_LARGE, ticks.out)
-            this.animateOpacity(0.7, ticks.out)
+    zoomOutAndInAndRemove(timings: Timings) {
+        this.schedule.run(timings.out, () => {
+            this.animateZoom(SIZE_LARGE, timings.out)
+            this.animateOpacity(0.7, timings.out)
         })
-        this.schedule.run(ticks.in, () => {
-            this.animateZoom(SIZE_MEDIUM_LARGE, ticks.in + 10)
-            this.animateOpacity(0, ticks.in + 10)
+        this.schedule.run(timings.in, () => {
+            this.animateZoom(SIZE_MEDIUM_LARGE, timings.in + 10)
+            this.animateOpacity(0, timings.in + 10)
         })
         this.scheduleRemove()
     }

@@ -1,29 +1,24 @@
-import {fabric} from "fabric";
-import {calcLine, calcLineStart} from "../CanvasUtils";
-import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes";
-import {Schedule} from "../../Schedule";
-import {ConnectionVisual} from "../visuals/ConnectionVisual";
-import {COLOR_PROBE_LINE} from "./util/DisplayConstants";
-import {TERMINAL_RECEIVE} from "../../terminal/TerminalReducer";
-import {Canvas} from "fabric/fabric-impl";
-import {Dispatch} from "redux";
-import {NodeScanType} from "../../../hacker/run/component/RunCanvas";
-import {DisplayCollection} from "./util/DisplayCollection";
-import {NodeDisplay} from "./NodeDisplay";
-import {Display} from "./Display";
-import {webSocketConnection} from "../../WebSocketConnection";
-import {Ticks} from "../../model/Ticks";
-import {ProbeVisual} from "../visuals/ProbeVisual";
+import {fabric} from "fabric"
+import {calcLine, calcLineStart} from "../CanvasUtils"
+import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes"
+import {Schedule} from "../../Schedule"
+import {ConnectionVisual} from "../visuals/ConnectionVisual"
+import {COLOR_PROBE_LINE} from "./util/DisplayConstants"
+import {Canvas} from "fabric/fabric-impl"
+import {NodeScanType} from "../../../hacker/run/component/RunCanvas"
+import {DisplayCollection} from "./util/DisplayCollection"
+import {NodeDisplay} from "./NodeDisplay"
+import {Display} from "./Display"
+import {ProbeVisual} from "../visuals/ProbeVisual"
+import {Timings} from "../../model/Ticks";
 
 
 
 export class ProbeDisplay implements Display {
 
     canvas: Canvas
-    dispatch: Dispatch
     id = null
     schedule
-    autoScan
     yourProbe
     aborted = false
     probeVisual: ProbeVisual | null = null
@@ -35,26 +30,24 @@ export class ProbeDisplay implements Display {
     y = 0
     size = 0
 
-    constructor(canvas: Canvas, dispatch: Dispatch, path: string[], scanType: NodeScanType, autoScan: boolean,
+    constructor(canvas: Canvas, path: string[], scanType: NodeScanType,
                 startDisplay: Display, yourProbe: boolean, nodeDisplays: DisplayCollection<NodeDisplay>,
-                ticks: Ticks) {
-        this.canvas = canvas;
-        this.schedule = new Schedule(dispatch);
-        this.autoScan = autoScan;
-        this.yourProbe = yourProbe;
-        this.dispatch = dispatch;
-        this.padding = yourProbe ? 3: 5;
+                timings: Timings) {
+        this.canvas = canvas
+        this.schedule = new Schedule(null)
+        this.yourProbe = yourProbe
+        this.padding = yourProbe ? 3: 5
 
-        let currentDisplay: Display = startDisplay;
+        let currentDisplay: Display = startDisplay
         path.forEach((nodeId) => {
-            const nextDisplay = nodeDisplays.get(nodeId);
-            this.scheduleMoveStep(nextDisplay, currentDisplay);
-            currentDisplay = nextDisplay;
-        });
+            const nextDisplay = nodeDisplays.get(nodeId)
+            this.scheduleMoveStep(nextDisplay, currentDisplay, timings.connection)
+            currentDisplay = nextDisplay
+        })
         const lastNodeId: string = path.pop()!
         this.schedule.run(0, () => {
-            this.processProbeArrive(scanType, lastNodeId, currentDisplay, ticks);
-        });
+            this.processProbeArrive(scanType, lastNodeId, currentDisplay, timings)
+        })
 
     }
 
@@ -69,95 +62,71 @@ export class ProbeDisplay implements Display {
         this.aborted = true
     }
 
-    scheduleMoveStep(nextDisplay: Display, currentDisplay: Display) {
-        this.schedule.run(22, () => this.moveStep(nextDisplay, currentDisplay, 20));
+    scheduleMoveStep(nextDisplay: Display, currentDisplay: Display, durationTicks: number) {
+        this.schedule.run(22, () => this.moveStep(nextDisplay, currentDisplay, durationTicks))
     }
 
     moveStep(nextDisplay: Display, currentDisplay: Display, duration: number) {
         if (this.aborted) return
 
-        const lineStartData = calcLineStart(currentDisplay, nextDisplay, 22, this.padding);
-        const lineElement = new ConnectionVisual(lineStartData, COLOR_PROBE_LINE, this.canvas);
+        const lineStartData = calcLineStart(currentDisplay, nextDisplay, 22, this.padding)
+        const lineElement = new ConnectionVisual(lineStartData, COLOR_PROBE_LINE, this.canvas)
 
-        this.connectionVisuals.push(lineElement);
-        const lineData = calcLine(currentDisplay, nextDisplay, this.padding);
-        lineElement.extendTo(lineData, duration);
+        this.connectionVisuals.push(lineElement)
+        const lineData = calcLine(currentDisplay, nextDisplay, this.padding)
+        lineElement.extendTo(lineData, duration)
     }
 
-    processProbeArrive(scanType: NodeScanType, nodeId: string, currentDisplay: Display, ticks: Ticks) {
+    processProbeArrive(scanType: NodeScanType, nodeId: string, currentDisplay: Display, timings: Timings) {
         if (this.aborted) return
 
         this.probeVisual = new ProbeVisual(this.canvas, currentDisplay as NodeDisplay, this.schedule)
 
         switch (scanType) {
             case SCAN_NODE_INITIAL:
-                return this.scanInside(nodeId, SCAN_NODE_INITIAL, ticks);
+                return this.scanInside(nodeId, SCAN_NODE_INITIAL, timings)
             case SCAN_CONNECTIONS:
-                return this.scanOutside(nodeId, ticks);
+                return this.scanOutside(nodeId, timings)
             case SCAN_NODE_DEEP:
-                return this.scanInside(nodeId, SCAN_NODE_DEEP, ticks);
+                return this.scanInside(nodeId, SCAN_NODE_DEEP, timings)
             default:
-                return this.probeError(scanType, nodeId);
+                throw new Error("Unknown scantype: " + scanType)
         }
     }
 
-    scanInside(nodeId: string, scanType: NodeScanType, ticks: Ticks) {
-        this.probeVisual!.zoomInAndOutAndRemove(ticks)
-        const finishMethod = () => {
-            if (this.yourProbe) {
-                this.probeArriveSaga(nodeId, scanType, this.autoScan)
-            }
-        };
-        this.finishProbe(finishMethod);
+    scanInside(nodeId: string, scanType: NodeScanType, timings: Timings) {
+        this.probeVisual!.zoomInAndOutAndRemove(timings)
+        this.finishProbe()
     }
 
-    scanOutside(nodeId: string, ticks: Ticks) {
-        this.probeVisual!.zoomOutAndInAndRemove(ticks)
-        const finishMethod = () => {
-            if (this.yourProbe) {
-                this.probeArriveSaga(nodeId, SCAN_CONNECTIONS, this.autoScan)
-            }
-        };
-        this.finishProbe(finishMethod)
+    scanOutside(nodeId: string, timings: Timings) {
+        this.probeVisual!.zoomOutAndInAndRemove(timings)
+        this.finishProbe()
     }
 
-    probeArriveSaga(nodeId: string, scanType: NodeScanType, autoScan: boolean) {
-        const payload = {nodeId: nodeId, action: scanType, autoScan: autoScan};
-        webSocketConnection.sendObjectWithRunId("/av/scan/probeArrive", payload);
-    }
-
-    finishProbe(finishMethod : () => void) {
+    finishProbe() {
         this.schedule.run(10, () => {
             this.connectionVisuals.forEach(lineElement => {
-                lineElement.disappear(10);
-            });
-            finishMethod();
-        });
+                lineElement.disappear(10)
+            })
+        })
         this.schedule.run(0, () => {
             this.probeVisual!.remove()
             this.connectionVisuals.forEach(lineElement => {
-                lineElement.remove();
-            });
-            console.timeEnd("scan");
-        });
-    }
-
-
-    probeError(scanType: NodeScanType, nodeId: string) {
-        this.probeVisual!.removeError()
-        this.schedule.run(0, () => {
-            this.dispatch({type: TERMINAL_RECEIVE, data: "[warn b]Probe error: [info]" + scanType + "[/] unknown. nodeId: [info]" + nodeId})
-        });
+                lineElement.remove()
+            })
+            console.timeEnd("scan")
+        })
     }
 
     remove() {
         this.probeVisual?.remove()
         this.connectionVisuals.forEach(lineElement => {
-            lineElement.remove();
-        });
+            lineElement.remove()
+        })
     }
 
     terminate() {
-        this.schedule.terminate();
+        this.schedule.terminate()
     }
 }

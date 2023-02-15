@@ -8,9 +8,9 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch} from "redux";
 import {DisplayCollection} from "./util/DisplayCollection";
 import {NodeDisplay} from "./NodeDisplay";
-import {Ticks} from "../../model/Ticks";
 import {HackerDisplay} from "./HackerDisplay";
 import {PatrollerData} from "../../../hacker/server/RunServerActionProcessor";
+import {Timings} from "../../model/Ticks";
 
 
 export class TracingPatrollerDisplay implements Display {
@@ -35,7 +35,7 @@ export class TracingPatrollerDisplay implements Display {
     y: number
     size = 0
 
-    constructor({patrollerId, nodeId, path, ticks}: PatrollerData, canvas: Canvas, dispatch: Dispatch,
+    constructor({patrollerId, nodeId, path, timings}: PatrollerData, canvas: Canvas, dispatch: Dispatch,
                 nodeDisplays: DisplayCollection<NodeDisplay>,
                 hackerDisplays: DisplayCollection<HackerDisplay>) {
 
@@ -77,12 +77,12 @@ export class TracingPatrollerDisplay implements Display {
                 const lineElement = new ConnectionVisual(lineEndData, COLOR_PATROLLER_LINE, this.canvas, styling);
                 this.lineElements.push(lineElement);
 
-                lineElement.appear(ticks.appear * 2);
+                lineElement.appear(timings.appear * 2);
             });
         }
 
-        animate(this.canvas, this.patrollerIcon, "opacity", 1, ticks.appear);
-        this.schedule.wait(ticks.appear);
+        animate(this.canvas, this.patrollerIcon, "opacity", 1, timings.appear);
+        this.schedule.wait(timings.appear);
     }
 
     getAllIcons(): fabric.Object[] {
@@ -91,9 +91,9 @@ export class TracingPatrollerDisplay implements Display {
         return objects
     }
 
-    move(fromNodeId: string, toNodeId: string, ticks: Ticks) {
+    move(fromNodeId: string, toNodeId: string, timings: Timings) {
 
-        this.schedule.run(ticks.move, () => {
+        this.schedule.run(timings.move, () => {
             const fromNodeDisplay = this.nodeDisplays.get(fromNodeId)
             const toNodeDisplay = this.nodeDisplays.get(toNodeId)
 
@@ -103,7 +103,7 @@ export class TracingPatrollerDisplay implements Display {
             this.lineElements.push(lineElement);
 
             const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
-            lineElement.extendTo(lineEndData, ticks.move);
+            lineElement.extendTo(lineEndData, timings.move);
         });
     }
 

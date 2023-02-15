@@ -7,21 +7,20 @@ import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
-import org.n1.av2.backend.model.Ticks
+import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
-import org.n1.av2.backend.service.patroller.TracingPatrollerService
-import org.n1.av2.backend.service.scan.ScanProbeService
+import org.n1.av2.backend.service.scan.ScanProbActionService
 import org.springframework.stereotype.Service
 
 
-private val MOVE_START_TICKS = Ticks("main" to 30)
-private val MOVE_ARRIVE_TICKS = Ticks("main" to 8)
+private val MOVE_START_Timings = Timings("main" to 30)
+private val MOVE_ARRIVE_Timings = Timings("main" to 8)
 
-class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, ticks: Ticks = MOVE_ARRIVE_TICKS) : TicksGameEvent(ticks)
+class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, timings: Timings = MOVE_ARRIVE_Timings) : TicksGameEvent(timings)
 
-private val HACKER_SCANS_NODE_TICKS = Ticks("in" to 50, "out" to 25)
+private val HACKER_SCANS_NODE_Timings = Timings("in" to 50, "out" to 25)
 
 class HackerScannedNodeEvent(val nodeId: String, val userId: String, val runId: String)
 
@@ -34,8 +33,7 @@ class CommandMoveService(
     private val runEntityService: RunEntityService,
     private val nodeStatusRepo: NodeStatusRepo,
     private val timerTriggerLayerService: TimerTriggerLayerService,
-    private val probeService: ScanProbeService,
-    private val tracingPatrollerService: TracingPatrollerService,
+    private val scanProbeActionService: ScanProbActionService,
     private val taskRunner: TaskRunner,
     private val stompService: StompService
 ) {
@@ -102,11 +100,11 @@ class CommandMoveService(
 
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
         stompService.terminalSetLockedCurrentUser(true)
-        class StartMove(val userId: String, val nodeId: String, val ticks: Ticks)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_TICKS))
+        class StartMove(val userId: String, val nodeId: String, val timings: Timings)
+        stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
 
         val moveArriveEvent = MoveArriveGameEvent(toNode.id, state.userId, runId)
-        taskRunner.queueInTicks(MOVE_START_TICKS.total) { moveArrive(moveArriveEvent) }
+        taskRunner.queueInTicks(MOVE_START_Timings.totalTicks) { moveArrive(moveArriveEvent) }
     }
 
     fun moveArrive(arriveEvent: MoveArriveGameEvent) {
@@ -128,12 +126,12 @@ class CommandMoveService(
         if (nodeStatus == NodeScanStatus.FULLY_SCANNED_4) {
             arriveComplete(state, nodeId, userId, runId)
         } else {
-            class HackerScansNodeAction(val userId: String, val nodeId: String, val ticks: Ticks = HACKER_SCANS_NODE_TICKS)
+            class HackerScansNodeAction(val userId: String, val nodeId: String, val timings: Timings = HACKER_SCANS_NODE_Timings)
 
             val action = HackerScansNodeAction(userId, nodeId)
             stompService.toRun(runId, ReduxActions.SERVER_HACKER_SCANS_NODE, action)
             val event = HackerScannedNodeEvent(nodeId, userId, runId)
-            taskRunner.queueInTicks(action.ticks.total) { hackerScannedNode(event) }
+            taskRunner.queueInTicks(action.timings.totalTicks) { hackerScannedNode(event) }
         }
     }
 
@@ -148,7 +146,7 @@ class CommandMoveService(
         when (nodeScan.status) {
             NodeScanStatus.DISCOVERED_1 -> hackerScannedNodeAndConnections(scan, nodeId, nodeScan)
             NodeScanStatus.TYPE_KNOWN_2 -> hackerScannedNodeAndConnections(scan, nodeId, nodeScan)
-            NodeScanStatus.CONNECTIONS_KNOWN_3 -> probeService.scannedSingleNode(nodeScan, scan, nodeId, NodeScanStatus.FULLY_SCANNED_4)
+            NodeScanStatus.CONNECTIONS_KNOWN_3 -> scanProbeActionService.scannedSingleNode(nodeScan, scan, nodeId, NodeScanStatus.FULLY_SCANNED_4)
             NodeScanStatus.FULLY_SCANNED_4 -> return
             else -> error("Unexpected status: " + nodeScan.status)
         }
@@ -159,7 +157,7 @@ class CommandMoveService(
 
     private fun hackerScannedNodeAndConnections(run: Run, nodeId: String, nodeScan: NodeScan) {
         val node = nodeEntityService.getById(nodeId)
-        probeService.scannedConnections(run, node, nodeScan, false)
+        scanProbeActionService.scannedConnections(run, node, nodeScan)
     }
 
 
@@ -167,9 +165,9 @@ class CommandMoveService(
         hackerStateEntityService.arriveAt(state, nodeId)
         triggerLayersAtArrive(nodeId, userId, runId)
 
-        class MoveArriveMessage(val nodeId: String, val userId: String, val ticks: Ticks)
+        class MoveArriveMessage(val nodeId: String, val userId: String, val timings: Timings)
 
-        val data = MoveArriveMessage(nodeId, userId, MOVE_ARRIVE_TICKS)
+        val data = MoveArriveMessage(nodeId, userId, MOVE_ARRIVE_Timings)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
         stompService.terminalSetLockedCurrentUser(false)
     }

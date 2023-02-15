@@ -7,6 +7,7 @@ import org.n1.av2.backend.service.ThemeService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.createLayerId
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrElse
 
 const val NODE_MIN_X = 35
 const val NODE_MAX_X = 607 - 35
@@ -118,6 +119,10 @@ class NodeEntityService(
         val lowerCapped = Math.max(value, lowerBound)
         val totalCapped = Math.min(lowerCapped, upperBound)
         return totalCapped
+    }
+
+    fun findById(nodeId: String): Node {
+        return nodeRepo.findById(nodeId).getOrElse { error("Node not found for id: ${nodeId}") }
     }
 
     fun findByNetworkId(siteId: String, networkId: String): Node? {

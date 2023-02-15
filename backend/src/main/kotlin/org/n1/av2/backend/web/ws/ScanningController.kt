@@ -1,9 +1,9 @@
 package org.n1.av2.backend.web.ws
 
 import org.n1.av2.backend.engine.TaskRunner
-import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.ReduxEvent
-import org.n1.av2.backend.service.scan.ScanningService
+import org.n1.av2.backend.service.run.EnterRunService
+import org.n1.av2.backend.service.scan.ScanInfoService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -14,7 +14,8 @@ import java.security.Principal
 @Controller
 class ScanningController(
     val taskRunner: TaskRunner,
-    val scanningService: ScanningService
+    val scanInfoService: ScanInfoService,
+    val enterRunService: EnterRunService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -22,34 +23,29 @@ class ScanningController(
 
     @MessageMapping("/scan/scansOfPlayer")
     fun scansOfPlayer(principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.sendScanInfosOfPlayer() }
+        taskRunner.runTask(principal) { scanInfoService.sendScanInfosOfPlayer() }
     }
 
     @MessageMapping("/scan/scanForName")
     fun scanForName(siteName: String, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.scanSiteForName(siteName) }
+        taskRunner.runTask(principal) { enterRunService.searchSiteByName(siteName) }
     }
 
     @MessageMapping("/scan/deleteScan")
     fun deleteScan(runId: String, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.deleteScan(runId) }
+        taskRunner.runTask(principal) { scanInfoService.deleteScan(runId) }
     }
 
     @MessageMapping("/scan/enterScan")
     fun enterScan(siteId: String, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.enterScan(siteId) }
+        taskRunner.runTask(principal) { enterRunService.enterRun(siteId) }
     }
 
     @MessageMapping("/scan/leaveScan")
     fun leaveScan(runId: String, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.leaveRun(runId) }
+        taskRunner.runTask(principal) { scanInfoService.leaveRun(runId) }
     }
 
-    data class ProbeScanActionInput(val runId: String, val nodeId: String, val action: NodeScanType, val autoScan: Boolean)
-    @MessageMapping("/scan/probeArrive")
-    fun probeArrive(input: ProbeScanActionInput, principal: Principal) {
-        taskRunner.runTask(principal) { scanningService.probeArrive(input.runId, input.nodeId, input.action, input.autoScan) }
-    }
 //     --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
     @MessageExceptionHandler

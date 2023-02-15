@@ -12,9 +12,9 @@ data class Run(
     val initiatorId: String,
     val siteId: String,
     var totalDistanceScanned: Int = 0,
-    var startTime: ZonedDateTime? = null,
-    var duration: Int? = null,
-    var efficiency: Int? = null,
+    var scanStartTime: ZonedDateTime,
+    var scanDuration: Int? = null,
+    var scanEfficiency: Int? = null,
     val nodeScanById: MutableMap<String, NodeScan>
 )
 

@@ -23,9 +23,9 @@ private class Task(val action: () -> Unit, val user: User)
  */
 @Component
 class TaskRunner(
-    val taskEngine: TaskEngine,
-    val timedTaskRunner: TimedTaskRunner,
-    val currentUserService: CurrentUserService) {
+    private val taskEngine: TaskEngine,
+    private val timedTaskRunner: TimedTaskRunner,
+    private val currentUserService: CurrentUserService) {
 
     fun runTask(principal: Principal, action: () -> Unit) {
         if (principal !is UserPrincipal) error("Received call where principal is not UserPrincipal: ${principal}")

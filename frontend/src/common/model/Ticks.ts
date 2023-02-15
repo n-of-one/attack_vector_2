@@ -1,1 +1,1 @@
-export type Ticks = { [key: string]: number }
+export type Timings = { [key: string]: number }

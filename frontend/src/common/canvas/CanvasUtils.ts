@@ -4,20 +4,20 @@ import {Display} from "./display/Display"
 import {TICK_MILLIS} from "../Schedule";
 
 
-export const animate = (canvas: Canvas, toAnimate: fabric.Object, attribute: string | null, value: any, duration: number, easing: IUtilAminEaseFunction | null = null) => {
+export const animate = (canvas: Canvas, toAnimate: fabric.Object, attribute: string | null, value: any, durationTicks: number, easing: IUtilAminEaseFunction | null = null) => {
 
     const easingFunction = (easing) ? easing : fabric.util.ease.easeInOutSine
     if (attribute) {
         toAnimate.animate(attribute, value, {
             onChange: canvas.renderAll.bind(canvas),
-            duration: (duration * TICK_MILLIS) - 25,
+            duration: (durationTicks * TICK_MILLIS) - 25,
             easing: easingFunction
         })
     }
     else {
         toAnimate.animate(value, {
             onChange: canvas.renderAll.bind(canvas),
-            duration: (duration * TICK_MILLIS) - 25,
+            duration: (durationTicks * TICK_MILLIS) - 25,
             easing: easingFunction
         })
     }

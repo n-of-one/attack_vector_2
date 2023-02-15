@@ -5,7 +5,7 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.IceStatusRepo
 import org.n1.av2.backend.entity.run.LayerStatusRepo
 import org.n1.av2.backend.entity.run.NodeStatusRepo
-import org.n1.av2.backend.model.Ticks
+import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
@@ -15,9 +15,9 @@ import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
 import org.springframework.stereotype.Service
 
-private val START_ATTACK_SLOW = Ticks("main" to 250)
-private val NO_TICKS = Ticks("main" to 0)
-private val START_ATTACK_FAST = NO_TICKS
+private val START_ATTACK_SLOW = Timings("main" to 250)
+private val NO_Timings = Timings("main" to 0)
+private val START_ATTACK_FAST = NO_Timings
 
 
 class StartAttackArriveGameEvent(val userId: String, val runId: String)
@@ -42,14 +42,14 @@ class StartAttackService(
 
         hackerStateEntityService.startRun(userId, runId)
 
-        data class StartRun(val userId: String, val quick: Boolean, val ticks: Ticks)
-        val ticks = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
-        val data = StartRun(userId, quick, ticks)
+        data class StartRun(val userId: String, val quick: Boolean, val timings: Timings)
+        val timings = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
+        val data = StartRun(userId, quick, timings)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
 
 
         val next = StartAttackArriveGameEvent(userId, runId)
-        taskRunner.queueInTicks(ticks.total) { startAttackArrive(next) }
+        taskRunner.queueInTicks(timings.totalTicks) { startAttackArrive(next) }
     }
 
     fun startAttackArrive(event: StartAttackArriveGameEvent) {

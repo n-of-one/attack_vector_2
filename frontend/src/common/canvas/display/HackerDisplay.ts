@@ -18,8 +18,8 @@ import {DisplayCollection} from "./util/DisplayCollection"
 import {NodeDisplay} from "./NodeDisplay"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
 import {HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
-import {Ticks} from "../../model/Ticks"
 import {notEmpty} from "../../Util";
+import {Timings} from "../../model/Ticks";
 
 const APPEAR_TIME = 20
 const DISAPPEAR_TIME = 10
@@ -243,11 +243,11 @@ export class HackerDisplay implements Display {
         })
     }
 
-    startRun(quick: boolean, ticks: Ticks) {
+    startRun(quick: boolean, timings: Timings) {
         if (quick) {
             this.startRunQuick()
         } else {
-            this.startRunSlow(ticks)
+            this.startRunSlow(timings)
         }
     }
 
@@ -263,7 +263,7 @@ export class HackerDisplay implements Display {
 
     }
 
-    startRunSlow(ticks: Ticks) {
+    startRunSlow(timings: Timings) {
         this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 0, this)
         this.canvas.add(this.hackerIcon)
         this.canvas.sendToBack(this.hackerIcon)
@@ -271,9 +271,9 @@ export class HackerDisplay implements Display {
         this.targetNodeDisplay = this.siteStartNodeDisplay
 
 
-        this.schedule.run(ticks.main, () => {
+        this.schedule.run(timings.main, () => {
             if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, ticks.main - 50, this.you, easeOutSine)
+            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, timings.main - 50, this.you, easeOutSine)
         })
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)
@@ -288,19 +288,19 @@ export class HackerDisplay implements Display {
     //     animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
     // }
 
-    moveStart(nodeDisplay: NodeDisplay, ticks: Ticks) {
+    moveStart(nodeDisplay: NodeDisplay, timings: Timings) {
         this.targetNodeDisplay = nodeDisplay
 
-        this.schedule.run(ticks.main, () => {
+        this.schedule.run(timings.main, () => {
             if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, ticks.main + 10, this.you)
+            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, timings.main + 10, this.you)
         })
         // this.schedule.run(0, () => {
         //     this.moveLineElement?.disappear(10)
         // })
     }
 
-    moveArrive(nodeDisplay: NodeDisplay, ticks: Ticks) {
+    moveArrive(nodeDisplay: NodeDisplay, timings: Timings) {
         // this.moveLineElement?.disappear(10)
         this.schedule.run(0, () => {
             this.moveLineElement?.disappear(10)
@@ -323,7 +323,7 @@ export class HackerDisplay implements Display {
         this.canvas.bringToFront(this.hackerIcon!)
 
 
-        animate(this.canvas, this.hackerIcon!, 'opacity', 1, ticks.main)
+        animate(this.canvas, this.hackerIcon!, 'opacity', 1, timings.main)
 
         if (!oldNodeDisplay) return
 
@@ -332,8 +332,8 @@ export class HackerDisplay implements Display {
         this.canvas.add(afterImage).renderAll()
 
 
-        animate(this.canvas, afterImage, 'opacity', 0, ticks.main)
-        this.schedule.wait(ticks.main)
+        animate(this.canvas, afterImage, 'opacity', 0, timings.main)
+        this.schedule.wait(timings.main)
         this.schedule.run(0, () => {
             this.canvas.remove(afterImage)
         })
@@ -366,24 +366,24 @@ export class HackerDisplay implements Display {
         // })
     }
 
-    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, ticks: number, you: boolean, ease: IUtilAminEaseFunction= easeInOutSine): ConnectionVisual {
+    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, durationTicks: number, you: boolean, ease: IUtilAminEaseFunction= easeInOutSine): ConnectionVisual {
         const lineData: LinePositions = calcLine(fromNodeDisplay, toNodeDisplay, 0)
         const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
 
         const opacity = (you) ? 1: 0.5
 
         const lineElement = new ConnectionVisual(lineStart, COLOR_HACKER_LINE, this.canvas, {opacity: opacity})
-        lineElement.extendTo(lineData, ticks, ease)
+        lineElement.extendTo(lineData, durationTicks, ease)
 
         return lineElement
     }
 
-    hackerProbeLayers(ticks: Ticks) {
-        this.schedule.run(ticks.start, () => {
-            this.animateZoom(SCALE_SMALL, ticks.start)
+    hackerProbeLayers(timing: Timings) {
+        this.schedule.run(timing.start, () => {
+            this.animateZoom(SCALE_SMALL, timing.start)
         })
-        this.schedule.run(ticks.end, () => {
-            this.animateZoom(SCALE_NORMAL, ticks.end)
+        this.schedule.run(timing.end, () => {
+            this.animateZoom(SCALE_NORMAL, timing.end)
         })
     }
 

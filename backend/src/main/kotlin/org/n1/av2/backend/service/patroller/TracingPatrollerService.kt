@@ -6,7 +6,7 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.PatrollerPathSegment
 import org.n1.av2.backend.entity.run.TracingPatroller
 import org.n1.av2.backend.entity.run.TracingPatrollerRepo
-import org.n1.av2.backend.model.Ticks
+import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
@@ -17,13 +17,13 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
 
-val PATROLLER_ARRIVE_FIRST_TICKS = Ticks("appear" to 20)
-val PATROLLER_MOVE_TICKS = Ticks("move" to 15)
+val PATROLLER_ARRIVE_FIRST_Timings = Timings("appear" to 20)
+val PATROLLER_MOVE_Timings = Timings("move" to 15)
 
 
-class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String, ticks: Ticks) : TicksGameEvent(ticks)
+class TracingPatrollerArrivesGameEvent(val patrollerId: String, val nodeId: String, timings: Timings) : TicksGameEvent(timings)
 
-class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: List<PatrollerPathSegment>, val ticks: Ticks = PATROLLER_ARRIVE_FIRST_TICKS)
+class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: List<PatrollerPathSegment>, val timings: Timings = PATROLLER_ARRIVE_FIRST_Timings)
 
 
 @Service
@@ -67,8 +67,8 @@ class TracingPatrollerService(
 
         messageStartPatroller(patroller, nodeId, runId)
 
-        val next = TracingPatrollerArrivesGameEvent(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_TICKS)
-        taskRunner.queueInTicks(PATROLLER_ARRIVE_FIRST_TICKS.total) { patrollerArrives(next) }
+        val next = TracingPatrollerArrivesGameEvent(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_Timings)
+        taskRunner.queueInTicks(PATROLLER_ARRIVE_FIRST_Timings.totalTicks) { patrollerArrives(next) }
     }
 
     fun patrollerArrives(event: TracingPatrollerArrivesGameEvent) {
@@ -92,8 +92,8 @@ class TracingPatrollerService(
 
         messagePatrollerMove(patroller, segment, runId)
 
-        val next = TracingPatrollerArrivesGameEvent(patroller.id, nextNodeToTarget.id, PATROLLER_MOVE_TICKS)
-        taskRunner.queueInTicks(PATROLLER_MOVE_TICKS.total) { patrollerArrives(next) }
+        val next = TracingPatrollerArrivesGameEvent(patroller.id, nextNodeToTarget.id, PATROLLER_MOVE_Timings)
+        taskRunner.queueInTicks(PATROLLER_MOVE_Timings.totalTicks) { patrollerArrives(next) }
     }
 
     private fun lockHacker(patroller: TracingPatroller) {
@@ -135,9 +135,9 @@ class TracingPatrollerService(
     // -- Messages to UI -- //
 
     private fun messageStartPatroller(patroller: TracingPatroller, nodeId: String, runId: String) {
-        class ActionStartPatroller(val patrollerId: String, val nodeId: String, val ticks: Ticks)
+        class ActionStartPatroller(val patrollerId: String, val nodeId: String, val timings: Timings)
 
-        val action = ActionStartPatroller(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_TICKS)
+        val action = ActionStartPatroller(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_Timings)
         stompService.toRun(runId, ReduxActions.SERVER_START_TRACING_PATROLLER, action)
     }
 
@@ -149,9 +149,9 @@ class TracingPatrollerService(
     }
 
     private fun messagePatrollerMove(patroller: TracingPatroller, segment: PatrollerPathSegment, runId: String) {
-        class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val ticks: Ticks)
+        class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val timings: Timings)
 
-        val action = ActionPatrollerMove(patroller.id, segment.fromNodeId, segment.toNodeId, PATROLLER_MOVE_TICKS)
+        val action = ActionPatrollerMove(patroller.id, segment.fromNodeId, segment.toNodeId, PATROLLER_MOVE_Timings)
         stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_MOVE, action)
     }
 
