@@ -78,7 +78,7 @@ class ScanningService(
         stompService.toRun(run.runId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-        taskRunner.queueInTicks(totalTicks) {
+        taskRunner.queueInTicks(totalTicks - 20) {
             scanProbActionService.probeCompleted(run, node, scanType)
 
             if (allNodesScanned(run)) {

@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {animate, calcLine, calcLineStart, getHtmlImage} from "../CanvasUtils";
+import {animate, calcLine, getHtmlImage, LinePositions} from "../CanvasUtils";
 import {Schedule} from "../../Schedule";
 import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
 import {ConnectionVisual} from "../visuals/ConnectionVisual";
@@ -97,13 +97,13 @@ export class TracingPatrollerDisplay implements Display {
             const fromNodeDisplay = this.nodeDisplays.get(fromNodeId)
             const toNodeDisplay = this.nodeDisplays.get(toNodeId)
 
-            const lineStartData = calcLineStart(fromNodeDisplay, toNodeDisplay, 22, 4);
-            const lineElement = new ConnectionVisual(lineStartData, COLOR_PATROLLER_LINE, this.canvas);
+            const lineData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
+            const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
 
+            const lineElement = new ConnectionVisual(lineStart, COLOR_PATROLLER_LINE, this.canvas);
             this.lineElements.push(lineElement);
 
-            const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
-            lineElement.extendTo(lineEndData, timings.move);
+            lineElement.extendTo(lineData, timings.move);
         });
     }
 

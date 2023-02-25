@@ -106,12 +106,6 @@ const expandPadding = (xSpan: number, ySpan: number, padding: number | null): nu
     }
 }
 
-export const calcLineStart = (from: Display, to: Display, fromOffset: number, padding: number): LinePositions => {
-    const {distance} = calcDistance(from, to)
-    const toOffset = distance - fromOffset
-    return calcLineWithOffset(from, to, fromOffset, toOffset, padding)
-}
-
 export function easeLinear (t: number, b: number, c: number, d: number) {
     return b + (t/d) * c
 }

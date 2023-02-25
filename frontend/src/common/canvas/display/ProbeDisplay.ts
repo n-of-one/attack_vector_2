@@ -1,5 +1,5 @@
 import {fabric} from "fabric"
-import {calcLine, calcLineStart} from "../CanvasUtils"
+import {calcLine, LinePositions} from "../CanvasUtils"
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes"
 import {Schedule} from "../../Schedule"
 import {ConnectionVisual} from "../visuals/ConnectionVisual"
@@ -69,11 +69,13 @@ export class ProbeDisplay implements Display {
     moveStep(nextDisplay: Display, currentDisplay: Display, duration: number) {
         if (this.aborted) return
 
-        const lineStartData = calcLineStart(currentDisplay, nextDisplay, 22, this.padding)
-        const lineElement = new ConnectionVisual(lineStartData, COLOR_PROBE_LINE, this.canvas)
+        const lineData = calcLine(currentDisplay, nextDisplay, this.padding)
+        const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
+
+
+        const lineElement = new ConnectionVisual(lineStart, COLOR_PROBE_LINE, this.canvas)
 
         this.connectionVisuals.push(lineElement)
-        const lineData = calcLine(currentDisplay, nextDisplay, this.padding)
         lineElement.extendTo(lineData, duration)
     }
 
