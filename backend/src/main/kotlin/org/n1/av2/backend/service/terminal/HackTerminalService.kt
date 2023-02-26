@@ -1,9 +1,11 @@
 package org.n1.av2.backend.service.terminal
 
-import org.n1.av2.backend.config.MyEnvironment
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.Syntax
+import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.terminal.hacking.CommandHackService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.CommandViewService
@@ -17,7 +19,8 @@ class HackTerminalService(
     private val commandMoveService: CommandMoveService,
     private val commandViewService: CommandViewService,
     private val hackerStateEntityService: HackerStateEntityService,
-    private val environment: MyEnvironment) {
+    private val runService: RunService,
+) {
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.trim().split(" ")
@@ -26,7 +29,7 @@ class HackTerminalService(
 
         when (commandAction) {
             "help" -> processHelp()
-            "dc" -> stompService.terminalReceiveCurrentUser("[warn]Not implemented. Yet...")
+            "dc" -> processDc(runId)
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
             else -> processPrivilegedCommand(runId, tokens, commandAction)
@@ -64,22 +67,18 @@ class HackTerminalService(
 //        }
     }
 
+    fun processDc(runId: String) {
+        val hackerState = hackerStateEntityService.retrieveForCurrentUser()
+        runService.leaveRun(hackerState)
+
+        stompService.toUser(ReduxActions.SERVER_HACKER_DC, "-")
+    }
+
     fun reportLocked() {
         stompService.terminalReceiveCurrentUser("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
 
-    fun sendSyntaxHighlighting(userId: String) {
-        val map = HashMap<String, Syntax>()
 
-        map["help"] = Syntax("u", "error s")
-        map["move"] = Syntax("u", "ok", "error s")
-        map["view"] = Syntax("u", "error s")
-        map["hack"] = Syntax("u", "primary", "error s")
-        map["dc"] = Syntax("u", "error s")
-        map["/share"] = Syntax("u warn", "info", "error s")
-
-        sendSyntaxHighlighting(map, userId, stompService)
-    }
 
 
 }

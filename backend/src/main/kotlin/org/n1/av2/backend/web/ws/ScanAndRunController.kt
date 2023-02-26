@@ -1,8 +1,9 @@
 package org.n1.av2.backend.web.ws
 
 import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.ui.ReduxEvent
-import org.n1.av2.backend.service.run.EnterRunService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.scan.ScanInfoService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
@@ -12,10 +13,11 @@ import org.springframework.stereotype.Controller
 import java.security.Principal
 
 @Controller
-class ScanningController(
-    val taskRunner: TaskRunner,
-    val scanInfoService: ScanInfoService,
-    val enterRunService: EnterRunService,
+class ScanAndRunController(
+    private val taskRunner: TaskRunner,
+    private val scanInfoService: ScanInfoService,
+    private val runService: RunService,
+    private val hackerStateEntityService: HackerStateEntityService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -28,7 +30,7 @@ class ScanningController(
 
     @MessageMapping("/scan/scanForName")
     fun scanForName(siteName: String, principal: Principal) {
-        taskRunner.runTask(principal) { enterRunService.searchSiteByName(siteName) }
+        taskRunner.runTask(principal) { scanInfoService.searchSiteByName(siteName) }
     }
 
     @MessageMapping("/scan/deleteScan")
@@ -38,12 +40,14 @@ class ScanningController(
 
     @MessageMapping("/scan/enterScan")
     fun enterScan(siteId: String, principal: Principal) {
-        taskRunner.runTask(principal) { enterRunService.enterRun(siteId) }
+        taskRunner.runTask(principal) { runService.enterRun(siteId) }
     }
 
-    @MessageMapping("/scan/leaveScan")
+    @MessageMapping("/run/leaveRun")
     fun leaveScan(runId: String, principal: Principal) {
-        taskRunner.runTask(principal) { scanInfoService.leaveRun(runId) }
+        taskRunner.runTask(principal) {
+            val state = hackerStateEntityService.retrieveForCurrentUser()
+            runService.leaveRun(state) }
     }
 
 //     --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

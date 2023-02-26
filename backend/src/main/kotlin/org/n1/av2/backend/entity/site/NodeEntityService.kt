@@ -18,8 +18,8 @@ const val NODE_MAX_Y = 815 - 48 - 100
 
 @Service
 class NodeEntityService(
-    val nodeRepo: NodeRepo,
-    val themeService: ThemeService
+    private val nodeRepo: NodeRepo,
+    private val themeService: ThemeService
 ) {
 
     fun createNode(command: AddNode): Node {
@@ -85,9 +85,6 @@ class NodeEntityService(
         return movedNode
     }
 
-    fun purgeAll() {
-        nodeRepo.deleteAll()
-    }
 
     fun deleteNode(nodeId: String) {
         val node = getById(nodeId)

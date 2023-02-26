@@ -239,10 +239,6 @@ export const initRunServerActions = (store: Store) => {
         runCanvas.hackerScansNode(data)
     })
 
-    webSocketConnection.addAction(SERVER_HACKER_DC, (data: HackerProbeConnectionsAction) => {
-        runCanvas.hackerProbeConnections(data)
-    })
-
     webSocketConnection.addAction(SERVER_START_HACKING_ICE_PASSWORD, (_: any) => {
         passwordIceManager.passwordIceStartHack()
     })

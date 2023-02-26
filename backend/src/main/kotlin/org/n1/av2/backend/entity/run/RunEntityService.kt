@@ -8,10 +8,12 @@ import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 
 @Service
-class RunEntityService(private val runRepo: RunRepo,
-                       private val userRunLinkRepo: UserRunLinkRepo,
-                       private val time: TimeService,
-                       private val currentUserService: CurrentUserService) {
+class RunEntityService(
+    private val runRepo: RunRepo,
+    private val userRunLinkRepo: UserRunLinkRepo,
+    private val time: TimeService,
+    private val currentUserService: CurrentUserService
+) {
 
     fun getByRunId(runId: String): Run {
         return runRepo.findByRunId(runId) ?: error("${runId} not found")
@@ -20,11 +22,11 @@ class RunEntityService(private val runRepo: RunRepo,
     fun createScan(siteProperties: SiteProperties, nodeScanById: MutableMap<String, NodeScan>, user: User): String {
         val runId = createId("run") { candidate: String -> runRepo.findByRunId(candidate) }
         val run = Run(
-                scanStartTime = time.now(),
-                runId = runId,
-                siteId = siteProperties.siteId,
-                nodeScanById = nodeScanById,
-                initiatorId =  user.id
+            scanStartTime = time.now(),
+            runId = runId,
+            siteId = siteProperties.siteId,
+            nodeScanById = nodeScanById,
+            initiatorId = user.id
         )
         runRepo.save(run)
 
@@ -43,11 +45,6 @@ class RunEntityService(private val runRepo: RunRepo,
         val userScans = userRunLinkRepo.findAllByUserId(userId)
         val runIds = userScans.map { it.runId }
         return runRepo.findByRunIdIn(runIds)
-    }
-
-    fun purgeAll() {
-        runRepo.deleteAll()
-        userRunLinkRepo.deleteAll()
     }
 
     fun hasUserScan(user: User, runId: String): Boolean {

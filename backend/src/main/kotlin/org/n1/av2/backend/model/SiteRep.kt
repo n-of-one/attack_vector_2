@@ -10,12 +10,4 @@ data class SiteRep(
     val siteProperties: SiteProperties
 ) {
 
-    fun findNodeByServiceId(layerId: String): Node? {
-        val node = nodes.find { node ->
-            node.layers.filter { layer ->
-                layer.id == layerId
-            }.any()
-        }
-        return node
-    }
 }

@@ -295,13 +295,10 @@ export class HackerDisplay implements Display {
             if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
             this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, timings.main + 10, this.you)
         })
-        // this.schedule.run(0, () => {
-        //     this.moveLineElement?.disappear(10)
-        // })
+
     }
 
     moveArrive(nodeDisplay: NodeDisplay, timings: Timings) {
-        // this.moveLineElement?.disappear(10)
         this.schedule.run(0, () => {
             this.moveLineElement?.disappear(10)
         })
@@ -359,11 +356,16 @@ export class HackerDisplay implements Display {
     }
 
     repositionInNode(yOffset: number) {
-        // this.schedule.run(4, () => {
-        //     if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-        //
-        //     this.moveStep(this.currentNodeDisplay, -OFFSET, yOffset, 4)
-        // })
+        this.schedule.run(4, () => {
+            if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
+
+            this.moveStep(this.currentNodeDisplay, -OFFSET, yOffset, 4)
+        })
+    }
+
+    moveStep(node: NodeDisplay, offsetX: number, offsetY: number, time: number, easing: IUtilAminEaseFunction | null = null) {
+        animate(this.canvas, this.hackerIcon!, "left", node.x + offsetX, time, easing)
+        animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
     }
 
     animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, durationTicks: number, you: boolean, ease: IUtilAminEaseFunction= easeInOutSine): ConnectionVisual {
@@ -385,24 +387,6 @@ export class HackerDisplay implements Display {
         this.schedule.run(timing.end, () => {
             this.animateZoom(SCALE_NORMAL, timing.end)
         })
-    }
-
-    hackerProbeConnections(nodeDisplay: NodeDisplay) {
-        // this.schedule.run(4, () => {
-        //     this.moveStep(nodeDisplay, 0, 0, 4)
-        // })
-        //
-        // this.schedule.run(50, () => {
-        //     this.animateZoom(SCALE_LARGE, 50)
-        //     this.animateOpacity(0.6, 50)
-        // })
-        // this.schedule.run(45, () => {
-        //     this.animateZoom(SCALE_NORMAL, 50)
-        //     this.animateOpacity(1, 50)
-        // })
-        // this.schedule.run(4, () => {
-        //     this.moveStep(nodeDisplay, OFFSET, OFFSET, 4)
-        // })
     }
 
     animateZoom(scale: number, duration: number) {

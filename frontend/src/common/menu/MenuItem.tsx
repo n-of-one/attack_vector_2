@@ -6,6 +6,7 @@ import {HackerState} from "../../hacker/HackerRootReducer";
 import {webSocketConnection} from "../WebSocketConnection";
 import {terminalManager} from "../terminal/TerminalManager";
 import {runCanvas} from "../../hacker/run/component/RunCanvas";
+import {Dispatch} from "redux";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -13,6 +14,19 @@ interface Props {
     targetPage: string,
     label: string,
     requriesRole: string,
+}
+
+export const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
+    console.log("Navigating to page: " + targetPage);
+    dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
+
+    if (currentPage === RUN && targetPage !== RUN) {
+        webSocketConnection.unsubscribe();
+        terminalManager.stop();
+        runCanvas.stop();
+        webSocketConnection.send("/av/run/leaveRun", runId);
+    }
+    return false
 }
 
 export const MenuItem = (props: Props) => {
@@ -24,27 +38,17 @@ export const MenuItem = (props: Props) => {
     const currentPage =  useSelector( (state: HackerState) => state.currentPage )
     const runId: string | null =  useSelector( (state: HackerState) => state.run?.run?.runId )
 
-    const navigateTo = (event: any, targetPage: string) => {
+    const handleClick = (event:any) => {
         event.preventDefault();
-        console.log("Navigating to page: " + targetPage);
-        dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
-
-        if (currentPage === RUN && targetPage !== RUN) {
-            webSocketConnection.unsubscribe();
-            terminalManager.stop();
-            runCanvas.stop();
-            webSocketConnection.send("/av/scan/leaveScan", runId);
-        }
-        return false
+        navigateTo(currentPage, props.targetPage, runId, dispatch)
     }
-
 
 
     if (roles.includes(props.requriesRole)) {
         if (currentPage === props.targetPage) {
             return <li className="nav-item active"><a className="nav-link">{props.label}</a></li>
         } else {
-            return <li className="nav-item"><a className="nav-link" onClick={(e) => navigateTo(e, props.targetPage)}>{props.label}</a></li>
+            return <li className="nav-item"><a className="nav-link" onClick={(e) => handleClick(e)}>{props.label}</a></li>
         }
     } else {
         return <></>

@@ -366,11 +366,6 @@ class RunCanvas {
         probe.zoomInAndOutAndRemove(timings)
     }
 
-    hackerProbeConnections({userId, nodeId}: HackerProbeConnectionsAction) {
-        const nodeDisplay = this.nodeDisplays.get(nodeId)
-        this.hackerDisplays.get(userId).hackerProbeConnections(nodeDisplay)
-    }
-
     nodeHacked(nodeId: string) {
         this.nodeDataById[nodeId].hacked = true
         this.nodeDisplays.get(nodeId).hacked()

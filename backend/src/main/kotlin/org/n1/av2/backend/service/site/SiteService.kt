@@ -42,22 +42,5 @@ class SiteService(
         return nodes.find { node -> node.networkId == startNodeNetworkId }
     }
 
-    fun purgeAll() {
-        sitePropertiesEntityService.findAll().forEach { siteProperties ->
-            stompService.toSite(siteProperties.siteId, ReduxActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
-        }
-
-        sitePropertiesEntityService.purgeAll()
-        layoutEntityService.purgeAll()
-        nodeEntityService.purgeAll()
-        connectionEntityService.purgeAll()
-        siteEditorStateEntityService.purgeAll()
-    }
-
-
-    // --- --- --- //
-
-
-
 
 }

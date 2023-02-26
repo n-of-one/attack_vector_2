@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class LayoutEntityService(
-        val layoutRepo: LayoutRepo
+        private val layoutRepo: LayoutRepo
 ) {
 
 
@@ -38,9 +38,6 @@ class LayoutEntityService(
         layoutRepo.save(layout)
     }
 
-    fun purgeAll() {
-        layoutRepo.deleteAll()
-    }
 
     fun create(id: String): Layout {
         val layout = Layout(siteId = id)

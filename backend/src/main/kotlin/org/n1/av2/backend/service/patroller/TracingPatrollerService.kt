@@ -113,14 +113,13 @@ class TracingPatrollerService(
         return targetTraverseNode.traceToDistance(1) ?: error("Cannot find path to hacker at ${targetNodeId} from ${patroller.currentNodeId}")
     }
 
-    fun purgeAll() {
-        tracingPatrollerRepo.deleteAll()
-    }
 
     fun disconnected(userId: String) {
         tracingPatrollerRepo
                 .findAllByTargetUserId(userId)
                 .forEach { remove(it) }
+
+        // TODO FIXME: also inform all UIs that those patrollers must be removed
     }
 
     private fun remove(patroller: TracingPatroller) {

@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
@@ -8,6 +9,7 @@ import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.run.StartAttackService
 import org.n1.av2.backend.service.scan.ScanningService
 import org.springframework.stereotype.Service
@@ -21,6 +23,8 @@ class ScanTerminalService(
     private val startAttackService: StartAttackService,
     private val currentUser: CurrentUserService,
     private val environment: MyEnvironment,
+    private val hackerStateEntityService: HackerStateEntityService,
+    private val runService: RunService,
     private val stompService: StompService,
     ) {
 
@@ -52,7 +56,9 @@ class ScanTerminalService(
     }
 
     private fun processDisconnect() {
-        // FIXME: Also inform other hackers that this one is leaving
+        val hackerState = hackerStateEntityService.retrieveForCurrentUser()
+        runService.leaveRun(hackerState)
+
         stompService.toUser(ReduxActions.SERVER_HACKER_DC, "-")
     }
 
@@ -114,22 +120,7 @@ class ScanTerminalService(
     }
 
 
-    fun sendSyntaxHighlighting() {
-        val map = HashMap<String, Syntax>()
 
-        map["help"] = Syntax("u", "error s")
-        map["autoscan"] = Syntax("u", "error s")
-        map["attack"] = Syntax("u", "error s")
-        map["scan"] = Syntax("u", "ok", "error s")
-        map["dc"] = Syntax("u", "error s")
-        map["/share"] = Syntax("u warn", "info", "error s")
-
-        map["move"] = Syntax("error s", "error s")
-        map["view"] = Syntax("error s", "error s")
-        map["hack"] = Syntax("error s", "error s")
-
-        sendSyntaxHighlighting(map, currentUser.userId, stompService)
-    }
 
 
 }

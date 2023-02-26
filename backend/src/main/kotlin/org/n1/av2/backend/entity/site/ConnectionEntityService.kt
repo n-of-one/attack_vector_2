@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class ConnectionEntityService(
-        val connectionRepo: ConnectionRepo
+        private val connectionRepo: ConnectionRepo
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -31,10 +31,6 @@ class ConnectionEntityService(
 
     fun getAll(siteId: String): List<Connection> {
         return connectionRepo.findBySiteId(siteId)
-    }
-
-    fun purgeAll() {
-        connectionRepo.deleteAll()
     }
 
     fun findByNodeId(nodeId: String): Set<Connection> {

@@ -10,11 +10,10 @@ import javax.annotation.PostConstruct
 
 @Component
 class UserEntityService(
-    val userRepo: UserRepo,
-    val template: MongoTemplate
+    private val userRepo: UserRepo,
 ) {
 
-    val passwordEncoder = BCryptPasswordEncoder(4)
+    val passwordEncoder = BCryptPasswordEncoder(10)
 
     fun findByName(userName: String): User? {
         return userRepo.findByNameIgnoreCase(userName)
@@ -85,11 +84,6 @@ class UserEntityService(
         }
 
         return createId("user", ::findExisting)
-    }
-
-    fun purgeAll() {
-        userRepo.deleteAll()
-        createMandatoryUsers()
     }
 
     fun getById(userId: String): User {

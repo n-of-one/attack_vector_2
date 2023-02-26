@@ -95,15 +95,15 @@ class TaskEngine (val stompService: StompService,
                 return
             }
             if (exception is FatalException) {
-                val event = ServerFatal(false, exception.message ?: "-")
+                val event = ServerFatal(false, exception.message ?: exception.javaClass.name)
                 stompService.toUser(ReduxActions.SERVER_ERROR, event)
                 logger.warn("${task.user.name}: ${exception}")
                 return
             }
             if (!currentUserService.isSystemUser) {
-                val event = ServerFatal(true, exception.message ?: "-")
+                val event = ServerFatal(true, exception.message ?: exception.javaClass.name)
                 stompService.toUser(ReduxActions.SERVER_ERROR, event)
-                logger.info("${task.user.name} - task triggered exception. ", exception)
+                logger.info("User: ${task.user.name} - task triggered exception. ", exception)
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)
             }

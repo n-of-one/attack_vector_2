@@ -169,6 +169,7 @@ export class WebSocketConnection {
     }
 
     addAction(actionName: string, actionMethod: (action: ActionType) => void) {
+        if (this.actions[actionName]) { throw Error("Duplicate action definition for : " + actionName)}
         this.actions[actionName] = actionMethod;
     }
 }

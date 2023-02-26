@@ -98,16 +98,6 @@ class HackerStateEntityService(
         hackerStateRepo.save(newPosition)
     }
 
-    fun purgeAll() {
-        hackerStateRepo.deleteAll()
-        init()
-    }
-
-    fun snapBack(oldState: HackerStateRunning) {
-        val newState = oldState.toState().copy(targetNodeId = oldState.currentNodeId)
-        hackerStateRepo.save(newState)
-    }
-
     fun lockHacker(hackerId: String, patrollerId: String) {
         val position = retrieve(hackerId)
         val newPosition = position.copy(locked = true, hookPatrollerId = patrollerId, runActivity = RunActivity.AT_NODE, targetNodeId = null)
@@ -123,6 +113,7 @@ class HackerStateEntityService(
                 runActivity = RunActivity.NA,
                 hookPatrollerId = null, locked = false)
         hackerStateRepo.save(newState)
+
     }
 
     fun login(userId: String) {

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SitePropertiesEntityService(
-    val sitePropertiesRepo: SitePropertiesRepo,
+    private val sitePropertiesRepo: SitePropertiesRepo,
 ) {
 
     fun getBySiteId(id: String): SiteProperties {
@@ -25,10 +25,6 @@ class SitePropertiesEntityService(
         if (input.isEmpty()) throw ValidationException("Name cannot be empty")
         if (input.contains(" ")) throw ValidationException("Site name cannot contain a space")
         data.name = input
-    }
-
-    fun purgeAll() {
-        sitePropertiesRepo.deleteAll()
     }
 
     fun createId(): String {
