@@ -17,16 +17,13 @@ interface Props {
 }
 
 export const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
-    console.log("Navigating to page: " + targetPage);
-    dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
-
     if (currentPage === RUN && targetPage !== RUN) {
-        webSocketConnection.unsubscribe();
-        terminalManager.stop();
-        runCanvas.stop();
         webSocketConnection.send("/av/run/leaveRun", runId);
     }
-    return false
+    else {
+        console.log("Navigating to page: " + targetPage);
+        dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
+    }
 }
 
 export const MenuItem = (props: Props) => {
@@ -41,6 +38,7 @@ export const MenuItem = (props: Props) => {
     const handleClick = (event:any) => {
         event.preventDefault();
         navigateTo(currentPage, props.targetPage, runId, dispatch)
+        return false
     }
 
 

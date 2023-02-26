@@ -10,7 +10,6 @@ import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.site.SiteService
-import org.n1.av2.backend.service.terminal.ScanTerminalService
 import org.n1.av2.backend.service.terminal.SyntaxHighlightingService
 import org.springframework.stereotype.Service
 
@@ -83,6 +82,7 @@ class RunService(
 
         class HackerLeaveNotification(val userId: String)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(hackerState.userId))
+        stompService.toUser(ReduxActions.SERVER_HACKER_DC, "-")
 
         hackerStateEntityService.leaveRun()
     }

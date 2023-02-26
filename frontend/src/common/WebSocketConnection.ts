@@ -5,6 +5,7 @@ import {ActionType} from "./Util";
 import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer";
 import {SET_USER_ID} from "./reducer/UserIdReducer";
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT} from "../hacker/server/GenericServerActionProcessor";
+import {currentUser} from "./CurrentUser";
 
 export class WebSocketConnection {
 
@@ -52,6 +53,7 @@ export class WebSocketConnection {
             notify ({type: "fatal", message:"Please close this browser tab, hackers can only use one browser tab at a time.."});
             return
         }
+        currentUser.id = userId;
 
         // notify_neutral('Status','Connection with server established (' + userName + ")");
         this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"});

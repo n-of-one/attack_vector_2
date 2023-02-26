@@ -119,14 +119,10 @@ class TracingPatrollerService(
                 .findAllByTargetUserId(userId)
                 .forEach { remove(it) }
 
-        // TODO FIXME: also inform all UIs that those patrollers must be removed
     }
 
     private fun remove(patroller: TracingPatroller) {
         tracingPatrollerRepo.delete(patroller)
-
-//      TODO: re-implement, rethink
-//        timedEventQueue.removeAllFor(patroller.id)
         messageRemovePatroller(patroller.id, patroller.runId)
     }
 

@@ -5,8 +5,6 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.model.Syntax
-import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
@@ -58,8 +56,6 @@ class ScanTerminalService(
     private fun processDisconnect() {
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
         runService.leaveRun(hackerState)
-
-        stompService.toUser(ReduxActions.SERVER_HACKER_DC, "-")
     }
 
     private fun processHelp() {
