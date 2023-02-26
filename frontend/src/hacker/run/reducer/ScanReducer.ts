@@ -1,7 +1,7 @@
 import {SERVER_DISCOVER_NODES} from "../model/ScanActions";
-import {DISCOVERED_1, NodeScanStatus} from "../../../common/enums/NodeStatus";
+import {NodeScanStatus} from "../../../common/enums/NodeStatus";
 import {AnyAction} from "redux";
-import {SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "../../server/RunServerActionProcessor";
+import {ProbeResultConnections, SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "../../server/RunServerActionProcessor";
 
 export interface Scan {
     runId: string,
@@ -65,15 +65,12 @@ const updateNodeScanById = (nodeScanById: NodeScanById, nodeId: string, newStatu
     return newNodeScanById;
 };
 
-interface DiscoverNodes {
-    nodeIds: string[],
-    connectionIds: string[]
-}
 
-const updateDiscoveredNodes = (scan: Scan, discoverNodes: DiscoverNodes) => {
+const updateDiscoveredNodes = (scan: Scan, probeResultConnections: ProbeResultConnections) => {
     let intermediateNodeScanById = scan.nodeScanById;
-    discoverNodes.nodeIds.forEach((nodeId: string) => {
-        intermediateNodeScanById = updateNodeScanById(intermediateNodeScanById, nodeId, DISCOVERED_1);
-    });
+
+    Object.entries(probeResultConnections.nodeStatusById).forEach(([nodeId, status]) => {
+        intermediateNodeScanById = updateNodeScanById(intermediateNodeScanById, nodeId, status)
+    })
     return {...scan, nodeScanById: intermediateNodeScanById};
 };

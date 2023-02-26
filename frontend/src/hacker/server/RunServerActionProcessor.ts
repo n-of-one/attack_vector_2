@@ -26,6 +26,7 @@ import {
 import {enterScan} from "../home/HackerHome"
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK} from "../../common/terminal/TerminalReducer"
 import {Schedule} from "../../common/Schedule"
+import {NodeScanStatus} from "../../common/enums/NodeStatus";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
@@ -56,8 +57,11 @@ export interface SiteAndScan {
     patrollers: PatrollerData[],
 }
 
+export interface NodeStatusById {
+    [key: string]: NodeScanStatus
+}
 export interface ProbeResultConnections {
-    nodeIds: string[],
+    nodeStatusById: NodeStatusById,
     connectionIds: string[]
 }
 
@@ -171,11 +175,11 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_UPDATE_NODE_STATUS, (data: UpdateNodeStatusAction) => {
-        runCanvas.updateNodeStatus(data)
+        runCanvas.updateNodeStatus(data.nodeId, data.newStatus)
     })
 
-    webSocketConnection.addAction(SERVER_DISCOVER_NODES, ({nodeIds, connectionIds}: ProbeResultConnections) => {
-        runCanvas.discoverNodes(nodeIds, connectionIds)
+    webSocketConnection.addAction(SERVER_DISCOVER_NODES, ({nodeStatusById, connectionIds}: ProbeResultConnections) => {
+        runCanvas.discoverNodes(nodeStatusById, connectionIds)
     })
 
     webSocketConnection.addAction(SERVER_PROBE_LAUNCH, (data: ProbeAction) => {

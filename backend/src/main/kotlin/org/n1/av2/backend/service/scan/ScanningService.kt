@@ -173,8 +173,13 @@ class ScanningService(
             val oldStatus = run.nodeScanById[it]
             run.nodeScanById[it] = NodeScan(NodeScanStatus.FULLY_SCANNED_4, oldStatus!!.distance)
         }
-
         runEntityService.save(run)
+
+        val nodeStatusById = layout.nodeIds.map {
+            it to NodeScanStatus.FULLY_SCANNED_4
+        }.toMap()
+
+        stompService.toRun(run.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, layout.connectionIds))
         scanInfoService.updateScanInfoToPlayers(run)
     }
 

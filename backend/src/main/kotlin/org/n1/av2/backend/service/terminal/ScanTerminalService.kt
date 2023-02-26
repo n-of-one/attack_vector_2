@@ -110,7 +110,6 @@ class ScanTerminalService(
     }
 
     fun processQuickscan(runId: String) {
-        stompService.terminalSetLockedCurrentUser(true)
         scanningService.quickScan(runId)
     }
 

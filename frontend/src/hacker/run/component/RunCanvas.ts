@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {Schedule} from "../../../common/Schedule"
-import {DISCOVERED_1, UNDISCOVERED_0} from "../../../common/enums/NodeStatus"
+import {NodeScanStatus, UNDISCOVERED_0} from "../../../common/enums/NodeStatus"
 import {NodeDisplay} from "../../../common/canvas/display/NodeDisplay"
 import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
 import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
@@ -10,7 +10,6 @@ import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPat
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackersReducer"
-import {UpdateNodeStatusAction} from "../reducer/ScanReducer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
@@ -18,10 +17,9 @@ import {DisplayCollection} from "../../../common/canvas/display/util/DisplayColl
 import {
     ActionPatrollerCatchesHacker,
     ActionPatrollerMove,
-    HackerProbeConnectionsAction,
     HackerScansNodeAction,
     MoveArriveAction, MoveArriveFailAction,
-    MoveStartAction,
+    MoveStartAction, NodeStatusById,
     PatrollerData,
     ProbeAction,
     SiteAndScan
@@ -34,6 +32,8 @@ export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.
 let probeDisplayIdSequence = 0
+
+
 
 
 /// This class renders the sit map on the JFabric Canvas
@@ -248,24 +248,28 @@ class RunCanvas {
         this.probeDisplays.add(probeId, probeDisplay)
     }
 
-    updateNodeStatus(action: UpdateNodeStatusAction) {
-        // TODO We don't need to pass an object field in a method: this.selectedObject
-        // TODO: add check if node exists
-        this.nodeDisplays.get(action.nodeId).updateStatus(action.newStatus, this.selectedObject)
+    updateNodeStatus(nodeId: string, status: NodeScanStatus) {
+        if (this.nodeDisplays.has(nodeId)) {
+            this.nodeDisplays.get(nodeId).updateStatus(status, this.selectedObject)
+        } else {
+            const nodeData = this.nodeDataById[nodeId]
+            nodeData.status = status
+            this.addNodeDisplay(nodeData)
+        }
     }
 
-    discoverNodes(nodeIds: string[], connectionIds: string[]) {
-        nodeIds.forEach((id) => {
-            const nodeData = this.nodeDataById[id]
-            nodeData.status = DISCOVERED_1
-            this.addNodeDisplay(nodeData)
+    discoverNodes(nodeStatusById: NodeStatusById, connectionIds: string[]) {
+        Object.entries(nodeStatusById).forEach(([nodeId, status]) => {
+            this.updateNodeStatus(nodeId, status)
         })
 
         connectionIds.forEach((id) => {
-            const connection = this.connectionDataById[id]
-            const fromIcon = this.nodeDisplays.get(connection.fromId)
-            const toIcon = this.nodeDisplays.get(connection.toId)
-            this.addConnectionDisplay(connection, fromIcon, toIcon)
+            if (!this.connectionDisplays.has(id)) {
+                const connection = this.connectionDataById[id]
+                const fromIcon = this.nodeDisplays.get(connection.fromId)
+                const toIcon = this.nodeDisplays.get(connection.toId)
+                this.addConnectionDisplay(connection, fromIcon, toIcon)
+            }
         })
     }
 
@@ -360,6 +364,7 @@ class RunCanvas {
     moveArriveFail(data: MoveArriveFailAction) {
         this.hackerDisplays.get(data.userId).moveArriveFail()
     }
+
     hackerScansNode({userId, nodeId, timings}: HackerScansNodeAction) {
         const nodeDisplay = this.nodeDisplays.get(nodeId)
         const probe = new ProbeVisual(this.canvas, nodeDisplay, new Schedule(this.dispatch))

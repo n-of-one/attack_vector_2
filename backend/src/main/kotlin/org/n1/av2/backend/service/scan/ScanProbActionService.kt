@@ -14,6 +14,8 @@ import org.n1.av2.backend.util.s
 import org.springframework.stereotype.Service
 import java.util.*
 
+data class ProbeResultConnections(val nodeStatusById: Map<String, NodeScanStatus>, val connectionIds: Collection<String>)
+
 @Service
 class ScanProbActionService(
     private val runEntityService: RunEntityService,
@@ -102,9 +104,11 @@ class ScanProbActionService(
         run.totalDistanceScanned += nodeScan.distance!!
         runEntityService.save(run)
 
-        data class ProbeResultConnections(val nodeIds: List<String>, val connectionIds: Collection<String>)
+
+        val nodeStatusById = discoveredNodeIds.map { it to NodeScanStatus.DISCOVERED_1 }.toMap()
+
         stompService.toRun(run.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(node.id, nodeScan.status))
-        stompService.toRun(run.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(discoveredNodeIds, discoveredConnectionIds))
+        stompService.toRun(run.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, discoveredConnectionIds))
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")

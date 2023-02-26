@@ -47,5 +47,8 @@ export class DisplayCollection<Type extends Display> {
         Object.values(this.byId).forEach(method)
     }
 
-
+    has(id: string) {
+        const result = this.byId[id]
+        return (result !== null && result !== undefined)
+    }
 }
