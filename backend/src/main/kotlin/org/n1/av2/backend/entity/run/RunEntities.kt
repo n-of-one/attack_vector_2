@@ -56,7 +56,8 @@ data class LayerStatus(
     val layerId: String,
     @Indexed val runId: String,
     var hacked: Boolean,
-    val hackedBy: MutableList<String>
+    val hackedBy: MutableList<String>,
+    val iceId: String?,
 )
 
 @Document

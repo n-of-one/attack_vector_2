@@ -1,20 +1,21 @@
 package org.n1.av2.backend.service.layerhacking.ice.password
 
-import org.n1.av2.backend.entity.run.IceStatusRepo
-import org.n1.av2.backend.entity.run.IceTangleStatus
-import org.n1.av2.backend.entity.run.TangleLine
-import org.n1.av2.backend.entity.run.TanglePoint
+import org.n1.av2.backend.entity.ice.TangleIceStatus
+import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
+import org.n1.av2.backend.entity.ice.TangleLine
+import org.n1.av2.backend.entity.ice.TanglePoint
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.IceTangleLayer
-import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.util.createId
-import org.n1.av2.backend.util.nodeIdFromServiceId
 import org.n1.av2.backend.web.ws.ice.IceTangleController
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrElse
 import kotlin.system.measureNanoTime
 
 const val X_SIZE = 1200
@@ -23,15 +24,17 @@ const val PADDING = 10
 
 private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: Int, val id: String)
 
+private const val TANGLE_PREFIX = "tangle-"
+
 @Service
 class IceTangleService(
-    val iceStatusRepo: IceStatusRepo,
+    val tangleIceStatusRepo: TangleIceStatusRepo,
     val nodeEntityService: NodeEntityService,
+    val stompService: StompService,
     val hackedUtil: HackedUtil,
-    val stompService: StompService) {
+) {
 
     data class UiTangleState(
-        val layerId: String,
         val strength: IceStrength,
         val points: MutableList<TanglePoint>,
         val lines: List<TangleLine>
@@ -39,60 +42,62 @@ class IceTangleService(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    fun hack(layer: IceTangleLayer, runId: String) {
-        val tangleStatus = getOrCreateStatus(layer, runId)
-        val uiState = UiTangleState(layer.id, layer.strength, tangleStatus.points, tangleStatus.lines)
-        stompService.toUser(ReduxActions.SERVER_START_HACKING_ICE_TANGLE, uiState)
+
+    fun enter(iceId: String) {
+        val iceStatus = tangleIceStatusRepo
+            .findById(iceId)
+            .getOrElse {
+                stompService.replyMessage(NotyMessage(NotyType.FATAL, "Error", "No ice for ID: ${iceId}"))
+                return
+            }
+
+        val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines)
+        stompService.reply(ReduxActions.SERVER_START_ENTER_ICE_TANGLE, uiState)
     }
 
-    private fun getOrCreateStatus(layer: Layer, runId: String): IceTangleStatus {
-        return getStatus(layer.id, runId) ?: createServiceStatus(layer, runId)
-    }
 
-    private fun getStatus(layerId: String, runId: String): IceTangleStatus? {
-        val tangleStatus = iceStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: return null
-        return tangleStatus as IceTangleStatus
-    }
+    fun createTangleIce(layer: IceTangleLayer, nodeId: String, runId: String): TangleIceStatus {
+        val creation = TangleCreator().create(layer.strength)
 
-    private fun createServiceStatus(layer: Layer, runId: String): IceTangleStatus {
-        val nodeId = nodeIdFromServiceId(layer.id)
-        val node = nodeEntityService.getById(nodeId)
-
-        val iceConfig = node.layers.find {it.id == layer.id }!! as IceTangleLayer
-
-
-        val creation = TangleCreator().create(iceConfig.strength)
-
-        val id = createId("iceTangleStatus-")
-        val iceTangleStatus = IceTangleStatus(id, layer.id, runId, creation.points, creation.points, creation.lines)
-        iceStatusRepo.save(iceTangleStatus)
+        val id = createId("tangle", tangleIceStatusRepo::findById)
+        val iceTangleStatus = TangleIceStatus(
+            id = id,
+            runId = runId,
+            nodeId = nodeId,
+            layerId = layer.id,
+            strength = layer.strength,
+            originalPoints = creation.points,
+            points = creation.points,
+            lines = creation.lines
+        )
+        tangleIceStatusRepo.save(iceTangleStatus)
         return iceTangleStatus
     }
 
     // Puzzle solving //
 
-    data class TanglePointMoved(val layerId: String, val id: String, val x: Int, val y: Int, val solved: Boolean)
+    data class TanglePointMoved(val id: String, val x: Int, val y: Int, val solved: Boolean)
 
     fun move(command: IceTangleController.TanglePointMoveInput) {
         val x = keepInPlayArea(command.x, X_SIZE)
         val y = keepInPlayArea(command.y, Y_SIZE)
 
-        val tangleStatus = getStatus(command.layerId, command.runId)!!
+        val tangleStatus = tangleIceStatusRepo.findById(command.iceId).getOrElse { error("Ice not found for \"${command.iceId}\"") }
 
-        tangleStatus.points.removeIf { it.id == command.id }
-        val newPoint = TanglePoint(command.id, x, y)
+        tangleStatus.points.removeIf { it.id == command.pointId }
+        val newPoint = TanglePoint(command.pointId, x, y)
         tangleStatus.points.add(newPoint)
 
-        iceStatusRepo.save(tangleStatus)
+        tangleIceStatusRepo.save(tangleStatus)
 
         val solved = tangleSolved(tangleStatus)
 
-        val message = TanglePointMoved(command.layerId, command.id, x, y, solved)
+        val message = TanglePointMoved(command.pointId, x, y, solved)
 
-        stompService.toRun(command.runId, ReduxActions.SERVER_TANGLE_POINT_MOVED, message)
+        stompService.toIce(command.iceId, ReduxActions.SERVER_TANGLE_POINT_MOVED, message)
 
         if (solved) {
-            hackedUtil.iceHacked(command.layerId, command.runId, 70)
+            hackedUtil.iceHacked(tangleStatus.layerId, tangleStatus.runId, 70)
         }
 
     }
@@ -104,7 +109,7 @@ class IceTangleService(
     }
 
 
-    private fun tangleSolved(tangleStatus: IceTangleStatus): Boolean {
+    private fun tangleSolved(tangleStatus: TangleIceStatus): Boolean {
 
         val segments = toSegments(tangleStatus)
 
@@ -117,10 +122,10 @@ class IceTangleService(
         return solved!!
     }
 
-    private fun toSegments(tangleStatus: IceTangleStatus): List<TangleLineSegment> {
+    private fun toSegments(tangleStatus: TangleIceStatus): List<TangleLineSegment> {
         return tangleStatus.lines.map { line ->
-            val from = tangleStatus.points.find {it.id ==line.fromId }!!
-            val to = tangleStatus.points.find {it.id == line.toId }!!
+            val from = tangleStatus.points.find { it.id == line.fromId }!!
+            val to = tangleStatus.points.find { it.id == line.toId }!!
 
             TangleLineSegment(from.x, from.y, to.x, to.y, line.id)
         }
@@ -136,8 +141,9 @@ class IceTangleService(
             uncheckedSegments.forEach { segment_2 ->
                 if (!connected(segment_1, segment_2)) {
                     val intersect = segmentsIntersect(
-                            segment_1.x1, segment_1.y1, segment_1.x2, segment_1.y2,
-                            segment_2.x1, segment_2.y1, segment_2.x2, segment_2.y2)
+                        segment_1.x1, segment_1.y1, segment_1.x2, segment_1.y2,
+                        segment_2.x1, segment_2.y1, segment_2.x2, segment_2.y2
+                    )
 
                     if (intersect) {
                         solved = false

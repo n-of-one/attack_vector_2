@@ -50,7 +50,7 @@ class SyntaxHighlightingService(
 
     fun sendSyntaxHighlighting(highlighting: Map<String, Syntax>, userId: String, stompService: StompService) {
         val message = SyntaxHighlightingMessage("main", highlighting)
-        stompService.toUser(userId, ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, message)
+        stompService.reply(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, message)
     }
 
 }

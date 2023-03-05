@@ -43,12 +43,12 @@ class HackTerminalService(
             "view" -> commandViewService.process(runId, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
-            else -> stompService.terminalReceiveCurrentUser("Unknown command, try [u]help[/].")
+            else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
         }
     }
 
     private fun processHelp() {
-        stompService.terminalReceiveCurrentUser(
+        stompService.replyTerminalReceive(
                 "Command options:",
                 " [u]move [ok]<network id>[/]     -- for example: [u]mv[ok] 00",
                 " [u]view",
@@ -70,7 +70,7 @@ class HackTerminalService(
     }
 
     fun reportLocked() {
-        stompService.terminalReceiveCurrentUser("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
+        stompService.replyTerminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
 
 

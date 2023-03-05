@@ -46,7 +46,7 @@ class IcePasswordService(
 
         val uiState = UiState(null, false, hintToDisplay, passwordStatus)
 
-        stompService.toUser(ReduxActions.SERVER_START_HACKING_ICE_PASSWORD, uiState)
+        stompService.reply(ReduxActions.SERVER_START_HACKING_ICE_PASSWORD, uiState)
     }
 
 

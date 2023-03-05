@@ -16,7 +16,7 @@ class TextLayerService(
         nodeEntityService.save(node)
         hackedUtil.nonIceHacked(layer.id, node, runId)
 
-        stompService.terminalReceiveCurrentUser("Hacked: [pri]${layer.level}[/] ${layer.name}", "", layer.text)
+        stompService.replyTerminalReceive("Hacked: [pri]${layer.level}[/] ${layer.name}", "", layer.text)
     }
 
 }

@@ -1,10 +1,8 @@
-import {HIDDEN, UNLOCKED} from "../IceUiState";
-import {ICE_TANGLE} from "../../../../common/enums/LayerTypes";
+import {HIDDEN, UNLOCKED} from "../../hacker/run/ice/IceUiState";
 import {AnyAction} from "redux";
-import {CurrentIce} from "../CurrentIceReducer";
 
 export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
-export const SERVER_START_HACKING_ICE_TANGLE = "SERVER_START_HACKING_ICE_TANGLE";
+export const SERVER_START_ENTER_ICE_TANGLE = "SERVER_START_ENTER_ICE_TANGLE";
 export const SERVER_TANGLE_POINT_MOVED = "SERVER_TANGLE_POINT_MOVED";
 
 export interface TangleIceState {
@@ -28,7 +26,7 @@ export interface TangleLine {
     type: string
 }
 
-const defaultState: TangleIceState = {
+export const defaultState: TangleIceState = {
     layerId: "",
     strength: "AVERAGE",
     uiState: HIDDEN,
@@ -36,13 +34,10 @@ const defaultState: TangleIceState = {
     lines: []
 };
 
-export const tangleIceReducer = (state: TangleIceState = defaultState, action: AnyAction, currentIce: CurrentIce) => {
-    if (!currentIce || currentIce.type !== ICE_TANGLE) {
-        return
-    }
+export const tangleIceReducer = (state: TangleIceState = defaultState, action: AnyAction): TangleIceState => {
 
     switch (action.type) {
-        case SERVER_START_HACKING_ICE_TANGLE:
+        case SERVER_START_ENTER_ICE_TANGLE:
             return {...action.data, uiState: HIDDEN};
         case ICE_TANGLE_BEGIN:
             return {...state, uiState: UNLOCKED};

@@ -27,7 +27,7 @@ class CommandHackService(
 
     fun process(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
-            return stompService.terminalReceiveCurrentUser("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
+            return stompService.replyTerminalReceive("Missing [primary]<layer>[/]        -- for example: [u]hack[primary] 0")
         }
         val node = nodeEntityService.getById(state.currentNodeId)
 
@@ -48,7 +48,7 @@ class CommandHackService(
             layer is TextLayer -> textLayerService.hack(layer, node, state.runId)
             layer is TimerTriggerLayer -> snifferLayerService.hack(layer)
             layer.type.ice -> serviceIceGeneric.hack(layer, state.runId)
-            else -> stompService.terminalReceiveCurrentUser("Layer type not supported yet: ${layer.type}")
+            else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
 
@@ -56,16 +56,16 @@ class CommandHackService(
     private fun reportLayerUnknown(node: Node, layerInput: String) {
         val layerCount = node.layers.size
         if (layerCount == 1) {
-            stompService.terminalReceiveCurrentUser("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
+            stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
                     "This node has only one service, the only valid option is: [u]hack [primary]0[/].")
         } else {
-            stompService.terminalReceiveCurrentUser("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
+            stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
                     "This node has ${layerCount} services, so use a number between [primary]0[/] and [primary]${layerCount - 1}[/].")
         }
     }
 
     private fun reportBlockingIce(blockingIceLayer: Layer) {
-        stompService.terminalReceiveCurrentUser("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
+        stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
     }
 
 

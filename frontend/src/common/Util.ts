@@ -2,8 +2,6 @@ import {useState} from "react"
 import {zeroPad} from "./component/Pad";
 import {TICK_MILLIS} from "./Schedule";
 
-export type ActionType = any
-
 export const delay = (toRun: () => void) => {
   setTimeout(toRun, 1)
 }

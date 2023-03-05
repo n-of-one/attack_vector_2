@@ -1,8 +1,6 @@
 import {serverTime} from "../../../common/ServerTime";
 import {AnyAction} from "redux";
 import {TERMINAL_TICK} from "../../../common/terminal/TerminalReducer";
-import {SERVER_HACKER_LEAVE_SCAN} from "../model/ScanActions";
-import {currentUser} from "../../../common/CurrentUser";
 import {SERVER_HACKER_DC} from "../../server/RunServerActionProcessor";
 
 export const SERVER_START_COUNTDOWN = "SERVER_START_COUNTDOWN";

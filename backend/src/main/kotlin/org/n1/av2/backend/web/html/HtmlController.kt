@@ -12,7 +12,7 @@ private const val INDEX = "../static/index.html"
 class HtmlController(
         val errorAttributes: ErrorAttributes) : ErrorController {
 
-    @GetMapping("/", "/login", "/login/", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}")
+    @GetMapping("/", "/login", "/login/", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "ice/{iceId}")
     fun default(): String {
         return INDEX
     }

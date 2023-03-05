@@ -3,7 +3,6 @@ import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
 import {FINISH_HACKING_ICE} from "../../model/HackActions";
 import {serverTime} from "../../../../common/ServerTime";
 import {AnyAction} from "redux";
-import {CurrentIce} from "../CurrentIceReducer";
 import {TERMINAL_TICK} from "../../../../common/terminal/TerminalReducer";
 
 export const SERVER_START_HACKING_ICE_PASSWORD = "SERVER_START_HACKING_ICE_PASSWORD";
@@ -32,10 +31,13 @@ const defaultState = {
     hint: "mother's name",
 };
 
-export const passwordIceReducer = (state : PasswordIceI= defaultState, action: AnyAction, currentIce:CurrentIce) => {
-    if (!currentIce || currentIce.type !== ICE_PASSWORD) {
-        return state;
-    }
+export const passwordIceReducer = (state : PasswordIceI= defaultState, action: AnyAction) => {
+    return state
+
+    // FIXME
+    // if (!currentIce || currentIce.type !== ICE_PASSWORD) {
+    //     return state;
+    // }
 
     switch (action.type) {
         case TERMINAL_TICK: {
@@ -45,7 +47,7 @@ export const passwordIceReducer = (state : PasswordIceI= defaultState, action: A
         case SERVER_START_HACKING_ICE_PASSWORD:
             return processStartHacking(action.data);
         case SERVER_ICE_PASSWORD_UPDATE:
-            return processServerUpdate(action.data, currentIce, state);
+            return processServerUpdate(action.data, state);
         case ICE_PASSWORD_BEGIN:
             return {...state, uiState: UNLOCKED};
         case ICE_PASSWORD_LOCK:
@@ -80,12 +82,7 @@ const processStartHacking = (serverStatus: ServerStatus): PasswordIceI => {
     return {...serverStatus, waitSeconds: waitSeconds, uiState: HIDDEN };
 };
 
-const processServerUpdate = (serverStatus: ServerStatus, currentIce: CurrentIce, oldState: PasswordIceI) => {
-    // disregard updates for password ice that this player is not hacking.
-    if (currentIce.layerId !== serverStatus.layerId) {
-        return oldState;
-    }
-
+const processServerUpdate = (serverStatus: ServerStatus, oldState: PasswordIceI) => {
     const waitSeconds = calculateWaitSeconds(serverStatus);
     return {...serverStatus, waitSeconds: waitSeconds, uiState: UNLOCKED};
 };

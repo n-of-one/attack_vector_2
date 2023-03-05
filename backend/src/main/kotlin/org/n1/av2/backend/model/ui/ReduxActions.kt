@@ -2,6 +2,9 @@ package org.n1.av2.backend.model.ui
 
 enum class ReduxActions {
 
+    SERVER_USER_CONNECTION,         // Tell the client that a new user-connection was established. Have the client check if this
+                                    // is the connection it just made, or if a newer connection was made and the old one needs to shut down
+
     SERVER_TIME_SYNC,               // Send server time to client to make it use server time.
 
     SERVER_NOTIFICATION,
@@ -53,7 +56,9 @@ enum class ReduxActions {
     SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                // change icon of node in run
 
-    SERVER_START_HACKING_ICE_TANGLE,    // sent to hacker that hacks this ice
+    SERVER_REDIRECT_HACK_ICE,          // open a new window to start hacking ICE
+
+    SERVER_START_ENTER_ICE_TANGLE,    // sent to hacker that hacks this ice
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
 
     SERVER_START_COUNTDOWN,             // The client can show the countdown clock

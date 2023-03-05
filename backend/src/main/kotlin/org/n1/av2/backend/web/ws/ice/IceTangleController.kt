@@ -11,14 +11,20 @@ class IceTangleController(
         val iceTangleService: IceTangleService,
         val taskRunner: TaskRunner ) {
 
-    data class TanglePointMoveInput(val layerId: String,
-                                    val runId: String,
-                                    val id: String,
+    data class EnterInput(val iceId: String)
+
+    @MessageMapping("/ice/tangle/enter")
+    fun enter(command: EnterInput, principal: Principal) {
+        taskRunner.runTask(principal) { iceTangleService.enter(command.iceId) }
+    }
+
+    data class TanglePointMoveInput(val iceId: String,
+                                    val pointId: String,
                                     val x: Int,
                                     val y: Int)
 
     @MessageMapping("/ice/tangle/moved")
-    fun scansOfPlayer(command: TanglePointMoveInput, principal: Principal) {
+    fun movedPoint(command: TanglePointMoveInput, principal: Principal) {
         taskRunner.runTask(principal) { iceTangleService.move(command) }
     }
 

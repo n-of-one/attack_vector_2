@@ -40,16 +40,16 @@ class ScanTerminalService(
             "attack" -> processAttack(runId, false)
             "quickattack", "qa" -> processAttack(runId, true)
             "move", "view", "hack" -> reportHackCommand()
-            else -> stompService.terminalReceiveCurrentUser("Unknown command, try [u]help[/].")
+            else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
         }
     }
 
     private fun reportHackCommand() {
-        stompService.terminalReceiveCurrentUser("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
+        stompService.replyTerminalReceive("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
     }
 
     private fun processAutoScan(runId: String) {
-        stompService.terminalReceiveAndLockedCurrentUser(true, "Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
+        stompService.replyTerminalReceiveAndLocked(true, "Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
         scanningService.performAutoScan(runId)
     }
 
@@ -59,7 +59,7 @@ class ScanTerminalService(
     }
 
     private fun processHelp() {
-        stompService.terminalReceiveCurrentUser(
+        stompService.replyTerminalReceive(
                 "Command options:",
                 " [u]autoscan",
                 " [u]attack",
@@ -67,7 +67,7 @@ class ScanTerminalService(
                 " [u]dc",
                 " [u]/share [info]<user name>")
         if (environment.dev) {
-            stompService.terminalReceiveCurrentUser(
+            stompService.replyTerminalReceive(
                     "",
                     "[i]Available only during development and testing:[/]",
                     " [u]quickscan[/] or [u]qs",
@@ -78,7 +78,7 @@ class ScanTerminalService(
 
     fun processScan(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
-            stompService.terminalReceiveCurrentUser("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
+            stompService.replyTerminalReceive("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
             return
         }
         val networkId = tokens[1]
@@ -87,7 +87,7 @@ class ScanTerminalService(
 
         val node = nodeEntityService.findByNetworkId(run.siteId, networkId)
             ?: if (networkId.length == 1) {
-                return stompService.terminalReceiveCurrentUser("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
+                return stompService.replyTerminalReceive("Node [ok]${networkId}[/] not found. Did you mean: [u]scan [ok]0${networkId}[/] ?")
             } else {
                 return reportNodeNotFound(networkId)
             }
@@ -97,12 +97,12 @@ class ScanTerminalService(
             return reportNodeNotFound(networkId)
         }
 
-        stompService.terminalSetLockedCurrentUser(true)
+        stompService.replyTerminalSetLocked(true)
         scanningService.performManualScan(run, node, status)
     }
 
     private fun reportNodeNotFound(networkId: String) {
-        stompService.terminalReceiveCurrentUser("Node [ok]${networkId}[/] not found.")
+        stompService.replyTerminalReceive("Node [ok]${networkId}[/] not found.")
     }
 
     fun processQuickscan(runId: String) {
@@ -110,7 +110,7 @@ class ScanTerminalService(
     }
 
     private fun processAttack(runId: String, quick: Boolean) {
-        stompService.terminalSetLockedCurrentUser(true)
+        stompService.replyTerminalSetLocked(true)
         startAttackService.startAttack(runId, quick)
     }
 

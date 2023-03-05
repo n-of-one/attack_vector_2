@@ -39,23 +39,18 @@ class ScanningService(
 
     fun performAutoScan(runId: String) {
         val run = runEntityService.getByRunId(runId)
-        if (run.scanStartTime == null) {
-            run.scanStartTime = time.now()
-            runEntityService.save(run)
-            scanInfoService.updateScanInfoToPlayers(run)
-        }
         val targetTraverseNode = findProbeTarget(run)
         if (targetTraverseNode != null) {
             launchProbe(targetTraverseNode, run, true)
         }
         else {
-            stompService.terminalReceiveAndLockedCurrentUser(false, "Scan already complete")
+            stompService.replyTerminalReceiveAndLocked(false, "Scan already complete")
         }
     }
 
     fun performManualScan(run: Run, node: Node, status: NodeScanStatus) {
         if (run.scanDuration != null ) {
-            stompService.terminalReceiveAndLockedCurrentUser(false, "Scan already complete")
+            stompService.replyTerminalReceiveAndLocked(false, "Scan already complete")
             return
         }
         val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(run)
@@ -139,7 +134,7 @@ class ScanningService(
         run.scanDuration = (durationMillis / 1000.0).roundToInt()
         run.scanEfficiency = calculateEfficiency(run, durationMillis)
         runEntityService.save(run)
-        stompService.terminalReceiveCurrentUser("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${run.scanEfficiency}%")
+        stompService.replyTerminalReceive("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${run.scanEfficiency}%")
         scanInfoService.updateScanInfoToPlayers(run)
     }
 

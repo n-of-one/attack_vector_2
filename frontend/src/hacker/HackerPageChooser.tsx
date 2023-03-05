@@ -4,11 +4,11 @@ import React from "react"
 import {Terminal} from "../common/terminal/Terminal"
 import {MenuBar} from "../common/menu/MenuBar"
 import {runCanvas} from "./run/component/RunCanvas"
-import {RunPageChooser} from "./run/component/RunPageChooser"
 import {useSelector} from "react-redux"
 import {HackerState} from "./HackerRootReducer"
 import {TerminalState} from "../common/terminal/TerminalReducer"
 import {MAIL, RUN} from "../common/menu/pageReducer"
+import {RunHome} from "./run/component/RunHome";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -31,7 +31,7 @@ const renderCurrentPage = (currentPage: string) => {
         case MAIL:
             return <MailHome/>
         case RUN:
-            return <RunPageChooser/>
+            return <RunHome/>
         default:
             return <HackerHome/>
     }

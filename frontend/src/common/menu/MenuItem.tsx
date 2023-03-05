@@ -4,8 +4,6 @@ import Cookies from "js-cookie";
 import {NAVIGATE_PAGE, RUN} from "./pageReducer";
 import {HackerState} from "../../hacker/HackerRootReducer";
 import {webSocketConnection} from "../WebSocketConnection";
-import {terminalManager} from "../terminal/TerminalManager";
-import {runCanvas} from "../../hacker/run/component/RunCanvas";
 import {Dispatch} from "redux";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -17,6 +15,7 @@ interface Props {
 }
 
 export const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
+
     if (currentPage === RUN && targetPage !== RUN) {
         webSocketConnection.send("/av/run/leaveRun", runId);
     }

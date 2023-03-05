@@ -2,6 +2,7 @@ package org.n1.av2.backend.engine
 
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ValidationException
@@ -9,13 +10,14 @@ import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.FatalException
 import org.n1.av2.backend.util.ServerFatal
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.security.Principal
 import java.util.concurrent.LinkedBlockingQueue
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
-private class Task(val action: () -> Unit, val user: User)
+private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 
 /**
  * All actions are performed on a single thread, this way the execution becomes very predictable,
@@ -30,7 +32,7 @@ class TaskRunner(
     fun runTask(principal: Principal, action: () -> Unit) {
         if (principal !is UserPrincipal) error("Received call where principal is not UserPrincipal: ${principal}")
 
-        taskEngine.runForUser(principal.user, action)
+        taskEngine.runForUser(principal, action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
@@ -41,17 +43,14 @@ class TaskRunner(
 
     fun queueInTicks(waitTicks: Int, action: () -> Unit) {
         val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
-        timedTaskRunner.add(currentUserService.userId, due, currentUserService.user, action)
-    }
-
-    fun queueInSeconds(omniId: String, seconds: Int, user: User, action: () -> Unit) {
-        val due = System.currentTimeMillis() + SECOND_MILLIS * seconds
-        timedTaskRunner.add(omniId, due, user, action)
+        val userPrincipal =  SecurityContextHolder.getContext().authentication as UserPrincipal
+        timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
     }
 
     fun queueInMinutesAndSeconds(minutes: Long, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + SECOND_MILLIS * seconds + MINUTE_MILLIS * minutes
-        timedTaskRunner.add(currentUserService.userId, due, currentUserService.user, action)
+        val userPrincipal =  SecurityContextHolder.getContext().authentication as UserPrincipal
+        timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
     }
 }
 
@@ -69,8 +68,8 @@ class TaskEngine (val stompService: StompService,
         Thread(this).start()
     }
 
-    fun runForUser(user: User, action: () -> Unit) {
-        val task = Task(action, user)
+    fun runForUser(userPrincipal: UserPrincipal, action: () -> Unit) {
+        val task = Task(action, userPrincipal)
         queue.put(task)
     }
 
@@ -84,31 +83,33 @@ class TaskEngine (val stompService: StompService,
         val task = queue.take()
         if (!running) return // this will happen if fun terminate() unblocked the queue.
         try {
-            currentUserService.set(task.user)
+            currentUserService.set(task.userPrincipal.user)
+            SecurityContextHolder.getContext().authentication = task.userPrincipal
             task.action()
         } catch (exception: Exception) {
             if (exception is InterruptedException) {
                 throw exception
             }
             if (exception is ValidationException) {
-                stompService.toUser(exception.getNoty())
+                stompService.replyMessage(exception.getNoty())
                 return
             }
             if (exception is FatalException) {
                 val event = ServerFatal(false, exception.message ?: exception.javaClass.name)
-                stompService.toUser(ReduxActions.SERVER_ERROR, event)
-                logger.warn("${task.user.name}: ${exception}")
+                stompService.reply(ReduxActions.SERVER_ERROR, event)
+                logger.warn("${task.userPrincipal.user.name}: ${exception}")
                 return
             }
             if (!currentUserService.isSystemUser) {
                 val event = ServerFatal(true, exception.message ?: exception.javaClass.name)
-                stompService.toUser(ReduxActions.SERVER_ERROR, event)
-                logger.info("User: ${task.user.name} - task triggered exception. ", exception)
+                stompService.reply(ReduxActions.SERVER_ERROR, event)
+                logger.info("User: ${task.userPrincipal.user.name} - task triggered exception. ", exception)
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)
             }
         } finally {
             currentUserService.remove()
+            SecurityContextHolder.clearContext()
         }
     }
 
@@ -116,8 +117,9 @@ class TaskEngine (val stompService: StompService,
     fun terminate() {
         this.running = false
         val systemUser = User(id = SYSTEM_USER_ID, name = "System", icon = HackerIcon.BEAR)
+        val userPrincipal = UserPrincipal("system:system-connection", systemUser, "system-connection", ConnectionType.INTERNAL )
 
         // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
-        this.queue.add(Task({}, systemUser ))
+        this.queue.add(Task({}, userPrincipal ))
     }
 }

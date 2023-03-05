@@ -2,6 +2,7 @@ package org.n1.av2.backend.service.user
 
 import org.n1.av2.backend.entity.run.HackerGeneralActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
@@ -20,21 +21,18 @@ class UserConnectionService(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    /** Returns validity of connection. False means this is a duplicate connection */
-    fun connect(userPrincipal: UserPrincipal): Boolean {
+    fun connect(userPrincipal: UserPrincipal) {
         val existingState = hackerStateEntityService.retrieve(userPrincipal.userId)
-        return if (existingState.generalActivity == HackerGeneralActivity.OFFLINE) {
+         if (existingState.generalActivity == HackerGeneralActivity.OFFLINE) {
             hackerStateEntityService.login(userPrincipal.userId)
-            true
-        }
-        else {
-            logger.info("Rejected duplicate session from: " + userPrincipal.user.name )
-            false
-        }
+         }
+
+        data class NewConnection(val connectionId: String, val type: ConnectionType)
+        stompService.toUserAllConnections(userPrincipal.userId, ReduxActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, userPrincipal.type))
     }
 
     fun sendTime() {
-        stompService.toUser(currentUserService.userId, ReduxActions.SERVER_TIME_SYNC, ZonedDateTime.now())
+        stompService.reply(ReduxActions.SERVER_TIME_SYNC, ZonedDateTime.now())
     }
 
     fun disconnect() {

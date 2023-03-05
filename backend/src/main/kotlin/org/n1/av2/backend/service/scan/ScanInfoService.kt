@@ -9,6 +9,8 @@ import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.RunService
+import org.n1.av2.backend.service.terminal.TERMINAL_CHAT
 import org.springframework.stereotype.Service
 
 /** This service deals with the action of scanning (as opposed to the actions performed on a scan). */
@@ -17,10 +19,11 @@ class ScanInfoService(
     private val runEntityService: RunEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
-    private val hackerStateEntityService: HackerStateEntityService,
     private val currentUserService: CurrentUserService,
     private val stompService: StompService,
     private val traverseNodeService: TraverseNodeService,
+    private val userLinkEntityService: UserLinkEntityService,
+    private val runService: RunService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -28,7 +31,7 @@ class ScanInfoService(
     fun searchSiteByName(siteName: String) {
         val siteProperties = sitePropertiesEntityService.findByName(siteName)
         if (siteProperties == null) {
-            stompService.toUser(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+            stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
             return
         }
 
@@ -36,11 +39,11 @@ class ScanInfoService(
 
         val user = currentUserService.user
 
-        val runId = runEntityService.createScan(siteProperties, nodeScans, user)
+        val runId = runService.createRun(siteProperties.siteId, nodeScans, user)
 
         data class ScanSiteResponse(val runId: String, val siteId: String)
         val response = ScanSiteResponse(runId, siteProperties.siteId)
-        stompService.toUser(ReduxActions.SERVER_SITE_DISCOVERED, response)
+        stompService.reply(ReduxActions.SERVER_SITE_DISCOVERED, response)
         sendScanInfosOfPlayer() // to update the scans in the home screen
     }
 
@@ -57,7 +60,7 @@ class ScanInfoService(
 
 
     fun deleteScan(runId: String) {
-        runEntityService.deleteUserScan(runId)
+        userLinkEntityService.deleteUserScan(runId)
         sendScanInfosOfPlayer()
     }
 
@@ -76,26 +79,31 @@ class ScanInfoService(
     )
 
     fun sendScanInfosOfPlayer(userId: String) {
-        val scans = runEntityService.getAll(userId)
+        val runLinks = userLinkEntityService.findAllByUserId(userId)
+        val scans = runEntityService.getAll(runLinks)
         val scanItems = scans.map(::createScanInfo)
-        stompService.toUser(userId, ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
+        stompService.reply(ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
     }
 
     fun shareScan(runId: String, user: User) {
-        if (runEntityService.hasUserScan(user, runId)) {
-            stompService.terminalReceiveCurrentUser("[info]${user.name}[/] already has this scan.")
+        if (userLinkEntityService.hasUserScan(user, runId)) {
+            stompService.replyTerminalReceive("[info]${user.name}[/] already has this scan.")
             return
         }
-        runEntityService.createUserScan(runId, user)
-        stompService.terminalReceiveCurrentUser("Shared scan with [info]${user.name}[/].")
+        userLinkEntityService.createUserScan(runId, user)
+        stompService.replyTerminalReceive("Shared scan with [info]${user.name}[/].")
 
         val myUserName = currentUserService.user.name
 
         val scan = runEntityService.getByRunId(runId)
         val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
-        stompService.toUser(user.id, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
-        stompService.terminalReceiveForUserForTerminal(user.id, "chat", "[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]")
+        stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
+        stompService.toUserAllConnections(user.id,
+            ReduxActions.SERVER_TERMINAL_RECEIVE,
+            StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
+        )
+
         sendScanInfosOfPlayer(user.id)
     }
 
@@ -119,8 +127,8 @@ class ScanInfoService(
 
     fun updateScanInfoToPlayers(run: Run) {
         val scanInfo = createScanInfo(run)
-        runEntityService.getUsersOfScan(run.runId).forEach { userId ->
-            stompService.toUser(userId, ReduxActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
+        userLinkEntityService.getUsersOfScan(run.runId).forEach {
+            stompService.reply(ReduxActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
         }
     }
 }

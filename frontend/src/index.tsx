@@ -7,6 +7,7 @@ import {Login} from "./Login"
 import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/Notification";
+import {IceRoot} from "./ice/IceRoot";
 
 
 const ReRoute = (): JSX.Element => {
@@ -40,10 +41,16 @@ const Editor = () => {
     return (<EditorRoot siteId={siteId as string}/>)
 }
 
+const Ice = () => {
+    const {iceId} = useParams()
+    return (<IceRoot redirectId={iceId as string}/>)
+}
+
 root.render(
     <>
         <BrowserRouter>
             <Routes>
+                <Route path="/ice/:iceId" element={<Ice/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>

@@ -9,7 +9,7 @@ class OsLayerService(
 
 
     fun hack(layer: Layer) {
-        stompService.terminalReceiveCurrentUser("Hacking ${layer.name} reveals nothing new.")
+        stompService.replyTerminalReceive("Hacking ${layer.name} reveals nothing new.")
     }
 
 

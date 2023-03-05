@@ -99,7 +99,7 @@ class TracingPatrollerService(
     private fun lockHacker(patroller: TracingPatroller) {
         hackerStateEntityService.lockHacker(patroller.targetUserId, patroller.id)
         messageCatchHacker(patroller)
-        stompService.terminalReceiveForUser(patroller.targetUserId, "[error]critical[/] OS privileges revoked.")
+        stompService.replyTerminalReceive("[error]critical[/] OS privileges revoked.")
 
         // TODO start tracing
     }

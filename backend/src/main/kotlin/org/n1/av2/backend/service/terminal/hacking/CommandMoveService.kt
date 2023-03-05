@@ -40,7 +40,7 @@ class CommandMoveService(
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
-            stompService.terminalReceiveCurrentUser("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
+            stompService.replyTerminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
             return
         }
         val networkId = tokens[1]
@@ -70,16 +70,16 @@ class CommandMoveService(
     }
 
     private fun reportAtTargetNode(networkId: String): Boolean {
-        stompService.terminalReceiveCurrentUser("[error]error[/] already at [ok]${networkId}[/].")
+        stompService.replyTerminalReceive("[error]error[/] already at [ok]${networkId}[/].")
         return false
     }
 
     fun reportNodeNotFound(networkId: String) {
-        stompService.terminalReceiveCurrentUser("[error]error[/] node [ok]${networkId}[/] not found.")
+        stompService.replyTerminalReceive("[error]error[/] node [ok]${networkId}[/] not found.")
     }
 
     fun reportNoPath(networkId: String): Boolean {
-        stompService.terminalReceiveCurrentUser("[error]error[/] no path from current node to [ok]${networkId}[/].")
+        stompService.replyTerminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
         return false
     }
 
@@ -93,13 +93,13 @@ class CommandMoveService(
     }
 
     private fun reportProtected(): Boolean {
-        stompService.terminalReceiveCurrentUser("[warn b]blocked[/] ICE in current node is blocking your move.")
+        stompService.replyTerminalReceive("[warn b]blocked[/] ICE in current node is blocking your move.")
         return false
     }
 
 
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
-        stompService.terminalSetLockedCurrentUser(true)
+        stompService.replyTerminalSetLocked(true)
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
 
@@ -169,7 +169,7 @@ class CommandMoveService(
 
         val data = MoveArriveMessage(nodeId, userId, MOVE_ARRIVE_Timings)
         stompService.toRun(runId, ReduxActions.SERVER_HACKER_MOVE_ARRIVE, data)
-        stompService.terminalSetLockedCurrentUser(false)
+        stompService.replyTerminalSetLocked(false)
     }
 
 

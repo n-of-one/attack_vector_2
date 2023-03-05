@@ -41,6 +41,7 @@ export const SERVER_SCAN_FULL = "SERVER_SCAN_FULL"
 export const SERVER_UPDATE_NODE_STATUS = "SERVER_UPDATE_NODE_STATUS"
 export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
 
+export const SERVER_REDIRECT_HACK_ICE = "SERVER_REDIRECT_HACK_ICE"
 
 /** Event to ignore while waiting for the scan full result */
 export const WAITING_FOR_SCAN_IGNORE_LIST =
@@ -142,6 +143,10 @@ interface RemovePatrollerAction {
     patrollerId: string
 }
 
+interface RedirectHackIce {
+    redirectId: string
+}
+
 export const initRunServerActions = (store: Store) => {
 
     const dispatch = store.dispatch
@@ -241,6 +246,10 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_HACKER_SCANS_NODE, (data: HackerScansNodeAction) => {
         runCanvas.hackerScansNode(data)
+    })
+
+    webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
+        window.open(`/ice/${data.redirectId}`, data.redirectId)
     })
 
     webSocketConnection.addAction(SERVER_START_HACKING_ICE_PASSWORD, (_: any) => {

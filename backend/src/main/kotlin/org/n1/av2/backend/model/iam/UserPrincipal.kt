@@ -4,9 +4,17 @@ import org.n1.av2.backend.entity.user.User
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
-class UserPrincipal(val user: User): Authentication {
+enum class ConnectionType {
+    WS_RUN,
+    WS_ICE,
+    WEB_PAGE,
+    INTERNAL // used for internal processes that don't really have a connection
+}
 
-    var invalidated = false
+data class UserPrincipal(private val _name: String, val user: User, val connectionId: String, val type: ConnectionType): Authentication {
+
+    /// Used in websocket connection
+    override fun getName() = _name
 
     val userId: String
         get() = user.id
@@ -17,13 +25,6 @@ class UserPrincipal(val user: User): Authentication {
 
     override fun setAuthenticated(p0: Boolean) {
         error("not supported")
-    }
-
-    override fun getName(): String {
-        return if (invalidated)
-            "error"
-        else
-            userId
     }
 
     override fun getCredentials(): Any {
@@ -40,9 +41,5 @@ class UserPrincipal(val user: User): Authentication {
 
     override fun getDetails(): Any {
         return user
-    }
-
-    fun invalidate() {
-        invalidated = true
     }
 }

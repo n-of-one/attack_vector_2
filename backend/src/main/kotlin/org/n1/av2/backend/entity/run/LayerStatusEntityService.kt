@@ -10,13 +10,17 @@ class LayerStatusEntityService(
         private val layerStatusRepo: LayerStatusRepo
 ) {
 
-    fun getOrCreate(layerId: String, runId: String): LayerStatus {
-        return layerStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: createLayerStatus(layerId, runId)
+    fun get(layerId: String, runId: String): LayerStatus {
+        return layerStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: error("No layer status found for layerId: ${layerId} runId: ${runId}")
     }
 
-    private fun createLayerStatus(layerId: String, runId: String): LayerStatus {
+    fun getOrCreate(layerId: String, runId: String): LayerStatus {
+        return layerStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: createLayerStatus(layerId, runId, null)
+    }
+
+    fun createLayerStatus(layerId: String, runId: String, iceId: String?): LayerStatus {
         val id = createId("layerStatus-")
-        val status = LayerStatus(id, layerId, runId, false, LinkedList())
+        val status = LayerStatus(id, layerId, runId, false, LinkedList(), iceId)
         layerStatusRepo.save(status)
         return status
     }

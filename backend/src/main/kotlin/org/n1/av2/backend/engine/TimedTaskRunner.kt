@@ -1,6 +1,6 @@
 package org.n1.av2.backend.engine
 
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -19,7 +19,7 @@ const val SYSTEM_USER_ID = "user-system"
  * Tasks can be scheduled to run in the future. Then will be held here and when their time comes,
  * added to the TaskRunner to be executed.
  */
-private class TimedEvent(val omniId: String, val due: Long, val user: User, val action: () -> Unit)
+private class TimedEvent(val omniId: String, val due: Long, val userPrincipal: UserPrincipal, val action: () -> Unit)
 
 @Component
 class TimedTaskRunner(
@@ -53,14 +53,14 @@ class TimedTaskRunner(
             if (now < due) { return SLEEP_MILLIS_NO_EVENTS }
 
             val event = timedTasks.removeAt(0)
-            taskEngine.runForUser(event.user, event.action)
+            taskEngine.runForUser(event.userPrincipal, event.action)
             return 0
         }
     }
 
-    fun add(omniId: String, due: Long, user: User, action: () -> Unit) {
+    fun add(omniId: String, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
         lock.withLock {
-            timedTasks.add(TimedEvent(omniId, due, user, action))
+            timedTasks.add(TimedEvent(omniId, due, userPrincipal, action))
             timedTasks.sortBy { it.due }
         }
     }

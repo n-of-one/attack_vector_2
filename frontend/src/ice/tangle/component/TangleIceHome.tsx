@@ -1,18 +1,18 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import {Terminal} from "../../../../common/terminal/Terminal"
-import {CloseButton} from "../../../../common/component/CloseButton"
-import {FINISH_HACKING_ICE} from "../../model/HackActions"
-import {HIDDEN} from "../IceUiState"
-import {HackerState} from "../../../HackerRootReducer"
+import {Terminal} from "../../../common/terminal/Terminal"
+import {CloseButton} from "../../../common/component/CloseButton"
+import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions"
+import {HIDDEN} from "../../../hacker/run/ice/IceUiState"
+import {TangleRootState} from "../TangleRootReducer";
 
 export const TangleIceHome = () => {
     
     const dispatch = useDispatch()
     const close = () => dispatch({type: FINISH_HACKING_ICE})
     
-    const ice = useSelector( (state:HackerState) => state.run.ice.tangle! )
-    const displayTerminal = useSelector( (state:HackerState) => state.run.ice.displayTerminal )
+    const ice = useSelector( (state:TangleRootState) => state.tangle )
+    const displayTerminal = useSelector( (state:TangleRootState) => state.displayTerminal )
 
     const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : ""
 

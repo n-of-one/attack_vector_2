@@ -6,6 +6,10 @@ import org.n1.av2.backend.entity.run.RunActivity.SCANNING
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 
+const val TERMINAL_MAIN = "main"
+const val TERMINAL_CHAT = "chat"
+
+
 @Service
 class TerminalService(
     private val hackerStateEntityService: HackerStateEntityService,

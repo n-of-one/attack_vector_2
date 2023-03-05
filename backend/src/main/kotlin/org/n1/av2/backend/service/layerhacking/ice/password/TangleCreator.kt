@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.layerhacking.ice.password
 
-import org.n1.av2.backend.entity.run.TangleLine
-import org.n1.av2.backend.entity.run.TangleLineType
-import org.n1.av2.backend.entity.run.TanglePoint
+import org.n1.av2.backend.entity.ice.TangleLine
+import org.n1.av2.backend.entity.ice.TangleLineType
+import org.n1.av2.backend.entity.ice.TanglePoint
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import java.util.*
 import kotlin.math.roundToInt

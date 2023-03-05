@@ -19,18 +19,3 @@ class IcePasswordStatus(
         var lockedUntil: ZonedDateTime
 ) : IceStatus(id, layerId, runId)
 
-class IceTangleStatus(
-        id: String,
-        layerId: String,
-        runId: String,
-        val originalPoints: MutableList<TanglePoint>,
-        val points: MutableList<TanglePoint>,
-        val lines: List<TangleLine>
-
-) : IceStatus(id, layerId, runId)
-
-data class TanglePoint(val id: String, val x: Int, val y: Int)
-
-enum class TangleLineType { NORMAL, SETUP}
-data class TangleLine(val id: String, val fromId: String, val toId: String, val type: TangleLineType)
-

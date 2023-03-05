@@ -32,7 +32,8 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
                         "/edit/**", "/api/**",
                         "/about", "/error", "/loginSubmit",
                         "/notChrome", "/login/*", "/manual/**", "/keepAlive", "/signUp").permitAll()
-                .requestMatchers("/attack_vector_websocket").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
+                .requestMatchers("/ice_ws").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
+                .requestMatchers("/run_ws").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
                 .requestMatchers("/hacker/**").permitAll()
                 .requestMatchers("/gm/**").permitAll()
 //

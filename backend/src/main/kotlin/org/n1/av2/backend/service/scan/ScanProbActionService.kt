@@ -46,7 +46,7 @@ class ScanProbActionService(
     data class ProbeResultSingleNode(val nodeId: String, val newStatus: NodeScanStatus)
 
     private fun probeScanInitial(run: Run, node: Node, nodeScan: NodeScan): Boolean {
-        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${node.layers.size} ${"layer".s(node.layers.size)}.")
+        stompService.replyTerminalReceive("Scanned node ${node.networkId} - discovered ${node.layers.size} ${"layer".s(node.layers.size)}.")
 
         scannedSingleNode(nodeScan, run, node.id, NodeScanStatus.TYPE_KNOWN_2)
         return false
@@ -55,11 +55,11 @@ class ScanProbActionService(
 
     private fun probeScanDeep(run: Run, node: Node, nodeScan: NodeScan): Boolean {
         if (nodeScan.status != NodeScanStatus.CONNECTIONS_KNOWN_3) {
-            stompService.terminalReceiveCurrentUser("Scanning node ${node.networkId} did not find anything.")
+            stompService.replyTerminalReceive("Scanning node ${node.networkId} did not find anything.")
             return false
         }
 
-        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${node.layers.size} layer details")
+        stompService.replyTerminalReceive("Scanned node ${node.networkId} - discovered ${node.layers.size} layer details")
 
         scannedSingleNode(nodeScan, run, node.id, NodeScanStatus.FULLY_SCANNED_4)
         return false
@@ -68,7 +68,7 @@ class ScanProbActionService(
     fun scannedConnections(run: Run, node: Node, nodeScan: NodeScan): Boolean {
 
         if (nodeScan.status.level >= NodeScanStatus.CONNECTIONS_KNOWN_3.level ) {
-            stompService.terminalReceiveCurrentUser("Scanning node ${node.networkId} did not find new connections.")
+            stompService.replyTerminalReceive("Scanning node ${node.networkId} did not find new connections.")
             return false
         }
 
@@ -111,7 +111,7 @@ class ScanProbActionService(
         stompService.toRun(run.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, discoveredConnectionIds))
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
-        stompService.terminalReceiveCurrentUser("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
+        stompService.replyTerminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
         return discoveredNodeIds.isNotEmpty()
     }
 

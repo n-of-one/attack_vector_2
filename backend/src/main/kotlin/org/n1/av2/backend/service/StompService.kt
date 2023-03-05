@@ -3,8 +3,10 @@ package org.n1.av2.backend.service
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ReduxActions
 import org.n1.av2.backend.model.ui.ReduxEvent
+import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.simp.SimpMessageSendingOperations
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 @Service
@@ -37,53 +39,44 @@ class StompService(
         stompTemplate.convertAndSend("/topic/run/${runId}", event)
     }
 
-    fun toUser(userId: String, actionType: ReduxActions, data: Any) {
+    fun toIce(iceId: String, actionType: ReduxActions, data: Any? = null) {
         simulateNonLocalhost()
-        logger.debug("-> ${userId} ${actionType}")
+        logger.debug("-> ${iceId} ${actionType}")
         val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSendToUser(userId, "/reply", event)
+        stompTemplate.convertAndSend("/topic/ice/${iceId}", event)
     }
 
-    fun toUser(actionType: ReduxActions, data: Any) {
-        val userId = currentUserService.userId
-        toUser(userId, actionType, data)
+    fun reply(actionType: ReduxActions, data: Any) {
+        simulateNonLocalhost()
+        val name = SecurityContextHolder.getContext().authentication.name
+        logger.debug("-> ${name} ${actionType}")
+        val event = ReduxEvent(actionType, data)
+        stompTemplate.convertAndSendToUser(name, "/reply", event)
     }
 
-    fun toUser(message: NotyMessage) {
-        val userId = currentUserService.userId
-        toUser(userId, message)
-    }
-
-    fun toUser(userId: String, message: NotyMessage) {
-        toUser(userId, ReduxActions.SERVER_NOTIFICATION, message)
+    fun replyMessage(message: NotyMessage) {
+        reply(ReduxActions.SERVER_NOTIFICATION, message)
     }
 
     class TerminalReceive(val terminalId: String, val lines: Array<out String>, val locked : Boolean? = null)
 
-    fun terminalReceiveAndLockedCurrentUser(locked: Boolean, vararg lines: String) {
-        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines, locked))
+    fun replyTerminalReceiveAndLocked(locked: Boolean, vararg lines: String) {
+        reply(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines, locked))
     }
 
-    fun terminalReceiveCurrentUser(vararg lines: String) {
-        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
+    fun replyTerminalReceive(vararg lines: String) {
+        reply(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines ))
     }
 
-    fun terminalSetLockedCurrentUser(lock: Boolean) {
-        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", emptyArray(), lock))
+    fun replyTerminalSetLocked(lock: Boolean) {
+        reply(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, emptyArray(), lock))
     }
 
-
-    class TerminalReceiveLinesAsCollection(val terminalId: String, val lines: Collection<String>)
-    fun terminalReceiveCurrentUser(lines: Collection<String>) {
-        toUser(ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceiveLinesAsCollection("main", lines))
-    }
-
-    fun terminalReceiveForUser(userId: String, vararg lines: String) {
-        toUser(userId, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive("main", lines))
-    }
-
-    fun terminalReceiveForUserForTerminal(userId: String, terminalId: String, vararg lines: String) {
-        toUser(userId, ReduxActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(terminalId, lines))
+    fun toUserAllConnections(userId: String, actionType: ReduxActions, data: Any) {
+        simulateNonLocalhost()
+        logger.debug("-> ${userId} ${actionType}")
+        val event = ReduxEvent(actionType, data)
+        stompTemplate.convertAndSend("/topic/user/${userId}", event)
     }
 
 }
