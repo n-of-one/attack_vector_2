@@ -11,9 +11,15 @@ class IcePasswordController(
         val icePasswordService: IcePasswordService,
         val taskRunner: TaskRunner ) {
 
+    data class EnterInput(val iceId: String)
+
+    @MessageMapping("/ice/password/enter")
+    fun enter(command: EnterInput, principal: Principal) {
+        taskRunner.runTask(principal) { icePasswordService.enter(command.iceId) }
+    }
 
     @MessageMapping("/ice/password/submit")
-    fun scansOfPlayer(command: IcePasswordService.SubmitPassword, principal: Principal) {
+    fun submit(command: IcePasswordService.SubmitPassword, principal: Principal) {
         taskRunner.runTask(principal) { icePasswordService.submitAttempt(command) }
     }
 

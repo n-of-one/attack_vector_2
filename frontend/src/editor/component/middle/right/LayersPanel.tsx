@@ -1,8 +1,8 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {
-    CODE, CORE, ICE_ALTERNATE, ICE_FILM, ICE_MAGIC_EYE, ICE_NETWALK, ICE_PASSWORD, ICE_PASSWORD_SEARCH, ICE_TANGLE,
-    ICE_UNHACKABLE, ICE_WORD_SEARCH, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER
+    CODE, CORE, ALTERNATE_ICE, ICE_FILM, MAGIC_EYE_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
+    UNHACKABLE_ICE, WORD_SEARCH_ICE, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER
 } from "../../../../common/enums/LayerTypes"
 import {Glyphicon} from "../../../../common/component/Glyphicon"
 import {EditorState} from "../../../EditorRootReducer"
@@ -64,15 +64,14 @@ export const LayersPanel = () => {
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>
-                    {ice(ICE_PASSWORD)}
-                    {ice(ICE_TANGLE)}
+                    {ice(PASSWORD_ICE)}
+                    {ice(TANGLE_ICE)}
                     {unImplemented(ICE_FILM)}
-                    {unImplemented(ICE_NETWALK)}
-                    {unImplemented(ICE_WORD_SEARCH)}
-                    {unImplemented(ICE_MAGIC_EYE)}
-                    {unImplemented(ICE_PASSWORD_SEARCH)}
-                    {unImplemented(ICE_ALTERNATE)}
-                    {unImplemented(ICE_UNHACKABLE)}
+                    {unImplemented(NETWALK_ICE)}
+                    {unImplemented(WORD_SEARCH_ICE)}
+                    {unImplemented(MAGIC_EYE_ICE)}
+                    {unImplemented(ALTERNATE_ICE)}
+                    {unImplemented(UNHACKABLE_ICE)}
                 </div>
                 <br/>
             </div>

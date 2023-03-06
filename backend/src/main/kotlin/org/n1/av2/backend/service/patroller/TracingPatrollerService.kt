@@ -7,7 +7,7 @@ import org.n1.av2.backend.entity.run.PatrollerPathSegment
 import org.n1.av2.backend.entity.run.TracingPatroller
 import org.n1.av2.backend.entity.run.TracingPatrollerRepo
 import org.n1.av2.backend.model.Timings
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.scan.TraverseNode
@@ -133,28 +133,28 @@ class TracingPatrollerService(
         class ActionStartPatroller(val patrollerId: String, val nodeId: String, val timings: Timings)
 
         val action = ActionStartPatroller(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_Timings)
-        stompService.toRun(runId, ReduxActions.SERVER_START_TRACING_PATROLLER, action)
+        stompService.toRun(runId, ServerActions.SERVER_START_TRACING_PATROLLER, action)
     }
 
     private fun messageCatchHacker(patroller: TracingPatroller) {
         class ActionPatrollerCatchesHacker(val patrollerId: String, val hackerId: String)
 
         val action = ActionPatrollerCatchesHacker(patroller.id, patroller.targetUserId)
-        stompService.toRun(patroller.runId, ReduxActions.SERVER_PATROLLER_LOCKS_HACKER, action)
+        stompService.toRun(patroller.runId, ServerActions.SERVER_PATROLLER_LOCKS_HACKER, action)
     }
 
     private fun messagePatrollerMove(patroller: TracingPatroller, segment: PatrollerPathSegment, runId: String) {
         class ActionPatrollerMove(val patrollerId: String, val fromNodeId: String, val toNodeId: String, val timings: Timings)
 
         val action = ActionPatrollerMove(patroller.id, segment.fromNodeId, segment.toNodeId, PATROLLER_MOVE_Timings)
-        stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_MOVE, action)
+        stompService.toRun(runId, ServerActions.SERVER_PATROLLER_MOVE, action)
     }
 
     private fun messageRemovePatroller(patrollerId: String, runId: String) {
         class RemovePatroller(val patrollerId: String)
 
         val action = RemovePatroller(patrollerId)
-        stompService.toRun(runId, ReduxActions.SERVER_PATROLLER_REMOVE, action)
+        stompService.toRun(runId, ServerActions.SERVER_PATROLLER_REMOVE, action)
     }
 
 

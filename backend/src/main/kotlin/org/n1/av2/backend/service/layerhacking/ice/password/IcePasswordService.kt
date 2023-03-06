@@ -1,113 +1,98 @@
 package org.n1.av2.backend.service.layerhacking.ice.password
 
-import org.n1.av2.backend.entity.run.IcePasswordStatus
-import org.n1.av2.backend.entity.run.IceStatusRepo
-import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.ice.PasswordIceStatus
+import org.n1.av2.backend.entity.ice.PasswordIceStatusRepo
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.IcePasswordLayer
-import org.n1.av2.backend.entity.site.layer.Layer
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.model.ui.NotyType
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.util.createId
-import org.n1.av2.backend.util.nodeIdFromServiceId
 import java.time.ZonedDateTime
 import java.util.*
+import kotlin.jvm.optionals.getOrElse
 
 @org.springframework.stereotype.Service
 class IcePasswordService(
     val nodeEntityService: NodeEntityService,
-    val iceStatusRepo: IceStatusRepo,
+    val passwordIceStatusRepo: PasswordIceStatusRepo,
     val time: TimeService,
-    val serviceIceUtil: HackedUtil,
-    val stompService: StompService) {
+    val stompService: StompService,
+    val hackedUtil: HackedUtil,
+    ) {
 
-
-    data class UiState(val message: String?,
-                       val hacked: Boolean,
-                       val hint: String?,
-                       val layerId: String,
-                       val attempts: MutableList<String>,
-                       var lockedUntil: ZonedDateTime) {
-
-        constructor(message: String?, hacked: Boolean, hint: String?, status: IcePasswordStatus) :
-                this(message, hacked, hint, status.layerId, status.attempts, status.lockedUntil)
+    data class UiState(
+        val layerId: String,
+        var lockedUntil: ZonedDateTime,
+        val attempts: MutableList<String>,
+        val message: String?,
+        val hacked: Boolean,
+        val hint: String?
+    ) {
+        constructor(message: String?, hacked: Boolean, hint: String?, status: PasswordIceStatus) :
+                this(status.layerId, status.lockedUntil, status.attempts, message, hacked, hint)
     }
 
-    fun hack(layer: Layer, runId: String) {
-        val passwordStatus = getOrCreateStatus(layer.id, runId)
+    fun enter(iceId: String) {
+        val iceStatus = passwordIceStatusRepo
+            .findById(iceId)
+            .getOrElse {
+                stompService.replyMessage(NotyMessage(NotyType.FATAL, "Error", "No ice for ID: ${iceId}"))
+                return
+            }
 
-        val nodeId = nodeIdFromServiceId(layer.id)
-        val node = nodeEntityService.getById(nodeId)
-        val passwordService =  node.getLayerById(layer.id) as IcePasswordLayer
+        val layer = getLayer(iceStatus)
+        val hintToDisplay = hintToDisplay(iceStatus, layer)
+        val uiState = UiState(null, false, hintToDisplay, iceStatus)
 
-        val hintToDisplay = hintToDisplay(passwordStatus, passwordService)
-
-        val uiState = UiState(null, false, hintToDisplay, passwordStatus)
-
-        stompService.reply(ReduxActions.SERVER_START_HACKING_ICE_PASSWORD, uiState)
+        stompService.reply(ServerActions.SERVER_ENTER_ICE_PASSWORD, uiState)
     }
 
-
-    private fun getOrCreateStatus(layerId: String, runId: String): IcePasswordStatus {
-        return ( iceStatusRepo.findByLayerIdAndRunId(layerId, runId) ?: createServiceStatus(layerId, runId) ) as IcePasswordStatus
-    }
-
-    private fun createServiceStatus(layerId: String, runId: String): IcePasswordStatus {
-        val id = createId("icePasswordStatus-")
-        val passwordStatus = IcePasswordStatus(id, layerId, runId, LinkedList(), time.now().minusSeconds(1))
-        iceStatusRepo.save(passwordStatus)
-        return passwordStatus
-    }
-
-
-    class SubmitPassword(val layerId: String, val runId: String, val password: String)
+    class SubmitPassword(val iceId: String, val password: String)
 
     fun submitAttempt(command: SubmitPassword) {
-        val status = getOrCreateStatus(command.layerId, command.runId)
-        val nodeId = nodeIdFromServiceId(command.layerId)
-        val node = nodeEntityService.getById(nodeId)
-        val layer =  node.getLayerById(command.layerId) as IcePasswordLayer
+        val iceStatus = passwordIceStatusRepo.findById(command.iceId).getOrElse {  error("Ice not found for id: ${command.iceId}") }
+        val layer = getLayer(iceStatus)
 
         when {
-            status.attempts.contains(command.password) -> resolveDuplicate(command.runId, status, command.password, layer.hint)
-            command.password == layer.password -> resolveHacked(command, command.password, node)
-            else -> resolveFailed(command.runId, status, command.password, layer.hint)
+            iceStatus.attempts.contains(command.password) -> resolveDuplicate(iceStatus, layer, command.password)
+            command.password == layer.password -> resolveHacked(iceStatus, command.password)
+            else -> resolveFailed(iceStatus, layer, command.password)
         }
     }
 
 
+    private fun resolveDuplicate(iceStatus: PasswordIceStatus, layer: IcePasswordLayer, password: String) {
+        val hintToDisplay = hintToDisplay(iceStatus, layer)
 
-    private fun resolveDuplicate(runId: String, status: IcePasswordStatus, password: String, hint: String) {
-        val hintToDisplay = if (status.attempts.size > 0) hint else null
-        val result = UiState("Password \"${password}\" already attempted, ignoring", false, hintToDisplay, status)
-        stompService.toRun(runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
+        val result = UiState("Password \"${password}\" already attempted, ignoring", false, hintToDisplay, iceStatus)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_PASSWORD_UPDATE, result)
     }
 
 
+    private fun resolveHacked(iceStatus: PasswordIceStatus, password: String) {
+        iceStatus.attempts.add(password)
 
-    private fun resolveHacked(command: SubmitPassword, password: String, node: Node) {
-        val passwordStatus = getOrCreateStatus(command.layerId, command.runId)
-        passwordStatus.attempts.add(password)
+        val result = UiState("Password accepted.", true, null, iceStatus)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_PASSWORD_UPDATE, result)
 
-
-        val result = UiState("Password accepted.", true, null, passwordStatus)
-        stompService.toRun(command.runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
-        serviceIceUtil.iceHacked(command.layerId, node, command.runId, 70)
+        hackedUtil.iceHacked(iceStatus.layerId, iceStatus.runId, 70)
     }
 
-    private fun resolveFailed(runId: String, status: IcePasswordStatus, password: String, hint: String) {
-        status.attempts.add(password)
-        status.attempts.sort()
-        val timeOutSeconds = calculateTimeOutSeconds(status.attempts.size)
-        status.lockedUntil = time.now().plusSeconds(timeOutSeconds)
+    private fun resolveFailed(iceStatus: PasswordIceStatus, layer: IcePasswordLayer, password: String) {
+        iceStatus.attempts.add(password)
+        iceStatus.attempts.sort()
+        val timeOutSeconds = calculateTimeOutSeconds(iceStatus.attempts.size)
+        iceStatus.lockedUntil = time.now().plusSeconds(timeOutSeconds)
 
-        val hintToDisplay = if (status.attempts.size > 0) hint else null
-        iceStatusRepo.save(status)
+        val hintToDisplay = hintToDisplay(iceStatus, layer)
+        passwordIceStatusRepo.save(iceStatus)
 
-        val result = UiState("Password incorrect: ${password}", false, hintToDisplay, status)
-        stompService.toRun(runId, ReduxActions.SERVER_ICE_PASSWORD_UPDATE, result)
+        val result = UiState("Password incorrect: ${password}", false, hintToDisplay, iceStatus)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_PASSWORD_UPDATE, result)
     }
 
 
@@ -120,9 +105,22 @@ class IcePasswordService(
         }
     }
 
-    private fun hintToDisplay(status: IcePasswordStatus, layer: IcePasswordLayer): String? {
-        return if (status.attempts.size > 0) layer.hint else null
+    private fun hintToDisplay(iceStatus: PasswordIceStatus, layer: IcePasswordLayer): String? {
+        return if (iceStatus.attempts.size > 0) layer.hint else null
     }
 
+    private fun getLayer(iceStatus: PasswordIceStatus) : IcePasswordLayer {
+        val node = nodeEntityService.getById(iceStatus.nodeId)
+        val layer = node.getLayerById(iceStatus.layerId)
+        if (layer !is IcePasswordLayer) error("Wrong layer type/data for layer: ${layer.id}")
+        return layer
+    }
+
+    fun createStatus(layer: IcePasswordLayer, nodeId: String, runId: String): PasswordIceStatus {
+        val id = createId("password", passwordIceStatusRepo::findById)
+        val passwordStatus = PasswordIceStatus(id, runId, nodeId, layer.id, LinkedList(), time.now().minusSeconds(1))
+        passwordIceStatusRepo.save(passwordStatus)
+        return passwordStatus
+    }
 
 }

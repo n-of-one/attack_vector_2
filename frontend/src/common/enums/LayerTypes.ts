@@ -9,15 +9,25 @@ export const MONEY = "MONEY";
 export const CODE = "CODE";
 export const TIMER_TRIGGER = "TIMER_TRIGGER";
 export const CORE = "CORE";
-export const ICE_PASSWORD = "ICE_PASSWORD";
+export const PASSWORD_ICE = "PASSWORD_ICE";
 export const ICE_FILM = "ICE_FILM";
-export const ICE_NETWALK = "ICE_NETWALK";
-export const ICE_WORD_SEARCH = "ICE_WORD_SEARCH";
-export const ICE_MAGIC_EYE = "ICE_MAGIC_EYE";
-export const ICE_PASSWORD_SEARCH = "ICE_PASSWORD_SEARCH";
-export const ICE_ALTERNATE = "ICE_ALTERNATE";
-export const ICE_UNHACKABLE = "ICE_UNHACKABLE";
-export const ICE_TANGLE = "ICE_TANGLE";
+export const NETWALK_ICE = "NETWALK_ICE";
+export const WORD_SEARCH_ICE = "WORD_SEARCH_ICE";
+export const MAGIC_EYE_ICE = "MAGIC_EYE_ICE";
+export const ALTERNATE_ICE = "ALTERNATE_ICE";
+export const UNHACKABLE_ICE = "UNHACKABLE_ICE";
+export const TANGLE_ICE = "TANGLE_ICE";
+
+export enum LayerType {
+    OS = "OS",
+    TEXT= "TEXT",
+    TIMER_TRIGGER = "TIMER_TRIGGER",
+    PASSWORD_ICE = "PASSWORD_ICE",
+    TANGLE_ICE = "TANGLE_ICE",
+}
+
+
+
 export const glyphiconFromType = (type: string) => {
     switch(type) {
         case OS : return "glyphicon-home";
@@ -31,15 +41,14 @@ export const glyphiconFromType = (type: string) => {
         case CODE : return "glyphicon-ok-circle";
         case TIMER_TRIGGER : return "glyphicon-time";
         case CORE : return "glyphicon-th-large";
-        case ICE_PASSWORD : return "glyphicon-console";
-        case ICE_TANGLE: return "glyphicon-asterisk";
+        case PASSWORD_ICE : return "glyphicon-console";
+        case TANGLE_ICE: return "glyphicon-asterisk";
         case ICE_FILM : return "glyphicon-film";
-        case ICE_NETWALK : return "glyphicon-qrcode";
-        case ICE_WORD_SEARCH : return "glyphicon-th";
-        case ICE_MAGIC_EYE : return "glyphicon-eye-close";
-        case ICE_PASSWORD_SEARCH : return "glyphicon-tasks";
-        case ICE_ALTERNATE : return "glyphicon-star";
-        case ICE_UNHACKABLE : return "glyphicon-ban-circle";
+        case NETWALK_ICE : return "glyphicon-qrcode";
+        case WORD_SEARCH_ICE : return "glyphicon-th";
+        case MAGIC_EYE_ICE : return "glyphicon-eye-close";
+        case ALTERNATE_ICE : return "glyphicon-star";
+        case UNHACKABLE_ICE : return "glyphicon-ban-circle";
         default:
             console.log("unknown type:" + type);
             return "glyphicon-thumbs-down";

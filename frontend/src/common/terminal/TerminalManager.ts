@@ -3,7 +3,7 @@ import {delay} from "../Util";
 import {Dispatch, Store} from "redux";
 import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TerminalState} from "./TerminalReducer";
 import {TICK_MILLIS} from "../Schedule";
-import {HackerState} from "../../hacker/HackerRootReducer";
+import {ICE_INPUT_TERMINAL_ID, MAIN_TERMINAL_ID} from "./ActiveTerminalIdReducer";
 
 class TerminalManager {
 
@@ -59,13 +59,12 @@ class TerminalManager {
         }
     }
 
-    terminalStateById(terminalId: string): TerminalState {
-        const state:HackerState = this.store.getState()
+    private terminalStateById(terminalId: string): TerminalState {
+        const state = this.store.getState()
 
         switch (terminalId) {
-            case "main" : return state.terminal
-            case "iceInput": return state.run.ice.inputTerminal
-            case "iceDisplay": return state.run.ice.displayTerminal
+            case MAIN_TERMINAL_ID : return state.terminal
+            case ICE_INPUT_TERMINAL_ID: return state.inputTerminal
         }
         throw new Error("Unknown terminalId: " + terminalId)
     }

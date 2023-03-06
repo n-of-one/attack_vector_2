@@ -29,7 +29,7 @@ class EditorService(
         val layout = layoutEntityService.getBySiteId(command.siteId)
         val node = nodeEntityService.createNode(command)
         layoutEntityService.addNode(layout, node)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_NODE, node)
+        stompService.toSite(command.siteId, ServerActions.SERVER_ADD_NODE, node)
     }
 
     fun addConnection(command: AddConnection) {
@@ -42,7 +42,7 @@ class EditorService(
         val connection = connectionEntityService.createConnection(command)
 
         layoutEntityService.addConnection(layout, connection)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_CONNECTION, connection)
+        stompService.toSite(command.siteId, ServerActions.SERVER_ADD_CONNECTION, connection)
     }
 
     fun deleteConnections(siteId: String, nodeId: String) {
@@ -80,10 +80,10 @@ class EditorService(
             }
 
             sitePropertiesEntityService.save(properties)
-            stompService.toSite(properties.siteId, ReduxActions.SERVER_UPDATE_SITE_DATA, properties)
+            stompService.toSite(properties.siteId, ServerActions.SERVER_UPDATE_SITE_DATA, properties)
         }
         catch (validationException: ValidationException) {
-            stompService.toSite(properties.siteId, ReduxActions.SERVER_UPDATE_SITE_DATA, properties)
+            stompService.toSite(properties.siteId, ServerActions.SERVER_UPDATE_SITE_DATA, properties)
             throw validationException
         }
     }
@@ -91,13 +91,13 @@ class EditorService(
     fun moveNode(command: MoveNode) {
         val node = nodeEntityService.moveNode(command)
         val response = command.copy(x = node.x, y = node.y)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_MOVE_NODE, response)
+        stompService.toSite(command.siteId, ServerActions.SERVER_MOVE_NODE, response)
     }
 
 
     fun sendSiteFull(siteId: String) {
         val toSend = siteService.getSiteFull(siteId)
-        stompService.toSite(siteId, ReduxActions.SERVER_SITE_FULL, toSend)
+        stompService.toSite(siteId, ServerActions.SERVER_SITE_FULL, toSend)
     }
 
     fun deleteNode(siteId: String, nodeId: String) {
@@ -120,7 +120,7 @@ class EditorService(
         val changedNode = node.copy(networkId = command.value)
         nodeEntityService.save(changedNode)
         val message = ServerUpdateNetworkId(command.nodeId, changedNode.networkId)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_NETWORK_ID, message)
+        stompService.toSite(command.siteId, ServerActions.SERVER_UPDATE_NETWORK_ID, message)
         siteValidationService.validate(command.siteId)
     }
 
@@ -131,7 +131,7 @@ class EditorService(
         layer.update(command.key, command.value)
         nodeEntityService.save(node)
         val message = ServerUpdateLayer(command.nodeId, layer.id, layer)
-        stompService.toSite(command.siteId, ReduxActions.SERVER_UPDATE_LAYER, message)
+        stompService.toSite(command.siteId, ServerActions.SERVER_UPDATE_LAYER, message)
         siteValidationService.validate(command.siteId)
     }
 
@@ -140,7 +140,7 @@ class EditorService(
         val layer = nodeEntityService.addLayer(command)
         val message = LayerAdded(command.nodeId, layer)
 
-        stompService.toSite(command.siteId, ReduxActions.SERVER_ADD_LAYER, message)
+        stompService.toSite(command.siteId, ServerActions.SERVER_ADD_LAYER, message)
         siteValidationService.validate(command.siteId)
     }
 
@@ -148,7 +148,7 @@ class EditorService(
         val message = nodeEntityService.removeLayer(command)
 
         if (message != null) {
-            stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)
+            stompService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, message)
             siteValidationService.validate(command.siteId)
         }
     }
@@ -156,7 +156,7 @@ class EditorService(
     fun swapLayers(command: SwapLayerCommand) {
         val message = nodeEntityService.swapLayers(command)
         if (message != null) {
-            stompService.toSite(command.siteId, ReduxActions.SERVER_NODE_UPDATED, message)
+            stompService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, message)
         }
     }
 }

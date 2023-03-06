@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerOsPanel} from "./type/panel/LayerOsPanel"
 import {findElementById} from "../../../../../common/Immutable"
-import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes"
+import {PASSWORD_ICE, TANGLE_ICE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes"
 import {LayerTextPanel} from "./type/panel/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {Glyphicon} from "../../../../../common/component/Glyphicon"
@@ -27,9 +27,9 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerTextPanel node={node} layer={layer}/>
         case TIMER_TRIGGER:
             return <LayerTimerTriggerPanel node={node} layer={layer}/>
-        case ICE_PASSWORD:
+        case PASSWORD_ICE:
             return <LayerIcePasswordPanel node={node} layer={layer}/>
-        case ICE_TANGLE:
+        case TANGLE_ICE:
             return <LayerIceTanglePanel node={node} layer={layer}/>
         default:
             return <div className="text">NodeDetailPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>

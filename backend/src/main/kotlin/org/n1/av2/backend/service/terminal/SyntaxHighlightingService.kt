@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.model.Syntax
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
@@ -50,7 +50,7 @@ class SyntaxHighlightingService(
 
     fun sendSyntaxHighlighting(highlighting: Map<String, Syntax>, userId: String, stompService: StompService) {
         val message = SyntaxHighlightingMessage("main", highlighting)
-        stompService.reply(ReduxActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, message)
+        stompService.reply(ServerActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, message)
     }
 
 }

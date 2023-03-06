@@ -11,7 +11,7 @@ import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.NodeScanType
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
@@ -70,7 +70,7 @@ class ScanningService(
         val timings = scanType.timings
         val probeAction = ProbeAction(userId, path, scanType, timings)
 
-        stompService.toRun(run.runId, ReduxActions.SERVER_PROBE_LAUNCH, probeAction)
+        stompService.toRun(run.runId, ServerActions.SERVER_PROBE_LAUNCH, probeAction)
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
         taskRunner.queueInTicks(totalTicks - 20) {
@@ -174,7 +174,7 @@ class ScanningService(
             it to NodeScanStatus.FULLY_SCANNED_4
         }.toMap()
 
-        stompService.toRun(run.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, layout.connectionIds))
+        stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, layout.connectionIds))
         scanInfoService.updateScanInfoToPlayers(run)
     }
 

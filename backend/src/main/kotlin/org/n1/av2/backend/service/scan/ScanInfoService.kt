@@ -6,7 +6,7 @@ import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
@@ -43,7 +43,7 @@ class ScanInfoService(
 
         data class ScanSiteResponse(val runId: String, val siteId: String)
         val response = ScanSiteResponse(runId, siteProperties.siteId)
-        stompService.reply(ReduxActions.SERVER_SITE_DISCOVERED, response)
+        stompService.reply(ServerActions.SERVER_SITE_DISCOVERED, response)
         sendScanInfosOfPlayer() // to update the scans in the home screen
     }
 
@@ -82,7 +82,7 @@ class ScanInfoService(
         val runLinks = userLinkEntityService.findAllByUserId(userId)
         val scans = runEntityService.getAll(runLinks)
         val scanItems = scans.map(::createScanInfo)
-        stompService.reply(ReduxActions.SERVER_RECEIVE_USER_SCANS, scanItems)
+        stompService.reply(ServerActions.SERVER_RECEIVE_USER_SCANS, scanItems)
     }
 
     fun shareScan(runId: String, user: User) {
@@ -100,7 +100,7 @@ class ScanInfoService(
 
         stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
         stompService.toUserAllConnections(user.id,
-            ReduxActions.SERVER_TERMINAL_RECEIVE,
+            ServerActions.SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
         )
 
@@ -128,7 +128,7 @@ class ScanInfoService(
     fun updateScanInfoToPlayers(run: Run) {
         val scanInfo = createScanInfo(run)
         userLinkEntityService.getUsersOfScan(run.runId).forEach {
-            stompService.reply(ReduxActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
+            stompService.reply(ServerActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
         }
     }
 }

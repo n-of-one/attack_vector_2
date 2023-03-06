@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.layerhacking.ice.password
+package org.n1.av2.backend.service.layerhacking.ice.tangle
 
 import org.n1.av2.backend.entity.ice.TangleIceStatus
 import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
@@ -9,7 +9,7 @@ import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.IceTangleLayer
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.util.createId
@@ -23,8 +23,6 @@ const val Y_SIZE = 680
 const val PADDING = 10
 
 private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: Int, val id: String)
-
-private const val TANGLE_PREFIX = "tangle-"
 
 @Service
 class IceTangleService(
@@ -52,7 +50,7 @@ class IceTangleService(
             }
 
         val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines)
-        stompService.reply(ReduxActions.SERVER_START_ENTER_ICE_TANGLE, uiState)
+        stompService.reply(ServerActions.SERVER_ENTER_ICE_TANGLE, uiState)
     }
 
 
@@ -94,7 +92,7 @@ class IceTangleService(
 
         val message = TanglePointMoved(command.pointId, x, y, solved)
 
-        stompService.toIce(command.iceId, ReduxActions.SERVER_TANGLE_POINT_MOVED, message)
+        stompService.toIce(command.iceId, ServerActions.SERVER_TANGLE_POINT_MOVED, message)
 
         if (solved) {
             hackedUtil.iceHacked(tangleStatus.layerId, tangleStatus.runId, 70)

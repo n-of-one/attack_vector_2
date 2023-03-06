@@ -4,15 +4,17 @@ import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.entity.site.layer.IcePasswordLayer
 import org.n1.av2.backend.entity.site.layer.IceTangleLayer
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.ice.password.IceTangleService
+import org.n1.av2.backend.service.layerhacking.ice.password.IcePasswordService
+import org.n1.av2.backend.service.layerhacking.ice.tangle.IceTangleService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.site.SiteService
@@ -34,6 +36,7 @@ class RunService(
     private val runLinkEntityService: UserLinkEntityService,
     private val nodeEntityService: NodeEntityService,
     private val iceTangleService: IceTangleService,
+    private val icePasswordService: IcePasswordService,
 ) {
 
     class HackerPresence(
@@ -51,7 +54,7 @@ class RunService(
         val thisHackerState = hackerStateEntityService.enterScan(run.siteId, runId)
 
         syntaxHighlightingService.sendForScan()
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_ENTER_SCAN, toPresence(thisHackerState))
+        stompService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SCAN, toPresence(thisHackerState))
 
         val siteFull = siteService.getSiteFull(run.siteId)
         siteFull.sortNodeByDistance(run)
@@ -64,7 +67,7 @@ class RunService(
         class ScanAndSite(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val patrollers: List<PatrollerUiData>)
 
         val scanAndSite = ScanAndSite(run, siteFull, hackerPresences, patrollers)
-        stompService.reply(ReduxActions.SERVER_SCAN_FULL, scanAndSite)
+        stompService.reply(ServerActions.SERVER_SCAN_FULL, scanAndSite)
     }
 
     private fun getPresenceInRun(runId: String): List<HackerPresence> {
@@ -94,8 +97,8 @@ class RunService(
         tracingPatrollerService.disconnected(hackerState.userId)
 
         class HackerLeaveNotification(val userId: String)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(hackerState.userId))
-        stompService.reply(ReduxActions.SERVER_HACKER_DC, "-")
+        stompService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(hackerState.userId))
+        stompService.reply(ServerActions.SERVER_HACKER_DC, "-")
 
         hackerStateEntityService.leaveRun()
     }
@@ -119,17 +122,22 @@ class RunService(
 
     fun setupLayer(layer: Layer, nodeId: String, runId: String) {
         when (layer.type) {
-            LayerType.ICE_TANGLE -> createTangleIce(layer, nodeId, runId)
+            LayerType.TANGLE_ICE -> createTangleIce(layer, nodeId, runId)
+            LayerType.PASSWORD_ICE -> createPasswordIce(layer, nodeId, runId)
             else -> return
         }
     }
 
     fun createTangleIce(layer: Layer, nodeId: String, runId: String) {
         if (layer !is IceTangleLayer) error("Wrong layer type/data for layer: ${layer.id}")
-
         val iceTangleStatus = iceTangleService.createTangleIce(layer, nodeId, runId)
-
         layerStatusEntityService.createLayerStatus(layer.id, runId, iceTangleStatus.id)
+    }
+
+    fun createPasswordIce(layer: Layer, nodeId: String, runId: String) {
+        if (layer !is IcePasswordLayer) error("Wrong layer type/data for layer: ${layer.id}")
+        val passwordIceStatus = icePasswordService.createStatus(layer, nodeId, runId)
+        layerStatusEntityService.createLayerStatus(layer.id, runId, passwordIceStatus.id)
     }
 
 }

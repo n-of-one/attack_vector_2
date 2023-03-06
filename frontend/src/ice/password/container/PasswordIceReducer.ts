@@ -1,11 +1,10 @@
-import {ICE_PASSWORD} from "../../../../common/enums/LayerTypes";
-import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState";
-import {FINISH_HACKING_ICE} from "../../model/HackActions";
-import {serverTime} from "../../../../common/ServerTime";
+import {HIDDEN, LOCKED, UNLOCKED} from "../../IceUiState";
+import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions";
+import {serverTime} from "../../../common/ServerTime";
 import {AnyAction} from "redux";
-import {TERMINAL_TICK} from "../../../../common/terminal/TerminalReducer";
+import {TERMINAL_TICK} from "../../../common/terminal/TerminalReducer";
 
-export const SERVER_START_HACKING_ICE_PASSWORD = "SERVER_START_HACKING_ICE_PASSWORD";
+export const SERVER_ENTER_ICE_PASSWORD = "SERVER_ENTER_ICE_PASSWORD";
 export const SERVER_ICE_PASSWORD_UPDATE = "SERVER_ICE_PASSWORD_UPDATE";
 export const ICE_PASSWORD_LOCK = "ICE_PASSWORD_LOCK";
 export const ICE_PASSWORD_BEGIN = "ICE_PASSWORD_BEGIN";
@@ -21,31 +20,33 @@ export interface PasswordIceI {
     hint?: string,
 }
 
+interface ServerStatus {
+    layerId: string,
+    lockedUntil: string
+    attempts: string[]
+    message?: string,
+    hacked: boolean,
+    hint?: string,
+}
 const defaultState = {
     layerId: "svc-7baa-4572-cde0",
     lockedUntil: "2019-08-26T15:38:40.9179757+02:00",
     attempts: ["zwaardvis", "secret"],
-    uiState: "UNLOCKED",
+    uiState: HIDDEN,
     waitSeconds: 7,
     hacked: false,
     hint: "mother's name",
 };
 
 export const passwordIceReducer = (state : PasswordIceI= defaultState, action: AnyAction) => {
-    return state
-
-    // FIXME
-    // if (!currentIce || currentIce.type !== ICE_PASSWORD) {
-    //     return state;
-    // }
 
     switch (action.type) {
         case TERMINAL_TICK: {
             return processTick(state);
         }
 
-        case SERVER_START_HACKING_ICE_PASSWORD:
-            return processStartHacking(action.data);
+        case SERVER_ENTER_ICE_PASSWORD:
+            return processEnterIce(action.data);
         case SERVER_ICE_PASSWORD_UPDATE:
             return processServerUpdate(action.data, state);
         case ICE_PASSWORD_BEGIN:
@@ -68,16 +69,9 @@ const processTick = (state: PasswordIceI) => {
     return {...state, waitSeconds: waitSeconds, locked: false};
 };
 
-interface ServerStatus {
-    message?: string,
-    hacked: boolean,
-    hint?: string,
-    layerId: string,
-    attempts: string[]
-    lockedUntil: string
-}
 
-const processStartHacking = (serverStatus: ServerStatus): PasswordIceI => {
+
+const processEnterIce = (serverStatus: ServerStatus): PasswordIceI => {
     const waitSeconds = calculateWaitSeconds(serverStatus);
     return {...serverStatus, waitSeconds: waitSeconds, uiState: HIDDEN };
 };

@@ -1,18 +1,14 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import {Terminal} from "../../../../common/terminal/Terminal"
-import {HIDDEN, LOCKED, UNLOCKED} from "../IceUiState"
-import {CloseButton} from "../../../../common/component/CloseButton"
-import {FINISH_HACKING_ICE} from "../../model/HackActions"
+import {Terminal} from "../../../common/terminal/Terminal"
+import {HIDDEN, LOCKED, UNLOCKED} from "../../IceUiState"
 import {ICE_PASSWORD_LOCK, PasswordIceI} from "./PasswordIceReducer"
-import {HackerState} from "../../../HackerRootReducer"
-import {TERMINAL_SUBMIT, TerminalState} from "../../../../common/terminal/TerminalReducer"
+import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
-import {formatTimeInterval} from "../../../../common/Util";
-import {ENTER_KEY} from "../../../../KeyCodes";
-import {webSocketConnection} from "../../../../common/WebSocketConnection";
-
-
+import {formatTimeInterval} from "../../../common/Util";
+import {ENTER_KEY} from "../../../KeyCodes";
+import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {PasswordRootState} from "../PasswordRootReducer";
 
 const renderInput = (inputTerminal: TerminalState, enterPassword: () => void, dispatch: Dispatch, ice: PasswordIceI) => {
     if (ice.uiState === LOCKED) {
@@ -44,11 +40,11 @@ const renderHint = (ice: PasswordIceI) => {
 export const PasswordIceHome = () => {
 
     const dispatch = useDispatch()
-    const close = () => dispatch({type: FINISH_HACKING_ICE})
 
-    const ice = useSelector((state: HackerState) => state.run.ice.password!)
-    const displayTerminal = useSelector((state: HackerState) => state.run.ice.displayTerminal)
-    const inputTerminal = useSelector((state: HackerState) => state.run.ice.inputTerminal)
+    const iceId = useSelector((state: PasswordRootState) => state.iceId)
+    const ice = useSelector((state: PasswordRootState) => state.password)
+    const displayTerminal = useSelector((state: PasswordRootState) => state.displayTerminal)
+    const inputTerminal = useSelector((state: PasswordRootState) => state.inputTerminal)
 
     const enterPassword = () => {
         const password = inputTerminal.input
@@ -57,8 +53,8 @@ export const PasswordIceHome = () => {
             return
         }
 
-        const payload = {layerId: ice.layerId, password: password}
-        webSocketConnection.sendObjectWithRunId("/av/ice/password/submit", payload)
+        const payload = {iceId: iceId, password: password}
+        webSocketConnection.sendObject("/av/ice/password/submit", payload)
         dispatch({type: ICE_PASSWORD_LOCK})
     }
     const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : ""
@@ -71,7 +67,7 @@ export const PasswordIceHome = () => {
                     <div className="col-lg-12">
                         <h4 className="text-success">
                             <strong>
-                                Ice: <span className="text-info">Aruna</span>&nbsp;<CloseButton closeAction={close}/><br/>
+                                Ice: <span className="text-info">Aruna</span>&nbsp;<br/>
                                 Strength: <span className="text-info">Unknown</span><br/>
                             </strong>
                         </h4>

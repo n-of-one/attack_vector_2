@@ -2,6 +2,7 @@ package org.n1.av2.backend.config
 
 import org.n1.av2.backend.config.security.WebSocketAuthenticationHandler
 import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.StompConnectionEventService
 import org.n1.av2.backend.service.user.UserConnectionService
@@ -68,11 +69,14 @@ class StompConfig(
     fun handleConnectEvent(event: SessionConnectEvent) {
         val principal = event.user!! as UserPrincipal
 
+
         // A bit hacky: need to set the security context for the stompConnectionEventService to be able to do its thing
         // but because we are not formally connected yet.
         try {
-            SecurityContextHolder.getContext().authentication = principal
-            stompConnectionEventService.connect(principal)
+            if (principal.user.type == UserType.HACKER) {
+                SecurityContextHolder.getContext().authentication = principal
+                stompConnectionEventService.connect(principal)
+            }
         }
         finally {
             SecurityContextHolder.clearContext()

@@ -15,7 +15,7 @@ abstract class IceLayer(
 ) : Layer(id, type, level, name, note) {
 
     constructor(id: String, level: Int, defaultName: String, strength: IceStrength) :
-            this(id, LayerType.ICE_PASSWORD, level, defaultName, "", strength)
+            this(id, LayerType.PASSWORD_ICE, level, defaultName, "", strength)
 
     @Suppress("UNUSED_PARAMETER")
     var ice: Boolean

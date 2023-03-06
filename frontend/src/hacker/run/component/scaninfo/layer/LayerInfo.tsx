@@ -1,5 +1,5 @@
 import React from 'react'
-import {ICE_PASSWORD, ICE_TANGLE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes"
+import {PASSWORD_ICE, TANGLE_ICE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes"
 import {ScanInfoOs} from "./ScanInfoOs"
 import {ScanInfoText} from "./ScanInfoText"
 import {Pad} from "../../../../../common/component/Pad"
@@ -11,9 +11,9 @@ const renderLayer = (layer: LayerDetails) => {
     switch (layer.type) {
         case OS:
             return <ScanInfoOs layer={layer}/>
-        case ICE_PASSWORD:
+        case PASSWORD_ICE:
             return <ScanInfoIce layer={layer} iceDescription="static password"/>
-        case ICE_TANGLE:
+        case TANGLE_ICE:
             return <ScanInfoIce layer={layer} iceDescription="tangle"/>
         case TEXT:
             return <ScanInfoText layer={layer}/>

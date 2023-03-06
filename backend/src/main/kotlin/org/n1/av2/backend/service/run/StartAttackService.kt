@@ -2,16 +2,10 @@ package org.n1.av2.backend.service.run
 
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.entity.run.IceStatusRepo
-import org.n1.av2.backend.entity.run.LayerStatusRepo
-import org.n1.av2.backend.entity.run.NodeStatusRepo
-import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.model.Timings
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.patroller.TracingPatrollerService
-import org.n1.av2.backend.service.terminal.HackTerminalService
 import org.n1.av2.backend.service.terminal.SyntaxHighlightingService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
 import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
@@ -44,7 +38,7 @@ class StartAttackService(
         data class StartRun(val userId: String, val quick: Boolean, val timings: Timings)
         val timings = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
         val data = StartRun(userId, quick, timings)
-        stompService.toRun(runId, ReduxActions.SERVER_HACKER_START_ATTACK, data)
+        stompService.toRun(runId, ServerActions.SERVER_HACKER_START_ATTACK, data)
 
 
         val next = StartAttackArriveGameEvent(userId, runId)

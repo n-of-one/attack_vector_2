@@ -10,8 +10,8 @@ class ThemeService {
         return when(serviceType) {
             LayerType.OS -> "OS"
             LayerType.TEXT -> "Data vault"
-            LayerType.ICE_PASSWORD -> "Aruna"
-            LayerType.ICE_TANGLE -> "Reva"
+            LayerType.PASSWORD_ICE -> "Aruna"
+            LayerType.TANGLE_ICE -> "Reva"
             LayerType.TIMER_TRIGGER -> "Network Sniffer"
 //            else -> error("Unknown service type: ${serviceType}")
         }

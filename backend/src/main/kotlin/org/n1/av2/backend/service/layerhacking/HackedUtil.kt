@@ -4,10 +4,10 @@ import org.n1.av2.backend.entity.run.LayerStatusEntityService
 import org.n1.av2.backend.entity.run.NodeStatusEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.util.nodeIdFromServiceId
+import org.n1.av2.backend.util.nodeIdFromLayerId
 
 
 @org.springframework.stereotype.Service
@@ -23,7 +23,7 @@ class HackedUtil(
     data class NodeHacked(val nodeId: String, val delay: Int)
 
     fun iceHacked(layerId: String, runId: String, delay: Int) {
-        val nodeId = nodeIdFromServiceId(layerId)
+        val nodeId = nodeIdFromLayerId(layerId)
         val node = nodeEntityService.getById(nodeId)
         iceHacked(layerId, node, runId, delay)
     }
@@ -33,19 +33,19 @@ class HackedUtil(
         saveLayerStatusHacked(layerId, runId)
 
         val update = IceHackedUpdate(layerId, node.id)
-        stompService.toRun(runId, ReduxActions.SERVER_LAYER_HACKED, update)
+        stompService.toRun(runId, ServerActions.SERVER_LAYER_HACKED, update)
 
         if (layerId == lastNonHackedIceLayerId) {
             nodeStatusEntityService.createHackedStatus(node.id, runId)
             val nodeHackedUpdate = NodeHacked(node.id, delay)
-            stompService.toRun(runId, ReduxActions.SERVER_NODE_HACKED, nodeHackedUpdate)
+            stompService.toRun(runId, ServerActions.SERVER_NODE_HACKED, nodeHackedUpdate)
         }
     }
 
     fun nonIceHacked(layerId: String, node: Node, runId: String) {
         saveLayerStatusHacked(layerId, runId)
         val update = IceHackedUpdate(layerId, node.id)
-        stompService.toRun(runId, ReduxActions.SERVER_LAYER_HACKED, update)
+        stompService.toRun(runId, ServerActions.SERVER_LAYER_HACKED, update)
     }
 
     private fun saveLayerStatusHacked(layerId: String, runId: String) {

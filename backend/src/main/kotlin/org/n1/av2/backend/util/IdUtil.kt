@@ -17,7 +17,7 @@ fun createLayerId(node: Node, findExisting: (String)-> Any?): String {
     return createId("${node.id}-layer", findExisting, 9, 13)
 }
 
-fun nodeIdFromServiceId(layerId: String): String {
+fun nodeIdFromLayerId(layerId: String): String {
     return layerId.substring(0,14)
 }
 

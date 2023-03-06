@@ -8,7 +8,7 @@ import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.ui.NodeScanType
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.s
 import org.springframework.stereotype.Service
@@ -107,8 +107,8 @@ class ScanProbActionService(
 
         val nodeStatusById = discoveredNodeIds.map { it to NodeScanStatus.DISCOVERED_1 }.toMap()
 
-        stompService.toRun(run.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(node.id, nodeScan.status))
-        stompService.toRun(run.runId, ReduxActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, discoveredConnectionIds))
+        stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(node.id, nodeScan.status))
+        stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, discoveredConnectionIds))
 
         val iceMessage = if (node.ice) " | Ice detected" else ""
         stompService.replyTerminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}${iceMessage}")
@@ -119,6 +119,6 @@ class ScanProbActionService(
         nodeScan.status = newStatus
         run.totalDistanceScanned += nodeScan.distance!!
         runEntityService.save(run)
-        stompService.toRun(run.runId, ReduxActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(nodeId, nodeScan.status))
+        stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(nodeId, nodeScan.status))
     }
 }

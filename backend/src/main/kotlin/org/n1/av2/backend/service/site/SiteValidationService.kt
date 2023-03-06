@@ -2,7 +2,7 @@ package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
@@ -109,7 +109,7 @@ class SiteValidationService(
 
         if (oldState != newState) {
             siteEditorStateEntityService.save(newState)
-            stompService.toSite(id, ReduxActions.SERVER_UPDATE_SITE_STATE, newState)
+            stompService.toSite(id, ServerActions.SERVER_UPDATE_SITE_STATE, newState)
         }
     }
 }

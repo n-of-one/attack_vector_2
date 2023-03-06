@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.run.HackerGeneralActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
@@ -28,11 +28,11 @@ class UserConnectionService(
          }
 
         data class NewConnection(val connectionId: String, val type: ConnectionType)
-        stompService.toUserAllConnections(userPrincipal.userId, ReduxActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, userPrincipal.type))
+        stompService.toUserAllConnections(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, userPrincipal.type))
     }
 
     fun sendTime() {
-        stompService.reply(ReduxActions.SERVER_TIME_SYNC, ZonedDateTime.now())
+        stompService.reply(ServerActions.SERVER_TIME_SYNC, ZonedDateTime.now())
     }
 
     fun disconnect() {

@@ -1,8 +1,8 @@
-import {HIDDEN, UNLOCKED} from "../../hacker/run/ice/IceUiState";
+import {HIDDEN, UNLOCKED} from "../IceUiState";
 import {AnyAction} from "redux";
 
 export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
-export const SERVER_START_ENTER_ICE_TANGLE = "SERVER_START_ENTER_ICE_TANGLE";
+export const SERVER_ENTER_ICE_TANGLE = "SERVER_ENTER_ICE_TANGLE";
 export const SERVER_TANGLE_POINT_MOVED = "SERVER_TANGLE_POINT_MOVED";
 
 export interface TangleIceState {
@@ -37,7 +37,7 @@ export const defaultState: TangleIceState = {
 export const tangleIceReducer = (state: TangleIceState = defaultState, action: AnyAction): TangleIceState => {
 
     switch (action.type) {
-        case SERVER_START_ENTER_ICE_TANGLE:
+        case SERVER_ENTER_ICE_TANGLE:
             return {...action.data, uiState: HIDDEN};
         case ICE_TANGLE_BEGIN:
             return {...state, uiState: UNLOCKED};

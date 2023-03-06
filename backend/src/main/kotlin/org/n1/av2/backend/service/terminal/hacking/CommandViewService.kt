@@ -3,7 +3,7 @@ package org.n1.av2.backend.service.terminal.hacking
 import org.n1.av2.backend.entity.run.HackerStateRunning
 import org.n1.av2.backend.entity.run.LayerStatusEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 
@@ -33,7 +33,7 @@ class CommandViewService(
             lines.add("${blocked}[pri]${layer.level}[/] ${layer.name}${iceSuffix}${hacked}")
         }
 
-        stompService.reply(ReduxActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive("main", lines.map { it }.toTypedArray()))
+        stompService.reply(ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive("main", lines.map { it }.toTypedArray()))
     }
 
 }

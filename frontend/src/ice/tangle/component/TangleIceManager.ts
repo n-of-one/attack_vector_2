@@ -1,9 +1,8 @@
 import {Schedule} from "../../../common/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../../../hacker/run/ice/GenericIceManager";
+import {GenericIceManager} from "../../GenericIceManager";
 import {tangleIceCanvas} from "../canvas/TangleIceCanvas";
 import {notify} from "../../../common/Notification";
-import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions";
 import {delay} from "../../../common/Util";
 import {Dispatch, Store} from "redux";
 import {ICE_TANGLE_BEGIN, TangleLine, TanglePoint} from "../TangleIceReducer";
@@ -41,14 +40,13 @@ class TangleIceManager extends GenericIceManager {
         delay (() => {tangleIceCanvas.init(iceId, puzzle, this.dispatch, this.store)});
         this.schedule.clear();
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
-        // TODO Re-enable long text
-        // this.displayTerminal(20, "↼ Connecting to ice, initiating attack.");
-        // this.displayTerminal(40, "↼ Network inspection.");
-        // this.displayTerminal(10, "↼ Complete");
-        // this.displayTerminal(10, "↼ Weak encryption detected: Directed Acyclic Graph");
-        // this.displayTerminal(20, "↼ Negotiating lowest entropy");
-        // this.displayTerminal(30, "");
-        // this.displayTerminal(20, "↼ Negotiation complete.");
+        this.displayTerminal(20, "↼ Connecting to ice, initiating attack.");
+        this.displayTerminal(40, "↼ Network inspection.");
+        this.displayTerminal(10, "↼ Complete");
+        this.displayTerminal(10, "↼ Weak encryption detected: Directed Acyclic Graph");
+        this.displayTerminal(20, "↼ Negotiating lowest entropy");
+        this.displayTerminal(30, "");
+        this.displayTerminal(20, "↼ Negotiation complete.");
         this.displayTerminal(5, "↼ Start manual decryption");
         this.schedule.dispatch(0, {type: ICE_TANGLE_BEGIN});
     }
@@ -56,7 +54,6 @@ class TangleIceManager extends GenericIceManager {
     moved(data: TanglePointMoved) {
 
         // state.run.ice.currentIce;
-        const state = this.store.getState();
         tangleIceCanvas.serverMovedPoint(data);
         if (data.solved) {
             notify({type: "ok", title: "Result", message: "Ice hacked"});

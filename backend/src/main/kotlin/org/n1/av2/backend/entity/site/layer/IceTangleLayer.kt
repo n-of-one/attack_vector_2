@@ -15,7 +15,7 @@ class IceTangleLayer(
 ) : IceLayer(id, type, level, name, note, strength) {
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.ICE_TANGLE, level, defaultName, "", IceStrength.AVERAGE)
+            this(id, LayerType.TANGLE_ICE, level, defaultName, "", IceStrength.AVERAGE)
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
         return emptyList()

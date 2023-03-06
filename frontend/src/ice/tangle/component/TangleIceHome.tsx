@@ -1,16 +1,13 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
-import {CloseButton} from "../../../common/component/CloseButton"
-import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions"
-import {HIDDEN} from "../../../hacker/run/ice/IceUiState"
+import {HIDDEN} from "../../IceUiState"
 import {TangleRootState} from "../TangleRootReducer";
 
 export const TangleIceHome = () => {
     
     const dispatch = useDispatch()
-    const close = () => dispatch({type: FINISH_HACKING_ICE})
-    
+
     const ice = useSelector( (state:TangleRootState) => state.tangle )
     const displayTerminal = useSelector( (state:TangleRootState) => state.displayTerminal )
 
@@ -24,7 +21,7 @@ export const TangleIceHome = () => {
                     <div className="col-lg-12">
                         <h4 className="text-success">
                             <strong>
-                                Ice: <span className="text-info">Reva</span>&nbsp;<CloseButton closeAction={close}/><br/>
+                                Ice: <span className="text-info">Reva</span>&nbsp;<br/>
                                 Strength: <span className="text-info">{ice.strength}</span><br/>
                             </strong>
                         </h4>

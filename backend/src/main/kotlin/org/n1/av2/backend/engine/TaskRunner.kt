@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
@@ -96,13 +96,13 @@ class TaskEngine (val stompService: StompService,
             }
             if (exception is FatalException) {
                 val event = ServerFatal(false, exception.message ?: exception.javaClass.name)
-                stompService.reply(ReduxActions.SERVER_ERROR, event)
+                stompService.reply(ServerActions.SERVER_ERROR, event)
                 logger.warn("${task.userPrincipal.user.name}: ${exception}")
                 return
             }
             if (!currentUserService.isSystemUser) {
                 val event = ServerFatal(true, exception.message ?: exception.javaClass.name)
-                stompService.reply(ReduxActions.SERVER_ERROR, event)
+                stompService.reply(ServerActions.SERVER_ERROR, event)
                 logger.info("User: ${task.userPrincipal.user.name} - task triggered exception. ", exception)
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)

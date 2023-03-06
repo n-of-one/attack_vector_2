@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.layerhacking.ice.password
+package org.n1.av2.backend.service.layerhacking.ice.tangle
 
 import org.n1.av2.backend.entity.ice.TangleLine
 import org.n1.av2.backend.entity.ice.TangleLineType

@@ -2,51 +2,53 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {WEBSOCKET_ICE, webSocketConnection} from "../../common/WebSocketConnection";
-import {tangleIceManager} from "./component/TangleIceManager";
-import {initTangleIceServerActions} from "./TangleServerActionProcessor";
 import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
-import {TangleContainer} from "./component/TangleContainer";
-import {tangleRootReducer, TangleRootState} from "./TangleRootReducer";
-import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
+import {PasswordContainer} from "./container/PasswordContainer";
+import {passwordRootReducer, PasswordRootState} from "./PasswordRootReducer";
+import {passwordIceManager} from "./container/PasswordIceManager";
+import {initPasswordIceServerActions} from "./PasswordServerActionProcessor";
+import {ICE_INPUT_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
+import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 
 interface Props {
     iceId: string
 }
-export class TangleRoot extends Component<Props> {
+
+export class PasswordRoot extends Component<Props> {
 
     store: Store
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = { iceId: props.iceId}
+        const preLoadedState = {iceId: props.iceId, activeTerminalId: ICE_INPUT_TERMINAL_ID}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
         this.store = configureStore({
-            reducer: tangleRootReducer as Reducer<TangleRootState>,
+            reducer: passwordRootReducer as Reducer<PasswordRootState>,
             preloadedState: preLoadedState,
-            middleware: (getDefaultMiddleware) =>  [...getDefaultMiddleware()],
+            middleware: (getDefaultMiddleware) => [...getDefaultMiddleware()],
             devTools: isDevelopmentServer
         })
 
         webSocketConnection.create(WEBSOCKET_ICE, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/tangle/enter", {iceId: props.iceId})
+            webSocketConnection.sendObject("/av/ice/password/enter", {iceId: props.iceId})
         });
 
-        tangleIceManager.init(this.store);
+        passwordIceManager.init(this.store)
         terminalManager.init(this.store)
         initGenericServerActions()
-        initTangleIceServerActions(this.store)
+        initPasswordIceServerActions(this.store)
     }
 
     render() {
-        return(
+        return (
             <RequiresRole requires="ROLE_HACKER">
                 <Provider store={this.store}>
-                    <TangleContainer />
+                    <PasswordContainer/>
                 </Provider>
             </RequiresRole>
         )

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {TangleRoot} from "./tangle/TangleRoot";
+import {PasswordRoot} from "./password/PasswordRoot";
 
 interface Props {
     redirectId: string
@@ -15,8 +16,9 @@ export const IceRoot = (props: Props) => {
         const fetchData = async () => {
             const response: Response = await fetch( `/api/ice/${props.redirectId}` );
             const text: string = await response.text()
-            setIceType(text)
-            setIceId(`${text}-${props.redirectId}`)
+            const responseObject = JSON.parse(text)
+            setIceType(responseObject.type)
+            setIceId(responseObject.iceId)
         }
 
         fetchData()
@@ -28,7 +30,8 @@ export const IceRoot = (props: Props) => {
         return <div style={{color: "yellow"}}>Waiting</div>
     }
 
-    if (iceType === "tangle" ) return <TangleRoot iceId={iceId} />
+    if (iceType === "TANGLE_ICE" ) return <TangleRoot iceId={iceId} />
+    if (iceType === "PASSWORD_ICE" ) return <PasswordRoot iceId={iceId} />
 
-    return <div style={{color: "red"}}>Unsupported Ice type: {iceType}</div>
+    return <div style={{color: "red"}}>No Ice found for ID: {props.redirectId}</div>
 }

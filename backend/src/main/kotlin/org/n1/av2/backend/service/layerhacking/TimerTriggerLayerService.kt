@@ -3,7 +3,7 @@ package org.n1.av2.backend.service.layerhacking
 import org.n1.av2.backend.engine.GameEvent
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
-import org.n1.av2.backend.model.ui.ReduxActions
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
@@ -35,12 +35,12 @@ class TimerTriggerLayerService(
         val alarmTime = time.now()
                 .plusMinutes(layer.minutes)
                 .plusSeconds(layer.seconds)
-        stompService.reply(ReduxActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
+        stompService.reply(ServerActions.SERVER_START_COUNTDOWN, CountdownStart(alarmTime))
 
         stompService.replyTerminalReceive("[pri]${layer.level}[/] Network sniffer : analyzing traffic. Persona mask will fail in [error]${detectTime(layer)}[/].")
 
         class FlashPatroller(val nodeId: String)
-        stompService.toRun(runId, ReduxActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
+        stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
 
         val event = TimerActivatesGameEvent(runId, nodeId, userId)
         taskRunner.queueInMinutesAndSeconds(layer.minutes, layer.seconds) { timerActivates(event) }
@@ -51,7 +51,7 @@ class TimerTriggerLayerService(
     }
 
     fun timerActivates(event: TimerActivatesGameEvent) {
-        stompService.toRun(event.runId, ReduxActions.SERVER_COMPLETE_COUNTDOWN)
+        stompService.toRun(event.runId, ServerActions.SERVER_COMPLETE_COUNTDOWN)
         tracingPatrollerService.activatePatroller(event.nodeId, event.userId, event.runId)
     }
 }

@@ -1,6 +1,6 @@
 package org.n1.av2.backend.model.ui
 
-enum class ReduxActions {
+enum class ServerActions {
 
     SERVER_USER_CONNECTION,         // Tell the client that a new user-connection was established. Have the client check if this
                                     // is the connection it just made, or if a newer connection was made and the old one needs to shut down
@@ -48,18 +48,6 @@ enum class ReduxActions {
     SERVER_HACKER_MOVE_ARRIVE_FAIL, // step two of the move if the hacker could not complete the move (for instance because it was locked in place)
 
     SERVER_HACKER_SCANS_NODE,      // when arriving at a node that is state DISCOVERED or TYPE
-    SERVER_HACKER_PROBE_CONNECTIONS, // when hacking OS
-
-
-    SERVER_START_HACKING_ICE_PASSWORD, // sent to hacker that hacks this ice
-    SERVER_ICE_PASSWORD_UPDATE,        // sent to run to inform of hacked status update
-    SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
-    SERVER_NODE_HACKED,                // change icon of node in run
-
-    SERVER_REDIRECT_HACK_ICE,          // open a new window to start hacking ICE
-
-    SERVER_START_ENTER_ICE_TANGLE,    // sent to hacker that hacks this ice
-    SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
 
     SERVER_START_COUNTDOWN,             // The client can show the countdown clock
     SERVER_COMPLETE_COUNTDOWN,          // The countdown completes
@@ -67,10 +55,20 @@ enum class ReduxActions {
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
     SERVER_START_TRACING_PATROLLER,     // Client shows a patroller (for example as a result of an alarm countdown)
     SERVER_PATROLLER_MOVE,              // Client can show this
-    SERVER_PATROLLER_HOOKS_HACKER,      // Client can show the move line turning red
-    SERVER_PATROLLER_SNAPS_BACK_HACKER, // Show hacker display snapped back to node it was trying to leave.
     SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
     SERVER_PATROLLER_REMOVE,            // Client can remove it
+
+    SERVER_REDIRECT_HACK_ICE,          // open a new window to start hacking ICE
+    SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
+    SERVER_NODE_HACKED,                // change icon of node in run
+
+
+    SERVER_ENTER_ICE_PASSWORD, // sent to hacker that hacks this ice
+    SERVER_ICE_PASSWORD_UPDATE,        // sent to run to inform of hacked status update
+
+    SERVER_ENTER_ICE_TANGLE,    // sent to hacker that hacks this ice
+    SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
+
 
 
 }

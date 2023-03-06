@@ -6,7 +6,7 @@ import {HackerPageChooser} from "./HackerPageChooser";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
 import {WEBSOCKET_RUN, webSocketConnection} from "../common/WebSocketConnection";
 import {terminalManager} from "../common/terminal/TerminalManager";
-import {passwordIceManager} from "./run/ice/password/PasswordIceManager";
+import {passwordIceManager} from "../ice/password/container/PasswordIceManager";
 import {tangleIceManager} from "../ice/tangle/component/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
 import {HACKER_HOME} from "../common/menu/pageReducer";
