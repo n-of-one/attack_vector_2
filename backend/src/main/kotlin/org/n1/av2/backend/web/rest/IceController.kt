@@ -11,7 +11,9 @@ class IceController(
 
     @GetMapping("{layerStatusReference}")
     fun getIce(@PathVariable layerStatusReference: String): LayerStatusEntityService.IceBasicInfo {
-        return layerStatusEntityService.getLayerType(layerStatusReference)
+        return LayerStatusEntityService.IceBasicInfo("WORD_SEARCH_ICE", "wordSearch-10000-1000")
+//        return layerStatusEntityService.getLayerType(layerStatusReference)
     }
+
 
 }

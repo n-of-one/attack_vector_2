@@ -11,3 +11,117 @@
 .iceDisplayTerminal {
     height: 120px;
 }
+
+.iceWsGrid {
+    position: relative;
+    z-index: 10;
+    left: 5px;
+    top: 15px;
+}
+
+/*.iceWsElement {*/
+/*    width: 30px;*/
+/*    color: #f0ad4e;*/
+/*    font-size: 18px;*/
+/*    padding-left: 8px;*/
+/*    background-color: #6006;*/
+/*}*/
+
+.iceWsElement {
+    width: 22px;
+    color: #f0ad4e;
+    font-size: 18px;
+    padding-left: 5px;
+    transition: background-color 0.5s;
+    height: 23px;
+}
+
+.iceWsContainer {
+    padding: 4px;
+}
+
+.iceWsRow {
+    height: 30px;
+}
+
+.ws {
+    position: relative;
+    top: -2px
+}
+
+.wsCORRECT {
+    background-color: #0606;
+}
+
+.wsSELECTED {
+    background-color: #660F;
+}
+
+.wsA:before { content: "A"; }
+.wsB:before { content: "B"; }
+.wsC:before { content: "C"; }
+.wsD:before { content: "D"; }
+.wsE:before { content: "E"; }
+.wsF:before { content: "F"; }
+.wsG:before { content: "G"; }
+.wsH:before { content: "H"; }
+.wsI:before { content: "I"; }
+.wsJ:before { content: "J"; }
+.wsK:before { content: "K"; }
+.wsL:before { content: "L"; }
+.wsM:before { content: "M"; }
+.wsN:before { content: "N"; }
+.wsO:before { content: "O"; }
+.wsP:before { content: "P"; }
+.wsQ:before { content: "Q"; }
+.wsR:before { content: "R"; }
+.wsS:before { content: "S"; }
+.wsT:before { content: "T"; }
+.wsU:before { content: "U"; }
+.wsV:before { content: "V"; }
+.wsW:before { content: "W"; }
+.wsX:before { content: "X"; }
+.wsY:before { content: "Y"; }
+.wsZ:before { content: "Z"; }
+
+.wsa:before { content: "a"; }
+.wsb:before { content: "b"; }
+.wsc:before { content: "c"; }
+.wsd:before { content: "d"; }
+.wse:before { content: "e"; }
+.wsf:before { content: "f"; }
+.wsg:before { content: "g"; }
+.wsh:before { content: "h"; }
+.wsi:before { content: "i"; }
+.wsj:before { content: "j"; }
+.wsk:before { content: "k"; }
+.wsl:before { content: "l"; }
+.wsm:before { content: "m"; }
+.wsn:before { content: "n"; }
+.wso:before { content: "o"; }
+.wsp:before { content: "p"; }
+.wsq:before { content: "q"; }
+.wsr:before { content: "r"; }
+.wss:before { content: "s"; }
+.wst:before { content: "t"; }
+.wsu:before { content: "u"; }
+.wsv:before { content: "v"; }
+.wsw:before { content: "w"; }
+.wsx:before { content: "x"; }
+.wsy:before { content: "y"; }
+.wsz:before { content: "z"; }
+
+.ws0:before { content: "*"; }
+.ws1:before { content: "_"; }
+.ws2:before { content: "{"; }
+.ws3:before { content: "}"; }
+.ws4:before { content: "@"; }
+.ws5:before { content: "("; }
+.ws6:before { content: ")"; }
+.ws7:before { content: " "; }
+.ws8:before { content: ","; }
+.ws9:before { content: '"'; }
+.ws10:before { content: "/"; }
+.ws11:before { content: "1"; }
+.ws12:before { content: "9"; }
+.ws13:before { content: "2"; }

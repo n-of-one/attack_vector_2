@@ -1,0 +1,18 @@
+The game has multiple (competing) design goals:
+
+- The main game interface (terminal, manage hacker stuff, hack) is meant to be run from a computer/laptop
+- Ice should be hackable from a phone (if feasable)
+
+Ice games run in a separate browser window, so the layout can be different from the main interface.
+
+
+The UI is designed to fit within a 1920x1080 resolution monitor running a default windows + chrome setup
+
+Windows: toolbar on the bottom, height 1
+Chrome: Not maximized, toolbar and button bar visible
+
+This gives us effectively 1920x937 pixels. Accounting for a scroll bar and rounding down, we are left with:
+
+Screen real estate: 1900x930.
+
+

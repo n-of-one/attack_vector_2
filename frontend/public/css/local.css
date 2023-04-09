@@ -293,6 +293,14 @@ a.textLink {
     transition: opacity 2s ease-in;
 }
 
+.transition_alpha_slow {
+    -webkit-transition: opacity 5s ease-in;
+    -moz-transition: opacity 5s ease-in;
+    -ms-transition: opacity 5s ease-in;
+    -o-transition: opacity 5s ease-in;
+    transition: opacity 5s ease-in;
+}
+
 .close-x-position {
     top: 2px;
     left: 1px;
@@ -306,4 +314,3 @@ a.textLink {
     position: relative;
     z-index: 100;
 }
-
