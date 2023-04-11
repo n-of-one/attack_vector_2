@@ -5,7 +5,6 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.ice.password.IcePasswordService
 
 @org.springframework.stereotype.Service
 class ServiceIceGeneric(
@@ -22,6 +21,7 @@ class ServiceIceGeneric(
         when (layer.type) {
             LayerType.PASSWORD_ICE -> enterIce(layer, runId)
             LayerType.TANGLE_ICE -> enterIce(layer, runId)
+            LayerType.WORD_SEARCH_ICE -> enterIce(layer, runId)
             else -> error("unsupported ice type: ${layer.type}")
         }
     }

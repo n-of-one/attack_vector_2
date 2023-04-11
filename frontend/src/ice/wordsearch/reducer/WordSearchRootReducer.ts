@@ -3,13 +3,14 @@ import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalId
 import {AnyAction, combineReducers} from "redux";
 import {WordSearchState, wordSearchStateReducer} from "./WordSearchStateReducer";
 import {WordSearchPuzzle, wordSearchPuzzleReducer} from "./WordSearchPuzzleReducer";
+import {UIState, wordSearchUiStateReducer} from "./WordSearchUiStateReducer";
 
 
 export interface WordSearchRootState {
     iceId: string,
     state: WordSearchState,
-    puzzle: WordSearchPuzzle
-
+    puzzle: WordSearchPuzzle,
+    uiState: UIState
     displayTerminal: TerminalState,
 }
 
@@ -24,6 +25,7 @@ export const wordSearchRootReducer = combineReducers<WordSearchRootState>(
         iceId: noOpReducer,
         state: wordSearchStateReducer,
         puzzle: wordSearchPuzzleReducer,
+        uiState: wordSearchUiStateReducer,
         displayTerminal: displayTerminalReducer
     }
 )

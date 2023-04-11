@@ -3,13 +3,15 @@ import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {WordSearchPuzzle} from "./WordSearchPuzzle";
+import {HIDDEN} from "../../IceUiState";
 
 export const WordSearchHome = () => {
 
     const puzzle = useSelector( (state:WordSearchRootState) => state.puzzle )
     const displayTerminal = useSelector( (state:WordSearchRootState) => state.displayTerminal )
+    const uiState = useSelector( (state:WordSearchRootState) => state.uiState )
 
-    const classHidden = ""
+    const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
 
     const puzzleRef = createRef<HTMLDivElement>()
 
@@ -23,12 +25,6 @@ export const WordSearchHome = () => {
         canvasContainerRef.appendChild(puzzleRef.current)
     }
     setTimeout(moveIt, 2)
-
-    setTimeout( () => {
-        console.log(puzzleRef!!.current!!.className)
-        puzzleRef!!.current!!.classList.remove("hidden_alpha");
-        console.log(puzzleRef!!.current!!.className)
-    },100)
 
     return (
         <div className="row untangleIcePanelRow">
@@ -60,7 +56,7 @@ export const WordSearchHome = () => {
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
 
-                <div className={"row transition_alpha_fast" + classHidden}>
+                <div className={"row transition_alpha_fast" + classShowCanvas}>
                     <div className="col-lg-12">
                         <div>
                             <canvas id="wordSearchCanvas" style={{

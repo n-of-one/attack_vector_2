@@ -1,7 +1,8 @@
 import {AnyAction} from "redux";
 
-export const WORD_SEARCH_BEGIN = "WORD_SEARCH_BEGIN";
-export const SERVER_ENTER_ICE_WORD_SEARCH = "SERVER_ENTER_ICE_WORD_SEARCH";
+export const WORD_SEARCH_BEGIN = "WORD_SEARCH_BEGIN"
+export const SERVER_ENTER_ICE_WORD_SEARCH = "SERVER_ENTER_ICE_WORD_SEARCH"
+export const SERVER_ICE_WORD_SEARCH_UPDATED = "SERVER_ICE_WORD_SEARCH_UPDATED"
 
 
 export interface WordSearchPuzzle {
@@ -16,7 +17,7 @@ const defaultState: WordSearchPuzzle = {
     layerId: "",
     strength: "",
     letters: [
-        ['R', 'O', 'O', 'T', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'A', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E',  'D', 'E'],
+        ['R', 'O', 'O', 'T', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'A', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'D', 'E'],
         ['A', 'B', 'C', 'D', 'E'],
         ['F', 'G', 'H', 'I', 'J'],
         ['K', 'L', 'M', 'N', 'O'],
@@ -29,8 +30,12 @@ export const wordSearchPuzzleReducer = (state: WordSearchPuzzle = defaultState, 
 
     switch (action.type) {
         case SERVER_ENTER_ICE_WORD_SEARCH:
-            return {...action.data};
-        default:
-            return state;
+            return {
+                layerId: action.data.layerId,
+                strength: action.data.strength,
+                letters: action.data.letters,
+                words: action.data.words
+            }
+        default: return state
     }
-};
+}

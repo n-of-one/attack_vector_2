@@ -24,6 +24,7 @@ export enum LayerType {
     TIMER_TRIGGER = "TIMER_TRIGGER",
     PASSWORD_ICE = "PASSWORD_ICE",
     TANGLE_ICE = "TANGLE_ICE",
+    WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
 }
 
 

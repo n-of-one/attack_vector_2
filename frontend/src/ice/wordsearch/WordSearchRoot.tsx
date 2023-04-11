@@ -2,13 +2,14 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {WEBSOCKET_ICE, webSocketConnection} from "../../common/WebSocketConnection";
-import {tangleIceManager} from "./component/WordSearchManager";
 import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {WordSearchContainer} from "./component/WordSearchContainer";
 import {wordSearchRootReducer, WordSearchRootState} from "./reducer/WordSearchRootReducer";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../common/terminal/TerminalManager";
+import {wordSearchManager} from "./component/WordSearchManager";
+import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
 
 interface Props {
     iceId: string
@@ -32,13 +33,13 @@ export class WordSearchRoot extends Component<Props> {
 
         webSocketConnection.create(WEBSOCKET_ICE, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/wordsearch/enter", {iceId: props.iceId})
+            webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: props.iceId})
         });
 
-        tangleIceManager.init(this.store);
+        wordSearchManager.init(this.store);
         terminalManager.init(this.store)
         initGenericServerActions()
-        // initTangleIceServerActions(this.store)
+        initWordSearchServerActions(this.store)
     }
 
     render() {

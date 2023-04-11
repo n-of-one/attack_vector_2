@@ -6,6 +6,7 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.IcePasswordLayer
 import org.n1.av2.backend.entity.site.layer.IceTangleLayer
+import org.n1.av2.backend.entity.site.layer.IceWordSearchLayer
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
@@ -15,6 +16,7 @@ import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.ice.password.IcePasswordService
 import org.n1.av2.backend.service.layerhacking.ice.tangle.IceTangleService
+import org.n1.av2.backend.service.layerhacking.ice.wordsearch.IceWordSearchService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.site.SiteService
@@ -37,6 +39,7 @@ class RunService(
     private val nodeEntityService: NodeEntityService,
     private val iceTangleService: IceTangleService,
     private val icePasswordService: IcePasswordService,
+    private val iceWordSearchService: IceWordSearchService
 ) {
 
     class HackerPresence(
@@ -124,8 +127,15 @@ class RunService(
         when (layer.type) {
             LayerType.TANGLE_ICE -> createTangleIce(layer, nodeId, runId)
             LayerType.PASSWORD_ICE -> createPasswordIce(layer, nodeId, runId)
+            LayerType.WORD_SEARCH_ICE -> createWordSearchIce(layer, nodeId, runId)
             else -> return
         }
+    }
+
+    private fun createWordSearchIce(layer: Layer, nodeId: String, runId: String) {
+        if (layer !is IceWordSearchLayer) error("Wrong layer type/data for layer: ${layer.id}")
+        val wordSearchIceStatus = iceWordSearchService.createIce(layer, nodeId, runId)
+        layerStatusEntityService.createLayerStatus(layer.id, runId, wordSearchIceStatus.id)
     }
 
     fun createTangleIce(layer: Layer, nodeId: String, runId: String) {
@@ -139,5 +149,4 @@ class RunService(
         val passwordIceStatus = icePasswordService.createStatus(layer, nodeId, runId)
         layerStatusEntityService.createLayerStatus(layer.id, runId, passwordIceStatus.id)
     }
-
 }

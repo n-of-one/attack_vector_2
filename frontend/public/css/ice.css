@@ -33,7 +33,7 @@
     font-size: 18px;
     padding-left: 5px;
     transition: background-color 0.5s;
-    height: 23px;
+    height: 22px;
 }
 
 .iceWsContainer {
@@ -111,17 +111,47 @@
 .wsy:before { content: "y"; }
 .wsz:before { content: "z"; }
 
-.ws0:before { content: "*"; }
-.ws1:before { content: "_"; }
-.ws2:before { content: "{"; }
-.ws3:before { content: "}"; }
-.ws4:before { content: "@"; }
-.ws5:before { content: "("; }
-.ws6:before { content: ")"; }
-.ws7:before { content: " "; }
-.ws8:before { content: ","; }
-.ws9:before { content: '"'; }
-.ws10:before { content: "/"; }
-.ws11:before { content: "1"; }
-.ws12:before { content: "9"; }
-.ws13:before { content: "2"; }
+.ws0:before { content: "0"; }
+.ws1:before { content: "1"; }
+.ws2:before { content: "2"; }
+.ws3:before { content: "3"; }
+.ws4:before { content: "4"; }
+.ws5:before { content: "5"; }
+.ws6:before { content: "6"; }
+.ws7:before { content: "7"; }
+.ws8:before { content: "8"; }
+.ws9:before { content: '9'; }
+
+.ws32:before { content: " "; }
+.ws33:before { content: "!"; }
+.ws34:before { content: "\""; }
+.ws35:before { content: "#"; }
+.ws36:before { content: "$"; }
+.ws37:before { content: "%"; }
+.ws38:before { content: "&"; }
+.ws39:before { content: "'"; }
+.ws40:before { content: "("; }
+.ws41:before { content: ")"; }
+.ws42:before { content: "*"; }
+.ws43:before { content: "+"; }
+.ws44:before { content: ","; }
+.ws45:before { content: "-"; }
+.ws46:before { content: "."; }
+.ws47:before { content: "/"; }
+.ws58:before { content: ":"; }
+.ws59:before { content: ";"; }
+.ws60:before { content: "<"; }
+.ws61:before { content: "="; }
+.ws62:before { content: ">"; }
+.ws63:before { content: "?"; }
+.ws64:before { content: "@"; }
+.ws91:before { content: "["; }
+.ws92:before { content: "\\"; }
+.ws93:before { content: "]"; }
+.ws94:before { content: "^"; }
+.ws95:before { content: "_"; }
+.ws96:before { content: "`"; }
+.ws123:before { content: "{"; }
+.ws124:before { content: "|"; }
+.ws125:before { content: "}"; }
+.ws126:before { content: "~"; }

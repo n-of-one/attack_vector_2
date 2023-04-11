@@ -24,7 +24,6 @@ export class WordSearchIndicatorDisplay {
                 hoverCursor: 'default',
                 opacity: 0.8,
             });
-        this.logPosition(x, y)
         this.canvas.add(this.line)
         this.canvas.renderAll()
     }
@@ -43,7 +42,4 @@ export class WordSearchIndicatorDisplay {
         this.canvas.remove(this.line)
     }
 
-    logPosition(x: number, y: number) {
-        console.log(`[ ${this.x1}, ${this.y1}, ${x}, ${y} ]`)
-    }
 }

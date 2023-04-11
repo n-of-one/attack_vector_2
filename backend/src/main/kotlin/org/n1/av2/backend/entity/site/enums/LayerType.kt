@@ -13,7 +13,7 @@ enum class LayerType(
 //    CODE,
 //    RESOURCE,
 //    SCAN_BLOCKER,
-//    ICE_WORD_SEARCH,
+    WORD_SEARCH_ICE(true),
 //    ICE_MAGIC_EYE,
     PASSWORD_ICE(true),
     TANGLE_ICE(true),

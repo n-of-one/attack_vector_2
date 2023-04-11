@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerOsPanel} from "./type/panel/LayerOsPanel"
 import {findElementById} from "../../../../../common/Immutable"
-import {PASSWORD_ICE, TANGLE_ICE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes"
+import {PASSWORD_ICE, TANGLE_ICE, OS, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {LayerTextPanel} from "./type/panel/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {Glyphicon} from "../../../../../common/component/Glyphicon"
@@ -12,6 +12,7 @@ import {LayerTimerTriggerPanel} from "./type/panel/LayerTimerTriggerPanel"
 import {EditorState} from "../../../../EditorRootReducer"
 import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
+import {LayerIceWordSearchPanel} from "./type/panel/LayerIceWordSearchPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -31,6 +32,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerIcePasswordPanel node={node} layer={layer}/>
         case TANGLE_ICE:
             return <LayerIceTanglePanel node={node} layer={layer}/>
+        case WORD_SEARCH_ICE:
+            return <LayerIceWordSearchPanel node={node} layer={layer} />
         default:
             return <div className="text">NodeDetailPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>
     }

@@ -3,6 +3,7 @@ import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {WordSearchIndicatorDisplay} from "./WordSearchIndicatorDisplay";
 import {LETTERS_SELECTED} from "../reducer/WordSearchStateReducer";
+import {webSocketConnection} from "../../../common/WebSocketConnection";
 
 const MARGIN_TOP = 5
 const MARGIN_LEFT = 5
@@ -18,7 +19,7 @@ const MARGIN_LEFT = 5
 // const COLUMNS = 50
 
 const CELL_SIZE = 30
-const ROWS = 28
+const ROWS = 22
 const COLUMNS = 50
 // const HALF_CELL = Math.floor(CELL_SIZE / 2)
 
@@ -33,6 +34,10 @@ const COLUMNS = 50
 // const ROWS = 26
 // const COLUMNS = 26
 
+interface Position {
+    x: number,
+    y: number
+}
 
 class WordSearchCanvas {
 
@@ -42,8 +47,11 @@ class WordSearchCanvas {
     iceId: string | null = null
     letterCount = 0
 
+    previousLetterPosition: Position | null = null
+
+
     lettersSelected: string[] = []
-    letterStartPosition: {x: number, y: number} | null = null
+    letterStartPosition: { x: number, y: number } | null = null
 
     indicatorVisual: WordSearchIndicatorDisplay | null = null
 
@@ -54,7 +62,7 @@ class WordSearchCanvas {
 
         const canvas = new fabric.Canvas('wordSearchCanvas', {
             width: 1552,
-            height: 852,
+            height: 671,
             // height: 680,
             backgroundColor: "#333333",
         });
@@ -74,13 +82,13 @@ class WordSearchCanvas {
 
 
         // horizontal lines
-        for (let y = 0; y < ROWS+1; y++) {
-            this.drawLine(0,y, COLUMNS,y)
+        for (let y = 0; y < ROWS + 1; y++) {
+            this.drawLine(0, y, COLUMNS, y)
         }
 
         // vertical lines
-        for (let x = 0; x < COLUMNS+1; x++) {
-            this.drawLine(x,0,x,ROWS)
+        for (let x = 0; x < COLUMNS + 1; x++) {
+            this.drawLine(x, 0, x, ROWS)
         }
 
         // for (let x = 0; x < 4; x++) {
@@ -93,14 +101,6 @@ class WordSearchCanvas {
         this.canvas.discardActiveObject();
         this.canvas.renderAll();
     }
-
-    private randomLetter() {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        // return characters.charAt(Math.floor(Math.random() * characters.length))
-        const letterIndex = (this.letterCount++) % 26
-        return characters.charAt(letterIndex)
-    }
-
 
 
     private drawLine(x1: number, y1: number, x2: number, y2: number) {
@@ -123,33 +123,18 @@ class WordSearchCanvas {
         this.canvas.add(line)
     }
 
-    private drawLetter(x: number, y: number, textString: string) {
-        const textImage = new fabric.Text(textString, {
-            left: MARGIN_LEFT + (x + 0.5) * CELL_SIZE,
-            top: MARGIN_TOP + (y + 0.5) * CELL_SIZE,
-            fill: "#f0ad4e",    // color-ok
-            fontFamily: "SpaceMono",
-            fontSize: 18,
-            fontStyle: "normal", // "", "normal", "italic" or "oblique".
-            textAlign: "center", // "center", "right" or "justify".
-            opacity: 1,
-            selectable: false,
-            hoverCursor: "default",
-
-        })
-        this.canvas.add(textImage)
-    }
 
     mouseDown(event: MouseEvent) {
         if (this.indicatorVisual != null) {
-            this.indicatorVisual.remove()
+            // we must have gone out of bounds. Process potential previous event first.
+            this.mouseUp(event)
         }
 
         const pointer = this.canvas.getPointer(event);
         this.indicatorVisual = new WordSearchIndicatorDisplay(this.canvas, pointer.x, pointer.y)
 
         this.letterStartPosition = this.determineLetterPosition(pointer.x, pointer.y)
-        const key = `${this.letterStartPosition.y}:${this.letterStartPosition.x}`
+        const key = `${this.letterStartPosition.x}:${this.letterStartPosition.y}`
         this.lettersSelected = [key]
         this.updateLettersSelected()
     }
@@ -164,17 +149,22 @@ class WordSearchCanvas {
         const dx = this.letterStartPosition!!.x - letterPosition.x
         const dy = this.letterStartPosition!!.y - letterPosition.y
 
-        if (dx == 0 && dy == 0) { return }
+        if ((dx === 0 && dy === 0) ||
+            (this.previousLetterPosition !== null && this.previousLetterPosition.x === letterPosition.x && this.previousLetterPosition.y === letterPosition.y)
+        ) {
+            return
+        }
+        this.previousLetterPosition = letterPosition
 
-        this.lettersSelected = [`${this.letterStartPosition!!.y}:${this.letterStartPosition!!.x}`]
-        if ((dx ==0 && dy != 0 ) || (dx != 0 && dy == 0) || (Math.abs(dx) == Math.abs(dy))) {
+        this.lettersSelected = [`${this.letterStartPosition!!.x}:${this.letterStartPosition!!.y}`]
+        if ((dx === 0 && dy !== 0) || (dx !== 0 && dy === 0) || (Math.abs(dx) === Math.abs(dy))) {
             let walk = 0
             const maxWalk = Math.max(Math.abs(dx), Math.abs(dy))
             while (walk < maxWalk) {
                 walk++
                 const x = this.letterStartPosition!!.x - Math.sign(dx) * walk
                 const y = this.letterStartPosition!!.y - Math.sign(dy) * walk
-                const key = `${y}:${x}`
+                const key = `${x}:${y}`
                 this.lettersSelected.push(key)
             }
         }
@@ -187,13 +177,22 @@ class WordSearchCanvas {
         this.indicatorVisual.remove()
         this.indicatorVisual = null
 
-        this.lettersSelected = []
-        this.letterStartPosition = null
-        this.updateLettersSelected()
+        this.processLetters()
     }
 
     updateLettersSelected() {
         this.dispatch({type: LETTERS_SELECTED, payload: this.lettersSelected})
+    }
+
+    processLetters() {
+        if (this.lettersSelected.length >= 2) {
+            const payload = {iceId: this.iceId, letters: this.lettersSelected}
+            webSocketConnection.send("/av/ice/wordSearch/selected", JSON.stringify(payload))
+        }
+
+        this.lettersSelected = []
+        this.letterStartPosition = null
+        this.updateLettersSelected()
     }
 
 

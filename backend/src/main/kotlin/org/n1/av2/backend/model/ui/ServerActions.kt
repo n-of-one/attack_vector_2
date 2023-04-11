@@ -63,11 +63,15 @@ enum class ServerActions {
     SERVER_NODE_HACKED,                // change icon of node in run
 
 
-    SERVER_ENTER_ICE_PASSWORD, // sent to hacker that hacks this ice
-    SERVER_ICE_PASSWORD_UPDATE,        // sent to run to inform of hacked status update
+    SERVER_ENTER_ICE_PASSWORD,          // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_ICE_PASSWORD_UPDATE,         // sent to run to inform of hacked status update
 
-    SERVER_ENTER_ICE_TANGLE,    // sent to hacker that hacks this ice
+    SERVER_ENTER_ICE_TANGLE,            // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
+
+    SERVER_ENTER_ICE_WORD_SEARCH,        // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_ICE_WORD_SEARCH_UPDATED       // sent to run when a word was found
+
 
 
 
