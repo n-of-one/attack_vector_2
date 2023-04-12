@@ -27,10 +27,10 @@ export const WordSearchHome = () => {
     setTimeout(moveIt, 2)
 
     return (
-        <div className="row untangleIcePanelRow">
+        <div className="row wordSearchIcePanelRow">
             <div className="col-lg-12">
                 <div className="row">
-                    <div className="col-lg-12">
+                    <div className="col-lg-3">
                         <h4 className="text-success">
                             <strong>
                                 Ice: <span className="text-info">Pumer</span>&nbsp;<br/>
@@ -38,23 +38,23 @@ export const WordSearchHome = () => {
                             </strong>
                         </h4>
                     </div>
-                </div>
-                <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
-                <div className="row">
-                    <div className="col-lg-3">
-                        <div className="text-left">
-                            <div className="text">
-                                Community &nbsp;avg 14:33 &nbsp;best 03:33 &nbsp;(44%)<br/>
-                                You &nbsp; &nbsp; &nbsp; &nbsp;avg 12:00 &nbsp;best 08:23 &nbsp;(85%)<br/>
-                                You &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -02:33 &nbsp; &nbsp; &nbsp;+04:50<br/>
-                            </div>
-                        </div>
-                    </div>
                     <div className="col-lg-9">
                         <Terminal terminalState={displayTerminal} height={112}/>
                     </div>
                 </div>
-                <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
+                {/*<hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>*/}
+                {/*<div className="row">*/}
+                {/*    <div className="col-lg-3">*/}
+                {/*        <div className="text-left">*/}
+                {/*            <div className="text">*/}
+                {/*                Community &nbsp;avg 14:33 &nbsp;best 03:33 &nbsp;(44%)<br/>*/}
+                {/*                You &nbsp; &nbsp; &nbsp; &nbsp;avg 12:00 &nbsp;best 08:23 &nbsp;(85%)<br/>*/}
+                {/*                You &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -02:33 &nbsp; &nbsp; &nbsp;+04:50<br/>*/}
+                {/*            </div>*/}
+                {/*        </div>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
+                {/*<hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>*/}
 
                 <div className={"row transition_alpha_fast" + classShowCanvas}>
                     <div className="col-lg-12">

@@ -8,19 +8,18 @@ import {webSocketConnection} from "../../../common/WebSocketConnection";
 const MARGIN_TOP = 5
 const MARGIN_LEFT = 5
 
-// const CELL_SIZE = 40
-// const SIZE_VERTICAL = 40
-// const ROWS = 16
-// const COLUMNS = 38
+const CELL_SIZE = 40
+const ROWS = 20
+const COLUMNS = 20
 
 // const CELL_SIZE = 30
 // const SIZE_VERTICAL = 30
 // const ROWS = 22
 // const COLUMNS = 50
 
-const CELL_SIZE = 30
-const ROWS = 22
-const COLUMNS = 50
+// const CELL_SIZE = 30
+// const ROWS = 22
+// const COLUMNS = 50
 // const HALF_CELL = Math.floor(CELL_SIZE / 2)
 
 
@@ -62,7 +61,7 @@ class WordSearchCanvas {
 
         const canvas = new fabric.Canvas('wordSearchCanvas', {
             width: 1552,
-            height: 671,
+            height: 839,
             // height: 680,
             backgroundColor: "#333333",
         });
@@ -72,7 +71,7 @@ class WordSearchCanvas {
         fabric.Object.prototype.originY = 'center';
 
         setTimeout(function () {
-            fabric.Image.fromURL("/img/frontier/ice/wordSearch/darknoise_4_1552_852.png", (img) => {
+            fabric.Image.fromURL("/img/frontier/ice/wordSearch/darknoise_4_1552_852-2.png", (img) => {
                 img.set({width: canvas.width, height: canvas.height, originX: 'left', originY: 'top'});
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
             });

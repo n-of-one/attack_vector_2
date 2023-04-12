@@ -27,13 +27,28 @@
 /*    background-color: #6006;*/
 /*}*/
 
+.wordSearchIcePanelRow {
+    height: 960px;
+    background-color: #333;
+}
+
 .iceWsElement {
-    width: 22px;
-    color: #f0ad4e;
+    /*color: #f0ad4e;*/
+    color: #31708f;
+    /*color: #337ab7;*/
     font-size: 18px;
-    padding-left: 5px;
-    transition: background-color 0.5s;
-    height: 22px;
+    transition: background-color 2s, color 2s;
+
+    /* cell size 30*/
+    /*padding-left: 5px;*/
+    /*height: 22px;*/
+    /*width: 22px;*/
+
+    /* cell size 40*/
+    padding-left: 10px;
+    width: 32px;
+    height: 30px;
+    padding-top: 3px;
 }
 
 .iceWsContainer {
@@ -41,7 +56,8 @@
 }
 
 .iceWsRow {
-    height: 30px;
+    /*height: 30px;*/
+    height: 40px;
 }
 
 .ws {
@@ -50,11 +66,20 @@
 }
 
 .wsCORRECT {
-    background-color: #0606;
+    transition: background-color 2s, color 2s;
+    /*background-color: #0606;*/
+    background-color: #000;
 }
 
 .wsSELECTED {
-    background-color: #660F;
+    transition: background-color 2s, color 2s;
+    background-color: #f0ad4e66;
+    color: #000;
+}
+
+.wsSOLUTION {
+    background-color: #333;
+    color: #000;
 }
 
 .wsA:before { content: "A"; }

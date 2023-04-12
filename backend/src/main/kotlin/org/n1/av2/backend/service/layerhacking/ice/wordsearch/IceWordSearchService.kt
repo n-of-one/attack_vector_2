@@ -2,6 +2,7 @@ package org.n1.av2.backend.service.layerhacking.ice.wordsearch
 
 import org.n1.av2.backend.entity.ice.WordSearchStatus
 import org.n1.av2.backend.entity.ice.WordSearchStatusRepo
+import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.IceWordSearchLayer
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
@@ -12,6 +13,7 @@ import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
+
 @Service
 class IceWordSearchService(
     private val wordSearchStatusRepo: WordSearchStatusRepo,
@@ -20,8 +22,12 @@ class IceWordSearchService(
 
     ) {
 
+    companion object {
+        const val CREATION_ATTEMPTS = 50
+    }
+
     fun createIce(layer: IceWordSearchLayer, nodeId: String, runId: String): WordSearchStatus {
-        val creation = WordSearchCreator(layer.strength).create()
+        val creation = findBestCreation(layer.strength)
 
         val id = createId("wordSearch", wordSearchStatusRepo::findById)
         val wordSearchStatus = WordSearchStatus(
@@ -33,10 +39,18 @@ class IceWordSearchService(
             words = creation.words,
             letters = creation.letters,
             lettersCorrect = emptyList(),
-            hacked = false
+            hacked = false,
+            solutions = creation.solutions,
         )
         wordSearchStatusRepo.save(wordSearchStatus)
         return wordSearchStatus
+    }
+
+    fun findBestCreation(strength: IceStrength): WordSearchCreation {
+        return (1..CREATION_ATTEMPTS).map { WordSearchCreator(strength).create() }
+            .sortedBy { it.score }
+            .also { all -> all.forEach { println(it.score) } }
+            .last()
     }
 
     fun enter(iceId: String) {
@@ -58,7 +72,7 @@ class IceWordSearchService(
 
         if (wordSelected != nexWord && wordSelected.reversed() != nexWord) return
 
-        val hacked =  (iceStatus.wordIndex == iceStatus.words.size - 1)
+        val hacked = (iceStatus.wordIndex == iceStatus.words.size - 1)
         val nextIndex = if (hacked) -1 else iceStatus.wordIndex + 1
         val lettersCorrect = iceStatus.lettersCorrect + letters
         val newIceStatus = iceStatus.copy(

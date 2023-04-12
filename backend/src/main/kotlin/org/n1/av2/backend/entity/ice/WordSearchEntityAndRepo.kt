@@ -14,7 +14,8 @@ data class WordSearchStatus(
     val letters: List<List<Char>>,
     val lettersCorrect: List<String>,
     val wordIndex: Int = 0,
-    val hacked: Boolean = false
+    val hacked: Boolean = false,
+    val solutions: List<List<String>>,
 )
 
 @Repository

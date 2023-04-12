@@ -3,13 +3,22 @@ package org.n1.av2.backend.service.layerhacking.ice.wordsearch
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import kotlin.random.Random
 
+
+
 class WordSearchCreation(
     val words: List<String>,
-    val letters: List<List<Char>>
+    val letters: List<List<Char>>,
+    val solutions: List<List<String>>,
+    val score: Int,
 )
-const val MAX_ATTEMPTS = 1000
 
 class WordSearchCreator(private val strength: IceStrength) {
+
+    companion object {
+        const val MAX_ATTEMPTS = 1000
+        const val SCORE_FOR_OVERLAP = 30
+        const val SCORE_FOR_DIAGONAL = 10
+    }
 
     private val wordSearchWordList = WordSearchWordList()
 
@@ -19,6 +28,10 @@ class WordSearchCreator(private val strength: IceStrength) {
     private val sizeX = sizeX(strength)
     private val sizeY = sizeY(strength)
 
+    private var diagonalSolutions = 0
+    private var words: List<String> = listOf()
+    private var score = 0
+
 
     init {
         letterGrid = createGrid { randomLetter() }
@@ -26,57 +39,84 @@ class WordSearchCreator(private val strength: IceStrength) {
     }
 
     fun create(): WordSearchCreation {
-        val words = wordSearchWordList.getWords(strength)
+        words = wordSearchWordList.getWords(strength)
         addHeader()
 
-        words.forEach { word ->
-            fitWord(word)
-        }
+        val solutions: MutableList<List<String>> = mutableListOf()
 
-        return WordSearchCreation(words, letterGrid)
+        words
+            .sorted() // start with shorter words to try not to divide the grid into sectors from the start
+            .forEach { word ->
+                val solution = fitWord(word)
+                solutions.add(solution)
+            }
+
+        return WordSearchCreation(words, letterGrid, solutions, score)
     }
 
-    private fun fitWord(word: String) {
+    private fun fitWord(word: String): List<String> {
         repeat(MAX_ATTEMPTS) {
             val x = Random.nextInt(sizeX)
             val y = Random.nextInt(sizeY)
 
-            if (attemptFitWord(word, x, y)) {
-                return
-            }
+            val solution = attemptFitWord(word, x, y)
+            if (solution != null) return solution
         }
         error("Failed to fit word: ${word} after ${MAX_ATTEMPTS}")
     }
 
-    private fun attemptFitWord(word: String, x: Int, y: Int): Boolean {
+    private fun attemptFitWord(word: String, x: Int, y: Int): List<String>? {
         if (usedGrid[y][x]) {
-            return false
+            return null
         }
 
-        var direction = Random.nextInt(8)
-        repeat(8) {
-            if (attemptFitWordInDirection(word, x, y, direction)) {
-                return true
+        var direction = Random.nextInt(4)
+        if (diagonalSolutions <= (this.words.size / 2)+ 1) {
+            val solution = attemptFitWordInDirectionType(direction, word, x, y) { direction: Int ->
+                directionVectorDiagonal(direction)
             }
-            direction = (direction + 1) % 8
+            if (solution != null) {
+                this.diagonalSolutions++
+                this.score += SCORE_FOR_DIAGONAL
+                return solution
+            }
         }
-        return false
+
+        direction = Random.nextInt(4)
+        val solution = attemptFitWordInDirectionType(direction, word, x, y) { direction: Int ->
+            directionVectorHorizontalVertical(direction)
+        }
+        return solution
     }
 
-    private fun attemptFitWordInDirection(word: String, x: Int, y: Int, direction: Int): Boolean {
+    private fun attemptFitWordInDirectionType(
+        directionStart: Int, word: String, x: Int, y: Int,
+        directionFunction: (d: Int) -> Pair<Int, Int>
+    ): List<String>? {
+        var direction = directionStart
+        repeat(4) {
+            val directionVector = directionFunction(direction)
+            val solution = attemptFitWordInDirection(word, x, y, directionVector.first, directionVector.second)
+            if (solution != null) return solution
+            direction = (direction + 1) % 4
+        }
+        return null
+    }
 
-        val directionVector = directionVector(direction)
-        val dx = directionVector.first
-        val dy = directionVector.second
+    private fun attemptFitWordInDirection(word: String, x: Int, y: Int, dx: Int, dy: Int): List<String>? {
+        if (outOfBound(x, y, dx, dy, word.length)) return null
 
-        if (outOfBound(x, y, dx, dy, word.length)) return false
+        var scoreForSolution = 0
 
+        val solution = mutableListOf<String>()
         var currentX = x
         var currentY = y
         for (letter in word) {
-            if (usedGrid[currentY][currentX] && letterGrid[currentY][currentX] != letter) {
-                return false
+            if (usedGrid[currentY][currentX]) {
+                if (letterGrid[currentY][currentX] != letter) return null
+                scoreForSolution += SCORE_FOR_OVERLAP
             }
+
             currentX += dx
             currentY += dy
         }
@@ -86,11 +126,13 @@ class WordSearchCreator(private val strength: IceStrength) {
         for (letter in word) {
             usedGrid[currentY][currentX] = true
             letterGrid[currentY][currentX] = letter
+            solution.add("${currentX}:${currentY}")
             currentX += dx
             currentY += dy
         }
 
-        return true
+        this.score += scoreForSolution
+        return solution
     }
 
     private fun outOfBound(x: Int, y: Int, dx: Int, dy: Int, length: Int): Boolean {
@@ -101,9 +143,9 @@ class WordSearchCreator(private val strength: IceStrength) {
 
     private fun <T> createGrid(creatorFunction: () -> T): MutableList<MutableList<T>> {
         val letterGrid = mutableListOf<MutableList<T>>()
-        for (y in 0..sizeY) {
+        for (y in 1..sizeY) {
             val row = mutableListOf<T>()
-            for (x in 0..sizeX) {
+            for (x in 1..sizeX) {
                 row.add(creatorFunction())
             }
             letterGrid.add(row)
@@ -112,16 +154,22 @@ class WordSearchCreator(private val strength: IceStrength) {
         return letterGrid
     }
 
-    private fun directionVector(direction: Int): Pair<Int, Int> {
+    private fun directionVectorDiagonal(direction: Int): Pair<Int, Int> {
+        return when (direction) {
+            0 -> Pair(1, 1)
+            1 -> Pair(-1, 1)
+            2 -> Pair(-1, -1)
+            3 -> Pair(1, -1)
+            else -> error("Unknown direction: $direction")
+        }
+    }
+
+    private fun directionVectorHorizontalVertical(direction: Int): Pair<Int, Int> {
         return when (direction) {
             0 -> Pair(1, 0)
-            1 -> Pair(1, 1)
-            2 -> Pair(0, 1)
-            3 -> Pair(-1, 1)
-            4 -> Pair(-1, 0)
-            5 -> Pair(-1, -1)
-            6 -> Pair(0, -1)
-            7 -> Pair(1, -1)
+            1 -> Pair(0, 1)
+            2 -> Pair(-1, 0)
+            3 -> Pair(0, -1)
             else -> error("Unknown direction: $direction")
         }
     }
@@ -156,8 +204,8 @@ class WordSearchCreator(private val strength: IceStrength) {
 
     private fun addHeader() {
         var x = Random.nextInt(sizeX)
-        var y = 0
-        "____inject{@authorize(92), @c_override(\"header\", \"trusted/1\"), @remote_core_dump_analyze()}___".forEach { letter ->
+        var y = 2
+        "____inject{@authorize(92), @remote_core_dump_analyze()}___".forEach { letter ->
             letterGrid[y][x] = letter
             usedGrid[y][x] = true
             x++

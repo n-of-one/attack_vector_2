@@ -5,6 +5,11 @@ import kotlin.random.Random
 
 
 class WordSearchWordList {
+
+    companion object {
+        const val MAX_ATTEMPTS = 100
+    }
+
     private val wordsBySize: Map<Int, List<String>>
 
     init {

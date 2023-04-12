@@ -7,7 +7,7 @@ export const WORD_SEARCH_BEGIN = "WORD_SEARCH_BEGIN"
 
 export interface WordSearchState {
     lettersCorrect: string[],
-    lettersSelected: string[]
+    lettersSelected: string[],
     wordIndex: number,
     hacked: boolean
 }
@@ -39,7 +39,7 @@ function stateFromAction( action: AnyAction) {
         lettersCorrect: action.data.lettersCorrect,
         lettersSelected: [],
         wordIndex: action.data.wordIndex,
-        hacked: action.data.hacked
+        hacked: action.data.hacked,
     }
 }
 function letterSelected(state: WordSearchState, action: AnyAction) {

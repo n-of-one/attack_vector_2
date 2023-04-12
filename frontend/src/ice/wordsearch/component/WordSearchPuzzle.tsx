@@ -33,15 +33,18 @@ export const WordSearchPuzzle = () => {
     const puzzle = useSelector((rootState: WordSearchRootState) => rootState.puzzle)
     const state = useSelector((rootState: WordSearchRootState) => rootState.state)
 
+    const solutionElements = puzzle.solutions.flat()
+
 
     const puzzleRow = (row: string[], y: number) => {
 
         const puzzleElementForRow = (element: string, x: number) => {
             const key = `${x}:${y}`
 
-
-            const classCorrect = (state.lettersCorrect.includes(key)) ? `wsCORRECT` : ""
+            const classSolution = (solutionElements.includes(key)) ? "wsSOLUTION" : ""
+            const classCorrect = (state.lettersCorrect.includes(key)) ? "wsCORRECT" : classSolution
             const classSelected = (state.lettersSelected.includes(key)) ? `wsSELECTED` : classCorrect
+
 
 
             return <td className="iceWsContainer" key={key}>

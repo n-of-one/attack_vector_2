@@ -52,6 +52,12 @@ class WordSearchManager extends GenericIceManager {
 
         // thread.display(0, "#wordsearch_main");
 
+        this.displayTerminal(0, ".");
+        this.displayTerminal(0, ".");
+        this.displayTerminal(0, ".");
+        this.displayTerminal(0, ".");
+        this.displayTerminal(0, ".");
+        this.displayTerminal(0, ".");
 
         this.displayTerminal(15, "[[i;#31708f;]↼ Remote core dump analysis session started.]");
         this.displayTerminal(5, " ");

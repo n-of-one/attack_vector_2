@@ -9,21 +9,17 @@ export interface WordSearchPuzzle {
     layerId: string,
     strength: string,
     letters: string[][],
-    words: string[]
+    words: string[],
+    solutions: string[][],
 }
 
 
 const defaultState: WordSearchPuzzle = {
     layerId: "",
     strength: "",
-    letters: [
-        ['R', 'O', 'O', 'T', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'A', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'B', 'C', 'D', 'E', 'A', 'B', 'C', 'D', 'E', 'D', 'E'],
-        ['A', 'B', 'C', 'D', 'E'],
-        ['F', 'G', 'H', 'I', 'J'],
-        ['K', 'L', 'M', 'N', 'O'],
-        ['P', 'Q', 'R', 'S', 'T']
-    ],
-    words: ["ROOT", "ABCD", "EFGH", "IJKL", "MNOP", "QRST"]
+    letters: [[]],
+    words: [],
+    solutions: [[]]
 };
 
 export const wordSearchPuzzleReducer = (state: WordSearchPuzzle = defaultState, action: AnyAction): WordSearchPuzzle => {
@@ -34,7 +30,8 @@ export const wordSearchPuzzleReducer = (state: WordSearchPuzzle = defaultState, 
                 layerId: action.data.layerId,
                 strength: action.data.strength,
                 letters: action.data.letters,
-                words: action.data.words
+                words: action.data.words,
+                solutions: action.data.solutions,
             }
         default: return state
     }
