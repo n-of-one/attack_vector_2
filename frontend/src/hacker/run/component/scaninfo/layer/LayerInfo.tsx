@@ -1,5 +1,5 @@
 import React from 'react'
-import {PASSWORD_ICE, TANGLE_ICE, OS, TEXT, TIMER_TRIGGER} from "../../../../../common/enums/LayerTypes"
+import {LayerType, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {ScanInfoOs} from "./ScanInfoOs"
 import {ScanInfoText} from "./ScanInfoText"
 import {Pad} from "../../../../../common/component/Pad"
@@ -15,12 +15,14 @@ const renderLayer = (layer: LayerDetails) => {
             return <ScanInfoIce layer={layer} iceDescription="static password"/>
         case TANGLE_ICE:
             return <ScanInfoIce layer={layer} iceDescription="tangle"/>
+        case WORD_SEARCH_ICE:
+            return <ScanInfoIce layer={layer} iceDescription="word search"/>
         case TEXT:
             return <ScanInfoText layer={layer}/>
         case TIMER_TRIGGER:
             return <ScanInfoTimerTrigger layer={layer}/>
         default:
-            return <><span className="text-danger">Unknown layer</span></>
+            return <><span className="text-danger"> Unknown layer</span></>
     }
 }
 

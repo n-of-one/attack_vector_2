@@ -1,9 +1,10 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {delay} from "../Util";
 import {Dispatch, Store} from "redux";
-import {TERMINAL_KEY_PRESS, TERMINAL_TICK, TerminalState} from "./TerminalReducer";
-import {TICK_MILLIS} from "../Schedule";
+import {TERMINAL_KEY_PRESS, TERMINAL_UPDATE, TerminalState} from "./TerminalReducer";
 import {ICE_INPUT_TERMINAL_ID, MAIN_TERMINAL_ID} from "./ActiveTerminalIdReducer";
+
+export const TERMINAL_UPDATE_MILLIS = 20 // 50 updates/s
 
 class TerminalManager {
 
@@ -19,8 +20,8 @@ class TerminalManager {
         delay(() => {
 
             setInterval(() => {
-                this.dispatch({type: TERMINAL_TICK});
-            }, TICK_MILLIS);
+                this.dispatch({type: TERMINAL_UPDATE});
+            }, TERMINAL_UPDATE_MILLIS);
         })
 
         window.onkeydown = (event: KeyboardEvent) => {

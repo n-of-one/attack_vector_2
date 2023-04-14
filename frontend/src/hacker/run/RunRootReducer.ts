@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux'
 
 import {Scan, scanReducer} from "./reducer/ScanReducer";
-import {createTerminalReducer, TerminalState} from "../../common/terminal/TerminalReducer";
-import {siteReducer, Site} from "./reducer/SiteReducer";
+import {createTerminalReducer, TerminalLineType, TerminalState} from "../../common/terminal/TerminalReducer";
+import {Site, siteReducer} from "./reducer/SiteReducer";
 import {infoNodeIdReducer} from "./reducer/InfoNodeIdReducer";
 import {countdownReducer, CountDownState} from "./coundown/CountdownReducer";
 import {CHAT_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
@@ -15,7 +15,7 @@ export interface RunState {
     countdown: CountDownState
 }
 
-const chatTerminalReducer = createTerminalReducer(CHAT_TERMINAL_ID, {readOnly: true, receiveBuffer: [{type: "text", data: "= chat offline ="}]})
+const chatTerminalReducer = createTerminalReducer(CHAT_TERMINAL_ID, {readOnly: true, receiveBuffer: [{type: TerminalLineType.TEXT, data: "= chat offline ="}]})
 
 export const runRootReducer =
     combineReducers<RunState>({

@@ -1,6 +1,6 @@
 import {serverTime} from "../../../common/ServerTime";
 import {AnyAction} from "redux";
-import {TERMINAL_TICK} from "../../../common/terminal/TerminalReducer";
+import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
 import {SERVER_HACKER_DC} from "../../server/RunServerActionProcessor";
 
 export const SERVER_START_COUNTDOWN = "SERVER_START_COUNTDOWN";
@@ -30,7 +30,7 @@ export const countdownReducer = (state: CountDownState = defaultState, action: A
     switch (action.type) {
         case SERVER_START_COUNTDOWN:
             return serverAlarmTrigger(state, action.data);
-        case TERMINAL_TICK:
+        case TERMINAL_UPDATE:
             return processTick(state);
         case SERVER_COMPLETE_COUNTDOWN:
             return processExpireTimer(state);

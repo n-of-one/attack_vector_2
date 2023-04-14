@@ -2,7 +2,7 @@ import {HIDDEN, LOCKED, UNLOCKED} from "../../IceUiState";
 import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions";
 import {serverTime} from "../../../common/ServerTime";
 import {AnyAction} from "redux";
-import {TERMINAL_TICK} from "../../../common/terminal/TerminalReducer";
+import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
 
 export const SERVER_ENTER_ICE_PASSWORD = "SERVER_ENTER_ICE_PASSWORD";
 export const SERVER_ICE_PASSWORD_UPDATE = "SERVER_ICE_PASSWORD_UPDATE";
@@ -41,7 +41,7 @@ const defaultState = {
 export const passwordIceReducer = (state : PasswordIceI= defaultState, action: AnyAction) => {
 
     switch (action.type) {
-        case TERMINAL_TICK: {
+        case TERMINAL_UPDATE: {
             return processTick(state);
         }
 

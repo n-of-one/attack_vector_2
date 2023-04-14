@@ -11,7 +11,7 @@
  */
 import {AnyAction, Dispatch} from "redux";
 
-export const TICK_MILLIS = 50;
+export const TICK_MILLIS = 50
 
 export class Schedule {
 

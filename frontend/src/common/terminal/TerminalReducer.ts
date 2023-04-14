@@ -3,19 +3,23 @@ import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes"
 import {SERVER_ERROR} from "../../hacker/server/GenericServerActionProcessor"
 
 const LINE_LIMIT = 100
+const TERMINAL_UPDATES_PER_TICK = 8
 
 export const SERVER_TERMINAL_SYNTAX_HIGHLIGHTING = "SERVER_TERMINAL_SYNTAX_HIGHLIGHTING"
 export const TERMINAL_KEY_PRESS = "TERMINAL_KEY_PRESS"
 export const TERMINAL_SUBMIT = "TERMINAL_SUBMIT"
-export const TERMINAL_TICK = "TERMINAL_TICK"
+export const TERMINAL_UPDATE = "TERMINAL_UPDATE"
 export const TERMINAL_RECEIVE = "TERMINAL_RECEIVE"
 export const SERVER_TERMINAL_RECEIVE = "SERVER_TERMINAL_RECEIVE"
 export const TERMINAL_CLEAR = "TERMINAL_CLEAR"
 export const TERMINAL_LOCK = "TERMINAL_LOCK"
 export const TERMINAL_UNLOCK = "TERMINAL_UNLOCK"
 
+export enum TerminalLineType {
+    TEXT,
+}
 export interface TerminalLine {
-    type: string,
+    type: TerminalLineType,
     data: string,
     class?: string[]
 }
@@ -56,7 +60,7 @@ export const terminalStateDefault: TerminalState = {
     input: "",              // user input
     renderingLine: null,    // String - part of the current rendering line that is being shown
     receivingLine: null,    // String - part of the current rendering line that is waiting to be shown
-    receiveBuffer: [{type: "text", data: "[b]🜁 Verdant OS 🜃"}, {type: "text", data: " "}], // lines waiting to be shown.
+    receiveBuffer: [{type: TerminalLineType.TEXT, data: "[b]🜁 Verdant OS 🜃"}, {type: TerminalLineType.TEXT, data: " "}], // lines waiting to be shown.
     receiving: true,        // true if there are lines waiting to be shown, or in the process of being shown.
     syntaxHighlighting: {},
     history: [],            // [ "move 00", "view", "hack 2" ]
@@ -77,8 +81,12 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
     const defaultState = {...terminalStateDefault, ...config, id: id}
 
     return (terminal: TerminalState | undefined = defaultState , action: AnyAction) => {
-        if (action.type === TERMINAL_TICK) {
-            return processTick(processTick(processTick(processTick(terminal))))
+        if (action.type === TERMINAL_UPDATE) {
+            let state = terminal
+            for (let i = 0; i < TERMINAL_UPDATES_PER_TICK; i++) {
+                state = processUpdate(state)
+            }
+            return state
         }
 
         // terminalId from server actions is in data part
@@ -113,7 +121,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
     }
 }
 
-function processTick(terminal: TerminalState) {
+function processUpdate(terminal: TerminalState) {
     if (!terminal.receiving) {
         return terminal
     }
@@ -123,7 +131,7 @@ function processTick(terminal: TerminalState) {
 
     let nextReceiveBuffer = [...terminal.receiveBuffer]
     let nextLines = [...terminal.lines]
-    let nextRenderingLine: TerminalLine | null = (terminal.renderingLine) ? {...terminal.renderingLine} : {type: "text", data: ""}
+    let nextRenderingLine: TerminalLine | null = (terminal.renderingLine) ? {...terminal.renderingLine} : {type: TerminalLineType.TEXT, data: ""}
 
     let nextReceivingLine
     if (terminal.receivingLine !== null) {
@@ -139,8 +147,8 @@ function processTick(terminal: TerminalState) {
         nextReceivingLine.data = ""
         nextRenderingLine.data = ""
     } else {
-        const nextChar = input.substr(0, 1)
-        const nextData = input.substr(1)
+        const nextChar = input.substring(0, 1)
+        const nextData = input.substring(1)
 
         nextReceivingLine.data = nextData
         nextRenderingLine.data += nextChar

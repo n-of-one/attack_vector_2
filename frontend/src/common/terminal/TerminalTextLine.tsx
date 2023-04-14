@@ -1,19 +1,23 @@
-import React from "react";
-import {TerminalLine} from "./TerminalReducer";
+import React from "react"
+import {TerminalLine} from "./TerminalReducer"
 
+enum TerminalBlockType {
+    TEXT,
+    SPACE
+}
 interface BlockI {
     text: string,
     className: string,
-    type: string
+    type: TerminalBlockType
 }
 
 const Block = (block: BlockI) => {
-    if (block.type === "text") {
+    if (block.type === TerminalBlockType.TEXT) {
         return <span className={block.className}>{block.text}</span>
     } else {
         return <span>&nbsp;</span>
     }
-};
+}
 
 interface Props {
     line: TerminalLine,
@@ -21,13 +25,13 @@ interface Props {
 
 // const renderLine = (line, index) => {
 export const TerminalTextLine = ({line}: Props) => {
-    let lineClasses = (line.class) ? line.class : [];
-    let classNames = "terminalLine";
+    let lineClasses = (line.class) ? line.class : []
+    let classNames = "terminalLine"
     lineClasses.forEach(name => {
         classNames += " terminal_" + name
-    });
+    })
 
-    let blocks = parseLine(line);
+    let blocks = parseLine(line)
     return (
         <div className={classNames}>
             {
@@ -38,58 +42,61 @@ export const TerminalTextLine = ({line}: Props) => {
 }
 
 
-const spaceBlock = {text: "", className: "", type: "space"};
-const textBlockTemplate = {text: "", className: "", type: "text"};
+const spaceBlock = {text: "", className: "", type: TerminalBlockType.SPACE}
+const textBlockTemplate = {text: "", className: "", type: TerminalBlockType.TEXT}
 
 const parseLine = (line: TerminalLine): BlockI[] => {
-    let blocks = [];
-    let mode = "text";
-    let block = {...textBlockTemplate};
-    let currentClassName = "";
+    let blocks: BlockI[] = []
+    let mode = "text"
+    let block = {...textBlockTemplate}
+    let currentClassName = ""
+    let c = null
+    let previousC = null
     for (let i = 0; i < line.data.length; i++) {
-        let c = line.data.charAt(i);
+        previousC = c
+        c = line.data.charAt(i)
 
         if (c === "[") {
             if (mode === "text") {
-                mode = "style";
+                mode = "style"
                 if (block.text) {
-                    block.className = currentClassName;
-                    blocks.push(block);
+                    block.className = currentClassName
+                    blocks.push(block)
                 }
-                block = {...textBlockTemplate};
-                continue;
+                block = {...textBlockTemplate}
+                continue
             } else {
                 // escaped '[' character
-                mode = "text";
-                block.text += c;
-                continue;
+                mode = "text"
+                block.text += c
+                continue
             }
         }
-        if (c === " " && mode === "text") {
+        if (c === " " && mode === "text" && previousC === " ") {
             if (block.text) {
-                block.className = currentClassName;
-                blocks.push(block);
+                block.className = currentClassName
+                blocks.push(block)
             }
-            blocks.push(spaceBlock);
-            block = {...textBlockTemplate};
-            continue;
+            blocks.push(spaceBlock)
+            block = {...textBlockTemplate}
+            continue
 
         }
         if (c === "]" && mode === "style") {
-            mode = "text";
-            let style = block.text === "/" ? "" : block.text;
-            let styleParts = style.split(" ");
-            currentClassName = styleParts.map(it => "terminal_style_" + it).join(" ");
-            block.text = "";
-            continue;
+            mode = "text"
+            let style = block.text === "/" ? "" : block.text
+            let styleParts = style.split(" ")
+            currentClassName = styleParts.map(it => "terminal_style_" + it).join(" ")
+            block.text = ""
+            continue
         }
 
-        block.text += c;
+        block.text += c
     }
     if (mode === "text" && block.text) {
-        block.className = currentClassName;
-        blocks.push(block);
+        block.className = currentClassName
+        blocks.push(block)
     }
 
-    return blocks;
+    return blocks
 }

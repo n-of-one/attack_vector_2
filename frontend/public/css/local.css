@@ -75,6 +75,7 @@ body {
 body {
     /*padding-bottom: 40px;*/
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
+    font-variant-ligatures: none;
 }
 
 .darkWell {
@@ -301,9 +302,8 @@ a.textLink {
     transition: opacity 5s ease-in;
 }
 
-.close-x-position {
+.close-position {
     top: 2px;
-    left: 1px;
     color: #aaa;
 }
 

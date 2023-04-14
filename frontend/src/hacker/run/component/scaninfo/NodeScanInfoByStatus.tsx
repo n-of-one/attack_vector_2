@@ -43,7 +43,7 @@ function renderLayerIsIce(layer: LayerDetails) {
     return <span key={layer.level}>
         <Pad length={3} numberValue={layer.level}/>
         <span className="text-primary">{layer.level}</span>
-        <Pad length={3} />unknown {text}<br/>
+        <Pad length={3} /> unknown {text}<br/>
     </span>
 }
 

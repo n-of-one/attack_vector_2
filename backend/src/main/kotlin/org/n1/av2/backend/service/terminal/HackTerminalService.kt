@@ -50,11 +50,11 @@ class HackTerminalService(
     private fun processHelp() {
         stompService.replyTerminalReceive(
                 "Command options:",
-                " [u]move [ok]<network id>[/]     -- for example: [u]mv[ok] 00",
+                " [u]move[/] [ok]<network id>[/]     -- for example: [u]mv[ok] 00",
                 " [u]view",
-                " [u]hack [primary]<layer>[/]        -- for example: [u]hack[primary] 0",
+                " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 0",
                 " [u]dc",
-                " [u]/share [info]<user name>")
+                " [u]/share[/] [info]<user name>")
 //        if (environment.dev) {
 //            stompService.terminalReceive(
 //                    "",

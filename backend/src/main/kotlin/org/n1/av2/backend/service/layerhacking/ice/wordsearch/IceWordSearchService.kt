@@ -12,6 +12,7 @@ import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
+import kotlin.system.measureTimeMillis
 
 
 @Service
@@ -21,6 +22,8 @@ class IceWordSearchService(
     val hackedUtil: HackedUtil,
 
     ) {
+
+    private val logger = mu.KotlinLogging.logger {}
 
     companion object {
         const val CREATION_ATTEMPTS = 50
@@ -48,10 +51,20 @@ class IceWordSearchService(
     }
 
     fun findBestCreation(strength: IceStrength): WordSearchCreation {
-        return (1..CREATION_ATTEMPTS).map { WordSearchCreator(strength).create() }
-            .sortedBy { it.score }
-            .also { all -> all.forEach { println(it.score) } }
-            .last()
+        var creation: WordSearchCreation
+        measureTimeMillis {
+            creation =  (1..CREATION_ATTEMPTS).map {
+                WordSearchCreator(strength).create()
+            }
+                .filterNotNull()
+                .ifEmpty { error("Failed to create ice") }
+                .sortedBy { it.score }
+                .onEach { println(it.score) }
+                .last()
+        }.run {
+            logger.debug("Creating word search ice ${strength} took ${this} ms")
+        }
+        return creation
     }
 
     fun enter(iceId: String) {

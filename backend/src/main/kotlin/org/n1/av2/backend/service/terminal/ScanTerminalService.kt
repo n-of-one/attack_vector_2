@@ -63,9 +63,9 @@ class ScanTerminalService(
                 "Command options:",
                 " [u]autoscan",
                 " [u]attack",
-                " [u]scan [ok]<network id>[/]   -- for example: [u]scan [ok]00",
+                " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
                 " [u]dc",
-                " [u]/share [info]<user name>")
+                " [u]/share[/u] [info]<user name>")
         if (environment.dev) {
             stompService.replyTerminalReceive(
                     "",

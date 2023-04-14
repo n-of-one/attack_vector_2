@@ -67,7 +67,7 @@ export const NodeScanInfo = () => {
                             </div>
 
                             <div className="nodeInfoClose text-end" onClick={() => dismiss()}>
-                                <span className="close-x-position glyphicon glyphicon-remove"/>
+                                <span className="close-position glyphicon glyphicon-remove"/>
                             </div>
                         </div>
                     </div>

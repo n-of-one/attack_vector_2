@@ -107,18 +107,22 @@ class RunService(
     }
 
     fun createRun(siteId: String, nodeScanById: MutableMap<String, NodeScan>, user: User): String {
-        val run = runEntityService.create(siteId, nodeScanById, user.id)
+        val runId = runEntityService.createRunId()
+
+        // create ice can fail, so do that first. If it fails, nothing is persisted yet.
+        createIce(siteId, runId)
+
+        val run = runEntityService.create(runId, siteId, nodeScanById, user.id)
         runLinkEntityService.createUserScan(run.runId, user)
-        createIce(siteId, run)
 
         return run.runId
     }
 
-    fun createIce(siteId: String, run: Run) {
+    fun createIce(siteId: String, runId: String) {
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach { node ->
             node.layers.forEach {layer ->
-                setupLayer(layer, node.id, run.runId)
+                setupLayer(layer, node.id, runId)
             }
         }
     }

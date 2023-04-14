@@ -4,7 +4,6 @@ import org.n1.av2.backend.entity.site.enums.IceStrength
 import kotlin.random.Random
 
 
-
 class WordSearchCreation(
     val words: List<String>,
     val letterGrid: List<List<Char>>,
@@ -15,7 +14,7 @@ class WordSearchCreation(
 class WordSearchCreator(private val strength: IceStrength) {
 
     companion object {
-        const val MAX_ATTEMPTS = 1000
+        const val FIT_WORD_MAX_ATTEMPTS = 1000
         const val SCORE_FOR_OVERLAP = 30
         const val SCORE_FOR_DIAGONAL = 10
     }
@@ -38,31 +37,34 @@ class WordSearchCreator(private val strength: IceStrength) {
         usedGrid = createGrid { false }
     }
 
-    fun create(): WordSearchCreation {
-        words = wordSearchWordList.getWords(strength)
-        addHeader()
+    fun create(): WordSearchCreation? {
+        try {
+            words = wordSearchWordList.getWords(strength)
+            addHeader()
 
-        val solutions: MutableList<List<String>> = mutableListOf()
+            val solutions: MutableList<List<String>> = mutableListOf()
 
-        words
-            .sorted() // start with shorter words to try not to divide the grid into sectors from the start
-            .forEach { word ->
-                val solution = fitWord(word)
-                solutions.add(solution)
-            }
-
-        return WordSearchCreation(words, letterGrid, solutions, score)
+            words
+                .sorted() // start with shorter words to try not to divide the grid into sectors from the start
+                .forEach { word ->
+                    val solution = fitWord(word)
+                    solutions.add(solution)
+                }
+            return WordSearchCreation(words, letterGrid, solutions, score)
+        } catch (exception: Exception) {
+            return null // failed to create puzzle
+        }
     }
 
     private fun fitWord(word: String): List<String> {
-        repeat(MAX_ATTEMPTS) {
+        repeat(FIT_WORD_MAX_ATTEMPTS) {
             val x = Random.nextInt(sizeX)
             val y = Random.nextInt(sizeY)
 
             val solution = attemptFitWord(word, x, y)
             if (solution != null) return solution
         }
-        error("Failed to fit word: ${word} after ${MAX_ATTEMPTS}")
+        error("Failed to fit word: ${word} after ${FIT_WORD_MAX_ATTEMPTS}")
     }
 
     private fun attemptFitWord(word: String, x: Int, y: Int): List<String>? {
@@ -180,7 +182,7 @@ class WordSearchCreator(private val strength: IceStrength) {
 
     private fun sizeX(strength: IceStrength): Int {
         return when (strength) {
-            IceStrength.VERY_WEAK -> 10
+            IceStrength.VERY_WEAK -> 13
             IceStrength.WEAK -> 15
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 30
@@ -192,7 +194,7 @@ class WordSearchCreator(private val strength: IceStrength) {
 
     private fun sizeY(strength: IceStrength): Int {
         return when (strength) {
-            IceStrength.VERY_WEAK -> 10
+            IceStrength.VERY_WEAK -> 13
             IceStrength.WEAK -> 15
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 22

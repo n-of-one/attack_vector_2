@@ -63,7 +63,7 @@ class WordSearchWordList {
 
     private fun maxLength(strength: IceStrength): Int {
         return when (strength) {
-            IceStrength.VERY_WEAK -> 12
+            IceStrength.VERY_WEAK -> 8
             IceStrength.WEAK -> 12
             IceStrength.AVERAGE -> 12
             IceStrength.STRONG -> 10
@@ -75,7 +75,7 @@ class WordSearchWordList {
 
     private fun wordCount(strength: IceStrength): Int {
         return when (strength) {
-            IceStrength.VERY_WEAK -> 6
+            IceStrength.VERY_WEAK -> 5
             IceStrength.WEAK -> 7
             IceStrength.AVERAGE -> 8
             IceStrength.STRONG -> 15

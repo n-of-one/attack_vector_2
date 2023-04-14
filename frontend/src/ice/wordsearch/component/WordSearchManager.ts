@@ -30,25 +30,25 @@ class WordSearchManager extends GenericIceManager {
         this.schedule.clear()
         this.dispatch( {type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
 
-        this.displayTerminal(10,"[[i;#a9443b;]↼ Connecting to ice, initiating attack.]");
+        this.displayTerminal(10,"[warn]↼ Connecting to ice, initiating attack.");
 
         this.displayTerminal(10, "⇁ Connection established - authorization handshake started");
         this.displayTerminal(8, "⇁ G*G Security token not found in request, fallback to rp/inner/program authorization scheme.");
-        this.displayTerminal(45, '⇁ Accessing rp/i/p client header: [[;#31708f;]client_id=386422_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _' +
+        this.displayTerminal(45, '⇁ Accessing rp/i/p client header: [primary]client_id=386422_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _' +
             '_inject{@cursor(4block rel#00.18), text("____inject{@authorize(92),@c_override("header/2", "trusted"), @remote_core_dump_analyze()}___"), @marker(0),' +
-            '@allocate_mem(999 4blocks), @jump(#marker(0))} _ _ ]');
+            '@allocate_mem(999 4blocks), @jump(#marker(0))} _ _ ');
         this.displayTerminal(0, "⇁ Memory allocation overflow, core dump");
         this.displayTerminal(10, "⇁ Core dump analyzer started");
         this.displayTerminal(10, "⇁ Trigger executable block at #00.22");
-        this.displayTerminal(3, "⇁ authorize [[;#3c763d;]ok]");
-        this.displayTerminal(3, "⇁ c_override [[;#3c763d;]authorized]");
-        this.displayTerminal(3, "⇁ remote_core_dump_analyze [[;#3c763d;]trusted]");
+        this.displayTerminal(3, "⇁ authorize [ok]ok");
+        this.displayTerminal(3, "⇁ c_override [ok]authorized");
+        this.displayTerminal(3, "⇁ remote_core_dump_analyze [ok]trusted");
         this.displayTerminal(15, " ");
 
         this.schedule.dispatch(0, {type: WORD_SEARCH_BEGIN});
 
 
-        this.displayTerminal(15, "[[i;#31708f;]↼ Remote core dump analysis session started.]");
+        this.displayTerminal(15, "[i primary]↼ Remote core dump analysis session started.");
         this.displayTerminal(5, " ");
 
 
@@ -60,7 +60,7 @@ class WordSearchManager extends GenericIceManager {
         const rootState = this.store.getState() as WordSearchRootState
         const nextWord = rootState.puzzle.words[wordIndex]
         const index = `${wordIndex + 1}/${rootState.puzzle.words.length}`
-        this.displayTerminal(0, `Search fragment: ${nextWord} ${index}`)
+        this.displayTerminal(0, `Search fragment: [info]${nextWord}[/] ${index}`)
     }
 
     update(data: UpdateAction) {
@@ -86,11 +86,12 @@ class WordSearchManager extends GenericIceManager {
                 }
                 this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: positions })
             }
-            this.schedule.wait(20)
+            this.schedule.wait(25)
 
             this.displayTerminal(0, "");
-            this.displayTerminal(20, "Memory analysis complete. Status: [[b;#31708f;]success]");
-            this.displayTerminal(40, "[[i;#a9443b;]↼ Ice restored, access granted.]");
+            this.displayTerminal(20, "Memory analysis complete. Status: [strong ok]success");
+            this.displayTerminal(0, "");
+            this.displayTerminal(40, "[i primary]↼ Ice restored, access granted.");
             this.schedule.run(0, () => {
                 window.close()
             });
