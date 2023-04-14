@@ -2,6 +2,7 @@ import React from 'react'
 import {wordSearchCanvas} from "../canvas/WordSearchCanvas";
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {useSelector} from "react-redux";
+import {LetterState, WordSearchState} from "../reducer/WordSearchStateReducer";
 
 
 const mouseDown = (event: React.MouseEvent<HTMLTableElement>) => {
@@ -28,27 +29,34 @@ const wsClass = (element: string): string => {
     return `ws${element.codePointAt(0)}`
 }
 
+const classByState = (key: string, state: WordSearchState) => {
+
+    if (state.selected[key] !== undefined) { return "wsSELECTED" }
+
+    const letterState: LetterState | undefined  = state.letters[key]
+
+    switch(letterState) {
+        case undefined: return ""
+        case LetterState.HINT : return "wsSOLUTION"
+        case LetterState.CORRECT: return "wsCORRECT"
+        case LetterState.CORRECT_HIGHLIGHT: return "wsCORRECT_HIGHLIGHT"
+        default: return "wsUNKNOWN"
+    }
+}
+
 export const WordSearchPuzzle = () => {
 
-    const puzzle = useSelector((rootState: WordSearchRootState) => rootState.puzzle)
+    const letterGrid = useSelector((rootState: WordSearchRootState) => rootState.puzzle.letterGrid)
     const state = useSelector((rootState: WordSearchRootState) => rootState.state)
-
-    const solutionElements = puzzle.solutions.flat()
-
 
     const puzzleRow = (row: string[], y: number) => {
 
         const puzzleElementForRow = (element: string, x: number) => {
             const key = `${x}:${y}`
-
-            const classSolution = (solutionElements.includes(key)) ? "wsSOLUTION" : ""
-            const classCorrect = (state.lettersCorrect.includes(key)) ? "wsCORRECT" : classSolution
-            const classSelected = (state.lettersSelected.includes(key)) ? `wsSELECTED` : classCorrect
-
-
+            const stateClass = classByState(key, state)
 
             return <td className="iceWsContainer" key={key}>
-                <div className={`iceWsElement ${classSelected}`}>
+                <div className={`iceWsElement ${stateClass}`}>
                     <div className={`ws ${wsClass(element)}`}/>
                 </div>
             </td>
@@ -66,7 +74,7 @@ export const WordSearchPuzzle = () => {
         onMouseMove={(event) => mouseMove(event)}
     >
         <tbody>
-        {puzzle.letters.map(puzzleRow)}
+        {letterGrid.map(puzzleRow)}
         </tbody>
     </table>
 

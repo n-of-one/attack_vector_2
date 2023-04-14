@@ -1,22 +1,34 @@
 import {AnyAction} from "redux";
-import {SERVER_ENTER_ICE_WORD_SEARCH, SERVER_ICE_WORD_SEARCH_UPDATED} from "./WordSearchPuzzleReducer";
+import {SERVER_ENTER_ICE_WORD_SEARCH} from "./WordSearchPuzzleReducer";
+import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
 
 export const LETTERS_SELECTED = "LETTERS_SELECTED";
 export const WORD_SEARCH_BEGIN = "WORD_SEARCH_BEGIN"
+export const LETTER_CORRECT_HIGHLIGHT = "LETTER_CORRECT_HIGHLIGHT"
+export const LETTER_CORRECT = "LETTER_CORRECT"
 
+export enum LetterState {
+    HINT,
+    SELECTED,
+    CORRECT_HIGHLIGHT,
+    CORRECT
+}
+
+export interface Letter {
+    position: string, // format: "{x}:{y}"
+    state: LetterState,
+}
+
+export type LetterTypeMap = { [key: string]: LetterState }
 
 export interface WordSearchState {
-    lettersCorrect: string[],
-    lettersSelected: string[],
-    wordIndex: number,
-    hacked: boolean
+    letters: LetterTypeMap,
+    selected: LetterTypeMap,
 }
 
 const defaultState: WordSearchState = {
-    lettersCorrect: ["0:0", "0:1", "0:2", "0:3"],
-    lettersSelected: [],
-    wordIndex: 0,
-    hacked: false
+    letters: {},
+    selected: {},
 }
 
 
@@ -24,25 +36,61 @@ export const wordSearchStateReducer = (state: WordSearchState = defaultState, ac
 
     switch (action.type) {
         case SERVER_ENTER_ICE_WORD_SEARCH:
-            return stateFromAction(action)
-        case SERVER_ICE_WORD_SEARCH_UPDATED:
-            return stateFromAction(action)
+            return stateFromServer(state, action as unknown as WordSearchStateFromServer)
+        case LETTER_CORRECT_HIGHLIGHT:
+            return letterUpdate(state, action.positions, LetterState.CORRECT_HIGHLIGHT)
+        case LETTER_CORRECT:
+            return letterUpdate(state, action.positions, LetterState.CORRECT)
         case LETTERS_SELECTED:
-            return letterSelected(state, action)
+            return letterSelected(state, action.selected)
         default:
             return state
     }
 }
 
-function stateFromAction( action: AnyAction) {
-    return {
-        lettersCorrect: action.data.lettersCorrect,
-        lettersSelected: [],
-        wordIndex: action.data.wordIndex,
-        hacked: action.data.hacked,
-    }
+interface WordSearchStateFromServer {
+    data: ServerEnterIceWordSearch
 }
-function letterSelected(state: WordSearchState, action: AnyAction) {
-    const newVal = {...state, lettersSelected: action.payload}
-    return newVal
+
+function stateFromServer(state: WordSearchState, action: WordSearchStateFromServer): WordSearchState {
+
+    const letters: LetterTypeMap = {}
+
+    action.data.solutions.forEach((solution: string[]) => {
+        return solution.forEach((position: string) => {
+            letters[position] = LetterState.HINT
+        })
+    })
+
+    // correct-state letters trump hint-state letters
+    action.data.correctPositions.forEach((position: string) => {
+        letters[position] = LetterState.CORRECT
+    })
+
+    const newState =  {letters, selected: {}}
+    return newState
 }
+
+
+function letterUpdate(state: WordSearchState, positions: string[], letterState: LetterState) {
+    const newLetters = {...state.letters}
+    positions.forEach((position: string) => {
+        newLetters[position] = letterState
+    })
+
+    return {...state, letters: newLetters}
+}
+
+
+function letterSelected(state: WordSearchState, selected: string[]) {
+
+    const newSelected: LetterTypeMap = {}
+
+    selected.forEach((position: string) => {
+        newSelected[position] = LetterState.SELECTED
+    })
+
+    return {letters: state.letters, selected: newSelected}
+}
+
+

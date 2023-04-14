@@ -68,7 +68,7 @@
 .wsCORRECT {
     transition: background-color 2s, color 2s;
     /*background-color: #0606;*/
-    background-color: #000;
+    background-color: #0004;
 }
 
 .wsSELECTED {
@@ -80,6 +80,16 @@
 .wsSOLUTION {
     background-color: #333;
     color: #000;
+}
+
+.wsCORRECT_HIGHLIGHT {
+    background-color: #54bffc60;
+    color: #000;
+}
+
+.wsUNKNOWN {
+    background-color: #f00;
+    color: #fff;
 }
 
 .wsA:before { content: "A"; }

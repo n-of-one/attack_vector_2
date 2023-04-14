@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 class WordSearchCreation(
     val words: List<String>,
-    val letters: List<List<Char>>,
+    val letterGrid: List<List<Char>>,
     val solutions: List<List<String>>,
     val score: Int,
 )
@@ -70,9 +70,9 @@ class WordSearchCreator(private val strength: IceStrength) {
             return null
         }
 
-        var direction = Random.nextInt(4)
-        if (diagonalSolutions <= (this.words.size / 2)+ 1) {
-            val solution = attemptFitWordInDirectionType(direction, word, x, y) { direction: Int ->
+        var startDirection = Random.nextInt(4)
+        if (diagonalSolutions < (this.words.size / 2)) {
+            val solution = attemptFitWordInDirectionType(startDirection, word, x, y) { direction: Int ->
                 directionVectorDiagonal(direction)
             }
             if (solution != null) {
@@ -82,8 +82,8 @@ class WordSearchCreator(private val strength: IceStrength) {
             }
         }
 
-        direction = Random.nextInt(4)
-        val solution = attemptFitWordInDirectionType(direction, word, x, y) { direction: Int ->
+        startDirection = Random.nextInt(4)
+        val solution = attemptFitWordInDirectionType(startDirection, word, x, y) { direction: Int ->
             directionVectorHorizontalVertical(direction)
         }
         return solution
@@ -95,8 +95,8 @@ class WordSearchCreator(private val strength: IceStrength) {
     ): List<String>? {
         var direction = directionStart
         repeat(4) {
-            val directionVector = directionFunction(direction)
-            val solution = attemptFitWordInDirection(word, x, y, directionVector.first, directionVector.second)
+            val (dx, dy) = directionFunction(direction)
+            val solution = attemptFitWordInDirection(word, x, y, dx, dy)
             if (solution != null) return solution
             direction = (direction + 1) % 4
         }

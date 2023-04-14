@@ -1,5 +1,4 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
-import {notify} from "./Notification"
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer"
 import {SET_USER_ID} from "./reducer/UserIdReducer"
@@ -22,10 +21,6 @@ export class WebSocketConnection {
     subscriptions: Subscription[] = []
 
     actions: { [key: string]: (action: any) => void } = {}
-
-    constructor() {
-
-    }
 
     create(endpoint: string, store: Store, additionalOnWsOpen: () => void, waitForType: string | null = null) {
         this.store = store

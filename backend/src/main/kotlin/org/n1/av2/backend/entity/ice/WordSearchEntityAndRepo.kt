@@ -11,11 +11,11 @@ data class WordSearchStatus(
     val layerId: String,
     val strength: IceStrength,
     val words: List<String>,
-    val letters: List<List<Char>>,
-    val lettersCorrect: List<String>,
+    val letterGrid: List<List<Char>>,
+    val correctPositions: List<String>, // all letter positions of letters that were correctly found, type: "{x}:{y}"
     val wordIndex: Int = 0,
     val hacked: Boolean = false,
-    val solutions: List<List<String>>,
+    val solutions: List<List<String>>, // solutions (list of letter positions "{x}:{y}" )
 )
 
 @Repository

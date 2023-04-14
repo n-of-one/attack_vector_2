@@ -180,7 +180,7 @@ class WordSearchCanvas {
     }
 
     updateLettersSelected() {
-        this.dispatch({type: LETTERS_SELECTED, payload: this.lettersSelected})
+        this.dispatch({type: LETTERS_SELECTED, selected: this.lettersSelected})
     }
 
     processLetters() {

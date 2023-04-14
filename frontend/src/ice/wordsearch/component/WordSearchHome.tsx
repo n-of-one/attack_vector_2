@@ -38,8 +38,8 @@ export const WordSearchHome = () => {
                             </strong>
                         </h4>
                     </div>
-                    <div className="col-lg-9">
-                        <Terminal terminalState={displayTerminal} height={112}/>
+                    <div className="col-lg-9" style={{paddingTop: "4px"}}>
+                        <Terminal terminalState={displayTerminal} height={112} />
                     </div>
                 </div>
                 {/*<hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>*/}

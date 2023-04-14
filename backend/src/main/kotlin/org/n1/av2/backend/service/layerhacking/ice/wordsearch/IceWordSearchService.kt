@@ -37,10 +37,11 @@ class IceWordSearchService(
             layerId = layer.id,
             strength = layer.strength,
             words = creation.words,
-            letters = creation.letters,
-            lettersCorrect = emptyList(),
+            letterGrid = creation.letterGrid,
+            correctPositions = emptyList(),
             hacked = false,
             solutions = creation.solutions,
+            wordIndex = creation.words.size - 1
         )
         wordSearchStatusRepo.save(wordSearchStatus)
         return wordSearchStatus
@@ -64,25 +65,32 @@ class IceWordSearchService(
         stompService.reply(ServerActions.SERVER_ENTER_ICE_WORD_SEARCH, iceStatus)
     }
 
+    class WordSearchUpdate(
+        val iceId: String, val runId: String,
+        val wordIndex: Int,
+        val lettersCorrect: List<String>, val hacked: Boolean
+    )
+
     fun selected(iceId: String, letters: List<String>) {
         val iceStatus = wordSearchStatusRepo.findById(iceId).getOrElse { error("Ice not found for \"${iceId}\"") }
         if (iceStatus.hacked) return
-        val wordSelected = determineWordSelected(letters, iceStatus.letters)
+        val wordSelected = determineWordSelected(letters, iceStatus.letterGrid)
         val nexWord = iceStatus.words[iceStatus.wordIndex]
 
         if (wordSelected != nexWord && wordSelected.reversed() != nexWord) return
 
         val hacked = (iceStatus.wordIndex == iceStatus.words.size - 1)
         val nextIndex = if (hacked) -1 else iceStatus.wordIndex + 1
-        val lettersCorrect = iceStatus.lettersCorrect + letters
+        val lettersCorrect = iceStatus.correctPositions + letters
         val newIceStatus = iceStatus.copy(
-            lettersCorrect = lettersCorrect,
+            correctPositions = lettersCorrect,
             wordIndex = nextIndex,
             hacked = hacked
         )
         wordSearchStatusRepo.save(newIceStatus)
 
-        stompService.reply(ServerActions.SERVER_ICE_WORD_SEARCH_UPDATED, newIceStatus)
+        val updateMessage = WordSearchUpdate(iceStatus.id, iceStatus.runId, nextIndex, letters, hacked)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_WORD_SEARCH_UPDATED, updateMessage)
         if (hacked) {
             hackedUtil.iceHacked(iceStatus.layerId, iceStatus.runId, 70)
         }
@@ -96,6 +104,4 @@ class IceWordSearchService(
         }
         return builder.toString()
     }
-
-
 }
