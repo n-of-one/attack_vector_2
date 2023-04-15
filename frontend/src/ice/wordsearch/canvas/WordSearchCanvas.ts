@@ -4,34 +4,12 @@ import {fabric} from "fabric";
 import {WordSearchIndicatorDisplay} from "./WordSearchIndicatorDisplay";
 import {LETTERS_SELECTED} from "../reducer/WordSearchStateReducer";
 import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
 
 const MARGIN_TOP = 5
 const MARGIN_LEFT = 5
-
-const CELL_SIZE = 40
-const ROWS = 20
-const COLUMNS = 20
-
-// const CELL_SIZE = 30
-// const SIZE_VERTICAL = 30
-// const ROWS = 22
-// const COLUMNS = 50
-
-// const CELL_SIZE = 30
-// const ROWS = 22
-// const COLUMNS = 50
-// const HALF_CELL = Math.floor(CELL_SIZE / 2)
-
-
-// const CELL_SIZE = 25
-// const SIZE_VERTICAL = 25
-// const ROWS = 26
-// const COLUMNS = 61
-
-// const CELL_SIZE = 25
-// const SIZE_VERTICAL = 25
-// const ROWS = 26
-// const COLUMNS = 26
+const MARGIN_BOTTOM = 5
+const MARGIN_RIGHT = 5
 
 interface Position {
     x: number,
@@ -44,31 +22,57 @@ class WordSearchCanvas {
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
     iceId: string | null = null
+
+    cellSize: number = 0
+
     letterCount = 0
-
     previousLetterPosition: Position | null = null
-
-
     lettersSelected: string[] = []
     letterStartPosition: { x: number, y: number } | null = null
 
     indicatorVisual: WordSearchIndicatorDisplay | null = null
 
-    init(iceId: string, puzzleData: any, dispatch: Dispatch, store: Store) {
+    init(iceId: string, puzzleData: ServerEnterIceWordSearch, dispatch: Dispatch, store: Store) {
         this.iceId = iceId
         this.dispatch = dispatch;
         this.store = store;
 
-        const canvas = new fabric.Canvas('wordSearchCanvas', {
-            width: 1552,
-            height: 839,
-            // height: 680,
-            backgroundColor: "#333333",
-        });
-        this.canvas = canvas
+        const rows = puzzleData.letterGrid.length
+        const columns = puzzleData.letterGrid[0].length
+
+        this.cellSize = (rows <= 20) ? 40: 30
+
+        this.canvas = this.createCanvas(columns, rows)
 
         fabric.Object.prototype.originX = "center";
         fabric.Object.prototype.originY = 'center';
+
+
+        this.canvas.selection = false;
+
+        // horizontal lines
+        for (let y = 0; y < rows + 1; y++) {
+            this.drawLine(0, y, columns, y)
+        }
+
+        // vertical lines
+        for (let x = 0; x < columns + 1; x++) {
+            this.drawLine(x, 0, x, rows)
+        }
+
+        this.canvas.discardActiveObject();
+        this.canvas.renderAll();
+    }
+
+    private createCanvas(columns: number, rows: number) : Canvas {
+        const width = columns * this.cellSize + MARGIN_LEFT + MARGIN_RIGHT
+        const height = rows * this.cellSize + MARGIN_TOP + MARGIN_BOTTOM
+
+        const canvas = new fabric.Canvas('wordSearchCanvas', {
+            width,
+            height,
+            backgroundColor: "#333333",
+        });
 
         setTimeout(function () {
             fabric.Image.fromURL("/img/frontier/ice/wordSearch/darknoise_4_1552_852-2.png", (img) => {
@@ -77,43 +81,22 @@ class WordSearchCanvas {
             });
         }, 100);
 
-        canvas.selection = false;
-
-
-        // horizontal lines
-        for (let y = 0; y < ROWS + 1; y++) {
-            this.drawLine(0, y, COLUMNS, y)
-        }
-
-        // vertical lines
-        for (let x = 0; x < COLUMNS + 1; x++) {
-            this.drawLine(x, 0, x, ROWS)
-        }
-
-        // for (let x = 0; x < 4; x++) {
-        //     for (let y = 0; y < 4; y++) {
-        //         this.drawLetter(x, y, this.randomLetter())
-        //     }
-        // }
-
-
-        this.canvas.discardActiveObject();
-        this.canvas.renderAll();
+        return canvas
     }
 
 
     private drawLine(x1: number, y1: number, x2: number, y2: number) {
         const lineData = [
-            MARGIN_LEFT + x1 * CELL_SIZE,
-            MARGIN_TOP + y1 * CELL_SIZE,
-            MARGIN_LEFT + x2 * CELL_SIZE,
-            MARGIN_TOP + y2 * CELL_SIZE
+            MARGIN_LEFT + x1 * this.cellSize,
+            MARGIN_TOP + y1 * this.cellSize,
+            MARGIN_LEFT + x2 * this.cellSize,
+            MARGIN_TOP + y2 * this.cellSize
         ]
         const line = new fabric.Line(
             lineData, {
-                stroke: "#aaa",
+                stroke: "#000b",
                 strokeWidth: 2,
-                strokeDashArray: [2, 2],
+                // strokeDashArray: [8, 2],
                 selectable: false,
                 hoverCursor: 'default',
                 opacity: 0.4
@@ -201,8 +184,8 @@ class WordSearchCanvas {
 
 
     private determineLetterPosition(x: number, y: number) {
-        const letterX = Math.floor((x - MARGIN_LEFT) / CELL_SIZE)
-        const letterY = Math.floor((y - MARGIN_TOP) / CELL_SIZE)
+        const letterX = Math.floor((x - MARGIN_LEFT) / this.cellSize)
+        const letterY = Math.floor((y - MARGIN_TOP) / this.cellSize)
         return {x: letterX, y: letterY}
     }
 }

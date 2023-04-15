@@ -56,8 +56,7 @@ class WordSearchWordList {
             IceStrength.AVERAGE -> 4
             IceStrength.STRONG -> 3
             IceStrength.VERY_STRONG -> 3
-            IceStrength.IMPENETRABLE -> 3
-            IceStrength.UNKNOWN -> error("Cannot create word search ice for strength UNKNOWN")
+            IceStrength.ONYX -> 3
         }
     }
 
@@ -68,8 +67,7 @@ class WordSearchWordList {
             IceStrength.AVERAGE -> 12
             IceStrength.STRONG -> 10
             IceStrength.VERY_STRONG -> 8
-            IceStrength.IMPENETRABLE -> 6
-            IceStrength.UNKNOWN -> error("Cannot create word search ice for strength UNKNOWN")
+            IceStrength.ONYX -> 6
         }
     }
 
@@ -80,8 +78,7 @@ class WordSearchWordList {
             IceStrength.AVERAGE -> 8
             IceStrength.STRONG -> 15
             IceStrength.VERY_STRONG -> 20
-            IceStrength.IMPENETRABLE -> 25
-            IceStrength.UNKNOWN -> error("Cannot create word search ice for strength UNKNOWN")
+            IceStrength.ONYX -> 25
         }
     }
 

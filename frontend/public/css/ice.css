@@ -12,6 +12,11 @@
     height: 120px;
 }
 
+.wordSearchIcePanelRow {
+    height: 950px;
+    background-color: #333;
+}
+
 .iceWsGrid {
     position: relative;
     z-index: 10;
@@ -19,46 +24,44 @@
     top: 15px;
 }
 
-/*.iceWsElement {*/
-/*    width: 30px;*/
-/*    color: #f0ad4e;*/
-/*    font-size: 18px;*/
-/*    padding-left: 8px;*/
-/*    background-color: #6006;*/
-/*}*/
-
-.wordSearchIcePanelRow {
-    height: 960px;
-    background-color: #333;
+.iceWsContainer_40 {
+    padding: 4px;
+    height: 40px;
 }
 
-.iceWsElement {
-    /*color: #f0ad4e;*/
+.iceWsContainer_30 {
+    padding: 3px;
+    height: 30px;
+}
+
+/*.iceWsRow_ {*/
+/*    !*height: 30px;*!*/
+/*    height: 40px;*/
+/*}*/
+
+.iceWsElement_40 {
     color: #31708f;
-    /*color: #337ab7;*/
     font-size: 18px;
     transition: background-color 0.5s, color 0.5s;
 
-    /* cell size 30*/
-    /*padding-left: 5px;*/
-    /*height: 22px;*/
-    /*width: 22px;*/
-
-    /* cell size 40*/
     padding-left: 10px;
     width: 32px;
     height: 30px;
     padding-top: 3px;
 }
 
-.iceWsContainer {
-    padding: 4px;
+.iceWsElement_30 {
+    color: #31708f;
+    font-size: 16px;
+    transition: background-color 0.5s, color 0.5s;
+
+    padding-left: 6px;
+    height: 22px;
+    width: 24px;
+
+    padding-top: 1px;
 }
 
-.iceWsRow {
-    /*height: 30px;*/
-    height: 40px;
-}
 
 .ws {
     position: relative;
@@ -67,20 +70,18 @@
 
 .wsCORRECT {
     transition: background-color 2s, color 2s;
-    /*background-color: #0606;*/
     background-color: #0004;
 }
 
 .wsSELECTED {
-    transition: background-color 2s, color 2s;
-    /*background-color: #f0ad4e66;*/
+    transition: background-color 1s, color 2s;
     background-color: #8886;
     color: #000;
 }
 
 .wsSOLUTION {
     /*background-color: #333;*/
-    /*color: #000;*/
+    /*color: #31708f66;*/
 }
 
 .wsCORRECT_HIGHLIGHT {

@@ -26,7 +26,7 @@ class WordSearchManager extends GenericIceManager {
 
     enter(iceId: string, data: ServerEnterIceWordSearch) {
         setTimeout(() => {
-            wordSearchCanvas.init(iceId, {}, this.dispatch, this.store)
+            wordSearchCanvas.init(iceId, data, this.dispatch, this.store)
         }, 100)
 
         this.schedule.clear()

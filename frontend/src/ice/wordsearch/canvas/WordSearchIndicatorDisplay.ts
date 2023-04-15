@@ -17,8 +17,8 @@ export class WordSearchIndicatorDisplay {
 
         this.line = new fabric.Line(
             [x,y,x,y], {
-                stroke: "yellow",
-                strokeWidth: 3,
+                stroke: "#31708f",
+                strokeWidth: 2,
                 strokeDashArray: [4, 4],
                 selectable: false,
                 hoverCursor: 'default',

@@ -3,12 +3,13 @@ import {webSocketConnection} from "../../common/WebSocketConnection";
 import {SERVER_ENTER_ICE_WORD_SEARCH} from "./reducer/WordSearchPuzzleReducer";
 import {wordSearchManager} from "./component/WordSearchManager";
 import {delay} from "../../common/Util";
+import {IceStrength} from "../../common/model/IceStrength";
 
 export const SERVER_ICE_WORD_SEARCH_UPDATED = "SERVER_ICE_WORD_SEARCH_UPDATED"
 
 export interface ServerEnterIceWordSearch {
     layerId: string,
-    strength: string,
+    strength: IceStrength,
     letterGrid: string[][],
     words: string[],
     uiState: string,

@@ -187,7 +187,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 30
             IceStrength.VERY_STRONG -> 40
-            IceStrength.IMPENETRABLE -> 50
+            IceStrength.ONYX, -> 50
             else -> error("Unknown ice strength: $strength")
         }
     }
@@ -199,7 +199,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 22
             IceStrength.VERY_STRONG -> 24
-            IceStrength.IMPENETRABLE -> 28
+            IceStrength.ONYX, -> 28
             else -> error("Unknown ice strength: $strength")
         }
     }

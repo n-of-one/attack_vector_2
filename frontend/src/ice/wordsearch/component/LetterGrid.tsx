@@ -3,6 +3,14 @@ import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {useSelector} from "react-redux";
 import {LetterState, WordSearchState} from "../reducer/WordSearchStateReducer";
 
+
+
+export const calculateSize = (letterGrid: string[][]) => {
+    const rows = letterGrid.length
+
+    return (rows <= 20) ? 40: 30
+}
+
 const wsClass = (element: string): string => {
     if ((element >= 'A' && element <= 'Z')
         || (element >= 'a' && element <= 'z')) {
@@ -42,14 +50,16 @@ export const LetterGrid = () => {
     const letterGrid = useSelector((rootState: WordSearchRootState) => rootState.puzzle.letterGrid)
     const state = useSelector((rootState: WordSearchRootState) => rootState.state)
 
+    const size = calculateSize(letterGrid)
+
     const puzzleRow = (row: string[], y: number) => {
 
         const puzzleElementForRow = (element: string, x: number) => {
             const key = `${x}:${y}`
             const stateClass = classByState(key, state)
 
-            return <td className="iceWsContainer" key={key}>
-                <div className={`iceWsElement ${stateClass}`}>
+            return <td className={`iceWsContainer_${size}`} key={key}>
+                <div className={`iceWsElement_${size} ${stateClass}`}>
                     <div className={`ws ${wsClass(element)}`}/>
                 </div>
             </td>

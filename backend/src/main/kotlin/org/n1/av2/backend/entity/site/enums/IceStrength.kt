@@ -7,6 +7,5 @@ enum class IceStrength {
     AVERAGE,
     STRONG,
     VERY_STRONG,
-    IMPENETRABLE,
-    UNKNOWN
+    ONYX,
 }

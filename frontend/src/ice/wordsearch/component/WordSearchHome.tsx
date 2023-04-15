@@ -4,6 +4,8 @@ import {Terminal} from "../../../common/terminal/Terminal"
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {WordSearchPuzzle} from "./WordSearchPuzzle";
 import {HIDDEN} from "../../IceUiState";
+import {calculateSize} from "./LetterGrid";
+import {IceTitle} from "../../../common/component/IceTitle";
 
 export const WordSearchHome = () => {
 
@@ -26,20 +28,17 @@ export const WordSearchHome = () => {
     }
     setTimeout(moveIt, 2)
 
+    const size = calculateSize(puzzle.letterGrid)
+
     return (
         <div className="row wordSearchIcePanelRow">
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <h4 className="text-success">
-                            <strong>
-                                Ice: <span className="text-info">Pumer</span>&nbsp;<br/>
-                                Strength: <span className="text-info">{puzzle.strength}</span><br/>
-                            </strong>
-                        </h4>
+                        <IceTitle name="Pumer" strength={puzzle.strength} />
                     </div>
                     <div className="col-lg-9" style={{paddingTop: "4px"}}>
-                        <Terminal terminalState={displayTerminal} height={112} />
+                        <Terminal terminalState={displayTerminal} height={84} />
                     </div>
                 </div>
                 {/*<hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>*/}

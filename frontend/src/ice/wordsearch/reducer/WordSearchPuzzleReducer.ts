@@ -1,5 +1,6 @@
 import {AnyAction} from "redux";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
+import {IceStrength} from "../../../common/model/IceStrength";
 
 export const SERVER_ENTER_ICE_WORD_SEARCH = "SERVER_ENTER_ICE_WORD_SEARCH"
 
@@ -7,7 +8,7 @@ export const SERVER_ENTER_ICE_WORD_SEARCH = "SERVER_ENTER_ICE_WORD_SEARCH"
 
 export interface WordSearchPuzzle {
     layerId: string,
-    strength: string,
+    strength: IceStrength,
     letterGrid: string[][],
     words: string[],
     solutions: string[][],
@@ -16,7 +17,7 @@ export interface WordSearchPuzzle {
 
 const defaultState: WordSearchPuzzle = {
     layerId: "",
-    strength: "",
+    strength: IceStrength.AVERAGE,
     letterGrid: [[]],
     words: [],
     solutions: [[]]
