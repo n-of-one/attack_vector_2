@@ -44,7 +44,7 @@ class IceWordSearchService(
             correctPositions = emptyList(),
             hacked = false,
             solutions = creation.solutions,
-            wordIndex = creation.words.size - 1
+            wordIndex = 0
         )
         wordSearchStatusRepo.save(wordSearchStatus)
         return wordSearchStatus

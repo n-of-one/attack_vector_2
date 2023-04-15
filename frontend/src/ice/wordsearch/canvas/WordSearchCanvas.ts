@@ -185,8 +185,13 @@ class WordSearchCanvas {
 
     processLetters() {
         if (this.lettersSelected.length >= 2) {
-            const payload = {iceId: this.iceId, letters: this.lettersSelected}
-            webSocketConnection.send("/av/ice/wordSearch/selected", JSON.stringify(payload))
+
+            const toSend = this.lettersSelected
+            // Delay the sending, so that the selected cells have some time to fade out.
+            setTimeout(()=> {
+                const payload = {iceId: this.iceId, letters: toSend}
+                webSocketConnection.send("/av/ice/wordSearch/selected", JSON.stringify(payload))
+            },200)
         }
 
         this.lettersSelected = []

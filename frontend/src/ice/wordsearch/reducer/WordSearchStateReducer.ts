@@ -67,7 +67,7 @@ function stateFromServer(state: WordSearchState, action: WordSearchStateFromServ
         letters[position] = LetterState.CORRECT
     })
 
-    const newState =  {letters, selected: {}}
+    const newState =  {letters, selected: state.selected}
     return newState
 }
 

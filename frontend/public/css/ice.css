@@ -37,7 +37,7 @@
     color: #31708f;
     /*color: #337ab7;*/
     font-size: 18px;
-    transition: background-color 2s, color 2s;
+    transition: background-color 0.5s, color 0.5s;
 
     /* cell size 30*/
     /*padding-left: 5px;*/
@@ -73,13 +73,14 @@
 
 .wsSELECTED {
     transition: background-color 2s, color 2s;
-    background-color: #f0ad4e66;
+    /*background-color: #f0ad4e66;*/
+    background-color: #8886;
     color: #000;
 }
 
 .wsSOLUTION {
-    background-color: #333;
-    color: #000;
+    /*background-color: #333;*/
+    /*color: #000;*/
 }
 
 .wsCORRECT_HIGHLIGHT {

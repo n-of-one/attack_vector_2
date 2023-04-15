@@ -15,6 +15,8 @@ class WordSearchManager extends GenericIceManager {
     dispatch: Dispatch = null as unknown as Dispatch
     schedule: Schedule = null as unknown as Schedule
 
+    quickPlaying = false
+
     init(store: Store) {
         this.store = store;
         this.dispatch = store.dispatch;
@@ -31,19 +33,20 @@ class WordSearchManager extends GenericIceManager {
         this.dispatch( {type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
 
         this.displayTerminal(10,"[warn]↼ Connecting to ice, initiating attack.");
-
-        this.displayTerminal(10, "⇁ Connection established - authorization handshake started");
-        this.displayTerminal(8, "⇁ G*G Security token not found in request, fallback to rp/inner/program authorization scheme.");
-        this.displayTerminal(45, '⇁ Accessing rp/i/p client header: [primary]client_id=386422_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _' +
-            '_inject{@cursor(4block rel#00.18), text("____inject{@authorize(92),@c_override("header/2", "trusted"), @remote_core_dump_analyze()}___"), @marker(0),' +
-            '@allocate_mem(999 4blocks), @jump(#marker(0))} _ _ ');
-        this.displayTerminal(0, "⇁ Memory allocation overflow, core dump");
-        this.displayTerminal(10, "⇁ Core dump analyzer started");
-        this.displayTerminal(10, "⇁ Trigger executable block at #00.22");
-        this.displayTerminal(3, "⇁ authorize [ok]ok");
-        this.displayTerminal(3, "⇁ c_override [ok]authorized");
-        this.displayTerminal(3, "⇁ remote_core_dump_analyze [ok]trusted");
-        this.displayTerminal(15, " ");
+        if (!this.quickPlaying) {
+            this.displayTerminal(10, "⇁ Connection established - authorization handshake started");
+            this.displayTerminal(8, "⇁ G*G Security token not found in request, fallback to rp/inner/program authorization scheme.");
+            this.displayTerminal(45, '⇁ Accessing rp/i/p client header: [primary]client_id=386422_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _' +
+                '_inject{@cursor(4block rel#00.18), text("____inject{@authorize(92),@c_override("header/2", "trusted"), @remote_core_dump_analyze()}___"), @marker(0),' +
+                '@allocate_mem(999 4blocks), @jump(#marker(0))} _ _ ');
+            this.displayTerminal(0, "⇁ Memory allocation overflow, core dump");
+            this.displayTerminal(10, "⇁ Core dump analyzer started");
+            this.displayTerminal(10, "⇁ Trigger executable block at #00.22");
+            this.displayTerminal(3, "⇁ authorize [ok]ok");
+            this.displayTerminal(3, "⇁ c_override [ok]authorized");
+            this.displayTerminal(3, "⇁ remote_core_dump_analyze [ok]trusted");
+            this.displayTerminal(15, " ");
+        }
 
         this.schedule.dispatch(0, {type: WORD_SEARCH_BEGIN});
 
@@ -67,6 +70,9 @@ class WordSearchManager extends GenericIceManager {
         if (!data.hacked) {
             this.displayNextWord(data.wordIndex)
         }
+        // warm up
+        this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: ["x:x"] })
+        // end test
         data.lettersCorrect.forEach( (letter: string) => {
             this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: [letter] })
         })
