@@ -66,9 +66,9 @@ export const LayersPanel = () => {
                 <div>
                     {ice(PASSWORD_ICE)}
                     {ice(TANGLE_ICE)}
-                    {unImplemented(ICE_FILM)}
-                    {unImplemented(NETWALK_ICE)}
+                    {ice(NETWALK_ICE)}
                     {ice(WORD_SEARCH_ICE)}
+                    {unImplemented(ICE_FILM)}
                     {unImplemented(MAGIC_EYE_ICE)}
                     {unImplemented(ALTERNATE_ICE)}
                     {unImplemented(UNHACKABLE_ICE)}

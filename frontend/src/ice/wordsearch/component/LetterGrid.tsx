@@ -5,7 +5,7 @@ import {LetterState, WordSearchState} from "../reducer/WordSearchStateReducer";
 
 
 
-export const calculateSize = (letterGrid: string[][]) => {
+const calculateSize = (letterGrid: string[][]) => {
     const rows = letterGrid.length
 
     return (rows <= 20) ? 40: 30

@@ -13,6 +13,7 @@ class ThemeService {
             LayerType.PASSWORD_ICE -> "Aruna"
             LayerType.TANGLE_ICE -> "Reva"
             LayerType.WORD_SEARCH_ICE -> "Pumer"
+            LayerType.NETWALK_ICE -> "Dahana"
             LayerType.TIMER_TRIGGER -> "Network Sniffer"
 //            else -> error("Unknown service type: ${serviceType}")
         }

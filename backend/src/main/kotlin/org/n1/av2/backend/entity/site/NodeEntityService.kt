@@ -150,6 +150,7 @@ class NodeEntityService(
             LayerType.PASSWORD_ICE -> IcePasswordLayer(id, layer, defaultName)
             LayerType.TANGLE_ICE -> IceTangleLayer(id, layer, defaultName)
             LayerType.WORD_SEARCH_ICE -> IceWordSearchLayer(id, layer, defaultName)
+            LayerType.NETWALK_ICE -> IceNetwalkLayer(id, layer, defaultName)
             LayerType.OS -> error("Cannot add OS")
             LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, layer, defaultName)
         }

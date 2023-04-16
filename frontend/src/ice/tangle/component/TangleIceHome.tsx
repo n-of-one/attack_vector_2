@@ -1,12 +1,10 @@
 import React from 'react'
-import {useDispatch, useSelector} from "react-redux"
+import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
-import {HIDDEN} from "../../IceUiState"
 import {TangleRootState} from "../TangleRootReducer";
+import {HIDDEN} from "../../IceModel";
 
 export const TangleIceHome = () => {
-    
-    const dispatch = useDispatch()
 
     const ice = useSelector( (state:TangleRootState) => state.tangle )
     const displayTerminal = useSelector( (state:TangleRootState) => state.displayTerminal )

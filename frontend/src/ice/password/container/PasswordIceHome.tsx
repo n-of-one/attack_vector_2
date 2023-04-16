@@ -1,7 +1,6 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
-import {HIDDEN, LOCKED, UNLOCKED} from "../../IceUiState"
 import {ICE_PASSWORD_LOCK, PasswordIceI} from "./PasswordIceReducer"
 import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
@@ -9,6 +8,7 @@ import {formatTimeInterval} from "../../../common/Util";
 import {ENTER_KEY} from "../../../KeyCodes";
 import {webSocketConnection} from "../../../common/WebSocketConnection";
 import {PasswordRootState} from "../PasswordRootReducer";
+import {HIDDEN, LOCKED, UNLOCKED} from "../../IceModel";
 
 const renderInput = (inputTerminal: TerminalState, enterPassword: () => void, dispatch: Dispatch, ice: PasswordIceI) => {
     if (ice.uiState === LOCKED) {

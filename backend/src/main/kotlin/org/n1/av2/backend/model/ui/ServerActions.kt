@@ -37,17 +37,17 @@ enum class ServerActions {
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
 
-    SERVER_HACKER_DC,               // You have left the scan/run
+    SERVER_HACKER_DC,                   // You have left the scan/run
 
-    SERVER_HACKER_ENTER_SCAN,       // A hacker enters a scan (notify other hackers about this)
-    SERVER_HACKER_LEAVE_SCAN,       // A hacker leaves a scan (if it's you then you will also receive a SERVER_HACKER_DC)
+    SERVER_HACKER_ENTER_SCAN,           // A hacker enters a scan (notify other hackers about this)
+    SERVER_HACKER_LEAVE_SCAN,           // A hacker leaves a scan (if it's you then you will also receive a SERVER_HACKER_DC)
 
     SERVER_HACKER_START_ATTACK,
-    SERVER_HACKER_MOVE_START,       // step one of the move
-    SERVER_HACKER_MOVE_ARRIVE,      // step two of the move
-    SERVER_HACKER_MOVE_ARRIVE_FAIL, // step two of the move if the hacker could not complete the move (for instance because it was locked in place)
+    SERVER_HACKER_MOVE_START,           // step one of the move
+    SERVER_HACKER_MOVE_ARRIVE,          // step two of the move
+    SERVER_HACKER_MOVE_ARRIVE_FAIL,     // step two of the move if the hacker could not complete the move (for instance because it was locked in place)
 
-    SERVER_HACKER_SCANS_NODE,      // when arriving at a node that is state DISCOVERED or TYPE
+    SERVER_HACKER_SCANS_NODE,           // when arriving at a node that is state DISCOVERED or TYPE
 
     SERVER_START_COUNTDOWN,             // The client can show the countdown clock
     SERVER_COMPLETE_COUNTDOWN,          // The countdown completes
@@ -58,9 +58,9 @@ enum class ServerActions {
     SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
     SERVER_PATROLLER_REMOVE,            // Client can remove it
 
-    SERVER_REDIRECT_HACK_ICE,          // open a new window to start hacking ICE
-    SERVER_LAYER_HACKED,               // sent to run to update info, this is visible when clicking on icon
-    SERVER_NODE_HACKED,                // change icon of node in run
+    SERVER_REDIRECT_HACK_ICE,           // open a new window to start hacking ICE
+    SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
+    SERVER_NODE_HACKED,                 // change icon of node in run
 
 
     SERVER_ENTER_ICE_PASSWORD,          // sent to hacker that hacks this ice, first message of Ice window
@@ -69,10 +69,11 @@ enum class ServerActions {
     SERVER_ENTER_ICE_TANGLE,            // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
 
-    SERVER_ENTER_ICE_WORD_SEARCH,        // sent to hacker that hacks this ice, first message of Ice window
-    SERVER_ICE_WORD_SEARCH_UPDATED       // sent to run when a word was found
+    SERVER_ENTER_ICE_WORD_SEARCH,       // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_ICE_WORD_SEARCH_UPDATED,     // sent to run when a word was found
 
-
+    SERVER_ENTER_ICE_NETWALK,           // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_NETWALK_NODE_ROTATED         // sent to run when a node was rotated clockwise
 
 
 }

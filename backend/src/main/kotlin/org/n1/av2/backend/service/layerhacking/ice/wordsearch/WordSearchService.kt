@@ -16,11 +16,10 @@ import kotlin.system.measureTimeMillis
 
 
 @Service
-class IceWordSearchService(
+class WordSearchService(
     private val wordSearchStatusRepo: WordSearchStatusRepo,
     private val stompService: StompService,
     val hackedUtil: HackedUtil,
-
     ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -79,7 +78,7 @@ class IceWordSearchService(
     }
 
     class WordSearchUpdate(
-        val iceId: String, val runId: String,
+        val iceId: String,
         val wordIndex: Int,
         val lettersCorrect: List<String>, val hacked: Boolean
     )
@@ -102,7 +101,7 @@ class IceWordSearchService(
         )
         wordSearchStatusRepo.save(newIceStatus)
 
-        val updateMessage = WordSearchUpdate(iceStatus.id, iceStatus.runId, nextIndex, letters, hacked)
+        val updateMessage = WordSearchUpdate(iceStatus.id, nextIndex, letters, hacked)
         stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_WORD_SEARCH_UPDATED, updateMessage)
         if (hacked) {
             hackedUtil.iceHacked(iceStatus.layerId, iceStatus.runId, 70)

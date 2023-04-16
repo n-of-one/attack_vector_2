@@ -17,6 +17,7 @@ enum class LayerType(
 //    ICE_MAGIC_EYE,
     PASSWORD_ICE(true),
     TANGLE_ICE(true),
+    NETWALK_ICE(true)
 //    ICE_MANUAL,
 //    ICE_UNHACKABLE
 

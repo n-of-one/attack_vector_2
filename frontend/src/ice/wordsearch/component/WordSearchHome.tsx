@@ -3,9 +3,8 @@ import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {WordSearchPuzzle} from "./WordSearchPuzzle";
-import {HIDDEN} from "../../IceUiState";
-import {calculateSize} from "./LetterGrid";
 import {IceTitle} from "../../../common/component/IceTitle";
+import {HIDDEN} from "../../IceModel";
 
 export const WordSearchHome = () => {
 
@@ -28,8 +27,6 @@ export const WordSearchHome = () => {
     }
     setTimeout(moveIt, 2)
 
-    const size = calculateSize(puzzle.letterGrid)
-
     return (
         <div className="row wordSearchIcePanelRow">
             <div className="col-lg-12">
@@ -41,19 +38,6 @@ export const WordSearchHome = () => {
                         <Terminal terminalState={displayTerminal} height={84} />
                     </div>
                 </div>
-                {/*<hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>*/}
-                {/*<div className="row">*/}
-                {/*    <div className="col-lg-3">*/}
-                {/*        <div className="text-left">*/}
-                {/*            <div className="text">*/}
-                {/*                Community &nbsp;avg 14:33 &nbsp;best 03:33 &nbsp;(44%)<br/>*/}
-                {/*                You &nbsp; &nbsp; &nbsp; &nbsp;avg 12:00 &nbsp;best 08:23 &nbsp;(85%)<br/>*/}
-                {/*                You &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -02:33 &nbsp; &nbsp; &nbsp;+04:50<br/>*/}
-                {/*            </div>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-                {/*<hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>*/}
 
                 <div className={"row transition_alpha_fast" + classShowCanvas}>
                     <div className="col-lg-12">

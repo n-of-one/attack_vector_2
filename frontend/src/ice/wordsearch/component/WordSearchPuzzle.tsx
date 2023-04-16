@@ -1,8 +1,5 @@
 import React from 'react'
 import {wordSearchCanvas} from "../canvas/WordSearchCanvas";
-import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
-import {useSelector} from "react-redux";
-import {LetterState, WordSearchState} from "../reducer/WordSearchStateReducer";
 import {LetterGrid} from "./LetterGrid";
 
 

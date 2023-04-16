@@ -25,6 +25,7 @@ export enum LayerType {
     PASSWORD_ICE = "PASSWORD_ICE",
     TANGLE_ICE = "TANGLE_ICE",
     WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
+    NETWALK_ICE = "NETWALK_ICE",
 }
 
 

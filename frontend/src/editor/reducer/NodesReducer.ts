@@ -44,7 +44,7 @@ export interface LayerDetails {
     minutes?: number    // Layer Timer Trigger
     seconds?: number    // Layer Timer Trigger
 
-    strength? : "VERY_WEAK" | "WEAK" | "AVERAGE" | "STRONG" | "VERY_STRONG" | "IMPENETRABLE" | "UNKNOWN"
+    strength? : "VERY_WEAK" | "WEAK" | "AVERAGE" | "STRONG" | "VERY_STRONG" | "ONYX"
     password? : string  // Password Ice layer
     hint?: string       // password Ice layer
 

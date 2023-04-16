@@ -1,8 +1,8 @@
-import {HIDDEN, LOCKED, UNLOCKED} from "../../IceUiState";
 import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions";
 import {serverTime} from "../../../common/ServerTime";
 import {AnyAction} from "redux";
 import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
+import {HIDDEN, LOCKED, UNLOCKED} from "../../IceModel";
 
 export const SERVER_ENTER_ICE_PASSWORD = "SERVER_ENTER_ICE_PASSWORD";
 export const SERVER_ICE_PASSWORD_UPDATE = "SERVER_ICE_PASSWORD_UPDATE";

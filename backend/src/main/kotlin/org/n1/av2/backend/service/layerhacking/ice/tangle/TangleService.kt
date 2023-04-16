@@ -18,19 +18,22 @@ import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 import kotlin.system.measureNanoTime
 
-const val X_SIZE = 1200
-const val Y_SIZE = 680
-const val PADDING = 10
-
 private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: Int, val id: String)
 
 @Service
-class IceTangleService(
+class TangleService(
     val tangleIceStatusRepo: TangleIceStatusRepo,
     val nodeEntityService: NodeEntityService,
     val stompService: StompService,
     val hackedUtil: HackedUtil,
 ) {
+
+    companion object {
+        const val X_SIZE = 1200
+        const val Y_SIZE = 680
+        const val PADDING = 10
+    }
+
 
     data class UiTangleState(
         val strength: IceStrength,

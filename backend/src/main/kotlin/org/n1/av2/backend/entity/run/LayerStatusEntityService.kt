@@ -2,6 +2,7 @@ package org.n1.av2.backend.entity.run
 
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.nodeIdFromLayerId
 import org.springframework.stereotype.Service
@@ -46,14 +47,14 @@ class LayerStatusEntityService(
         return layerStatusRepo.findByRunId(runId)
     }
 
-    class IceBasicInfo(val type: String, val iceId: String? = null)
+    class IceBasicInfo(val type: LayerType?, val iceId: String? = null)
     fun getLayerType(layerStatusReference: String): IceBasicInfo {
         val id = "layerStatus-${layerStatusReference}"
-        val layerStatus = layerStatusRepo.findById(id).getOrElse { return IceBasicInfo("UNKNOWN") }
+        val layerStatus = layerStatusRepo.findById(id).getOrElse { return IceBasicInfo(null) }
 
         val nodeId = nodeIdFromLayerId(layerStatus.layerId)
         val node = nodeEntityService.findById(nodeId)
         val layer = node.getLayerById(layerStatus.layerId)
-        return IceBasicInfo(layer.type.toString(), layerStatus.iceId)
+        return IceBasicInfo(layer.type, layerStatus.iceId)
     }
 }

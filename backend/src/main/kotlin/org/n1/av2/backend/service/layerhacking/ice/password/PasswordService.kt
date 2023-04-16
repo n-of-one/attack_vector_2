@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
 @org.springframework.stereotype.Service
-class IcePasswordService(
+class PasswordService(
     val nodeEntityService: NodeEntityService,
     val passwordIceStatusRepo: PasswordIceStatusRepo,
     val time: TimeService,

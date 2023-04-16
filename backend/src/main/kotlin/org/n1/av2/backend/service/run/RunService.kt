@@ -4,19 +4,17 @@ import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.LayerType
-import org.n1.av2.backend.entity.site.layer.IcePasswordLayer
-import org.n1.av2.backend.entity.site.layer.IceTangleLayer
-import org.n1.av2.backend.entity.site.layer.IceWordSearchLayer
-import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.entity.site.layer.*
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.ice.password.IcePasswordService
-import org.n1.av2.backend.service.layerhacking.ice.tangle.IceTangleService
-import org.n1.av2.backend.service.layerhacking.ice.wordsearch.IceWordSearchService
+import org.n1.av2.backend.service.layerhacking.ice.password.PasswordService
+import org.n1.av2.backend.service.layerhacking.ice.tangle.TangleService
+import org.n1.av2.backend.service.layerhacking.ice.wordsearch.WordSearchService
+import org.n1.av2.backend.service.layerhacking.netwalk.IceNetwalkService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.site.SiteService
@@ -37,9 +35,10 @@ class RunService(
     private val stompService: StompService,
     private val runLinkEntityService: UserLinkEntityService,
     private val nodeEntityService: NodeEntityService,
-    private val iceTangleService: IceTangleService,
-    private val icePasswordService: IcePasswordService,
-    private val iceWordSearchService: IceWordSearchService
+    private val tangleService: TangleService,
+    private val passwordService: PasswordService,
+    private val wordSearchService: WordSearchService,
+    private val iceNetwalkService: IceNetwalkService
 ) {
 
     class HackerPresence(
@@ -132,25 +131,32 @@ class RunService(
             LayerType.TANGLE_ICE -> createTangleIce(layer, nodeId, runId)
             LayerType.PASSWORD_ICE -> createPasswordIce(layer, nodeId, runId)
             LayerType.WORD_SEARCH_ICE -> createWordSearchIce(layer, nodeId, runId)
+            LayerType.NETWALK_ICE ->createNetwalkIce(layer, nodeId, runId)
             else -> return
         }
     }
+    private fun createNetwalkIce(layer: Layer, nodeId: String, runId: String) {
+        if (layer !is IceNetwalkLayer) error("Wrong layer type/data for layer: ${layer.id}")
+        val netwalkIceStatus = iceNetwalkService.createIce(layer, nodeId, runId)
+        layerStatusEntityService.createLayerStatus(layer.id, runId, netwalkIceStatus.id)
+    }
+
 
     private fun createWordSearchIce(layer: Layer, nodeId: String, runId: String) {
         if (layer !is IceWordSearchLayer) error("Wrong layer type/data for layer: ${layer.id}")
-        val wordSearchIceStatus = iceWordSearchService.createIce(layer, nodeId, runId)
+        val wordSearchIceStatus = wordSearchService.createIce(layer, nodeId, runId)
         layerStatusEntityService.createLayerStatus(layer.id, runId, wordSearchIceStatus.id)
     }
 
     fun createTangleIce(layer: Layer, nodeId: String, runId: String) {
         if (layer !is IceTangleLayer) error("Wrong layer type/data for layer: ${layer.id}")
-        val iceTangleStatus = iceTangleService.createTangleIce(layer, nodeId, runId)
+        val iceTangleStatus = tangleService.createTangleIce(layer, nodeId, runId)
         layerStatusEntityService.createLayerStatus(layer.id, runId, iceTangleStatus.id)
     }
 
     fun createPasswordIce(layer: Layer, nodeId: String, runId: String) {
         if (layer !is IcePasswordLayer) error("Wrong layer type/data for layer: ${layer.id}")
-        val passwordIceStatus = icePasswordService.createStatus(layer, nodeId, runId)
+        val passwordIceStatus = passwordService.createStatus(layer, nodeId, runId)
         layerStatusEntityService.createLayerStatus(layer.id, runId, passwordIceStatus.id)
     }
 }

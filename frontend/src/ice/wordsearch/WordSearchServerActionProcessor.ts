@@ -22,7 +22,6 @@ export interface ServerEnterIceWordSearch {
 
 export interface UpdateAction {
     iceId: string,
-    runId: string,
     lettersCorrect: string[],
     wordIndex: number,
     hacked: boolean

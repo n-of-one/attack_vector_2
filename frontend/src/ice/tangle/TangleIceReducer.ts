@@ -1,5 +1,5 @@
-import {HIDDEN, UNLOCKED} from "../IceUiState";
 import {AnyAction} from "redux";
+import {HIDDEN, UNLOCKED} from "../IceModel";
 
 export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
 export const SERVER_ENTER_ICE_TANGLE = "SERVER_ENTER_ICE_TANGLE";
