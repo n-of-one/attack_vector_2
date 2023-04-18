@@ -45,13 +45,8 @@ class TangleService(
 
 
     fun enter(iceId: String) {
-        val iceStatus = tangleIceStatusRepo
-            .findById(iceId)
-            .getOrElse {
-                stompService.replyMessage(NotyMessage(NotyType.FATAL, "Error", "No ice for ID: ${iceId}"))
-                return
-            }
-
+        val iceStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
+        if (iceStatus.hacked) error("This ice has already been hacked.")
         val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines)
         stompService.reply(ServerActions.SERVER_ENTER_ICE_TANGLE, uiState)
     }
@@ -89,9 +84,8 @@ class TangleService(
         val newPoint = TanglePoint(command.pointId, x, y)
         tangleStatus.points.add(newPoint)
 
-        tangleIceStatusRepo.save(tangleStatus)
-
         val solved = tangleSolved(tangleStatus)
+        tangleIceStatusRepo.save(tangleStatus.copy(hacked = solved))
 
         val message = TanglePointMoved(command.pointId, x, y, solved)
 

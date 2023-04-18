@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
-class TangleIceStatus(
+data class TangleIceStatus(
     val id: String,
     val runId: String,
     val nodeId: String,
@@ -12,7 +12,8 @@ class TangleIceStatus(
     val strength: IceStrength,
     val originalPoints: MutableList<TanglePoint>,
     val points: MutableList<TanglePoint>,
-    val lines: List<TangleLine>
+    val lines: List<TangleLine>,
+    val hacked: Boolean = false,
 )
 
 data class TanglePoint(val id: String, val x: Int, val y: Int)

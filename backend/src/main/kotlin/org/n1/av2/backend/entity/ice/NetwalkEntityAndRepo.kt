@@ -65,7 +65,7 @@ fun NetwalkCellType.rotateClockwise(): NetwalkCellType {
 }
 
 
-data class NetwalkCellMinimal(
+data class NetwalkCell(
     val type: NetwalkCellType,
     val connected: Boolean
 )
@@ -76,9 +76,9 @@ data class NetwalkEntity(
     val nodeId: String,
     val layerId: String,
     val strength: IceStrength,
+    val wrapping: Boolean,
     val hacked: Boolean,
-
-    val cellGrid: List<List<NetwalkCellMinimal>>,
+    val cellGrid: List<List<NetwalkCell>>,
 )
 
 @Repository

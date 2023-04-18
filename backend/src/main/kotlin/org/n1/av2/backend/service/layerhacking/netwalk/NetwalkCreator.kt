@@ -1,15 +1,35 @@
 package org.n1.av2.backend.service.layerhacking.netwalk
 
 import org.n1.av2.backend.entity.ice.*
+import org.n1.av2.backend.entity.ice.NetwalkCell
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import kotlin.random.Random
+
+/**
+ * https://en.wikipedia.org/wiki/Maze_generation_algorithm
+ *
+ * Randomized Prim's algorithm
+ * This algorithm is a randomized version of Prim's algorithm.
+ *
+ * - Start with a grid full of walls.
+ * - Pick a cell, mark it as part of the maze. Add the walls of the cell to the wall list.
+ * While there are walls in the list:
+ * - Pick a random wall from the list. If only one of the two cells that the wall divides is visited, then:
+ * - Make the wall a passage and mark the unvisited cell as part of the maze.
+ * - Add the neighboring walls of the cell to the wall list.
+ * - Remove the wall from the list.
+ * It will usually be relatively easy to find the way to the starting cell, but hard to find the way anywhere else.
+*/
+
+
 
 class Wall(
     val from: Point,
     val to: Point
 ) {
 
-// Walls must be agnostic of ordering of from and to
+    // Walls must be agnostic of ordering of from and to
+    // This is important for finding if a wall is already in a set of walls.
 
     override fun equals(other: Any?): Boolean {
         if (other !is Wall) return false
@@ -26,20 +46,29 @@ class Wall(
     }
 }
 
-class NetwalkCreator(val iceStrength: IceStrength) {
+class NetwalkPuzzle(val grid: List<List<NetwalkCell>>, val wrapping: Boolean)
+
+
+/**
+ * This implementation either creates a netwalk puzzle, or returns null if the solution
+ * - has unreachable positions
+ * - ends up with a solution where the middle is an end leaf
+ */
+class NetwalkCreator(iceStrength: IceStrength) {
 
     companion object {
         val sizeByStrength = mapOf(
-            IceStrength.VERY_WEAK to 5,
-            IceStrength.WEAK to 9,
-            IceStrength.AVERAGE to 11,
-            IceStrength.STRONG to 13,
-            IceStrength.VERY_STRONG to 9,
-            IceStrength.ONYX to 11,
+            IceStrength.VERY_WEAK to Pair (7, 7),
+            IceStrength.WEAK to Pair (9, 9),
+            IceStrength.AVERAGE to Pair (11, 11),
+            IceStrength.STRONG to Pair (15, 13),
+            IceStrength.VERY_STRONG to Pair (9, 9),
+            IceStrength.ONYX to Pair(17, 11)
         )
     }
 
-    private val size = sizeByStrength[iceStrength]!!
+    private val sizeX = sizeByStrength[iceStrength]!!.first
+    private val sizeY = sizeByStrength[iceStrength]!!.second
     private val wrapping = (iceStrength == IceStrength.VERY_STRONG || iceStrength == IceStrength.ONYX)
 
     private val grid: MutableSet<Point> = mutableSetOf()
@@ -50,26 +79,56 @@ class NetwalkCreator(val iceStrength: IceStrength) {
         if (wrapping) return mutableSetOf()
 
         val result = mutableSetOf<Wall>()
-        (0 until size).forEach { x ->
+        (0 until sizeX).forEach { x ->
             result.add(Wall(Point(x, 0), Point(x, -1)))
-            result.add(Wall(Point(x, size - 1), Point(x, size)))
+            result.add(Wall(Point(x, sizeY - 1), Point(x, sizeY)))
         }
-        (0 until size).forEach { y ->
+        (0 until sizeY).forEach { y ->
             result.add(Wall(Point(0, y), Point(-1, y)))
-            result.add(Wall(Point(size - 1, y), Point(size, y)))
+            result.add(Wall(Point(sizeX - 1, y), Point(sizeX, y)))
         }
         return result
     }
 
+    fun create(): NetwalkPuzzle? {
+        createPuzzle()
+        val result = converPuzzleToGrid() ?: return null
+        if (centerIsALeaf(result)) return null
 
-    fun create(): List<List<NetwalkCellMinimal>> {
-        val center = (size) / 2
-        val start = Point(center, center)
+        val grid = NetwalkConnectionTracer(result, wrapping).trace().second
+        return NetwalkPuzzle(grid, wrapping)
+    }
+
+    private fun converPuzzleToGrid(): List<List<NetwalkCell>>? {
+        val result: MutableList<MutableList<NetwalkCell>> = mutableListOf()
+
+        for (y in 0 until sizeY) {
+            val row: MutableList<NetwalkCell> = mutableListOf()
+            for (x in 0 until sizeX) {
+                val type = cellType(x, y, walls, finalWalls) ?: return null
+
+                val rotations = Random.nextInt(4)
+                var rotatedType = type
+                repeat(rotations) { rotatedType = rotatedType.rotateClockwise() }
+
+                val cell = NetwalkCell(
+                    type = rotatedType,
+                    connected = false
+                )
+                row.add(cell)
+            }
+            result.add(row)
+        }
+        return result
+    }
+
+    private fun createPuzzle() {
+        val start = Point(Random.nextInt(sizeX), Random.nextInt(sizeY))
         walls.addAll(findWalls(start))
         grid.add(start)
 
         while (walls.isNotEmpty()) {
-            printGrid(walls, finalWalls)
+    //            printGrid(walls, finalWalls)
 
             val wall = walls.random()
             if (grid.contains(wall.to)) {
@@ -87,28 +146,6 @@ class NetwalkCreator(val iceStrength: IceStrength) {
             }
             walls.remove(wall)
         }
-
-        val result: MutableList<MutableList<NetwalkCellMinimal>> = mutableListOf()
-
-        for (y in 0 until size) {
-            val row: MutableList<NetwalkCellMinimal> = mutableListOf()
-            for (x in 0 until size) {
-                val type = cellType(x, y, walls, finalWalls) ?: error("No cell type for $x, $y")
-
-                val rotations = Random.nextInt(4)
-                var rotatedType = type
-                (0 until rotations).forEach { rotatedType = rotatedType.rotateClockwise() }
-
-                val cell = NetwalkCellMinimal(
-                    type = rotatedType,
-                    connected = false
-                )
-                row.add(cell)
-            }
-            result.add(row)
-        }
-
-        return NetwalkConnectionTracer(result).trace().second
     }
 
     private fun findWalls(location: Point): List<Wall> {
@@ -127,10 +164,10 @@ class NetwalkCreator(val iceStrength: IceStrength) {
         var toY = from.y + direction.dy
 
         if (wrapping) {
-            toX %= size
-            toY %= size
+            toX = wrapX(toX)
+            toY = wrapY(toY)
         } else {
-            if (toX < 0 || toX >= size || toY < 0 || toY >= size) {
+            if (toX < 0 || toX >= sizeX || toY < 0 || toY >= sizeY) {
                 return null
             }
         }
@@ -138,8 +175,8 @@ class NetwalkCreator(val iceStrength: IceStrength) {
     }
 
     private fun printGrid(walls: Set<Wall>, finalWalls: Set<Wall>) {
-        for (y in 0 until size) {
-            for (x in 0 until size) {
+        for (y in 0 until sizeY) {
+            for (x in 0 until sizeX) {
                 val image = cellType(x, y, walls, finalWalls)?.textImage ?: '*'
                 print(image)
             }
@@ -150,10 +187,10 @@ class NetwalkCreator(val iceStrength: IceStrength) {
 
     private fun cellType(x: Int, y: Int, walls: Set<Wall>, finalWalls: Set<Wall>): NetwalkCellType? {
         val point = Point(x, y)
-        val nWall = Wall(point, Point(x, y - 1))
-        val eWall = Wall(point, Point(x + 1, y))
-        val sWall = Wall(point, Point(x, y + 1))
-        val wWall = Wall(point, Point(x - 1, y))
+        val nWall = Wall(point, Point(x, wrapY(y - 1)))
+        val eWall = Wall(point, Point(wrapX(x + 1), y))
+        val sWall = Wall(point, Point(x, wrapY(y + 1)))
+        val wWall = Wall(point, Point(wrapX(x - 1), y))
 
         val nHasWall = walls.contains(nWall) || finalWalls.contains(nWall)
         val eHasWall = walls.contains(eWall) || finalWalls.contains(eWall)
@@ -167,4 +204,21 @@ class NetwalkCreator(val iceStrength: IceStrength) {
                     type.w != wHasWall
         }
     }
+
+    private fun wrapX(x: Int): Int {
+        if (!wrapping) return x
+        return (sizeX + x) % sizeX
+    }
+
+    private fun wrapY(y: Int): Int {
+        if (!wrapping) return y
+        return (sizeY + y) % sizeY
+    }
+
+    private fun centerIsALeaf(grid: List<List<NetwalkCell>>): Boolean {
+        val center = Point(sizeX / 2, sizeY / 2)
+        val type = grid[center.y][center.x].type
+        return (type == NetwalkCellType.N || type == NetwalkCellType.E || type == NetwalkCellType.S || type == NetwalkCellType.W)
+    }
+
 }

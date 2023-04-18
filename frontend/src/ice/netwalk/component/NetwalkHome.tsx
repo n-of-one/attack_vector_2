@@ -5,6 +5,9 @@ import {IceTitle} from "../../../common/component/IceTitle";
 import {NetwalkState} from "../reducer/NetwalkStateReducer";
 import {NetwalkRootState} from "../reducer/NetwlakRootReducer";
 import {netwalkCanvas} from "../canvas/NetwalkCanvas";
+import {HIDDEN} from "../../IceModel";
+
+/* eslint jsx-a11y/alt-text: 0*/
 
 interface ImageLoadedProps {
     id: string,
@@ -20,7 +23,7 @@ const NetwalkImage = ({id, fileName}: ImageLoadedProps) => {
 
     // https://codesandbox.io/s/red-flower-27i85?file=/src/gifToSprite.js
 
-    const path = `/img/frontier/ice/netwalk/${fileName}`
+    const path = `/img/frontier/ice/netwalk/cell/${fileName}`
 
     return <span><img id={id} src={path} style={{display: "none"}} height="80" width="80" onLoad={imageLoaded}/></span>
 }
@@ -34,12 +37,23 @@ const DisplayTerminal = () => {
 
 export const NetwalkHome = () => {
 
-    const uiState = useSelector( (rootState:NetwalkRootState) => rootState.uiState )
+    const uiState = useSelector( (rootState:NetwalkRootState) => rootState.state.uiState )
     const state: NetwalkState = useSelector( (rootState:NetwalkRootState) => rootState.state )
 
-    // const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
-    const classShowCanvas = ""
+    const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
 
+
+    // Code used to download the canvas in order to create the background image
+    // setTimeout(() => {
+    //     const a = document.getElementById("downloadSpan")!!
+    //     let link = document.createElement("a")
+    //     link.download = "netwalk.png"
+    //     link.href = netwalkCanvas.canvas.toDataURL({
+    //         format: 'jpg',
+    //     });
+    //     link.text = "Download to png"
+    //     a.appendChild(link)
+    // }, 1000)
 
 
 
@@ -48,10 +62,11 @@ export const NetwalkHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Pumer" strength={state.strength} />
+                        <IceTitle name="Dahana" strength={state.strength} />
                     </div>
                     <div className="col-lg-9" style={{paddingTop: "4px"}}>
                         <DisplayTerminal />
+                        {/*<span id={"downloadSpan"}/>*/}
                     </div>
                 </div>
 
@@ -80,7 +95,5 @@ export const NetwalkHome = () => {
             <NetwalkImage id="straight" fileName="straight.png" />
             <NetwalkImage id="straightConnected" fileName="straightConnected.gif"/>
         </div>
-
-
     )
 }

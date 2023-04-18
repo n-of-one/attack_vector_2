@@ -5,13 +5,14 @@ import org.springframework.stereotype.Repository
 import java.time.ZonedDateTime
 
 
-class PasswordIceStatus(
+data class PasswordIceStatus(
     val id: String,
     val runId: String,
     val nodeId: String,
     val layerId: String,
     val attempts: MutableList<String>,
-    var lockedUntil: ZonedDateTime
+    var lockedUntil: ZonedDateTime,
+    val hacked : Boolean = false,
 )
 
 @Repository

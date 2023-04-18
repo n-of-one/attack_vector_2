@@ -4,7 +4,7 @@ import {IceStrength} from "../../common/model/IceStrength";
 import {SERVER_ENTER_ICE_NETWALK, SERVER_NETWALK_NODE_ROTATED} from "./reducer/NetwalkStateReducer";
 import {netwalkManager} from "./component/NetwalkManager";
 
-export interface CellMinimal {
+export interface NetwalkCell {
     "type": CellType,
     "connected": boolean
 }
@@ -13,7 +13,8 @@ export interface ServerEnterIceNetwalk {
     strength: IceStrength,
     uiState: string,
     hacked: boolean,
-    cellGrid: CellMinimal[][]
+    cellGrid: NetwalkCell[][],
+    wrapping: boolean
 }
 
 export enum CellType {

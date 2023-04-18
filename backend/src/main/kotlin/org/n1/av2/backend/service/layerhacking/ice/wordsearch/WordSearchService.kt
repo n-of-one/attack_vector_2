@@ -20,7 +20,7 @@ class WordSearchService(
     private val wordSearchStatusRepo: WordSearchStatusRepo,
     private val stompService: StompService,
     val hackedUtil: HackedUtil,
-    ) {
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -52,7 +52,7 @@ class WordSearchService(
     fun findBestCreation(strength: IceStrength): WordSearchCreation {
         var creation: WordSearchCreation
         measureTimeMillis {
-            creation =  (1..CREATION_ATTEMPTS).map {
+            creation = (1..CREATION_ATTEMPTS).map {
                 WordSearchCreator(strength).create()
             }
                 .filterNotNull()
@@ -67,13 +67,8 @@ class WordSearchService(
     }
 
     fun enter(iceId: String) {
-        val iceStatus = wordSearchStatusRepo
-            .findById(iceId)
-            .getOrElse {
-                stompService.replyMessage(NotyMessage(NotyType.FATAL, "Error", "No ice for ID: ${iceId}"))
-                return
-            }
-
+        val iceStatus = wordSearchStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
+        if (iceStatus.hacked) error("This ice has already been hacked.")
         stompService.reply(ServerActions.SERVER_ENTER_ICE_WORD_SEARCH, iceStatus)
     }
 

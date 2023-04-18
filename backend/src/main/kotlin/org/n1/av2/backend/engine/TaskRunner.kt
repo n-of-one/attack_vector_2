@@ -107,7 +107,14 @@ class TaskEngine (val stompService: StompService,
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)
             }
-        } finally {
+        }
+        catch(error: Throwable) {
+            logger.error("Task triggered error.", error)
+            val event = ServerFatal(false, error.message ?: error.javaClass.name)
+            stompService.reply(ServerActions.SERVER_ERROR, event)
+            return
+        }
+        finally {
             currentUserService.remove()
             SecurityContextHolder.clearContext()
         }

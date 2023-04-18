@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ReduxEvent
 import org.n1.av2.backend.service.terminal.TERMINAL_MAIN

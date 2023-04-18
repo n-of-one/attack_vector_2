@@ -37,12 +37,8 @@ class PasswordService(
     }
 
     fun enter(iceId: String) {
-        val iceStatus = passwordIceStatusRepo
-            .findById(iceId)
-            .getOrElse {
-                stompService.replyMessage(NotyMessage(NotyType.FATAL, "Error", "No ice for ID: ${iceId}"))
-                return
-            }
+        val iceStatus = passwordIceStatusRepo.findById(iceId).getOrElse { error("No Password ice for ID: ${iceId}") }
+        if (iceStatus.hacked) error("This ice has already been hacked.")
 
         val layer = getLayer(iceStatus)
         val hintToDisplay = hintToDisplay(iceStatus, layer)
@@ -75,6 +71,7 @@ class PasswordService(
 
     private fun resolveHacked(iceStatus: PasswordIceStatus, password: String) {
         iceStatus.attempts.add(password)
+        passwordIceStatusRepo.save(iceStatus.copy(hacked = true))
 
         val result = UiState("Password accepted.", true, null, iceStatus)
         stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_PASSWORD_UPDATE, result)
