@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller
 import java.security.Principal
 
 @Controller
-class IceTangleController(
+class TangleIceController(
     val tangleService: TangleService,
     val taskRunner: TaskRunner ) {
 

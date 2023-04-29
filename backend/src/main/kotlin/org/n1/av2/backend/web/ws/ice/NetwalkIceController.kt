@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller
 import java.security.Principal
 
 @Controller
-class IceNetwalkController(
+class NetwalkIceController(
     val netwalkService: NetwalkIceService,
     val taskRunner: TaskRunner ) {
 

@@ -12,7 +12,7 @@ import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.util.createId
-import org.n1.av2.backend.web.ws.ice.IceTangleController
+import org.n1.av2.backend.web.ws.ice.TangleIceController
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 import kotlin.system.measureNanoTime
@@ -73,7 +73,7 @@ class TangleService(
 
     data class TanglePointMoved(val id: String, val x: Int, val y: Int, val solved: Boolean)
 
-    fun move(command: IceTangleController.TanglePointMoveInput) {
+    fun move(command: TangleIceController.TanglePointMoveInput) {
         val x = keepInPlayArea(command.x, X_SIZE)
         val y = keepInPlayArea(command.y, Y_SIZE)
 

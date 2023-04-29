@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller
 import java.security.Principal
 
 @Controller
-class IceWordSearchController(
+class WordSearchIceController(
     val wordSearchService: WordSearchService,
     val taskRunner: TaskRunner ) {
 

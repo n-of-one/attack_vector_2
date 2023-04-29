@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller
 import java.security.Principal
 
 @Controller
-class IcePasswordController(
+class PasswordIceController(
     val passwordService: PasswordService,
     val taskRunner: TaskRunner ) {
 
