@@ -16,13 +16,16 @@ export const GmHome = () => {
     const dispatch = useDispatch()
 
 
-    useRunOnce(() => {
+    const fetchSites = () => {
         fetch("/api/site/")
             .then(response => response.json())
             .then(sites => {
                 dispatch({type: RECEIVE_SITES, sites: sites})
             })
-    })
+
+    }
+
+    useRunOnce(() => { fetchSites() })
 
     const edit = (siteName: string) => {
         post({
@@ -38,6 +41,8 @@ export const GmHome = () => {
                 notify({type: "fatal", message: "Connection to server failed, unable to continue."})
             }
         })
+
+        setTimeout( fetchSites, 1000)
     }
 
     const deleteSite = (siteId: string, name: string) => {

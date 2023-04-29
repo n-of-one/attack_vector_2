@@ -23,8 +23,8 @@ class SlowIceLayer(
             this(id, LayerType.SLOW_ICE, level, defaultName, "",
                 IceStrength.AVERAGE, SlowIceCreator.totalUnitsByStrength[IceStrength.AVERAGE]!!,
                 defaultTimeHackerGroup(IceStrength.AVERAGE, 1, 1),
-                defaultTimeHackerGroup(IceStrength.AVERAGE, 1, 5),
-                defaultTimeHackerGroup(IceStrength.AVERAGE, 5, 10),
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 5, 1),
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 10, 5),
                 )
 
     override fun updateInternal(key: String, value: String): Boolean {
