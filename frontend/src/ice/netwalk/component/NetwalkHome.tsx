@@ -2,10 +2,10 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {IceTitle} from "../../../common/component/IceTitle";
-import {NetwalkState} from "../reducer/NetwalkStateReducer";
-import {NetwalkRootState} from "../reducer/NetwlakRootReducer";
+import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
 import {netwalkCanvas} from "../canvas/NetwalkCanvas";
 import {HIDDEN} from "../../IceModel";
+import {IceStrength} from "../../../common/model/IceStrength";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -38,7 +38,7 @@ const DisplayTerminal = () => {
 export const NetwalkHome = () => {
 
     const uiState = useSelector( (rootState:NetwalkRootState) => rootState.state.uiState )
-    const state: NetwalkState = useSelector( (rootState:NetwalkRootState) => rootState.state )
+    const strength: IceStrength = useSelector( (rootState:NetwalkRootState) => rootState.state.strength )
 
     const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
 
@@ -58,11 +58,11 @@ export const NetwalkHome = () => {
 
 
     return (
-        <div className="row wordSearchIcePanelRow">
+        <div className="row icePanelRow">
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Dahana" strength={state.strength} />
+                        <IceTitle name="Dahana" strength={strength} />
                     </div>
                     <div className="col-lg-9" style={{paddingTop: "4px"}}>
                         <DisplayTerminal />

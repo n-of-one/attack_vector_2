@@ -3,6 +3,8 @@ import {TangleRoot} from "./tangle/TangleRoot";
 import {PasswordRoot} from "./password/PasswordRoot";
 import {WordSearchRoot} from "./wordsearch/WordSearchRoot";
 import {NetwalkRoot} from "./netwalk/NetwalkRoot";
+import {NETWALK_ICE, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, WORD_SEARCH_ICE} from "../common/enums/LayerTypes";
+import {SlowIceRoot} from "./slow/SlowIceRoot";
 
 interface Props {
     redirectId: string
@@ -29,13 +31,14 @@ export const IceRoot = (props: Props) => {
 
 
     if (iceType === "") {
-        return <div style={{color: "yellow"}}>Waiting</div>
+        return <div style={{color: "yellow"}}>Loading</div>
     }
 
-    if (iceType === "TANGLE_ICE" ) return <TangleRoot iceId={iceId} />
-    if (iceType === "PASSWORD_ICE" ) return <PasswordRoot iceId={iceId} />
-    if (iceType === "WORD_SEARCH_ICE" ) return <WordSearchRoot iceId={iceId} />
-    if (iceType === "NETWALK_ICE" ) return <NetwalkRoot iceId={iceId} />
+    if (iceType === TANGLE_ICE ) return <TangleRoot iceId={iceId} />
+    if (iceType === PASSWORD_ICE ) return <PasswordRoot iceId={iceId} />
+    if (iceType === WORD_SEARCH_ICE ) return <WordSearchRoot iceId={iceId} />
+    if (iceType === NETWALK_ICE ) return <NetwalkRoot iceId={iceId} />
+    if (iceType === SLOW_ICE ) return <SlowIceRoot iceId={iceId} />
 
     return <div style={{color: "red"}}>No Ice found for ID: {props.redirectId}</div>
 }

@@ -2,7 +2,6 @@ import React from 'react'
 import { useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
 import {LayerStrength} from "../../../LayerStrength"
-import {LayerIceTangle} from "../../../../../../../../common/model/layer/LayerIceTangle"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerField} from "../../../LayerField";
 import {LayerSlowIce} from "../../../../../../../../common/model/layer/LayerSlowIce";

@@ -16,7 +16,7 @@ const noOpReducer = (state: string = "", action: AnyAction): string => {
     return state
 }
 
-export const netwlakRootReducer = combineReducers<NetwalkRootState>(
+export const netwalkRootReducer = combineReducers<NetwalkRootState>(
     {
         iceId: noOpReducer,
         state: netwalkStateReducer,

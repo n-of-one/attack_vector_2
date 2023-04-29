@@ -4,17 +4,16 @@ import {configureStore} from "@reduxjs/toolkit";
 import {WEBSOCKET_ICE, webSocketConnection} from "../../common/WebSocketConnection";
 import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
-import {NetwalkContainer} from "./component/NetwalkContainer";
-import {NetwalkRootState, netwalkRootReducer} from "./reducer/NetwalkRootReducer";
-import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../common/terminal/TerminalManager";
-import {initNetwalkServerActions} from "./NetwalkServerActionProcessor";
-import {netwalkManager} from "./component/NetwalkManager";
+import {slowIceRootReducer, SlowIceRootState} from "./reducer/SlowIceRootReducer";
+import {SlowIceContainer} from "./component/SlowIceContainer";
+import {slowIceManager} from "./component/SlowIceManager";
 
 interface Props {
     iceId: string
 }
-export class NetwalkRoot extends Component<Props> {
+
+export class SlowIceRoot extends Component<Props> {
 
     store: Store
 
@@ -25,7 +24,7 @@ export class NetwalkRoot extends Component<Props> {
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
         this.store = configureStore({
-            reducer: netwalkRootReducer as Reducer<NetwalkRootState>,
+            reducer: slowIceRootReducer as Reducer<SlowIceRootState>,
             preloadedState: preLoadedState,
             middleware: (getDefaultMiddleware) =>  [...getDefaultMiddleware()],
             devTools: isDevelopmentServer
@@ -36,17 +35,20 @@ export class NetwalkRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/netwalk/enter", {iceId: props.iceId})
         });
 
-        netwalkManager.init(this.store);
+        slowIceManager.init(this.store)
         terminalManager.init(this.store)
-        initGenericServerActions()
-        initNetwalkServerActions(this.store)
+        // initGenericServerActions()
+        // initNetwalkServerActions(this.store)
+        setTimeout(() => {
+            slowIceManager.enter(props.iceId)
+        }, 100)
     }
 
     render() {
         return(
             <RequiresRole requires="ROLE_HACKER">
                 <Provider store={this.store}>
-                    <NetwalkContainer />
+                    <SlowIceContainer />
                 </Provider>
             </RequiresRole>
         )

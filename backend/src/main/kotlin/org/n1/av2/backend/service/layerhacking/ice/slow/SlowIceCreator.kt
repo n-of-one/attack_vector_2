@@ -29,14 +29,14 @@ class SlowIceCreator {
 
     companion object {
 
-        private val AVERAGE_UNITS_PER_SECOND = 15
+        private const val AVERAGE_UNITS_PER_SECOND = 15
         val totalUnitsByStrength = mapOf(
-            IceStrength.VERY_WEAK to AVERAGE_UNITS_PER_SECOND * MINUTE_SECONDS * 10,  // 10 minutes  : 1.6 minutes
-            IceStrength.WEAK to AVERAGE_UNITS_PER_SECOND * MINUTE_SECONDS * 30,       // 30 minutes  : 5 minutes
-            IceStrength.AVERAGE to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 1,       // 1 hour      : 10 minutes
-            IceStrength.STRONG to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 6,        // 6 hours     : 1 hours
-            IceStrength.VERY_STRONG to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 24,  // 24 hours    : 4 hours
-            IceStrength.ONYX to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 144         // 144 hours   : 24 hours
+            IceStrength.VERY_WEAK to AVERAGE_UNITS_PER_SECOND * MINUTE_SECONDS * 10,  // 10 minutes  : 1.6 minutes : 9000
+            IceStrength.WEAK to AVERAGE_UNITS_PER_SECOND * MINUTE_SECONDS * 30,       // 30 minutes  : 5 minutes   : 27000
+            IceStrength.AVERAGE to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 1,       // 1 hour      : 10 minutes  : 54000
+            IceStrength.STRONG to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 6,        // 6 hours     : 1 hours     : 324000
+            IceStrength.VERY_STRONG to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 24,  // 24 hours    : 4 hours     : 1296000
+            IceStrength.ONYX to AVERAGE_UNITS_PER_SECOND * HOUR_SECONDS * 144         // 144 hours   : 24 hours    : 7776000
         )
 
         fun defaultTimeHackerGroup(strength: IceStrength, hackerLevel: Int, hackerCount: Int ): String {

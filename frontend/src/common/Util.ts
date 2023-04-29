@@ -39,3 +39,11 @@ export const formatTimeInterval = (totalSecondsLeft: number | null) => {
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined
 }
+
+export function hashCode(str: string): number {
+  var h: number = 0;
+  for (var i = 0; i < str.length; i++) {
+    h = 31 * h + str.charCodeAt(i);
+  }
+  return h & 0xFFFFFFFF
+}

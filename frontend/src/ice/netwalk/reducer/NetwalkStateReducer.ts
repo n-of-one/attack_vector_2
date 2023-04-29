@@ -6,10 +6,6 @@ export const SERVER_ENTER_ICE_NETWALK = "SERVER_ENTER_ICE_NETWALK"
 export const SERVER_NETWALK_NODE_ROTATED = "SERVER_NETWALK_NODE_ROTATED"
 export const NETWALK_BEGIN = "NETWALK_BEGIN"
 
-/*
-Cell name indicates which directions are free to go. If the cell type is N then you can only go North.
- */
-
 export interface NetwalkState {
     strength: IceStrength,
     hacked: boolean,

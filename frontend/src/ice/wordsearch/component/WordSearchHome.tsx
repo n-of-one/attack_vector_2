@@ -28,7 +28,7 @@ export const WordSearchHome = () => {
     setTimeout(moveIt, 2)
 
     return (
-        <div className="row wordSearchIcePanelRow">
+        <div className="row icePanelRow">
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
