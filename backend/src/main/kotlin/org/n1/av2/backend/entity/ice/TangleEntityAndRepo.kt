@@ -24,4 +24,5 @@ data class TangleLine(val id: String, val fromId: String, val toId: String, val 
 
 @Repository
 interface TangleIceStatusRepo: CrudRepository<TangleIceStatus, String> {
+    fun deleteAllByRunId(runId: String)
 }

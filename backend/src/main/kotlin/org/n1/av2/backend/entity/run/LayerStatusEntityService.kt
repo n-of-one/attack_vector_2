@@ -57,4 +57,8 @@ class LayerStatusEntityService(
         val layer = node.getLayerById(layerStatus.layerId)
         return IceBasicInfo(layer.type, layerStatus.iceId)
     }
+
+    fun deleteAllForRuns(runs: List<Run>) {
+        runs.forEach { layerStatusRepo.deleteAllByRunId(it.runId) }
+    }
 }

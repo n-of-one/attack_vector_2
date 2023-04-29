@@ -4,11 +4,10 @@ import org.n1.av2.backend.entity.ice.TangleIceStatus
 import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
 import org.n1.av2.backend.entity.ice.TangleLine
 import org.n1.av2.backend.entity.ice.TanglePoint
+import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.IceStrength
-import org.n1.av2.backend.entity.site.layer.IceTangleLayer
-import org.n1.av2.backend.model.ui.NotyMessage
-import org.n1.av2.backend.model.ui.NotyType
+import org.n1.av2.backend.entity.site.layer.TangleIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
@@ -52,7 +51,7 @@ class TangleService(
     }
 
 
-    fun createTangleIce(layer: IceTangleLayer, nodeId: String, runId: String): TangleIceStatus {
+    fun createTangleIce(layer: TangleIceLayer, nodeId: String, runId: String): TangleIceStatus {
         val creation = TangleCreator().create(layer.strength)
 
         val id = createId("tangle", tangleIceStatusRepo::findById)
@@ -157,5 +156,9 @@ class TangleService(
     private fun connected(x: Int, y: Int, segment: TangleLineSegment): Boolean {
         return (x == segment.x1 && y == segment.y1) ||
                 (x == segment.x2 && y == segment.y2)
+    }
+
+    fun deleteAllForRuns(runs: List<Run>) {
+        runs.forEach { tangleIceStatusRepo.deleteAllByRunId(it.runId) }
     }
 }

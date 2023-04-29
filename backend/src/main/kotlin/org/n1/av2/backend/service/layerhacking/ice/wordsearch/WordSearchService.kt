@@ -2,10 +2,9 @@ package org.n1.av2.backend.service.layerhacking.ice.wordsearch
 
 import org.n1.av2.backend.entity.ice.WordSearchStatus
 import org.n1.av2.backend.entity.ice.WordSearchStatusRepo
+import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.enums.IceStrength
-import org.n1.av2.backend.entity.site.layer.IceWordSearchLayer
-import org.n1.av2.backend.model.ui.NotyMessage
-import org.n1.av2.backend.model.ui.NotyType
+import org.n1.av2.backend.entity.site.layer.WordSearchIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
@@ -28,7 +27,7 @@ class WordSearchService(
         const val CREATION_ATTEMPTS = 50
     }
 
-    fun createIce(layer: IceWordSearchLayer, nodeId: String, runId: String): WordSearchStatus {
+    fun createIce(layer: WordSearchIceLayer, nodeId: String, runId: String): WordSearchStatus {
         val creation = findBestCreation(layer.strength)
 
         val id = createId("wordSearch", wordSearchStatusRepo::findById)
@@ -110,5 +109,10 @@ class WordSearchService(
             builder.append(lettersGrid[y][x])
         }
         return builder.toString()
+    }
+
+    fun deleteAllForRuns(runs: List<Run>) {
+        runs.forEach { wordSearchStatusRepo.deleteAllByRunId(it.runId) }
+
     }
 }

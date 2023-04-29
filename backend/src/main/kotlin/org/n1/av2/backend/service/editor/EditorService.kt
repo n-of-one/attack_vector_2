@@ -7,6 +7,7 @@ import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.SiteValidationService
 
@@ -18,6 +19,7 @@ class EditorService(
     val nodeEntityService: NodeEntityService,
     val connectionEntityService: ConnectionEntityService,
     val siteValidationService: SiteValidationService,
+    val runService: RunService,
     val stompService: StompService
 ) {
 
@@ -158,5 +160,10 @@ class EditorService(
         if (message != null) {
             stompService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, message)
         }
+    }
+
+    fun deleteSite(siteId: String) {
+        runService.deleteSite(siteId)
+        siteService.removeSite(siteId)
     }
 }

@@ -26,7 +26,7 @@ enum class ServerActions {
     SERVER_NODE_UPDATED,
 
 
-    SERVER_RECEIVE_USER_SCANS,      // Scans shown on home page of user
+    SERVER_UPDATE_USER_SCANS,       // Sent to user to update the scans shown on home page of that user
     SERVER_UPDATE_SCAN_INFO,        // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_SCAN_FULL,               // Result of user enter scan (for the user itself)
@@ -73,7 +73,8 @@ enum class ServerActions {
     SERVER_ICE_WORD_SEARCH_UPDATED,     // sent to run when a word was found
 
     SERVER_ENTER_ICE_NETWALK,           // sent to hacker that hacks this ice, first message of Ice window
-    SERVER_NETWALK_NODE_ROTATED         // sent to run when a node was rotated clockwise
+    SERVER_NETWALK_NODE_ROTATED,        // sent to run when a node was rotated clockwise
+
 
 
 }

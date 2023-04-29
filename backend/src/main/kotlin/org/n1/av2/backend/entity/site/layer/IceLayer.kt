@@ -2,8 +2,8 @@ package org.n1.av2.backend.entity.site.layer
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.model.SiteRep
 
-private const val STRENGTH = "strength"
 
 abstract class IceLayer(
     id: String,
@@ -13,6 +13,10 @@ abstract class IceLayer(
     note: String,
     var strength: IceStrength
 ) : Layer(id, type, level, name, note) {
+
+    companion object {
+        const val STRENGTH = "strength"
+    }
 
     constructor(id: String, level: Int, defaultName: String, strength: IceStrength) :
             this(id, LayerType.PASSWORD_ICE, level, defaultName, "", strength)
@@ -33,5 +37,10 @@ abstract class IceLayer(
         }
         return true
     }
+
+    override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+        return emptyList()
+    }
+
 
 }

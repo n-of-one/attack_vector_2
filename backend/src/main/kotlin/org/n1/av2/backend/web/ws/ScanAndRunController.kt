@@ -30,7 +30,7 @@ class ScanAndRunController(
 
     @MessageMapping("/scan/scanForName")
     fun scanForName(siteName: String, principal: Principal) {
-        taskRunner.runTask(principal) { scanInfoService.searchSiteByName(siteName) }
+        taskRunner.runTask(principal) { runService.startNewRun(siteName) }
     }
 
     @MessageMapping("/scan/deleteScan")

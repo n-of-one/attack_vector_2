@@ -4,13 +4,14 @@ interface PostCall {
     body: Object,
     ok: (response: any) => void,
     notok: (response: Response) => void,
-    error: (result: Error) => void
+    error: (result: Error) => void,
+    method?: string
 }
 
-export const post = ({url, body, ok, notok, error}: PostCall) => {
+export const restCall = ({url, body, ok, notok, error, method}: PostCall) => {
 
-    fetch(url, {
-            method: "POST",
+        fetch(url, {
+            method: method ? method : "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body),
         }
@@ -49,3 +50,14 @@ export const post = ({url, body, ok, notok, error}: PostCall) => {
         }
     })
 }
+
+
+export const post = ({url, body, ok, notok, error, }: PostCall) => {
+    restCall({url, body, ok, notok, error, method: "POST"})
+}
+
+
+export const deleteCall = ({url, body, ok, notok, error}: PostCall) => {
+    restCall({url, body, ok, notok, error, method: "DELETE"})
+}
+

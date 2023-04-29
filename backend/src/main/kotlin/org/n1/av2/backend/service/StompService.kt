@@ -1,9 +1,8 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.model.ui.NotyMessage
-import org.n1.av2.backend.model.ui.NotyType
-import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ReduxEvent
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.simp.SimpMessageSendingOperations
@@ -73,7 +72,7 @@ class StompService(
         reply(ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, emptyArray(), lock))
     }
 
-    fun toUserAllConnections(userId: String, actionType: ServerActions, data: Any) {
+    fun toUser(userId: String, actionType: ServerActions, data: Any) {
         simulateNonLocalhost()
         logger.debug("-> ${userId} ${actionType}")
         val event = ReduxEvent(actionType, data)

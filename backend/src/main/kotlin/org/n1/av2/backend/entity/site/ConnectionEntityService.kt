@@ -41,5 +41,9 @@ class ConnectionEntityService(
         connectionRepo.deleteAll(connections)
     }
 
+    fun deleteAllForSite(siteId: String) {
+        connectionRepo.findBySiteId(siteId).forEach { connectionRepo.delete(it) }
+    }
+
 
 }

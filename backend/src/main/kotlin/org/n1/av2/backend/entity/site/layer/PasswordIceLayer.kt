@@ -8,7 +8,7 @@ import org.n1.av2.backend.model.ui.ValidationException
 private const val PASSWORD = "password"
 private const val HINT = "hint"
 
-class IcePasswordLayer(
+class PasswordIceLayer(
     id: String,
     type: LayerType,
     level: Int,

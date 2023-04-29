@@ -45,4 +45,8 @@ class LayoutEntityService(
         return layout
     }
 
+    fun delete(siteId: String) {
+        layoutRepo.deleteById(siteId)
+    }
+
 }

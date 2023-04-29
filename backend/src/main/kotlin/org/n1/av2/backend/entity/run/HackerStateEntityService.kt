@@ -104,12 +104,12 @@ class HackerStateEntityService(
         hackerStateRepo.save(newPosition)
     }
 
-    fun leaveRun() {
+    fun leaveRun(userId: String) {
         val newState = HackerState(
-                userId = currentUserService.userId,
+                userId = userId,
                 runId = null, siteId = null,
                 currentNodeId = null, previousNodeId = null, targetNodeId = null,
-                generalActivity = HackerGeneralActivity.RUNNING,
+                generalActivity = HackerGeneralActivity.ONLINE,
                 runActivity = RunActivity.NA,
                 hookPatrollerId = null, locked = false)
         hackerStateRepo.save(newState)
@@ -135,6 +135,10 @@ class HackerStateEntityService(
     private fun createLoggedOutState(userId: String): HackerState {
         return HackerState(userId = userId, runId = null, siteId = null, currentNodeId = null, previousNodeId = null, targetNodeId = null,
                 generalActivity = HackerGeneralActivity.OFFLINE, runActivity = RunActivity.NA, hookPatrollerId = null, locked = false)
+    }
+
+    fun findAllHackersInRun(runId: String): List<String> {
+        return hackerStateRepo.findByRunId(runId).map {it.userId}
     }
 
 }

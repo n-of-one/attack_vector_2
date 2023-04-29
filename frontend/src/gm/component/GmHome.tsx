@@ -2,13 +2,12 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {MenuBar} from "../../common/menu/MenuBar"
 import {TextInput} from "../../common/component/TextInput"
-import {post} from "../../common/RestClient"
+import {deleteCall, post} from "../../common/RestClient"
 import {notify} from "../../common/Notification"
 import {SilentLink} from "../../common/component/SilentLink"
 import {GmState} from "../GmRoot"
 import {GmSite, RECEIVE_SITES} from "../GmSitesReducer"
 import {useRunOnce} from "../../common/Util"
-
 
 
 export const GmHome = () => {
@@ -39,6 +38,24 @@ export const GmHome = () => {
                 notify({type: "fatal", message: "Connection to server failed, unable to continue."})
             }
         })
+    }
+
+    const deleteSite = (siteId: string, name: string) => {
+        if (window.confirm(`Confirm that you want to delete site ${name}. `)) {
+            deleteCall({
+                url: `/api/site/${siteId}`,
+                body: {},
+                ok: () => {
+                    window.location.reload()
+                },
+                notok: () => {
+                    notify({type: "fatal", message: "Connection to server failed, unable to continue."})
+                },
+                error: () => {
+                    notify({type: "fatal", message: "Connection to server failed, unable to continue."})
+                }
+            })
+        }
     }
 
 
@@ -102,6 +119,13 @@ export const GmHome = () => {
                                                 window.open("/edit/" + site.id, site.id)
                                             }}><>{site.name}</>
                                             </SilentLink>
+                                            </td>
+                                            <td>
+                                                <SilentLink onClick={() => {
+                                                    deleteSite(site.id, site.name);
+                                                }}>
+                                                    <span className="glyphicon glyphicon-remove-circle"/>
+                                                </SilentLink>
                                             </td>
                                         </tr>)
                                 })

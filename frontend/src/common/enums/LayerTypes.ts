@@ -10,7 +10,7 @@ export const CODE = "CODE";
 export const TIMER_TRIGGER = "TIMER_TRIGGER";
 export const CORE = "CORE";
 export const PASSWORD_ICE = "PASSWORD_ICE";
-export const ICE_FILM = "ICE_FILM";
+export const SLOW_ICE = "SLOW_ICE";
 export const NETWALK_ICE = "NETWALK_ICE";
 export const WORD_SEARCH_ICE = "WORD_SEARCH_ICE";
 export const MAGIC_EYE_ICE = "MAGIC_EYE_ICE";
@@ -26,6 +26,7 @@ export enum LayerType {
     TANGLE_ICE = "TANGLE_ICE",
     WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
     NETWALK_ICE = "NETWALK_ICE",
+    SLOW_ICE = "SLOW_ICE",
 }
 
 
@@ -45,7 +46,7 @@ export const glyphiconFromType = (type: string) => {
         case CORE : return "glyphicon-th-large";
         case PASSWORD_ICE : return "glyphicon-console";
         case TANGLE_ICE: return "glyphicon-asterisk";
-        case ICE_FILM : return "glyphicon-film";
+        case SLOW_ICE : return "glyphicon-hourglass";
         case NETWALK_ICE : return "glyphicon-qrcode";
         case WORD_SEARCH_ICE : return "glyphicon-th";
         case MAGIC_EYE_ICE : return "glyphicon-eye-close";

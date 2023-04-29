@@ -1,10 +1,11 @@
-package org.n1.av2.backend.service.layerhacking.netwalk
+package org.n1.av2.backend.service.layerhacking.ice.netwalk
 
 import org.n1.av2.backend.engine.SECONDS_IN_TICKS
 import org.n1.av2.backend.entity.ice.*
 import org.n1.av2.backend.entity.ice.NetwalkCell
+import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.enums.IceStrength
-import org.n1.av2.backend.entity.site.layer.IceNetwalkLayer
+import org.n1.av2.backend.entity.site.layer.NetwalkIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class IceNetwalkService(
+class NetwalkIceService(
     private val stompService: StompService,
     private val netwalkStatusRepo: NetwalkStatusRepo,
     val hackedUtil: HackedUtil,
@@ -23,7 +24,7 @@ class IceNetwalkService(
         const val MAX_CREATE_ATTEMPTS = 20
     }
 
-    fun createIce(layer: IceNetwalkLayer, nodeId: String, runId: String): NetwalkEntity {
+    fun createIce(layer: NetwalkIceLayer, nodeId: String, runId: String): NetwalkEntity {
         val puzzle = createNetwalkPuzzle(layer.strength)
         val id = createId("netwalk", netwalkStatusRepo::findById)
 
@@ -46,7 +47,7 @@ class IceNetwalkService(
             val puzzle = creator.create()
             if (puzzle != null) return puzzle
         }
-        error("Failed to create netwalk puzzle after ${MAX_CREATE_ATTEMPTS} attempts")
+        error("Failed to create netwalk puzzle after $MAX_CREATE_ATTEMPTS attempts")
     }
 
 
@@ -98,5 +99,9 @@ class IceNetwalkService(
             }
         }
         return gridWithRotatedCell
+    }
+
+    fun deleteAlLForRuns(runs: List<Run>) {
+        runs.forEach { netwalkStatusRepo.deleteAllByRunId(it.runId) }
     }
 }

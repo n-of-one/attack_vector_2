@@ -2,10 +2,9 @@ package org.n1.av2.backend.service.layerhacking.ice.password
 
 import org.n1.av2.backend.entity.ice.PasswordIceStatus
 import org.n1.av2.backend.entity.ice.PasswordIceStatusRepo
+import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.entity.site.layer.IcePasswordLayer
-import org.n1.av2.backend.model.ui.NotyMessage
-import org.n1.av2.backend.model.ui.NotyType
+import org.n1.av2.backend.entity.site.layer.PasswordIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
@@ -61,7 +60,7 @@ class PasswordService(
     }
 
 
-    private fun resolveDuplicate(iceStatus: PasswordIceStatus, layer: IcePasswordLayer, password: String) {
+    private fun resolveDuplicate(iceStatus: PasswordIceStatus, layer: PasswordIceLayer, password: String) {
         val hintToDisplay = hintToDisplay(iceStatus, layer)
 
         val result = UiState("Password \"${password}\" already attempted, ignoring", false, hintToDisplay, iceStatus)
@@ -79,7 +78,7 @@ class PasswordService(
         hackedUtil.iceHacked(iceStatus.layerId, iceStatus.runId, 70)
     }
 
-    private fun resolveFailed(iceStatus: PasswordIceStatus, layer: IcePasswordLayer, password: String) {
+    private fun resolveFailed(iceStatus: PasswordIceStatus, layer: PasswordIceLayer, password: String) {
         iceStatus.attempts.add(password)
         iceStatus.attempts.sort()
         val timeOutSeconds = calculateTimeOutSeconds(iceStatus.attempts.size)
@@ -102,22 +101,26 @@ class PasswordService(
         }
     }
 
-    private fun hintToDisplay(iceStatus: PasswordIceStatus, layer: IcePasswordLayer): String? {
+    private fun hintToDisplay(iceStatus: PasswordIceStatus, layer: PasswordIceLayer): String? {
         return if (iceStatus.attempts.size > 0) layer.hint else null
     }
 
-    private fun getLayer(iceStatus: PasswordIceStatus) : IcePasswordLayer {
+    private fun getLayer(iceStatus: PasswordIceStatus) : PasswordIceLayer {
         val node = nodeEntityService.getById(iceStatus.nodeId)
         val layer = node.getLayerById(iceStatus.layerId)
-        if (layer !is IcePasswordLayer) error("Wrong layer type/data for layer: ${layer.id}")
+        if (layer !is PasswordIceLayer) error("Wrong layer type/data for layer: ${layer.id}")
         return layer
     }
 
-    fun createStatus(layer: IcePasswordLayer, nodeId: String, runId: String): PasswordIceStatus {
+    fun createStatus(layer: PasswordIceLayer, nodeId: String, runId: String): PasswordIceStatus {
         val id = createId("password", passwordIceStatusRepo::findById)
         val passwordStatus = PasswordIceStatus(id, runId, nodeId, layer.id, LinkedList(), time.now().minusSeconds(1))
         passwordIceStatusRepo.save(passwordStatus)
         return passwordStatus
+    }
+
+    fun deleteAllForRuns(runs: List<Run>) {
+        runs.forEach { passwordIceStatusRepo.deleteAllByRunId(it.runId) }
     }
 
 }

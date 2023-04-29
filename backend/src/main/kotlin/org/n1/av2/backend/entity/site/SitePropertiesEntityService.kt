@@ -40,4 +40,8 @@ class SitePropertiesEntityService(
     fun save(properties: SiteProperties) {
         sitePropertiesRepo.save(properties)
     }
+
+    fun delete(siteId: String) {
+        sitePropertiesRepo.deleteById(siteId)
+    }
 }

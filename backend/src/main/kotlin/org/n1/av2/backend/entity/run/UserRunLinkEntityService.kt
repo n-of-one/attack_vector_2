@@ -5,7 +5,7 @@ import org.n1.av2.backend.service.CurrentUserService
 import org.springframework.stereotype.Repository
 
 @Repository
-class UserLinkEntityService(
+class UserRunLinkEntityService(
     private val userRunLinkRepo: UserRunLinkRepo,
     private val currentUserService: CurrentUserService,
 ) {
@@ -30,6 +30,10 @@ class UserLinkEntityService(
 
     fun findAllByUserId(userId: String): List<UserRunLink> {
         return userRunLinkRepo.findAllByUserId(userId)
+    }
+
+    fun deleteAllForRuns(runs: List<Run>) {
+        runs.forEach { userRunLinkRepo.deleteAllByRunId(it.runId) }
     }
 
 }

@@ -83,4 +83,5 @@ data class NetwalkEntity(
 
 @Repository
 interface NetwalkStatusRepo : CrudRepository<NetwalkEntity, String> {
+    fun deleteAllByRunId(runId: String)
 }

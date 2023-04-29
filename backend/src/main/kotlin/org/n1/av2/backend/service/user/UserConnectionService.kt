@@ -28,7 +28,7 @@ class UserConnectionService(
          }
 
         data class NewConnection(val connectionId: String, val type: ConnectionType)
-        stompService.toUserAllConnections(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, userPrincipal.type))
+        stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, userPrincipal.type))
     }
 
     fun sendTime() {

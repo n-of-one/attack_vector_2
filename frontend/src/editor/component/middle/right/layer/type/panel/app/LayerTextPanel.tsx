@@ -1,9 +1,9 @@
 import React from 'react'
 import {useDispatch} from "react-redux"
-import {LayerText} from "../../../../../../../common/model/layer/LayerText"
-import {LayerField} from "../../LayerField"
-import {LayerPanel} from "./LayerPanel"
-import {LayerDetails, NodeI} from "../../../../../../reducer/NodesReducer"
+import {LayerText} from "../../../../../../../../common/model/layer/LayerText"
+import {LayerField} from "../../../LayerField"
+import {LayerPanel} from "../LayerPanel"
+import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 
 
 interface Props {

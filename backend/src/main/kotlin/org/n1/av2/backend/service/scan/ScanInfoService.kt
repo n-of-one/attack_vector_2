@@ -9,7 +9,6 @@ import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.terminal.TERMINAL_CHAT
 import org.springframework.stereotype.Service
 
@@ -22,32 +21,12 @@ class ScanInfoService(
     private val currentUserService: CurrentUserService,
     private val stompService: StompService,
     private val traverseNodeService: TraverseNodeService,
-    private val userLinkEntityService: UserLinkEntityService,
-    private val runService: RunService,
+    private val userRunLinkEntityService: UserRunLinkEntityService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
-    fun searchSiteByName(siteName: String) {
-        val siteProperties = sitePropertiesEntityService.findByName(siteName)
-        if (siteProperties == null) {
-            stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
-            return
-        }
-
-        val nodeScans = createNodeScans(siteProperties.siteId)
-
-        val user = currentUserService.user
-
-        val runId = runService.createRun(siteProperties.siteId, nodeScans, user)
-
-        data class ScanSiteResponse(val runId: String, val siteId: String)
-        val response = ScanSiteResponse(runId, siteProperties.siteId)
-        stompService.reply(ServerActions.SERVER_SITE_DISCOVERED, response)
-        sendScanInfosOfPlayer() // to update the scans in the home screen
-    }
-
-    private fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
+    fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
         val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId)
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
@@ -60,7 +39,7 @@ class ScanInfoService(
 
 
     fun deleteScan(runId: String) {
-        userLinkEntityService.deleteUserScan(runId)
+        userRunLinkEntityService.deleteUserScan(runId)
         sendScanInfosOfPlayer()
     }
 
@@ -79,18 +58,18 @@ class ScanInfoService(
     )
 
     fun sendScanInfosOfPlayer(userId: String) {
-        val runLinks = userLinkEntityService.findAllByUserId(userId)
+        val runLinks = userRunLinkEntityService.findAllByUserId(userId)
         val scans = runEntityService.getAll(runLinks)
         val scanItems = scans.map(::createScanInfo)
-        stompService.reply(ServerActions.SERVER_RECEIVE_USER_SCANS, scanItems)
+        stompService.toUser(userId, ServerActions.SERVER_UPDATE_USER_SCANS, scanItems)
     }
 
     fun shareScan(runId: String, user: User) {
-        if (userLinkEntityService.hasUserScan(user, runId)) {
+        if (userRunLinkEntityService.hasUserScan(user, runId)) {
             stompService.replyTerminalReceive("[info]${user.name}[/] already has this scan.")
             return
         }
-        userLinkEntityService.createUserScan(runId, user)
+        userRunLinkEntityService.createUserScan(runId, user)
         stompService.replyTerminalReceive("Shared scan with [info]${user.name}[/].")
 
         val myUserName = currentUserService.user.name
@@ -99,7 +78,7 @@ class ScanInfoService(
         val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
         stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
-        stompService.toUserAllConnections(user.id,
+        stompService.toUser(user.id,
             ServerActions.SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
         )
@@ -127,7 +106,7 @@ class ScanInfoService(
 
     fun updateScanInfoToPlayers(run: Run) {
         val scanInfo = createScanInfo(run)
-        userLinkEntityService.getUsersOfScan(run.runId).forEach {
+        userRunLinkEntityService.getUsersOfScan(run.runId).forEach {
             stompService.reply(ServerActions.SERVER_UPDATE_SCAN_INFO, scanInfo)
         }
     }

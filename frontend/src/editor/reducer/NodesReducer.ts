@@ -48,6 +48,11 @@ export interface LayerDetails {
     password? : string  // Password Ice layer
     hint?: string       // password Ice layer
 
+    totalUnits?: number          // Slow Ice layer
+    time1Level1Hacker?: string   // Slow Ice layer
+    time1Level5Hacker?: string   // Slow Ice layer
+    time5Level10Hackers?: string // Slow Ice layer
+
 
 }
 

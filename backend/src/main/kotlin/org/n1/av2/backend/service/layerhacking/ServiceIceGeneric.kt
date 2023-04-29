@@ -23,6 +23,7 @@ class ServiceIceGeneric(
             LayerType.TANGLE_ICE -> enterIce(layer, runId)
             LayerType.WORD_SEARCH_ICE -> enterIce(layer, runId)
             LayerType.NETWALK_ICE -> enterIce(layer, runId)
+            LayerType.SLOW_ICE -> enterIce(layer, runId)
             else -> error("unsupported ice type: ${layer.type}")
         }
     }

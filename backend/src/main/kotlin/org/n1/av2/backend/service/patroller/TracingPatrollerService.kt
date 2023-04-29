@@ -2,10 +2,7 @@ package org.n1.av2.backend.service.patroller
 
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
-import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.entity.run.PatrollerPathSegment
-import org.n1.av2.backend.entity.run.TracingPatroller
-import org.n1.av2.backend.entity.run.TracingPatrollerRepo
+import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
@@ -33,7 +30,8 @@ class TracingPatrollerService(
     val tracingPatrollerRepo: TracingPatrollerRepo,
     val traverseNodeService: TraverseNodeService,
     val time: TimeService,
-    val stompService: StompService) {
+    val stompService: StompService
+) {
 
     @PostConstruct
     fun init() {
@@ -47,21 +45,21 @@ class TracingPatrollerService(
 
     fun getAllForRun(runId: String): List<PatrollerUiData> {
         return tracingPatrollerRepo
-                .findAllByRunId(runId)
-                .map { patroller ->
-                    PatrollerUiData(patroller.id, patroller.originatingNodeId, patroller.path)
-                }
+            .findAllByRunId(runId)
+            .map { patroller ->
+                PatrollerUiData(patroller.id, patroller.originatingNodeId, patroller.path)
+            }
     }
 
     fun activatePatroller(nodeId: String, userId: String, runId: String) {
         val patroller = TracingPatroller(
-                id = createId("tracingPatroller", tracingPatrollerRepo::findById),
-                runId = runId,
-                targetUserId = userId,
-                siteId = hackerStateEntityService.retrieve(userId).toRunState().siteId,
-                currentNodeId = nodeId,
-                originatingNodeId = nodeId,
-                path = ArrayList<PatrollerPathSegment>(0)
+            id = createId("tracingPatroller", tracingPatrollerRepo::findById),
+            runId = runId,
+            targetUserId = userId,
+            siteId = hackerStateEntityService.retrieve(userId).toRunState().siteId,
+            currentNodeId = nodeId,
+            originatingNodeId = nodeId,
+            path = ArrayList<PatrollerPathSegment>(0)
         )
         tracingPatrollerRepo.save(patroller)
 
@@ -116,8 +114,8 @@ class TracingPatrollerService(
 
     fun disconnected(userId: String) {
         tracingPatrollerRepo
-                .findAllByTargetUserId(userId)
-                .forEach { remove(it) }
+            .findAllByTargetUserId(userId)
+            .forEach { remove(it) }
 
     }
 
@@ -157,5 +155,7 @@ class TracingPatrollerService(
         stompService.toRun(runId, ServerActions.SERVER_PATROLLER_REMOVE, action)
     }
 
-
+    fun deleteAllForRuns(runs: List<Run>) {
+        runs.forEach { tracingPatrollerRepo.deleteAllByRunId(it.runId) }
+    }
 }

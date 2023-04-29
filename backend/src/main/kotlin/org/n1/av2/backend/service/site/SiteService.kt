@@ -12,7 +12,7 @@ class SiteService(
     val sitePropertiesEntityService: SitePropertiesEntityService,
     val nodeEntityService: NodeEntityService,
     val connectionEntityService: ConnectionEntityService,
-    val siteEditorStateEntityService: SiteEditorStateEntityService
+    val siteEditorStateEntityService: SiteEditorStateEntityService,
 ) {
 
     fun createSite(name: String): String {
@@ -37,6 +37,18 @@ class SiteService(
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
         return nodes.find { node -> node.networkId == startNodeNetworkId }
+    }
+
+    fun removeSite(siteId: String) {
+        // verify that site exists
+        sitePropertiesEntityService.getBySiteId(siteId)
+
+        sitePropertiesEntityService.delete(siteId)
+        layoutEntityService.delete(siteId)
+        nodeEntityService.deleteAllForSite(siteId)
+        connectionEntityService.deleteAllForSite(siteId)
+        siteEditorStateEntityService.delete(siteId)
+
     }
 
 

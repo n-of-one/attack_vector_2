@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.layerhacking.netwalk
+package org.n1.av2.backend.service.layerhacking.ice.netwalk
 
 import org.n1.av2.backend.entity.ice.Direction
 import org.n1.av2.backend.entity.ice.NetwalkCell

@@ -10,12 +10,13 @@ class ThemeService {
         return when(serviceType) {
             LayerType.OS -> "OS"
             LayerType.TEXT -> "Data vault"
-            LayerType.PASSWORD_ICE -> "Aruna"
-            LayerType.TANGLE_ICE -> "Reva"
-            LayerType.WORD_SEARCH_ICE -> "Pumer"
-            LayerType.NETWALK_ICE -> "Dahana"
             LayerType.TIMER_TRIGGER -> "Network Sniffer"
-//            else -> error("Unknown service type: ${serviceType}")
+
+            LayerType.PASSWORD_ICE -> "Rahasy" // mystery in Hindi
+            LayerType.TANGLE_ICE -> "Gaanth" // knot in Hindi
+            LayerType.WORD_SEARCH_ICE -> "Jaal" // grid in Hindi
+            LayerType.NETWALK_ICE -> "Sanrachana" // structure in Hindi
+            LayerType.SLOW_ICE -> "Taar" // tar in Hindi
         }
     }
 }

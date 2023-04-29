@@ -1,15 +1,15 @@
 package org.n1.av2.backend.web.ws.ice
 
 import org.n1.av2.backend.engine.TaskRunner
-import org.n1.av2.backend.service.layerhacking.netwalk.IceNetwalkService
+import org.n1.av2.backend.service.layerhacking.ice.netwalk.NetwalkIceService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
 import java.security.Principal
 
 @Controller
 class IceNetwalkController(
-        val netwalkService: IceNetwalkService,
-        val taskRunner: TaskRunner ) {
+    val netwalkService: NetwalkIceService,
+    val taskRunner: TaskRunner ) {
 
     data class EnterInput(val iceId: String)
     @MessageMapping("/ice/netwalk/enter")

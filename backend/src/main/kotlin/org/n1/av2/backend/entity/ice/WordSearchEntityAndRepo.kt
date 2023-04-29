@@ -20,4 +20,5 @@ data class WordSearchStatus(
 
 @Repository
 interface WordSearchStatusRepo: CrudRepository<WordSearchStatus, String> {
+    fun deleteAllByRunId(runId: String)
 }

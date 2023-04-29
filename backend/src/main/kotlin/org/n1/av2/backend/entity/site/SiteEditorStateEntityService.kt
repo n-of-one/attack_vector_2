@@ -19,4 +19,8 @@ class SiteEditorStateEntityService(
     fun save(state: SiteEditorState) {
         repo.save(state)
     }
+
+    fun delete(siteId: String) {
+        repo.deleteById(siteId)
+    }
 }

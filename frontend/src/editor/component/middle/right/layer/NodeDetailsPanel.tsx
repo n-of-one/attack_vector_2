@@ -1,19 +1,20 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import {LayerOsPanel} from "./type/panel/LayerOsPanel"
+import {LayerOsPanel} from "./type/panel/app/LayerOsPanel"
 import {findElementById} from "../../../../../common/Immutable"
-import {PASSWORD_ICE, TANGLE_ICE, OS, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE, NETWALK_ICE} from "../../../../../common/enums/LayerTypes"
-import {LayerTextPanel} from "./type/panel/LayerTextPanel"
+import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
+import {LayerTextPanel} from "./type/panel/app/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {Glyphicon} from "../../../../../common/component/Glyphicon"
-import {LayerIcePasswordPanel} from "./type/panel/LayerIcePasswordPanel"
-import {LayerIceTanglePanel} from "./type/panel/LayerIceTanglePanel"
-import {LayerTimerTriggerPanel} from "./type/panel/LayerTimerTriggerPanel"
+import {LayerIcePasswordPanel} from "./type/panel/ice/LayerIcePasswordPanel"
+import {LayerIceTanglePanel} from "./type/panel/ice/LayerIceTanglePanel"
+import {LayerTimerTriggerPanel} from "./type/panel/app/LayerTimerTriggerPanel"
 import {EditorState} from "../../../../EditorRootReducer"
 import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
-import {LayerIceWordSearchPanel} from "./type/panel/LayerIceWordSearchPanel";
-import {LayerIceNetWalkPanel} from "./type/panel/LayerIceNetwalkPanel";
+import {LayerIceWordSearchPanel} from "./type/panel/ice/LayerIceWordSearchPanel";
+import {LayerIceNetWalkPanel} from "./type/panel/ice/LayerIceNetwalkPanel";
+import {LayerSlowIcePanel} from "./type/panel/ice/LayerSlowIcePanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -37,6 +38,9 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerIceWordSearchPanel node={node} layer={layer} />
         case NETWALK_ICE:
             return <LayerIceNetWalkPanel node={node} layer={layer} />
+        case LayerType.SLOW_ICE:
+            return <LayerSlowIcePanel node={node} layer={layer}/>
+
         default:
             return <div className="text">NodeDetailPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>
     }

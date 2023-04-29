@@ -1,0 +1,42 @@
+package org.n1.av2.backend.entity.site.layer
+
+import org.n1.av2.backend.entity.site.enums.IceStrength
+import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.service.layerhacking.ice.slow.SlowIceCreator
+import org.n1.av2.backend.service.layerhacking.ice.slow.SlowIceCreator.Companion.defaultTimeHackerGroup
+
+class SlowIceLayer(
+    id: String,
+    type: LayerType,
+    level: Int,
+    name: String,
+    note: String,
+    strength: IceStrength,
+    var totalUnits: Int,
+    var time1Level1Hacker: String,
+    var time1Level5Hacker: String,
+    var time5Level10Hackers: String
+
+) : IceLayer(id, type, level, name, note, strength) {
+
+    constructor(id: String, level: Int, defaultName: String) :
+            this(id, LayerType.SLOW_ICE, level, defaultName, "",
+                IceStrength.AVERAGE, SlowIceCreator.totalUnitsByStrength[IceStrength.AVERAGE]!!,
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 1, 1),
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 1, 5),
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 5, 10),
+                )
+
+    override fun updateInternal(key: String, value: String): Boolean {
+        if (key == STRENGTH) {
+            super.updateInternal(key, value)
+            this.totalUnits = SlowIceCreator.totalUnitsByStrength[strength]!!
+            this.time1Level1Hacker = defaultTimeHackerGroup(strength, 1, 1)
+            this.time1Level5Hacker = defaultTimeHackerGroup(strength, 5, 1)
+            this.time5Level10Hackers = defaultTimeHackerGroup(strength, 10, 5)
+            return true
+        }
+        return super.updateInternal(key, value)
+    }
+
+}

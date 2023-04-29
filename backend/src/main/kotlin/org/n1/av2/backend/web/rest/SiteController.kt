@@ -27,4 +27,12 @@ class SiteController(
         return sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name) }
     }
 
+    data class DeleteResponse(val success: Boolean = true)
+    @DeleteMapping("{id}")
+    fun post(@PathVariable id: String): DeleteResponse {
+        editorService.deleteSite(id)
+        return DeleteResponse()
+    }
+
+
 }

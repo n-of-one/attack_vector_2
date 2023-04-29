@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {
-    CODE, CORE, ALTERNATE_ICE, ICE_FILM, MAGIC_EYE_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
+    CODE, CORE, ALTERNATE_ICE, SLOW_ICE, MAGIC_EYE_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
     UNHACKABLE_ICE, WORD_SEARCH_ICE, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER
 } from "../../../../common/enums/LayerTypes"
 import {Glyphicon} from "../../../../common/component/Glyphicon"
@@ -68,7 +68,7 @@ export const LayersPanel = () => {
                     {ice(TANGLE_ICE)}
                     {ice(NETWALK_ICE)}
                     {ice(WORD_SEARCH_ICE)}
-                    {unImplemented(ICE_FILM)}
+                    {ice(SLOW_ICE)}
                     {unImplemented(MAGIC_EYE_ICE)}
                     {unImplemented(ALTERNATE_ICE)}
                     {unImplemented(UNHACKABLE_ICE)}

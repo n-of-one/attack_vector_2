@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.layerhacking.netwalk
+package org.n1.av2.backend.service.layerhacking.ice.netwalk
 
 import org.n1.av2.backend.entity.ice.*
 import org.n1.av2.backend.entity.ice.NetwalkCell
@@ -92,14 +92,14 @@ class NetwalkCreator(iceStrength: IceStrength) {
 
     fun create(): NetwalkPuzzle? {
         createPuzzle()
-        val result = converPuzzleToGrid() ?: return null
+        val result = convertPuzzleToGrid() ?: return null
         if (centerIsALeaf(result)) return null
 
         val grid = NetwalkConnectionTracer(result, wrapping).trace().second
         return NetwalkPuzzle(grid, wrapping)
     }
 
-    private fun converPuzzleToGrid(): List<List<NetwalkCell>>? {
+    private fun convertPuzzleToGrid(): List<List<NetwalkCell>>? {
         val result: MutableList<MutableList<NetwalkCell>> = mutableListOf()
 
         for (y in 0 until sizeY) {

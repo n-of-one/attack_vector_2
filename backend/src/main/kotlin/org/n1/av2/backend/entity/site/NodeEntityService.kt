@@ -147,10 +147,11 @@ class NodeEntityService(
 
         return when (layerType) {
             LayerType.TEXT -> TextLayer(id, layer, defaultName)
-            LayerType.PASSWORD_ICE -> IcePasswordLayer(id, layer, defaultName)
-            LayerType.TANGLE_ICE -> IceTangleLayer(id, layer, defaultName)
-            LayerType.WORD_SEARCH_ICE -> IceWordSearchLayer(id, layer, defaultName)
-            LayerType.NETWALK_ICE -> IceNetwalkLayer(id, layer, defaultName)
+            LayerType.PASSWORD_ICE -> PasswordIceLayer(id, layer, defaultName)
+            LayerType.TANGLE_ICE -> TangleIceLayer(id, layer, defaultName)
+            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, layer, defaultName)
+            LayerType.NETWALK_ICE -> NetwalkIceLayer(id, layer, defaultName)
+            LayerType.SLOW_ICE -> SlowIceLayer(id, layer, defaultName)
             LayerType.OS -> error("Cannot add OS")
             LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, layer, defaultName)
         }
@@ -184,6 +185,10 @@ class NodeEntityService(
         nodeRepo.save(node)
 
         return LayersUpdated(node, null)
+    }
+
+    fun deleteAllForSite(siteId: String) {
+        nodeRepo.findBySiteId(siteId).forEach { nodeRepo.delete(it) }
     }
 
 }
