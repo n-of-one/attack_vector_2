@@ -8,6 +8,8 @@ import {terminalManager} from "../../common/terminal/TerminalManager";
 import {slowIceRootReducer, SlowIceRootState} from "./reducer/SlowIceRootReducer";
 import {SlowIceContainer} from "./component/SlowIceContainer";
 import {slowIceManager} from "./component/SlowIceManager";
+import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
+import {initSlowIceServerActions} from "./SlowIceServerActionProcessor";
 
 interface Props {
     iceId: string
@@ -32,16 +34,13 @@ export class SlowIceRoot extends Component<Props> {
 
         webSocketConnection.create(WEBSOCKET_ICE, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/netwalk/enter", {iceId: props.iceId})
+            webSocketConnection.sendObject("/av/ice/slowIce/enter", {iceId: props.iceId})
         });
 
         slowIceManager.init(this.store)
         terminalManager.init(this.store)
-        // initGenericServerActions()
-        // initNetwalkServerActions(this.store)
-        setTimeout(() => {
-            slowIceManager.enter(props.iceId)
-        }, 100)
+        initGenericServerActions()
+        initSlowIceServerActions(this.store)
     }
 
     render() {

@@ -21,15 +21,14 @@ export const SlowIceHome = () => {
     const uiState = useSelector( (rootState:SlowIceRootState) => rootState.iceState.uiState )
     const strength: IceStrength = useSelector( (rootState:SlowIceRootState) => rootState.iceState.strength )
 
-    // const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
-    const classShowCanvas =  ""
+    const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
 
     return (
         <div className="row icePanelRow">
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Saag" strength={strength} />
+                        <IceTitle name="Taar" strength={strength} />
                     </div>
                     <div className="col-lg-9" style={{paddingTop: "4px"}}>
                         <DisplayTerminal />

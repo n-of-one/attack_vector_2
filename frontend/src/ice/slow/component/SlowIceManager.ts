@@ -4,7 +4,11 @@ import {GenericIceManager} from "../../GenericIceManager";
 import {Dispatch, Store} from "redux";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {slowIceCanvas} from "../canvas/SlowIceCanvas";
+import {SlowIceEnter, SlowIceStatusUpdate} from "../SlowIceServerActionProcessor";
+import {SLOW_ICE_BEGIN} from "../reducer/SlowIceReducer";
+import {webSocketConnection} from "../../../common/WebSocketConnection";
 
+const DELAY_BETWEEN_HACK_TICKS_S = 5
 
 class SlowIceManager extends GenericIceManager {
 
@@ -13,6 +17,11 @@ class SlowIceManager extends GenericIceManager {
     schedule: Schedule = null as unknown as Schedule
 
     quickPlaying = false
+    unitsPerSecond = 0
+
+    iceId: string = ""
+
+    hackingIntervalId: ReturnType<typeof setInterval> | null = null
 
     init(store: Store) {
         this.store = store;
@@ -20,47 +29,58 @@ class SlowIceManager extends GenericIceManager {
         this.schedule = new Schedule(store.dispatch);
     }
 
-    // enter(iceId: string, data: ServerEnterIceNetwalk) {
-    enter(iceId: string) {
-        slowIceCanvas.init(iceId, { totalUnits: 324000,unitsHacked: 100,}, this.store)
+    enter(iceId: string, data: SlowIceEnter) {
+        this.iceId = iceId
+        this.unitsPerSecond = data.unitsPerSecond
+
+        slowIceCanvas.init(iceId, data, this.store)
 
         this.schedule.clear()
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
 
-        // this.quickPlaying = true
-
         if (!this.quickPlaying) {
-            this.displayTerminal(20, "[warn]↼ Connecting to ice, initiating attack.");
-            this.displayTerminal(42, "↼ Detected [info]Dahana[/] network obfuscation.");
-            this.displayTerminal(6, "↼ Attempting automatic reconfiguration.");
-            this.displayTerminal(34, "↼ Reconfiguring.");
-            this.displayTerminal(50, "↺ Status check");
-            this.displayTerminal(20, "↼ Network integrity [info]17%");
+            this.displayTerminal(20, "[warn]↼ Connecting to ice, initiating attack.")
+            this.displayTerminal(42, "↼ Analysing [info]Taar[/] elliptic curve encryption.")
+            this.displayTerminal(6, `↼ ECC strength: [warn]${data.totalUnits}[/].`)
+            this.displayTerminal(5, "")
+            this.displayTerminal(15, "↼ Initializing curve approximation arrays.")
+            this.displayTerminal(20, "↼ Generating block matrix.")
         }
 
-        // this.schedule.dispatch(0, {type: NETWALK_BEGIN});
+        this.schedule.dispatch(35, {type: SLOW_ICE_BEGIN})
 
-        this.displayTerminal(15, "[i primary]↼ Remote core dump analysis session started.");
-        this.displayTerminal(5, " ");
-
-
+        this.displayTerminal(25, "↼ Matrix status [ok]ready[/].")
+        this.displayTerminal(5, "")
+        this.displayTerminal(15, "↼ [i]Automatic brute force in progress.")
+        this.displayTerminal(20, `↼ Updating progress every [primary]${DELAY_BETWEEN_HACK_TICKS_S}[/] seconds.`)
+        this.schedule.run(0, () => {
+            this.hackingIntervalId = setInterval(() => {
+                webSocketConnection.sendObject("/av/ice/slowIce/hackedUnits", {
+                    iceId: this.iceId, units: data.unitsPerSecond * DELAY_BETWEEN_HACK_TICKS_S
+                })
+            }, DELAY_BETWEEN_HACK_TICKS_S * 1000)
+        })
     }
 
-    // serverSentNodeRotated(data: NetwalkRotateUpdate) {
-    //     netwalkCanvas.serverSentNodeRotated(data)
-    //
-    //     if (data.hacked) {
-    //         netwalkCanvas.finish()
-    //         this.displayTerminal(10, "⇁ Configuration [ok]restored");
-    //         this.displayTerminal(44, "");
-    //         this.displayTerminal(50, "[warn]↼ Access granted.");
-    //         this.displayTerminal(20, "");
-    //
-    //         this.schedule.run(0, () => {
-    //             window.close()
-    //         });
-    //     }
-    // }
+
+    serverSentUpdate(data: SlowIceStatusUpdate) {
+        slowIceCanvas.update(data)
+
+        if (data.hacked) {
+            slowIceCanvas.finish()
+            this.displayTerminal(30, "");
+            this.displayTerminal(50, "[warn]↼ Access granted.");
+
+            if (this.hackingIntervalId) {
+                clearInterval(this.hackingIntervalId)
+            }
+            if (!this.quickPlaying) {
+                this.schedule.run(0, () => {
+                    window.close()
+                })
+            }
+        }
+    }
 }
 
 export const slowIceManager = new SlowIceManager();

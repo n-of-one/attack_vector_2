@@ -1,7 +1,6 @@
 package org.n1.av2.backend.entity.user
 
 import org.n1.av2.backend.util.createId
-import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component

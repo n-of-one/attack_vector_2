@@ -1,9 +1,9 @@
 import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
 import {SlowIceBlockDisplay} from "./SlowIceBlockDisplay";
 import {hashCode} from "../../../common/Util";
+import {SlowIceEnter, SlowIceUpdate} from "../SlowIceServerActionProcessor";
 
 export const BLOCK_WIDTH = 90
 export const BLOCK_PADDING_LEFT = 10
@@ -14,10 +14,6 @@ export const PADDING_LEFT = 20
 export const PADDING_TOP = 20
 
 
-interface SlowIceStats {
-    totalUnits: number,
-    unitsHacked: number
-}
 
 const deterministicShuffle = (list: number[], seed: number) => {
     const size = list.length
@@ -55,12 +51,7 @@ class SlowIceCanvas {
     boxDisplaysByIndex = {} as {[index: number]: SlowIceBlockDisplay}
 
 
-    imageLoaded(totalImages: number) {
-        this.imagesLoaded++
-        this.allImagesLoaded = (this.imagesLoaded === totalImages)
-    }
-
-    init(iceId: string, data: SlowIceStats, store: Store) {
+    init(iceId: string, data: SlowIceEnter, store: Store) {
 
         this.iceId = iceId
         this.store = store
@@ -92,7 +83,7 @@ class SlowIceCanvas {
 
 
         setTimeout(() => {
-            fabric.Image.fromURL("/img/tmp/cosmic-gb67dc5363_1920_PIRO4D_Pixabay_pixel.jpg", (img) => {
+            fabric.Image.fromURL("/img/frontier/ice/slowIce/cosmic-gb67dc5363_1920_PIRO4D_Pixabay_pixel.jpg", (img) => {
                 img.set({width: canvasWidth, height: canvasHeight, originX: 'left', originY: 'top'});
                 this.canvas.setBackgroundImage(img, this.canvas.renderAll.bind(this.canvas));
             });
@@ -100,25 +91,11 @@ class SlowIceCanvas {
         this.initBoxIndices(iceId);
 
         this.renderBoxes()
-
-        this.addHacker(15, 0)
-
-        this.addHacker(15, 2.5)
-        this.addHacker(15, 1)
-        this.addHacker(15, 3.7)
-        this.addHacker(15, .5)
-
     }
 
-    addHacker(unitsPerSecond: number, delayS: number) {
-        setTimeout(() => {
-            setInterval(() => {
-                this.unitsHacked += 5 * unitsPerSecond
-                this.renderBoxes()
-
-            }, 5 * 1000)
-
-        }, delayS * 1000)
+    update(data: SlowIceUpdate) {
+        this.unitsHacked = data.unitsHacked
+        this.renderBoxes()
     }
 
 
@@ -159,6 +136,10 @@ class SlowIceCanvas {
             unitCount += unitsPerBox
         }
         this.canvas.renderAll()
+    }
+
+    finish() {
+
     }
 }
 

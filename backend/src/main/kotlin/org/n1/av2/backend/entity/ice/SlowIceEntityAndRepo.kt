@@ -9,7 +9,7 @@ data class SlowIceStatus(
     val runId: String,
     val nodeId: String,
     val layerId: String,
-    val hacked : Boolean = false,
+    val hacked : Boolean,
     val strength: IceStrength,
 
     val totalUnits: Int,

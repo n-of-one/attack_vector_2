@@ -75,6 +75,8 @@ enum class ServerActions {
     SERVER_ENTER_ICE_NETWALK,           // sent to hacker that hacks this ice, first message of Ice window
     SERVER_NETWALK_NODE_ROTATED,        // sent to run when a node was rotated clockwise
 
+    SERVER_ENTER_ICE_SLOW,              // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_SLOW_ICE_UPDATE              // sent to run when a slow ice status was updated
 
 
 }
