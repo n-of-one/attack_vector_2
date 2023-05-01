@@ -12,7 +12,6 @@ import org.n1.av2.backend.util.FatalException
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
-import java.security.Principal
 import java.util.concurrent.LinkedBlockingQueue
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -29,10 +28,8 @@ class TaskRunner(
     private val timedTaskRunner: TimedTaskRunner,
     private val currentUserService: CurrentUserService) {
 
-    fun runTask(principal: Principal, action: () -> Unit) {
-        if (principal !is UserPrincipal) error("Received call where principal is not UserPrincipal: ${principal}")
-
-        taskEngine.runForUser(principal, action)
+    fun runTask(userPrincipal: UserPrincipal, action: () -> Unit) {
+        taskEngine.runForUser(userPrincipal, action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs

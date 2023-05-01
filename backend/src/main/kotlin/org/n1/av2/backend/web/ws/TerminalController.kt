@@ -1,10 +1,10 @@
 package org.n1.av2.backend.web.ws
 
 import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.terminal.TerminalService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
-import java.security.Principal
 
 @Controller
 class TerminalController(
@@ -16,8 +16,8 @@ class TerminalController(
     data class TerminalCommand(val runId: String, val command: String)
 
     @MessageMapping("/terminal/main")
-    fun terminalMain(terminalCommand: TerminalCommand, principal: Principal) {
-        taskRunner.runTask(principal) { terminalService.processCommand(terminalCommand.runId, terminalCommand.command) }
+    fun terminalMain(terminalCommand: TerminalCommand, userPrincipal: UserPrincipal) {
+        taskRunner.runTask(userPrincipal) { terminalService.processCommand(terminalCommand.runId, terminalCommand.command) }
     }
 
 }

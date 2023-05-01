@@ -28,7 +28,8 @@ export const initGenericServerActions = () => {
         notify({type: 'fatal', message: 'Connection with server lost. Please refresh browser.'})
     })
 
-    webSocketConnection.addAction(SERVER_ERROR, (data: { message: string }) => {
-        notify({type: 'error', message: data.message})
+    webSocketConnection.addAction(SERVER_ERROR, (data: { message: string, recoverable: boolean }) => {
+        const type = data.recoverable ? 'error' : 'fatal'
+        notify({type: type, message: data.message})
     })
 }

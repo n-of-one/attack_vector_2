@@ -1,8 +1,11 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.*
+import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.util.ServerFatal
 import org.springframework.stereotype.Service
 
 @Service
@@ -39,16 +42,13 @@ class SiteService(
         return nodes.find { node -> node.networkId == startNodeNetworkId }
     }
 
-    fun removeSite(siteId: String) {
-        // verify that site exists
-        sitePropertiesEntityService.getBySiteId(siteId)
-
+    fun removeSite(siteId: String, userPrincipal: UserPrincipal) {
+        stompService.toSite(siteId, ServerActions.SERVER_ERROR, ServerFatal(false, "Site removed by ${userPrincipal.user.name}, please close browser window."))
         sitePropertiesEntityService.delete(siteId)
         layoutEntityService.delete(siteId)
         nodeEntityService.deleteAllForSite(siteId)
         connectionEntityService.deleteAllForSite(siteId)
         siteEditorStateEntityService.delete(siteId)
-
     }
 
 

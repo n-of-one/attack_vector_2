@@ -5,6 +5,7 @@ import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
@@ -162,8 +163,8 @@ class EditorService(
         }
     }
 
-    fun deleteSite(siteId: String) {
+    fun deleteSite(siteId: String, userPrincipal: UserPrincipal) {
         runService.deleteSite(siteId)
-        siteService.removeSite(siteId)
+        siteService.removeSite(siteId, userPrincipal)
     }
 }

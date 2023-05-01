@@ -1,10 +1,10 @@
 package org.n1.av2.backend.web.ws.ice
 
 import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.layerhacking.ice.tangle.TangleService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
-import java.security.Principal
 
 @Controller
 class TangleIceController(
@@ -14,8 +14,8 @@ class TangleIceController(
     data class EnterInput(val iceId: String)
 
     @MessageMapping("/ice/tangle/enter")
-    fun enter(command: EnterInput, principal: Principal) {
-        taskRunner.runTask(principal) { tangleService.enter(command.iceId) }
+    fun enter(command: EnterInput, userPrincipal: UserPrincipal) {
+        taskRunner.runTask(userPrincipal) { tangleService.enter(command.iceId) }
     }
 
     data class TanglePointMoveInput(val iceId: String,
@@ -24,8 +24,8 @@ class TangleIceController(
                                     val y: Int)
 
     @MessageMapping("/ice/tangle/moved")
-    fun movedPoint(command: TanglePointMoveInput, principal: Principal) {
-        taskRunner.runTask(principal) { tangleService.move(command) }
+    fun movedPoint(command: TanglePointMoveInput, userPrincipal: UserPrincipal) {
+        taskRunner.runTask(userPrincipal) { tangleService.move(command) }
     }
 
 }
