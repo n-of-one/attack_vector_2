@@ -1,36 +1,43 @@
 import React, {ReactElement} from 'react'
 import Cookies from 'js-cookie'
+import userAuthorizations from "./UserAuthorizations";
 
-
-const jwt: string | undefined = Cookies.get("jwt")
-const authenticated: boolean = jwt !== undefined
-const cookieRoles: string | undefined = Cookies.get("roles")
-const roles = (cookieRoles !== undefined) ? cookieRoles.split("|") : []
 
 interface Props {
-    requires: string
+    requires?: string
+    anyOf?: string[]
     children: ReactElement
 }
-export const RequiresRole = (props : Props) => {
 
-        if (!authenticated) {
-            document.location.href = `/login?next=${document.location.href}`
-            return <></>
-        }
-        if (roles.includes(props.requires)) {
-            return (
-                <>{props.children}</>
-            )
-        }
-        else {
-            return (
-                <div className="text">
-                    You are not logged in with an account that has access to this page. Please <a href="/login">Login</a> with another account.<br />
-                    <br />
-                    Required role: {props.requires}
-                </div>
-            )
-        }
+export const RequiresRole = (props: Props) => {
+
+    if (!userAuthorizations.authenticated) {
+        document.location.href = `/login?next=${document.location.href}`
+        return <></>
     }
+
+    if (isAllowed(props)) {
+        return (
+            <>{props.children}</>
+        )
+    } else {
+        return (
+            <div className="text">
+                You are logged in with an account that does not have access to this page. Please <a href="/login">Login</a> with another account.<br/>
+                <br/>
+            </div>
+        )
+    }
+}
+
+const isAllowed= (props: Props): boolean => {
+    if (props.requires) {
+        return userAuthorizations.roles.includes(props.requires)
+    }
+    if (props.anyOf) {
+        return props.anyOf.some(role => userAuthorizations.roles.includes(role))
+    }
+    return false
+}
 
 

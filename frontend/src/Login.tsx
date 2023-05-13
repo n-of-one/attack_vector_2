@@ -7,27 +7,33 @@ interface SimpleLogin {
 }
 
 const simpleLogins = [
-    {name: "[Corne] Stalker", login: "Stalker"},
-    {name: "[Josh] Shade_zero", login: "Shade_zero"},
-    {name: "[Rob] Paradox", login: "Paradox"},
-    {name: "[Sander] Angler", login: "Angler"},
-    {name: "[Silvester] _eternity_", login: "_eternity_"},
-    {name: "[Thijs] C_H_I_E_F", login: "C_H_I_E_F"},
-    {name: "[Verik] -=Silver=-", login: "-=Silver=-"},
-    {name: "*unclaimed* Obsidian", login: "Obsidian"},
-    {name: "*unclaimed* BoltBishop", login: "BoltBishop"},
-    {name: "*unclaimed* CryptoLaw", login: "CryptoLaw"},
-    {name: "*unclaimed* Moonshine", login: "Moonshine"},
-    {name: "*unclaimed* N1X", login: "N1X"},
-    {name: "*unclaimed* Face.dread", login: "Face.dread"},
-    {name: "*unclaimed* .Specter.", login: ".Specter."},
+    {name: "[Corne]", login: "Stalker"},
+    {name: "[Josh]", login: "Shade_zero"},
+    {name: "[Rob]", login: "Paradox"},
+    {name: "[Sander]", login: "Angler"},
+    {name: "[Silvester]", login: "eternity"},
+    {name: "[Thijs]", login: "C_H_I_E_F"},
+    {name: "[Verik]", login: "Silver"},
+    {name: "*unclaimed*", login: "Obsidian"},
+    {name: "*unclaimed*", login: "BoltBishop"},
+    {name: "*unclaimed*", login: "CryptoLaw"},
+    {name: "*unclaimed*", login: "Moonshine"},
+    {name: "*unclaimed*", login: "N1X"},
+    {name: "*unclaimed*", login: "Face.dread"},
+    {name: "*unclaimed*", login: "Specter"},
 ]
+
+if (window.location.port === "3000") {
+    simpleLogins.push({name: "[admin]", login: "Admin"})
+    simpleLogins.push({name: "[gm]", login: "gm"})
+}
+
 
 export const Login = () =>  {
 
     const [name, setName] = useState("")
-    const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
+
 
 
 
@@ -35,18 +41,14 @@ export const Login = () =>  {
         setName(value)
     }
 
-    const onPasswordChange = (value: string) => {
-        setPassword(value)
-    }
-
     const submit = (event: FormEvent) => {
         event.preventDefault()
-        login(name, password)
+        login(name)
     }
 
 
-    const login = (name: string, password: string) => {
-        const loginInput = {name: name, password: password}
+    const login = (name: string) => {
+        const loginInput = {name: name}
         setMessage("Logging in")
 
         post({
@@ -79,13 +81,14 @@ export const Login = () =>  {
             <div className="row" key={simpleLogin.login}>
                 <div className="col-lg-offset-2 col-lg-5">
                     <div className="text">
+                        <span>{simpleLogin.name} </span>
                         {/*eslint-disable-next-line*/}
                         <a href="#" onClick={
                             (event) => {
-                                login(simpleLogin.login, "")
+                                login(simpleLogin.login)
                                 event.preventDefault()
                                 return false
-                            }}>{simpleLogin.name}</a>
+                            }}>{simpleLogin.login}</a>
                     </div>
                 </div>
             </div>
@@ -115,16 +118,6 @@ export const Login = () =>  {
                                            onNameChange(event.target.value)
                                        }}
                                        value={name}/>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="inputPassword3" className="col-sm-2 control-label text">Password</label>
-                            <div className="col-sm-10">
-                                <input type="password" className="form-control" id="password" placeholder="Password"
-                                       onChange={(event) => {
-                                           onPasswordChange(event.target.value)
-                                       }}
-                                       value={password}/>
                             </div>
                         </div>
                         <div className="form-group">

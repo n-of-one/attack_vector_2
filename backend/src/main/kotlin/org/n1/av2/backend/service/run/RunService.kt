@@ -9,6 +9,7 @@ import org.n1.av2.backend.entity.site.layer.*
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserEntityService
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
@@ -90,11 +91,12 @@ class RunService(
 
     private fun toPresence(state: HackerState): HackerPresence {
         val user = userEntityService.getById(state.userId)
+        if (user.type != UserType.HACKER || user.hacker == null) error("${user.name} is not a hacker")
 
         return HackerPresence(
             userId = user.id,
             userName = user.name,
-            icon = user.icon,
+            icon = user.hacker.icon,
             nodeId = state.currentNodeId,
             targetNodeId = state.currentNodeId,
             activity = state.runActivity,

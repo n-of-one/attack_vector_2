@@ -1,7 +1,6 @@
 package org.n1.av2.backend.engine
 
-import org.n1.av2.backend.entity.user.HackerIcon
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
@@ -120,8 +119,7 @@ class TaskEngine (val stompService: StompService,
     @PreDestroy
     fun terminate() {
         this.running = false
-        val systemUser = User(id = SYSTEM_USER_ID, name = "System", icon = HackerIcon.BEAR)
-        val userPrincipal = UserPrincipal("system:system-connection", systemUser, "system-connection", ConnectionType.INTERNAL )
+        val userPrincipal = UserPrincipal("system:system-connection", SYSTEM_USER, "system-connection", ConnectionType.INTERNAL )
 
         // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
         this.queue.add(Task({}, userPrincipal ))

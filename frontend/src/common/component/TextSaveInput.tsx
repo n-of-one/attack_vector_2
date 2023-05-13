@@ -20,20 +20,22 @@ The key needs to be set at a higher level, where we have context to base this ke
 
 interface Props {
     id?: string,
-    value: string | number,
+    value?: string | number,
     placeholder?: string,
     type?: string, // textArea or undefined for textInput
     save: (value: string) => void,
     className: string,
     rows?: number,
+    readonly?: boolean,
 
 }
 
 
 export const TextSaveInput = (props: Props) => {
-
+    const readonly = props.readonly ? props.readonly : false
     // convert potential number values to string, otherwise equals detection does not work
     const valueString = "" + props.value
+
 
     const [value, setValue] = useState(valueString);
 
@@ -91,6 +93,7 @@ export const TextSaveInput = (props: Props) => {
                           onKeyDown={(event) => handleKeyDown(event, false)}
                           onBlur={() => handleBlur()}
                           rows={props.rows}
+                          disabled={readonly}
                 />
                 {icon}
             </span>
@@ -105,6 +108,7 @@ export const TextSaveInput = (props: Props) => {
                            onChange={(event) => handleChange(event)}
                            onKeyDown={(event) => handleKeyDown(event, true)}
                            onBlur={() => handleBlur()}
+                           readOnly={readonly}
                     />
                 {icon}
                 </span>

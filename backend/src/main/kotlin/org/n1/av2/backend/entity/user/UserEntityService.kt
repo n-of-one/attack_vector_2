@@ -2,7 +2,6 @@ package org.n1.av2.backend.entity.user
 
 import org.n1.av2.backend.util.createId
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.annotation.PostConstruct
@@ -12,69 +11,58 @@ class UserEntityService(
     private val userRepo: UserRepo,
 ) {
 
-    val passwordEncoder = BCryptPasswordEncoder(10)
 
-    fun findByName(userName: String): User? {
+    fun findByNameIgnoreCase(userName: String): User? {
         return userRepo.findByNameIgnoreCase(userName)
     }
 
     fun getByName(userName: String): User {
-        return findByName(userName) ?: throw UsernameNotFoundException("Invalid username or password.")
-    }
-
-    fun login(userName: String, password: String): User {
-
-
-        val user = getByName(userName)
-        if (passwordEncoder.matches(password, user.encodedPasscoded)) {
-            return user
-        }
-        else {
-            throw UsernameNotFoundException("Invalid username or password.")
-        }
-    }
-
-    fun createUser(userInput: User, password: String): User {
-        userInput.encodedPasscoded = passwordEncoder.encode(password )
-        userRepo.save(userInput)
-        return userInput
+        return findByNameIgnoreCase(userName) ?: throw UsernameNotFoundException("Username not found: ${userName}")
     }
 
     @PostConstruct
     fun createMandatoryUsers() {
         mandatoryUser("admin", "", UserType.ADMIN)
         mandatoryUser("gm", "", UserType.GM)
-        mandatoryUser("hacker", "", UserType.HACKER, HackerIcon.CROCODILE)
-        mandatoryUser("h", "", UserType.HACKER, HackerIcon.KOALA)
-
-        mandatoryUser("Stalker", "", UserType.HACKER, HackerIcon.BEAR)
-        mandatoryUser("Obsidian", "", UserType.HACKER, HackerIcon.BIRD_1)
-        mandatoryUser("Paradox", "", UserType.HACKER, HackerIcon.BULL)
-        mandatoryUser("Shade_zero", "", UserType.HACKER, HackerIcon.EAGLE)
-        mandatoryUser("_eternity_", "", UserType.HACKER, HackerIcon.COBRA)
-        mandatoryUser("BoltBishop", "", UserType.HACKER, HackerIcon.DRAGON_1)
-        mandatoryUser("CryptoLaw", "", UserType.HACKER, HackerIcon.FROG)
-        mandatoryUser("Moonshine", "", UserType.HACKER, HackerIcon.LION)
-        mandatoryUser("Angler", "", UserType.HACKER, HackerIcon.SHARK)
-        mandatoryUser("N1X", "", UserType.HACKER, HackerIcon.STINGRAY)
-        mandatoryUser("Face.dread" , "", UserType.HACKER, HackerIcon.LIZARD)
-        mandatoryUser("-=Silver=-", "", UserType.HACKER, HackerIcon.COBRA)
-        mandatoryUser("C_H_I_E_F", "", UserType.HACKER, HackerIcon.WOLF)
-        mandatoryUser(".Specter.", "", UserType.HACKER, HackerIcon.UNICORN)
+        mandatoryUser("hacker", "hacker@mailinator.com", UserType.HACKER, HackerIcon.CROCODILE)
+        mandatoryUser("h", "h@mailinator.com", UserType.HACKER, HackerIcon.KOALA)
+        mandatoryUser("Stalker", "stalker@mailinator.com", UserType.HACKER, HackerIcon.BEAR)
+        mandatoryUser("Obsidian", "obsidian@mailinator.com", UserType.HACKER, HackerIcon.BIRD_1)
+        mandatoryUser("Paradox", "paradox@mailinator.com", UserType.HACKER, HackerIcon.BULL)
+        mandatoryUser("Shade_zero", "Shade_zero@mailinator.com", UserType.HACKER, HackerIcon.EAGLE)
+        mandatoryUser("eternity", "eternity@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
+        mandatoryUser("BoltBishop", "boltbishop@mailinator.com", UserType.HACKER, HackerIcon.DRAGON_1)
+        mandatoryUser("CryptoLaw", "cryptoLaw@mailinator.com", UserType.HACKER, HackerIcon.FROG)
+        mandatoryUser("Moonshine", "moonshine@mailinator.com", UserType.HACKER, HackerIcon.LION)
+        mandatoryUser("Angler", "angler@mailinator.com", UserType.HACKER, HackerIcon.SHARK)
+        mandatoryUser("N1X", "N1X@mailinator.com", UserType.HACKER, HackerIcon.STINGRAY)
+        mandatoryUser("Face.dread", "face.dread@mailinator.com", UserType.HACKER, HackerIcon.LIZARD)
+        mandatoryUser("Silver", "silver@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
+        mandatoryUser("C_H_I_E_F", "c_h_i_e_f@mailinator.com", UserType.HACKER_MANAGER, HackerIcon.WOLF)
+        mandatoryUser("Specter", "specter@mailinator.com", UserType.HACKER, HackerIcon.UNICORN)
     }
 
 
-    fun mandatoryUser(userName: String, password: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
-        val user = findByName(userName)
-        if (user == null) {
-            val newUser = User(
-                    name = userName,
-                    type = type,
-                    id = createUserId(),
-                    icon = icon
-            )
-            createUser(newUser, password)
-        }
+    fun mandatoryUser(userName: String, email: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
+        val user = findByNameIgnoreCase(userName)
+        if (user != null) return
+
+        val hacker = if (type == UserType.HACKER_MANAGER || type == UserType.HACKER) Hacker(
+            icon = icon,
+            skill = HackerSkill(5, 0, 0),
+            playerName = "anonymous",
+            characterName = "unknown"
+        )
+        else null
+
+        val newUser = User(
+            name = userName,
+            type = type,
+            id = createUserId(),
+            hacker = hacker,
+            email = email
+        )
+        userRepo.save(newUser)
     }
 
     fun createUserId(): String {
@@ -91,6 +79,10 @@ class UserEntityService(
 
     fun findAll(): List<User> {
         return userRepo.findAll().toList()
+    }
+
+    fun save(user: User) {
+        userRepo.save(user)
     }
 
 

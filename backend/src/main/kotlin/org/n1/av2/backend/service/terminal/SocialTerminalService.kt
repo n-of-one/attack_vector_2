@@ -21,7 +21,7 @@ class SocialTerminalService(
             return
         }
         val userName = tokens.stream().skip(1).collect(Collectors.joining(" "))
-        val user = userEntityService.findByName(userName)
+        val user = userEntityService.findByNameIgnoreCase(userName)
         if (user == null) {
             stompService.replyTerminalReceive("[warn]not found[/] - user [info]${userName}[/] not found.")
             return

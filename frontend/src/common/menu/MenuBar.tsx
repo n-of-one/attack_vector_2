@@ -2,8 +2,7 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
-import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../../gm/GmPages"
-import {HACKER_COMMUNITY, HACKER_HOME, MAIL, ME, RUN} from "./pageReducer"
+import {ADMIN, GM_SITES, HACKER_COMMUNITY, HACKER_HOME, LOGS, MAIL, ME, MISSIONS, RUN, USERS} from "./pageReducerX"
 import {HackerState} from "../../hacker/HackerRootReducer"
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/

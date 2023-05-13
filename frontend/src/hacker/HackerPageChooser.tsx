@@ -7,7 +7,7 @@ import {runCanvas} from "./run/component/RunCanvas"
 import {useSelector} from "react-redux"
 import {HackerState} from "./HackerRootReducer"
 import {TerminalState} from "../common/terminal/TerminalReducer"
-import {MAIL, RUN} from "../common/menu/pageReducer"
+import {MAIL, RUN} from "../common/menu/pageReducerX"
 import {RunHome} from "./run/component/RunHome";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {

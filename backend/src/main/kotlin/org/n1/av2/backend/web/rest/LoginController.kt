@@ -18,13 +18,13 @@ class LoginController(
     private val userEntityService: UserEntityService,
     private val jwtTokenProvider: JwtTokenProvider) {
 
-    data class LoginInput(val name: String = "", val password: String = "")
+    data class LoginInput(val name: String)
     data class LoginResponse(val success:Boolean, val message: String? = null)
 
     @PostMapping("/login")
     fun login(@RequestBody input: LoginInput, response: HttpServletResponse): LoginResponse {
         try {
-            val user = userEntityService.login(input.name, input.password)
+            val user = userEntityService.getByName(input.name)
             generateJwtCookie(user, response)
             generateUserNameCookie(user, response)
             generateTypeCookie(user, response)

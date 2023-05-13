@@ -8,7 +8,7 @@ import {webSocketConnection} from "../../common/WebSocketConnection";
 import {runCanvas} from "../run/component/RunCanvas";
 import {HIDE_NODE_INFO} from "../run/model/ScanActions";
 import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
-import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
+import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducerX";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
 import {Dispatch} from "redux";

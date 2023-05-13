@@ -14,7 +14,6 @@ const val SECOND_MILLIS = 1000
 const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS
 const val MINUTE_MILLIS = 60 * SECOND_MILLIS
 
-const val SYSTEM_USER_ID = "user-system"
 
 /**
  * Tasks can be scheduled to run in the future. Then will be held here and when their time comes,

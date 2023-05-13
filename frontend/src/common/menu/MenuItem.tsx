@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Cookies from "js-cookie";
-import {NAVIGATE_PAGE, RUN} from "./pageReducer";
+import {NAVIGATE_PAGE, RUN} from "./pageReducerX";
 import {HackerState} from "../../hacker/HackerRootReducer";
 import {webSocketConnection} from "../WebSocketConnection";
 import {Dispatch} from "redux";

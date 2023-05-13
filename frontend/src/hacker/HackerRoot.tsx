@@ -9,7 +9,7 @@ import {terminalManager} from "../common/terminal/TerminalManager";
 import {passwordIceManager} from "../ice/password/container/PasswordIceManager";
 import {tangleIceManager} from "../ice/tangle/component/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
-import {HACKER_HOME} from "../common/menu/pageReducer";
+import {HACKER_HOME} from "../common/menu/pageReducerX";
 import {initRunServerActions} from "./server/RunServerActionProcessor";
 
 export class HackerRoot extends Component {
@@ -33,9 +33,9 @@ export class HackerRoot extends Component {
             webSocketConnection.send("/av/scan/scansOfPlayer", "")
         });
 
-        terminalManager.init(this.store);
-        passwordIceManager.init(this.store);
-        tangleIceManager.init(this.store);
+        terminalManager.init(this.store)
+        passwordIceManager.init(this.store)
+        tangleIceManager.init(this.store)
 
         initRunServerActions(this.store)
     }

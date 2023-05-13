@@ -25,6 +25,9 @@ enum class ServerActions {
     SERVER_ADD_LAYER,
     SERVER_NODE_UPDATED,
 
+    SERVER_RECEIVE_USERS_OVERVIEW,  // List of users for user-overview
+    SERVER_USER_DETAILS,            // User details for editing
+
 
     SERVER_UPDATE_USER_SCANS,       // Sent to user to update the scans shown on home page of that user
     SERVER_UPDATE_SCAN_INFO,        // Scan info has changed (as displayed on home screen)
