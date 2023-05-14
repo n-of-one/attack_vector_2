@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
 
 @Service
 class StompService(
@@ -16,8 +17,16 @@ class StompService(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    @Value("\${ENVIRONMENT ?: default}")
+    @Value("\${ENVIRONMENT:default}")
     lateinit var environment: String
+
+    @PostConstruct
+    fun logEnvironment() {
+        logger.info("ENVIRONMENT: ${environment}")
+        if (environment.startsWith("dev")) {
+            logger.info("Simulating non-localhost")
+        }
+    }
 
     val simulateNonLocalhost = {
         if (environment.startsWith("dev")) {
