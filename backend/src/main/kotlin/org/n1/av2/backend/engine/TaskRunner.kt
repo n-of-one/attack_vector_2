@@ -5,7 +5,7 @@ import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.FatalException
 import org.n1.av2.backend.util.ServerFatal
@@ -25,34 +25,41 @@ private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 class TaskRunner(
     private val taskEngine: TaskEngine,
     private val timedTaskRunner: TimedTaskRunner,
-    private val currentUserService: CurrentUserService) {
+    private val currentUserService: CurrentUserService
+) {
 
     fun runTask(userPrincipal: UserPrincipal, action: () -> Unit) {
         taskEngine.runForUser(userPrincipal, action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
-    @Deprecated(message=">> Do not use run, Use runTask() instead", level=DeprecationLevel.ERROR, replaceWith = ReplaceWith("taskRunner.runTask(principal) {}"))
+    @Deprecated(
+        message = ">> Do not use run, Use runTask() instead",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("taskRunner.runTask(principal) {}")
+    )
     fun run(action: () -> Unit) {
         error(">> Do not use run, this is ambiguous with Kotlin run. Use runTask() instead")
     }
 
     fun queueInTicks(waitTicks: Int, action: () -> Unit) {
         val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
-        val userPrincipal =  SecurityContextHolder.getContext().authentication as UserPrincipal
+        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
         timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
     }
 
     fun queueInMinutesAndSeconds(minutes: Long, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + SECOND_MILLIS * seconds + MINUTE_MILLIS * minutes
-        val userPrincipal =  SecurityContextHolder.getContext().authentication as UserPrincipal
+        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
         timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
     }
 }
 
 @Component
-class TaskEngine (val stompService: StompService,
-                 val currentUserService: CurrentUserService): Runnable {
+class TaskEngine(
+    val stompService: StompService,
+    val currentUserService: CurrentUserService
+) : Runnable {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -103,14 +110,12 @@ class TaskEngine (val stompService: StompService,
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)
             }
-        }
-        catch(error: Throwable) {
+        } catch (error: Throwable) {
             logger.error("Task triggered error.", error)
             val event = ServerFatal(false, error.message ?: error.javaClass.name)
             stompService.reply(ServerActions.SERVER_ERROR, event)
             return
-        }
-        finally {
+        } finally {
             currentUserService.remove()
             SecurityContextHolder.clearContext()
         }
@@ -119,9 +124,9 @@ class TaskEngine (val stompService: StompService,
     @PreDestroy
     fun terminate() {
         this.running = false
-        val userPrincipal = UserPrincipal("system:system-connection", SYSTEM_USER, "system-connection", ConnectionType.INTERNAL )
+        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USER, ConnectionType.INTERNAL)
 
         // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
-        this.queue.add(Task({}, userPrincipal ))
+        this.queue.add(Task({}, userPrincipal))
     }
 }

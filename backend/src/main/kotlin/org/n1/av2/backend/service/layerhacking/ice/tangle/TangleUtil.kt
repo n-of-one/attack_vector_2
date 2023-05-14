@@ -30,11 +30,12 @@ fun segmentsIntersect(p0_x: Int, p0_y: Int, p1_x: Int, p1_y: Int,
     val s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y)
     val t = (s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y)
 
-    if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-        val i_x = p0_x + (t * s1_x)
-        val i_y = p0_y + (t * s1_y)
-        println("Intersect at (${i_x}. ${i_y}")
-        return true
-    }
-    return false
+    return (s in 0.0..1.0 && t in 0.0 .. 1.0 )
+//    {
+//        val i_x = p0_x + (t * s1_x)
+//        val i_y = p0_y + (t * s1_y)
+//        println("Intersect at (${i_x}. ${i_y}")
+//        return true
+//    }
+//    return false
 }

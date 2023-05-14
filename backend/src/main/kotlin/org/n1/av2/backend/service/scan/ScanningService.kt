@@ -12,7 +12,7 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.springframework.stereotype.Service

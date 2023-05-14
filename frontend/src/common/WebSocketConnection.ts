@@ -6,7 +6,7 @@ import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT} from "../hacke
 import {currentUser} from "./CurrentUser"
 
 
-export const WEBSOCKET_RUN = "run_ws"
+export const WEBSOCKET_MAIN = "av_ws"
 export const WEBSOCKET_ICE = "ice_ws"
 
 export class WebSocketConnection {

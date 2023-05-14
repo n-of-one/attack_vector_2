@@ -5,13 +5,18 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
 enum class ConnectionType {
-    WS_RUN,
+    WS_GENERAL,
     WS_ICE,
     WEB_PAGE,
     INTERNAL // used for internal processes that don't really have a connection
 }
 
-data class UserPrincipal(private val _name: String, val user: User, val connectionId: String, val type: ConnectionType): Authentication {
+data class UserPrincipal(
+    private val _name: String,
+    val connectionId: String,
+    val user: User,
+    val type: ConnectionType
+): Authentication {
 
     /// Used in websocket connection
     override fun getName() = _name

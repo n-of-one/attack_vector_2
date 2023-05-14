@@ -2,7 +2,7 @@ package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.model.Syntax
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 

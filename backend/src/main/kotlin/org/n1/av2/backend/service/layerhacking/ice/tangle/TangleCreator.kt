@@ -39,8 +39,6 @@ class TLine(val slope: Float, val yOffset: Float, val intersections: MutableList
 
     fun sortIntersections() {
         intersections.sortBy { distanceSquared(it) }
-        println("Sorted:")
-        intersections.forEach { println(it) }
     }
 
     private fun distanceSquared(point: TPoint): Float {

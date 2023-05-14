@@ -4,6 +4,7 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {ADMIN, GM_SITES, HACKER_COMMUNITY, HACKER_HOME, LOGS, MAIL, ME, MISSIONS, RUN, USERS} from "./pageReducerX"
 import {HackerState} from "../../hacker/HackerRootReducer"
+import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_MISSION_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../UserAuthorizations";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -48,13 +49,14 @@ export const MenuBar = () => {
                                 {/*<MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />*/}
                                 <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}
-                                <MenuItem requriesRole="ROLE_SITE_MANAGER" targetPage={GM_SITES} label="Sites"/>
-                                <MenuItem requriesRole="ROLE_HACKER" targetPage={LOGS} label="Logs"/>
-                                <MenuItem requriesRole="ROLE_HACKER" targetPage={MAIL} label="Mail"/>
-                                <MenuItem requriesRole="ROLE_MISSION_MANAGER" targetPage={MISSIONS} label="Missions"/>
-                                <MenuItem requriesRole="ROLE_USER_MANAGER" targetPage={USERS} label="Users"/>
-                                <MenuItem requriesRole="ROLE_ADMIN" targetPage={ADMIN} label="Admin"/>
-                                <MenuItem requriesRole="ROLE_HACKER_MANAGER" targetPage={HACKER_COMMUNITY}
+                                <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={GM_SITES} label="Sites"/>
+                                <MenuItem requriesRole={ROLE_HACKER} targetPage={LOGS} label="Logs"/>
+                                <MenuItem requriesRole={ROLE_HACKER} targetPage={MAIL} label="Mail"/>
+                                <MenuItem requriesRole={ROLE_MISSION_MANAGER} targetPage={MISSIONS} label="Missions"/>
+                                <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={USERS} label="Users"/>
+                                <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={USERS} label="Users"/>
+                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={ADMIN} label="Admin"/>
+                                <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={HACKER_COMMUNITY}
                                           label="Hacker Community"/>
                             </ul>
                             <ul className="navbar-nav">

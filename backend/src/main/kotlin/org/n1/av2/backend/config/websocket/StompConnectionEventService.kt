@@ -1,7 +1,8 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.config.websocket
 
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.user.UserConnectionService
 import org.springframework.stereotype.Service
 
@@ -17,6 +18,7 @@ class StompConnectionEventService(
 
     /** Returns validity of connection. False means this is a duplicate connection */
     fun connect(userPrincipal: UserPrincipal) {
+        println("Connected: ${userPrincipal.user.name}")
         currentUserService.set(userPrincipal.user)
         taskRunner. queueInTicks(1) {
             userConnectionService.connect(userPrincipal)
@@ -24,6 +26,7 @@ class StompConnectionEventService(
     }
 
     fun disconnect(userPrincipal: UserPrincipal) {
+        println("Disconnected: ${userPrincipal.user.name}")
         taskRunner.runTask(userPrincipal) {
             userConnectionService.disconnect()
         }

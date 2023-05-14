@@ -2,7 +2,7 @@ import React from "react"
 import {Terminal} from "../common/terminal/Terminal"
 import {MenuBar} from "../common/menu/MenuBar"
 import {useSelector} from "react-redux"
-import {GmHome} from "./component/GmHome";
+import {GmSites} from "./sites/GmSites";
 import {UserManagement} from "./users/UserManagement";
 import {GmState} from "./GmRootReducer";
 import {UserDetails} from "./users/UserDetails";
@@ -15,17 +15,17 @@ import {ROLE_USER_MANAGER} from "../common/UserAuthorizations";
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
         case GM_SITES:
-            return <GmHome/>
+            return <GmSites/>
         case USERS:
             return <UserManagement/>
         case LOGS:
-            return <GmHome/>
+            return <GmSites/>
         case MISSIONS:
-            return <GmHome/>
+            return <GmSites/>
         case ADMIN:
-            return <GmHome/>
+            return <GmSites/>
         default:
-            return <GmHome/>
+            return <GmSites/>
     }
 }
 

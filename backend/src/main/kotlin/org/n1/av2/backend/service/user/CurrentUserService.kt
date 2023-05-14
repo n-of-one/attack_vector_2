@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.user
 
 import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.User

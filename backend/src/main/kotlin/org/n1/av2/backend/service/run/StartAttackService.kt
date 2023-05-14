@@ -4,7 +4,7 @@ import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.terminal.SyntaxHighlightingService
 import org.n1.av2.backend.service.terminal.hacking.CommandMoveService

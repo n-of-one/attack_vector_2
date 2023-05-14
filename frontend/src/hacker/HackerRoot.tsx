@@ -4,7 +4,7 @@ import {RequiresRole} from "../common/RequiresRole";
 import {Reducer, Store} from "redux";
 import {HackerPageChooser} from "./HackerPageChooser";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
-import {WEBSOCKET_RUN, webSocketConnection} from "../common/WebSocketConnection";
+import {WEBSOCKET_MAIN, webSocketConnection} from "../common/WebSocketConnection";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {passwordIceManager} from "../ice/password/container/PasswordIceManager";
 import {tangleIceManager} from "../ice/tangle/component/TangleIceManager";
@@ -29,7 +29,7 @@ export class HackerRoot extends Component {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(WEBSOCKET_RUN, this.store, () => {
+        webSocketConnection.create(WEBSOCKET_MAIN, this.store, () => {
             webSocketConnection.send("/av/scan/scansOfPlayer", "")
         });
 

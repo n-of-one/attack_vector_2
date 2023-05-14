@@ -5,7 +5,7 @@ import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserType
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
@@ -26,10 +26,8 @@ class HackerStateEntityService(
         // If the server starts, all hackers are logged out by definition.
 
         userEntityService.findAll().forEach { user ->
-            if (user.type ==  UserType.HACKER || user.type ==  UserType.HACKER) {
-                val newState = createLoggedOutState(user.id)
-                hackerStateRepo.save(newState)
-            }
+            val newState = createLoggedOutState(user.id)
+            hackerStateRepo.save(newState)
         }
     }
 
@@ -62,7 +60,7 @@ class HackerStateEntityService(
     }
 
     fun retrieve(userId: String): HackerState {
-        return hackerStateRepo.findByUserId(userId) ?: error("HackerPosition not found for ${userId}")
+        return hackerStateRepo.findByUserId(userId) ?: createLoggedOutState(userId)
     }
 
     fun startRun(userId: String, runId: String) {
@@ -125,11 +123,15 @@ class HackerStateEntityService(
                 runActivity = RunActivity.NA,
                 hookPatrollerId = null, locked = false)
         hackerStateRepo.save(newState)
+
+        printAllStates("Login ${userId}")
     }
 
     fun goOffline(state: HackerState) {
         val newState = createLoggedOutState(state.userId)
         hackerStateRepo.save(newState)
+        printAllStates("goOffline ${state.userId}")
+
     }
 
     private fun createLoggedOutState(userId: String): HackerState {
@@ -139,6 +141,19 @@ class HackerStateEntityService(
 
     fun findAllHackersInRun(runId: String): List<String> {
         return hackerStateRepo.findByRunId(runId).map {it.userId}
+    }
+
+    fun isOnline(userId: String): Boolean {
+        val state = hackerStateRepo.findByUserId(userId) ?: return false
+        return state.generalActivity != HackerGeneralActivity.OFFLINE
+    }
+
+    private fun printAllStates(message: String) {
+        logger.warn { message}
+        hackerStateRepo.findAll().forEach {
+            val user = userEntityService.getById(it.userId)
+            logger.info { "State: ${it.userId} \t\t ${it.generalActivity} \t ${user.name}" }
+        }
     }
 
 }

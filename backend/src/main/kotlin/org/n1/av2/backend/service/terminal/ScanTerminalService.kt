@@ -5,7 +5,7 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.run.StartAttackService

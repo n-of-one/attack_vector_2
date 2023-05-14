@@ -1,7 +1,7 @@
 package org.n1.av2.backend.entity.run
 
 import org.n1.av2.backend.entity.site.LayoutEntityService
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service

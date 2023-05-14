@@ -141,7 +141,6 @@ class TangleService(
 
                     if (intersect) {
                         solved = false
-//                        logger.debug("Intersect: ${segment_1.id} x ${segment_2.id}")
                     }
                 }
             }

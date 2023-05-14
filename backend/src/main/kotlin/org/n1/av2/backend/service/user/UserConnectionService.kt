@@ -5,7 +5,6 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
 import org.springframework.stereotype.Service
@@ -36,7 +35,7 @@ class UserConnectionService(
     }
 
     fun disconnect() {
-        if (currentUserService.isSystemUser || currentUserService.isAdmin) return;
+        if (currentUserService.isSystemUser) return;
 
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
 

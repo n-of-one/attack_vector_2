@@ -1,19 +1,18 @@
 import React, {useEffect} from 'react'
 import {SilentLink} from "../../common/component/SilentLink";
-import {UserOverview} from "./UsersReducer";
+import {User, UserOverview} from "./UsersReducer";
 import {useSelector} from "react-redux";
 import {GmState} from "../GmRootReducer";
 import {webSocketConnection} from "../../common/WebSocketConnection";
 import {UserDetails} from "./UserDetails";
 import {RequiresRole} from "../../common/RequiresRole";
 import {ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../../common/UserAuthorizations";
-
-
-
+import {TextSaveInput} from "../../common/component/TextSaveInput";
+import {TextInput} from "../../common/component/TextInput";
 
 
 export const UserManagement = () => {
-    return <RequiresRole anyOf={[ROLE_USER_MANAGER,ROLE_HACKER_MANAGER]}>
+    return <RequiresRole anyOf={[ROLE_USER_MANAGER, ROLE_HACKER_MANAGER]}>
         <UserManagementAuthorized/>
     </RequiresRole>
 
@@ -21,7 +20,7 @@ export const UserManagement = () => {
 
 export const UserManagementAuthorized = () => {
 
-    useEffect( () => {
+    useEffect(() => {
         webSocketConnection.send("/av/user/overview", "")
     }, [])
 
@@ -32,11 +31,6 @@ export const UserManagementAuthorized = () => {
     }
 
     const user = useSelector((state: GmState) => state.users.edit)
-    const save = (field: string, value: string) => {
-        if (!user) throw Error("No user to save")
-        const message = {userId: user.id, field, value}
-        webSocketConnection.send("/av/user/edit", message)
-    }
 
     return (
         <div className="row">
@@ -44,13 +38,13 @@ export const UserManagementAuthorized = () => {
             </div>
             <div className="col-lg-5">
                 <div className="text">
-                    <strong>User management</strong><br/>
+                    <h3 className="text-info">User management</h3><br/>
                     <br/>
                     <br/>
-                    <UserDetails user={user} save={save} />
+                    {CreateUser(user)}
+                    <UserDetails user={user} />
                 </div>
-                <div className="text">[create user]
-                </div>
+
             </div>
             <div className="col-lg-5 rightPane rightPane">
                 <div className="siteMap">
@@ -64,7 +58,7 @@ export const UserManagementAuthorized = () => {
                         </thead>
                         <tbody>
                         {
-                            users.map((user: UserOverview ) => {
+                            users.map((user: UserOverview) => {
                                 return (
                                     <tr key={user.id}>
                                         <td className="table-very-condensed"><SilentLink onClick={() => {
@@ -82,9 +76,30 @@ export const UserManagementAuthorized = () => {
                 </div>
             </div>
         </div>
-
-
     )
 }
 
+const CreateUser = (user: User | null) => {
+    if (user) return null
+
+    const createUser = (name: string) => {
+        webSocketConnection.send("/av/user/create", name)
+    }
+
+    return <div className="row form-group">
+        {/*<label htmlFor="newUser" className="col-lg-1 control-label text-muted">Email</label>*/}
+
+
+
+        <div className="col-lg-8">
+            <TextInput placeholder="User name"
+                       buttonLabel="Create new user"
+                       buttonClass="btn-info"
+                       save={(name: string) => createUser(name)}
+                       clearAfterSubmit={true}/>
+        </div>
+    </div>
+
+
+}
 

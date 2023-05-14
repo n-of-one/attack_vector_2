@@ -7,7 +7,7 @@ import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.terminal.TERMINAL_CHAT
 import org.springframework.stereotype.Service

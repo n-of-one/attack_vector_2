@@ -4,12 +4,12 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.n1.av2.backend.config.ICE_ENDPOINT
-import org.n1.av2.backend.config.RUN_ENDPOINT
+import org.n1.av2.backend.config.websocket.ICE_ENDPOINT
+import org.n1.av2.backend.config.websocket.MAIN_ENDPOINT
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.service.CurrentUserService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -41,7 +41,7 @@ class JwtAuthenticationFilter(
                     val userName = tokenProvider.getUserNameFromJWT(jwt)
                     val user = userEntityService.getByName(userName)
                     val connectionId = connectionUtil.create()
-                    authentication = UserPrincipal("", user, connectionId, type)
+                    authentication = UserPrincipal("", connectionId, user, type)
                     SecurityContextHolder.getContext().authentication = authentication
                     currentUserService.set(user)
 
@@ -65,7 +65,7 @@ class JwtAuthenticationFilter(
     private fun determineType(url: StringBuffer?): ConnectionType {
         val path = url.toString().substringAfter("/")
         return when (path) {
-            RUN_ENDPOINT -> ConnectionType.WS_RUN
+            MAIN_ENDPOINT -> ConnectionType.WS_GENERAL
             ICE_ENDPOINT -> ConnectionType.WS_ICE
             else -> ConnectionType.WEB_PAGE
         }

@@ -7,8 +7,9 @@ import {runCanvas} from "./run/component/RunCanvas"
 import {useSelector} from "react-redux"
 import {HackerState} from "./HackerRootReducer"
 import {TerminalState} from "../common/terminal/TerminalReducer"
-import {MAIL, RUN} from "../common/menu/pageReducerX"
+import {MAIL, RUN, USERS} from "../common/menu/pageReducerX"
 import {RunHome} from "./run/component/RunHome";
+import {UserManagement} from "../gm/users/UserManagement";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -32,6 +33,8 @@ const renderCurrentPage = (currentPage: string) => {
             return <MailHome/>
         case RUN:
             return <RunHome/>
+        case USERS:
+            return <UserManagement/>
         default:
             return <HackerHome/>
     }

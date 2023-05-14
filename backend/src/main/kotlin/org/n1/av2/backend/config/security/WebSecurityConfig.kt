@@ -1,5 +1,7 @@
 package org.n1.av2.backend.config.security
 
+import org.n1.av2.backend.entity.user.ROLE_HACKER
+import org.n1.av2.backend.entity.user.ROLE_USER
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -24,34 +26,35 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 //                .exceptionHandling()
 //                .authenticationEntryPoint(unauthorizedHandler)
 //            .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/", "/health",
-                        "/edit/**", "/api/**",
-                        "/about", "/error", "/loginSubmit",
-                        "/notChrome", "/login/*", "/manual/**", "/keepAlive", "/signUp").permitAll()
-                .requestMatchers("/ice_ws").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
-                .requestMatchers("/run_ws").permitAll() // .hasAnyRole(ROLE_USER.authority.toString())
-                .requestMatchers("/hacker/**").permitAll()
-                .requestMatchers("/gm/**").permitAll()
+            .authorizeHttpRequests()
+
+            .requestMatchers("/av_ws").hasAuthority(ROLE_USER.authority.toString())
+            .requestMatchers("/ice_ws").hasAuthority(ROLE_USER.authority.toString())
+
+            .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority.toString())
+
+            // HTML routes
+            .requestMatchers("/").permitAll()
+            .requestMatchers("/ice/**").hasAuthority(ROLE_HACKER.authority.toString())
+            .requestMatchers("/hacker/**").hasAuthority(ROLE_USER.authority.toString())
+            .requestMatchers("/gm/**").hasAuthority(ROLE_USER.authority.toString())
+            .requestMatchers("/about").permitAll()
+            .requestMatchers("/manual/**").permitAll()
+            .requestMatchers("/login/*", "/api/login", "/signUp").permitAll()
 //
             .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
+            .logout()
+            .permitAll()
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/")
+            .invalidateHttpSession(true)
 //
             .and()
-                .logout()
-                .permitAll()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true)
-//
-            .and()
-                .csrf()
-                .disable()
+            .csrf()
+            .disable()
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 

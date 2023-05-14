@@ -4,12 +4,12 @@ import {TextInput} from "../../common/component/TextInput"
 import {deleteCall, post} from "../../common/RestClient"
 import {notify} from "../../common/Notification"
 import {SilentLink} from "../../common/component/SilentLink"
-import {GmSite, RECEIVE_SITES} from "../GmSitesReducer"
+import {GmSite, RECEIVE_SITES} from "./GmSitesReducer"
 import {useRunOnce} from "../../common/Util"
 import {GmState} from "../GmRootReducer";
 
 
-export const GmHome = () => {
+export const GmSites = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
     const dispatch = useDispatch()

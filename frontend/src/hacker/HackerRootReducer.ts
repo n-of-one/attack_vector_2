@@ -8,6 +8,7 @@ import {themeReducer} from "../common/reducer/ThemeReducer";
 import {userIdReducer} from "../common/reducer/UserIdReducer";
 import {HackerPresence, hackersReducer} from "./run/reducer/HackersReducer";
 import {ActiveTerminalId, activeTerminalIdReducer, MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
+import {Users, usersReducer} from "../gm/GmRootReducer";
 
 export interface HackerState {
     currentPage: string,
@@ -18,6 +19,7 @@ export interface HackerState {
     terminal: TerminalState,
     activeTerminalId:ActiveTerminalId,
     theme: string,
+    users: Users,
     userId: string
 }
 
@@ -32,5 +34,6 @@ export const hackerRootReducer = combineReducers({
     terminal: mainTerminalReducer,
     activeTerminalId: activeTerminalIdReducer,
     theme: themeReducer,
-    userId: userIdReducer
+    userId: userIdReducer,
+    users: usersReducer,
 })

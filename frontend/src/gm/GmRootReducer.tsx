@@ -1,17 +1,17 @@
 import {pageReducerX} from "../common/menu/pageReducerX";
-import {GmSite, gmSitesReducer} from "./GmSitesReducer";
+import {GmSite, gmSitesReducer} from "./sites/GmSitesReducer";
 import {combineReducers} from "redux";
-import {EditUser, editUserReducer, User, userOverviewReducer} from "./users/UsersReducer";
+import {editUserReducer, User, userOverviewReducer} from "./users/UsersReducer";
 
 
-const usersReducer = combineReducers({
+export const usersReducer = combineReducers({
     overview: userOverviewReducer,
     edit: editUserReducer,
 })
 
 export interface Users {
     overview: Array<User>,
-    edit: EditUser
+    edit: User | null
 }
 
 export interface GmState {

@@ -1,9 +1,11 @@
 package org.n1.av2.backend.service
 
 import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxEvent
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.security.core.context.SecurityContextHolder
@@ -13,7 +15,8 @@ import javax.annotation.PostConstruct
 @Service
 class StompService(
         val stompTemplate: SimpMessageSendingOperations,
-        val currentUserService: CurrentUserService) {
+        val currentUserService: CurrentUserService
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -65,6 +68,14 @@ class StompService(
 
     fun replyMessage(message: NotyMessage) {
         reply(ServerActions.SERVER_NOTIFICATION, message)
+    }
+
+    fun replyNeutral(message: String, title: String = "") {
+        reply(ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, title, message))
+    }
+
+    fun replyError(message: String, title: String = "") {
+        reply(ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.ERROR, title, message))
     }
 
     class TerminalReceive(val terminalId: String, val lines: Array<out String>, val locked : Boolean? = null)

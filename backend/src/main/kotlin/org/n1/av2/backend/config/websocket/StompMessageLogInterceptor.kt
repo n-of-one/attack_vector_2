@@ -1,4 +1,4 @@
-package org.n1.av2.backend.config
+package org.n1.av2.backend.config.websocket
 
 import mu.KLogger
 import org.springframework.messaging.Message

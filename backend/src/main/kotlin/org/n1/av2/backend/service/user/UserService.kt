@@ -1,15 +1,19 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.user
 
+import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.user.*
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.util.isInt
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
     private val userEntityService: UserEntityService,
     private val stompService: StompService,
+    private val hackerStateEntityService: HackerStateEntityService,
 ) {
 
     class UserOverview(
@@ -20,9 +24,32 @@ class UserService(
     )
 
     fun overview() {
-        val all =  userEntityService.findAll()
-        val message = all.map { UserOverview(it.id, it.name, it.hacker?.playerName, it.hacker?.characterName) }
+        val message = filteredUsers().map { UserOverview(it.id, it.name, it.hacker?.playerName, it.hacker?.characterName) }
         stompService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
+    }
+
+    private fun filteredUsers(): List<User> {
+        val all = userEntityService.findAll()
+        if (!SecurityContextHolder.getContext().authentication.authorities.contains(ROLE_USER_MANAGER)) {
+            return all.filter { it.type == UserType.HACKER || it.type == UserType.HACKER_MANAGER }
+        }
+        return all
+    }
+
+    fun create(name: String) {
+        if (userEntityService.findByNameIgnoreCase(name) != null) {
+            throw ValidationException("User with name $name already exists.")
+        }
+        val userInput = User(
+            id = name,
+            email = "",
+            name = name,
+            type = UserType.HACKER,
+            hacker = null
+        )
+        val user = userEntityService.save(userInput)
+        overview()
+        select(user.id)
     }
 
     fun select(userId: String) {
@@ -49,7 +76,7 @@ class UserService(
         overview()
     }
 
-    private fun changeType (user: User, newType: String): User {
+    private fun changeType(user: User, newType: String): User {
         if (newType != UserType.HACKER.name) {
             return user.copy(type = UserType.valueOf(newType))
         }
@@ -74,6 +101,14 @@ class UserService(
         }
         val newHacker = user.hacker.copy(skill = newSkill)
         return user.copy(hacker = newHacker)
+    }
+
+    fun delete(userId: String) {
+        if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
+
+        userEntityService.delete(userId)
+        overview()
+        stompService.replyNeutral("User deleted")
     }
 
 }

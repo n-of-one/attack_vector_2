@@ -59,34 +59,3 @@ Step 2. create user
                  { } )`
 
 
-## Deploy to Herouku:
-
-The application is tested to work on Heroku. Free tier dynamo is usually good enough. A free MongoDB is available from mLab: Sandbox size 
-
-After a Heroku account has been set up, and configured as a git remote with name 'heroku', it can be updated using:
-
-First login: `heroku login`
-
-Then upload, build & deploy: `git push heroku master`
-
-
-
-## Notes
-
-Drop all collections:
-
-db.user.drop();
-
-db.siteData.drop();
-db.siteState.drop();
-db.node.drop();
-db.layout.drop();
-db.connection.drop();
-
-db.scan.drop();
-db.userScan.drop();
-
-db.hackerPosition.drop();
-
-db.dbchangelog.drop();
-db.mongobeelock.drop();
