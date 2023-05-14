@@ -15,7 +15,8 @@ data class UserPrincipal(
     private val _name: String,
     val connectionId: String,
     val user: User,
-    val type: ConnectionType
+    val type: ConnectionType,
+    val iceId: String? = null
 ): Authentication {
 
     /// Used in websocket connection

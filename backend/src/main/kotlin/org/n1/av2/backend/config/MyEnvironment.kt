@@ -5,10 +5,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class MyEnvironment(
-        @Value("#{environment.ENVIRONMENT}") private val environment: String = "unspecified") {
-
+    @Value("\${ENVIRONMENT:default}") private val environment: String
+) {
 
     val dev: Boolean
-        get() = true
-//        get() = (environment.startsWith("dev"))
+        get() = (environment.startsWith("dev"))
 }

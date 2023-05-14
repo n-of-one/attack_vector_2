@@ -1,4 +1,4 @@
-import {pageReducerX} from "../common/menu/pageReducerX";
+import {pageReducer} from "../common/menu/pageReducer";
 import {GmSite, gmSitesReducer} from "./sites/GmSitesReducer";
 import {combineReducers} from "redux";
 import {editUserReducer, User, userOverviewReducer} from "./users/UsersReducer";
@@ -23,7 +23,7 @@ export interface GmState {
 
 
 export const gmRootReducer = combineReducers({
-    currentPage: pageReducerX,
+    currentPage: pageReducer,
     users: usersReducer,
     sites: gmSitesReducer,
 })

@@ -1,10 +1,32 @@
 package org.n1.av2.backend.config.websocket
 
 import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.user.UserConnectionService
+import org.n1.av2.backend.service.user.UserIceHackingService
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
+
+
+// Prevent circular connection
+@Configuration
+class StompConnectionEventServiceInit(
+    val taskRunner: TaskRunner,
+    val userConnectionService: UserConnectionService,
+    val stompConnectionEventService: StompConnectionEventService,
+    val userIceHackingService: UserIceHackingService
+) {
+
+    @PostConstruct
+    fun postConstruct() {
+        stompConnectionEventService.taskRunner = taskRunner
+        stompConnectionEventService.userConnectionService = userConnectionService
+        stompConnectionEventService.userIceHackingService = userIceHackingService
+    }
+}
 
 @Service
 class StompConnectionEventService(
@@ -13,22 +35,32 @@ class StompConnectionEventService(
 
     lateinit var taskRunner: TaskRunner
     lateinit var userConnectionService: UserConnectionService
+    lateinit var userIceHackingService: UserIceHackingService
 
     private val logger = mu.KotlinLogging.logger {}
 
-    /** Returns validity of connection. False means this is a duplicate connection */
     fun connect(userPrincipal: UserPrincipal) {
-        println("Connected: ${userPrincipal.user.name}")
         currentUserService.set(userPrincipal.user)
-        taskRunner. queueInTicks(1) {
-            userConnectionService.connect(userPrincipal)
+        taskRunner.runTask(userPrincipal) {
+
+            if (userPrincipal.type == ConnectionType.WS_GENERAL) {
+                userConnectionService.connect(userPrincipal)
+            }
+            if (userPrincipal.type == ConnectionType.WS_ICE) {
+                userIceHackingService.connect(userPrincipal)
+            }
         }
     }
 
     fun disconnect(userPrincipal: UserPrincipal) {
-        println("Disconnected: ${userPrincipal.user.name}")
         taskRunner.runTask(userPrincipal) {
-            userConnectionService.disconnect()
+
+            if (userPrincipal.type == ConnectionType.WS_GENERAL) {
+                userConnectionService.disconnect(userPrincipal)
+            }
+            if (userPrincipal.type == ConnectionType.WS_ICE) {
+                userIceHackingService.disconnect(userPrincipal)
+            }
         }
     }
 

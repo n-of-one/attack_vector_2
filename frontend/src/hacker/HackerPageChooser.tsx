@@ -7,9 +7,10 @@ import {runCanvas} from "./run/component/RunCanvas"
 import {useSelector} from "react-redux"
 import {HackerState} from "./HackerRootReducer"
 import {TerminalState} from "../common/terminal/TerminalReducer"
-import {MAIL, RUN, USERS} from "../common/menu/pageReducerX"
+import {DISCONNECTED, MAIL, RUN, USERS} from "../common/menu/pageReducer"
 import {RunHome} from "./run/component/RunHome";
 import {UserManagement} from "../gm/users/UserManagement";
+import {Disconnected} from "../common/component/Disconnected";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -45,7 +46,9 @@ export const HackerPageChooser = () => {
 
     const infoNodeId: string | null = useSelector((state: HackerState) => state.run?.infoNodeId)
     const messageTerminal: TerminalState = useSelector((state: HackerState) => state.run.messageTerminal)
+
     const currentPage: string =  useSelector((state: HackerState) =>  state.currentPage)
+    if (currentPage === DISCONNECTED) return <Disconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark" onClick={(event) => dismissScanInfo(infoNodeId, event)}>

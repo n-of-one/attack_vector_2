@@ -7,7 +7,6 @@ import {webSocketConnection} from "../../common/WebSocketConnection";
 import {UserDetails} from "./UserDetails";
 import {RequiresRole} from "../../common/RequiresRole";
 import {ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../../common/UserAuthorizations";
-import {TextSaveInput} from "../../common/component/TextSaveInput";
 import {TextInput} from "../../common/component/TextInput";
 
 

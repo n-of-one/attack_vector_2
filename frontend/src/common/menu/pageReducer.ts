@@ -15,7 +15,7 @@ export const LOGS = "LOGS"
 export const MISSIONS = "MISSIONS"
 export const USERS = "USERS"
 export const ADMIN = "ADMIN"
-
+export const DISCONNECTED = "DISCONNECTED"
 
 
 
@@ -25,7 +25,7 @@ export const NAVIGATE_PAGE = "NAVIGATE_PAGE";
 
 const defaultState = "No page yet.";
 
-export const pageReducerX = (state: string = defaultState, action: AnyAction): string => {
+export const pageReducer = (state: string = defaultState, action: AnyAction): string => {
     switch(action.type) {
         case NAVIGATE_PAGE : return action.to;
         default: return state;

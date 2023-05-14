@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import {pageReducerX} from "../common/menu/pageReducerX";
+import {pageReducer} from "../common/menu/pageReducer";
 import {homeRootReducer, HomeState} from "./home/HomeRootReducer";
 import {mailRootReducer, MailRootState} from "./mail/MailRootReducer";
 import {runRootReducer, RunState} from "./run/RunRootReducer";
@@ -26,7 +26,7 @@ export interface HackerState {
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true})
 
 export const hackerRootReducer = combineReducers({
-    currentPage: pageReducerX,
+    currentPage: pageReducer,
     run: runRootReducer,
     home: homeRootReducer,
     mail: mailRootReducer,

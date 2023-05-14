@@ -1,4 +1,4 @@
-package org.n1.av2.backend.config.security
+package org.n1.av2.backend.config.websocket
 
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Component

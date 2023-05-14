@@ -1,7 +1,7 @@
 import {Store} from "redux"
 import {webSocketConnection} from "../../common/WebSocketConnection"
 import {initGenericServerActions} from "./GenericServerActionProcessor"
-import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducerX"
+import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducer"
 import {terminalManager} from "../../common/terminal/TerminalManager"
 import {NodeScanType, runCanvas} from "../run/component/RunCanvas"
 import {

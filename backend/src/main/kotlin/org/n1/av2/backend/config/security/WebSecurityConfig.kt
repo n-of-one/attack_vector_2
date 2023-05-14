@@ -34,6 +34,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/av_ws").hasAuthority(ROLE_USER.authority.toString())
             .requestMatchers("/ice_ws").hasAuthority(ROLE_USER.authority.toString())
 
+            .requestMatchers("/login/*", "/api/login", "/signUp").permitAll()
             .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority.toString())
 
             // HTML routes
@@ -43,7 +44,6 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/gm/**").hasAuthority(ROLE_USER.authority.toString())
             .requestMatchers("/about").permitAll()
             .requestMatchers("/manual/**").permitAll()
-            .requestMatchers("/login/*", "/api/login", "/signUp").permitAll()
 //
             .and()
             .logout()

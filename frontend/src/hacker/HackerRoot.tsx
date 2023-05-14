@@ -4,13 +4,14 @@ import {RequiresRole} from "../common/RequiresRole";
 import {Reducer, Store} from "redux";
 import {HackerPageChooser} from "./HackerPageChooser";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
-import {WEBSOCKET_MAIN, webSocketConnection} from "../common/WebSocketConnection";
+import {webSocketConnection} from "../common/WebSocketConnection";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {passwordIceManager} from "../ice/password/container/PasswordIceManager";
 import {tangleIceManager} from "../ice/tangle/component/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
-import {HACKER_HOME} from "../common/menu/pageReducerX";
+import {HACKER_HOME} from "../common/menu/pageReducer";
 import {initRunServerActions} from "./server/RunServerActionProcessor";
+import {CONNECTION_TYPE_GENERAL} from "../common/CurrentUser";
 
 export class HackerRoot extends Component {
 
@@ -29,7 +30,7 @@ export class HackerRoot extends Component {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(WEBSOCKET_MAIN, this.store, () => {
+        webSocketConnection.create(CONNECTION_TYPE_GENERAL, this.store, () => {
             webSocketConnection.send("/av/scan/scansOfPlayer", "")
         });
 

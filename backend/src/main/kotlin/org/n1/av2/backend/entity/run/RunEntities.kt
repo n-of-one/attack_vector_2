@@ -28,6 +28,7 @@ data class UserRunLink(
 @Document
 data class HackerState(
     @Id val userId: String,
+    val connectionId: String,
     val runId: String?,
     val siteId: String?,
     val currentNodeId: String?,
@@ -41,7 +42,7 @@ data class HackerState(
 
     fun toRunState(): HackerStateRunning {
         return HackerStateRunning(
-            userId,
+            userId, connectionId,
             runId ?: error("runId null for ${userId}"),
             siteId ?: error("siteId null for ${userId}"),
             currentNodeId ?: error("currentNodeId null for ${userId}"),
@@ -114,6 +115,7 @@ enum class RunActivity {
 /** Convenience class that mimicks HackerState but enforces non-null state of all fields that are used in a run */
 class HackerStateRunning(
     val userId: String,
+    val connectionId: String,
     val runId: String,
     val siteId: String,
     val currentNodeId: String,
@@ -126,7 +128,7 @@ class HackerStateRunning(
 
     fun toState(): HackerState {
         return HackerState(
-            userId, runId, siteId, currentNodeId, previousNodeId, targetNodeId,
+            userId, connectionId, runId, siteId, currentNodeId, previousNodeId, targetNodeId,
             HackerGeneralActivity.RUNNING, runActivity, hookPatrollerId, locked
         )
     }

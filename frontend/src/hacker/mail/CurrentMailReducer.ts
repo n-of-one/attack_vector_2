@@ -1,5 +1,5 @@
 import {AnyAction} from "redux";
-import {NAVIGATE_PAGE} from "../../common/menu/pageReducerX";
+import {NAVIGATE_PAGE} from "../../common/menu/pageReducer";
 
 export const SELECT_MAIL = "SELECT_MAIL";
 

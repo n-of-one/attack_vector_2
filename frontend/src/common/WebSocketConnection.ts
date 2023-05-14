@@ -2,8 +2,10 @@ import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer"
 import {SET_USER_ID} from "./reducer/UserIdReducer"
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT} from "../hacker/server/GenericServerActionProcessor"
-import {currentUser} from "./CurrentUser"
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../hacker/server/GenericServerActionProcessor"
+import {CONNECTION_TYPE_GENERAL, ConnectionType, currentUser} from "./CurrentUser"
+import {notify} from "./Notification";
+import {DISCONNECTED, NAVIGATE_PAGE} from "./menu/pageReducer";
 
 
 export const WEBSOCKET_MAIN = "av_ws"
@@ -22,7 +24,9 @@ export class WebSocketConnection {
 
     actions: { [key: string]: (action: any) => void } = {}
 
-    create(endpoint: string, store: Store, additionalOnWsOpen: () => void, waitForType: string | null = null) {
+    create(type: ConnectionType, store: Store, additionalOnWsOpen: () => void, waitForType: string | null = null) {
+        currentUser.type = type
+        const endpoint = (type === CONNECTION_TYPE_GENERAL) ? WEBSOCKET_MAIN : WEBSOCKET_ICE
         this.store = store
         const url = this.createUrl(endpoint)
         this.client = webstomp.client(url, {debug: false, heartbeat: {incoming: 0, outgoing: 0}})
@@ -31,7 +35,7 @@ export class WebSocketConnection {
             this.waitFor(waitForType, null)
         }
 
-        this.client.connect({"testHeader": "testValue"}, (event) => {
+        this.client.connect({}, (event) => {
             this.onWsOpen(event!, additionalOnWsOpen)
         }, (event) => {
             this.onWsConnectError(event)
@@ -104,7 +108,13 @@ export class WebSocketConnection {
         const action = JSON.parse(wsMessage.body)
 
         if (action.type === SERVER_FORCE_DISCONNECT) {
-            this.client.disconnect()
+            this.abort("Server forced disconnection.")
+        }
+        if (action.type === SERVER_USER_CONNECTION &&
+            currentUser.type === action.data.type &&
+            currentUser.connectionId !== action.data.connectionId) {
+
+            this.abort("Another browser tab was opened for hacking. \n\n Close or refresh this tab.")
         }
 
         if (this.waitingForType && action.type !== SERVER_ERROR) {
@@ -164,8 +174,10 @@ export class WebSocketConnection {
         this.subscriptions = []
     }
 
-    abort() {
+    abort(message: string) {
+        this.store.dispatch({type: NAVIGATE_PAGE, to: DISCONNECTED})
         this.client.disconnect()
+        notify({type: "fatal", message, title: "ERROR"})
     }
 
     addAction(actionName: string, actionMethod: (action: any) => void) {

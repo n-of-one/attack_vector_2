@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.n1.av2.backend.config.websocket.ConnectionUtil
 import org.n1.av2.backend.config.websocket.ICE_ENDPOINT
 import org.n1.av2.backend.config.websocket.MAIN_ENDPOINT
 import org.n1.av2.backend.entity.user.UserEntityService
@@ -31,16 +32,13 @@ class JwtAuthenticationFilter(
         var authentication: UserPrincipal? = null
 
         try {
-            val url = request.requestURL
-            val type = determineType(url)
-
             val jwt = getJwtFromRequest(request)
-
             if (jwt != null) {
                 if (tokenProvider.validateToken(jwt)) {
                     val userName = tokenProvider.getUserNameFromJWT(jwt)
                     val user = userEntityService.getByName(userName)
                     val connectionId = connectionUtil.create()
+                    val type = determineType(request.requestURI)
                     authentication = UserPrincipal("", connectionId, user, type)
                     SecurityContextHolder.getContext().authentication = authentication
                     currentUserService.set(user)
@@ -62,8 +60,7 @@ class JwtAuthenticationFilter(
         }
     }
 
-    private fun determineType(url: StringBuffer?): ConnectionType {
-        val path = url.toString().substringAfter("/")
+    private fun determineType(path: String): ConnectionType {
         return when (path) {
             MAIN_ENDPOINT -> ConnectionType.WS_GENERAL
             ICE_ENDPOINT -> ConnectionType.WS_ICE

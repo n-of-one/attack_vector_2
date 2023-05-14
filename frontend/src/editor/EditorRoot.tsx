@@ -4,9 +4,10 @@ import {EditorHome} from "./component/EditorHome"
 import {editorRootReducer, editorRootDefaultState, EditorState} from "./EditorRootReducer"
 import {Reducer, Store} from "redux"
 import {RequiresRole} from "../common/RequiresRole"
-import {WEBSOCKET_MAIN, webSocketConnection} from "../common/WebSocketConnection"
+import {webSocketConnection} from "../common/WebSocketConnection"
 import {configureStore} from "@reduxjs/toolkit"
 import {initEditorServerActions, SERVER_SITE_FULL} from "./server/EditorServerActionProcessor"
+import {CONNECTION_TYPE_GM} from "../common/CurrentUser";
 
 interface Props {
     siteId: string,
@@ -46,7 +47,7 @@ export class EditorRoot extends Component<Props> {
             devTools: developmentServer
         })
 
-        webSocketConnection.create(WEBSOCKET_MAIN, this.store, () => {
+        webSocketConnection.create(CONNECTION_TYPE_GM, this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + props.siteId)
             webSocketConnection.send("/av/editor/siteFull", props.siteId)
         }, SERVER_SITE_FULL)

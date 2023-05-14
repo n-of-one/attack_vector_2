@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
-import {WEBSOCKET_ICE, webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/WebSocketConnection";
 import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {PasswordContainer} from "./container/PasswordContainer";
@@ -11,6 +11,7 @@ import {initPasswordIceServerActions} from "./PasswordServerActionProcessor";
 import {ICE_INPUT_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
+import {CONNECTION_TYPE_ICE} from "../../common/CurrentUser";
 
 interface Props {
     iceId: string
@@ -22,7 +23,7 @@ export class PasswordRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = {iceId: props.iceId, activeTerminalId: ICE_INPUT_TERMINAL_ID}
+        const preLoadedState = {iceId: props.iceId, activeTerminalId: ICE_INPUT_TERMINAL_ID, currentPage: "password"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
@@ -33,7 +34,7 @@ export class PasswordRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(WEBSOCKET_ICE, this.store, () => {
+        webSocketConnection.create(CONNECTION_TYPE_ICE, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
             webSocketConnection.sendObject("/av/ice/password/enter", {iceId: props.iceId})
         });

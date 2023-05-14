@@ -2,10 +2,12 @@ import {createTerminalReducer, TerminalState} from "../../common/terminal/Termin
 import {ICE_DISPLAY_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {AnyAction, combineReducers} from "redux";
 import {tangleIceReducer, TangleIceState} from "./TangleIceReducer";
+import {pageReducer} from "../../common/menu/pageReducer";
 
 
 export interface TangleRootState {
     iceId: string,
+    currentPage: string,
     tangle: TangleIceState,
     displayTerminal: TerminalState,
 }
@@ -19,6 +21,7 @@ const noOpReducer = (state: string = "", action: AnyAction): string => {
 export const tangleRootReducer = combineReducers<TangleRootState>(
     {
         iceId: noOpReducer,
+        currentPage: pageReducer,
         tangle: tangleIceReducer,
         displayTerminal: displayTerminalReducer
     }

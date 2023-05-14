@@ -1,8 +1,15 @@
 import React from "react";
 import {NetwalkHome} from "./NetwalkHome";
-
+import {useSelector} from "react-redux";
+import {DISCONNECTED} from "../../../common/menu/pageReducer";
+import {Disconnected} from "../../../common/component/Disconnected";
+import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
 
 export const NetwalkContainer = () => {
+
+    const currentPage: string = useSelector((state: NetwalkRootState) =>  state.currentPage)
+    if (currentPage === DISCONNECTED) return <Disconnected/>
+
     return (
         <div className="container-fluid" data-bs-theme="dark">
             <div className="row">

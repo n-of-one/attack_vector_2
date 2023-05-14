@@ -7,6 +7,7 @@ import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
@@ -21,29 +22,31 @@ class UserConnectionService(
     private val logger = mu.KotlinLogging.logger {}
 
     fun connect(userPrincipal: UserPrincipal) {
-        val existingState = hackerStateEntityService.retrieve(userPrincipal.userId)
-         if (existingState.generalActivity == HackerGeneralActivity.OFFLINE) {
-            hackerStateEntityService.login(userPrincipal.userId)
-         }
+        hackerStateEntityService.login(userPrincipal.userId)
 
-        data class NewConnection(val connectionId: String, val type: ConnectionType)
-        stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, userPrincipal.type))
+        class NewConnection(val connectionId: String, val type: ConnectionType)
+        if (userPrincipal.user.type.hacker) {
+            stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, ConnectionType.WS_GENERAL))
+        }
     }
 
     fun sendTime() {
         stompService.reply(ServerActions.SERVER_TIME_SYNC, ZonedDateTime.now())
     }
 
-    fun disconnect() {
-        if (currentUserService.isSystemUser) return;
+    fun disconnect(userPrincipal: UserPrincipal) {
+        if (currentUserService.isSystemUser) return
 
-        val hackerState = hackerStateEntityService.retrieveForCurrentUser()
+        val hackerState = hackerStateEntityService.retrieve(userPrincipal.userId)
+        val connectionId = hackerStateEntityService.currentUserConnectionId()
+
+        if (hackerState.connectionId != connectionId) return // don't change the active session over another session disconnecting
 
         if (hackerState.generalActivity == HackerGeneralActivity.RUNNING && hackerState.runId != null) {
             runService.leaveRun(hackerState)
         }
 
-        hackerStateEntityService.goOffline(hackerState)
+        hackerStateEntityService.goOffline(userPrincipal)
     }
 
 }

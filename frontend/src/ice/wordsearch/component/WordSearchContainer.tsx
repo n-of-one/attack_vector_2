@@ -1,8 +1,17 @@
 import React from "react";
 import {WordSearchHome} from "./WordSearchHome";
+import {useSelector} from "react-redux";
+import {DISCONNECTED} from "../../../common/menu/pageReducer";
+import {Disconnected} from "../../../common/component/Disconnected";
+import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 
 
 export const WordSearchContainer = () => {
+
+    const currentPage: string =  useSelector((state: WordSearchRootState) =>  state.currentPage)
+    if (currentPage === DISCONNECTED) return <Disconnected/>
+
+
     return (
         <div className="container-fluid" data-bs-theme="dark">
             <div className="row">

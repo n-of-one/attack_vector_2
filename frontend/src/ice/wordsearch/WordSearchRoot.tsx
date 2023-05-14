@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
-import {WEBSOCKET_ICE, webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/WebSocketConnection";
 import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {WordSearchContainer} from "./component/WordSearchContainer";
@@ -10,6 +10,7 @@ import {initGenericServerActions} from "../../hacker/server/GenericServerActionP
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {wordSearchManager} from "./component/WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
+import {CONNECTION_TYPE_ICE} from "../../common/CurrentUser";
 
 interface Props {
     iceId: string
@@ -20,7 +21,7 @@ export class WordSearchRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = { iceId: props.iceId}
+        const preLoadedState = { iceId: props.iceId, currentPage: "wordSearch"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
@@ -31,7 +32,7 @@ export class WordSearchRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(WEBSOCKET_ICE, this.store, () => {
+        webSocketConnection.create(CONNECTION_TYPE_ICE, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
             webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: props.iceId})
         });

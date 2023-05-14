@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
-import { GmSites } from "./sites/GmSites"
 import {Provider} from 'react-redux'
 import {RequiresRole} from "../common/RequiresRole"
 import {configureStore} from "@reduxjs/toolkit"
-import {GM_SITES, NAVIGATE_PAGE} from "../common/menu/pageReducerX"
+import {GM_SITES, NAVIGATE_PAGE} from "../common/menu/pageReducer"
 import {Reducer, Store} from "redux"
 import {gmRootReducer, GmState} from "./GmRootReducer";
 import {GmPageChooser} from "./GmPageChooser";
-import {WEBSOCKET_MAIN, webSocketConnection} from "../common/WebSocketConnection";
+import {webSocketConnection} from "../common/WebSocketConnection";
 import {initGenericServerActions} from "../hacker/server/GenericServerActionProcessor";
+import {CONNECTION_TYPE_GM} from "../common/CurrentUser";
 
 
 interface Props { }
@@ -24,7 +24,7 @@ export class GmRoot extends Component<Props>{
             reducer: gmRootReducer as Reducer<GmState>
         })
 
-        webSocketConnection.create(WEBSOCKET_MAIN, this.gmStore, () => {
+        webSocketConnection.create(CONNECTION_TYPE_GM, this.gmStore, () => {
             webSocketConnection.send("/av/scan/scansOfPlayer", "")
         })
         initGenericServerActions()

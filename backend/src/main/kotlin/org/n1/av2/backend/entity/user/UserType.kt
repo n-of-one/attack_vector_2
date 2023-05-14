@@ -17,24 +17,25 @@ val ROLE_HACKER_MANAGER = AvAuthority ( "ROLE_HACKER_MANAGER" )    // can create
 val ROLE_MISSION_MANAGER = AvAuthority ( "ROLE_MISSION_MANAGER" )  // can create missions
 val ROLE_LOGS = AvAuthority ( "ROLE_LOGS" )        // can view logs
 
-enum class UserType(vararg authorizationsInput: GrantedAuthority) {
+enum class UserType(val hacker: Boolean, vararg authorizationsInput: GrantedAuthority) {
 
     // synthetic users that is nog logged in.
-    NOT_LOGGED_IN(),
+    NOT_LOGGED_IN(false),
 
     // regular player
-    HACKER(ROLE_USER, ROLE_HACKER),
+    HACKER(true, ROLE_USER, ROLE_HACKER),
 
     // player manager
-    HACKER_MANAGER(ROLE_USER, ROLE_HACKER_MANAGER, ROLE_HACKER),
+    HACKER_MANAGER(true, ROLE_USER, ROLE_HACKER_MANAGER, ROLE_HACKER),
 
     // Regular GM
-    GM(ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS),
+    GM(false, ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS),
     // For preparing system, backups, etc.
-    ADMIN(
+    ADMIN(false,
         ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS,
             ROLE_ADMIN
     );
+
 
     val authorities = authorizationsInput.toList()
 }
