@@ -32,7 +32,7 @@ class NetwalkManager extends GenericIceManager {
 
         if (!this.quickPlaying) {
             this.displayTerminal(20, "[warn]↼ Connecting to ice, initiating attack.");
-            this.displayTerminal(42, "↼ Detected [info]Dahana[/] network obfuscation.");
+            this.displayTerminal(42, "↼ Detected [info]Sanrachana[/] network obfuscation.");
             this.displayTerminal(6, "↼ Attempting automatic reconfiguration.");
             this.displayTerminal(34, "↼ Reconfiguring.");
             this.displayTerminal(50, "↺ Status check");

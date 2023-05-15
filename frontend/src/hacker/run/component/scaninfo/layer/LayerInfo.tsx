@@ -1,5 +1,5 @@
 import React from 'react'
-import {LayerType, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
+import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {ScanInfoOs} from "./ScanInfoOs"
 import {ScanInfoText} from "./ScanInfoText"
 import {Pad} from "../../../../../common/component/Pad"
@@ -11,16 +11,20 @@ const renderLayer = (layer: LayerDetails) => {
     switch (layer.type) {
         case OS:
             return <ScanInfoOs layer={layer}/>
+        case TEXT:
+            return <ScanInfoText layer={layer}/>
+        case TIMER_TRIGGER:
+            return <ScanInfoTimerTrigger layer={layer}/>
         case PASSWORD_ICE:
             return <ScanInfoIce layer={layer} iceDescription="static password"/>
         case TANGLE_ICE:
             return <ScanInfoIce layer={layer} iceDescription="tangle"/>
         case WORD_SEARCH_ICE:
             return <ScanInfoIce layer={layer} iceDescription="word search"/>
-        case TEXT:
-            return <ScanInfoText layer={layer}/>
-        case TIMER_TRIGGER:
-            return <ScanInfoTimerTrigger layer={layer}/>
+        case NETWALK_ICE:
+            return <ScanInfoIce layer={layer} iceDescription="netwalk"/>
+        case SLOW_ICE:
+            return <ScanInfoIce layer={layer} iceDescription="slow"/>
         default:
             return <><span className="text-danger"> Unknown layer</span></>
     }

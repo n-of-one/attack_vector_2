@@ -19,7 +19,7 @@ export const TangleIceHome = () => {
                     <div className="col-lg-12">
                         <h4 className="text-success">
                             <strong>
-                                Ice: <span className="text-info">Reva</span>&nbsp;<br/>
+                                Ice: <span className="text-info">Gaanth</span>&nbsp;<br/>
                                 Strength: <span className="text-info">{ice.strength}</span><br/>
                             </strong>
                         </h4>

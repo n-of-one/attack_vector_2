@@ -67,7 +67,7 @@ export const PasswordIceHome = () => {
                     <div className="col-lg-12">
                         <h4 className="text-success">
                             <strong>
-                                Ice: <span className="text-info">Aruna</span>&nbsp;<br/>
+                                Ice: <span className="text-info">Rahasy</span>&nbsp;<br/>
                                 Strength: <span className="text-info">Unknown</span><br/>
                             </strong>
                         </h4>
@@ -78,9 +78,6 @@ export const PasswordIceHome = () => {
                     <div className="col-lg-3">
                         <div className="text-left">
                             <div className="text">
-                                Community &nbsp;avg 14:33 &nbsp;best 03:33 &nbsp;(44%)<br/>
-                                You &nbsp; &nbsp; &nbsp; &nbsp;avg 12:00 &nbsp;best 08:23 &nbsp;(85%)<br/>
-                                You &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -02:33 &nbsp; &nbsp; &nbsp;+04:50<br/>
                             </div>
                         </div>
                     </div>

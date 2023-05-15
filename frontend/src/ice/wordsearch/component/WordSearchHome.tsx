@@ -32,7 +32,7 @@ export const WordSearchHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Pumer" strength={puzzle.strength} />
+                        <IceTitle name="Jaal" strength={puzzle.strength} />
                     </div>
                     <div className="col-lg-9" style={{paddingTop: "4px"}}>
                         <Terminal terminalState={displayTerminal} height={84} />

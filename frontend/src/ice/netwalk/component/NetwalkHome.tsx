@@ -62,7 +62,7 @@ export const NetwalkHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Dahana" strength={strength} />
+                        <IceTitle name="Sanrachana" strength={strength} />
                     </div>
                     <div className="col-lg-9" style={{paddingTop: "4px"}}>
                         <DisplayTerminal />
