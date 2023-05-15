@@ -3,6 +3,8 @@ package org.n1.av2.backend.model.iam
 import org.n1.av2.backend.entity.user.User
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 
 enum class ConnectionType {
     WS_GENERAL,
@@ -18,6 +20,12 @@ data class UserPrincipal(
     val type: ConnectionType,
     val iceId: String? = null
 ): Authentication {
+
+    companion object {
+        fun fromContext(): UserPrincipal {
+            return SecurityContextHolder.getContext().authentication as UserPrincipal
+        }
+    }
 
     /// Used in websocket connection
     override fun getName() = _name

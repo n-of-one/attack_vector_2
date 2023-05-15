@@ -4,6 +4,7 @@ import {useSelector} from "react-redux";
 import {DISCONNECTED} from "../../../common/menu/pageReducer";
 import {Disconnected} from "../../../common/component/Disconnected";
 import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
+import {IceHackerPresence} from "../../common/IceHackerPresence";
 
 export const NetwalkContainer = () => {
 
@@ -16,7 +17,7 @@ export const NetwalkContainer = () => {
                 <div className="col-lg-2">
                     <div className="row">
                         <div className="col-lg-12">
-                            <span className="text">&nbsp;</span>
+                            <IceHackerPresence />
                         </div>
                     </div>
                     <div className="row">

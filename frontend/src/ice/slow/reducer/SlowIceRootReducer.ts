@@ -3,11 +3,13 @@ import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalId
 import {AnyAction, combineReducers} from "redux";
 import {SlowIceState, slowIceStateReducer} from "./SlowIceReducer";
 import {pageReducer} from "../../../common/menu/pageReducer";
+import {iceHackersReducer, IceHackers} from "../../common/IceHackersReducer";
 
 
 export interface SlowIceRootState {
     iceId: string,
     currentPage: string,
+    hackers: IceHackers,
     iceState: SlowIceState,
     displayTerminal: TerminalState,
 }
@@ -22,6 +24,7 @@ export const slowIceRootReducer = combineReducers<SlowIceRootState>(
     {
         iceId: noOpReducer,
         currentPage: pageReducer,
+        hackers: iceHackersReducer,
         iceState: slowIceStateReducer,
         displayTerminal: displayTerminalReducer
     }

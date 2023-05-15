@@ -5,6 +5,7 @@ import {useSelector} from "react-redux";
 import {PasswordRootState} from "../PasswordRootReducer";
 import {DISCONNECTED} from "../../../common/menu/pageReducer";
 import {Disconnected} from "../../../common/component/Disconnected";
+import {IceHackerPresence} from "../../common/IceHackerPresence";
 
 export const PasswordContainer = () => {
 
@@ -19,7 +20,7 @@ export const PasswordContainer = () => {
                 <div className="col-lg-2">
                     <div className="row">
                         <div className="col-lg-12">
-                            <span className="text">&nbsp;</span>
+                            <IceHackerPresence />
                         </div>
                     </div>
                     <div className="row">

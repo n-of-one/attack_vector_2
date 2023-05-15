@@ -5,11 +5,13 @@ import {WordSearchState, wordSearchStateReducer} from "./WordSearchStateReducer"
 import {WordSearchPuzzle, wordSearchPuzzleReducer} from "./WordSearchPuzzleReducer";
 import {UIState, wordSearchUiStateReducer} from "./WordSearchUiStateReducer";
 import {pageReducer} from "../../../common/menu/pageReducer";
+import {iceHackersReducer, IceHackers} from "../../common/IceHackersReducer";
 
 
 export interface WordSearchRootState {
     iceId: string,
     currentPage: string,
+    hackers: IceHackers,
     state: WordSearchState,
     puzzle: WordSearchPuzzle,
     uiState: UIState
@@ -26,6 +28,7 @@ export const wordSearchRootReducer = combineReducers<WordSearchRootState>(
     {
         iceId: noOpReducer,
         currentPage: pageReducer,
+        hackers: iceHackersReducer,
         state: wordSearchStateReducer,
         puzzle: wordSearchPuzzleReducer,
         uiState: wordSearchUiStateReducer,

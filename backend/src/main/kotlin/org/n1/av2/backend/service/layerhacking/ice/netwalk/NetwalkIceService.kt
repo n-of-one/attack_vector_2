@@ -9,6 +9,7 @@ import org.n1.av2.backend.entity.site.layer.NetwalkIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
+import org.n1.av2.backend.service.user.UserIceHackingService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
@@ -17,8 +18,10 @@ import kotlin.jvm.optionals.getOrElse
 class NetwalkIceService(
     private val stompService: StompService,
     private val netwalkStatusRepo: NetwalkStatusRepo,
-    val hackedUtil: HackedUtil,
-) {
+    private val hackedUtil: HackedUtil,
+    private val userIceHackingService: UserIceHackingService,
+
+    ) {
 
     companion object {
         const val MAX_CREATE_ATTEMPTS = 20
@@ -56,6 +59,7 @@ class NetwalkIceService(
         val netwalk = netwalkStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         if (netwalk.hacked) error("This ice has already been hacked.")
         stompService.reply(ServerActions.SERVER_ENTER_ICE_NETWALK, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.hacked, netwalk.wrapping))
+        userIceHackingService.enter(iceId)
     }
 
     fun rotate(iceId: String, x: Int, y: Int) {

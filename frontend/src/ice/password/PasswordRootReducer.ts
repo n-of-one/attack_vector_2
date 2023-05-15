@@ -3,11 +3,13 @@ import {CHAT_TERMINAL_ID, ICE_DISPLAY_TERMINAL_ID, ICE_INPUT_TERMINAL_ID} from "
 import {AnyAction, combineReducers} from "redux";
 import {PasswordIceI, passwordIceReducer} from "./container/PasswordIceReducer";
 import {pageReducer} from "../../common/menu/pageReducer";
+import {iceHackersReducer, IceHackers} from "../common/IceHackersReducer";
 
 
 export interface PasswordRootState {
     iceId: string,
     currentPage: string,
+    hackers: IceHackers,
     password: PasswordIceI,
     displayTerminal: TerminalState,
     inputTerminal: TerminalState,
@@ -27,6 +29,7 @@ export const passwordRootReducer = combineReducers<PasswordRootState>(
     {
         iceId: noOpReducer,
         currentPage: pageReducer,
+        hackers: iceHackersReducer,
         password: passwordIceReducer,
         activeTerminalId: noOpReducer,
         displayTerminal: displayTerminalReducer,

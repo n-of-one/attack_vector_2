@@ -8,6 +8,7 @@ import org.n1.av2.backend.entity.site.layer.WordSearchIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
+import org.n1.av2.backend.service.user.UserIceHackingService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
@@ -18,8 +19,10 @@ import kotlin.system.measureTimeMillis
 class WordSearchService(
     private val wordSearchStatusRepo: WordSearchStatusRepo,
     private val stompService: StompService,
-    val hackedUtil: HackedUtil,
-) {
+    private val hackedUtil: HackedUtil,
+    private val userIceHackingService: UserIceHackingService,
+
+    ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -69,6 +72,7 @@ class WordSearchService(
         val iceStatus = wordSearchStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
         if (iceStatus.hacked) error("This ice has already been hacked.")
         stompService.reply(ServerActions.SERVER_ENTER_ICE_WORD_SEARCH, iceStatus)
+        userIceHackingService.enter(iceId)
     }
 
     class WordSearchUpdate(

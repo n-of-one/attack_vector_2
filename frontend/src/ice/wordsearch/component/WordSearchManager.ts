@@ -15,7 +15,7 @@ class WordSearchManager extends GenericIceManager {
     dispatch: Dispatch = null as unknown as Dispatch
     schedule: Schedule = null as unknown as Schedule
 
-    quickPlaying = false
+    quickPlaying = true
 
     init(store: Store) {
         this.store = store;

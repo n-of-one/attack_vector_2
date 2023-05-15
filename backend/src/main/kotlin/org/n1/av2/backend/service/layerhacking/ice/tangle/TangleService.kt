@@ -11,6 +11,7 @@ import org.n1.av2.backend.entity.site.layer.TangleIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
+import org.n1.av2.backend.service.user.UserIceHackingService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.web.ws.ice.TangleIceController
 import org.springframework.stereotype.Service
@@ -21,10 +22,10 @@ private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: I
 
 @Service
 class TangleService(
-    val tangleIceStatusRepo: TangleIceStatusRepo,
-    val nodeEntityService: NodeEntityService,
-    val stompService: StompService,
-    val hackedUtil: HackedUtil,
+    private val tangleIceStatusRepo: TangleIceStatusRepo,
+    private val stompService: StompService,
+    private val hackedUtil: HackedUtil,
+    private val userIceHackingService: UserIceHackingService,
 ) {
 
     companion object {
@@ -48,6 +49,7 @@ class TangleService(
         if (iceStatus.hacked) error("This ice has already been hacked.")
         val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines)
         stompService.reply(ServerActions.SERVER_ENTER_ICE_TANGLE, uiState)
+        userIceHackingService.enter(iceId)
     }
 
 

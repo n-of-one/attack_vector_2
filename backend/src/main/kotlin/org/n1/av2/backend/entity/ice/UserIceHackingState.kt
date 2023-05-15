@@ -14,6 +14,7 @@ data class UserIceHackingState(
 
 @Repository
 interface UserIceHackingStateRepository: CrudRepository<UserIceHackingState, String> {
+    fun findByIceId(iceId: String): List<UserIceHackingState>
 
 }
 

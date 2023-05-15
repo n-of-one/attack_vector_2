@@ -9,6 +9,7 @@ import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
+import org.n1.av2.backend.service.user.UserIceHackingService
 import org.n1.av2.backend.util.createId
 import java.time.ZonedDateTime
 import java.util.*
@@ -16,12 +17,13 @@ import kotlin.jvm.optionals.getOrElse
 
 @org.springframework.stereotype.Service
 class PasswordService(
-    val nodeEntityService: NodeEntityService,
-    val passwordIceStatusRepo: PasswordIceStatusRepo,
-    val time: TimeService,
-    val stompService: StompService,
-    val hackedUtil: HackedUtil,
-    ) {
+    private val nodeEntityService: NodeEntityService,
+    private val passwordIceStatusRepo: PasswordIceStatusRepo,
+    private val time: TimeService,
+    private val stompService: StompService,
+    private val hackedUtil: HackedUtil,
+    private val userIceHackingService: UserIceHackingService,
+) {
 
     data class UiState(
         val layerId: String,
@@ -44,12 +46,14 @@ class PasswordService(
         val uiState = UiState(null, false, hintToDisplay, iceStatus)
 
         stompService.reply(ServerActions.SERVER_ENTER_ICE_PASSWORD, uiState)
+        userIceHackingService.enter(iceId)
+
     }
 
     class SubmitPassword(val iceId: String, val password: String)
 
     fun submitAttempt(command: SubmitPassword) {
-        val iceStatus = passwordIceStatusRepo.findById(command.iceId).getOrElse {  error("Ice not found for id: ${command.iceId}") }
+        val iceStatus = passwordIceStatusRepo.findById(command.iceId).getOrElse { error("Ice not found for id: ${command.iceId}") }
         val layer = getLayer(iceStatus)
 
         when {
@@ -105,7 +109,7 @@ class PasswordService(
         return if (iceStatus.attempts.size > 0) layer.hint else null
     }
 
-    private fun getLayer(iceStatus: PasswordIceStatus) : PasswordIceLayer {
+    private fun getLayer(iceStatus: PasswordIceStatus): PasswordIceLayer {
         val node = nodeEntityService.getById(iceStatus.nodeId)
         val layer = node.getLayerById(iceStatus.layerId)
         if (layer !is PasswordIceLayer) error("Wrong layer type/data for layer: ${layer.id}")

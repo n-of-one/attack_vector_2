@@ -10,6 +10,7 @@ import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.layerhacking.ice.slow.SlowIceCreator.Companion.unitsPerSecond
+import org.n1.av2.backend.service.user.UserIceHackingService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
@@ -19,6 +20,7 @@ class SlowIceService(
     private val slowIceStatusRepo: SlowIceStatusRepo,
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
+    private val userIceHackingService: UserIceHackingService,
 ) {
 
     fun createIce(layer: SlowIceLayer, nodeId: String, runId: String): SlowIceStatus {
@@ -55,6 +57,7 @@ class SlowIceService(
             ServerActions.SERVER_ENTER_ICE_SLOW,
             SlowIceEnter(iceId, slowIce.totalUnits, slowIce.unitsHacked, slowIce.strength, slowIce.hacked, unitsPerSecond)
         )
+        userIceHackingService.enter(iceId)
     }
 
     fun hackedUnits(iceId: String, units: Int) {
