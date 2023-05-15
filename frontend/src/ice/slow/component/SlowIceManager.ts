@@ -2,11 +2,12 @@ import {Schedule} from "../../../common/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {GenericIceManager} from "../../GenericIceManager";
 import {Dispatch, Store} from "redux";
-import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
+import {TERMINAL_CLEAR, TERMINAL_REPLACE_LAST_LINE} from "../../../common/terminal/TerminalReducer";
 import {slowIceCanvas} from "../canvas/SlowIceCanvas";
 import {SlowIceEnter, SlowIceStatusUpdate} from "../SlowIceServerActionProcessor";
 import {SLOW_ICE_BEGIN} from "../reducer/SlowIceReducer";
 import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {formatTimeInterval} from "../../../common/Util";
 
 const DELAY_BETWEEN_HACK_TICKS_S = 5
 
@@ -17,11 +18,15 @@ class SlowIceManager extends GenericIceManager {
     schedule: Schedule = null as unknown as Schedule
 
     quickPlaying = false
-    unitsPerSecond = 0
 
     iceId: string = ""
 
     hackingIntervalId: ReturnType<typeof setInterval> | null = null
+    reportingIntervalId: ReturnType<typeof setInterval> | null = null
+
+    totalUnits = -1
+    unitsHacked = -1
+    lastUnitsHacked = -1
 
     init(store: Store) {
         this.store = store;
@@ -31,7 +36,9 @@ class SlowIceManager extends GenericIceManager {
 
     enter(iceId: string, data: SlowIceEnter) {
         this.iceId = iceId
-        this.unitsPerSecond = data.unitsPerSecond
+        this.unitsHacked = data.unitsHacked
+        this.lastUnitsHacked = data.unitsHacked
+        this.totalUnits = data.totalUnits
 
         slowIceCanvas.init(iceId, data, this.store)
 
@@ -41,7 +48,7 @@ class SlowIceManager extends GenericIceManager {
         if (!this.quickPlaying) {
             this.displayTerminal(20, "[warn]↼ Connecting to ice, initiating attack.")
             this.displayTerminal(42, "↼ Analysing [info]Taar[/] elliptic curve encryption.")
-            this.displayTerminal(6, `↼ ECC strength: [warn]${data.totalUnits}[/].`)
+            this.displayTerminal(6, `↼ ECC strength: [warn]${data.totalUnits}[/] units.`)
             this.displayTerminal(5, "")
             this.displayTerminal(15, "↼ Initializing curve approximation arrays.")
             this.displayTerminal(20, "↼ Generating block matrix.")
@@ -53,11 +60,29 @@ class SlowIceManager extends GenericIceManager {
         this.displayTerminal(5, "")
         this.displayTerminal(15, "↼ [i]Automatic brute force in progress.")
         this.displayTerminal(20, `↼ Updating progress every [primary]${DELAY_BETWEEN_HACK_TICKS_S}[/] seconds.`)
-        this.schedule.run(0, () => {
+        this.displayTerminal(0, "")
+        this.displayTerminal(0, "")
+        this.schedule.run(10, () => {
             this.hackingIntervalId = setInterval(() => {
+                const random = Math.floor(Math.random() * 11) - 5
+                const unitsHacked = data.unitsPerSecond * DELAY_BETWEEN_HACK_TICKS_S + random
+
                 webSocketConnection.sendObject("/av/ice/slowIce/hackedUnits", {
-                    iceId: this.iceId, units: data.unitsPerSecond * DELAY_BETWEEN_HACK_TICKS_S
+                    iceId: this.iceId, units: unitsHacked
                 })
+            }, DELAY_BETWEEN_HACK_TICKS_S * 1000)
+        })
+        this.schedule.run(10, () => {
+            this.reportingIntervalId = setInterval(() => {
+                const progress = this.unitsHacked - this.lastUnitsHacked
+                const unitsLeft = this.totalUnits - this.unitsHacked
+                const speed = Math.floor(progress / DELAY_BETWEEN_HACK_TICKS_S)
+                this.lastUnitsHacked = this.unitsHacked
+                const secondsLeft = Math.floor(unitsLeft / speed)
+
+                const timeLeft = formatTimeInterval(secondsLeft)
+                this.schedule.dispatch(0, {type: TERMINAL_REPLACE_LAST_LINE, terminalId: ICE_DISPLAY_TERMINAL_ID, data: `Speed: [info]${speed}[/] units/s. To go: ${timeLeft}.`})
+
             }, DELAY_BETWEEN_HACK_TICKS_S * 1000)
         })
     }
@@ -65,6 +90,7 @@ class SlowIceManager extends GenericIceManager {
 
     serverSentUpdate(data: SlowIceStatusUpdate) {
         slowIceCanvas.update(data)
+        this.unitsHacked = data.unitsHacked
 
         if (data.hacked) {
             slowIceCanvas.finish()

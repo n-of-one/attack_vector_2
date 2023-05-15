@@ -14,10 +14,12 @@ export const SERVER_TERMINAL_RECEIVE = "SERVER_TERMINAL_RECEIVE"
 export const TERMINAL_CLEAR = "TERMINAL_CLEAR"
 export const TERMINAL_LOCK = "TERMINAL_LOCK"
 export const TERMINAL_UNLOCK = "TERMINAL_UNLOCK"
+export const TERMINAL_REPLACE_LAST_LINE = "TERMINAL_REMOVE_LAST_LINE"
 
 export enum TerminalLineType {
     TEXT,
 }
+
 export interface TerminalLine {
     type: TerminalLineType,
     data: string,
@@ -80,7 +82,7 @@ type TerminalReducer = (state: TerminalState | undefined, action: AnyAction) => 
 export const createTerminalReducer = (id: string, config: CreatTerminalConfig): TerminalReducer => {
     const defaultState = {...terminalStateDefault, ...config, id: id}
 
-    return (terminal: TerminalState | undefined = defaultState , action: AnyAction) => {
+    return (terminal: TerminalState | undefined = defaultState, action: AnyAction) => {
         if (action.type === TERMINAL_UPDATE) {
             let state = terminal
             for (let i = 0; i < TERMINAL_UPDATES_PER_TICK; i++) {
@@ -115,6 +117,8 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
                 return terminalSetReadonly(terminal, false)
             case SERVER_TERMINAL_SYNTAX_HIGHLIGHTING:
                 return processSyntaxHighlighting(terminal, action.data)
+            case TERMINAL_REPLACE_LAST_LINE:
+                return replaceLastLine(terminal, action.data)
             default:
                 return terminal
         }
@@ -235,16 +239,17 @@ const handleHistory = (terminal: TerminalState, keyCode: number): TerminalState 
     if (index < 0) {
         return terminal
     }
-    if  (index >= terminal.history.length) {
-        return {...terminal, historyIndex: terminal.history.length, input: "" }
+    if (index >= terminal.history.length) {
+        return {...terminal, historyIndex: terminal.history.length, input: ""}
     }
-    return {...terminal, historyIndex: index, input: terminal.history[index] }
+    return {...terminal, historyIndex: index, input: terminal.history[index]}
 
 }
 
 export interface TerminalSubmitActionData {
     command: string
 }
+
 const handlePressEnter = (terminal: TerminalState, action: TerminalSubmitActionData): TerminalState => {
     const line = terminal.prompt + action.command
     const lines = limitLines([...terminal.lines, {type: "text", data: line, class: ["input"]}])
@@ -295,4 +300,13 @@ const terminalSetReadonly = (terminal: TerminalState, readOnly: boolean) => {
 
 const processSyntaxHighlighting = (terminal: TerminalState, data: any) => {
     return {...terminal, syntaxHighlighting: data.highlighting}
+}
+
+const replaceLastLine = (terminal: TerminalState, line: string) => {
+    const lines = [...terminal.lines]
+    if (terminal.lines.length > 0) {
+        lines.pop()
+    }
+    lines.push({type: TerminalLineType.TEXT, data: line})
+    return {...terminal, lines: lines}
 }

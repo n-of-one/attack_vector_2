@@ -1,5 +1,5 @@
 import React from 'react'
-import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
+import {NETWALK_ICE, OS, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {ScanInfoOs} from "./ScanInfoOs"
 import {ScanInfoText} from "./ScanInfoText"
 import {Pad} from "../../../../../common/component/Pad"

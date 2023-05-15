@@ -11,7 +11,7 @@ const imageFileName = (type: string) => {
     return root + fileName;
 }
 
-
+/* eslint jsx-a11y/alt-text: 0*/
 export const IceHackerPresence = () => {
 
     const hackerState = useSelector((state: WordSearchRootState) => state.hackers)
@@ -22,7 +22,7 @@ export const IceHackerPresence = () => {
             <br/>
             <div>
                 {hackerList.map((hacker: IceHacker) => <div>
-                        <img src={imageFileName(hacker.icon)} height="30" width="30"/> {hacker.name}
+                        <img src={imageFileName(hacker.icon)} height="30" width="30" key={hacker.userId}/> {hacker.name}
                     </div>
                 )}
             </div>
