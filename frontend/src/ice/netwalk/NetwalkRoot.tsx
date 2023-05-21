@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection} from "../../common/WebSocketConnection";
-import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {NetwalkContainer} from "./component/NetwalkContainer";
 import {NetwalkRootState, netwalkRootReducer} from "./reducer/NetwalkRootReducer";
@@ -15,20 +14,21 @@ import {CONNECTION_TYPE_ICE} from "../../common/CurrentUser";
 interface Props {
     iceId: string
 }
+
 export class NetwalkRoot extends Component<Props> {
 
     store: Store
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = { iceId: props.iceId, currentPage: "netwalk"}
+        const preLoadedState = {iceId: props.iceId, currentPage: "netwalk"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
         this.store = configureStore({
             reducer: netwalkRootReducer as Reducer<NetwalkRootState>,
             preloadedState: preLoadedState,
-            middleware: (getDefaultMiddleware) =>  [...getDefaultMiddleware()],
+            middleware: (getDefaultMiddleware) => [...getDefaultMiddleware()],
             devTools: isDevelopmentServer
         })
 
@@ -44,12 +44,10 @@ export class NetwalkRoot extends Component<Props> {
     }
 
     render() {
-        return(
-            <RequiresRole requires="ROLE_HACKER">
-                <Provider store={this.store}>
-                    <NetwalkContainer />
-                </Provider>
-            </RequiresRole>
+        return (
+            <Provider store={this.store}>
+                <NetwalkContainer/>
+            </Provider>
         )
     }
 }

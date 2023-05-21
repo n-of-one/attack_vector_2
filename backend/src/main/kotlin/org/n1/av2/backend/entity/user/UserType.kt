@@ -12,9 +12,10 @@ val ROLE_USER = AvAuthority( "ROLE_USER" )        // a user, can log in
 val ROLE_HACKER = AvAuthority ( "ROLE_HACKER" )    // can do hacking
 val ROLE_SITE_MANAGER = AvAuthority ( "ROLE_SITE_MANAGER" ) // can create and manage sites
 val ROLE_ADMIN = AvAuthority ( "ROLE_ADMIN" )                   // can do admin stuff like backup & restore
-val ROLE_USER_MANAGER = AvAuthority ( "ROLE_USER_MANAGER" )      // can create and edit usersr
+val ROLE_USER_MANAGER = AvAuthority ( "ROLE_USER_MANAGER" )      // can create and edit user
 val ROLE_HACKER_MANAGER = AvAuthority ( "ROLE_HACKER_MANAGER" )    // can create/edit hackers, a lesser version of user manager, cannot create gms or admins
 val ROLE_MISSION_MANAGER = AvAuthority ( "ROLE_MISSION_MANAGER" )  // can create missions
+val ROLE_GM = AvAuthority ( "ROLE_GM" )  // can see GM only data
 val ROLE_LOGS = AvAuthority ( "ROLE_LOGS" )        // can view logs
 
 enum class UserType(val hacker: Boolean, vararg authorizationsInput: GrantedAuthority) {
@@ -29,11 +30,11 @@ enum class UserType(val hacker: Boolean, vararg authorizationsInput: GrantedAuth
     HACKER_MANAGER(true, ROLE_USER, ROLE_HACKER_MANAGER, ROLE_HACKER),
 
     // Regular GM
-    GM(false, ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS),
+    GM(false, ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS, ROLE_GM),
     // For preparing system, backups, etc.
     ADMIN(false,
         ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS,
-            ROLE_ADMIN
+            ROLE_ADMIN,
     );
 
 

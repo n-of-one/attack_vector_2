@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection} from "../../common/WebSocketConnection";
-import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {PasswordContainer} from "./container/PasswordContainer";
 import {passwordRootReducer, PasswordRootState} from "./PasswordRootReducer";
@@ -47,11 +46,9 @@ export class PasswordRoot extends Component<Props> {
 
     render() {
         return (
-            <RequiresRole requires="ROLE_HACKER">
-                <Provider store={this.store}>
-                    <PasswordContainer/>
-                </Provider>
-            </RequiresRole>
+            <Provider store={this.store}>
+                <PasswordContainer/>
+            </Provider>
         )
     }
 }

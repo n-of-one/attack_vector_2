@@ -1,6 +1,8 @@
 package org.n1.av2.backend.config.security
 
+import org.n1.av2.backend.entity.user.ROLE_GM
 import org.n1.av2.backend.entity.user.ROLE_HACKER
+import org.n1.av2.backend.entity.user.ROLE_SITE_MANAGER
 import org.n1.av2.backend.entity.user.ROLE_USER
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 
 /**
@@ -22,6 +26,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
     @Bean
     @Throws(Exception::class)
     fun configure(http: HttpSecurity): SecurityFilterChain {
+
         http
 //                .exceptionHandling()
 //                .authenticationEntryPoint(unauthorizedHandler)
@@ -31,31 +36,27 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .and()
             .authorizeHttpRequests()
 
-            .requestMatchers("/av_ws").hasAuthority(ROLE_USER.authority.toString())
-            .requestMatchers("/ice_ws").hasAuthority(ROLE_USER.authority.toString())
+            .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**",
+                "/favicon.ico", "/asset-manifest.json").permitAll()
 
-            .requestMatchers("/login/*", "/api/login", "/signUp").permitAll()
-            .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority.toString())
+            .requestMatchers("/localLogout", "/loggedOut", "/login", "/sso",).permitAll()
+            .requestMatchers("/about").permitAll()
+
+            .requestMatchers("/av_ws").hasAuthority(ROLE_USER.authority)
+            .requestMatchers("/ice_ws").hasAuthority(ROLE_USER.authority)
+
+            .requestMatchers("/login/*", "/api/login", "/signUp", "/logout").permitAll()
+            .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority)
 
             // HTML routes
-            .requestMatchers("/").permitAll()
-            .requestMatchers("/ice/**").hasAuthority(ROLE_HACKER.authority.toString())
-            .requestMatchers("/hacker/**").hasAuthority(ROLE_USER.authority.toString())
-            .requestMatchers("/gm/**").hasAuthority(ROLE_USER.authority.toString())
-            .requestMatchers("/about").permitAll()
+            .requestMatchers("/hacker/**").permitAll()
+            .requestMatchers("/ice/**").permitAll()
+            .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
+            .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)
             .requestMatchers("/manual/**").permitAll()
-//
-            .and()
-            .logout()
-            .permitAll()
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/")
-            .invalidateHttpSession(true)
-//
             .and()
             .csrf()
             .disable()
-
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
@@ -80,4 +81,11 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 //    }
 
 
+}
+
+@Configuration
+class WebConfiguration : WebMvcConfigurer {
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/**").allowedOrigins("http://localhost.eosfrontier.space").allowedMethods("*")
+    }
 }

@@ -27,20 +27,18 @@ class JwtTokenProvider {
 
     fun generateJwt(user: User): String {
 
-
         val now = Date()
         val expiryDate = Date(now.time + jwtExpirationInMs)
 
-
         return Jwts.builder()
-                .setSubject(user.name)
+                .setSubject(user.id)
                 .setIssuedAt(Date())
                 .setExpiration(expiryDate)
                 .signWith(key)
                 .compact()
     }
 
-    fun getUserNameFromJWT(token: String): String {
+    fun getUserIdFromJWT(token: String): String {
         val claims = JwtParser
                 .parseClaimsJws(token)
                 .body

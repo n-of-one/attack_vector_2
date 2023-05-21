@@ -5,12 +5,12 @@ import {mailRootReducer, MailRootState} from "./mail/MailRootReducer";
 import {runRootReducer, RunState} from "./run/RunRootReducer";
 import {createTerminalReducer, TerminalState} from "../common/terminal/TerminalReducer";
 import {themeReducer} from "../common/reducer/ThemeReducer";
-import {userIdReducer} from "../common/reducer/UserIdReducer";
 import {HackerPresence, hackersReducer} from "./run/reducer/HackersReducer";
 import {ActiveTerminalId, activeTerminalIdReducer, MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
 import {Users, usersReducer} from "../gm/GmRootReducer";
+import {currentUserReducer, GenericUserRootState, User} from "../common/users/UserReducer";
 
-export interface HackerState {
+export interface HackerState extends GenericUserRootState {
     currentPage: string,
     run: RunState,
     home: HomeState,
@@ -20,7 +20,7 @@ export interface HackerState {
     activeTerminalId:ActiveTerminalId,
     theme: string,
     users: Users,
-    userId: string
+    currentUser: User | null,
 }
 
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true})
@@ -34,6 +34,6 @@ export const hackerRootReducer = combineReducers({
     terminal: mainTerminalReducer,
     activeTerminalId: activeTerminalIdReducer,
     theme: themeReducer,
-    userId: userIdReducer,
     users: usersReducer,
+    currentUser: currentUserReducer,
 })

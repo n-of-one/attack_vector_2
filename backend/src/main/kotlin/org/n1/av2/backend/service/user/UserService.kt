@@ -19,12 +19,12 @@ class UserService(
     class UserOverview(
         val id: String,
         val name: String,
-        val playerName: String?,
-        val characterName: String?
+        val characterName: String?,
+        val note: String?
     )
 
     fun overview() {
-        val message = filteredUsers().map { UserOverview(it.id, it.name, it.hacker?.playerName, it.hacker?.characterName) }
+        val message = filteredUsers().map { UserOverview(it.id, it.name, it.hacker?.characterName, it.gmNote, ) }
         stompService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
     }
 
@@ -36,20 +36,26 @@ class UserService(
         return all
     }
 
-    fun create(name: String) {
+    fun createFromScreen(name: String, externalId: String? = null) {
+        val user = create(name, externalId)
+        overview()
+        select(user.id)
+    }
+
+    fun create(name: String, externalId: String? = null, type: UserType = UserType.HACKER, hacker: Hacker? = null): User {
         if (userEntityService.findByNameIgnoreCase(name) != null) {
             throw ValidationException("User with name $name already exists.")
         }
+        val userId = userEntityService.createUserId()
         val userInput = User(
-            id = name,
+            id = userId,
+            externalId = externalId,
             email = "",
             name = name,
-            type = UserType.HACKER,
-            hacker = null
+            type = type,
+            hacker = hacker
         )
-        val user = userEntityService.save(userInput)
-        overview()
-        select(user.id)
+        return userEntityService.save(userInput)
     }
 
     fun select(userId: String) {
@@ -63,7 +69,7 @@ class UserService(
             "name" -> user.copy(name = value)
             "email" -> user.copy(email = value)
             "type" -> changeType(user, value)
-            "playerName" -> user.copy(hacker = user.hacker?.copy(playerName = value))
+            "gmNote" -> user.copy(gmNote = value)
             "characterName" -> user.copy(hacker = user.hacker?.copy(characterName = value))
             "hackerIcon" -> user.copy(hacker = user.hacker?.copy(icon = HackerIcon.valueOf(value)))
             "skillHacker" -> changeSkill(user, field, value)
@@ -83,7 +89,7 @@ class UserService(
         if (user.hacker != null) {
             return user.copy(type = UserType.valueOf(newType))
         }
-        val newHacker = Hacker(HackerIcon.BEAR, HackerSkill(1, 0, 0), "anonymous", "unknown")
+        val newHacker = Hacker(HackerIcon.BEAR, HackerSkill(1, 0, 0), "anonymous")
         return user.copy(type = UserType.valueOf(newType), hacker = newHacker)
     }
 
@@ -109,6 +115,10 @@ class UserService(
         userEntityService.delete(userId)
         overview()
         stompService.replyNeutral("User deleted")
+    }
+
+    fun update(updatedUser: User): User {
+        return userEntityService.save(updatedUser)
     }
 
 }

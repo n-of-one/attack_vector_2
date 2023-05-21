@@ -108,7 +108,7 @@ export const TextSaveInput = (props: Props) => {
                            onChange={(event) => handleChange(event)}
                            onKeyDown={(event) => handleKeyDown(event, true)}
                            onBlur={() => handleBlur()}
-                           readOnly={readonly}
+                           disabled={readonly}
                     />
                 {icon}
                 </span>

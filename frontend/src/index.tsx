@@ -3,11 +3,14 @@ import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Routes, Route, useParams} from 'react-router-dom'
 import {GmRoot} from "./gm/GmRoot"
 import {EditorRoot} from "./editor/EditorRoot"
-import {Login} from "./Login"
+import {Login} from "./login/Login"
 import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/Notification";
 import {IceRoot} from "./ice/IceRoot";
+import {BannerPage} from "./login/Sso";
+import {RequiresRole} from "./common/RequiresRole";
+import {larp} from "./common/Larp";
 
 
 const ReRoute = (): JSX.Element => {
@@ -29,9 +32,10 @@ const ReRoute = (): JSX.Element => {
     Cookies.remove("jwt")
     Cookies.remove("type")
     Cookies.remove("roles")
-    window.document.location.href = "/login"
+    window.document.location.href = larp.loginUrl
     return (<></>)
 }
+
 
 const container = document.getElementById('app') as HTMLDivElement
 const root = createRoot(container)
@@ -43,7 +47,11 @@ const Editor = () => {
 
 const Ice = () => {
     const {iceId} = useParams()
-    return (<IceRoot redirectId={iceId as string}/>)
+    return (
+        <RequiresRole requires="ROLE_HACKER">
+            <IceRoot redirectId={iceId as string}/>
+        </RequiresRole>
+    )
 }
 
 root.render(
@@ -52,6 +60,7 @@ root.render(
             <Routes>
                 <Route path="/ice/:iceId" element={<Ice/>}/>
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/loggedOut" element={<BannerPage/>}/>
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/edit/:siteId" element={<Editor/>}/>
@@ -62,4 +71,5 @@ root.render(
         <ToasterConfig/>
     </>
 )
+
 

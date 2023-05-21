@@ -1,6 +1,6 @@
 import React, {ReactElement} from 'react'
-import Cookies from 'js-cookie'
 import userAuthorizations from "./UserAuthorizations";
+import {larp} from "./Larp";
 
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 export const RequiresRole = (props: Props) => {
 
     if (!userAuthorizations.authenticated) {
-        document.location.href = `/login?next=${document.location.href}`
+        window.location.href = `${larp.loginUrl}?next=${document.location.pathname}`
         return <></>
     }
 

@@ -2,7 +2,7 @@ import React from "react"
 import {MenuBar} from "../common/menu/MenuBar"
 import {useSelector} from "react-redux"
 import {GmSites} from "./sites/GmSites";
-import {UserManagement} from "./users/UserManagement";
+import {UserManagement} from "../common/users/UserManagement";
 import {GmState} from "./GmRootReducer";
 import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../common/menu/pageReducer";
 

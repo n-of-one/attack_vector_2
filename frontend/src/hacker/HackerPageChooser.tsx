@@ -7,10 +7,11 @@ import {runCanvas} from "./run/component/RunCanvas"
 import {useSelector} from "react-redux"
 import {HackerState} from "./HackerRootReducer"
 import {TerminalState} from "../common/terminal/TerminalReducer"
-import {DISCONNECTED, MAIL, RUN, USERS} from "../common/menu/pageReducer"
+import {DISCONNECTED, MAIL, ME, RUN, USERS} from "../common/menu/pageReducer"
 import {RunHome} from "./run/component/RunHome";
-import {UserManagement} from "../gm/users/UserManagement";
+import {UserManagement} from "../common/users/UserManagement";
 import {Disconnected} from "../common/component/Disconnected";
+import {CurrentUser} from "../common/users/CurrentUser";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -34,6 +35,8 @@ const renderCurrentPage = (currentPage: string) => {
             return <MailHome/>
         case RUN:
             return <RunHome/>
+        case ME:
+            return <CurrentUser/>
         case USERS:
             return <UserManagement/>
         default:

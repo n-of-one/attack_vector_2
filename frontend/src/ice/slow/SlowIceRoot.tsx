@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection} from "../../common/WebSocketConnection";
-import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {slowIceRootReducer, SlowIceRootState} from "./reducer/SlowIceRootReducer";
@@ -22,14 +21,14 @@ export class SlowIceRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = { iceId: props.iceId, currentPage: "slowIce"}
+        const preLoadedState = {iceId: props.iceId, currentPage: "slowIce"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
         this.store = configureStore({
             reducer: slowIceRootReducer as Reducer<SlowIceRootState>,
             preloadedState: preLoadedState,
-            middleware: (getDefaultMiddleware) =>  [...getDefaultMiddleware()],
+            middleware: (getDefaultMiddleware) => [...getDefaultMiddleware()],
             devTools: isDevelopmentServer
         })
 
@@ -45,12 +44,10 @@ export class SlowIceRoot extends Component<Props> {
     }
 
     render() {
-        return(
-            <RequiresRole requires="ROLE_HACKER">
-                <Provider store={this.store}>
-                    <SlowIceContainer />
-                </Provider>
-            </RequiresRole>
+        return (
+            <Provider store={this.store}>
+                <SlowIceContainer/>
+            </Provider>
         )
     }
 }

@@ -24,7 +24,7 @@ class UserController(
     @MessageMapping("/user/create")
     fun create(@UserName name: String, userPrincipal: UserPrincipal) {
 
-        taskRunner.runTask(userPrincipal) { userService.create(name) }
+        taskRunner.runTask(userPrincipal) { userService.createFromScreen(name) }
     }
 
     @MessageMapping("/user/select")

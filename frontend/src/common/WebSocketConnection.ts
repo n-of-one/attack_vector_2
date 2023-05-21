@@ -1,7 +1,6 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer"
-import {SET_USER_ID} from "./reducer/UserIdReducer"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../hacker/server/GenericServerActionProcessor"
 import {CONNECTION_TYPE_GENERAL, ConnectionType, currentUser} from "./CurrentUser"
 import {notify} from "./Notification";
@@ -60,7 +59,6 @@ export class WebSocketConnection {
         currentUser.connectionId = connectionId
 
         this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"})
-        this.store.dispatch({type: SET_USER_ID, userId: userId})
 
         this.setupHeartbeat()
         this.subscribe('/user/reply', false) /// This will receive messages for this specific connection

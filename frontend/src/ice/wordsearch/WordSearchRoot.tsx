@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection} from "../../common/WebSocketConnection";
-import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {WordSearchContainer} from "./component/WordSearchContainer";
 import {wordSearchRootReducer, WordSearchRootState} from "./reducer/WordSearchRootReducer";
@@ -45,11 +44,9 @@ export class WordSearchRoot extends Component<Props> {
 
     render() {
         return(
-            <RequiresRole requires="ROLE_HACKER">
-                <Provider store={this.store}>
-                    <WordSearchContainer />
-                </Provider>
-            </RequiresRole>
+            <Provider store={this.store}>
+                <WordSearchContainer />
+            </Provider>
         )
     }
 }

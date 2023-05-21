@@ -9,6 +9,7 @@ import {Dispatch} from "redux"
 import {CountdownTimer} from "../coundown/CountdownTimer";
 import {ENTER_KEY} from "../../../KeyCodes";
 import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {currentUser} from "../../../common/CurrentUser";
 
 
 const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
@@ -42,7 +43,6 @@ export const RunHome = () => {
         dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: terminal.input, terminalId: terminal.id});
     }
     const infoNodeId = useSelector((state: HackerState) => state.run.infoNodeId)
-    const userId = useSelector((state: HackerState) => state.userId)
 
     return (
         <div className="row">
@@ -58,7 +58,7 @@ export const RunHome = () => {
                 </div>
                 <div className="row">
                     <div className="col-lg-12">
-                        <RunCanvasPanel dispatch={dispatch} userId={userId}/>
+                        <RunCanvasPanel dispatch={dispatch} userId={currentUser.id}/>
                     </div>
                 </div>
             </div>

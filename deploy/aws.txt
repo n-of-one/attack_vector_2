@@ -1,0 +1,12 @@
+Looking at ways to run AV2 on the cloud:
+
+https://docs.aws.amazon.com/whitepapers/latest/docker-on-aws/containers-orchestrations-on-aws.html
+
+Apprunner: https://docs.aws.amazon.com/apprunner/latest/dg/getting-started.html
+- docker created by AWS
+- automatic patching of docker OS (?)
+
+ECS + Fargate: https://aws.amazon.com/fargate/
+- build your own docker image
+
+EKS: https://aws.amazon.com/eks/

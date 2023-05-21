@@ -14,7 +14,7 @@ const logout = (event: any) => {
     Cookies.remove("type")
     Cookies.remove("roles")
     Cookies.remove("userName")
-    document.location.href = "/login"
+    document.location.href = "/localLogout"
 }
 
 const scanItem = (currentPage: string, runName: string | null) => {
@@ -30,6 +30,7 @@ const scanItem = (currentPage: string, runName: string | null) => {
 export const MenuBar = () => {
 
     const userName = Cookies.get("userName")
+
     const siteName = useSelector( (state: HackerState ) =>  (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "" )
     const currentPage =  useSelector( (state: HackerState) => state.currentPage )
 

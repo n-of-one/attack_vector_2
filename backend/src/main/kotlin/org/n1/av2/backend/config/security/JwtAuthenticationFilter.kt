@@ -29,14 +29,20 @@ class JwtAuthenticationFilter(
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
 
+        if (dontNeedAuthentication(request)) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+
         var authentication: UserPrincipal? = null
 
         try {
             val jwt = getJwtFromRequest(request)
             if (jwt != null) {
                 if (tokenProvider.validateToken(jwt)) {
-                    val userName = tokenProvider.getUserNameFromJWT(jwt)
-                    val user = userEntityService.getByName(userName)
+                    val userId = tokenProvider.getUserIdFromJWT(jwt)
+                    val user = userEntityService.getById(userId)
                     val connectionId = connectionUtil.create()
                     val type = determineType(request.requestURI)
                     authentication = UserPrincipal("", connectionId, user, type)
@@ -57,6 +63,20 @@ class JwtAuthenticationFilter(
                 connectionUtil.recycle(authentication.connectionId)
                 SecurityContextHolder.clearContext()
             }
+        }
+    }
+
+    private fun dontNeedAuthentication(request: HttpServletRequest): Boolean {
+        request.requestURI.let {
+            return (it.startsWith("/logout") ||
+                    it.startsWith("/login") ||
+                    it.startsWith("/sso") ||
+                    it.startsWith("/css") ||
+                    it.startsWith("/img") ||
+                    it.startsWith("/static") ||
+                    it.startsWith("/resources") ||
+                    it.startsWith("/favicon.ico")
+                    )
         }
     }
 

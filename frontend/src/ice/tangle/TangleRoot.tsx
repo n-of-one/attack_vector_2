@@ -4,7 +4,6 @@ import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection} from "../../common/WebSocketConnection";
 import {tangleIceManager} from "./component/TangleIceManager";
 import {initTangleIceServerActions} from "./TangleServerActionProcessor";
-import {RequiresRole} from "../../common/RequiresRole";
 import {Provider} from "react-redux";
 import {TangleContainer} from "./component/TangleContainer";
 import {tangleRootReducer, TangleRootState} from "./TangleRootReducer";
@@ -45,11 +44,9 @@ export class TangleRoot extends Component<Props> {
 
     render() {
         return(
-            <RequiresRole requires="ROLE_HACKER">
-                <Provider store={this.store}>
-                    <TangleContainer />
-                </Provider>
-            </RequiresRole>
+            <Provider store={this.store}>
+                <TangleContainer />
+            </Provider>
         )
     }
 }

@@ -50,7 +50,6 @@ class UserEntityService(
         val hacker = if (type == UserType.HACKER_MANAGER || type == UserType.HACKER) Hacker(
             icon = icon,
             skill = HackerSkill(5, 0, 0),
-            playerName = "anonymous",
             characterName = "unknown"
         )
         else null
@@ -60,7 +59,7 @@ class UserEntityService(
             type = type,
             id = createUserId(),
             hacker = hacker,
-            email = email
+            email = email,
         )
         userRepo.save(newUser)
     }
@@ -88,6 +87,10 @@ class UserEntityService(
     fun delete(userId: String) {
         val user = getById(userId)
         userRepo.delete(user)
+    }
+
+    fun findByExternalId(externalId: String): User? {
+        return userRepo.findByExternalId(externalId)
     }
 
 
