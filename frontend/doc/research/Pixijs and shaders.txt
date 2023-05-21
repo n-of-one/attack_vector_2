@@ -1,0 +1,13 @@
+https://www.pixijs.com/tutorials
+
+
+Shaders & Filters
+
+introduction (V3 code)
+https://www.awwwards.com/a-gentle-introduction-to-shaders-with-pixi-js.html
+
+Update for V5:
+https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters
+
+GLSL:
+http://www.shaderific.com/glsl/
