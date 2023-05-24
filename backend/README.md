@@ -16,6 +16,8 @@ The application uses environment properties for configuration, all with defaults
 
 `MONGODB_URI`     The connect URL for Mongo DB. Defaults to: mongodb://av2:av2@localhost/admin?authMechanism=SCRAM-SHA-1
 
+mongodb://av2:av2@host.docker.internal/admin?authMechanism=SCRAM-SHA-1
+
 `MONGODB_NAME`    The name of the database. Defaults to: av2
 
 <br />

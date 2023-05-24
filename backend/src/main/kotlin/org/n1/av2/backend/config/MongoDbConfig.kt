@@ -25,9 +25,8 @@ class MongoDbConfig(timeService: TimeService) : AbstractMongoClientConfiguration
         val envUrl = System.getenv("MONGODB_URI")
         val url =
             if (envUrl != null && envUrl.trim().isNotEmpty()) envUrl
-            else "mongodb://av2:av2@localhost/admin?authMechanism=SCRAM-SHA-1"
+            else "mongodb://attackvector2:attackvector2@localhost/admin?authMechanism=SCRAM-SHA-1"
         val connectionString = ConnectionString(url)
-
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()
