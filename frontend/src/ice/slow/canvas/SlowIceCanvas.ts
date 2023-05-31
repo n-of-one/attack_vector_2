@@ -2,7 +2,7 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {SlowIceBlockDisplay} from "./SlowIceBlockDisplay";
-import {hashCode} from "../../../common/Util";
+import {hashCode} from "../../../common/util/Util";
 import {SlowIceEnter, SlowIceUpdate} from "../SlowIceServerActionProcessor";
 
 export const BLOCK_WIDTH = 90

@@ -1,5 +1,5 @@
 import {fabric} from "fabric"
-import {Schedule} from "../../../common/Schedule"
+import {Schedule} from "../../../common/util/Schedule"
 import {NodeScanStatus, UNDISCOVERED_0} from "../../../common/enums/NodeStatus"
 import {NodeDisplay} from "../../../common/canvas/display/NodeDisplay"
 import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"

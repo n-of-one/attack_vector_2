@@ -1,13 +1,12 @@
 package org.n1.av2.backend.service.user
 
+import org.n1.av2.backend.config.websocket.ConnectionType
 import org.n1.av2.backend.entity.run.HackerGeneralActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
@@ -26,7 +25,7 @@ class UserConnectionService(
 
         class NewConnection(val connectionId: String, val type: ConnectionType)
         if (userPrincipal.user.type.hacker) {
-            stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, ConnectionType.WS_GENERAL))
+            stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, ConnectionType.WS_HACKER_MAIN))
         }
     }
 

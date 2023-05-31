@@ -3,7 +3,7 @@ import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {WordSearchIndicatorDisplay} from "./WordSearchIndicatorDisplay";
 import {LETTERS_SELECTED} from "../reducer/WordSearchStateReducer";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
 
 const MARGIN_TOP = 5

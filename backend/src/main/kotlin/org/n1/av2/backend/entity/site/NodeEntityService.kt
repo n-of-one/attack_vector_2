@@ -1,9 +1,15 @@
 package org.n1.av2.backend.entity.site
 
 import org.n1.av2.backend.entity.site.enums.LayerType
-import org.n1.av2.backend.entity.site.layer.*
+import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.entity.site.layer.OsLayer
+import org.n1.av2.backend.entity.site.layer.ice.*
+import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
+import org.n1.av2.backend.entity.site.layer.other.TextLayer
+import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.ThemeService
+import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightEntityService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.createLayerId
 import org.springframework.stereotype.Service
@@ -19,7 +25,8 @@ const val NODE_MAX_Y = 815 - 48 - 100
 @Service
 class NodeEntityService(
     private val nodeRepo: NodeRepo,
-    private val themeService: ThemeService
+    private val themeService: ThemeService,
+    private val statusLightEntityService: StatusLightEntityService,
 ) {
 
     fun createNode(command: AddNode): Node {
@@ -140,22 +147,30 @@ class NodeEntityService(
     }
 
     private fun createLayer(layerType: LayerType, node: Node): Layer {
-        val layer = node.layers.size
+        val level = node.layers.size
         val id = createLayerId(node)
 
         val defaultName = themeService.getDefaultName(layerType)
 
         return when (layerType) {
-            LayerType.TEXT -> TextLayer(id, layer, defaultName)
-            LayerType.PASSWORD_ICE -> PasswordIceLayer(id, layer, defaultName)
-            LayerType.TANGLE_ICE -> TangleIceLayer(id, layer, defaultName)
-            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, layer, defaultName)
-            LayerType.NETWALK_ICE -> NetwalkIceLayer(id, layer, defaultName)
-            LayerType.SLOW_ICE -> SlowIceLayer(id, layer, defaultName)
+            LayerType.TEXT -> TextLayer(id, level, defaultName)
+            LayerType.PASSWORD_ICE -> PasswordIceLayer(id, level, defaultName)
+            LayerType.TANGLE_ICE -> TangleIceLayer(id, level, defaultName)
+            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, level, defaultName)
+            LayerType.NETWALK_ICE -> NetwalkIceLayer(id, level, defaultName)
+            LayerType.SLOW_ICE -> SlowIceLayer(id, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
-            LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, layer, defaultName)
+            LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, level, defaultName)
+            LayerType.STATUS_LIGHT -> createStatusLightLayer(id, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
+            LayerType.LOCK -> createStatusLightLayer(id,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
         }
     }
+
+    private fun createStatusLightLayer(id: String, type: LayerType, level: Int, defaultName: String, textForRed: String, textForGreen: String): StatusLightLayer {
+        val entity = statusLightEntityService.create(false, defaultName, textForRed, textForGreen)
+        return  StatusLightLayer(id, type, level, defaultName, entity.id, textForRed, textForGreen)
+    }
+
 
     data class LayersUpdated(val node: Node, val layerId: String?)
 

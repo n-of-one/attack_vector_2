@@ -37,34 +37,43 @@ class StompService(
         }
     }
 
-    fun toSite(siteId: String, actionType: ServerActions, data: Any? = null) {
+    private fun sendToDestination(path: String, actionType: ServerActions, data: Any? = null) {
         simulateNonLocalhost()
-        logger.debug("-> ${siteId} ${actionType}")
+        logger.debug("-> ${path} ${actionType}")
         val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSend("/topic/site/${siteId}", event)
+        stompTemplate.convertAndSend(path, event)
+    }
+
+    fun toSite(siteId: String, actionType: ServerActions, data: Any? = null) {
+        sendToDestination("/topic/site/${siteId}", actionType, data)
     }
 
     fun toRun(runId: String, actionType: ServerActions, data: Any? = null) {
-        simulateNonLocalhost()
-        logger.debug("-> ${runId} ${actionType}")
-        val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSend("/topic/run/${runId}", event)
+        sendToDestination("/topic/topic/${runId}", actionType, data)
     }
 
     fun toIce(iceId: String, actionType: ServerActions, data: Any? = null) {
-        simulateNonLocalhost()
-        logger.debug("-> ${iceId} ${actionType}")
-        val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSend("/topic/ice/${iceId}", event)
+        sendToDestination("/topic/ice/${iceId}", actionType, data)
+    }
+
+    fun toApp(appId: String, actionType: ServerActions, data: Any) {
+        sendToDestination("/topic/app/${appId}", actionType, data)
+    }
+
+    fun toUser(userId: String, actionType: ServerActions, data: Any) {
+        sendToDestination("/topic/user/${userId}", actionType, data)
     }
 
     fun reply(actionType: ServerActions, data: Any) {
-        simulateNonLocalhost()
         val name = SecurityContextHolder.getContext().authentication.name
         logger.debug("-> ${name} ${actionType}")
+
+        simulateNonLocalhost()
         val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSendToUser(name, "/reply", event)
+        stompTemplate.convertAndSend("/reply", event)
     }
+
+    //**********************************************************************************************************************//
 
     fun replyMessage(message: NotyMessage) {
         reply(ServerActions.SERVER_NOTIFICATION, message)
@@ -92,11 +101,5 @@ class StompService(
         reply(ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, emptyArray(), lock))
     }
 
-    fun toUser(userId: String, actionType: ServerActions, data: Any) {
-        simulateNonLocalhost()
-        logger.debug("-> ${userId} ${actionType}")
-        val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSend("/topic/user/${userId}", event)
-    }
 
 }

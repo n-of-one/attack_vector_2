@@ -1,6 +1,6 @@
 import {createTerminalReducer, TerminalLineType, TerminalState} from "../../common/terminal/TerminalReducer";
 import {CHAT_TERMINAL_ID, ICE_DISPLAY_TERMINAL_ID, ICE_INPUT_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
-import {AnyAction, combineReducers} from "redux";
+import {AnyAction, combineReducers, Reducer} from "redux";
 import {PasswordIceI, passwordIceReducer} from "./container/PasswordIceReducer";
 import {pageReducer} from "../../common/menu/pageReducer";
 import {iceHackersReducer, IceHackers} from "../common/IceHackersReducer";
@@ -25,7 +25,7 @@ const noOpReducer = (state: string = "", action: AnyAction): string => {
     return state
 }
 
-export const passwordRootReducer = combineReducers<PasswordRootState>(
+export const passwordRootReducer: Reducer<PasswordRootState> = combineReducers<PasswordRootState>(
     {
         iceId: noOpReducer,
         currentPage: pageReducer,

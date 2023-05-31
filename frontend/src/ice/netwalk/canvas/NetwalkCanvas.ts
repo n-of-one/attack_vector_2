@@ -2,7 +2,7 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {NetwalkCellDisplay, PADDING_LEFT, PADDING_TOP} from "./NetwalkCellDisplay";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {NetwalkCell, CellType, NetwalkRotateUpdate, Point, ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
 
 type CellById = { [id: string]: NetwalkCellDisplay }

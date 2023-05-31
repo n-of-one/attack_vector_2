@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.ice.PasswordIceStatus
 import org.n1.av2.backend.entity.ice.PasswordIceStatusRepo
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.entity.site.layer.PasswordIceLayer
+import org.n1.av2.backend.entity.site.layer.ice.PasswordIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService

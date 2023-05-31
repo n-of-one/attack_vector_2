@@ -1,11 +1,10 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerOsPanel} from "./type/panel/app/LayerOsPanel"
-import {findElementById} from "../../../../../common/Immutable"
+import {findElementById} from "../../../../../common/util/Immutable"
 import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {LayerTextPanel} from "./type/panel/app/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
-import {Glyphicon} from "../../../../../common/component/Glyphicon"
 import {LayerIcePasswordPanel} from "./type/panel/ice/LayerIcePasswordPanel"
 import {LayerIceTanglePanel} from "./type/panel/ice/LayerIceTanglePanel"
 import {LayerTimerTriggerPanel} from "./type/panel/app/LayerTimerTriggerPanel"
@@ -15,6 +14,8 @@ import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
 import {LayerIceWordSearchPanel} from "./type/panel/ice/LayerIceWordSearchPanel";
 import {LayerIceNetWalkPanel} from "./type/panel/ice/LayerIceNetwalkPanel";
 import {LayerSlowIcePanel} from "./type/panel/ice/LayerSlowIcePanel";
+import {LayerStatusLightPanel} from "./type/panel/app/LayerStatusLightPanel";
+import {Icon} from "../../../../../common/component/icon/Icon";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -40,21 +41,26 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerIceNetWalkPanel node={node} layer={layer} />
         case LayerType.SLOW_ICE:
             return <LayerSlowIcePanel node={node} layer={layer}/>
+        case LayerType.STATUS_LIGHT:
+            return <LayerStatusLightPanel node={node} layer={layer}/>
+        case LayerType.LOCK:
+            return <LayerStatusLightPanel node={node} layer={layer}/>
 
         default:
-            return <div className="text">NodeDetailPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>
+            return <div className="text">NodeDetailsPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>
     }
 }
 
 
 const renderTab = (layer: LayerDetails, currentLayer: LayerDetails, selectLayer: (layer: LayerDetails) => void) => {
     const activeLinkClassName = (layer === currentLayer) ? "nav-link active" : "nav-link"
+    const svgColor = (layer === currentLayer) ? "white" : "navlinkblue"
 
     return (
         <li role="presentation" className="nav-item" key={layer.id}>
             <SilentLink classNameInput={activeLinkClassName} onClick={() => selectLayer(layer)} aria-controls="home"
                          data-toggle="tab">
-                <Glyphicon type={layer.type} size="18px"/>
+                <Icon type={layer.type} size="18px" svgColor={svgColor}/>
             </SilentLink>
         </li>
     )

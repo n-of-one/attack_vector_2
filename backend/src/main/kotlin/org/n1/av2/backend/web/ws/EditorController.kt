@@ -72,7 +72,7 @@ class EditorController(
     }
 
     @MessageMapping("/editor/addLayer")
-    fun addService(command: AddLayerCommand, userPrincipal: UserPrincipal) {
+    fun addLayer(command: AddLayerCommand, userPrincipal: UserPrincipal) {
         taskRunner.runTask(userPrincipal) { editorService.addLayer(command) }
     }
 

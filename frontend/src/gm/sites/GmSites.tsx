@@ -1,11 +1,10 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {TextInput} from "../../common/component/TextInput"
-import {deleteCall, post} from "../../common/RestClient"
-import {notify} from "../../common/Notification"
+import {deleteCall, post} from "../../common/server/RestClient"
+import {notify} from "../../common/util/Notification"
 import {SilentLink} from "../../common/component/SilentLink"
 import {GmSite, RECEIVE_SITES} from "./GmSitesReducer"
-import {useRunOnce} from "../../common/Util"
 import {GmState} from "../GmRootReducer";
 
 
@@ -24,9 +23,9 @@ export const GmSites = () => {
 
     }
 
-    useRunOnce(() => {
+    useEffect(() => {
         fetchSites()
-    })
+    }, [])
 
     const edit = (siteName: string) => {
         post({

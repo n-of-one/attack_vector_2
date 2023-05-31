@@ -4,7 +4,7 @@ import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FREE, HACKED, PROTECTED, FULLY_SCANNE
 import {animate, getHtmlImage} from "../CanvasUtils";
 import {IMAGE_SIZE} from "./util/DisplayConstants";
 import {Display} from "./Display";
-import {Schedule} from "../../Schedule";
+import {Schedule} from "../../util/Schedule";
 import {MoveNodeI, NodeI} from "../../../editor/reducer/NodesReducer";
 import {HackerDisplay} from "./HackerDisplay";
 

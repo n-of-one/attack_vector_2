@@ -5,10 +5,8 @@ import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.config.websocket.ConnectionUtil
-import org.n1.av2.backend.config.websocket.ICE_ENDPOINT
-import org.n1.av2.backend.config.websocket.MAIN_ENDPOINT
+import org.n1.av2.backend.config.websocket.connectionTypeFromPath
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.security.core.context.SecurityContextHolder
@@ -44,7 +42,7 @@ class JwtAuthenticationFilter(
                     val userId = tokenProvider.getUserIdFromJWT(jwt)
                     val user = userEntityService.getById(userId)
                     val connectionId = connectionUtil.create()
-                    val type = determineType(request.requestURI)
+                    val type = connectionTypeFromPath(request.requestURI)
                     authentication = UserPrincipal("", connectionId, user, type)
                     SecurityContextHolder.getContext().authentication = authentication
                     currentUserService.set(user)
@@ -80,13 +78,6 @@ class JwtAuthenticationFilter(
         }
     }
 
-    private fun determineType(path: String): ConnectionType {
-        return when (path) {
-            MAIN_ENDPOINT -> ConnectionType.WS_GENERAL
-            ICE_ENDPOINT -> ConnectionType.WS_ICE
-            else -> ConnectionType.WEB_PAGE
-        }
-    }
 
     private fun getJwtFromRequest(request: HttpServletRequest): String? {
         if (request.requestURI == "/api/health/") {

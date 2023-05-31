@@ -1,4 +1,4 @@
-import {webSocketConnection} from "../../common/WebSocketConnection"
+import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {editorSiteId} from "../EditorRoot"
 
 export const sendSitePropertyChanged = ({field, value}: { field: string, value: string|boolean }) => {
@@ -44,11 +44,6 @@ export const sendEditLayerData = ({nodeId, layerId, key, value}: { nodeId: strin
 export const sendEditNetworkId = ({nodeId, value}: { nodeId: string, value: string }) => {
     const payload = {siteId: editorSiteId, nodeId, value}
     webSocketConnection.send("/av/editor/editNetworkId", payload)
-}
-
-export const sendAddLayer = ({layerType, nodeId}: { layerType: string, nodeId: string }) => {
-    const payload = {siteId: editorSiteId, layerType, nodeId}
-    webSocketConnection.send("/av/editor/addLayer", payload)
 }
 
 export const sendRemoveLayer = ({nodeId, layerId}: { nodeId: string, layerId: string }) => {

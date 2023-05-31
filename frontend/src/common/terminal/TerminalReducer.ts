@@ -270,7 +270,7 @@ const limitLines = (lines: any[]) => {
 const handleServerError = (terminal: TerminalState, action: AnyAction) => {
     const retryLines = (action.data.recoverable) ? [
             {type: "text", data: " "},
-            {type: "text", data: "[warn b]A server error occurred. Please refresh browser."}]
+            {type: "text", data: "[warn b]A server error occurred. Please refresh."}]
         : [
             {type: "text", data: " "},
             {type: "text", data: "[warn b]A fatal server error occurred."}]

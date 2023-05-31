@@ -4,7 +4,7 @@ import {TextInput} from "../../common/component/TextInput";
 import {SilentLink} from "../../common/component/SilentLink";
 import {HackerState} from "../HackerRootReducer";
 import {ScanInfo} from "./ScansReducer";
-import {webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {runCanvas} from "../run/component/RunCanvas";
 import {HIDE_NODE_INFO} from "../run/model/ScanActions";
 import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";

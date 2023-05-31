@@ -6,6 +6,7 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.*
+import org.n1.av2.backend.entity.site.layer.ice.*
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserEntityService

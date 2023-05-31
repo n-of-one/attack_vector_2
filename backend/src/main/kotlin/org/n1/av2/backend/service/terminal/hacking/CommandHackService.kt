@@ -5,8 +5,8 @@ import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
-import org.n1.av2.backend.entity.site.layer.TextLayer
-import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
+import org.n1.av2.backend.entity.site.layer.other.TextLayer
+import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.OsLayerService
 import org.n1.av2.backend.service.layerhacking.ServiceIceGeneric

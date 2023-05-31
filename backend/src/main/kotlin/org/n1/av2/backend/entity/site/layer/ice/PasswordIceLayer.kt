@@ -1,12 +1,12 @@
-package org.n1.av2.backend.entity.site.layer
+package org.n1.av2.backend.entity.site.layer.ice
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
-private const val PASSWORD = "password"
-private const val HINT = "hint"
+const val PASSWORD = "password"
+const val HINT = "hint"
 
 class PasswordIceLayer(
     id: String,

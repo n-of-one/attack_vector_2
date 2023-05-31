@@ -3,10 +3,10 @@ import {SilentLink} from "../component/SilentLink";
 import {UserOverview} from "./UsersReducer";
 import {useSelector} from "react-redux";
 import {GmState} from "../../gm/GmRootReducer";
-import {webSocketConnection} from "../WebSocketConnection";
+import {webSocketConnection} from "../server/WebSocketConnection";
 import {UserDetails} from "./UserDetails";
-import {RequiresRole} from "../RequiresRole";
-import {ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../UserAuthorizations";
+import {RequiresRole} from "../user/RequiresRole";
+import {ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {TextInput} from "../component/TextInput";
 import {User} from "./UserReducer";
 

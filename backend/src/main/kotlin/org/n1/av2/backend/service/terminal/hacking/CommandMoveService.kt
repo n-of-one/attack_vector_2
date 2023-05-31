@@ -6,7 +6,7 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.entity.site.layer.TimerTriggerLayer
+import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService

@@ -1,5 +1,5 @@
 import {FINISH_HACKING_ICE} from "../../../hacker/run/model/HackActions";
-import {serverTime} from "../../../common/ServerTime";
+import {serverTime} from "../../../common/server/ServerTime";
 import {AnyAction} from "redux";
 import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
 import {HIDDEN, LOCKED, UNLOCKED} from "../../IceModel";

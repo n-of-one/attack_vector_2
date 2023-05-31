@@ -1,7 +1,7 @@
 import {fabric} from "fabric"
 import {calcLine, LinePositions} from "../CanvasUtils"
 import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes"
-import {Schedule} from "../../Schedule"
+import {Schedule} from "../../util/Schedule"
 import {ConnectionVisual} from "../visuals/ConnectionVisual"
 import {COLOR_PROBE_LINE} from "./util/DisplayConstants"
 import {Canvas} from "fabric/fabric-impl"

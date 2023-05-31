@@ -1,7 +1,7 @@
 import {fabric} from "fabric"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
 import {Display} from "./display/Display"
-import {TICK_MILLIS} from "../Schedule";
+import {TICK_MILLIS} from "../util/Schedule";
 
 
 export const animate = (canvas: Canvas, toAnimate: fabric.Object, attribute: string | null, value: any, durationTicks: number, easing: IUtilAminEaseFunction | null = null) => {

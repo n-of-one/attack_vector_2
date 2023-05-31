@@ -1,4 +1,4 @@
-package org.n1.av2.backend.entity.site.layer
+package org.n1.av2.backend.entity.site.layer.ice
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.enums.LayerType

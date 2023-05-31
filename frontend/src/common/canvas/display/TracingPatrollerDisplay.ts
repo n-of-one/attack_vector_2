@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 import {animate, calcLine, getHtmlImage, LinePositions} from "../CanvasUtils";
-import {Schedule} from "../../Schedule";
+import {Schedule} from "../../util/Schedule";
 import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
 import {ConnectionVisual} from "../visuals/ConnectionVisual";
 import {Display} from "./Display";

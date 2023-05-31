@@ -11,7 +11,7 @@ import {DISCONNECTED, MAIL, ME, RUN, USERS} from "../common/menu/pageReducer"
 import {RunHome} from "./run/component/RunHome";
 import {UserManagement} from "../common/users/UserManagement";
 import {Disconnected} from "../common/component/Disconnected";
-import {CurrentUser} from "../common/users/CurrentUser";
+import {Me} from "../common/users/Me";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -36,7 +36,7 @@ const renderCurrentPage = (currentPage: string) => {
         case RUN:
             return <RunHome/>
         case ME:
-            return <CurrentUser/>
+            return <Me/>
         case USERS:
             return <UserManagement/>
         default:

@@ -2,11 +2,11 @@ import React, {useEffect} from "react";
 import {useSelector} from "react-redux";
 import {UserDetails} from "./UserDetails";
 import {GenericUserRootState} from "./UserReducer";
-import {webSocketConnection} from "../WebSocketConnection";
-import {currentUser} from "../CurrentUser";
+import {webSocketConnection} from "../server/WebSocketConnection";
+import {currentUser} from "../user/CurrentUser";
 
 
-export const CurrentUser = () => {
+export const Me = () => {
 
     useEffect(() => {
         webSocketConnection.send("/av/user/select", currentUser.id)

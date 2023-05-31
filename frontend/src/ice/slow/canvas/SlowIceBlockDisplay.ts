@@ -1,7 +1,5 @@
 import {fabric} from "fabric";
 import {BLOCK_HEIGHT, BLOCK_PADDING_BOTTOM, BLOCK_PADDING_LEFT, BLOCK_WIDTH, PADDING_LEFT, PADDING_TOP} from "./SlowIceCanvas";
-import {TICK_MILLIS} from "../../../common/Schedule";
-import {easeLinear} from "../../../common/canvas/CanvasUtils";
 
 const SLOW_ICE_FILL_COLOR = "#337ab7"
 

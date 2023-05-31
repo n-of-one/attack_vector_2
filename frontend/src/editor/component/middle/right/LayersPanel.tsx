@@ -1,12 +1,14 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {
-    CODE, CORE, ALTERNATE_ICE, SLOW_ICE, MAGIC_EYE_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
-    UNHACKABLE_ICE, WORD_SEARCH_ICE, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER
+    CODE, CORE, SLOW_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
+    WORD_SEARCH_ICE, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER, LOCK, STATUS_LIGHT
 } from "../../../../common/enums/LayerTypes"
-import {Glyphicon} from "../../../../common/component/Glyphicon"
 import {EditorState} from "../../../EditorRootReducer"
-import {sendAddLayer} from "../../../server/EditorServerClient"
+import {editorSiteId} from "../../../EditorRoot";
+import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
+import {Icon} from "../../../../common/component/icon/Icon";
+
 
 export const LayersPanel = () => {
 
@@ -14,45 +16,58 @@ export const LayersPanel = () => {
 
     const add = (type: string, implemented?: boolean) => {
         if (implemented && currentNodeId != null) {
-            sendAddLayer({layerType: type, nodeId: currentNodeId})
+            const payload = {siteId: editorSiteId, layerType: type, nodeId: currentNodeId}
+            webSocketConnection.send("/av/editor/addLayer", payload)
         }
     }
 
-    const regular = (type: string) => {
+    const regular = (type: string, color: string) => {
         return (
             <span className="btn btn-info btn-spaced" onClick={() => {
                 add(type, true)
             }}>
-                <Glyphicon type={type} size="18px" color="white"/>
+                <Icon type={type} size="18px" color={color}/>
             </span>
         )
     }
 
-    const ice = (type: string) => {
-        return (
-            <span className="btn btn-info btn-spaced btn-narrowed" onClick={() => {
-                add(type, true)
-            }}>
-                    <Glyphicon type={type} size="18px" color="NavajoWhite"/>
-            </span>
-        )
-    }
+
 
     const unImplemented = (type: string) => {
         return (
             <span className="btn btn-grey btn-spaced">
-                <Glyphicon type={type} size="18px"/>
+                <Icon type={type} size="18px"/>
             </span>
         )
     }
+
+
+    //
+    // const statusLight = (type: string) => {
+    //     const boxPadding = {paddingLeft: "9px", paddingTop: "5px", paddingRight: "9px", paddingBottom: "5px"}
+    //     if (type === STATUS_LIGHT_DOOR) {
+    //         return (
+    //             <span className="btn btn-info btn-spaced" style={boxPadding} onClick={ () => { addStatusLight("DOOR") } }>
+    //             <BoxIcon type="door" color="royalblue"/>
+    //             </span>
+    //         )
+    //     }
+    //     if (type === STATUS_LIGHT_ON_OFF) {
+    //         return (
+    //             <span className="btn btn-info btn-spaced" onClick={ () => { addStatusLight("ON_OFF") } }>
+    //                 <Glyphicon name="glyphicon-adjust" size="18px" color="royalblue"/>
+    //             </span>
+    //         )
+    //     }
+    // }
 
     return (
         <div className="row">
             <div className="col-lg-12 darkWell">
                 <br/>
                 <div>
-                    {regular(TEXT)}
-                    {regular(TIMER_TRIGGER)}
+                    {regular(TEXT, "white")}
+                    {regular(TIMER_TRIGGER, "white")}
                     {unImplemented(PICTURE)}
                     {unImplemented(LINK)}
                     {unImplemented(TRACER)}
@@ -64,14 +79,13 @@ export const LayersPanel = () => {
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>
-                    {ice(PASSWORD_ICE)}
-                    {ice(TANGLE_ICE)}
-                    {ice(NETWALK_ICE)}
-                    {ice(WORD_SEARCH_ICE)}
-                    {ice(SLOW_ICE)}
-                    {unImplemented(MAGIC_EYE_ICE)}
-                    {unImplemented(ALTERNATE_ICE)}
-                    {unImplemented(UNHACKABLE_ICE)}
+                    {regular(PASSWORD_ICE, "NavajoWhite")}
+                    {regular(TANGLE_ICE, "NavajoWhite")}
+                    {regular(NETWALK_ICE, "NavajoWhite")}
+                    {regular(WORD_SEARCH_ICE, "NavajoWhite")}
+                    {regular(SLOW_ICE, "NavajoWhite")}
+                    {regular(LOCK, "royalblue")}
+                    {regular(STATUS_LIGHT, "royalblue")}
                 </div>
                 <br/>
             </div>

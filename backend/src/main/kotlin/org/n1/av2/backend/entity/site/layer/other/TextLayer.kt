@@ -1,6 +1,7 @@
-package org.n1.av2.backend.entity.site.layer
+package org.n1.av2.backend.entity.site.layer.other
 
 import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
@@ -14,6 +15,7 @@ class TextLayer(
     note: String,
     var text: String
 ) : Layer(id, type, level, name, note) {
+
 
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.TEXT, level, defaultName, "", "No data of value found.")

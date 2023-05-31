@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {TanglePointDisplay} from "./TanglePointDisplay";
 import {TangleLineDisplay} from "./TangleLineDisplay";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {TanglePointMoved, TanglePuzzle} from "../component/TangleIceManager";
 import {Dispatch, Store} from "redux";
 import {Canvas} from "fabric/fabric-impl";

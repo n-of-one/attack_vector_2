@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
-import {webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
 import {PasswordContainer} from "./container/PasswordContainer";
 import {passwordRootReducer, PasswordRootState} from "./PasswordRootReducer";
@@ -10,7 +10,7 @@ import {initPasswordIceServerActions} from "./PasswordServerActionProcessor";
 import {ICE_INPUT_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
-import {CONNECTION_TYPE_ICE} from "../../common/CurrentUser";
+import {NETWORKED_APP_ENDPOINT} from "../../common/server/ConnectionType";
 
 interface Props {
     iceId: string
@@ -33,7 +33,7 @@ export class PasswordRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(CONNECTION_TYPE_ICE, this.store, () => {
+        webSocketConnection.create(NETWORKED_APP_ENDPOINT, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
             webSocketConnection.sendObject("/av/ice/password/enter", {iceId: props.iceId})
         });
@@ -53,4 +53,25 @@ export class PasswordRoot extends Component<Props> {
     }
 }
 
+// export class PasswordRootSimplified extends Component<Props> {
+//
+//
+//     constructor(props: Props) {
+//         super(props)
+//         const preLoadedState = {activeTerminalId: ICE_INPUT_TERMINAL_ID, currentPage: "password"}
+//
+//         const store = comynfigureStore(passwordRootReducer, preLoadedState )
+//
+//
+//         passwordIceManager.init(store)
+//         terminalManager.init(store)
+//         initPasswordIceServerActions(store)
+//
+//         webSocketConnection.sendObject("/av/ice/password/enter", {iceId: props.iceId})
+//     }
+//
+//     render() {
+//         return <PasswordContainer/>
+//     }
+// }
 

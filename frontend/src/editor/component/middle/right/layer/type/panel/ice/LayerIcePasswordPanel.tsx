@@ -22,9 +22,9 @@ export const LayerIcePasswordPanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="ICE Password" layerObject={ice}>
-            <LayerField key={key("pa")} size="large" name="Password" value={ice.password} save={value => ice.savePassword(value)}
+            <LayerField key={key("pa")} size="large" label="Password" value={ice.password} save={value => ice.savePassword(value)}
                         placeholder="* Password / passphrase" help="The password or passphrase the hacker needs to enter to bypass this ice."/>
-            <LayerField key={key("hi")} size="large" name="Hint" value={ice.hint} save={value => ice.saveHint(value)}
+            <LayerField key={key("hi")} size="large" label="Hint" value={ice.hint} save={value => ice.saveHint(value)}
                         placeholder="Optional hint" help="This hint is shown when the password is entered incorrectly.
                               Can be used to help hackers."/>
         </LayerPanel>

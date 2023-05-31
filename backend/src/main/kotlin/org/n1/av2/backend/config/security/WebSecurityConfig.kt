@@ -1,7 +1,6 @@
 package org.n1.av2.backend.config.security
 
 import org.n1.av2.backend.entity.user.ROLE_GM
-import org.n1.av2.backend.entity.user.ROLE_HACKER
 import org.n1.av2.backend.entity.user.ROLE_SITE_MANAGER
 import org.n1.av2.backend.entity.user.ROLE_USER
 import org.springframework.context.annotation.Bean
@@ -42,8 +41,9 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/localLogout", "/loggedOut", "/login", "/sso",).permitAll()
             .requestMatchers("/about").permitAll()
 
-            .requestMatchers("/av_ws").hasAuthority(ROLE_USER.authority)
-            .requestMatchers("/ice_ws").hasAuthority(ROLE_USER.authority)
+            .requestMatchers("/ws_hacker").hasAuthority(ROLE_USER.authority)
+            .requestMatchers("/ws_networked_app").hasAuthority(ROLE_USER.authority)
+            .requestMatchers("/ws_unrestricted").permitAll()
 
             .requestMatchers("/login/*", "/api/login", "/signUp", "/logout").permitAll()
             .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority)

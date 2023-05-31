@@ -17,7 +17,7 @@ const renderInput = (value: string | number, readOnly: boolean, save?: (value: s
 }
 
 interface Props {
-    name: string,
+    label: string,
     size: string,
     readOnly?: boolean,
     value: string | number,
@@ -26,7 +26,7 @@ interface Props {
     help: string
 }
 
-export const LayerField = ({name, size, readOnly, value, save, placeholder, help} : Props) => {
+export const LayerField = ({label, size, readOnly, value, save, placeholder, help} : Props) => {
     if (!readOnly) {
         readOnly = false
     }
@@ -34,16 +34,16 @@ export const LayerField = ({name, size, readOnly, value, save, placeholder, help
     let colSize = (size === "large") ? "col-lg-8 noRightPadding" : "col-lg-5 noRightPadding"
     return (
         <div className="row form-group layerFieldRow">
-            <div className="col-lg-3 layerLabel">{name}</div>
+            <div className="col-lg-3 layerLabel">{label}</div>
             <div className={colSize}>
                 {renderInput(value, readOnly, save, placeholder)}
             </div>
             <div className="col-lg-1 layerHelpColumn">
                 <OverlayTrigger
-                    key={"tooltip_" + name}
+                    key={"tooltip_" + label}
                     placement="left"
                     overlay={
-                        <Tooltip id={`tooltip-${name}`}>
+                        <Tooltip id={`tooltip-${label}`}>
                             {help}
                         </Tooltip>
                     }

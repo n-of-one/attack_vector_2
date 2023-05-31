@@ -1,4 +1,4 @@
-import {updateArrayById} from "../../common/Immutable";
+import {updateArrayById} from "../../common/util/Immutable";
 import {AnyAction} from "redux";
 
 export const SERVER_UPDATE_USER_SCANS = "SERVER_UPDATE_USER_SCANS";

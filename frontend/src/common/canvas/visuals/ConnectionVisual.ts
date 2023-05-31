@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {animate, easeLinear, LinePositions} from "../CanvasUtils";
 import {Canvas} from "fabric/fabric-impl";
-import {delay, delayTicks} from "../../Util";
+import {delay, delayTicks} from "../../util/Util";
 
 export class ConnectionVisual {
 

@@ -1,5 +1,5 @@
 import React, {FormEvent, useState} from 'react'
-import {post} from "../common/RestClient"
+import {post} from "../common/server/RestClient"
 
 interface SimpleLogin {
     name: string,

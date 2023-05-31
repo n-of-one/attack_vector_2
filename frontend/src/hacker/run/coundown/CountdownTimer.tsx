@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector} from "react-redux";
 import {HackerState} from "../../HackerRootReducer";
-import {formatTimeInterval} from "../../../common/Util";
+import {formatTimeInterval} from "../../../common/util/Util";
 
 export const CountdownTimer = () => {
 

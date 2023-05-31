@@ -1,4 +1,4 @@
-import {findElementById} from "../../common/Immutable"
+import {findElementById} from "../../common/util/Immutable"
 import {AnyAction} from "redux"
 import {NodeI} from "./NodesReducer"
 import {SERVER_ADD_LAYER, SERVER_NODE_UPDATED} from "../server/EditorServerActionProcessor"

@@ -65,7 +65,9 @@ enum class ServerActions {
     SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                 // change icon of node in run
 
-    SERVER_ICE_HACKERS_UPDATED,        // sent to ice to inform all hackers of the current hackers on this ice
+    SERVER_ICE_HACKERS_UPDATED,         // sent to ice to inform all hackers of the current hackers on this ice
+
+    SERVER_STATUS_LIGHT_UPDATE,          // sent to app and widget when loaded or status changed
 
     SERVER_ENTER_ICE_PASSWORD,          // sent to hacker that hacks this ice, first message of Ice window
     SERVER_ICE_PASSWORD_UPDATE,         // sent to run to inform of hacked status update

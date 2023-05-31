@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {ADMIN, GM_SITES, HACKER_COMMUNITY, HACKER_HOME, LOGS, MAIL, ME, MISSIONS, RUN, USERS} from "./pageReducer"
 import {HackerState} from "../../hacker/HackerRootReducer"
-import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_MISSION_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../UserAuthorizations";
+import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_MISSION_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

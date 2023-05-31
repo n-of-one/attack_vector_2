@@ -5,7 +5,7 @@ import org.n1.av2.backend.entity.ice.*
 import org.n1.av2.backend.entity.ice.NetwalkCell
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.enums.IceStrength
-import org.n1.av2.backend.entity.site.layer.NetwalkIceLayer
+import org.n1.av2.backend.entity.site.layer.ice.NetwalkIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil

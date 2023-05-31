@@ -6,11 +6,15 @@ import {EditorRoot} from "./editor/EditorRoot"
 import {Login} from "./login/Login"
 import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
-import {ToasterConfig} from "./common/Notification";
+import {ToasterConfig} from "./common/util/Notification";
 import {IceRoot} from "./ice/IceRoot";
 import {BannerPage} from "./login/Sso";
-import {RequiresRole} from "./common/RequiresRole";
+import {RequiresRole} from "./common/user/RequiresRole";
 import {larp} from "./common/Larp";
+import {StatusLightRoot} from "./widget/status_light/StatusLightRoot";
+import {app} from "./app/AppId";
+import {SwitchRoot} from "./app/switch/SwitchRoot";
+import {ROLE_USER} from "./common/user/UserAuthorizations";
 
 
 const ReRoute = (): JSX.Element => {
@@ -47,12 +51,25 @@ const Editor = () => {
 
 const Ice = () => {
     const {iceId} = useParams()
-    return (
-        <RequiresRole requires="ROLE_HACKER">
+    return <RequiresRole requires="ROLE_HACKER">
             <IceRoot redirectId={iceId as string}/>
         </RequiresRole>
-    )
 }
+
+const Widget = () => {
+    const {id} = useParams()
+    app.id = id
+    return <StatusLightRoot/>
+}
+
+const App = () => {
+    const {id} = useParams()
+    app.id = id
+    // return <RequiresRole requires="ROLE_USER">
+        return <SwitchRoot/>
+    // </RequiresRole>
+}
+
 
 root.render(
     <>
@@ -64,6 +81,8 @@ root.render(
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/edit/:siteId" element={<Editor/>}/>
+                <Route path="/widget/:id" element={<Widget/>}/>
+                <Route path="/app/:id" element={<App/>}/>
                 <Route path="/" element={<ReRoute/>}/>
                 <Route path="*" element={<ReRoute/>}/>
             </Routes>

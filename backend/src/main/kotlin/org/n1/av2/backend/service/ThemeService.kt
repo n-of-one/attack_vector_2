@@ -12,6 +12,9 @@ class ThemeService {
             LayerType.TEXT -> "Data vault"
             LayerType.TIMER_TRIGGER -> "Network Sniffer"
 
+            LayerType.STATUS_LIGHT -> "Status Light"
+            LayerType.LOCK -> "Lock"
+
             LayerType.PASSWORD_ICE -> "Rahasy" // mystery in Hindi
             LayerType.TANGLE_ICE -> "Gaanth" // knot in Hindi
             LayerType.WORD_SEARCH_ICE -> "Jaal" // grid in Hindi

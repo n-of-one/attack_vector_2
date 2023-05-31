@@ -1,7 +1,7 @@
 import {fabric} from "fabric"
 import {Canvas} from "fabric/fabric-impl"
 import {animate, getHtmlImage} from "../CanvasUtils"
-import {Schedule, TICK_MILLIS} from "../../Schedule"
+import {Schedule, TICK_MILLIS} from "../../util/Schedule"
 import {NodeDisplay} from "../display/NodeDisplay"
 import {Timings} from "../../model/Ticks"
 

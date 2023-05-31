@@ -1,5 +1,5 @@
 import {Store} from "redux";
-import {webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {IceStrength} from "../../common/model/IceStrength";
 import {slowIceManager} from "./component/SlowIceManager";
 

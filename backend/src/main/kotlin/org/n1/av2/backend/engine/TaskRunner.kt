@@ -1,12 +1,12 @@
 package org.n1.av2.backend.engine
 
+import org.n1.av2.backend.config.websocket.ConnectionType
 import org.n1.av2.backend.entity.user.SYSTEM_USER
-import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
-import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.util.FatalException
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.security.core.context.SecurityContextHolder
@@ -124,7 +124,7 @@ class TaskEngine(
     @PreDestroy
     fun terminate() {
         this.running = false
-        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USER, ConnectionType.INTERNAL)
+        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USER, ConnectionType.NONE)
 
         // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
         this.queue.add(Task({}, userPrincipal))

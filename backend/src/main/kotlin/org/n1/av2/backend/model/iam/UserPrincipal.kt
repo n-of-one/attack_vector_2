@@ -1,17 +1,11 @@
 package org.n1.av2.backend.model.iam
 
+import org.n1.av2.backend.config.websocket.ConnectionType
 import org.n1.av2.backend.entity.user.User
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 
-enum class ConnectionType {
-    WS_GENERAL,
-    WS_ICE,
-    WEB_PAGE,
-    INTERNAL // used for internal processes that don't really have a connection
-}
 
 data class UserPrincipal(
     private val _name: String,

@@ -1,5 +1,5 @@
 import {Store} from "redux";
-import {webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {SERVER_ENTER_ICE_TANGLE, SERVER_TANGLE_POINT_MOVED} from "./TangleIceReducer";
 import {tangleIceManager, TanglePointMoved, TanglePuzzle} from "./component/TangleIceManager";
 

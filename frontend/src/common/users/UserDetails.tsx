@@ -3,11 +3,11 @@ import {CLOSE_USER_EDIT } from "./UsersReducer";
 import {User, USER_TYPE_ADMIN, USER_TYPE_GM, USER_TYPE_HACKER, USER_TYPE_HACKER_MANAGER} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
-import userAuthorizations, {ROLE_GM, ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../UserAuthorizations";
+import userAuthorizations, {ROLE_GM, ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {CloseButton} from "../component/CloseButton";
 import {useDispatch} from "react-redux";
-import {webSocketConnection} from "../WebSocketConnection";
-import {currentUser} from "../CurrentUser";
+import {webSocketConnection} from "../server/WebSocketConnection";
+import {currentUser} from "../user/CurrentUser";
 import {larp} from "../Larp";
 
 type SaveFunction = (field: string, value: string) => void

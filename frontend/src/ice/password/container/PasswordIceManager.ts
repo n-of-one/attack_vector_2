@@ -1,6 +1,6 @@
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer"
-import {Schedule} from "../../../common/Schedule"
-import {notify} from "../../../common/Notification"
+import {Schedule} from "../../../common/util/Schedule"
+import {notify} from "../../../common/util/Notification"
 import {Dispatch, Store} from "redux"
 import {GenericIceManager} from "../../GenericIceManager"
 import {ICE_PASSWORD_BEGIN} from "./PasswordIceReducer"

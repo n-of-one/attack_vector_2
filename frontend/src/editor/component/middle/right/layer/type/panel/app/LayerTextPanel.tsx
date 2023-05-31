@@ -21,7 +21,7 @@ export const LayerTextPanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="Text" layerObject={text}>
-            <LayerField key={key("text")} size="large" name="Hacked text" value={text.text} save={value => text.saveText(value)}
+            <LayerField key={key("text")} size="large" label="Hacked text" value={text.text} save={value => text.saveText(value)}
                         placeholder="* Data found: ..." help="This is the text displayed when a player hacks this layer.
                               It can be used to provide data, or to simulate that some effect has taken place."/>
         </LayerPanel>

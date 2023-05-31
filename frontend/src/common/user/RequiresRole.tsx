@@ -1,6 +1,6 @@
 import React, {ReactElement} from 'react'
 import userAuthorizations from "./UserAuthorizations";
-import {larp} from "./Larp";
+import {larp} from "../Larp";
 
 
 interface Props {

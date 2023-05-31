@@ -4,9 +4,9 @@ import {Terminal} from "../../../common/terminal/Terminal"
 import {ICE_PASSWORD_LOCK, PasswordIceI} from "./PasswordIceReducer"
 import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
-import {formatTimeInterval} from "../../../common/Util";
+import {formatTimeInterval} from "../../../common/util/Util";
 import {ENTER_KEY} from "../../../KeyCodes";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {PasswordRootState} from "../PasswordRootReducer";
 import {HIDDEN, LOCKED, UNLOCKED} from "../../IceModel";
 

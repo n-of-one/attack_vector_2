@@ -1,5 +1,5 @@
-import {webSocketConnection} from "../../common/WebSocketConnection"
-import {NotificationType} from "../../common/Notification"
+import {webSocketConnection} from "../../common/server/WebSocketConnection"
+import {NotificationType} from "../../common/util/Notification"
 import {editorCanvas, LoadSiteData} from "../component/middle/middle/EditorCanvas"
 import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
 import {Connection} from "../reducer/ConnectionsReducer"

@@ -1,5 +1,5 @@
 import {Store} from "redux"
-import {webSocketConnection} from "../../common/WebSocketConnection"
+import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {initGenericServerActions} from "./GenericServerActionProcessor"
 import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducer"
 import {terminalManager} from "../../common/terminal/TerminalManager"
@@ -16,7 +16,7 @@ import {HackerPresence} from "../run/reducer/HackersReducer"
 import {Timings} from "../../common/model/Ticks"
 import {SERVER_ICE_PASSWORD_UPDATE, SERVER_ENTER_ICE_PASSWORD} from "../../ice/password/container/PasswordIceReducer"
 import {passwordIceManager, PasswordIceStateUpdate} from "../../ice/password/container/PasswordIceManager"
-import {delayTicks} from "../../common/Util"
+import {delayTicks} from "../../common/util/Util"
 import {
     SERVER_FLASH_PATROLLER,
     SERVER_PATROLLER_LOCKS_HACKER,
@@ -25,7 +25,7 @@ import {
 } from "../run/coundown/CountdownReducer"
 import {enterScan} from "../home/HackerHome"
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK} from "../../common/terminal/TerminalReducer"
-import {Schedule} from "../../common/Schedule"
+import {Schedule} from "../../common/util/Schedule"
 import {NodeScanStatus} from "../../common/enums/NodeStatus";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"

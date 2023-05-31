@@ -1,4 +1,4 @@
-import {findElementById, updateArrayById} from "../../../common/Immutable";
+import {findElementById, updateArrayById} from "../../../common/util/Immutable";
 import {SiteProperties, sitePropertiesDefault} from "../../../editor/reducer/SitePropertiesReducer";
 import {defaultLayout, Layout} from "../../../editor/reducer/LayoutReducer";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";

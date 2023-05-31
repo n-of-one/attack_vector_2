@@ -1,8 +1,8 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {editorCanvas} from "./EditorCanvas"
 import {useDispatch, useSelector} from "react-redux"
 import {EditorState} from "../../../EditorRootReducer"
-import {useRunOnceDelayed} from "../../../../common/Util"
+import {delay} from "../../../../common/util/Util"
 import {sendAddNode} from "../../../server/EditorServerClient"
 
 
@@ -11,9 +11,9 @@ export const EditCanvasPanel = () => {
     const dragAndDropState = useSelector((state: EditorState) => state.dragAndDrop)
     const dispatch = useDispatch()
 
-    useRunOnceDelayed(() => {
-        editorCanvas.init(dispatch)
-    })
+    useEffect(() => {
+        delay( () => editorCanvas.init(dispatch))
+    },[])
 
     const allowDrop = (event: any) => {
         event.preventDefault()

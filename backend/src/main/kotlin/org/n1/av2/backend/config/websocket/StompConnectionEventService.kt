@@ -1,7 +1,6 @@
 package org.n1.av2.backend.config.websocket
 
 import org.n1.av2.backend.engine.TaskRunner
-import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.user.UserConnectionService
@@ -40,13 +39,12 @@ class StompConnectionEventService(
     private val logger = mu.KotlinLogging.logger {}
 
     fun connect(userPrincipal: UserPrincipal) {
-        currentUserService.set(userPrincipal.user)
         taskRunner.runTask(userPrincipal) {
 
-            if (userPrincipal.type == ConnectionType.WS_GENERAL) {
+            if (userPrincipal.type == ConnectionType.WS_HACKER_MAIN) {
                 userConnectionService.connect(userPrincipal)
             }
-            if (userPrincipal.type == ConnectionType.WS_ICE) {
+            if (userPrincipal.type == ConnectionType.WS_NETWORK_APP) {
                 userIceHackingService.connect(userPrincipal)
             }
         }
@@ -55,10 +53,10 @@ class StompConnectionEventService(
     fun disconnect(userPrincipal: UserPrincipal) {
         taskRunner.runTask(userPrincipal) {
 
-            if (userPrincipal.type == ConnectionType.WS_GENERAL) {
+            if (userPrincipal.type == ConnectionType.WS_HACKER_MAIN) {
                 userConnectionService.disconnect(userPrincipal)
             }
-            if (userPrincipal.type == ConnectionType.WS_ICE) {
+            if (userPrincipal.type == ConnectionType.WS_NETWORK_APP) {
                 userIceHackingService.disconnect(userPrincipal)
             }
         }

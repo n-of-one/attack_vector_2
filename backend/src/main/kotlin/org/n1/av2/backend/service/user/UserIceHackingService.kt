@@ -1,10 +1,10 @@
 package org.n1.av2.backend.service.user
 
+import org.n1.av2.backend.config.websocket.ConnectionType
 import org.n1.av2.backend.entity.ice.UserIceHackingState
 import org.n1.av2.backend.entity.ice.UserIceHackingStateRepository
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.model.iam.ConnectionType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
@@ -28,7 +28,7 @@ class UserIceHackingService(
         repo.save(newState)
 
         class NewConnection(val connectionId: String, val type: ConnectionType)
-        stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, ConnectionType.WS_ICE))
+        stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, ConnectionType.WS_NETWORK_APP))
     }
 
     fun enter(iceId: String) {

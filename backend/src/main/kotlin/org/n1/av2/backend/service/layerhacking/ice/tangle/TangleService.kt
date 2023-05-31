@@ -5,9 +5,8 @@ import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
 import org.n1.av2.backend.entity.ice.TangleLine
 import org.n1.av2.backend.entity.ice.TanglePoint
 import org.n1.av2.backend.entity.run.Run
-import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.IceStrength
-import org.n1.av2.backend.entity.site.layer.TangleIceLayer
+import org.n1.av2.backend.entity.site.layer.ice.TangleIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil

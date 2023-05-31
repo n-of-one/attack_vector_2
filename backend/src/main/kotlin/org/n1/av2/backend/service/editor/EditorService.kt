@@ -5,23 +5,29 @@ import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.entity.site.layer.other.STATUS
+import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
+import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_GREEN
+import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_RED
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightEntityService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.SiteValidationService
 
 @org.springframework.stereotype.Service
 class EditorService(
-    val siteService: SiteService,
-    val layoutEntityService: LayoutEntityService,
-    val sitePropertiesEntityService: SitePropertiesEntityService,
-    val nodeEntityService: NodeEntityService,
-    val connectionEntityService: ConnectionEntityService,
-    val siteValidationService: SiteValidationService,
-    val runService: RunService,
-    val stompService: StompService
+    private val siteService: SiteService,
+    private val layoutEntityService: LayoutEntityService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val nodeEntityService: NodeEntityService,
+    private val connectionEntityService: ConnectionEntityService,
+    private val siteValidationService: SiteValidationService,
+    private val runService: RunService,
+    private val stompService: StompService,
+    private val statusLightEntityService: StatusLightEntityService,
 ) {
 
     fun getByNameOrCreate(name: String): String {
@@ -84,8 +90,7 @@ class EditorService(
 
             sitePropertiesEntityService.save(properties)
             stompService.toSite(properties.siteId, ServerActions.SERVER_UPDATE_SITE_DATA, properties)
-        }
-        catch (validationException: ValidationException) {
+        } catch (validationException: ValidationException) {
             stompService.toSite(properties.siteId, ServerActions.SERVER_UPDATE_SITE_DATA, properties)
             throw validationException
         }
@@ -118,6 +123,7 @@ class EditorService(
     }
 
     data class ServerUpdateNetworkId(val nodeId: String, val networkId: String)
+
     fun editNetworkId(command: EditNetworkIdCommand) {
         val node = nodeEntityService.getById(command.nodeId)
         val changedNode = node.copy(networkId = command.value)
@@ -128,23 +134,40 @@ class EditorService(
     }
 
     data class ServerUpdateLayer(val nodeId: String, val layerId: String, val layer: Layer)
+
     fun editLayerData(command: EditLayerDataCommand) {
         val node = nodeEntityService.getById(command.nodeId)
-        val layer = node.layers.find{ it.id == command.layerId} ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
+        val layer = node.layers.find { it.id == command.layerId } ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
         layer.update(command.key, command.value)
+        processUpdateToApp(layer, command.key, command.value)
         nodeEntityService.save(node)
         val message = ServerUpdateLayer(command.nodeId, layer.id, layer)
         stompService.toSite(command.siteId, ServerActions.SERVER_UPDATE_LAYER, message)
         siteValidationService.validate(command.siteId)
     }
 
+    private fun processUpdateToApp(layer: Layer, key: String, value: String) {
+        if (layer is StatusLightLayer) {
+            val entity = statusLightEntityService.findById(layer.appId)
+            when (key) {
+                STATUS -> statusLightEntityService.update(entity.copy(status = value.toBoolean()))
+                TEXT_FOR_RED -> statusLightEntityService.update(entity.copy(textForRed = value))
+                TEXT_FOR_GREEN -> statusLightEntityService.update(entity.copy(textForGreen = value))
+                else -> Unit
+            }
+        }
+    }
+
+
     data class LayerAdded(val nodeId: String, val layer: Layer)
-    fun addLayer(command: AddLayerCommand) {
+
+    fun addLayer(command: AddLayerCommand): Layer {
         val layer = nodeEntityService.addLayer(command)
         val message = LayerAdded(command.nodeId, layer)
 
         stompService.toSite(command.siteId, ServerActions.SERVER_ADD_LAYER, message)
         siteValidationService.validate(command.siteId)
+        return layer
     }
 
     fun removeLayer(command: RemoveLayerCommand) {
@@ -167,4 +190,5 @@ class EditorService(
         runService.deleteSite(siteId)
         siteService.removeSite(siteId, userPrincipal)
     }
+
 }

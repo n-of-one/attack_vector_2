@@ -1,6 +1,6 @@
 import React from 'react'
 import {SilentLink} from "../../../../../common/component/SilentLink"
-import {Glyphicon} from "../../../../../common/component/Glyphicon"
+import {Glyphicon} from "../../../../../common/component/icon/Glyphicon"
 import {OS} from "../../../../../common/enums/LayerTypes"
 import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {sendRemoveLayer} from "../../../../server/EditorServerClient"

@@ -1,5 +1,5 @@
 import {Store} from "redux";
-import {webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {IceStrength} from "../../common/model/IceStrength";
 import {SERVER_ENTER_ICE_NETWALK, SERVER_NETWALK_NODE_ROTATED} from "./reducer/NetwalkStateReducer";
 import {netwalkManager} from "./component/NetwalkManager";

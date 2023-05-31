@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 import {animate, calcLine} from "../CanvasUtils";
 import {Canvas} from "fabric/fabric-impl";
-import {Schedule} from "../../Schedule";
+import {Schedule} from "../../util/Schedule";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {NodeDisplay} from "./NodeDisplay";
 import {Display} from "./Display";

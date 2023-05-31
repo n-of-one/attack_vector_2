@@ -1,6 +1,6 @@
-import {webSocketConnection} from "../../common/WebSocketConnection";
-import {serverTime} from "../../common/ServerTime";
-import {notify} from "../../common/Notification";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
+import {serverTime} from "../../common/server/ServerTime";
+import {notify} from "../../common/util/Notification";
 import {ServerNotification} from "../../editor/server/EditorServerActionProcessor";
 
 export const SERVER_NOTIFICATION = "SERVER_NOTIFICATION"
@@ -25,7 +25,7 @@ export const initGenericServerActions = () => {
     })
 
     webSocketConnection.addAction(SERVER_DISCONNECT, () => {
-        notify({type: 'fatal', message: 'Connection with server lost. Please refresh browser.'})
+        notify({type: 'fatal', message: 'Connection with server lost. Please refresh.'})
     })
 
     webSocketConnection.addAction(SERVER_ERROR, (data: { message: string, recoverable: boolean }) => {

@@ -21,9 +21,9 @@ export const LayerTimerTriggerPanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="Timer Trigger" layerObject={layerObject}>
-            <LayerField key={key("minutes")} size="large" name="Minutes" value={layerObject.minutes} save={value => layerObject.saveMinutes(value)}
+            <LayerField key={key("minutes")} size="large" label="Minutes" value={layerObject.minutes} save={value => layerObject.saveMinutes(value)}
                         placeholder="(Minutes until alarm)" help="Minutes part of time until alarm."/>
-            <LayerField key={key("seconds")} size="large" name="Seconds" value={layerObject.seconds} save={value => layerObject.saveSeconds(value)}
+            <LayerField key={key("seconds")} size="large" label="Seconds" value={layerObject.seconds} save={value => layerObject.saveSeconds(value)}
                         placeholder="(Seconds part of time until alarm)" help="Seconds part of time until alarm."/>
         </LayerPanel>
     )

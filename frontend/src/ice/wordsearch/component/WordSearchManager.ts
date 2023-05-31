@@ -1,4 +1,4 @@
-import {Schedule} from "../../../common/Schedule";
+import {Schedule} from "../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {GenericIceManager} from "../../GenericIceManager";
 import {Dispatch, Store} from "redux";

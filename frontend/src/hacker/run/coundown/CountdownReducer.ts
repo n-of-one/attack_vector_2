@@ -1,4 +1,4 @@
-import {serverTime} from "../../../common/ServerTime";
+import {serverTime} from "../../../common/server/ServerTime";
 import {AnyAction} from "redux";
 import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
 import {SERVER_HACKER_DC} from "../../server/RunServerActionProcessor";

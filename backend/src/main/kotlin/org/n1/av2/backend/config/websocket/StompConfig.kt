@@ -1,14 +1,11 @@
 package org.n1.av2.backend.config.websocket
 
-import org.n1.av2.backend.engine.TaskRunner
-import org.n1.av2.backend.model.iam.ConnectionType
+import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.service.user.UserConnectionService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.http.server.ServerHttpRequest
-import org.springframework.http.server.ServerHttpResponse
-import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.security.core.context.SecurityContextHolder
@@ -20,19 +17,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.messaging.SessionConnectEvent
 import org.springframework.web.socket.messaging.SessionDisconnectEvent
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
-import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.security.Principal
-import javax.annotation.PostConstruct
+import java.util.*
 
-const val MAIN_ENDPOINT = "/av_ws"
-const val ICE_ENDPOINT = "/ice_ws"
 
 @Configuration
 @EnableWebSocketMessageBroker
 @Component
 class StompConfig(
     val stompConnectionEventService: StompConnectionEventService,
+    private val connectionUtil: ConnectionUtil,
 ) : WebSocketMessageBrokerConfigurer {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -40,30 +35,46 @@ class StompConfig(
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
 
-        class WebSocketAuthenticationHandler : DefaultHandshakeHandler() {
-
+        class UnauthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
                 attributes: Map<String, Any>
             ): Principal {
-                /// The UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
-                val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal ?: throw RuntimeException("Login please")
+                val user = User(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, "")
+                val connectionId = connectionUtil.create()
+                val name = "${user.name}:${connectionId}"
+                return UserPrincipal(name, connectionId, user, ConnectionType.WS_UNRESTRICTED)
+            }
+        }
+        registry
+            .addEndpoint(UNRESTRICTED_ENDPOINT)
+            .setAllowedOrigins("*")
+            .setHandshakeHandler(UnauthenticatedHandshakeHandler())
+
+
+        class AuthenticatedHandshakeHandler : DefaultHandshakeHandler() {
+            override fun determineUser(
+                request: ServerHttpRequest, wsHandler: WebSocketHandler,
+                attributes: Map<String, Any>
+            ): Principal {
+                // The UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
+
+                // WebSecurityConfig will make sure only authenticated users get here.
+                val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
                 /// Replace the name with username + connectionId, so that the Client will know its unique connectionId.
                 return userPrincipal.copy(_name = "${userPrincipal.userId}:${userPrincipal.connectionId}")
             }
         }
 
         registry
-            .addEndpoint(MAIN_ENDPOINT)
+            .addEndpoint(HACKER_ENDPOINT)
             .setAllowedOrigins("*")
-//            .addInterceptors(MyHandshakeInterceptor())
-            .setHandshakeHandler(WebSocketAuthenticationHandler())
+            .setHandshakeHandler(AuthenticatedHandshakeHandler())
 
         registry
-            .addEndpoint(ICE_ENDPOINT)
+            .addEndpoint(NETWORKED_APP_ENDPOINT)
             .setAllowedOrigins("*")
-//            .addInterceptors(MyHandshakeInterceptor())
-            .setHandshakeHandler(WebSocketAuthenticationHandler())
+            .setHandshakeHandler(AuthenticatedHandshakeHandler())
 
     }
 

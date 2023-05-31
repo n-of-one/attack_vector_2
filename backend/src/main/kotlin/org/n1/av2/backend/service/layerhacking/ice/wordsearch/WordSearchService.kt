@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.ice.WordSearchStatus
 import org.n1.av2.backend.entity.ice.WordSearchStatusRepo
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.enums.IceStrength
-import org.n1.av2.backend.entity.site.layer.WordSearchIceLayer
+import org.n1.av2.backend.entity.site.layer.ice.WordSearchIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil

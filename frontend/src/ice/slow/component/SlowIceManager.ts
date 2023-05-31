@@ -1,4 +1,4 @@
-import {Schedule} from "../../../common/Schedule";
+import {Schedule} from "../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {GenericIceManager} from "../../GenericIceManager";
 import {Dispatch, Store} from "redux";
@@ -6,8 +6,8 @@ import {TERMINAL_CLEAR, TERMINAL_REPLACE_LAST_LINE} from "../../../common/termin
 import {slowIceCanvas} from "../canvas/SlowIceCanvas";
 import {SlowIceEnter, SlowIceStatusUpdate} from "../SlowIceServerActionProcessor";
 import {SLOW_ICE_BEGIN} from "../reducer/SlowIceReducer";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
-import {formatTimeInterval} from "../../../common/Util";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
+import {formatTimeInterval} from "../../../common/util/Util";
 
 const DELAY_BETWEEN_HACK_TICKS_S = 5
 

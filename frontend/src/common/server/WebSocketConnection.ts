@@ -1,14 +1,13 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
 import {Store} from "redux"
-import {TERMINAL_RECEIVE} from "./terminal/TerminalReducer"
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../hacker/server/GenericServerActionProcessor"
-import {CONNECTION_TYPE_GENERAL, ConnectionType, currentUser} from "./CurrentUser"
-import {notify} from "./Notification";
-import {DISCONNECTED, NAVIGATE_PAGE} from "./menu/pageReducer";
+import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
+import {currentUser} from "../user/CurrentUser"
+import {notify} from "../util/Notification";
+import {DISCONNECTED, NAVIGATE_PAGE} from "../menu/pageReducer";
+import {ConnectionType} from "./ConnectionType";
 
 
-export const WEBSOCKET_MAIN = "av_ws"
-export const WEBSOCKET_ICE = "ice_ws"
 
 export class WebSocketConnection {
 
@@ -23,11 +22,13 @@ export class WebSocketConnection {
 
     actions: { [key: string]: (action: any) => void } = {}
 
-    create(type: ConnectionType, store: Store, additionalOnWsOpen: () => void, waitForType: string | null = null) {
-        currentUser.type = type
-        const endpoint = (type === CONNECTION_TYPE_GENERAL) ? WEBSOCKET_MAIN : WEBSOCKET_ICE
+    connectionType: ConnectionType = null as unknown as ConnectionType
+    connectionId: string = null as unknown as string
+
+    create(connectionType: ConnectionType, store: Store, additionalOnWsOpen: () => void, waitForType: string | null = null) {
+        this.connectionType = connectionType
         this.store = store
-        const url = this.createUrl(endpoint)
+        const url = this.createUrl(connectionType)
         this.client = webstomp.client(url, {debug: false, heartbeat: {incoming: 0, outgoing: 0}})
 
         if (waitForType) {
@@ -41,14 +42,13 @@ export class WebSocketConnection {
         })
     }
 
-    createUrl(endpoint: string) {
-        let port: string = window.location.port
+    createUrl(connection: ConnectionType) {
         const hostName: string = window.location.hostname
-        this.developmentServer = (port === "3000")
+        this.developmentServer = (window.location.port === "3000")
         // During development connect directly to backend, websocket proxying does not work with create-react-app.
-        port = this.developmentServer ? "80" : port
+        const port = this.developmentServer ? "80" :  window.location.port
         const protocol = (window.location.protocol === "http:") ? "ws" : "wss"
-        return `${protocol}://${hostName}:${port}/${endpoint}`
+        return `${protocol}://${hostName}:${port}${connection.endpoint}`
     }
 
     onWsOpen(event: Frame, additionalOnWsOpen: () => void) {
@@ -56,7 +56,7 @@ export class WebSocketConnection {
         const userId = userIdAndConnection.substring(0, userIdAndConnection.indexOf(":"))
         const connectionId = userIdAndConnection.substring(userId.length + 1)
         currentUser.id = userId
-        currentUser.connectionId = connectionId
+        this.connectionId = connectionId
 
         this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"})
 
@@ -109,8 +109,8 @@ export class WebSocketConnection {
             this.abort("Server forced disconnection.")
         }
         if (action.type === SERVER_USER_CONNECTION &&
-            currentUser.type === action.data.type &&
-            currentUser.connectionId !== action.data.connectionId) {
+            this.connectionType === action.data.type &&
+            this.connectionId !== action.data.connectionId) {
 
             this.abort("Another browser tab was opened for hacking. \n\n Close or refresh this tab.")
         }

@@ -1,9 +1,9 @@
-import {Schedule} from "../../../common/Schedule";
+import {Schedule} from "../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {GenericIceManager} from "../../GenericIceManager";
 import {tangleIceCanvas} from "../canvas/TangleIceCanvas";
-import {notify} from "../../../common/Notification";
-import {delay} from "../../../common/Util";
+import {notify} from "../../../common/util/Notification";
+import {delay} from "../../../common/util/Util";
 import {Dispatch, Store} from "redux";
 import {ICE_TANGLE_BEGIN, TangleLine, TanglePoint} from "../TangleIceReducer";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";

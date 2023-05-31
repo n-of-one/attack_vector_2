@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {runCanvas} from "../RunCanvas"
-import {findElementById} from "../../../../common/Immutable"
+import {findElementById} from "../../../../common/util/Immutable"
 import {NodeScanInfoByStatus} from "./NodeScanInfoByStatus"
 import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FULLY_SCANNED_4, NodeScanStatus, TYPE_KNOWN_2} from "../../../../common/enums/NodeStatus"
 import {Pad} from "../../../../common/component/Pad"

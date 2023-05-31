@@ -1,4 +1,4 @@
-import {findElementById, updateArrayById} from "../../common/Immutable"
+import {findElementById, updateArrayById} from "../../common/util/Immutable"
 import {AnyAction} from "redux"
 import {
     SERVER_ADD_LAYER,
@@ -52,6 +52,11 @@ export interface LayerDetails {
     time1Level1Hacker?: string   // Slow Ice layer
     time1Level5Hacker?: string   // Slow Ice layer
     time5Level10Hackers?: string // Slow Ice layer
+
+    appId: string
+    status: boolean
+    textForGreen: string
+    textForRed: string
 
 
 }

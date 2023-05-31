@@ -25,7 +25,9 @@ abstract class Layer(
         if (this.name.isEmpty()) throw ValidationException("Service name cannot be empty.")
     }
 
-    abstract fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit>
+    open fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+        return emptyList()
+    }
 
     fun allValidationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
         val methods = validationMethods().toMutableList()

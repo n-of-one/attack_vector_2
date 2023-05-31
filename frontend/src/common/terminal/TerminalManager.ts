@@ -1,5 +1,5 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
-import {delay} from "../Util";
+import {delay} from "../util/Util";
 import {Dispatch, Store} from "redux";
 import {TERMINAL_KEY_PRESS, TERMINAL_UPDATE, TerminalState} from "./TerminalReducer";
 import {ICE_INPUT_TERMINAL_ID, MAIN_TERMINAL_ID} from "./ActiveTerminalIdReducer";

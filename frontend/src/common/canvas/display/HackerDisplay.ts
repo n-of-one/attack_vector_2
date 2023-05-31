@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {animate, calcLine, easeInOutSine, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
-import {Schedule} from "../../Schedule"
+import {Schedule} from "../../util/Schedule"
 import {
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
@@ -18,7 +18,7 @@ import {DisplayCollection} from "./util/DisplayCollection"
 import {NodeDisplay} from "./NodeDisplay"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
 import {HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
-import {notEmpty} from "../../Util";
+import {notEmpty} from "../../util/Util";
 import {Timings} from "../../model/Ticks";
 
 const APPEAR_TIME = 20

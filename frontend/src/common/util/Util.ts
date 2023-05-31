@@ -1,5 +1,5 @@
 import {useState} from "react"
-import {zeroPad} from "./component/Pad";
+import {zeroPad} from "../component/Pad";
 import {TICK_MILLIS} from "./Schedule";
 
 export const delay = (toRun: () => void) => {
@@ -10,19 +10,6 @@ export const delayTicks = (tickCount: number, toRun: () => void) => {
   setTimeout(toRun, TICK_MILLIS * tickCount)
 }
 
-export const useRunOnce = (callBack: () => void) => {
-  const [hasBeenCalled, setHasBeenCalled] = useState(false)
-  if (hasBeenCalled) return
-  callBack()
-  setHasBeenCalled(true)
-}
-
-export const useRunOnceDelayed = (callBack: () => void) => {
-  const [hasBeenCalled, setHasBeenCalled] = useState(false)
-  if (hasBeenCalled) return
-  delay(callBack)
-  setHasBeenCalled(true)
-}
 
 export const formatTimeInterval = (totalSecondsLeft: number | null) => {
   if (!totalSecondsLeft) {

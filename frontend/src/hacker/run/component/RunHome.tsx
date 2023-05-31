@@ -8,8 +8,8 @@ import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalR
 import {Dispatch} from "redux"
 import {CountdownTimer} from "../coundown/CountdownTimer";
 import {ENTER_KEY} from "../../../KeyCodes";
-import {webSocketConnection} from "../../../common/WebSocketConnection";
-import {currentUser} from "../../../common/CurrentUser";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
+import {currentUser} from "../../../common/user/CurrentUser";
 
 
 const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {

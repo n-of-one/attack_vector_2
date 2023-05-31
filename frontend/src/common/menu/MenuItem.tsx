@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import Cookies from "js-cookie";
 import {NAVIGATE_PAGE, RUN} from "./pageReducer";
 import {HackerState} from "../../hacker/HackerRootReducer";
-import {webSocketConnection} from "../WebSocketConnection";
+import {webSocketConnection} from "../server/WebSocketConnection";
 import {Dispatch} from "redux";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/

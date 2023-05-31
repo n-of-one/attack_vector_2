@@ -1,8 +1,8 @@
 import {Store} from "redux";
-import {webSocketConnection} from "../../common/WebSocketConnection";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {SERVER_ENTER_ICE_WORD_SEARCH} from "./reducer/WordSearchPuzzleReducer";
 import {wordSearchManager} from "./component/WordSearchManager";
-import {delay} from "../../common/Util";
+import {delay} from "../../common/util/Util";
 import {IceStrength} from "../../common/model/IceStrength";
 
 export const SERVER_ICE_WORD_SEARCH_UPDATED = "SERVER_ICE_WORD_SEARCH_UPDATED"
