@@ -60,7 +60,7 @@ const renderTab = (layer: LayerDetails, currentLayer: LayerDetails, selectLayer:
         <li role="presentation" className="nav-item" key={layer.id}>
             <SilentLink classNameInput={activeLinkClassName} onClick={() => selectLayer(layer)} aria-controls="home"
                          data-toggle="tab">
-                <Icon type={layer.type} size="18px" svgColor={svgColor}/>
+                <Icon type={layer.type} svgColor={svgColor}/>
             </SilentLink>
         </li>
     )

@@ -26,7 +26,7 @@ export const LayersPanel = () => {
             <span className="btn btn-info btn-spaced" onClick={() => {
                 add(type, true)
             }}>
-                <Icon type={type} size="18px" color={color}/>
+                <Icon type={type} color={color}/>
             </span>
         )
     }
@@ -36,7 +36,7 @@ export const LayersPanel = () => {
     const unImplemented = (type: string) => {
         return (
             <span className="btn btn-grey btn-spaced">
-                <Icon type={type} size="18px"/>
+                <Icon type={type} />
             </span>
         )
     }
