@@ -12,7 +12,7 @@ import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_RED
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightEntityService
+import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.SiteValidationService
@@ -27,7 +27,7 @@ class EditorService(
     private val siteValidationService: SiteValidationService,
     private val runService: RunService,
     private val stompService: StompService,
-    private val statusLightEntityService: StatusLightEntityService,
+    private val statusLightService: StatusLightService,
 ) {
 
     fun getByNameOrCreate(name: String): String {
@@ -148,11 +148,11 @@ class EditorService(
 
     private fun processUpdateToApp(layer: Layer, key: String, value: String) {
         if (layer is StatusLightLayer) {
-            val entity = statusLightEntityService.findById(layer.appId)
+            val entity = statusLightService.findById(layer.appId)
             when (key) {
-                STATUS -> statusLightEntityService.update(entity.copy(status = value.toBoolean()))
-                TEXT_FOR_RED -> statusLightEntityService.update(entity.copy(textForRed = value))
-                TEXT_FOR_GREEN -> statusLightEntityService.update(entity.copy(textForGreen = value))
+                STATUS -> statusLightService.update(entity.copy(status = value.toBoolean()))
+                TEXT_FOR_RED -> statusLightService.update(entity.copy(textForRed = value))
+                TEXT_FOR_GREEN -> statusLightService.update(entity.copy(textForGreen = value))
                 else -> Unit
             }
         }

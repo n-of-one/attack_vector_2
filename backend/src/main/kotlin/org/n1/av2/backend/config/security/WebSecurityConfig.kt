@@ -35,11 +35,17 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .and()
             .authorizeHttpRequests()
 
-            .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**",
-                "/favicon.ico", "/asset-manifest.json").permitAll()
-
+            // HTML routes
+            .requestMatchers("/widget/**").permitAll()
+            .requestMatchers("/app/**").permitAll()
+            .requestMatchers("/hacker/**").permitAll()
+            .requestMatchers("/ice/**").permitAll()
+            .requestMatchers("/manual/**").permitAll()
+            .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/asset-manifest.json").permitAll()
             .requestMatchers("/localLogout", "/loggedOut", "/login", "/sso",).permitAll()
             .requestMatchers("/about").permitAll()
+            .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
+            .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)
 
             // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
             // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
@@ -53,12 +59,6 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/login/*", "/api/login", "/signUp", "/logout").permitAll()
             .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority)
 
-            // HTML routes
-            .requestMatchers("/hacker/**").permitAll()
-            .requestMatchers("/ice/**").permitAll()
-            .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
-            .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)
-            .requestMatchers("/manual/**").permitAll()
             .and()
             .csrf()
             .disable()

@@ -27,6 +27,14 @@ class StatusLightService(
     fun sendUpdate(statusLightEntity: StatusLightEntity) {
         val message = StatusLightMessage(statusLightEntity.status, statusLightEntity.description, statusLightEntity.textForRed, statusLightEntity.textForGreen)
         stompService.toApp(statusLightEntity.id, ServerActions.SERVER_STATUS_LIGHT_UPDATE, message)
+    }
 
+    fun update(statusLightEntity: StatusLightEntity) {
+        statusLightEntityService.update(statusLightEntity)
+        sendUpdate(statusLightEntity)
+    }
+
+    fun findById(appId: String): StatusLightEntity {
+        return statusLightEntityService.findById(appId)
     }
 }

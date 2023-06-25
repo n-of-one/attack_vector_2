@@ -1,20 +1,11 @@
 package org.n1.av2.backend.web.html
 
 import jakarta.servlet.http.Cookie
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.service.LoginService
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.web.servlet.error.ErrorAttributes
 import org.springframework.boot.web.servlet.error.ErrorController
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ResponseBody
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 
 
 private const val INDEX = "../static/index.html"
@@ -24,7 +15,7 @@ class HtmlController(
     private val loginService: LoginService
 ) : ErrorController {
 
-    @GetMapping("/", "/login", "/login/", "/loggedOut", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "ice/{iceId}")
+    @GetMapping("/", "/login", "/login/", "/loggedOut", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "ice/{iceId}", "/widget/{widgetId}", "/app/{appId}")
     fun default(): String {
         return INDEX
     }
