@@ -1,5 +1,6 @@
 package org.n1.av2.backend.config.websocket
 
+import org.n1.av2.backend.entity.user.ROLE_USER
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
@@ -57,11 +58,23 @@ class StompConfig(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
                 attributes: Map<String, Any>
             ): Principal {
-                // The UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
 
-                // WebSecurityConfig will make sure only authenticated users get here.
-                val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
+                // If the user is logged in, the UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
+
+                val authentication = SecurityContextHolder.getContext().authentication
+
+                if (authentication !is UserPrincipal || !authentication.user.type.authorities.contains(ROLE_USER)) {
+                    // signal to the client that they need to log in first.
+                    return UserPrincipal(
+                        _name = "not-logged-in",
+                        connectionId = connectionUtil.create(),
+                        user = User(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, ""),
+                        type = ConnectionType.NONE,
+                    )
+                }
+
                 /// Replace the name with username + connectionId, so that the Client will know its unique connectionId.
+                val userPrincipal: UserPrincipal = authentication
                 return userPrincipal.copy(_name = "${userPrincipal.userId}:${userPrincipal.connectionId}")
             }
         }

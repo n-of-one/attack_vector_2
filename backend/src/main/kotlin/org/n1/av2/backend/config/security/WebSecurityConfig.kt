@@ -41,8 +41,13 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/localLogout", "/loggedOut", "/login", "/sso",).permitAll()
             .requestMatchers("/about").permitAll()
 
-            .requestMatchers("/ws_hacker").hasAuthority(ROLE_USER.authority)
-            .requestMatchers("/ws_networked_app").hasAuthority(ROLE_USER.authority)
+            // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
+            // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
+            // the handshake handler. See: StompConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
+            .requestMatchers("/ws_hacker").permitAll() // .hasAuthority(ROLE_USER.authority)
+            .requestMatchers("/ws_networked_app").permitAll() // .hasAuthority(ROLE_USER.authority)
+
+            // This one really is permitAll()
             .requestMatchers("/ws_unrestricted").permitAll()
 
             .requestMatchers("/login/*", "/api/login", "/signUp", "/logout").permitAll()

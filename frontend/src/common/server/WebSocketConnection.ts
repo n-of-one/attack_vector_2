@@ -6,6 +6,7 @@ import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {DISCONNECTED, NAVIGATE_PAGE} from "../menu/pageReducer";
 import {ConnectionType} from "./ConnectionType";
+import {larp} from "../Larp";
 
 
 
@@ -53,6 +54,12 @@ export class WebSocketConnection {
 
     onWsOpen(event: Frame, additionalOnWsOpen: () => void) {
         const userIdAndConnection = event.headers["user-name"]!!
+
+        if (userIdAndConnection === "not-logged-in") {
+            this.redirectToLogin()
+            return
+        }
+
         const userId = userIdAndConnection.substring(0, userIdAndConnection.indexOf(":"))
         const connectionId = userIdAndConnection.substring(userId.length + 1)
         currentUser.id = userId
@@ -66,17 +73,21 @@ export class WebSocketConnection {
         additionalOnWsOpen()
     }
 
+    redirectToLogin() {
+        window.location.href = `${larp.loginUrl}?next=${document.location.pathname}`
+    }
+
     onWsConnectError(event: CloseEvent | Frame) {
         if (event instanceof CloseEvent) {
-            console.error("Connect failed: " + event.reason)
+            console.error("Connect failed, code: " + event.code)
+            if (event.code === 1006) {
+                notify({type: "fatal", message: "Failed to establish connection to AV server. It might not be running." })
+            }
         } else {
+            notify({type: "fatal", message: "Failed to establish connection to AV server." })
             console.error("Connection failed: " + event.toString())
         }
 
-        this.store.dispatch({type: SERVER_DISCONNECT})
-        if (this.actions[SERVER_DISCONNECT]) {
-            this.actions[SERVER_DISCONNECT]({})
-        }
     }
 
     setupHeartbeat() {
