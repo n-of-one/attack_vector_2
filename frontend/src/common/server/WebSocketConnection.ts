@@ -82,12 +82,17 @@ export class WebSocketConnection {
             console.error("Connect failed, code: " + event.code)
             if (event.code === 1006) {
                 notify({type: "fatal", message: "Failed to establish connection to AV server. It might not be running." })
+                return
             }
         } else {
             notify({type: "fatal", message: "Failed to establish connection to AV server." })
             console.error("Connection failed: " + event.toString())
         }
 
+        this.store.dispatch({type: SERVER_DISCONNECT})
+        if (this.actions[SERVER_DISCONNECT]) {
+            this.actions[SERVER_DISCONNECT]({})
+        }
     }
 
     setupHeartbeat() {

@@ -111,7 +111,9 @@ class EditorCanvas {
     }
 
     render() {
-        this.canvas!.renderAll()
+        if (this.canvas) {
+            this.canvas!.renderAll()
+        }
     }
 
     canvasObjectModified(event: IEvent<MouseEvent>) {

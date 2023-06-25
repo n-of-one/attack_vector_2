@@ -1,4 +1,3 @@
-import {useState} from "react"
 import {zeroPad} from "../component/Pad";
 import {TICK_MILLIS} from "./Schedule";
 

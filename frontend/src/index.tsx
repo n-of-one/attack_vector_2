@@ -14,7 +14,6 @@ import {larp} from "./common/Larp";
 import {StatusLightRoot} from "./widget/status_light/StatusLightRoot";
 import {app} from "./app/AppId";
 import {SwitchRoot} from "./app/switch/SwitchRoot";
-import {ROLE_USER} from "./common/user/UserAuthorizations";
 
 
 const ReRoute = (): JSX.Element => {

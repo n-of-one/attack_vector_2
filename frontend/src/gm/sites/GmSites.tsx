@@ -7,6 +7,7 @@ import {SilentLink} from "../../common/component/SilentLink"
 import {GmSite, RECEIVE_SITES} from "./GmSitesReducer"
 import {GmState} from "../GmRootReducer";
 
+/* eslint react-hooks/exhaustive-deps: 0*/
 
 export const GmSites = () => {
 

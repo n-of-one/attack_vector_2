@@ -23,7 +23,6 @@ export class EditorRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
 
-        console.log("constructing editorRoot")
         this.errorMessage = null
         editorSiteId = props.siteId
 

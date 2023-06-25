@@ -5,6 +5,7 @@ import {EditorState} from "../../../EditorRootReducer"
 import {delay} from "../../../../common/util/Util"
 import {sendAddNode} from "../../../server/EditorServerClient"
 
+/* eslint react-hooks/exhaustive-deps: 0*/
 
 export const EditCanvasPanel = () => {
 

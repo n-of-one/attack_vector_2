@@ -20,6 +20,7 @@ npm install --save react-redux-datatable
 npm install --save react-bootstrap bootstrap
 npm install --save-dev redux-devtools-extension
 npm install --save-dev @types/webpack-env
+npm install --save react-qr-code
 
 add the line
   ,"proxy": "http://localhost:8080"
@@ -28,6 +29,7 @@ to package.json
 
 Notes:
 
-Use npm audit --production to check for vulnerabilities.
+Use `npm audit --production` to check for vulnerabilities.
 See: https://github.com/facebook/create-react-app/issues/11174
+
 

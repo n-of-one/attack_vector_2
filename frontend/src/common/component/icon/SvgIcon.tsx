@@ -1,6 +1,8 @@
 import React from "react"
 import {LOCK, STATUS_LIGHT} from "../../enums/LayerTypes";
 
+/* eslint jsx-a11y/alt-text: 0*/
+
 interface Props {
     type?: string,
     color?: string

@@ -6,6 +6,7 @@ import {LayerLevel} from "../../LayerLevel"
 import {Layer} from "../../../../../../../common/model/layer/Layer"
 import {EditorState} from "../../../../../../EditorRootReducer"
 import {LayerField} from "../../LayerField"
+import {createSelector} from "@reduxjs/toolkit";
 
 interface Props {
     layerObject: Layer,
@@ -13,20 +14,26 @@ interface Props {
     typeDisplay: string
 }
 
+const selectCurrentNodeId = (state: EditorState) => state.currentNodeId
+const selectCurrentLayerId = (state: EditorState) => state.currentLayerId
+const selectNodes = (state: EditorState) => state.nodes
+
+const selectNodeAndLayerData = createSelector(selectCurrentNodeId, selectCurrentLayerId, selectNodes, (currentNodeId, currentLayerId, nodes) => {
+    if (!currentNodeId) {
+        return {}
+    }
+    const node = findElementById(nodes, currentNodeId)
+    const layer = findElementById(node.layers, currentLayerId!)
+
+    return {
+        node: node,
+        layerData: layer,
+    }
+})
+
 export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
 
-    const {node, layerData} = useSelector((state: EditorState) => {
-        if (!state.currentNodeId) {
-            return {}
-        }
-        const node = findElementById(state.nodes, state.currentNodeId)
-        const layer = findElementById(node.layers, state.currentLayerId!)
-
-        return {
-            node: node,
-            layerData: layer,
-        }
-    })
+    const {node, layerData} = useSelector(selectNodeAndLayerData)
 
     if (!node) {
         return <div/>

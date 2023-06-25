@@ -1,4 +1,4 @@
-import {AnyAction, combineReducers} from "redux";
+import {AnyAction} from "redux";
 
 const SERVER_STATUS_LIGHT_UPDATE = "SERVER_STATUS_LIGHT_UPDATE"
 

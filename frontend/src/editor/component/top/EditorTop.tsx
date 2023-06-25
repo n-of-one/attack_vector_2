@@ -3,7 +3,6 @@ import {SitePropertiesTop} from "./SitePropertiesTop"
 import {SiteState} from "./SiteState"
 
 export const EditorTop = () => {
-    console.log("render EditorTop")
     return (
         <div className="row editorRow">
             <div className="col-lg-12 darkWell">

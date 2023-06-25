@@ -1,6 +1,6 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {useSelector} from "react-redux";
-import {statusLightReducer, StatusLightState} from "./StatusLightReducers";
+import {StatusLightState} from "./StatusLightReducers";
 
 const MARGIN = 23
 

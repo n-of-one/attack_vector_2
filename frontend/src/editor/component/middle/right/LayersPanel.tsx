@@ -41,26 +41,6 @@ export const LayersPanel = () => {
         )
     }
 
-
-    //
-    // const statusLight = (type: string) => {
-    //     const boxPadding = {paddingLeft: "9px", paddingTop: "5px", paddingRight: "9px", paddingBottom: "5px"}
-    //     if (type === STATUS_LIGHT_DOOR) {
-    //         return (
-    //             <span className="btn btn-info btn-spaced" style={boxPadding} onClick={ () => { addStatusLight("DOOR") } }>
-    //             <BoxIcon type="door" color="royalblue"/>
-    //             </span>
-    //         )
-    //     }
-    //     if (type === STATUS_LIGHT_ON_OFF) {
-    //         return (
-    //             <span className="btn btn-info btn-spaced" onClick={ () => { addStatusLight("ON_OFF") } }>
-    //                 <Glyphicon name="glyphicon-adjust" size="18px" color="royalblue"/>
-    //             </span>
-    //         )
-    //     }
-    // }
-
     return (
         <div className="row">
             <div className="col-lg-12 darkWell">

@@ -21,7 +21,7 @@ export const LayerFieldDropdown = ({label, value, save, options, tooltipId, tool
             <div className="col-lg-3 layerLabel">{label}</div>
             <div className="col-lg-5 noRightPadding">
                 <select className="form-control" onChange={(event) => save(event.target.value)} value={value}>
-                    {options.map((option: DropdownOption) => <option value={option.value}>{option.text}</option>) }
+                    {options.map((option: DropdownOption) => <option value={option.value} key={option.value}>{option.text}</option>) }
                 </select>
             </div>
             <div className="col-lg-1 layerHelpColumn">

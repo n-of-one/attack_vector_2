@@ -16,6 +16,7 @@ import {LayerIceNetWalkPanel} from "./type/panel/ice/LayerIceNetwalkPanel";
 import {LayerSlowIcePanel} from "./type/panel/ice/LayerSlowIcePanel";
 import {LayerStatusLightPanel} from "./type/panel/app/LayerStatusLightPanel";
 import {Icon} from "../../../../../common/component/icon/Icon";
+import {createSelector} from "@reduxjs/toolkit";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -66,20 +67,25 @@ const renderTab = (layer: LayerDetails, currentLayer: LayerDetails, selectLayer:
     )
 }
 
+const selectCurrentNodeId = (state: EditorState) => state.currentNodeId
+const selectCurrentLayerId = (state: EditorState) => state.currentLayerId
+const selectNodes = (state: EditorState) => state.nodes
+const selectNodeDetails = createSelector(selectCurrentNodeId, selectCurrentLayerId, selectNodes, (currentNodeId, currentLayerId, nodes) => {
+    if (currentNodeId == null) {
+        return {layers: [], currentLayer: null}
+    }
+    const node: NodeI = findElementById(nodes, currentNodeId)
+    const layer: LayerDetails = findElementById(node.layers, currentLayerId!)
+    return {
+        node: node,
+        layers: node.layers,
+        currentLayer: layer
+    }
+})
+
 export const NodeDetailsPanel = () => {
 
-    const {node, layers, currentLayer} = useSelector((state: EditorState) => {
-        if (state.currentNodeId == null) {
-            return {layers: [], currentLayer: null}
-        }
-        const node: NodeI = findElementById(state.nodes, state.currentNodeId)
-        const layer: LayerDetails = findElementById(node.layers, state.currentLayerId!)
-        return {
-            node: node,
-            layers: node.layers,
-            currentLayer: layer
-        }
-    })
+    const {node, layers, currentLayer} = useSelector(selectNodeDetails)
 
     const dispatch = useDispatch()
     const selectLayer = (layer: LayerDetails) => dispatch({type: SELECT_LAYER, layerId: layer.id})

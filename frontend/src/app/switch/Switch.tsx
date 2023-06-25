@@ -1,8 +1,6 @@
-import React, {useState} from "react";
+import React from "react";
 import {useSelector} from "react-redux";
 import {SwitchRootState, SwitchState} from "./SwitchReducers";
-import {ToggleButton} from "react-bootstrap";
-import FormRange from "react-bootstrap/FormRange";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {app} from "../AppId";
 
