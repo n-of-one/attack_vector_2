@@ -33,7 +33,7 @@ class ServiceIceGeneric(
 
         data class EnterIce(val redirectId: String)
         val redirectId = layerStatus.id.substringAfter("-")
-        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce(redirectId))
+        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/$redirectId"))
     }
 
 }

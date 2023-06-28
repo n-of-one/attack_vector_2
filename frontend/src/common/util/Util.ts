@@ -33,3 +33,20 @@ export function hashCode(str: string): number {
   }
   return h & 0xFFFFFFFF
 }
+
+export const decodeAppReference = (base64: string) => {
+  const binString = atob(base64);
+  const bytes = new Uint8Array(binString.length);
+  for (let i = 0; i < binString.length; i++) {
+    bytes[i] = binString.charCodeAt(i) ^ (i % 256)
+  }
+  return String.fromCharCode(...bytes)
+}
+
+export const encodeAppReference = (appId: string) => {
+    const bytes = new Uint8Array(appId.length);
+    for (let i = 0; i < appId.length; i++) {
+        bytes[i] = appId.charCodeAt(i) ^ (i % 256)
+    }
+    return btoa(String.fromCharCode(...bytes))
+}

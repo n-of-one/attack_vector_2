@@ -1,5 +1,5 @@
 import React from 'react'
-import {IceStrength} from "../../../../../common/model/IceStrength";
+import {IceStrength} from "../../../../../../common/model/IceStrength";
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 interface Props {

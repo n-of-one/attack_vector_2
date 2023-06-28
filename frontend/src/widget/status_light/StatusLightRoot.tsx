@@ -10,6 +10,7 @@ import {WS_UNRESTRICTED} from "../../common/server/ConnectionType";
 import {app} from "../../app/AppId";
 
 interface Props {
+    appId: string
 }
 
 export class StatusLightRoot extends Component<Props> {
@@ -18,6 +19,7 @@ export class StatusLightRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
+        app.id = props.appId
         const preLoadedState = defaultState
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"

@@ -49,7 +49,7 @@ class StompService(
     }
 
     fun toRun(runId: String, actionType: ServerActions, data: Any? = null) {
-        sendToDestination("/topic/topic/${runId}", actionType, data)
+        sendToDestination("/topic/run/${runId}", actionType, data)
     }
 
     fun toIce(iceId: String, actionType: ServerActions, data: Any? = null) {
@@ -66,11 +66,7 @@ class StompService(
 
     fun reply(actionType: ServerActions, data: Any) {
         val name = SecurityContextHolder.getContext().authentication.name
-        logger.debug("-> ${name} ${actionType}")
-
-        simulateNonLocalhost()
-        val event = ReduxEvent(actionType, data)
-        stompTemplate.convertAndSend("/reply", event)
+        sendToDestination("/topic/user/${name}", actionType, data)
     }
 
     //**********************************************************************************************************************//

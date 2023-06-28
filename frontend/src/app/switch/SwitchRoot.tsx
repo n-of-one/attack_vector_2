@@ -10,6 +10,7 @@ import {app} from "../AppId";
 import {NETWORKED_APP_ENDPOINT} from "../../common/server/ConnectionType";
 
 interface Props {
+    appId: string
 }
 
 export class SwitchRoot extends Component<Props> {
@@ -17,6 +18,7 @@ export class SwitchRoot extends Component<Props> {
     store: Store
 
     constructor(props: Props) {
+        app.id = props.appId
         super(props)
         const preLoadedState = {}
 

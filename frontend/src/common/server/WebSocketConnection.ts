@@ -60,8 +60,7 @@ export class WebSocketConnection {
             return
         }
 
-        const userId = userIdAndConnection.substring(0, userIdAndConnection.indexOf(":"))
-        const connectionId = userIdAndConnection.substring(userId.length + 1)
+        const [userId, connectionId ] = userIdAndConnection.split("_")
         currentUser.id = userId
         this.connectionId = connectionId
 
@@ -70,6 +69,7 @@ export class WebSocketConnection {
         this.setupHeartbeat()
         this.subscribe('/user/reply', false) /// This will receive messages for this specific connection
         this.subscribe(`/topic/user/${userId}`, false) /// messages for this user on all connections
+        this.subscribe(`/topic/user/${userIdAndConnection}`, false) /// messages for this user connection specifically (/reply does not work)
         additionalOnWsOpen()
     }
 

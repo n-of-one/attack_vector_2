@@ -89,7 +89,7 @@ class StompConfig(
 
                 /// Replace the name with username + connectionId, so that the Client will know its unique connectionId.
                 val userPrincipal: UserPrincipal = authentication
-                return userPrincipal.copy(_name = "${userPrincipal.userId}:${userPrincipal.connectionId}")
+                return userPrincipal.copy(_name = "${userPrincipal.userId}_${userPrincipal.connectionId}")
             }
         }
 

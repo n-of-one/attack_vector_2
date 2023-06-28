@@ -1,6 +1,6 @@
 import React from 'react'
 import {useDispatch} from "react-redux"
-import {LayerField} from "../../../LayerField"
+import {LayerField} from "../../../element/LayerField"
 import {LayerPanel} from "../LayerPanel"
 import {LayerIcePassword} from "../../../../../../../../common/model/layer/LayerIcePassword"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"

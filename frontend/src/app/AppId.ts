@@ -3,7 +3,7 @@ export class AppId {
     _id: string | null = null
 
     set id(appId: string | undefined) {
-        if (!appId) { throw Error("Missing app id, did you manually go to a URL?")}
+        if (!appId) { throw Error("Missing app id, did you manually go to an URL?")}
         this._id = appId
     }
 

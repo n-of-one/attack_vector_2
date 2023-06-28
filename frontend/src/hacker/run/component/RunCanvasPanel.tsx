@@ -17,9 +17,6 @@ interface Props {
 
 export class RunCanvasPanel extends Component<Props> {
 
-    componentWillMount() {
-        // dispatch some actions if you use Redux
-    }
 
     componentDidMount() {
         runCanvas.init(this.props.userId, this.props.dispatch);

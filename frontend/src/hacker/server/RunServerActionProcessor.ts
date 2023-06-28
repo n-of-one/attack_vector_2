@@ -16,7 +16,7 @@ import {HackerPresence} from "../run/reducer/HackersReducer"
 import {Timings} from "../../common/model/Ticks"
 import {SERVER_ICE_PASSWORD_UPDATE, SERVER_ENTER_ICE_PASSWORD} from "../../ice/password/container/PasswordIceReducer"
 import {passwordIceManager, PasswordIceStateUpdate} from "../../ice/password/container/PasswordIceManager"
-import {delayTicks} from "../../common/util/Util"
+import {delayTicks, encodeAppReference} from "../../common/util/Util"
 import {
     SERVER_FLASH_PATROLLER,
     SERVER_PATROLLER_LOCKS_HACKER,
@@ -249,7 +249,8 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
-        window.open(`/ice/${data.redirectId}`, data.redirectId)
+        const param = encodeAppReference(data.redirectId)
+        window.open(`/${param}`, param)
     })
 
     webSocketConnection.addAction(SERVER_ENTER_ICE_PASSWORD, (_: any) => {

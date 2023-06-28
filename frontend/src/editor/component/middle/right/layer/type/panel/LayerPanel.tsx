@@ -1,11 +1,11 @@
 import React, {ReactNode} from 'react'
 import {useSelector} from "react-redux"
 import {findElementById} from "../../../../../../../common/util/Immutable"
-import {LayerType} from "../../LayerType"
-import {LayerLevel} from "../../LayerLevel"
+import {LayerType} from "../../element/LayerType"
+import {LayerLevel} from "../../element/LayerLevel"
 import {Layer} from "../../../../../../../common/model/layer/Layer"
 import {EditorState} from "../../../../../../EditorRootReducer"
-import {LayerField} from "../../LayerField"
+import {LayerField} from "../../element/LayerField"
 import {createSelector} from "@reduxjs/toolkit";
 
 interface Props {
