@@ -3,8 +3,9 @@ package org.n1.av2.backend.entity.run
 import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
 
-@Repository
+@Service
 class UserRunLinkEntityService(
     private val userRunLinkRepo: UserRunLinkRepo,
     private val currentUserService: CurrentUserService,

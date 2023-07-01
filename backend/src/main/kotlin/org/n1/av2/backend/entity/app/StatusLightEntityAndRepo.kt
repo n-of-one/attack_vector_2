@@ -1,9 +1,11 @@
 package org.n1.av2.backend.entity.app
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
+@Document
 data class StatusLightEntity (
     @Id val id: String,
     val status: Boolean,

@@ -14,7 +14,7 @@ fun createId(prefix: String, findExisting: (String)-> Any? = ::neverFindExisting
 }
 
 fun createLayerId(node: Node, findExisting: (String)-> Any?): String {
-    return createId("${node.id}-layer", findExisting, 9, 13)
+    return createId("${node.id}:layer", findExisting, 9, 13)
 }
 
 fun nodeIdFromLayerId(layerId: String): String {

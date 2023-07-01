@@ -12,6 +12,7 @@ import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
 import {Dispatch} from "redux";
+import {developmentServer} from "../../common/util/DevEnvironment";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -31,9 +32,6 @@ export const HackerHome = () => {
         enterScan(scanInfo.runId, scanInfo.siteId, dispatch, currentPage)
     }
 
-    const deleteScan = (scanInfo: ScanInfo) => {
-        webSocketConnection.send("/av/scan/deleteScan", scanInfo.runId)
-    }
 
     return (
         <div className="row">
@@ -95,11 +93,8 @@ export const HackerHome = () => {
                                                 <td className="table-very-condensed">{scanInfo.initiatorName}</td>
                                                 <td className="table-very-condensed">{scanInfo.efficiency}</td>
                                                 <td className="table-very-condensed">
-                                                    <SilentLink onClick={() => {
-                                                        deleteScan(scanInfo);
-                                                    }}>
-                                                        <span className="glyphicon glyphicon-remove-circle"/>
-                                                    </SilentLink>
+                                                    <DeleteScanLink runId={scanInfo.runId}/>
+                                                    <ResetIceLink siteId={scanInfo.siteId}/>
                                                 </td>
                                             </tr>)
                                     })
@@ -123,4 +118,32 @@ export const enterScan = (runId: string, siteId: string, dispatch: Dispatch, cur
     dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
     webSocketConnection.send("/av/scan/enterScan", runId)
     terminalManager.start()
+}
+
+
+const DeleteScanLink = (props: { runId: string }) => {
+    const deleteScan = () => {
+        webSocketConnection.send("/av/scan/deleteScan", props.runId)
+    }
+
+    return <SilentLink onClick={deleteScan}>
+        <span className="glyphicon glyphicon-remove-circle"/>
+    </SilentLink>
+}
+
+const ResetIceLink = (props: { siteId: string }) => {
+    if (!developmentServer) {
+        return <></>
+    }
+
+    const resetIce = () => {
+        webSocketConnection.send("/av/scan/refreshIce", props.siteId)
+    }
+
+    return <>
+        &nbsp;<SilentLink onClick={resetIce}>
+        <span className="glyphicon glyphicon-refresh"/>
+    </SilentLink>
+    </>
+
 }

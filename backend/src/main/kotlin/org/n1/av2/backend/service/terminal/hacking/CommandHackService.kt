@@ -3,13 +3,15 @@ package org.n1.av2.backend.service.terminal.hacking
 import org.n1.av2.backend.entity.run.HackerStateRunning
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
+import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.OsLayerService
-import org.n1.av2.backend.service.layerhacking.ServiceIceGeneric
 import org.n1.av2.backend.service.layerhacking.TextLayerService
 import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
 import org.springframework.stereotype.Service
@@ -20,7 +22,6 @@ class CommandHackService(
     private val nodeEntityService: NodeEntityService,
     private val osLayerService: OsLayerService,
     private val textLayerService: TextLayerService,
-    private val serviceIceGeneric: ServiceIceGeneric,
     private val snifferLayerService: TimerTriggerLayerService,
     private val commandServiceUtil: CommandServiceUtil
 ) {
@@ -47,7 +48,7 @@ class CommandHackService(
             layer is OsLayer -> osLayerService.hack(layer)
             layer is TextLayer -> textLayerService.hack(layer, node, state.runId)
             layer is TimerTriggerLayer -> snifferLayerService.hack(layer)
-            layer.type.ice -> serviceIceGeneric.hack(layer, state.runId)
+            layer is IceLayer -> hackIce(node, layer)
             else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
@@ -66,6 +67,17 @@ class CommandHackService(
 
     private fun reportBlockingIce(blockingIceLayer: Layer) {
         stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
+    }
+
+
+    fun hackIce(node: Node, layer: IceLayer) {
+        if (layer.hacked) {
+            stompService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
+            return
+        }
+
+        data class EnterIce(val redirectId: String)
+        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${layer.id}"))
     }
 
 

@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.layerhacking.ice.netwalk
 import org.n1.av2.backend.engine.SECONDS_IN_TICKS
 import org.n1.av2.backend.entity.ice.*
 import org.n1.av2.backend.entity.ice.NetwalkCell
-import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.NetwalkIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
@@ -27,14 +26,16 @@ class NetwalkIceService(
         const val MAX_CREATE_ATTEMPTS = 20
     }
 
-    fun createIce(layer: NetwalkIceLayer, nodeId: String, runId: String): NetwalkEntity {
+    fun findOrCreateIceByLayerId(layer: NetwalkIceLayer): NetwalkEntity {
+        return netwalkStatusRepo.findByLayerId(layer.id) ?: createIce(layer)
+    }
+
+    private fun createIce(layer: NetwalkIceLayer): NetwalkEntity {
         val puzzle = createNetwalkPuzzle(layer.strength)
         val id = createId("netwalk", netwalkStatusRepo::findById)
 
         val netwalkEntity = NetwalkEntity(
             id = id,
-            runId = runId,
-            nodeId = nodeId,
             layerId = layer.id,
             strength = layer.strength,
             cellGrid = puzzle.grid,
@@ -54,7 +55,7 @@ class NetwalkIceService(
     }
 
 
-    class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, hacked: Boolean, val wrapping: Boolean)
+    class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, val hacked: Boolean, val wrapping: Boolean)
     fun enter(iceId: String) {
         val netwalk = netwalkStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         if (netwalk.hacked) error("This ice has already been hacked.")
@@ -86,7 +87,7 @@ class NetwalkIceService(
         stompService.toIce(iceId, ServerActions.SERVER_NETWALK_NODE_ROTATED, message)
 
         if (hacked) {
-            hackedUtil.iceHacked(netwalk.layerId, netwalk.runId, 7 * SECONDS_IN_TICKS)
+            hackedUtil.iceHacked(netwalk.layerId, 7 * SECONDS_IN_TICKS)
         }
     }
 
@@ -105,7 +106,8 @@ class NetwalkIceService(
         return gridWithRotatedCell
     }
 
-    fun deleteAlLForRuns(runs: List<Run>) {
-        runs.forEach { netwalkStatusRepo.deleteAllByRunId(it.runId) }
+    fun deleteByLayerId(layerId: String) {
+        val iceStatus = netwalkStatusRepo.findByLayerId(layerId) ?: return
+        netwalkStatusRepo.delete(iceStatus)
     }
 }

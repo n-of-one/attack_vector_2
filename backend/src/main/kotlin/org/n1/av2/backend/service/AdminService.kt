@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class AdminService(
-    private val layerStatusRepo: LayerStatusRepo,
-    private val nodeStatusRepo: NodeStatusRepo,
     private val hackerStateEntityService: HackerStateEntityService,
     private val hackerStateRepo: HackerStateRepo,
     private val tracingPatrollerRepo: TracingPatrollerRepo,
@@ -33,7 +31,6 @@ class AdminService(
     ) {
 
     fun purgeAll() {
-        layerStatusRepo.deleteAll()
         tracingPatrollerRepo.deleteAll()
 
         sitePropertiesRepo.findAll().forEach { siteProperties ->
@@ -62,8 +59,6 @@ class AdminService(
     }
 
     fun reset() {
-        layerStatusRepo.deleteAll()
-        nodeStatusRepo.deleteAll()
         tracingPatrollerRepo.deleteAll()
         hackerStateRepo.deleteAll()
         hackerStateEntityService.init()

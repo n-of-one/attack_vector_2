@@ -15,7 +15,7 @@ enum class ServerActions {
     SERVER_FORCE_DISCONNECT,
     SERVER_MOVE_NODE,
     SERVER_SITE_FULL,
-    SERVER_UPDATE_SITE_DATA,
+    SERVER_UPDATE_SITE_DATA,        // Send update of SiteProperties
 
     SERVER_UPDATE_NETWORK_ID,
     SERVER_UPDATE_LAYER,
@@ -33,6 +33,9 @@ enum class ServerActions {
     SERVER_UPDATE_SCAN_INFO,        // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_SCAN_FULL,               // Result of user enter scan (for the user itself)
+
+    SERVER_REFRESH_ICE,             // All ice is reset and unhacked, all nodes are unhacked
+
 
     SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, // transfer syntax highlighting to terminal
     SERVER_TERMINAL_RECEIVE,
@@ -83,6 +86,7 @@ enum class ServerActions {
 
     SERVER_ENTER_ICE_SLOW,              // sent to hacker that hacks this ice, first message of Ice window
     SERVER_SLOW_ICE_UPDATE              // sent to run when a slow ice status was updated
+    ,
 
 
 }

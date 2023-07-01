@@ -1,14 +1,15 @@
 package org.n1.av2.backend.entity.ice
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
+import org.springframework.data.mongodb.core.index.Indexed
+import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
+@Document
 data class WordSearchStatus(
     val id: String,
-    val runId: String,
-    val nodeId: String,
-    val layerId: String,
+    @Indexed val layerId: String,
     val strength: IceStrength,
     val words: List<String>,
     val letterGrid: List<List<Char>>,
@@ -20,5 +21,5 @@ data class WordSearchStatus(
 
 @Repository
 interface WordSearchStatusRepo: CrudRepository<WordSearchStatus, String> {
-    fun deleteAllByRunId(runId: String)
+    fun findByLayerId(layerId: String): WordSearchStatus?
 }

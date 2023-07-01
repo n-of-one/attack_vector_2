@@ -3,9 +3,14 @@ package org.n1.av2.backend.web.ws
 import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxEvent
+import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.scan.ScanInfoService
+import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -18,7 +23,10 @@ class ScanAndRunController(
     private val scanInfoService: ScanInfoService,
     private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
-) {
+    private val siteService: SiteService,
+    private val stompService: StompService
+
+    ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -38,6 +46,7 @@ class ScanAndRunController(
         taskRunner.runTask(userPrincipal) { scanInfoService.deleteScan(runId) }
     }
 
+
     @MessageMapping("/scan/enterScan")
     fun enterScan(siteId: String, userPrincipal: UserPrincipal) {
         taskRunner.runTask(userPrincipal) { runService.enterRun(siteId) }
@@ -49,6 +58,18 @@ class ScanAndRunController(
             val state = hackerStateEntityService.retrieveForCurrentUser()
             runService.leaveRun(state) }
     }
+
+
+    //     --- --- --- --- For testing purposes
+
+    @MessageMapping("/scan/refreshIce")
+    fun refreshIce(siteId: String, userPrincipal: UserPrincipal) {
+        taskRunner.runTask(userPrincipal) {
+            siteService.refreshIce(siteId)
+            stompService.replyMessage(NotyMessage.neutral("Ice reset"))
+        }
+    }
+
 
 //     --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 

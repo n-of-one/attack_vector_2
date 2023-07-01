@@ -1,7 +1,5 @@
 package org.n1.av2.backend.model.ui
 
-import org.n1.av2.backend.entity.run.LayerStatus
-import org.n1.av2.backend.entity.run.NodeStatus
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.entity.site.enums.LayerType
@@ -15,8 +13,6 @@ data class SiteFull(
     val connections: List<Connection>,
     val state: SiteEditorState,
     val startNodeId: String?,
-    var nodeStatuses: List<NodeStatus>?,
-    var layerStatuses: List<LayerStatus>?
 ) {
 
     fun sortNodeByDistance(run: Run) {

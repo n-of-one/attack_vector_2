@@ -25,10 +25,10 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
     const key = (param: string) => layer.id + ":" + param
 
     const widgetReference = encodeAppReference(`widget/${statusLight.appId}`)
-    const widgetUrl = `${window.location.origin}/${widgetReference}`
+    const widgetUrl = `${window.location.origin}/!/${widgetReference}`
 
     const appReference = encodeAppReference(`app/${statusLight.appId}`)
-    const appUrl = `${window.location.origin}/${appReference}`
+    const appUrl = `${window.location.origin}/!/${appReference}`
 
 
     return (

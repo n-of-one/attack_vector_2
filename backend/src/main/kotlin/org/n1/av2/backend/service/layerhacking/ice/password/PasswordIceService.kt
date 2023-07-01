@@ -2,7 +2,6 @@ package org.n1.av2.backend.service.layerhacking.ice.password
 
 import org.n1.av2.backend.entity.ice.PasswordIceStatus
 import org.n1.av2.backend.entity.ice.PasswordIceStatusRepo
-import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.ice.PasswordIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
@@ -16,7 +15,7 @@ import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
 @org.springframework.stereotype.Service
-class PasswordService(
+class PasswordIceService(
     private val nodeEntityService: NodeEntityService,
     private val passwordIceStatusRepo: PasswordIceStatusRepo,
     private val time: TimeService,
@@ -24,6 +23,17 @@ class PasswordService(
     private val hackedUtil: HackedUtil,
     private val userIceHackingService: UserIceHackingService,
 ) {
+
+    fun findOrCreateIceByLayerId(layer: PasswordIceLayer): PasswordIceStatus {
+        return passwordIceStatusRepo.findByLayerId(layer.id) ?: createStatus(layer)
+    }
+
+    fun createStatus(layer: PasswordIceLayer): PasswordIceStatus {
+        val id = createId("password", passwordIceStatusRepo::findById)
+        val passwordStatus = PasswordIceStatus(id, layer.id, LinkedList(), time.now().minusSeconds(1))
+        passwordIceStatusRepo.save(passwordStatus)
+        return passwordStatus
+    }
 
     data class UiState(
         val layerId: String,
@@ -79,7 +89,7 @@ class PasswordService(
         val result = UiState("Password accepted.", true, null, iceStatus)
         stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_PASSWORD_UPDATE, result)
 
-        hackedUtil.iceHacked(iceStatus.layerId, iceStatus.runId, 70)
+        hackedUtil.iceHacked(iceStatus.layerId, 70)
     }
 
     private fun resolveFailed(iceStatus: PasswordIceStatus, layer: PasswordIceLayer, password: String) {
@@ -110,21 +120,15 @@ class PasswordService(
     }
 
     private fun getLayer(iceStatus: PasswordIceStatus): PasswordIceLayer {
-        val node = nodeEntityService.getById(iceStatus.nodeId)
+        val node = nodeEntityService.findByLayerId(iceStatus.layerId)
         val layer = node.getLayerById(iceStatus.layerId)
         if (layer !is PasswordIceLayer) error("Wrong layer type/data for layer: ${layer.id}")
         return layer
     }
 
-    fun createStatus(layer: PasswordIceLayer, nodeId: String, runId: String): PasswordIceStatus {
-        val id = createId("password", passwordIceStatusRepo::findById)
-        val passwordStatus = PasswordIceStatus(id, runId, nodeId, layer.id, LinkedList(), time.now().minusSeconds(1))
-        passwordIceStatusRepo.save(passwordStatus)
-        return passwordStatus
-    }
 
-    fun deleteAllForRuns(runs: List<Run>) {
-        runs.forEach { passwordIceStatusRepo.deleteAllByRunId(it.runId) }
+    fun deleteByLayerId(layerId: String) {
+        val iceStatus = passwordIceStatusRepo.findByLayerId(layerId) ?: return
+        passwordIceStatusRepo.delete(iceStatus)
     }
-
 }

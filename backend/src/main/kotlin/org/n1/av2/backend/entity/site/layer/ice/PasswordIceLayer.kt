@@ -15,12 +15,13 @@ class PasswordIceLayer(
     name: String,
     note: String,
     strength: IceStrength,
+    hacked: Boolean,
     var password: String,
     var hint: String
-) : IceLayer(id, type, level, name, note, strength) {
+) : IceLayer(id, type, level, name, note, strength, hacked) {
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.PASSWORD_ICE, level, defaultName, "", IceStrength.AVERAGE, "", "")
+            this(id, LayerType.PASSWORD_ICE, level, defaultName, "", IceStrength.AVERAGE, false,"", "")
 
     @Suppress("UNUSED_PARAMETER")
     private fun validatePassword(siteRep: SiteRep) {

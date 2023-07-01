@@ -1,15 +1,16 @@
 package org.n1.av2.backend.entity.ice
 
+import org.springframework.data.mongodb.core.index.Indexed
+import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.time.ZonedDateTime
 
 
+@Document
 data class PasswordIceStatus(
     val id: String,
-    val runId: String,
-    val nodeId: String,
-    val layerId: String,
+    @Indexed val layerId: String,
     val attempts: MutableList<String>,
     var lockedUntil: ZonedDateTime,
     val hacked : Boolean = false,
@@ -17,5 +18,5 @@ data class PasswordIceStatus(
 
 @Repository
 interface PasswordIceStatusRepo: CrudRepository<PasswordIceStatus, String> {
-    fun deleteAllByRunId(runId: String)
+    fun findByLayerId(layerId: String): PasswordIceStatus?
 }

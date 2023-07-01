@@ -250,7 +250,7 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
         const param = encodeAppReference(data.redirectId)
-        window.open(`/${param}`, param)
+        window.open(`/!/${param}`, param)
     })
 
     webSocketConnection.addAction(SERVER_ENTER_ICE_PASSWORD, (_: any) => {

@@ -11,27 +11,26 @@ abstract class IceLayer(
     level: Int,
     name: String,
     note: String,
-    var strength: IceStrength
-) : Layer(id, type, level, name, note) {
+    var strength: IceStrength,
+    var hacked: Boolean,
+
+    ) : Layer(id, type, level, name, note) {
 
     companion object {
         const val STRENGTH = "strength"
     }
 
-    constructor(id: String, level: Int, defaultName: String, strength: IceStrength) :
-            this(id, LayerType.PASSWORD_ICE, level, defaultName, "", strength)
-
     @Suppress("UNUSED_PARAMETER")
     var ice: Boolean
-    set(ignore) {
-        // Needed setter because creating the object from Mongo always called the setter.
-    }
-    get() {
-        return true
-    }
+        set(ignore) {
+            // Needed setter because creating the object from Mongo always called the setter.
+        }
+        get() {
+            return true
+        }
 
     override fun updateInternal(key: String, value: String): Boolean {
-        when(key) {
+        when (key) {
             STRENGTH -> strength = IceStrength.valueOf(value)
             else -> return super.updateInternal(key, value)
         }

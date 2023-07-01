@@ -52,24 +52,6 @@ data class HackerState(
 }
 
 @Document
-data class LayerStatus(
-    @Id val id: String,
-    val layerId: String,
-    @Indexed val runId: String,
-    var hacked: Boolean,
-    val hackedBy: MutableList<String>,
-    val iceId: String?,
-)
-
-@Document
-data class NodeStatus(
-    @Id val id: String,
-    val nodeId: String,
-    @Indexed val runId: String,
-    var hacked: Boolean
-)
-
-@Document
 data class TracingPatroller(
     @Id val id: String,
     @Indexed val runId: String,

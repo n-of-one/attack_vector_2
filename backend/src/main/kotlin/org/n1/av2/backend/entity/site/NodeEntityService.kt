@@ -43,6 +43,7 @@ class NodeEntityService(
                 x = command.x,
                 y = command.y,
                 ice = command.type.ice,
+                hacked = false,
                 layers = layers,
                 networkId = networkId)
         nodeRepo.save(node)
@@ -131,6 +132,13 @@ class NodeEntityService(
 
     fun findByNetworkId(siteId: String, networkId: String): Node? {
         return nodeRepo.findBySiteIdAndNetworkId(siteId, networkId) ?: nodeRepo.findBySiteIdAndNetworkIdIgnoreCase(siteId, networkId)
+    }
+
+    fun findByLayerId(layerId: String): Node {
+        val layerIdParts= layerId.split(":")
+        if (layerIdParts.size != 2) error("Invalid layer id: ${layerId}")
+
+        return findById(layerIdParts[0])
     }
 
     fun save(node: Node) {

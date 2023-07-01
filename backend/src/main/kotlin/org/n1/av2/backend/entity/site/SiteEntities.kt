@@ -26,6 +26,7 @@ data class Node(
     val x: Int,
     val y: Int,
     var ice: Boolean,
+    val hacked: Boolean,
     val layers: MutableList<Layer>,
     @Indexed val networkId: String
 ) {

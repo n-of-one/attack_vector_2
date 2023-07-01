@@ -135,18 +135,9 @@ class RunCanvas {
 
         const nodes = site.nodes
         const connections = site.connections
-        const nodeStatuses = site.nodeStatuses
-        // const layerStatuses = site.layerStatuses
 
         this.nodeDataById = {}
         this.sortAndAddHackers(hackers)
-
-        /* On the server side, the node status is tied to a run. But client side we always are in one run.
-        So the node Status (per run) is added to the node itself to make it simpler. */
-        nodeStatuses.forEach((nodeStatus) => {
-            const node = nodes.find((node) => node.id === nodeStatus.nodeId)!
-            node.hacked = nodeStatus.hacked
-        })
 
         /* Similarly the layer status is added to each layer. */
         const layerById: { [key: string]: LayerDetails } = {}
@@ -155,14 +146,6 @@ class RunCanvas {
                 layerById[layer.id] = layer
             })
         })
-
-        // TODO why do we need layer statuses?
-
-        // layerStatuses.forEach((layerStatus) => {
-        //     const layer = layerById[layerStatus.layerId]
-        //     layer.hacked = layerStatus.hacked
-        // })
-
 
         nodes.forEach((nodeData: NodeI) => {
             this.nodeDataById[nodeData.id] = nodeData

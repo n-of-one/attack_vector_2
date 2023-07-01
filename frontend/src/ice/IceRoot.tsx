@@ -35,6 +35,11 @@ export const IceRoot = (props: Props) => {
         return <div style={{color: "cornsilk"}}>Loading</div>
     }
 
+    if (!iceId) {
+        return <TopLevelError error="Ice not found"
+                              description={`(AV server failed to find the ice you want to hack)`}/>
+    }
+
     if (iceType === TANGLE_ICE) return <TangleRoot iceId={iceId}/>
     if (iceType === PASSWORD_ICE) return <PasswordRoot iceId={iceId}/>
     if (iceType === WORD_SEARCH_ICE) return <WordSearchRoot iceId={iceId}/>

@@ -1,6 +1,8 @@
 package org.n1.av2.backend.entity.ice
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
+import org.springframework.data.mongodb.core.index.Indexed
+import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
@@ -70,11 +72,10 @@ data class NetwalkCell(
     val connected: Boolean
 )
 
+@Document
 data class NetwalkEntity(
     val id: String,
-    val runId: String,
-    val nodeId: String,
-    val layerId: String,
+    @Indexed val layerId: String,
     val strength: IceStrength,
     val wrapping: Boolean,
     val hacked: Boolean,
@@ -83,5 +84,5 @@ data class NetwalkEntity(
 
 @Repository
 interface NetwalkStatusRepo : CrudRepository<NetwalkEntity, String> {
-    fun deleteAllByRunId(runId: String)
+    fun findByLayerId(layerId: String): NetwalkEntity?
 }

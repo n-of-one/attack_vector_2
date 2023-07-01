@@ -6,6 +6,7 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
@@ -31,7 +32,6 @@ class CommandMoveService(
     private val connectionEntityService: ConnectionEntityService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val runEntityService: RunEntityService,
-    private val nodeStatusRepo: NodeStatusRepo,
     private val timerTriggerLayerService: TimerTriggerLayerService,
     private val scanProbeActionService: ScanProbActionService,
     private val taskRunner: TaskRunner,
@@ -64,7 +64,7 @@ class CommandMoveService(
 
         connectionEntityService.findConnection(state.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
         val fromNode = nodeEntityService.getById(state.currentNodeId)
-        if (hasActiveIce(fromNode, runId)) return reportProtected()
+        if (hasActiveIce(fromNode)) return reportProtected()
 
         return true
     }
@@ -83,13 +83,9 @@ class CommandMoveService(
         return false
     }
 
-    private fun hasActiveIce(node: Node, runId: String): Boolean {
-        if (node.layers.none { it.type.ice }) {
-            return false
-        }
+    private fun hasActiveIce(node: Node): Boolean {
+        return node.layers.any { it is IceLayer && !it.hacked}
 
-        val nodeStatus = nodeStatusRepo.findByNodeIdAndRunId(node.id, runId)
-        return (nodeStatus == null || !nodeStatus.hacked)
     }
 
     private fun reportProtected(): Boolean {

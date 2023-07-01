@@ -9,12 +9,10 @@ import org.n1.av2.backend.service.StompService
 class TextLayerService(
     val stompService: StompService,
     val nodeEntityService: NodeEntityService,
-    val hackedUtil: HackedUtil
 ) {
 
     fun hack(layer: TextLayer, node: Node, runId: String) {
         nodeEntityService.save(node)
-        hackedUtil.nonIceHacked(layer.id, node, runId)
 
         stompService.replyTerminalReceive("Hacked: [pri]${layer.level}[/] ${layer.name}", "", layer.text)
     }

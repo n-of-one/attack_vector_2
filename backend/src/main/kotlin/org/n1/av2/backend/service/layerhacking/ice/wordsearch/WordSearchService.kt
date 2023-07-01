@@ -2,7 +2,6 @@ package org.n1.av2.backend.service.layerhacking.ice.wordsearch
 
 import org.n1.av2.backend.entity.ice.WordSearchStatus
 import org.n1.av2.backend.entity.ice.WordSearchStatusRepo
-import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.WordSearchIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
@@ -30,14 +29,16 @@ class WordSearchService(
         const val CREATION_ATTEMPTS = 50
     }
 
-    fun createIce(layer: WordSearchIceLayer, nodeId: String, runId: String): WordSearchStatus {
+    fun findOrCreateIceByLayerId(layer: WordSearchIceLayer): WordSearchStatus {
+        return wordSearchStatusRepo.findByLayerId(layer.id) ?: createIce(layer)
+    }
+
+    fun createIce(layer: WordSearchIceLayer): WordSearchStatus {
         val creation = findBestCreation(layer.strength)
 
         val id = createId("wordSearch", wordSearchStatusRepo::findById)
         val wordSearchStatus = WordSearchStatus(
             id = id,
-            runId = runId,
-            nodeId = nodeId,
             layerId = layer.id,
             strength = layer.strength,
             words = creation.words,
@@ -102,7 +103,7 @@ class WordSearchService(
         val updateMessage = WordSearchUpdate(iceStatus.id, nextIndex, letters, hacked)
         stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_WORD_SEARCH_UPDATED, updateMessage)
         if (hacked) {
-            hackedUtil.iceHacked(iceStatus.layerId, iceStatus.runId, 70)
+            hackedUtil.iceHacked(iceStatus.layerId, 70)
         }
     }
 
@@ -115,8 +116,8 @@ class WordSearchService(
         return builder.toString()
     }
 
-    fun deleteAllForRuns(runs: List<Run>) {
-        runs.forEach { wordSearchStatusRepo.deleteAllByRunId(it.runId) }
-
+    fun deleteByLayerId(layerId: String) {
+        val iceStatus = wordSearchStatusRepo.findByLayerId(layerId) ?: return
+        wordSearchStatusRepo.delete(iceStatus)
     }
 }

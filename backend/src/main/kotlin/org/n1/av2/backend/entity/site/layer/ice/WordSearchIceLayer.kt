@@ -9,11 +9,12 @@ class WordSearchIceLayer(
     level: Int,
     name: String,
     note: String,
-    strength: IceStrength
+    strength: IceStrength,
+    hacked: Boolean,
 
-) : IceLayer(id, type, level, name, note, strength) {
+) : IceLayer(id, type, level, name, note, strength, hacked) {
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.WORD_SEARCH_ICE, level, defaultName, "", IceStrength.AVERAGE)
+            this(id, LayerType.WORD_SEARCH_ICE, level, defaultName, "", IceStrength.AVERAGE, false)
 
 }
