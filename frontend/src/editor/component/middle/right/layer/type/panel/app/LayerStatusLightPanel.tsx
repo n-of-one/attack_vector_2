@@ -24,13 +24,6 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
     const key = (param: string) => layer.id + ":" + param
 
-    const widgetReference = encodeAppReference(`widget/${statusLight.appId}`)
-    const widgetUrl = `${window.location.origin}/!/${widgetReference}`
-
-    const appReference = encodeAppReference(`app/${statusLight.appId}`)
-    const appUrl = `${window.location.origin}/!/${appReference}`
-
-
     return (
         <LayerPanel typeDisplay="StatusLight" layerObject={statusLight}>
             <LayerFieldDropdown key={key("status")} label="Status"
@@ -48,9 +41,9 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
                         save={value => statusLight.saveTextForGreen(value)}
                         help="Shown in the switch to indicate what this position means"/>
 
-            <UrlFieldWithQr name="App" url={appUrl} description="App for changing status"/>
+            <UrlFieldWithQr name="App" type="app" id={statusLight.appId} description="App for changing status"/>
 
-            <UrlFieldWithQr name="Widget" url={widgetUrl} description="Widget showing status"/>
+            <UrlFieldWithQr name="Widget" type="widget" id={statusLight.appId} description="Widget showing status"/>
 
         </LayerPanel>
     )

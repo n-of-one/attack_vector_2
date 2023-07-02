@@ -1,14 +1,20 @@
 import toast, {Toast} from "react-hot-toast";
 import QRCode from "react-qr-code";
 import React from "react";
+import {createEncodedUrl} from "../../../../../../common/util/Util";
+
+type UrlType = "ice" | "app" | "widget"
 
 interface Props {
     name: string,
-    url: string,
+    type: UrlType,
+    id: string,
     description: string
 }
 
-export const UrlFieldWithQr = ({name, url, description}: Props) => {
+export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
+
+    const url = createEncodedUrl(`${type}/${id}`)
 
     const showQR = () => {
         toast((t: Toast) => {

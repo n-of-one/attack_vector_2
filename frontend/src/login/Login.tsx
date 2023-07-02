@@ -34,7 +34,7 @@ const redirect = () => {
         document.location.href = "/"
     } else {
         const next = search.substring(search.indexOf('next=') + 5)
-        const allowedRedirect = /^[a-zA-Z0-9_/-]{1,50}$/g
+        const allowedRedirect = /^[a-zA-Z0-9_/-\\!]{1,100}$/g
         if (allowedRedirect.test(next)) {
             document.location.href = next
         }

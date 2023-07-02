@@ -8,6 +8,7 @@ export class LayerIce extends Layer {
 
     strength: string
 
+
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 

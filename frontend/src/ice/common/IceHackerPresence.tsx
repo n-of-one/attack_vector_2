@@ -21,8 +21,8 @@ export const IceHackerPresence = () => {
         <div className="text">
             <br/>
             <div>
-                {hackerList.map((hacker: IceHacker) => <div>
-                        <img src={imageFileName(hacker.icon)} height="30" width="30" key={hacker.userId}/> {hacker.name}
+                {hackerList.map((hacker: IceHacker) => <div key={hacker.userId}>
+                        <img src={imageFileName(hacker.icon)} height="30" width="30"/> {hacker.name}
                     </div>
                 )}
             </div>

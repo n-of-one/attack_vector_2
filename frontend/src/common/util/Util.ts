@@ -50,3 +50,8 @@ export const encodeAppReference = (appId: string) => {
     }
     return btoa(String.fromCharCode(...bytes))
 }
+
+export const createEncodedUrl = (path: string) => {
+  const reference = encodeAppReference(path)
+  return `${window.location.origin}/!/${reference}`
+}

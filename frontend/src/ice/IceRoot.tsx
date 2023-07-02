@@ -6,6 +6,7 @@ import {NetwalkRoot} from "./netwalk/NetwalkRoot";
 import {NETWALK_ICE, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, WORD_SEARCH_ICE} from "../common/enums/LayerTypes";
 import {SlowIceRoot} from "./slow/SlowIceRoot";
 import {TopLevelError} from "../common/component/TopLevelError";
+import {currentUser} from "../common/user/CurrentUser";
 
 interface Props {
     redirectId: string
@@ -15,6 +16,8 @@ export const IceRoot = (props: Props) => {
 
     const [iceType, setIceType] = useState("")
     const [iceId, setIceId] = useState("")
+    const [userId, setUserId] = useState("")
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +26,7 @@ export const IceRoot = (props: Props) => {
             const responseObject = JSON.parse(text)
             setIceType(responseObject.type)
             setIceId(responseObject.iceId)
+            setUserId(responseObject.userId)
         }
 
         fetchData().catch(() => {
@@ -31,8 +35,14 @@ export const IceRoot = (props: Props) => {
     }, [])
 
 
+
     if (iceType === "") {
         return <div style={{color: "cornsilk"}}>Loading</div>
+    }
+
+    if (!currentUser.mandatedIdOk(userId)) {
+        return <TopLevelError error="Please don't share URLs between players" description="This is circumventing the limitations of the game.
+                Off-game hacking is against the spirit of the game."/>
     }
 
     if (!iceId) {

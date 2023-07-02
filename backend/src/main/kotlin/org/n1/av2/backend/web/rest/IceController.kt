@@ -10,6 +10,7 @@ import org.n1.av2.backend.service.layerhacking.ice.password.PasswordIceService
 import org.n1.av2.backend.service.layerhacking.ice.slow.SlowIceService
 import org.n1.av2.backend.service.layerhacking.ice.tangle.TangleService
 import org.n1.av2.backend.service.layerhacking.ice.wordsearch.WordSearchService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.*
 class IceController(
     private val nodeEntityService: NodeEntityService,
     private val iceService: IceService,
+    private val currentUserService: CurrentUserService
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
-    class IceBasicInfo(val type: LayerType, val iceId: String?)
+    class IceBasicInfo(val type: LayerType, val iceId: String?, val userId: String)
     @GetMapping("{layerId}")
     fun getIce(@PathVariable layerId: String): IceBasicInfo {
         val node = nodeEntityService.findByLayerId(layerId)
@@ -30,7 +32,7 @@ class IceController(
 
         if (iceId == null) logger.error { "IceId not found for layerId=$layerId, ice type: $layer.type" }
 
-        return IceBasicInfo(layer.type, iceId)
+        return IceBasicInfo(layer.type, iceId, currentUserService.userId)
     }
 
 

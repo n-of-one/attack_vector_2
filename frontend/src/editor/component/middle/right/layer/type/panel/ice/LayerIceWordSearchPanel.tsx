@@ -4,6 +4,7 @@ import {LayerPanel} from "../LayerPanel"
 import {LayerStrength} from "../../../element/LayerStrength"
 import {LayerIceTangle} from "../../../../../../../../common/model/layer/LayerIceTangle"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {UrlFieldWithQr} from "../../../element/UrlFieldWithQr";
 
 interface Props {
     node: NodeI,
@@ -20,6 +21,7 @@ export const LayerIceWordSearchPanel = ({node, layer}: Props) => {
     return (
         <LayerPanel typeDisplay="ICE Word Search" layerObject={ice}>
             <LayerStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
+            <UrlFieldWithQr name="URL" type="ice" id={layer.id} description="App for changing status"/>
         </LayerPanel>
     )
 }

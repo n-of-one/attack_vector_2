@@ -14,6 +14,7 @@ import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.OsLayerService
 import org.n1.av2.backend.service.layerhacking.TextLayerService
 import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,7 +24,8 @@ class CommandHackService(
     private val osLayerService: OsLayerService,
     private val textLayerService: TextLayerService,
     private val snifferLayerService: TimerTriggerLayerService,
-    private val commandServiceUtil: CommandServiceUtil
+    private val commandServiceUtil: CommandServiceUtil,
+    private val currentUserService: CurrentUserService,
 ) {
 
     fun process(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -69,16 +71,12 @@ class CommandHackService(
         stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
     }
 
-
     fun hackIce(node: Node, layer: IceLayer) {
         if (layer.hacked) {
             stompService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
             return
         }
-
         data class EnterIce(val redirectId: String)
-        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${layer.id}"))
+        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${layer.id}?user=${currentUserService.userId}"))
     }
-
-
 }

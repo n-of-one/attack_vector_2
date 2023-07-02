@@ -23,7 +23,7 @@ export const RequiresRole = (props: Props) => {
     } else {
         return (
             <div className="text">
-                You are logged in with an account that does not have access to this page. Please <a href="/login">Login</a> with another account.<br/>
+                You are logged in with an account that does not have access to this page. Please <a href={`/login?next=${document.location.pathname}`}>Login</a> with another account.<br/>
                 <br/>
             </div>
         )
