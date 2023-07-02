@@ -6,9 +6,8 @@ import {GM_SITES, NAVIGATE_PAGE} from "../common/menu/pageReducer"
 import {Reducer, Store} from "redux"
 import {gmRootReducer, GmState} from "./GmRootReducer";
 import {GmPageChooser} from "./GmPageChooser";
-import {webSocketConnection} from "../common/server/WebSocketConnection";
+import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketConnection";
 import {initGenericServerActions} from "../hacker/server/GenericServerActionProcessor";
-import {WS_UNRESTRICTED} from "../common/server/ConnectionType";
 
 
 interface Props { }

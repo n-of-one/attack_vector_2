@@ -4,10 +4,10 @@ AV relies on websocket connections. There are different types of connections, as
 
 
 ## Overview
-There are different reasons to connect the the backend:
+There are different reasons to connect to the backend:
 
 - Admin who is managing setup
-- GM who is creating a site in advance
+- GM who is creating a site
 - GM who is creating missions
 
 - A Hacker player who is logged in with a laptop using their main browser tab to hack sites
@@ -15,6 +15,8 @@ There are different reasons to connect the the backend:
 
 - A GM who uses a phone to represent widget 
 - A Hacker who uses their phone to hack ICE outside of a site
+
+- A non-hacker player who uses their phone to interact with an app
 
 
 ## Connection types

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
-import {webSocketConnection} from "../../common/server/WebSocketConnection";
+import {webSocketConnection, WS_NETWORK_APP} from "../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {slowIceRootReducer, SlowIceRootState} from "./reducer/SlowIceRootReducer";
@@ -9,7 +9,6 @@ import {SlowIceContainer} from "./component/SlowIceContainer";
 import {slowIceManager} from "./component/SlowIceManager";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {initSlowIceServerActions} from "./SlowIceServerActionProcessor";
-import {NETWORKED_APP_ENDPOINT} from "../../common/server/ConnectionType";
 
 interface Props {
     iceId: string
@@ -32,7 +31,7 @@ export class SlowIceRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(NETWORKED_APP_ENDPOINT, this.store, () => {
+        webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
             webSocketConnection.sendObject("/av/ice/slowIce/enter", {iceId: props.iceId})
         });

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
-import {webSocketConnection} from "../../common/server/WebSocketConnection";
+import {webSocketConnection, WS_NETWORK_APP} from "../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
 import {WordSearchContainer} from "./component/WordSearchContainer";
 import {wordSearchRootReducer, WordSearchRootState} from "./reducer/WordSearchRootReducer";
@@ -9,7 +9,6 @@ import {initGenericServerActions} from "../../hacker/server/GenericServerActionP
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {wordSearchManager} from "./component/WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
-import {NETWORKED_APP_ENDPOINT} from "../../common/server/ConnectionType";
 
 interface Props {
     iceId: string
@@ -31,7 +30,7 @@ export class WordSearchRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(NETWORKED_APP_ENDPOINT, this.store, () => {
+        webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
             webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: props.iceId})
         });

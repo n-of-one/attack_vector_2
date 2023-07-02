@@ -1,0 +1,66 @@
+.status-light {
+    border-radius: 15%;
+    height: 300px;
+    width: 300px;
+    display: inline-block;
+    margin: 20px;
+}
+.status-light-on {
+    background-color: #00ff00;
+    border: thick solid darkgreen;
+}
+
+.status-light-off {
+    background-color: #ff0000;
+    border: thick solid brown;
+}
+
+.status-light-unknown {
+    background-color: #444;
+    border: thick solid black;
+}
+
+.status-light-text-green {
+    color: mediumseagreen;
+}
+.status-light-text-red {
+    color: brown;
+}
+
+
+/*.form-check-input:checked {*/
+/*    background-color: red;*/
+/*    border-color: pink;*/
+/*}*/
+
+.switch {
+    height: 30px;
+    width: 80px !important;
+}
+
+.switchLabel {
+    line-height: 35px;
+}
+
+.form-switch .form-check-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+}
+
+.form-check-input {
+    background-color: red;
+    border-color: black;
+}
+.form-check-input:checked {
+    background-color: green;
+    border-color: black;
+}
+
+.form-check-input:focus {
+    border-color: black;
+    outline: 0;
+    box-shadow: 0 0 0 0;
+}
+
+/*.form-switch .form-check-input:focus {*/
+/*    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='red'/%3e%3c/svg%3e");*/
+/*}*/

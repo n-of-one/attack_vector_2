@@ -5,10 +5,16 @@ import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CO
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {DISCONNECTED, NAVIGATE_PAGE} from "../menu/pageReducer";
-import {ConnectionType} from "./ConnectionType";
 import {larp} from "../Larp";
 
 
+export const WS_UNRESTRICTED = "WS_UNRESTRICTED"
+export const WS_HACKER_MAIN = "WS_HACKER_MAIN"
+export const WS_NETWORK_APP = "WS_NETWORK_APP"
+
+export type ConnectionType = "WS_UNRESTRICTED" | "WS_HACKER_MAIN" | "WS_NETWORK_APP"
+
+const pathByConnectionType = { WS_UNRESTRICTED: "/ws_unrestricted", WS_HACKER_MAIN: "/ws_hacker", WS_NETWORK_APP: "/ws_networked_app" }
 
 export class WebSocketConnection {
 
@@ -49,7 +55,8 @@ export class WebSocketConnection {
         // During development connect directly to backend, websocket proxying does not work with create-react-app.
         const port = this.developmentServer ? "80" :  window.location.port
         const protocol = (window.location.protocol === "http:") ? "ws" : "wss"
-        return `${protocol}://${hostName}:${port}${connection.endpoint}`
+        const path = pathByConnectionType[connection]
+        return `${protocol}://${hostName}:${port}${path}`
     }
 
     onWsOpen(event: Frame, additionalOnWsOpen: () => void) {

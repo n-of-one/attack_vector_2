@@ -4,10 +4,9 @@ import {EditorHome} from "./component/EditorHome"
 import {editorRootReducer, editorRootDefaultState, EditorState} from "./EditorRootReducer"
 import {Reducer, Store} from "redux"
 import {RequiresRole} from "../common/user/RequiresRole"
-import {webSocketConnection} from "../common/server/WebSocketConnection"
+import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketConnection"
 import {configureStore} from "@reduxjs/toolkit"
 import {initEditorServerActions, SERVER_SITE_FULL} from "./server/EditorServerActionProcessor"
-import {WS_UNRESTRICTED} from "../common/server/ConnectionType";
 
 interface Props {
     siteId: string,

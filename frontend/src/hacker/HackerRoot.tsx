@@ -4,14 +4,13 @@ import {RequiresRole} from "../common/user/RequiresRole";
 import {Reducer, Store} from "redux";
 import {HackerPageChooser} from "./HackerPageChooser";
 import {hackerRootReducer, HackerState} from "./HackerRootReducer";
-import {webSocketConnection} from "../common/server/WebSocketConnection";
+import {webSocketConnection, WS_HACKER_MAIN} from "../common/server/WebSocketConnection";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {passwordIceManager} from "../ice/password/container/PasswordIceManager";
 import {tangleIceManager} from "../ice/tangle/component/TangleIceManager";
 import {configureStore} from "@reduxjs/toolkit";
 import {HACKER_HOME} from "../common/menu/pageReducer";
 import {initRunServerActions} from "./server/RunServerActionProcessor";
-import {WS_HACKER_MAIN} from "../common/server/ConnectionType";
 
 export class HackerRoot extends Component {
 
