@@ -1,17 +1,12 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.*
-import org.n1.av2.backend.entity.site.layer.ice.*
+import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
-import org.n1.av2.backend.service.layerhacking.ice.netwalk.NetwalkIceService
-import org.n1.av2.backend.service.layerhacking.ice.password.PasswordIceService
-import org.n1.av2.backend.service.layerhacking.ice.slow.SlowIceService
-import org.n1.av2.backend.service.layerhacking.ice.tangle.TangleService
-import org.n1.av2.backend.service.layerhacking.ice.wordsearch.WordSearchService
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.stereotype.Service
 

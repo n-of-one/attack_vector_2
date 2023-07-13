@@ -3,13 +3,15 @@ import {TangleRoot} from "./tangle/TangleRoot";
 import {PasswordRoot} from "./password/PasswordRoot";
 import {WordSearchRoot} from "./wordsearch/WordSearchRoot";
 import {NetwalkRoot} from "./netwalk/NetwalkRoot";
-import {NETWALK_ICE, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, WORD_SEARCH_ICE} from "../common/enums/LayerTypes";
-import {SlowIceRoot} from "./slow/SlowIceRoot";
+import {NETWALK_ICE, PASSWORD_ICE, TAR_ICE, TANGLE_ICE, WORD_SEARCH_ICE} from "../common/enums/LayerTypes";
+import {TarRoot} from "./tar/TarRoot";
 import {TopLevelError} from "../common/component/TopLevelError";
-import {currentUser} from "../common/user/CurrentUser";
+import {mandatoryUser} from "../common/user/CurrentUser";
+import {IceAppRoot} from "../app/iceApp/IceAppRoot";
 
 interface Props {
-    redirectId: string
+    layerId: string,
+    type: "hacker" | "user"
 }
 
 export const IceRoot = (props: Props) => {
@@ -21,7 +23,7 @@ export const IceRoot = (props: Props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response: Response = await fetch(`/api/ice/${props.redirectId}`);
+            const response: Response = await fetch(`/api/ice/${props.layerId}`)
             const text: string = await response.text()
             const responseObject = JSON.parse(text)
             setIceType(responseObject.type)
@@ -32,15 +34,15 @@ export const IceRoot = (props: Props) => {
         fetchData().catch(() => {
             setIceType("CONNECT_ERROR")
         });
-    }, [])
+    }, [props.layerId])
 
 
 
     if (iceType === "") {
         return <div style={{color: "cornsilk"}}>Loading</div>
     }
-
-    if (!currentUser.mandatedIdOk(userId)) {
+    if (mandatoryUser.isSet() && mandatoryUser.id !== userId) {
+        // This URL was constructed for another user
         return <TopLevelError error="Please don't share URLs between players" description="This is circumventing the limitations of the game.
                 Off-game hacking is against the spirit of the game."/>
     }
@@ -50,11 +52,13 @@ export const IceRoot = (props: Props) => {
                               description={`(AV server failed to find the ice you want to hack)`}/>
     }
 
+    if (props.type === "user") return <IceAppRoot layerId={props.layerId} iceId={iceId}/>
+
     if (iceType === TANGLE_ICE) return <TangleRoot iceId={iceId}/>
     if (iceType === PASSWORD_ICE) return <PasswordRoot iceId={iceId}/>
     if (iceType === WORD_SEARCH_ICE) return <WordSearchRoot iceId={iceId}/>
     if (iceType === NETWALK_ICE) return <NetwalkRoot iceId={iceId}/>
-    if (iceType === SLOW_ICE) return <SlowIceRoot iceId={iceId}/>
+    if (iceType === TAR_ICE) return <TarRoot iceId={iceId}/>
 
     if (iceType === "CONNECT_ERROR") return <TopLevelError error="Connection error"
                                                            description={`(Failed to connect to AV server, try again)`}/>

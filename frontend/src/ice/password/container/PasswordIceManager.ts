@@ -1,20 +1,12 @@
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer"
 import {Schedule} from "../../../common/util/Schedule"
-import {notify} from "../../../common/util/Notification"
 import {Dispatch, Store} from "redux"
 import {GenericIceManager} from "../../GenericIceManager"
-import {ICE_PASSWORD_BEGIN} from "./PasswordIceReducer"
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer"
 import {terminalManager} from "../../../common/terminal/TerminalManager"
+import {ICE_PASSWORD_BEGIN} from "../reducer/PasswordReducer";
+import {IceAppStateUpdate} from "../../../app/iceApp/IceAppServerActionProcessor";
 
-export interface PasswordIceStateUpdate {
-    message?: string,
-    hacked: boolean,
-    hint?: string,
-    layerId: string,
-    attempts: String[],
-    lockedUntil: string
-}
 
 class PasswordIceManager extends GenericIceManager {
 
@@ -56,16 +48,11 @@ class PasswordIceManager extends GenericIceManager {
         this.schedule.clear()
     }
 
-    serverPasswordIceUpdate(serverIceState: PasswordIceStateUpdate) {
-        if (serverIceState.hacked) {
-            this.processSuccess(serverIceState.message!)
-        } else {
-            notify({type: "neutral", title: "Result", message: serverIceState.message!})
+    serverPasswordIceUpdate(serverIceState: IceAppStateUpdate) {
+        if (!serverIceState.hacked) {
+            return
         }
-    }
 
-    processSuccess(message: string) {
-        notify({type: "ok", title: "Result", message: message})
         this.displayTerminal(0, "")
         this.displayTerminal(20, "Password accepted")
         this.displayTerminal(40, "ICE grants access.")

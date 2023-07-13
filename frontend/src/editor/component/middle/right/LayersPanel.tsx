@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {
-    CODE, CORE, SLOW_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
+    CODE, CORE, TAR_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
     WORD_SEARCH_ICE, LINK, MONEY, PICTURE, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER, LOCK, STATUS_LIGHT
 } from "../../../../common/enums/LayerTypes"
 import {EditorState} from "../../../EditorRootReducer"
@@ -63,7 +63,7 @@ export const LayersPanel = () => {
                     {regular(TANGLE_ICE, "NavajoWhite")}
                     {regular(NETWALK_ICE, "NavajoWhite")}
                     {regular(WORD_SEARCH_ICE, "NavajoWhite")}
-                    {regular(SLOW_ICE, "NavajoWhite")}
+                    {regular(TAR_ICE, "NavajoWhite")}
                     {regular(LOCK, "royalblue")}
                     {regular(STATUS_LIGHT, "royalblue")}
                 </div>

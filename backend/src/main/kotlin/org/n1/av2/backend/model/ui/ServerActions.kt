@@ -70,10 +70,11 @@ enum class ServerActions {
 
     SERVER_ICE_HACKERS_UPDATED,         // sent to ice to inform all hackers of the current hackers on this ice
 
-    SERVER_STATUS_LIGHT_UPDATE,          // sent to app and widget when loaded or status changed
+    SERVER_STATUS_LIGHT_UPDATE,         // sent to app and widget when loaded or status changed
 
-    SERVER_ENTER_ICE_PASSWORD,          // sent to hacker that hacks this ice, first message of Ice window
-    SERVER_ICE_PASSWORD_UPDATE,         // sent to run to inform of hacked status update
+    SERVER_ENTER_ICE_APP,               // sent to hacker or user entering the Ice, first message of Ice window
+    SERVER_ICE_APP_UPDATE,              // sent to site to inform of hacked status update
+    SERVER_PASSWORD_CORRECT,            // sent to user to inform the IceApp that the password/passcode was correct
 
     SERVER_ENTER_ICE_TANGLE,            // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
@@ -84,9 +85,9 @@ enum class ServerActions {
     SERVER_ENTER_ICE_NETWALK,           // sent to hacker that hacks this ice, first message of Ice window
     SERVER_NETWALK_NODE_ROTATED,        // sent to run when a node was rotated clockwise
 
-    SERVER_ENTER_ICE_SLOW,              // sent to hacker that hacks this ice, first message of Ice window
-    SERVER_SLOW_ICE_UPDATE              // sent to run when a slow ice status was updated
-    ,
+    SERVER_ENTER_ICE_TAR,               // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_TAR_UPDATE,                  // sent to run when a tar ice has change (units hacked)
+
 
 
 }

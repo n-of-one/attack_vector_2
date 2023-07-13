@@ -2,9 +2,9 @@ import React from "react";
 import {PasswordIceHome} from "./PasswordIceHome";
 import {Terminal} from "../../../common/terminal/Terminal";
 import {useSelector} from "react-redux";
-import {PasswordRootState} from "../PasswordRootReducer";
-import {DISCONNECTED} from "../../../common/menu/pageReducer";
-import {Disconnected} from "../../../common/component/Disconnected";
+import {PasswordRootState} from "../reducer/PasswordRootReducer";
+import {FORCE_DISCONNECT} from "../../../common/menu/pageReducer";
+import {ForceDisconnected} from "../../../common/component/ForceDisconnected";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
 
 export const PasswordContainer = () => {
@@ -12,7 +12,7 @@ export const PasswordContainer = () => {
     const chatTerminal = useSelector( (state: PasswordRootState) => state.chatTerminal )
 
     const currentPage: string =  useSelector((state: PasswordRootState) =>  state.currentPage)
-    if (currentPage === DISCONNECTED) return <Disconnected/>
+    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

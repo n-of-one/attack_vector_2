@@ -13,7 +13,7 @@ import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
 import {LayerIceWordSearchPanel} from "./type/panel/ice/LayerIceWordSearchPanel";
 import {LayerIceNetWalkPanel} from "./type/panel/ice/LayerIceNetwalkPanel";
-import {LayerSlowIcePanel} from "./type/panel/ice/LayerSlowIcePanel";
+import {LayerIceTarPanel} from "./type/panel/ice/LayerIceTarPanel";
 import {LayerStatusLightPanel} from "./type/panel/app/LayerStatusLightPanel";
 import {Icon} from "../../../../../common/component/icon/Icon";
 import {createSelector} from "@reduxjs/toolkit";
@@ -40,8 +40,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerIceWordSearchPanel node={node} layer={layer} />
         case NETWALK_ICE:
             return <LayerIceNetWalkPanel node={node} layer={layer} />
-        case LayerType.SLOW_ICE:
-            return <LayerSlowIcePanel node={node} layer={layer}/>
+        case LayerType.TAR_ICE:
+            return <LayerIceTarPanel node={node} layer={layer}/>
         case LayerType.STATUS_LIGHT:
             return <LayerStatusLightPanel node={node} layer={layer}/>
         case LayerType.LOCK:

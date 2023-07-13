@@ -12,17 +12,18 @@ import {BannerPage} from "./login/Sso";
 import {RequiresRole} from "./common/user/RequiresRole";
 import {larp} from "./common/Larp";
 import {StatusLightRoot} from "./widget/status_light/StatusLightRoot";
-import {SwitchRoot} from "./app/switch/SwitchRoot";
 import {TopLevelError} from "./common/component/TopLevelError";
 import {decodeAppReference} from "./common/util/Util";
-import {currentUser} from "./common/user/CurrentUser";
+import {mandatoryUser} from "./common/user/CurrentUser";
+import {AppRoot} from "./app/AppRoot";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
     "\nUsing the browser console / dev-tools is not part of this game." +
-    "\nUsing it is considered off-game hacking, which is against the spirit of the game." +
+    "\nYou don't need to do any real-life hacking to play this game." +
+    "\nReal-life hacking is against the spirit of this game." +
     "\n" +
-    "\nSource code is available here: https://github.com/n-of-one/attack_vector_2" +
+    "\n_Attack Vector_ is open source: https://github.com/n-of-one/attack_vector_2" +
     "\n ")
 
 
@@ -57,31 +58,35 @@ const Editor = () => {
     return (<EditorRoot siteId={siteId as string}/>)
 }
 
-const parseMandatedUserId = (query: string) => {
+const setMandatoryUserId = (query: string) => {
     const [key, value] = query.split("=")
     if (key === "user") {
-        return currentUser.mandatedId = value
+        mandatoryUser.id = value
     }
 }
 
 const Standalone = () => {
-    const {encodedParam} = useParams()
+    const {encodedParam} = useParams() // encodedParam example: 'aWJnLGpqYmIlOWg6biA6OnJwKH91bHNlNXoqfSQia2xFUx9WV0BUCkocExoBGUgXAQ=='
 
     try {
-        const param = decodeAppReference(encodedParam as string)
-        const [path, query] = param.split("?")
-        if (query) { parseMandatedUserId(query) }
+        const param = decodeAppReference(encodedParam as string) // param example: 'ice/node-0b1b-45ba:layer-c0f8?user=user-b591-4f81'
+        console.log(param)
 
-        const [type, id] = path.split("/")
+        const [path, query] = param.split("?") // query example: 'user=user-b591-4f81'
+        if (query) { setMandatoryUserId(query) }
+
+        const [type, id] = path.split("/") // type example: 'ice'. id example: 'node-0b1b-45ba:layer-c0f8'
         switch (type) {
             case "ice":
-                return (<RequiresRole requires="ROLE_HACKER"><IceRoot redirectId={id}/></RequiresRole>)
+                return <RequiresRole requires="ROLE_HACKER"><IceRoot layerId={id} type="hacker"/></RequiresRole>
+            case "iceApp":
+                return <IceRoot layerId={id} type="user"/>
             case "app":
-                return (<SwitchRoot appId={id}/>)
+                return <AppRoot appId={id}/>
             case "widget":
-                return (<StatusLightRoot appId={id}/>)
+                return <StatusLightRoot appId={id}/>
             default:
-                return <TopLevelError error="Invalid connection" description="(Unknown app type, maybe the QR code/URL is from an older/different version of Attack Vector?)"/>
+                return <TopLevelError error="Invalid connection" description={`(Unknown app type: ${type}, maybe the QR code/URL is from an older/different version of Attack Vector?)`}/>
         }
     } catch (e) {
         console.log(e)

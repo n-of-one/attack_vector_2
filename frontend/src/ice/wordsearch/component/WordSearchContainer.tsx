@@ -1,8 +1,8 @@
 import React from "react";
 import {WordSearchHome} from "./WordSearchHome";
 import {useSelector} from "react-redux";
-import {DISCONNECTED} from "../../../common/menu/pageReducer";
-import {Disconnected} from "../../../common/component/Disconnected";
+import {FORCE_DISCONNECT} from "../../../common/menu/pageReducer";
+import {ForceDisconnected} from "../../../common/component/ForceDisconnected";
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
 
@@ -10,7 +10,7 @@ import {IceHackerPresence} from "../../common/IceHackerPresence";
 export const WordSearchContainer = () => {
 
     const currentPage: string =  useSelector((state: WordSearchRootState) =>  state.currentPage)
-    if (currentPage === DISCONNECTED) return <Disconnected/>
+    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
 
 
     return (

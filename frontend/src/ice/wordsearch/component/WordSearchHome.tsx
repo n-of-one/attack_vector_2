@@ -17,7 +17,6 @@ export const WordSearchHome = () => {
     const puzzleRef = createRef<HTMLDivElement>()
 
     const moveIt = () => {
-        // alert('moving it')
         const canvasContainerRef = document.getElementsByClassName("canvas-container")?.item(0)
         if (!canvasContainerRef || !puzzleRef.current) {
             setTimeout(moveIt, 2)

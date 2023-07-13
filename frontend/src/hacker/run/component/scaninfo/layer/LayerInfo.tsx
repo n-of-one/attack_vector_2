@@ -1,5 +1,5 @@
 import React from 'react'
-import {NETWALK_ICE, OS, PASSWORD_ICE, SLOW_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
+import {NETWALK_ICE, OS, PASSWORD_ICE, TAR_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {ScanInfoOs} from "./ScanInfoOs"
 import {ScanInfoText} from "./ScanInfoText"
 import {Pad} from "../../../../../common/component/Pad"
@@ -23,8 +23,8 @@ const renderLayer = (layer: LayerDetails) => {
             return <ScanInfoIce layer={layer} iceDescription="word search"/>
         case NETWALK_ICE:
             return <ScanInfoIce layer={layer} iceDescription="netwalk"/>
-        case SLOW_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="slow"/>
+        case TAR_ICE:
+            return <ScanInfoIce layer={layer} iceDescription="tar"/>
         default:
             return <><span className="text-danger"> Unknown layer</span></>
     }

@@ -9,11 +9,13 @@ export const MONEY = "MONEY"
 export const CODE = "CODE"
 export const TIMER_TRIGGER = "TIMER_TRIGGER"
 export const CORE = "CORE"
+
 export const PASSWORD_ICE = "PASSWORD_ICE"
-export const SLOW_ICE = "SLOW_ICE"
-export const NETWALK_ICE = "NETWALK_ICE"
-export const WORD_SEARCH_ICE = "WORD_SEARCH_ICE"
 export const TANGLE_ICE = "TANGLE_ICE"
+export const WORD_SEARCH_ICE = "WORD_SEARCH_ICE"
+export const NETWALK_ICE = "NETWALK_ICE"
+export const TAR_ICE = "TAR_ICE"
+
 export const LOCK = "LOCK"
 export const STATUS_LIGHT = "STATUS_LIGHT"
 
@@ -25,7 +27,7 @@ export enum LayerType {
     TANGLE_ICE = "TANGLE_ICE",
     WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
     NETWALK_ICE = "NETWALK_ICE",
-    SLOW_ICE = "SLOW_ICE",
+    TAR_ICE = "TAR_ICE",
     LOCK = "LOCK",
     STATUS_LIGHT = "STATUS_LIGHT",
 }

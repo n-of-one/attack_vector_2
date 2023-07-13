@@ -11,7 +11,7 @@ import {
     PASSWORD_ICE,
     PICTURE,
     SCAN_BLOCK,
-    SLOW_ICE, STATUS_LIGHT,
+    TAR_ICE, STATUS_LIGHT,
     TANGLE_ICE,
     TEXT,
     TIMER_TRIGGER,
@@ -57,7 +57,7 @@ const iconFamily = (type: string) => {
         case CORE:
         case PASSWORD_ICE:
         case TANGLE_ICE:
-        case SLOW_ICE:
+        case TAR_ICE:
         case NETWALK_ICE:
         case WORD_SEARCH_ICE:
             return "glyphicon"

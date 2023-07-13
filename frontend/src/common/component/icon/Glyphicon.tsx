@@ -6,7 +6,7 @@ import {
     OS,
     PASSWORD_ICE,
     PICTURE,
-    SCAN_BLOCK, SLOW_ICE,
+    SCAN_BLOCK, TAR_ICE,
     TANGLE_ICE,
     TEXT,
     TIMER_TRIGGER,
@@ -54,7 +54,7 @@ export const glyphiconFromType = (type: string) => {
         case CORE : return "glyphicon-th-large"
         case PASSWORD_ICE : return "glyphicon-console"
         case TANGLE_ICE: return "glyphicon-asterisk"
-        case SLOW_ICE : return "glyphicon-hourglass"
+        case TAR_ICE : return "glyphicon-hourglass"
         case NETWALK_ICE : return "glyphicon-qrcode"
         case WORD_SEARCH_ICE : return "glyphicon-th"
         default:

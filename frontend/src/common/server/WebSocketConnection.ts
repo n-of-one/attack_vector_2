@@ -4,7 +4,7 @@ import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
-import {DISCONNECTED, NAVIGATE_PAGE} from "../menu/pageReducer";
+import {FORCE_DISCONNECT, NAVIGATE_PAGE} from "../menu/pageReducer";
 import {larp} from "../Larp";
 
 
@@ -196,7 +196,7 @@ export class WebSocketConnection {
     }
 
     abort(message: string) {
-        this.store.dispatch({type: NAVIGATE_PAGE, to: DISCONNECTED})
+        this.store.dispatch({type: NAVIGATE_PAGE, to: FORCE_DISCONNECT})
         this.client.disconnect()
         notify({type: "fatal", message, title: "ERROR"})
     }

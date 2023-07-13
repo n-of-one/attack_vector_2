@@ -166,7 +166,7 @@ class NodeEntityService(
             LayerType.TANGLE_ICE -> TangleIceLayer(id, level, defaultName)
             LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, level, defaultName)
             LayerType.NETWALK_ICE -> NetwalkIceLayer(id, level, defaultName)
-            LayerType.SLOW_ICE -> SlowIceLayer(id, level, defaultName)
+            LayerType.TAR_ICE -> TarIceLayer(id, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
             LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, level, defaultName)
             LayerType.STATUS_LIGHT -> createStatusLightLayer(id, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")

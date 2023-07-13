@@ -23,7 +23,7 @@ enum class LayerType(
     TANGLE_ICE(true),
     NETWALK_ICE(true),
 //    ICE_MANUAL,
-    SLOW_ICE(true),
+    TAR_ICE(true),
 
 
 }

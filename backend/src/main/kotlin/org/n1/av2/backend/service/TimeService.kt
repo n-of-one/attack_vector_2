@@ -16,6 +16,11 @@ class TimeService(@Value("#{environment.TIME_ZONE}") timeZoneInput: String = Zon
         return ZonedDateTime.now(zoneId)
     }
 
+    fun longAgo(): ZonedDateTime {
+        return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, zoneId)
+    }
+
+
     fun formatDuration(duration: Duration): String {
         return String.format("%d:%02d:%02d", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart())
     }

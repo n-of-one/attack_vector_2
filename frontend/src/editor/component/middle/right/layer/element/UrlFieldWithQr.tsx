@@ -3,7 +3,7 @@ import QRCode from "react-qr-code";
 import React from "react";
 import {createEncodedUrl} from "../../../../../../common/util/Util";
 
-type UrlType = "ice" | "app" | "widget"
+type UrlType = "ice" | "app" | "widget" | "iceApp"
 
 interface Props {
     name: string,
