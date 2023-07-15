@@ -16,6 +16,7 @@ data class IceStatus(
     val attemptCount: Int = 0,         // but all attempts count for the purpose of locking
     val lockedUntil: ZonedDateTime,
     val hacked : Boolean = false,
+    val authorized: List<String> = emptyList() // userIds of users who are authorized to pass
 )
 
 @Repository

@@ -23,7 +23,7 @@ export class Larp {
         }
     }
 
-    iceName(type: IceType): string {
+    iceName(type?: IceType): string {
         switch (type) {
             case PASSWORD_ICE:
                 return "Rahasy"
@@ -36,7 +36,7 @@ export class Larp {
             case TAR_ICE:
                 return "Tar"
             default:
-                return "Unknown"
+                return ""
 
         }
 

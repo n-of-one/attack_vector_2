@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 @Document
 data class StatusLightEntity (
     @Id val id: String,
+    val layerId: String,
     val status: Boolean,
     val description: String,
     val textForRed: String,

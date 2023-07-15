@@ -1,9 +1,9 @@
 import toast, {Toast} from "react-hot-toast";
 import QRCode from "react-qr-code";
 import React from "react";
-import {createEncodedUrl} from "../../../../../../common/util/Util";
+import {avEncodedUrl} from "../../../../../../common/util/Util";
 
-type UrlType = "ice" | "app" | "widget" | "iceApp"
+type UrlType = "ice" | "app" | "widget" | "iceLayer"
 
 interface Props {
     name: string,
@@ -14,7 +14,8 @@ interface Props {
 
 export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
 
-    const url = createEncodedUrl(`${type}/${id}`)
+    const path = `${type}/${id}`
+    const url = avEncodedUrl(path)
 
     const showQR = () => {
         toast((t: Toast) => {
@@ -23,6 +24,7 @@ export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
                     <div>
                         <div>{description}</div>
                         <div>&nbsp;</div>
+                        <div>{path}</div>
                         <div>{url}</div>
                         <div onClick={dismissMethod}><br/>
                             <QRCode size={256} value={url} viewBox="0 0 256 256"/>

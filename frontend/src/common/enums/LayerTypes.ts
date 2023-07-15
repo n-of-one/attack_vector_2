@@ -32,5 +32,17 @@ export enum LayerType {
     STATUS_LIGHT = "STATUS_LIGHT",
 }
 
+export const layerTypeFromIceId = (iceId: string): LayerType | null => {
+    const [iceType] = iceId.split("-")
+    switch(iceType) {
+        case "password": return LayerType.PASSWORD_ICE
+        case "tangle": return LayerType.TANGLE_ICE
+        case "wordSearch": return LayerType.WORD_SEARCH_ICE
+        case "netwalk": return LayerType.NETWALK_ICE
+        case "tar": return LayerType.TAR_ICE
+        default: return null
+    }
+}
+
 
 

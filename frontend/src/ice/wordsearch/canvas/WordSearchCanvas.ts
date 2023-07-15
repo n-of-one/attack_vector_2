@@ -5,6 +5,7 @@ import {WordSearchIndicatorDisplay} from "./WordSearchIndicatorDisplay";
 import {LETTERS_SELECTED} from "../reducer/WordSearchStateReducer";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
+import {ice} from "../../IceModel";
 
 const MARGIN_TOP = 5
 const MARGIN_LEFT = 5
@@ -21,7 +22,6 @@ class WordSearchCanvas {
     canvas: Canvas = null as unknown as Canvas
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
-    iceId: string | null = null
 
     cellSize: number = 0
 
@@ -32,8 +32,7 @@ class WordSearchCanvas {
 
     indicatorVisual: WordSearchIndicatorDisplay | null = null
 
-    init(iceId: string, puzzleData: ServerEnterIceWordSearch, dispatch: Dispatch, store: Store) {
-        this.iceId = iceId
+    init(puzzleData: ServerEnterIceWordSearch, dispatch: Dispatch, store: Store) {
         this.dispatch = dispatch;
         this.store = store;
 
@@ -172,7 +171,7 @@ class WordSearchCanvas {
             const toSend = this.lettersSelected
             // Delay the sending, so that the selected cells have some time to fade out.
             setTimeout(()=> {
-                const payload = {iceId: this.iceId, letters: toSend}
+                const payload = {iceId: ice.id, letters: toSend}
                 webSocketConnection.send("/av/ice/wordSearch/selected", JSON.stringify(payload))
             },200)
         }

@@ -1,5 +1,5 @@
 import {AnyAction} from "redux";
-import {SERVER_ENTER_ICE_WORD_SEARCH} from "./WordSearchPuzzleReducer";
+import {SERVER_WORD_SEARCH_ENTER} from "./WordSearchPuzzleReducer";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
 
 export const LETTERS_SELECTED = "LETTERS_SELECTED";
@@ -35,7 +35,7 @@ const defaultState: WordSearchState = {
 export const wordSearchStateReducer = (state: WordSearchState = defaultState, action: AnyAction): WordSearchState => {
 
     switch (action.type) {
-        case SERVER_ENTER_ICE_WORD_SEARCH:
+        case SERVER_WORD_SEARCH_ENTER:
             return stateFromServer(state, action as unknown as WordSearchStateFromServer)
         case LETTER_CORRECT_HIGHLIGHT:
             return letterUpdate(state, action.positions, LetterState.CORRECT_HIGHLIGHT)

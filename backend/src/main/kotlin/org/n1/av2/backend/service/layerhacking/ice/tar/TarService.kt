@@ -45,13 +45,12 @@ class TarService(
     class TarEnter(val iceId: String, val totalUnits: Int, val unitsHacked: Int, val strength: IceStrength, val hacked: Boolean, val unitsPerSecond: Int)
     fun enter(iceId: String) {
         val tarIceStatus = tarIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
-        if (tarIceStatus.hacked) error("This ice has already been hacked.")
 
         val playerLevel = 5 // TODO: get actual player level
         val unitsPerSecond = unitsPerSecond(playerLevel)
 
         stompService.reply(
-            ServerActions.SERVER_ENTER_ICE_TAR,
+            ServerActions.SERVER_TAR_ENTER,
             TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, tarIceStatus.hacked, unitsPerSecond)
         )
         userIceHackingService.enter(iceId)

@@ -71,8 +71,7 @@ class WordSearchService(
 
     fun enter(iceId: String) {
         val iceStatus = wordSearchStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
-        if (iceStatus.hacked) error("This ice has already been hacked.")
-        stompService.reply(ServerActions.SERVER_ENTER_ICE_WORD_SEARCH, iceStatus)
+        stompService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, iceStatus)
         userIceHackingService.enter(iceId)
     }
 
@@ -101,7 +100,7 @@ class WordSearchService(
         wordSearchStatusRepo.save(newIceStatus)
 
         val updateMessage = WordSearchUpdate(iceStatus.id, nextIndex, letters, hacked)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_ICE_WORD_SEARCH_UPDATED, updateMessage)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_WORD_SEARCH_UPDATED, updateMessage)
         if (hacked) {
             hackedUtil.iceHacked(iceStatus.layerId, 70)
         }

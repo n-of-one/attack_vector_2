@@ -5,29 +5,33 @@ import {webSocketConnection, WS_NETWORK_APP} from "../../common/server/WebSocket
 import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../common/terminal/TerminalManager";
-import {iceAppRootReducer, IceAppRootState} from "./reducer/IceAppRootReducer";
-import {initIceAppServerActions} from "./IceAppServerActionProcessor";
-import {IceAppContainer} from "./component/IceAppContainer";
+import {authAppRootReducer, AuthAppRootState} from "./reducer/AuthAppRootReducer";
+import {initAuthAppServerActions} from "./AuthAppServerActionProcessor";
+import {AuthAppContainer} from "./component/AuthAppContainer";
 import {ice} from "../../ice/IceModel";
+import {app} from "../AppId";
 
 interface Props {
     iceId: string
-    layerId: string
+    appId: string
+    nextUrl: string
 }
 
-export class IceAppRoot extends Component<Props> {
+export class AuthAppRoot extends Component<Props> {
 
     store: Store
 
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        const preLoadedState = {currentPage: "iceApp", layerId: props.layerId}
+        app.id = props.appId
+
+        const preLoadedState = {currentPage: "iceApp"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
         this.store = configureStore({
-            reducer: iceAppRootReducer as Reducer<IceAppRootState>,
+            reducer: authAppRootReducer as Reducer<AuthAppRootState>,
             preloadedState: preLoadedState,
             middleware: (getDefaultMiddleware) => [...getDefaultMiddleware()],
             devTools: isDevelopmentServer
@@ -40,7 +44,7 @@ export class IceAppRoot extends Component<Props> {
 
         terminalManager.init(this.store)
         initGenericServerActions()
-        initIceAppServerActions(this.store)
+        initAuthAppServerActions(props.nextUrl)
 
         document.body.style.backgroundColor = "#333";
     }
@@ -48,7 +52,7 @@ export class IceAppRoot extends Component<Props> {
     render() {
         return (
             <Provider store={this.store}>
-                <IceAppContainer/>
+                <AuthAppContainer/>
             </Provider>
         )
     }

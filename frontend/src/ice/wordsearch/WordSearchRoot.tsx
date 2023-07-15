@@ -7,11 +7,13 @@ import {WordSearchContainer} from "./component/WordSearchContainer";
 import {wordSearchRootReducer, WordSearchRootState} from "./reducer/WordSearchRootReducer";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../common/terminal/TerminalManager";
-import {wordSearchManager} from "./component/WordSearchManager";
+import {wordSearchManager} from "./WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
+import {ice} from "../IceModel";
 
 interface Props {
     iceId: string
+    nextUrl: string | null
 }
 export class WordSearchRoot extends Component<Props> {
 
@@ -19,6 +21,7 @@ export class WordSearchRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
+        ice.id = props.iceId
         const preLoadedState = { iceId: props.iceId, currentPage: "wordSearch"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
@@ -31,11 +34,11 @@ export class WordSearchRoot extends Component<Props> {
         })
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
-            webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: props.iceId})
+            webSocketConnection.subscribe(`/topic/ice/${ice.id}`)
+            webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: ice.id})
         });
 
-        wordSearchManager.init(this.store);
+        wordSearchManager.init(this.store, props.nextUrl);
         terminalManager.init(this.store)
         initGenericServerActions()
         initWordSearchServerActions(this.store)

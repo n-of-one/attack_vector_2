@@ -36,7 +36,8 @@ class TangleService(
     data class UiTangleState(
         val strength: IceStrength,
         val points: MutableList<TanglePoint>,
-        val lines: List<TangleLine>
+        val lines: List<TangleLine>,
+        val hacked: Boolean,
     )
 
     private val logger = mu.KotlinLogging.logger {}
@@ -65,9 +66,8 @@ class TangleService(
 
     fun enter(iceId: String) {
         val iceStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
-        if (iceStatus.hacked) error("This ice has already been hacked.")
-        val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines)
-        stompService.reply(ServerActions.SERVER_ENTER_ICE_TANGLE, uiState)
+        val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines, iceStatus.hacked)
+        stompService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         userIceHackingService.enter(iceId)
     }
     // Puzzle solving //

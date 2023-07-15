@@ -1,6 +1,6 @@
 import {IceStrength} from "../../../common/model/IceStrength";
 import {HIDDEN, VISIBLE} from "../../IceModel";
-import {SERVER_ENTER_ICE_TAR} from "../TarServerActionProcessor";
+import {SERVER_TAR_ENTER} from "../TarServerActionProcessor";
 
 export const TAR_BEGIN = "TAR_BEGIN"
 
@@ -20,7 +20,7 @@ const defaultState: TarState = {
 export const tarStateReducer = (state: TarState = defaultState, action: any): TarState => {
 
         switch (action.type) {
-            case SERVER_ENTER_ICE_TAR:
+            case SERVER_TAR_ENTER:
                 return enter(state, action)
             case TAR_BEGIN:
                 return { ...state, uiState: VISIBLE }

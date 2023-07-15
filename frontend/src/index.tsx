@@ -14,8 +14,8 @@ import {larp} from "./common/Larp";
 import {StatusLightRoot} from "./widget/status_light/StatusLightRoot";
 import {TopLevelError} from "./common/component/TopLevelError";
 import {decodeAppReference} from "./common/util/Util";
-import {mandatoryUser} from "./common/user/CurrentUser";
 import {AppRoot} from "./app/AppRoot";
+import {IceSelector} from "./ice/IceSelector";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -58,35 +58,28 @@ const Editor = () => {
     return (<EditorRoot siteId={siteId as string}/>)
 }
 
-const setMandatoryUserId = (query: string) => {
-    const [key, value] = query.split("=")
-    if (key === "user") {
-        mandatoryUser.id = value
-    }
-}
-
 const Standalone = () => {
     const {encodedParam} = useParams() // encodedParam example: 'aWJnLGpqYmIlOWg6biA6OnJwKH91bHNlNXoqfSQia2xFUx9WV0BUCkocExoBGUgXAQ=='
 
     try {
-        const param = decodeAppReference(encodedParam as string) // param example: 'ice/node-0b1b-45ba:layer-c0f8?user=user-b591-4f81'
+        const param = decodeAppReference(encodedParam as string) // param example: 'app/statusLight-0b1b-45ba?hacking=true&level=1'
         console.log(param)
 
-        const [path, query] = param.split("?") // query example: 'user=user-b591-4f81'
-        if (query) { setMandatoryUserId(query) }
+        const [path, query] = param.split("?") // query example: 'hacking=true&level=1'
 
         const [type, id] = path.split("/") // type example: 'ice'. id example: 'node-0b1b-45ba:layer-c0f8'
         switch (type) {
             case "ice":
-                return <RequiresRole requires="ROLE_HACKER"><IceRoot layerId={id} type="hacker"/></RequiresRole>
-            case "iceApp":
-                return <IceRoot layerId={id} type="user"/>
+                return <RequiresRole requires="ROLE_HACKER"><IceRoot iceId={id} nextUrl={null}/></RequiresRole>
+            case "iceLayer":
+                return <RequiresRole requires="ROLE_HACKER"><IceSelector layerId={id}/></RequiresRole>
             case "app":
-                return <AppRoot appId={id}/>
+                return <AppRoot appId={id} query={query}/>
             case "widget":
                 return <StatusLightRoot appId={id}/>
             default:
-                return <TopLevelError error="Invalid connection" description={`(Unknown app type: ${type}, maybe the QR code/URL is from an older/different version of Attack Vector?)`}/>
+                return <TopLevelError error="Invalid connection"
+                                      description={`(Unknown app type: ${type}, maybe the QR code/URL is from an older/different version of Attack Vector?)`}/>
         }
     } catch (e) {
         console.log(e)

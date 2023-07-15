@@ -2,10 +2,11 @@ import {fabric} from "fabric";
 import {TanglePointDisplay} from "./TanglePointDisplay";
 import {TangleLineDisplay} from "./TangleLineDisplay";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
-import {TanglePointMoved, TanglePuzzle} from "../component/TangleIceManager";
+import {TanglePointMoved, TanglePuzzle} from "../TangleIceManager";
 import {Dispatch, Store} from "redux";
 import {Canvas} from "fabric/fabric-impl";
-import {TangleLine, TanglePoint} from "../TangleIceReducer";
+import {TangleLine, TanglePoint} from "../reducer/TangleIceReducer";
+import {ice} from "../../IceModel";
 
 class TangleIceCanvas {
 
@@ -15,10 +16,7 @@ class TangleIceCanvas {
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
 
-    iceId: string | null = null
-
-    init(iceId: string, puzzleData: TanglePuzzle, dispatch: Dispatch, store: Store) {
-        this.iceId = iceId
+    init(puzzleData: TanglePuzzle, dispatch: Dispatch, store: Store) {
         this.dispatch = dispatch;
         this.store = store;
 
@@ -97,7 +95,7 @@ class TangleIceCanvas {
             const icon = this.currentSelected.icon;
             // this.dispatch({type: ICE_TANGLE_MOVE_POINT, id: this.currentSelected.id, x: icon.left, y: icon.top});
 
-            const payload = {iceId: this.iceId, pointId: this.currentSelected.id, x: icon.left, y: icon.top};
+            const payload = {iceId: ice.id, pointId: this.currentSelected.id, x: icon.left, y: icon.top};
             webSocketConnection.send("/av/ice/tangle/moved", JSON.stringify(payload));
 
 

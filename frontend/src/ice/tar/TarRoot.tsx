@@ -9,9 +9,11 @@ import {TarContainer} from "./component/TarContainer";
 import {tarManager} from "./component/TarManager";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {initTarServerActions} from "./TarServerActionProcessor";
+import {ice} from "../IceModel";
 
 interface Props {
     iceId: string
+    nextUrl: string | null
 }
 
 export class TarRoot extends Component<Props> {
@@ -20,7 +22,8 @@ export class TarRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = {iceId: props.iceId, currentPage: "tar"}
+        ice.id = props.iceId
+        const preLoadedState = {currentPage: "tar"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
@@ -36,7 +39,7 @@ export class TarRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/tar/enter", {iceId: props.iceId})
         });
 
-        tarManager.init(this.store)
+        tarManager.init(this.store, props.nextUrl)
         terminalManager.init(this.store)
         initGenericServerActions()
         initTarServerActions(this.store)

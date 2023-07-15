@@ -29,7 +29,7 @@ export const Switch = () => {
                     <div className="p-2 text switchLabel">{state.textForRed}</div>
                     <div className="p-2"><span className="form-check form-switch">
                                 <input className="form-check-input switch" type="checkbox" role="switch" checked={state.status}
-                                       onClick={() => setValue(!state.status)}
+                                       onChange={() => setValue(!state.status)}
                                 /></span>
                     </div>
                     <div className="p-2 text switchLabel">{state.textForGreen}</div>

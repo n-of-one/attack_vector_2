@@ -4,6 +4,7 @@ import {fabric} from "fabric";
 import {NetwalkCellDisplay, PADDING_LEFT, PADDING_TOP} from "./NetwalkCellDisplay";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {NetwalkCell, CellType, NetwalkRotateUpdate, Point, ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
+import {ice} from "../../IceModel";
 
 type CellById = { [id: string]: NetwalkCellDisplay }
 
@@ -12,7 +13,6 @@ class NetwalkCanvas {
     canvas: Canvas = null as unknown as Canvas
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
-    iceId: string | null = null
 
     cellByLocation: CellById = {}
 
@@ -31,15 +31,14 @@ class NetwalkCanvas {
         this.allImagesLoaded = (this.imagesLoaded === totalImages)
     }
 
-    init(iceId: string, data: ServerEnterIceNetwalk, dispatch: Dispatch, store: Store) {
+    init(data: ServerEnterIceNetwalk, dispatch: Dispatch, store: Store) {
         if (!this.allImagesLoaded) {
             setTimeout(() => {
-                this.init(iceId, data, dispatch, store)
+                this.init(data, dispatch, store)
             }, 100)
             return
         }
 
-        this.iceId = iceId
         this.dispatch = dispatch;
         this.store = store;
 
@@ -159,7 +158,7 @@ class NetwalkCanvas {
         if (event?.target?.data instanceof NetwalkCellDisplay) {
             const cell: NetwalkCellDisplay = event.target.data
 
-            const payload = {iceId: this.iceId, x: cell.x, y: cell.y}
+            const payload = {iceId: ice.id, x: cell.x, y: cell.y}
             webSocketConnection.send("/av/ice/netwalk/rotate", JSON.stringify(payload))
         }
     }

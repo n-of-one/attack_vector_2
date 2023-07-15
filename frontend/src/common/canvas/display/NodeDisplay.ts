@@ -64,10 +64,6 @@ export class NodeDisplay implements Display {
         });
         this.canvas.add(this.labelIcon);
 
-        // TODO We don't need this, right?
-        // remove:
-        // this.nodeIcon.label = this.labelIcon;
-
         this.labelBackgroundIcon = new fabric.Rect({
             width: 20,
             height: 20,
@@ -79,10 +75,6 @@ export class NodeDisplay implements Display {
             selectable: false,
         });
         this.canvas.add(this.labelBackgroundIcon);
-
-        // TODO We don't need this, right?
-        // remove:
-        // this.nodeIcon.labelBackgroundIcon = this.labelBackgroundIcon;
 
         this.canvas.sendToBack(this.labelBackgroundIcon);
         this.canvas.bringToFront(this.labelIcon);

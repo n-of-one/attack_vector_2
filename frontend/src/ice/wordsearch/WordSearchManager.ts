@@ -1,38 +1,44 @@
-import {Schedule} from "../../../common/util/Schedule";
-import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../../GenericIceManager";
+import {Schedule} from "../../common/util/Schedule";
+import {ICE_DISPLAY_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
+import {GenericIceManager} from "../GenericIceManager";
 import {Dispatch, Store} from "redux";
-import {LETTER_CORRECT, LETTER_CORRECT_HIGHLIGHT, WORD_SEARCH_BEGIN} from "../reducer/WordSearchStateReducer";
-import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
-import {wordSearchCanvas} from "../canvas/WordSearchCanvas";
-import {ServerEnterIceWordSearch, UpdateAction} from "../WordSearchServerActionProcessor";
-import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
+import {LETTER_CORRECT, LETTER_CORRECT_HIGHLIGHT, WORD_SEARCH_BEGIN} from "./reducer/WordSearchStateReducer";
+import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
+import {wordSearchCanvas} from "./canvas/WordSearchCanvas";
+import {ServerEnterIceWordSearch, UpdateAction} from "./WordSearchServerActionProcessor";
+import {WordSearchRootState} from "./reducer/WordSearchRootReducer";
 
 
 class WordSearchManager extends GenericIceManager {
 
-    store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
     schedule: Schedule = null as unknown as Schedule
 
     quickPlaying = true
 
-    init(store: Store) {
+    init(store: Store, nextUrl: string | null) {
         this.store = store;
+        this.nextUrl = nextUrl
         this.dispatch = store.dispatch;
         this.schedule = new Schedule(store.dispatch);
     }
 
 
     enter(iceId: string, data: ServerEnterIceWordSearch) {
+        if (data.hacked) {
+            this.enterHacked()
+            return
+        }
+
+
         setTimeout(() => {
-            wordSearchCanvas.init(iceId, data, this.dispatch, this.store)
+            wordSearchCanvas.init(data, this.dispatch, this.store)
         }, 100)
 
         this.schedule.clear()
-        this.dispatch( {type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
+        this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
 
-        this.displayTerminal(10,"[warn]↼ Connecting to ice, initiating attack.");
+        this.displayTerminal(10, "[warn]↼ Connecting to ice, initiating attack.");
         if (!this.quickPlaying) {
             this.displayTerminal(10, "⇁ Connection established - authorization handshake started");
             this.displayTerminal(8, "⇁ G*G Security token not found in request, fallback to rp/inner/program authorization scheme.");
@@ -71,13 +77,13 @@ class WordSearchManager extends GenericIceManager {
             this.displayNextWord(data.wordIndex)
         }
         // warm up
-        this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: ["x:x"] })
+        this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: ["x:x"]})
         // end test
-        data.lettersCorrect.forEach( (letter: string) => {
-            this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: [letter] })
+        data.lettersCorrect.forEach((letter: string) => {
+            this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: [letter]})
         })
-        data.lettersCorrect.forEach( (letter: string) => {
-            this.schedule.dispatch(1, {type: LETTER_CORRECT, positions: [letter] })
+        data.lettersCorrect.forEach((letter: string) => {
+            this.schedule.dispatch(1, {type: LETTER_CORRECT, positions: [letter]})
         })
 
         if (data.hacked) {
@@ -85,12 +91,12 @@ class WordSearchManager extends GenericIceManager {
             const sizeY = rootState.puzzle.letterGrid.length
             const sizeX = rootState.puzzle.letterGrid[0].length
 
-            for (let x = sizeX-1; x >= 0; x--) {
+            for (let x = sizeX - 1; x >= 0; x--) {
                 const positions = []
                 for (let y = 0; y < sizeY; y++) {
                     positions.push(`${x}:${y}`)
                 }
-                this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: positions })
+                this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: positions})
             }
             this.schedule.wait(25)
 
@@ -98,9 +104,8 @@ class WordSearchManager extends GenericIceManager {
             this.displayTerminal(20, "Memory analysis complete. Status: [strong ok]success");
             this.displayTerminal(0, "");
             this.displayTerminal(40, "[i primary]↼ Ice restored, access granted.");
-            this.schedule.run(0, () => {
-                window.close()
-            });
+
+            this.processHacked()
         }
     }
 }

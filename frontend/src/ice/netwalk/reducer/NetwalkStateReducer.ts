@@ -2,7 +2,7 @@ import {AnyAction} from "redux";
 import {IceStrength} from "../../../common/model/IceStrength";
 import {ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
 
-export const SERVER_ENTER_ICE_NETWALK = "SERVER_ENTER_ICE_NETWALK"
+export const SERVER_NETWALK_ENTER = "SERVER_NETWALK_ENTER"
 export const SERVER_NETWALK_NODE_ROTATED = "SERVER_NETWALK_NODE_ROTATED"
 export const NETWALK_BEGIN = "NETWALK_BEGIN"
 
@@ -21,7 +21,7 @@ const defaultState: NetwalkState = {
 export const netwalkStateReducer = (state: NetwalkState = defaultState, action: AnyAction): NetwalkState => {
 
     switch (action.type) {
-        case SERVER_ENTER_ICE_NETWALK:
+        case SERVER_NETWALK_ENTER:
             return enter(state, action as unknown as NetwalkEnterFromServer)
         case NETWALK_BEGIN:
             return { ...state, uiState: "UNLOCKED" }

@@ -43,15 +43,17 @@ export const decodeAppReference = (base64: string) => {
   return String.fromCharCode(...bytes)
 }
 
-export const encodeAppReference = (appId: string) => {
-    const bytes = new Uint8Array(appId.length);
-    for (let i = 0; i < appId.length; i++) {
-        bytes[i] = appId.charCodeAt(i) ^ (i % 256)
+// xor with index then base64 encode
+export const avEncodedPath = (path: string) => {
+    const bytes = new Uint8Array(path.length);
+
+    for (let i = 0; i < path.length; i++) {
+        bytes[i] = path.charCodeAt(i) ^ (i % 256)
     }
     return btoa(String.fromCharCode(...bytes))
 }
 
-export const createEncodedUrl = (path: string) => {
-  const reference = encodeAppReference(path)
+export const avEncodedUrl = (path: string) => {
+  const reference = avEncodedPath(path)
   return `${window.location.origin}/!/${reference}`
 }

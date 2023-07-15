@@ -7,7 +7,7 @@ import {LayerStatusLight} from "../../../../../../../../common/model/layer/Layer
 import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
 import QRCode from "react-qr-code"
 import toast, {Toast} from "react-hot-toast";
-import {encodeAppReference} from "../../../../../../../../common/util/Util";
+import {avEncodedPath} from "../../../../../../../../common/util/Util";
 import {UrlFieldWithQr} from "../../../element/UrlFieldWithQr";
 
 

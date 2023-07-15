@@ -4,7 +4,7 @@ import {LayerField} from "../../../element/LayerField"
 import {LayerPanel} from "../LayerPanel"
 import {LayerIcePassword} from "../../../../../../../../common/model/layer/LayerIcePassword"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
-import {QrFields} from "../../../element/QrFields";
+import {IceUrlFieldWithQr} from "../../../element/IceUrlFieldWithQr";
 
 
 interface Props {
@@ -28,7 +28,7 @@ export const LayerIcePasswordPanel = ({node, layer}: Props) => {
             <LayerField key={key("hi")} size="large" label="Hint" value={ice.hint} save={value => ice.saveHint(value)}
                         placeholder="Optional hint" help="This hint is shown when the password is entered incorrectly.
                               Can be used to help hackers."/>
-            <QrFields id={layer.id}/>
+            <IceUrlFieldWithQr layerId={layer.id}/>
         </LayerPanel>
     )
 }

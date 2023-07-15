@@ -4,7 +4,7 @@ import {LayerPanel} from "../LayerPanel"
 import {LayerStrength} from "../../../element/LayerStrength"
 import {LayerIceTangle} from "../../../../../../../../common/model/layer/LayerIceTangle"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
-import {QrFields} from "../../../element/QrFields";
+import {IceUrlFieldWithQr} from "../../../element/IceUrlFieldWithQr";
 
 interface Props {
     node: NodeI,
@@ -22,7 +22,7 @@ export const LayerIceTanglePanel = ({node, layer}: Props) => {
     return (
         <LayerPanel typeDisplay="ICE (Un)tangle" layerObject={ice}>
             <LayerStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
-            <QrFields id={layer.id}/>
+            <IceUrlFieldWithQr layerId={layer.id}/>
         </LayerPanel>
     )
 }

@@ -156,29 +156,28 @@ class NodeEntityService(
 
     private fun createLayer(layerType: LayerType, node: Node): Layer {
         val level = node.layers.size
-        val id = createLayerId(node)
+        val layerId = createLayerId(node)
 
         val defaultName = themeService.getDefaultName(layerType)
 
         return when (layerType) {
-            LayerType.TEXT -> TextLayer(id, level, defaultName)
-            LayerType.PASSWORD_ICE -> PasswordIceLayer(id, level, defaultName)
-            LayerType.TANGLE_ICE -> TangleIceLayer(id, level, defaultName)
-            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, level, defaultName)
-            LayerType.NETWALK_ICE -> NetwalkIceLayer(id, level, defaultName)
-            LayerType.TAR_ICE -> TarIceLayer(id, level, defaultName)
+            LayerType.TEXT -> TextLayer(layerId, level, defaultName)
+            LayerType.PASSWORD_ICE -> PasswordIceLayer(layerId, level, defaultName)
+            LayerType.TANGLE_ICE -> TangleIceLayer(layerId, level, defaultName)
+            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(layerId, level, defaultName)
+            LayerType.NETWALK_ICE -> NetwalkIceLayer(layerId, level, defaultName)
+            LayerType.TAR_ICE -> TarIceLayer(layerId, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
-            LayerType.TIMER_TRIGGER -> TimerTriggerLayer(id, level, defaultName)
-            LayerType.STATUS_LIGHT -> createStatusLightLayer(id, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
-            LayerType.LOCK -> createStatusLightLayer(id,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
+            LayerType.TIMER_TRIGGER -> TimerTriggerLayer(layerId, level, defaultName)
+            LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
+            LayerType.LOCK -> createStatusLightLayer(layerId,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
         }
     }
 
-    private fun createStatusLightLayer(id: String, type: LayerType, level: Int, defaultName: String, textForRed: String, textForGreen: String): StatusLightLayer {
-        val entity = statusLightEntityService.create(false, defaultName, textForRed, textForGreen)
-        return  StatusLightLayer(id, type, level, defaultName, entity.id, textForRed, textForGreen)
+    private fun createStatusLightLayer(layerId: String, type: LayerType, level: Int, defaultName: String, textForRed: String, textForGreen: String): StatusLightLayer {
+        val entity = statusLightEntityService.create(layerId, false, defaultName, textForRed, textForGreen)
+        return  StatusLightLayer(layerId, type, level, defaultName, entity.id, textForRed, textForGreen)
     }
-
 
     data class LayersUpdated(val node: Node, val layerId: String?)
 

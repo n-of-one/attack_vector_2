@@ -72,20 +72,20 @@ enum class ServerActions {
 
     SERVER_STATUS_LIGHT_UPDATE,         // sent to app and widget when loaded or status changed
 
-    SERVER_ENTER_ICE_APP,               // sent to hacker or user entering the Ice, first message of Ice window
-    SERVER_ICE_APP_UPDATE,              // sent to site to inform of hacked status update
-    SERVER_PASSWORD_CORRECT,            // sent to user to inform the IceApp that the password/passcode was correct
+    SERVER_AUTH_APP_ENTER,              // sent to hacker or user entering the Ice, first message of Ice window
+    SERVER_AUTH_APP_UPDATE,             // sent to site to inform of hacked status update
+    SERVER_AUTH_APP_PASSWORD_CORRECT,   // sent to user to inform the IceApp that the password/passcode was correct
 
-    SERVER_ENTER_ICE_TANGLE,            // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_TANGLE_ENTER,                // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
 
-    SERVER_ENTER_ICE_WORD_SEARCH,       // sent to hacker that hacks this ice, first message of Ice window
-    SERVER_ICE_WORD_SEARCH_UPDATED,     // sent to run when a word was found
+    SERVER_WORD_SEARCH_ENTER,           // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_WORD_SEARCH_UPDATED,         // sent to run when a word was found
 
-    SERVER_ENTER_ICE_NETWALK,           // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_NETWALK_ENTER,               // sent to hacker that hacks this ice, first message of Ice window
     SERVER_NETWALK_NODE_ROTATED,        // sent to run when a node was rotated clockwise
 
-    SERVER_ENTER_ICE_TAR,               // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_TAR_ENTER,                   // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TAR_UPDATE,                  // sent to run when a tar ice has change (units hacked)
 
 

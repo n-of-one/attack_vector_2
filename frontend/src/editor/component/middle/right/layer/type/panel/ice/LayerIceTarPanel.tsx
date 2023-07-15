@@ -5,7 +5,7 @@ import {LayerStrength} from "../../../element/LayerStrength"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerField} from "../../../element/LayerField";
 import {LayerIceTar} from "../../../../../../../../common/model/layer/LayerIceTar";
-import {QrFields} from "../../../element/QrFields";
+import {IceUrlFieldWithQr} from "../../../element/IceUrlFieldWithQr";
 
 interface Props {
     node: NodeI,
@@ -19,12 +19,10 @@ export const LayerIceTarPanel = ({node, layer}: Props) => {
 
     const key = (param: string) => layer.id + ":" + param
 
-    const textOneHacker = `1x lvl 1: ${ice.time1Level1Hacker}s   1x lvl 5: ${ice.time1Level5Hacker}s`
-    const textFivesHacker = `5x lvl 10: ${ice.time5Level10Hackers}s`
     return (
         <LayerPanel typeDisplay="ICE Tar" layerObject={ice}>
             <LayerStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
-            <QrFields id={layer.id}/>
+            <IceUrlFieldWithQr layerId={layer.id}/>
             <LayerField label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = (10 + level) per second per hacker" readOnly={true}/>
             <LayerField label="Total time" size="large" value="See question mark to the right"
                         help={`It will take 1 lvl 1 hacker: ${ice.time1Level1Hacker} to hack.

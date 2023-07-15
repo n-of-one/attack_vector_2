@@ -1,30 +1,35 @@
-import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer"
-import {Schedule} from "../../../common/util/Schedule"
+import {ICE_DISPLAY_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer"
+import {Schedule} from "../../common/util/Schedule"
 import {Dispatch, Store} from "redux"
-import {GenericIceManager} from "../../GenericIceManager"
-import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer"
-import {terminalManager} from "../../../common/terminal/TerminalManager"
-import {ICE_PASSWORD_BEGIN} from "../reducer/PasswordReducer";
-import {IceAppStateUpdate} from "../../../app/iceApp/IceAppServerActionProcessor";
+import {GenericIceManager} from "../GenericIceManager"
+import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer"
+import {terminalManager} from "../../common/terminal/TerminalManager"
+import {ICE_PASSWORD_BEGIN} from "./reducer/PasswordReducer";
+import {AuthAppEnter, AuthAppStateUpdate} from "../../app/authApp/AuthAppServerActionProcessor";
 
 
 class PasswordIceManager extends GenericIceManager {
 
-    store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
     schedule: Schedule = null as unknown as Schedule
 
     quickPlaying = false
 
-    init(store: Store) {
+    init(store: Store, nextUrl: string | null) {
         this.store = store
+        this.nextUrl = nextUrl
         this.dispatch = store.dispatch
         this.schedule = new Schedule(store.dispatch)
     }
 
-    enter() {
+    enter(data: AuthAppEnter) {
         this.schedule.clear()
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
+
+        if (data.hacked) {
+            this.enterHacked()
+            return
+        }
 
         this.displayTerminal(20, "↼ Connecting to ice, initiating attack.")
         if (!this.quickPlaying) {
@@ -41,14 +46,14 @@ class PasswordIceManager extends GenericIceManager {
         this.schedule.run(0, () => {
             terminalManager.start()
         })
-
     }
+
 
     close() {
         this.schedule.clear()
     }
 
-    serverPasswordIceUpdate(serverIceState: IceAppStateUpdate) {
+    serverPasswordIceUpdate(serverIceState: AuthAppStateUpdate) {
         if (!serverIceState.hacked) {
             return
         }
@@ -56,9 +61,8 @@ class PasswordIceManager extends GenericIceManager {
         this.displayTerminal(0, "")
         this.displayTerminal(20, "Password accepted")
         this.displayTerminal(40, "ICE grants access.")
-        this.schedule.run(0, () => {
-            window.close()
-        })
+
+        this.processHacked()
     }
 
 }

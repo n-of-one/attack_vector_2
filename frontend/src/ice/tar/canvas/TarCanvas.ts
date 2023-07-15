@@ -4,6 +4,7 @@ import {fabric} from "fabric";
 import {TarBlockDisplay} from "./TarBlockDisplay";
 import {hashCode} from "../../../common/util/Util";
 import {TarEnter, TarStatusUpdate} from "../TarServerActionProcessor";
+import {ice} from "../../IceModel";
 
 export const BLOCK_WIDTH = 90
 export const BLOCK_PADDING_LEFT = 10
@@ -34,7 +35,6 @@ class TarCanvas {
     canvas: Canvas = null as unknown as Canvas
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
-    iceId: string | null = null
 
     totalUnits: number = 0
     unitsHacked: number = 0
@@ -51,9 +51,7 @@ class TarCanvas {
     boxDisplaysByIndex = {} as {[index: number]: TarBlockDisplay}
 
 
-    init(iceId: string, data: TarEnter, store: Store) {
-
-        this.iceId = iceId
+    init(data: TarEnter, store: Store) {
         this.store = store
 
         this.totalUnits = data.totalUnits
@@ -88,7 +86,7 @@ class TarCanvas {
                 this.canvas.setBackgroundImage(img, this.canvas.renderAll.bind(this.canvas));
             });
         }, 100);
-        this.initBoxIndices(iceId);
+        this.initBoxIndices();
 
         this.renderBoxes()
     }
@@ -100,9 +98,9 @@ class TarCanvas {
 
 
     // Create a shuffled list of numbers 0-99 that will be used to render the boxed in deterministic & semi random order.
-    private initBoxIndices(iceId: string) {
+    private initBoxIndices() {
         this.boxIndices = Array.from({length: 100}, (_, i) => i);
-        const seed = Math.abs(hashCode(iceId)) % 1000
+        const seed = Math.abs(hashCode(ice.id)) % 1000
         deterministicShuffle(this.boxIndices, seed)
     }
 

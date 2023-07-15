@@ -2,7 +2,7 @@ import {AnyAction} from "redux";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
 import {IceStrength} from "../../../common/model/IceStrength";
 
-export const SERVER_ENTER_ICE_WORD_SEARCH = "SERVER_ENTER_ICE_WORD_SEARCH"
+export const SERVER_WORD_SEARCH_ENTER = "SERVER_WORD_SEARCH_ENTER"
 
 
 
@@ -26,7 +26,7 @@ const defaultState: WordSearchPuzzle = {
 export const wordSearchPuzzleReducer = (state: WordSearchPuzzle = defaultState, action: AnyAction): WordSearchPuzzle => {
 
     switch (action.type) {
-        case SERVER_ENTER_ICE_WORD_SEARCH: return enter(action.data)
+        case SERVER_WORD_SEARCH_ENTER: return enter(action.data)
         default: return state
     }
 }

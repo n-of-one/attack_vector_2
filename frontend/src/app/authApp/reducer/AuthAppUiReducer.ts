@@ -1,7 +1,7 @@
 import {AnyAction} from "redux";
 import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
 import {serverTime} from "../../../common/server/ServerTime";
-import {IceAppEnter, IceAppStateUpdate, SERVER_ENTER_ICE_APP, SERVER_ICE_APP_UPDATE} from "../IceAppServerActionProcessor";
+import {AuthAppEnter, AuthAppStateUpdate, SERVER_AUTH_APP_ENTER, SERVER_AUTH_APP_UPDATE} from "../AuthAppServerActionProcessor";
 
 export const ICE_PASSWORD_LOCK = "ICE_PASSWORD_LOCK";
 
@@ -12,7 +12,7 @@ export const UI_STATE_SUBMITTING = "UI_STATE_SUBMITTING"
 export const SUBMIT_PASSWORD = "SUBMIT_PASSWORD"
 
 
-export interface IceAppUi {
+export interface AuthAppUi {
     state: "UI_STATE_UNLOCKED" | "UI_STATE_LOCKED" | "UI_STATE_SUBMITTING",
     waitSeconds: number,
     lockedUntil: string  // "2019-08-26T15:38:40.9179757+02:00"
@@ -31,16 +31,16 @@ export const defaultUi = {
     showHint: false,
 }
 
-export const iceAppUiReducer = (state : IceAppUi = defaultUi, action: AnyAction): IceAppUi => {
+export const authAppUiReducer = (state : AuthAppUi = defaultUi, action: AnyAction): AuthAppUi => {
 
     switch (action.type) {
         case TERMINAL_UPDATE: {
             return processTick(state)
         }
 
-        case SERVER_ENTER_ICE_APP:
+        case SERVER_AUTH_APP_ENTER:
             return processEnterIce(action.data)
-        case SERVER_ICE_APP_UPDATE:
+        case SERVER_AUTH_APP_UPDATE:
             return processServerUpdate(action.data, state)
         case SUBMIT_PASSWORD:
             return {...state, state: UI_STATE_SUBMITTING}
@@ -49,7 +49,7 @@ export const iceAppUiReducer = (state : IceAppUi = defaultUi, action: AnyAction)
     }
 }
 
-const processTick = (state: IceAppUi): IceAppUi => {
+const processTick = (state: AuthAppUi): AuthAppUi => {
     if (state.waitSeconds <= 0 ) {
         return state;
     }
@@ -63,7 +63,7 @@ const processTick = (state: IceAppUi): IceAppUi => {
     }
 }
 
-const processEnterIce = (serverStatus: IceAppEnter): IceAppUi => {
+const processEnterIce = (serverStatus: AuthAppEnter): AuthAppUi => {
     const waitSeconds = calculateWaitSeconds(serverStatus);
     return {
         state: (waitSeconds > 0) ? UI_STATE_LOCKED : UI_STATE_UNLOCKED,
@@ -75,7 +75,7 @@ const processEnterIce = (serverStatus: IceAppEnter): IceAppUi => {
     }
 }
 
-const processServerUpdate = (stateUpdate: IceAppStateUpdate, oldState: IceAppUi): IceAppUi => {
+const processServerUpdate = (stateUpdate: AuthAppStateUpdate, oldState: AuthAppUi): AuthAppUi => {
     const waitSeconds = calculateWaitSeconds(stateUpdate);
     return {...oldState,
         waitSeconds: waitSeconds,

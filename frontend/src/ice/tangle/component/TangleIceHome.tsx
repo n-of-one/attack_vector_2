@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
-import {TangleRootState} from "../TangleRootReducer";
+import {TangleRootState} from "../reducer/TangleRootReducer";
 import {HIDDEN} from "../../IceModel";
 
 export const TangleIceHome = () => {

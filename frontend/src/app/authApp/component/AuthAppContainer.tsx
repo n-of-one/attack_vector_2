@@ -2,17 +2,17 @@ import React from "react";
 import {useSelector} from "react-redux";
 import {FORCE_DISCONNECT} from "../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../common/component/ForceDisconnected";
-import {IceAppRootState} from "../reducer/IceAppRootReducer";
-import {IceAppHome} from "./IceAppHome";
+import {AuthAppRootState} from "../reducer/AuthAppRootReducer";
+import {AuthAppHome} from "./AuthAppHome";
 
-export const IceAppContainer = () => {
+export const AuthAppContainer = () => {
 
-    const currentPage: string = useSelector((state: IceAppRootState) =>  state.currentPage)
+    const currentPage: string = useSelector((state: AuthAppRootState) =>  state.currentPage)
     if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark">
-            <IceAppHome/>
+            <AuthAppHome/>
         </div>
     )
 }

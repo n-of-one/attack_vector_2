@@ -17,8 +17,8 @@ export class SwitchRoot extends Component<Props> {
     store: Store
 
     constructor(props: Props) {
-        app.id = props.appId
         super(props)
+        app.id = props.appId
         const preLoadedState = {}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"

@@ -5,15 +5,16 @@ import {webSocketConnection, WS_NETWORK_APP} from "../../common/server/WebSocket
 import {Provider} from "react-redux";
 import {PasswordContainer} from "./container/PasswordContainer";
 import {passwordRootReducer, PasswordRootState} from "./reducer/PasswordRootReducer";
-import {passwordIceManager} from "./container/PasswordIceManager";
-import {initPasswordIceServerActions} from "./PasswordServerActionProcessor";
+import {passwordIceManager} from "./PasswordIceManager";
 import {ICE_INPUT_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {ice} from "../IceModel";
+import {AuthAppEnter, AuthAppStateUpdate, SERVER_AUTH_APP_ENTER, SERVER_AUTH_APP_UPDATE} from "../../app/authApp/AuthAppServerActionProcessor";
 
 interface Props {
-    iceId: string
+    iceId: string,
+    nextUrl: string | null
 }
 
 export class PasswordRoot extends Component<Props> {
@@ -23,6 +24,7 @@ export class PasswordRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
+
         const preLoadedState = {activeTerminalId: ICE_INPUT_TERMINAL_ID as "iceInput", currentPage: "password"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
@@ -39,10 +41,10 @@ export class PasswordRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/password/enter", {iceId: ice.id, userType: "HACKER"})
         });
 
-        passwordIceManager.init(this.store)
+        passwordIceManager.init(this.store, props.nextUrl)
         terminalManager.init(this.store)
         initGenericServerActions()
-        initPasswordIceServerActions(this.store)
+        this.initPasswordIceServerActions()
     }
 
     render() {
@@ -52,27 +54,13 @@ export class PasswordRoot extends Component<Props> {
             </Provider>
         )
     }
+
+    initPasswordIceServerActions() {
+        webSocketConnection.addAction(SERVER_AUTH_APP_ENTER, (data: AuthAppEnter) => {
+            passwordIceManager.enter(data)
+        })
+        webSocketConnection.addAction(SERVER_AUTH_APP_UPDATE, (data: AuthAppStateUpdate) => {
+            passwordIceManager.serverPasswordIceUpdate(data)
+        })
+    }
 }
-
-// export class PasswordRootSimplified extends Component<Props> {
-//
-//
-//     constructor(props: Props) {
-//         super(props)
-//         const preLoadedState = {activeTerminalId: ICE_INPUT_TERMINAL_ID, currentPage: "password"}
-//
-//         const store = comynfigureStore(passwordRootReducer, preLoadedState )
-//
-//
-//         passwordIceManager.init(store)
-//         terminalManager.init(store)
-//         initPasswordIceServerActions(store)
-//
-//         webSocketConnection.sendObject("/av/ice/password/enter", {iceId: props.iceId})
-//     }
-//
-//     render() {
-//         return <PasswordContainer/>
-//     }
-// }
-

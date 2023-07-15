@@ -14,6 +14,7 @@ import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.OsLayerService
 import org.n1.av2.backend.service.layerhacking.TextLayerService
 import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 
@@ -26,6 +27,7 @@ class CommandHackService(
     private val snifferLayerService: TimerTriggerLayerService,
     private val commandServiceUtil: CommandServiceUtil,
     private val currentUserService: CurrentUserService,
+    private val iceService: IceService,
 ) {
 
     fun process(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -50,7 +52,7 @@ class CommandHackService(
             layer is OsLayer -> osLayerService.hack(layer)
             layer is TextLayer -> textLayerService.hack(layer, node, state.runId)
             layer is TimerTriggerLayer -> snifferLayerService.hack(layer)
-            layer is IceLayer -> hackIce(node, layer)
+            layer is IceLayer -> hackIce(layer)
             else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
@@ -71,12 +73,14 @@ class CommandHackService(
         stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
     }
 
-    fun hackIce(node: Node, layer: IceLayer) {
+    fun hackIce(layer: IceLayer) {
         if (layer.hacked) {
             stompService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
             return
         }
+        val iceId = iceService.findOrCreateIceForLayer(layer)
+
         data class EnterIce(val redirectId: String)
-        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${layer.id}?user=${currentUserService.userId}"))
+        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${iceId}"))
     }
 }

@@ -8,6 +8,7 @@ import {TarEnter, TarStatusUpdate} from "../TarServerActionProcessor";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {formatTimeInterval} from "../../../common/util/Util";
 import {TAR_BEGIN} from "../reducer/TarReducer";
+import {ice} from "../../IceModel";
 
 const DELAY_BETWEEN_HACK_TICKS_S = 5
 
@@ -19,8 +20,6 @@ class TarManager extends GenericIceManager {
 
     quickPlaying = false
 
-    iceId: string = ""
-
     hackingIntervalId: ReturnType<typeof setInterval> | null = null
     reportingIntervalId: ReturnType<typeof setInterval> | null = null
 
@@ -28,19 +27,25 @@ class TarManager extends GenericIceManager {
     unitsHacked = -1
     lastUnitsHacked = -1
 
-    init(store: Store) {
+    init(store: Store, nextUrl: string | null) {
         this.store = store;
+        this.nextUrl = nextUrl
         this.dispatch = store.dispatch;
         this.schedule = new Schedule(store.dispatch);
     }
 
-    enter(iceId: string, data: TarEnter) {
-        this.iceId = iceId
+    enter(data: TarEnter) {
+
+        if (data.hacked) {
+            this.enterHacked()
+            return
+        }
+
         this.unitsHacked = data.unitsHacked
         this.lastUnitsHacked = data.unitsHacked
         this.totalUnits = data.totalUnits
 
-        tarCanvas.init(iceId, data, this.store)
+        tarCanvas.init(data, this.store)
 
         this.schedule.clear()
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
@@ -68,7 +73,7 @@ class TarManager extends GenericIceManager {
                 const unitsHacked = data.unitsPerSecond * DELAY_BETWEEN_HACK_TICKS_S + random
 
                 webSocketConnection.sendObject("/av/ice/tar/hackedUnits", {
-                    iceId: this.iceId, units: unitsHacked
+                    iceId: ice.id, units: unitsHacked
                 })
             }, DELAY_BETWEEN_HACK_TICKS_S * 1000)
         })
@@ -100,11 +105,7 @@ class TarManager extends GenericIceManager {
             if (this.hackingIntervalId) {
                 clearInterval(this.hackingIntervalId)
             }
-            if (!this.quickPlaying) {
-                this.schedule.run(0, () => {
-                    window.close()
-                })
-            }
+            this.processHacked()
         }
     }
 }

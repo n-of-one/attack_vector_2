@@ -1,22 +1,19 @@
 import React, {useState} from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import {IceAppRootState} from "../reducer/IceAppRootReducer";
+import {AuthAppRootState} from "../reducer/AuthAppRootReducer";
 import {Glyphicon} from "../../../common/component/icon/Glyphicon";
 import {larp} from "../../../common/Larp";
 import {PASSWORD_ICE} from "../../../common/enums/LayerTypes";
-import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/IceAppUiReducer";
+import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/AuthAppUiReducer";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {ice} from "../../../ice/IceModel";
-import {createEncodedUrl} from "../../../common/util/Util";
-import {currentUser} from "../../../common/user/CurrentUser";
+import {avEncodedUrl} from "../../../common/util/Util";
+import {app} from "../../AppId";
 
+export const AuthAppHome = () => {
 
-export const IceAppHome = () => {
-
-
-    const type = useSelector((root: IceAppRootState) => root.iceInfo.type)
+    const type = useSelector((root: AuthAppRootState) => root.info.type)
     const infoType = type === PASSWORD_ICE ? "Password" : "Passcode"
-
 
     return (
         <>
@@ -69,20 +66,20 @@ export const IceAppHome = () => {
 }
 
 const IceBanner = () => {
-    const type = useSelector((root: IceAppRootState) => root.iceInfo.type)
-    const layerId = useSelector((root: IceAppRootState) => root.layerId)
-    const iceName = larp.iceName(type)
-
+    const type = useSelector((root: AuthAppRootState) => root.info.type)
     const [clickCount, setClickCount] = useState(0)
+
+    if (!type) return <></>
+
+    const iceName = larp.iceName(type)
     const clickIceName = () => {
         const newClickCount = clickCount + 1
         setClickCount(newClickCount)
         if (newClickCount >= 3) {
-            const url = createEncodedUrl(`ice/${layerId}?user=${currentUser.id}`)
+            const url = avEncodedUrl(`app/${app.id}?hacking=true`)
             document.location.href = url
         }
     }
-
     return <>
         <strong>Protected by {iceName} </strong><span className="text-success unselectable">I<span onClick={clickIceName}>C</span>E</span>
     </>
@@ -90,7 +87,7 @@ const IceBanner = () => {
 
 
 const PasswordSection = () => {
-    const state = useSelector((root: IceAppRootState) => root.ui.state)
+    const state = useSelector((root: AuthAppRootState) => root.ui.state)
 
     switch (state) {
         case UI_STATE_UNLOCKED:
@@ -105,7 +102,7 @@ const PasswordSection = () => {
 const PasswordInput = () => {
     const [password, setPassword] = React.useState("")
     const [showPassword, setShowPassword] = React.useState(false)
-    const type = useSelector((root: IceAppRootState) => root.iceInfo.type)
+    const type = useSelector((root: AuthAppRootState) => root.info.type)
     const placeHolder = type === PASSWORD_ICE ? "password" : "passcode-xxxx-xxxx"
     const dispatch = useDispatch()
 
@@ -173,7 +170,7 @@ const PasswordDisabled = () => {
 }
 
 const PasswordLocked = () => {
-    const waitSeconds = useSelector((root: IceAppRootState) => root.ui.waitSeconds)
+    const waitSeconds = useSelector((root: AuthAppRootState) => root.ui.waitSeconds)
 
     return (
         <div className="text-muted">Invalid input. Please wait {waitSeconds} seconds before retrying</div>
@@ -181,9 +178,9 @@ const PasswordLocked = () => {
 }
 
 const HintSection = () => {
-    const showHint = useSelector((root: IceAppRootState) => root.ui.showHint)
-    const hint = useSelector((root: IceAppRootState) => root.iceInfo.hint)
-    const state = useSelector((root: IceAppRootState) => root.ui.state)
+    const showHint = useSelector((root: AuthAppRootState) => root.ui.showHint)
+    const hint = useSelector((root: AuthAppRootState) => root.info.hint)
+    const state = useSelector((root: AuthAppRootState) => root.ui.state)
 
     if (state !== UI_STATE_UNLOCKED || !showHint) {
         return <div>&nbsp;</div>

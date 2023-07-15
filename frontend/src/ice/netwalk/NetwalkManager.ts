@@ -1,32 +1,38 @@
-import {Schedule} from "../../../common/util/Schedule";
-import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../../GenericIceManager";
+import {Schedule} from "../../common/util/Schedule";
+import {ICE_DISPLAY_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
+import {GenericIceManager} from "../GenericIceManager";
 import {Dispatch, Store} from "redux";
-import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
-import {netwalkCanvas} from "../canvas/NetwalkCanvas";
-import {NetwalkRotateUpdate, ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
-import {NETWALK_BEGIN} from "../reducer/NetwalkStateReducer";
+import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
+import {netwalkCanvas} from "./canvas/NetwalkCanvas";
+import {NetwalkRotateUpdate, ServerEnterIceNetwalk} from "./NetwalkServerActionProcessor";
+import {NETWALK_BEGIN} from "./reducer/NetwalkStateReducer";
 
 
 class NetwalkManager extends GenericIceManager {
 
-    store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
     schedule: Schedule = null as unknown as Schedule
 
     quickPlaying = false
+    nextUrl: string | null = null
 
-    init(store: Store) {
+    init(store: Store, nextUrl: string | null) {
         this.store = store;
+        this.nextUrl = nextUrl
         this.dispatch = store.dispatch;
         this.schedule = new Schedule(store.dispatch);
     }
 
-    enter(iceId: string, data: ServerEnterIceNetwalk) {
-        netwalkCanvas.init(iceId, data, this.dispatch, this.store)
+    enter(data: ServerEnterIceNetwalk) {
+        netwalkCanvas.init(data, this.dispatch, this.store)
 
         this.schedule.clear()
-        this.dispatch( {type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
+        this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
+
+        if (data.hacked) {
+            this.enterHacked()
+            return
+        }
 
         // this.quickPlaying = true
 
@@ -48,17 +54,16 @@ class NetwalkManager extends GenericIceManager {
     serverSentNodeRotated(data: NetwalkRotateUpdate) {
         netwalkCanvas.serverSentNodeRotated(data)
 
-        if (data.hacked) {
-            netwalkCanvas.finish()
-            this.displayTerminal(10, "⇁ Configuration [ok]restored");
-            this.displayTerminal(44, "");
-            this.displayTerminal(50, "[warn]↼ Access granted.");
-            this.displayTerminal(20, "");
-
-            this.schedule.run(0, () => {
-                window.close()
-            });
+        if (!data.hacked) {
+            return
         }
+        netwalkCanvas.finish()
+        this.displayTerminal(10, "⇁ Configuration [ok]restored");
+        this.displayTerminal(44, "");
+        this.displayTerminal(50, "[warn]↼ Access granted.");
+        this.displayTerminal(20, "");
+
+        this.processHacked()
     }
 }
 

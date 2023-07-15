@@ -2,16 +2,18 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_NETWORK_APP} from "../../common/server/WebSocketConnection";
-import {tangleIceManager} from "./component/TangleIceManager";
-import {initTangleIceServerActions} from "./TangleServerActionProcessor";
+import {tangleIceManager, TanglePointMoved, TanglePuzzle} from "./TangleIceManager";
 import {Provider} from "react-redux";
 import {TangleContainer} from "./component/TangleContainer";
-import {tangleRootReducer, TangleRootState} from "./TangleRootReducer";
+import {tangleRootReducer, TangleRootState} from "./reducer/TangleRootReducer";
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../common/terminal/TerminalManager";
+import {ice} from "../IceModel";
+import {SERVER_TANGLE_ENTER, SERVER_TANGLE_POINT_MOVED} from "./reducer/TangleIceReducer";
 
 interface Props {
     iceId: string
+    nextUrl: string | null
 }
 export class TangleRoot extends Component<Props> {
 
@@ -19,7 +21,8 @@ export class TangleRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = { iceId: props.iceId, currentPage: "tangle"}
+        ice.id = props.iceId
+        const preLoadedState = {currentPage: "tangle"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
@@ -35,10 +38,10 @@ export class TangleRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/tangle/enter", {iceId: props.iceId})
         });
 
-        tangleIceManager.init(this.store);
+        tangleIceManager.init(this.store, props.nextUrl)
         terminalManager.init(this.store)
         initGenericServerActions()
-        initTangleIceServerActions(this.store)
+        this.initTangleIceServerActions()
     }
 
     render() {
@@ -47,6 +50,16 @@ export class TangleRoot extends Component<Props> {
                 <TangleContainer />
             </Provider>
         )
+    }
+
+    initTangleIceServerActions() {
+        webSocketConnection.addAction(SERVER_TANGLE_ENTER, (data: TanglePuzzle) => {
+            tangleIceManager.enter(data)
+        })
+        webSocketConnection.addAction(SERVER_TANGLE_POINT_MOVED, (data: TanglePointMoved) => {
+            tangleIceManager.moved(data)
+        })
+
     }
 }
 

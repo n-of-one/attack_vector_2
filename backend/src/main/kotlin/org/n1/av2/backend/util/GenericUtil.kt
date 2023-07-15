@@ -10,3 +10,9 @@ fun toServerFatalReduxEvent(exception: Exception): ReduxEvent {
     val event = ServerFatal(recoverable, exception.message ?: "-")
     return ReduxEvent(ServerActions.SERVER_ERROR, event)
 }
+
+fun createPathWithQuery(path: String, params: Map<String, Any?>): String {
+    if (params.isEmpty()) return path
+    val query = params.filter { it.value != null }.map { "${it.key}=${it.value}" }.joinToString("&")
+    return "$path?$query"
+}

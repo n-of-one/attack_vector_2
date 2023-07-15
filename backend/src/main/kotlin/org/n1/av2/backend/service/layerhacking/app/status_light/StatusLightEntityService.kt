@@ -11,9 +11,9 @@ class StatusLightEntityService(
     private val statusLightRepo: StatusLightRepo
 ) {
 
-    fun create(status: Boolean = false, description: String, textForRed: String, textForGreen: String): StatusLightEntity {
-        val id = createId("status_light", statusLightRepo::findById)
-        val statusLightEntity = StatusLightEntity(id, status, description, textForRed, textForGreen)
+    fun create(layerId: String, status: Boolean = false, description: String, textForRed: String, textForGreen: String): StatusLightEntity {
+        val id = createId("statusLight", statusLightRepo::findById)
+        val statusLightEntity = StatusLightEntity(id, layerId, status, description, textForRed, textForGreen)
         return statusLightRepo.save(statusLightEntity)
     }
 

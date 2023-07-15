@@ -8,10 +8,12 @@ import {NetwalkRootState, netwalkRootReducer} from "./reducer/NetwalkRootReducer
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {initNetwalkServerActions} from "./NetwalkServerActionProcessor";
-import {netwalkManager} from "./component/NetwalkManager";
+import {netwalkManager} from "./NetwalkManager";
+import {ice} from "../IceModel";
 
 interface Props {
     iceId: string
+    nextUrl: string | null
 }
 
 export class NetwalkRoot extends Component<Props> {
@@ -20,7 +22,8 @@ export class NetwalkRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        const preLoadedState = {iceId: props.iceId, currentPage: "netwalk"}
+        ice.id = props.iceId
+        const preLoadedState = {currentPage: "netwalk"}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
@@ -33,10 +36,10 @@ export class NetwalkRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/netwalk/enter", {iceId: props.iceId})
+            webSocketConnection.sendObject("/av/ice/netwalk/enter", {iceId: ice.id})
         });
 
-        netwalkManager.init(this.store);
+        netwalkManager.init(this.store, props.nextUrl);
         terminalManager.init(this.store)
         initGenericServerActions()
         initNetwalkServerActions(this.store)

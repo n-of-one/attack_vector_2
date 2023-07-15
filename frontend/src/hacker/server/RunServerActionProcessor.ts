@@ -14,7 +14,7 @@ import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
 import {Site} from "../run/reducer/SiteReducer"
 import {HackerPresence} from "../run/reducer/HackersReducer"
 import {Timings} from "../../common/model/Ticks"
-import {delayTicks, encodeAppReference} from "../../common/util/Util"
+import {delayTicks, avEncodedPath} from "../../common/util/Util"
 import {
     SERVER_FLASH_PATROLLER,
     SERVER_PATROLLER_LOCKS_HACKER,
@@ -247,7 +247,7 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
-        const param = encodeAppReference(data.redirectId)
+        const param = avEncodedPath(data.redirectId)
         window.open(`/!/${param}`, param)
     })
 

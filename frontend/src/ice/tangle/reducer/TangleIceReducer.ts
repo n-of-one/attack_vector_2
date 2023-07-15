@@ -1,8 +1,8 @@
 import {AnyAction} from "redux";
-import {HIDDEN, VISIBLE} from "../IceModel";
+import {HIDDEN, VISIBLE} from "../../IceModel";
 
 export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
-export const SERVER_ENTER_ICE_TANGLE = "SERVER_ENTER_ICE_TANGLE";
+export const SERVER_TANGLE_ENTER = "SERVER_TANGLE_ENTER";
 export const SERVER_TANGLE_POINT_MOVED = "SERVER_TANGLE_POINT_MOVED";
 
 export interface TangleIceState {
@@ -37,7 +37,7 @@ export const defaultState: TangleIceState = {
 export const tangleIceReducer = (state: TangleIceState = defaultState, action: AnyAction): TangleIceState => {
 
     switch (action.type) {
-        case SERVER_ENTER_ICE_TANGLE:
+        case SERVER_TANGLE_ENTER:
             return {...action.data, uiState: HIDDEN};
         case ICE_TANGLE_BEGIN:
             return {...state, uiState: VISIBLE};

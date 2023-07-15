@@ -22,12 +22,8 @@ class IceController(
     fun getIce(@PathVariable layerId: String): IceBasicInfo {
         val node = nodeEntityService.findByLayerId(layerId)
         val layer = node.getLayerById(layerId)
-        val iceId = iceService.findIceIdForLayer(layer)
+        val iceStatus = iceService.findOrCreateIceForLayer(layer)
 
-        if (iceId == null) logger.error { "IceId not found for layerId=$layerId, ice type: $layer.type" }
-
-        return IceBasicInfo(layer.type, iceId, currentUserService.userId)
+        return IceBasicInfo(layer.type, iceStatus.id, currentUserService.userId)
     }
-
-
 }
