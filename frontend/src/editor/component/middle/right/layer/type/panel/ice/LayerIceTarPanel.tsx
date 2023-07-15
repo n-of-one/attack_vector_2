@@ -26,8 +26,11 @@ export const LayerIceTarPanel = ({node, layer}: Props) => {
             <LayerStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
             <QrFields id={layer.id}/>
             <LayerField label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = (10 + level) per second per hacker" readOnly={true}/>
-            <LayerField label="1 hacker" size="large" value={textOneHacker} help="Time it takes a single hacker to hack this ice." readOnly={true}/>
-            <LayerField label="Max hacking" size="large" value={textFivesHacker} help="Time it takes five level 10 hackers to hack this ice." readOnly={true}/>
+            <LayerField label="Total time" size="large" value="See question mark to the right"
+                        help={`It will take 1 lvl 1 hacker: ${ice.time1Level1Hacker} to hack.
+                        It will take 1 lvl 5 hacker: ${ice.time1Level5Hacker} to hack.
+                        It will take 5 lvl 10 hackers: ${ice.time5Level10Hackers} to hack.
+                        `} readOnly={true}/>
         </LayerPanel>
     )
 }

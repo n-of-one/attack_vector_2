@@ -17,6 +17,4 @@ export class LayerIceTar extends LayerIce {
         this.time1Level5Hacker = layer.time1Level5Hacker!
         this.time5Level10Hackers = layer.time5Level10Hackers!
     }
-
-
 }
