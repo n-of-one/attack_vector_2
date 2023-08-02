@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.terminal.hacking
 import org.n1.av2.backend.entity.run.HackerStateRunning
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
@@ -78,7 +77,7 @@ class CommandHackService(
             stompService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
             return
         }
-        val iceId = iceService.findOrCreateIceForLayer(layer)
+        val iceId = iceService.findOrCreateIceForLayer(layer).id
 
         data class EnterIce(val redirectId: String)
         stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${iceId}"))
