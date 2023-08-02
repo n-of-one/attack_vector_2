@@ -11,7 +11,7 @@ class NetwalkCreatorTest {
 
 
         val creator = NetwalkCreator(IceStrength.VERY_WEAK)
-        val grid = creator.create()
+        creator.create()
 
     }
 }

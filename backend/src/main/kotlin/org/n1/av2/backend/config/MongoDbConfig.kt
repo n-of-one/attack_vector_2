@@ -5,7 +5,6 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import org.n1.av2.backend.AttackVector
-import org.n1.av2.backend.service.TimeService
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
@@ -18,7 +17,6 @@ import java.util.*
 @Configuration
 @EnableMongoRepositories(basePackageClasses = [(AttackVector::class)])
 class MongoDbConfig(
-    timeService: TimeService,
     val config: ServerConfig
 
 ) : AbstractMongoClientConfiguration() {

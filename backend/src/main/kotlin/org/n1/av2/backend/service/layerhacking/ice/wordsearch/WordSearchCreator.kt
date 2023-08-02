@@ -188,7 +188,6 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.STRONG -> 30
             IceStrength.VERY_STRONG -> 40
             IceStrength.ONYX, -> 50
-            else -> error("Unknown ice strength: $strength")
         }
     }
 
@@ -200,7 +199,6 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.STRONG -> 22
             IceStrength.VERY_STRONG -> 24
             IceStrength.ONYX, -> 28
-            else -> error("Unknown ice strength: $strength")
         }
     }
 

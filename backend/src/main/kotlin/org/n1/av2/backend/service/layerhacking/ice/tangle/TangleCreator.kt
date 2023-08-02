@@ -119,7 +119,6 @@ class TangleCreator {
             IceStrength.STRONG -> 12
             IceStrength.VERY_STRONG -> 15
             IceStrength.ONYX -> 20
-            else -> error("Invalid strength for Tangle ice: ${strength}")
         }
     }
 
