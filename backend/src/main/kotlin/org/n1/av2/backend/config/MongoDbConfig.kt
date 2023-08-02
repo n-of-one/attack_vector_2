@@ -17,16 +17,14 @@ import java.util.*
 
 @Configuration
 @EnableMongoRepositories(basePackageClasses = [(AttackVector::class)])
-class MongoDbConfig(timeService: TimeService) : AbstractMongoClientConfiguration() {
+class MongoDbConfig(
+    timeService: TimeService,
+    val config: ServerConfig
 
-    val zoneId = timeService.zoneId
+) : AbstractMongoClientConfiguration() {
 
     override fun mongoClient(): MongoClient {
-        val envUrl = System.getenv("MONGODB_URI")
-        val url =
-            if (envUrl != null && envUrl.trim().isNotEmpty()) envUrl
-            else "mongodb://attackvector2:attackvector2@localhost/admin?authMechanism=SCRAM-SHA-1"
-        val connectionString = ConnectionString(url)
+        val connectionString = ConnectionString(config.mongoDbUrl)
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()
@@ -34,10 +32,7 @@ class MongoDbConfig(timeService: TimeService) : AbstractMongoClientConfiguration
     }
 
     override fun getDatabaseName(): String {
-        val envName: String? = System.getenv("MONGODB_NAME")
-
-        return if (envName != null && envName.trim().isNotEmpty()) envName
-        else "av2"
+        return config.mongoDbName
     }
 
 
@@ -55,7 +50,7 @@ class MongoDbConfig(timeService: TimeService) : AbstractMongoClientConfiguration
     inner class DateToZonedDateTimeConverter : Converter<Date, ZonedDateTime> {
 
         override fun convert(source: Date): ZonedDateTime? {
-            return ZonedDateTime.ofInstant(source.toInstant(), zoneId)
+            return ZonedDateTime.ofInstant(source.toInstant(), config.timeZoneId)
         }
     }
 

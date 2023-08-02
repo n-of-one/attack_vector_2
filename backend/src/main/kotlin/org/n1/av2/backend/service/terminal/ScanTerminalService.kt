@@ -1,11 +1,10 @@
 package org.n1.av2.backend.service.terminal
 
-import org.n1.av2.backend.config.MyEnvironment
+import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.run.StartAttackService
@@ -19,11 +18,10 @@ class ScanTerminalService(
     private val nodeEntityService: NodeEntityService,
     private val socialTerminalService: SocialTerminalService,
     private val startAttackService: StartAttackService,
-    private val currentUser: CurrentUserService,
-    private val environment: MyEnvironment,
     private val hackerStateEntityService: HackerStateEntityService,
     private val runService: RunService,
     private val stompService: StompService,
+    private val config: ServerConfig,
     ) {
 
 
@@ -66,7 +64,7 @@ class ScanTerminalService(
                 " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
                 " [u]dc",
                 " [u]/share[/u] [info]<user name>")
-        if (environment.dev) {
+        if (config.dev) {
             stompService.replyTerminalReceive(
                     "",
                     "[i]Available only during development and testing:[/]",

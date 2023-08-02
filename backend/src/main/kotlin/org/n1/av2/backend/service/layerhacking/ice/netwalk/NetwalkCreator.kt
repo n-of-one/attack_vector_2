@@ -7,6 +7,7 @@ import kotlin.random.Random
 
 /**
  * https://en.wikipedia.org/wiki/Maze_generation_algorithm
+ * https://www.youtube.com/watch?v=XajeSjilUDs&t=124s
  *
  * Randomized Prim's algorithm
  * This algorithm is a randomized version of Prim's algorithm.

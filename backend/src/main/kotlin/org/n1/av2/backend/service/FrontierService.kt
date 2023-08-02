@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.Cookie
+import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.entity.user.HackerSkill
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 const val FRONTIER_GM_GROUP = "30"
@@ -32,7 +32,7 @@ class FrontierHackerInfo(
  */
 @Service
 class FrontierService(
-    @Value("\${orthankToken:none}") val orthankToken: String
+    val config: ServerConfig
 ) {
     private val httpClient = HttpClient()
     private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -85,7 +85,7 @@ class FrontierService(
     }
 
     private fun getPlayerInfo(accountId: String): CharacterInfo {
-        val headers = mapOf("accountID" to accountId, "token" to orthankToken)
+        val headers = mapOf("accountID" to accountId, "token" to config.orthankToken)
         val responseText = httpClient.get("https://api.eosfrontier.space/orthanc/v2/chars_player/", headers)
         println(responseText)
         val playerInfo = objectMapper.readValue(responseText, CharacterInfo::class.java)
@@ -99,7 +99,7 @@ class FrontierService(
             constructor() : this("", 0)
         }
 
-        val headers = mapOf("id" to characterId, "token" to orthankToken)
+        val headers = mapOf("id" to characterId, "token" to config.orthankToken)
         val responseText = httpClient.get("https://api.eosfrontier.space/orthanc/v2/chars_player/skills/", headers)
         println(responseText)
         val skillsInfo: List<SkillInfo> = objectMapper.readValue(responseText, object : TypeReference<List<SkillInfo>>() {})
