@@ -15,4 +15,4 @@ docker images
 docker build -t av .
 
 # run docker
-docker run -p 80:80 -e "MONGODB_URI=mongodb://attackvector2:attackvector2@host.docker.internal/admin?authMechanism=SCRAM-SHA-1" av
+docker run -p 80:80 -e "MONGODB_URI=mongodb://attackvector2:attackvector2@host.docker.internal/admin?authMechanism=SCRAM-SHA-1" --rm av
