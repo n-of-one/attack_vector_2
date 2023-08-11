@@ -12,7 +12,15 @@ docker images
 
 
 # build docker
-docker build -t av .
+docker build -t av2 .
 
 # run docker
-docker run -p 80:80 -e "MONGODB_URI=mongodb://attackvector2:attackvector2@host.docker.internal/admin?authMechanism=SCRAM-SHA-1" --rm av
+docker run -p 80:80 -e "MONGODB_URI=mongodb://attackvector2:attackvector2@host.docker.internal/admin?authMechanism=SCRAM-SHA-1" --rm av2
+
+
+
+# tag to be uploaded to AWS ECR
+docker tag av2 <aws-account-id>.dkr.ecr.eu-central-1.amazonaws.com/av2:latest
+
+# Push to AWS ECR
+docker push <aws-account-id>.dkr.ecr.eu-central-1.amazonaws.com/av2:latest

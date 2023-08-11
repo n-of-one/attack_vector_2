@@ -36,45 +36,13 @@
 
 	<dependencies>
 
-		<!-- Database -->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-to-slf4j</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-starter-web</artifactId>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-messaging</artifactId>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-messaging</artifactId>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
