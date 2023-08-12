@@ -14,6 +14,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
 
       - name: cd backend directory
         run: cd backend
