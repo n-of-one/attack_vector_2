@@ -1,6 +1,5 @@
 Docker commands:
 
-
 # Remove all finished containers
 docker container prune -f
 
@@ -11,8 +10,23 @@ docker image rm av
 docker images
 
 
+---
+
+
 # build docker
-docker build -t av .
+docker build -t av2 .
 
 # run docker
-docker run -p 80:80 -e "MONGODB_URI=mongodb://attackvector2:attackvector2@host.docker.internal/admin?authMechanism=SCRAM-SHA-1" --rm av
+docker run -p 80:80 --rm av2
+
+# tag to be uploaded to AWS ECR
+docker tag av2 ACCOUNTID.dkr.ecr.eu-west-1.amazonaws.com/av2:latest
+
+# login to AWS ECR
+aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin ACCOUNTID.dkr.ecr.eu-west-1.amazonaws.com
+
+# push to AWS ECR
+docker push ACCOUNTID.dkr.ecr.eu-west-1.amazonaws.com/av2
+
+(if it keeps retrying but not sending data then either you did not log in (aws ecr get-login....) or there is no ECR repository for this image)
+

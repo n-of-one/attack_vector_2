@@ -28,26 +28,19 @@ class JwtAuthenticationFilter(
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
 
         if (dontNeedAuthentication(request)) {
+            logger.info("Don't need authentication for ${request.requestURI}")
             filterChain.doFilter(request, response)
             return
         }
-
 
         var authentication: UserPrincipal? = null
 
         try {
             val jwt = getJwtFromRequest(request)
-            if (jwt != null) {
-                if (tokenProvider.validateToken(jwt)) {
-                    val userId = tokenProvider.getUserIdFromJWT(jwt)
-                    val user = userEntityService.getById(userId)
-                    val connectionId = connectionUtil.create()
-                    val type = connectionTypeFromPath(request.requestURI)
-                    authentication = UserPrincipal("", connectionId, user, type)
-                    SecurityContextHolder.getContext().authentication = authentication
-                    currentUserService.set(user)
-
-                }
+            if (jwt == null) {
+                logger.info("No jwt found in request")
+            } else {
+                authentication = parseJwt(jwt, request)
             }
         } catch (exception: Exception) {
             logger.error("Could not set user authentication in security context: ", exception)
@@ -64,9 +57,28 @@ class JwtAuthenticationFilter(
         }
     }
 
+    private fun parseJwt(jwt: String, request: HttpServletRequest): UserPrincipal? {
+        if (!tokenProvider.validateToken(jwt)) {
+            logger.info("JWT is not valid: ${jwt}")
+            return null
+        }
+        val userId = tokenProvider.getUserIdFromJWT(jwt)
+        val user = userEntityService.getById(userId)
+        val connectionId = connectionUtil.create()
+        val type = connectionTypeFromPath(request.requestURI)
+        val authentication = UserPrincipal("", connectionId, user, type)
+        SecurityContextHolder.getContext().authentication = authentication
+        currentUserService.set(user)
+
+        val authorities = authentication.authorities.map { it.authority }.joinToString(", ")
+        logger.info("Valid authentication for ${user.name}. authorities: ${authorities} ")
+        return authentication
+    }
+
     private fun dontNeedAuthentication(request: HttpServletRequest): Boolean {
         request.requestURI.let {
-            return (it.startsWith("/logout") ||
+            return (it.startsWith("/api/health/") ||
+                    it.startsWith("/logout") ||
                     it.startsWith("/login") ||
                     it.startsWith("/sso") ||
                     it.startsWith("/css") ||
@@ -80,9 +92,6 @@ class JwtAuthenticationFilter(
 
 
     private fun getJwtFromRequest(request: HttpServletRequest): String? {
-        if (request.requestURI == "/api/health/") {
-            return null
-        }
         val cookie = request.cookies?.find { it.name == "jwt" } ?: return null
         return cookie.value
     }
