@@ -12,14 +12,18 @@ private const val INDEX = "../static/index.html"
 class HtmlController(
 ) : ErrorController {
 
+    private val logger = mu.KotlinLogging.logger {}
+
     @GetMapping("/")
     fun default(): String {
+        logger.info("Called default")
         return INDEX
     }
 
     @GetMapping("/hello")
     @ResponseBody
     fun hello(): String {
+        logger.error("oh no, hello!")
         return "Hello to you too!"
     }
 
