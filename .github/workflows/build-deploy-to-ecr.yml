@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  Build backend:
+  Build-backend-job:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 17
