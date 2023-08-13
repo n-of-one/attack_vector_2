@@ -12,9 +12,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-      - name: cd backend directory
-        run: cd backend
-
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -23,13 +20,9 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
+        working-directory: ./backend
         run: mvn --batch-mode --update-snapshots package
 
       - name: test
-        run: ls
-
-      - name: test
-        run: pwd
-
-      - name: test
+        working-directory: ./backend
         run: ls target/
