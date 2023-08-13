@@ -25,5 +25,11 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
 
-      - name: check results
-        run: ls -R target
+      - name: test
+        run: ls
+
+      - name: test
+        run: pwd
+
+      - name: test
+        run: ls target/
