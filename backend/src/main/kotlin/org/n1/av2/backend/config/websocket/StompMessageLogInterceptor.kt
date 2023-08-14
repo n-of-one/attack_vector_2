@@ -19,11 +19,16 @@ class MessageIn : ChannelInterceptor {
         }
 
         val command = message.headers["stompCommand"] as StompCommand
-        if ("SEND" == command.name) {
+        if ("SEND" == command.name && logMessage(message)) {
             log(logger, message, "<-")
         }
         return message
     }
+
+    private fun logMessage(message: Message<*>): Boolean {
+        return message.headers["simpDestination"] != "/hb"
+    }
+
 }
 
 class MessageOut : ChannelInterceptor {

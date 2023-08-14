@@ -78,10 +78,15 @@ body {
     font-variant-ligatures: none;
 }
 
+
+
 input {
     font-variant-ligatures: none;
 }
 
+.unselectable {
+    user-select: none;
+}
 .darkWell {
     background-color: #333333;
     border-radius: 3px 3px 3px 3px;

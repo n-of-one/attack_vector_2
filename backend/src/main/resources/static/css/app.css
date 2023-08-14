@@ -1,3 +1,29 @@
+.ice-input-disabled {
+    width: 187px;
+    /* height: 24px; */
+    border: #596166 1px solid;
+    border-radius: 4px 0px 0px 4px;
+    padding-top: 6px;
+    padding-left: 10px;
+    /* opacity: var(--bs-btn-disabled-opacity); */
+    margin-right: 1px;
+    top: 1px;
+    position: relative;
+}
+
+.ice-input-eye {
+    border-radius: 0px;
+    height: 36px;
+    top: 1px;
+}
+
+.ice-input-submit {
+    border-radius: 0px 3px 3px 0px;
+    height: 36px;
+    top: 1px;
+}
+
+
 .status-light {
     border-radius: 15%;
     height: 300px;

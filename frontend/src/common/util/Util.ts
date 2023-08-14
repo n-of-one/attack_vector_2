@@ -55,5 +55,5 @@ export const avEncodedPath = (path: string) => {
 
 export const avEncodedUrl = (path: string) => {
   const reference = avEncodedPath(path)
-  return `${window.location.origin}/!/${reference}`
+  return `${window.location.origin}/x/${reference}`
 }

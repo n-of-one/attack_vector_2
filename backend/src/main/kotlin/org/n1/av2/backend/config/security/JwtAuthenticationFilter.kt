@@ -28,7 +28,6 @@ class JwtAuthenticationFilter(
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
 
         if (dontNeedAuthentication(request)) {
-            logger.info("Don't need authentication for ${request.requestURI}")
             filterChain.doFilter(request, response)
             return
         }
@@ -37,9 +36,7 @@ class JwtAuthenticationFilter(
 
         try {
             val jwt = getJwtFromRequest(request)
-            if (jwt == null) {
-                logger.info("No jwt found in request")
-            } else {
+            if (jwt != null) {
                 authentication = parseJwt(jwt, request)
             }
         } catch (exception: Exception) {
@@ -59,7 +56,6 @@ class JwtAuthenticationFilter(
 
     private fun parseJwt(jwt: String, request: HttpServletRequest): UserPrincipal? {
         if (!tokenProvider.validateToken(jwt)) {
-            logger.info("JWT is not valid: ${jwt}")
             return null
         }
         val userId = tokenProvider.getUserIdFromJWT(jwt)
@@ -71,7 +67,6 @@ class JwtAuthenticationFilter(
         currentUserService.set(user)
 
         val authorities = authentication.authorities.map { it.authority }.joinToString(", ")
-        logger.info("Valid authentication for ${user.name}. authorities: ${authorities} ")
         return authentication
     }
 

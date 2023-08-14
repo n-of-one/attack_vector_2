@@ -96,7 +96,7 @@ root.render(
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/edit/:siteId" element={<Editor/>}/>
-                <Route path="/!/:encodedParam" element={<Standalone/>}/>
+                <Route path="/x/:encodedParam" element={<Standalone/>}/>
                 <Route path="/" element={<ReRoute/>}/>
                 <Route path="*" element={<ReRoute/>}/>
             </Routes>

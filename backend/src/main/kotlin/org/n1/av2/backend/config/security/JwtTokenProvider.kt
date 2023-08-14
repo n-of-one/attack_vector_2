@@ -22,7 +22,7 @@ class JwtTokenProvider {
     private val JwtParser = Jwts.parserBuilder().setSigningKey(key).build()
 
 
-    val jwtExpirationInS: Int = 60 * 60 * 5 // 5 hours
+    final val jwtExpirationInS: Int = 60 * 60 * 5 // 5 hours
     private val jwtExpirationInMs: Int = 1000 * jwtExpirationInS
 
     fun generateJwt(user: User): String {
@@ -52,7 +52,7 @@ class JwtTokenProvider {
         } catch (ex: SignatureException) {
             logger.error("Invalid JWT signature")
         } catch (ex: MalformedJwtException) {
-            logger.error("Invalid JWT token")
+            logger.error("Malformed JWT token")
         } catch (ex: ExpiredJwtException) {
             logger.error("Expired JWT token")
         } catch (ex: UnsupportedJwtException) {

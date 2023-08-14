@@ -248,7 +248,7 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
         const param = avEncodedPath(data.redirectId)
-        window.open(`/!/${param}`, param)
+        window.open(`/x/${param}`, param)
     })
 
     webSocketConnection.addAction(SERVER_NODE_HACKED, (data: NodeHacked) => {
