@@ -61,12 +61,13 @@ class JwtAuthenticationFilter(
         val userId = tokenProvider.getUserIdFromJWT(jwt)
         val user = userEntityService.getById(userId)
         val connectionId = connectionUtil.create()
+
+        // TODO: remove authentication, it's not used in this flow. We're just setting the user
         val type = connectionTypeFromPath(request.requestURI)
         val authentication = UserPrincipal("", connectionId, user, type)
         SecurityContextHolder.getContext().authentication = authentication
         currentUserService.set(user)
 
-        val authorities = authentication.authorities.map { it.authority }.joinToString(", ")
         return authentication
     }
 

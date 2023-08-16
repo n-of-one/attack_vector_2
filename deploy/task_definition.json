@@ -1,0 +1,95 @@
+{
+  "taskDefinitionArn": "$TASK_DEFINITION_ARN",
+  "containerDefinitions": [
+    {
+      "name": "av2",
+      "image": "$IMAGE_NAME",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "av2-80-tcp",
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "MONGODB_NAME",
+          "value": "demo"
+        },
+        {
+          "name": "MONGODB_URI",
+          "value": "$MONGODB_URI"
+        },
+        {
+          "name": "ENVIRONMENT",
+          "value": "demo"
+        }
+      ],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "$LOG_GROUP_NAME",
+          "awslogs-region": "eu-west-1",
+          "awslogs-stream-prefix": "demo"
+        },
+        "secretOptions": []
+      }
+    }
+  ],
+  "family": "demo_minimal",
+  "executionRoleArn": "$EXECUTION_ROLE_ARN",
+  "networkMode": "awsvpc",
+  "revision": 1,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "1024",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "tags": []
+}

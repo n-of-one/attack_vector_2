@@ -9,10 +9,10 @@ on:
 env:
   AWS_REGION: eu-west-1
   ECR_REPOSITORY: av2
-#  ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
-#  ECS_CLUSTER: MY_ECS_CLUSTER                 # set this to your Amazon ECS cluster name
-#  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition file, e.g. .aws/task-definition.json
-#  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the containerDefinitions section of your task definition
+  ECS_SERVICE: demo                 # set this to your Amazon ECS service name
+  ECS_CLUSTER: attack_vector_cluster                 # set this to your Amazon ECS cluster name
+  #  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: demo           # set this to the name of the container in the containerDefinitions section of your task definition
 
 jobs:
   Build-backend-job:
@@ -21,41 +21,48 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+      #      - name: Set up JDK 17
+      #        uses: actions/setup-java@v3
+      #        with:
+      #          java-version: '17'
+      #          distribution: 'temurin'
+      #          cache: 'maven'
+      #
+      #      - name: Build with Maven
+      #        working-directory: ./backend
+      #        run: mvn --batch-mode --update-snapshots package
+      #
+      #      - name: View build results
+      #        working-directory: ./backend
+      #        run: ls -als target/
+      #
+      #      - name: Configure AWS credentials
+      #        uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
+      #        with:
+      #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #          aws-region: ${{ env.AWS_REGION }}
+      #
+      #      - name: Login to Amazon ECR
+      #        id: login-ecr
+      #        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+      #
+      #      - name: Build, tag, and push image to Amazon ECR
+      #        id: build-image
+      #        env:
+      #          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      ##          IMAGE_TAG: ${{ github.sha }}
+      #          IMAGE_TAG: github-latest
+      #        working-directory: ./backend
+      #        run: |
+      #          # Build a docker container and push it to ECR so that it can be deployed to ECS.
+      #          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Build with Maven
-        working-directory: ./backend
-        run: mvn --batch-mode --update-snapshots package
-
-      - name: View build results
-        working-directory: ./backend
-        run: ls -als target/
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#          IMAGE_TAG: ${{ github.sha }}
-          IMAGE_TAG: github-latest
-        working-directory: ./backend
+      - name: set the secrets  the ECS Task definition
+        working-directory: ./deploy
+        id: create-task-definition
         run: |
-          # Build a docker container and push it to ECR so that it can be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          sed -i 's/$MONGODB_URI/${{ secrets.MONGODB_URI }} /g' task_definition.json
+          cat task_definition.json
