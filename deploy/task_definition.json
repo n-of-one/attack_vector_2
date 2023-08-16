@@ -2,7 +2,7 @@
   "taskDefinitionArn": "$TASK_DEFINITION_ARN",
   "containerDefinitions": [
     {
-      "name": "av2",
+      "name": "demo",
       "image": "$IMAGE_NAME",
       "cpu": 0,
       "portMappings": [
