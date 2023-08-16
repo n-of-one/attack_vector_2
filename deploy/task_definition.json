@@ -1,9 +1,9 @@
 {
-  "taskDefinitionArn": "$TASK_DEFINITION_ARN",
+  "taskDefinitionArn": "arn:aws:ecs:eu-west-1:000000000000:task-definition/demo_minimal:1",
   "containerDefinitions": [
     {
       "name": "demo",
-      "image": "$IMAGE_NAME",
+      "image": "000000000000.dkr.ecr.eu-west-1.amazonaws.com/av2:github-latest",
       "cpu": 0,
       "portMappings": [
         {
@@ -37,7 +37,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "$LOG_GROUP_NAME",
+          "awslogs-group": "/ecs/attack_vector",
           "awslogs-region": "eu-west-1",
           "awslogs-stream-prefix": "demo"
         },
@@ -46,7 +46,7 @@
     }
   ],
   "family": "demo_minimal",
-  "executionRoleArn": "$EXECUTION_ROLE_ARN",
+  "executionRoleArn": "arn:aws:iam::000000000000:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
   "revision": 1,
   "volumes": [],
@@ -91,5 +91,7 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
+  "registeredAt": "2023-08-16T12:13:52.706Z",
+  "registeredBy": "arn:aws:iam::000000000000:user/0000",
   "tags": []
 }
