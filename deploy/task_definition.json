@@ -45,7 +45,7 @@
     }
   ],
   "family": "demo_minimal",
-  "executionRoleArn": "arn:aws:iam::$AWS_ACCOUNT:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::$AWS_ACCOUNT_ID:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
   "volumes": [],
   "placementConstraints": [],
