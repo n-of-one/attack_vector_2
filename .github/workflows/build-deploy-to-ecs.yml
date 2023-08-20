@@ -65,6 +65,7 @@ jobs:
         id: create-task-definition
         run: |
           sed -i 's/$MONGODB_URI/${{ secrets.MONGODB_URI }} /g' task_definition.json
+          sed -i 's/$AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }} /g' task_definition.json
           cat task_definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
