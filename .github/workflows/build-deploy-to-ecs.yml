@@ -65,7 +65,7 @@ jobs:
         id: create-task-definition
         run: |
           sed -i 's/$MONGODB_URI/${{ secrets.MONGODB_URI }} /g' task_definition.json
-          sed -i 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }} /g' task_definition.json
+          sed -i 's/$AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }} /g' task_definition.json
           cat task_definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
@@ -74,6 +74,13 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
-          #          image: ${{ steps.build-image.outputs.image }}
-          image: test
+          image: ${{ steps.build-image.outputs.image }}
+          #image: test
 
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
