@@ -11,6 +11,7 @@ class ThemeService {
             LayerType.OS -> "OS"
             LayerType.TEXT -> "Data vault"
             LayerType.TIMER_TRIGGER -> "Network Sniffer"
+            LayerType.KEYSTORE -> "Keystore"
 
             LayerType.STATUS_LIGHT -> "Status Light"
             LayerType.LOCK -> "Lock"

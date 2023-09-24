@@ -1,6 +1,5 @@
 export const OS = "OS"
 export const TEXT = "TEXT"
-export const PICTURE = "PICTURE"
 export const LINK = "LINK"
 export const TRACER = "TRACER"
 export const TRACE_LOG = "TRACE_LOG"
@@ -19,6 +18,8 @@ export const TAR_ICE = "TAR_ICE"
 export const LOCK = "LOCK"
 export const STATUS_LIGHT = "STATUS_LIGHT"
 
+export const KEYSTORE = "KEYSTORE"
+
 export enum LayerType {
     OS = "OS",
     TEXT= "TEXT",
@@ -30,6 +31,8 @@ export enum LayerType {
     TAR_ICE = "TAR_ICE",
     LOCK = "LOCK",
     STATUS_LIGHT = "STATUS_LIGHT",
+    KEYSTORE = "KEYSTORE",
+
 }
 
 export const layerTypeFromIceId = (iceId: string): LayerType | null => {

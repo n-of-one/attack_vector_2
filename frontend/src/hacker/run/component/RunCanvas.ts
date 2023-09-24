@@ -62,8 +62,6 @@ class RunCanvas {
 
     init(userId: string, dispatch: Dispatch) {
 
-        console.log("Runcanvas.init")
-
         this.userId = userId
         this.dispatch = dispatch
 
@@ -92,7 +90,6 @@ class RunCanvas {
     }
 
     reset() {
-        console.log("Runcanvas.reset")
 
         if (this.canvas === null) {
             return
@@ -124,9 +121,6 @@ class RunCanvas {
     }
 
     loadScan(actionData: SiteAndScan) {
-
-        console.log("Runcanvas.loadScan")
-
 
         const scan = structuredClone(actionData.run)
         const site = structuredClone(actionData.site)

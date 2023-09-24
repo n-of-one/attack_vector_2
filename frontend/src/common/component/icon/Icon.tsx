@@ -9,7 +9,6 @@ import {
     NETWALK_ICE,
     OS,
     PASSWORD_ICE,
-    PICTURE,
     SCAN_BLOCK,
     TAR_ICE, STATUS_LIGHT,
     TANGLE_ICE,
@@ -17,7 +16,7 @@ import {
     TIMER_TRIGGER,
     TRACE_LOG,
     TRACER,
-    WORD_SEARCH_ICE
+    WORD_SEARCH_ICE, KEYSTORE
 } from "../../enums/LayerTypes";
 
 interface Props {
@@ -46,7 +45,6 @@ const iconFamily = (type: string) => {
     switch (type) {
         case OS:
         case TEXT:
-        case PICTURE:
         case LINK:
         case TRACER:
         case TRACE_LOG:
@@ -60,6 +58,7 @@ const iconFamily = (type: string) => {
         case TAR_ICE:
         case NETWALK_ICE:
         case WORD_SEARCH_ICE:
+        case KEYSTORE:
             return "glyphicon"
         case LOCK:
         case STATUS_LIGHT:

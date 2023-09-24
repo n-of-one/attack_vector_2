@@ -1,0 +1,9 @@
+# Common coding recipies - backend
+
+## Creating a new layer type
+
+1. start in the Frontend by adding a new layer type.
+2. Add the type to: `LayerType.kt` . Compiling will force you to add necessary code for the new type.
+3. Go back to the frontend.
+
+

@@ -53,11 +53,12 @@ export interface LayerDetails {
     time1Level5Hacker?: string   // Tar Ice layer
     time5Level10Hackers?: string // Tar Ice layer
 
-    appId: string
-    status: boolean
-    textForGreen: string
-    textForRed: string
+    appId?: string               // Status Light layer
+    status?: boolean             // Status Light layer
+    textForGreen?: string        // Status Light layer
+    textForRed?: string          // Status Light layer
 
+    iceId?: string               // Keystore layer
 
 }
 

@@ -50,7 +50,8 @@ export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
                 <LayerField key={key("id")} size="small" label="Layer id" value={layerObject.id} readOnly={true}
                             help="Unique ID of this layer. Used when layers refer to each other."/>
                 <LayerField key={key("name")} size="small" label="Layer name" value={layerObject.name} save={value => layerObject.saveName(value)}
-                            placeholder="As seen by hackers" help="When a hacker 'scans' or 'views' a node they will see the layers by this name."/>
+                            placeholder="As seen by hackers" help="When a hacker 'scans' or 'views' a node they will see the layers by this name.
+                            For ICE unique names help with passcodes"/>
                 {children}
                 <LayerField key={key("note")} size="large" label="Gm Note" value={layerObject.note} save={value => layerObject.saveNote(value)}
                             placeholder="" help="Players will never see this. Notes can help to understand the design of a site."/>

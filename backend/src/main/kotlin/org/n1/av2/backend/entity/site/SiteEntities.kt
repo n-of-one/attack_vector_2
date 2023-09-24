@@ -69,3 +69,7 @@ enum class SiteStateMessageType {
     INFO
 }
 
+fun findLayerById(layerId: String, nodes: List<Node>): Layer? {
+    val layers = nodes.flatMap { node -> node.layers }
+    return layers.find { layer -> layer.id == layerId }
+}

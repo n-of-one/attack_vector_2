@@ -10,9 +10,9 @@ const renderRemove = (layer: LayerDetails, remove: () => void) => {
         return null
     }
     return (
-        <span className="pull-right" style={{display: "block"}}>
+        <span className="pull-right">
             <SilentLink onClick={() => remove()}>
-                <Glyphicon name="glyphicon-remove" display="block"/>
+                <Glyphicon name="glyphicon-remove"/>
             </SilentLink>
         </span>
     )
@@ -23,6 +23,7 @@ interface Props {
     layer: LayerDetails,
     typeDisplay: string
 }
+
 export const LayerType = ({node, layer, typeDisplay}: Props) => {
 
     const remove = () => {
@@ -32,11 +33,11 @@ export const LayerType = ({node, layer, typeDisplay}: Props) => {
     return (
         <div className="row form-group layerFieldTopRow">
             <div className="col-lg-3 control-label layerLabel">Type</div>
-            <div className="col-lg-8">
-                <div className="strong layer_text_label text_gold d-flex justify-content-between">
-                    <span>{typeDisplay}</span>
-                    <span>{renderRemove(layer, remove)}</span>
-                </div>
+            <div className="col-lg-8 noRightPadding">
+                <span className="strong layer_text_label text_gold" style={{top: "7px", position: "relative"}}>{typeDisplay}</span>
+            </div>
+            <div className="col-lg-1 layerHelpColumn">
+                <span>{renderRemove(layer, remove)}</span>
             </div>
         </div>
     )

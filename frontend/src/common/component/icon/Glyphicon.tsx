@@ -2,16 +2,15 @@ import React from "react"
 import {
     CODE,
     CORE,
-    LINK,     MONEY, NETWALK_ICE,
+    LINK, MONEY, NETWALK_ICE,
     OS,
     PASSWORD_ICE,
-    PICTURE,
     SCAN_BLOCK, TAR_ICE,
     TANGLE_ICE,
     TEXT,
     TIMER_TRIGGER,
     TRACE_LOG,
-    TRACER, WORD_SEARCH_ICE
+    TRACER, WORD_SEARCH_ICE, KEYSTORE
 } from "../../enums/LayerTypes"
 
 
@@ -43,7 +42,7 @@ export const glyphiconFromType = (type: string) => {
     switch(type) {
         case OS : return "glyphicon-home"
         case TEXT : return "glyphicon-file"
-        case PICTURE : return "glyphicon-picture"
+        case KEYSTORE : return "glyphicon-briefcase"
         case LINK : return "glyphicon-link"
         case TRACER : return "glyphicon-transfer"
         case TRACE_LOG : return "glyphicon-erase"

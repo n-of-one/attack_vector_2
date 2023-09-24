@@ -17,6 +17,7 @@ import {LayerIceTarPanel} from "./type/panel/ice/LayerIceTarPanel";
 import {LayerStatusLightPanel} from "./type/panel/app/LayerStatusLightPanel";
 import {Icon} from "../../../../../common/component/icon/Icon";
 import {createSelector} from "@reduxjs/toolkit";
+import {LayerKeyStorePanel} from "./type/panel/app/LayerKeyStorePanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -46,6 +47,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerStatusLightPanel node={node} layer={layer}/>
         case LayerType.LOCK:
             return <LayerStatusLightPanel node={node} layer={layer}/>
+        case LayerType.KEYSTORE:
+            return <LayerKeyStorePanel node={node} layer={layer}/>
 
         default:
             return <div className="text">NodeDetailsPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>

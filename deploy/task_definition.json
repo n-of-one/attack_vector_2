@@ -1,9 +1,9 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:eu-west-1:000000000000:task-definition/demo_minimal:1",
+  "taskDefinitionArn": "arn:aws:ecs:eu-west-1:$AWS_ACCOUNT_ID:task-definition/demo_minimal:1",
   "containerDefinitions": [
     {
       "name": "demo",
-      "image": "000000000000.dkr.ecr.eu-west-1.amazonaws.com/av2:github-latest",
+      "image": "$AWS_ACCOUNT_ID.dkr.ecr.eu-west-1.amazonaws.com/av2:github-latest",
       "cpu": 0,
       "portMappings": [
         {
@@ -46,7 +46,7 @@
     }
   ],
   "family": "demo_minimal",
-  "executionRoleArn": "arn:aws:iam::000000000000:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::$AWS_ACCOUNT_ID:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
   "revision": 1,
   "volumes": [],
@@ -92,6 +92,6 @@
     "operatingSystemFamily": "LINUX"
   },
   "registeredAt": "2023-08-16T12:13:52.706Z",
-  "registeredBy": "arn:aws:iam::000000000000:user/0000",
+  "registeredBy": "arn:aws:iam::$AWS_ACCOUNT_ID:user/0000",
   "tags": []
 }

@@ -4,6 +4,7 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.ice.*
+import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
 import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
@@ -171,6 +172,7 @@ class NodeEntityService(
             LayerType.TIMER_TRIGGER -> TimerTriggerLayer(layerId, level, defaultName)
             LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
             LayerType.LOCK -> createStatusLightLayer(layerId,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
+            LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)
         }
     }
 
