@@ -3,6 +3,7 @@ import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {TangleRootState} from "../reducer/TangleRootReducer";
 import {HIDDEN} from "../../IceModel";
+import {IceTitle} from "../../common/IceTitle";
 
 export const TangleIceHome = () => {
 
@@ -17,12 +18,7 @@ export const TangleIceHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-12">
-                        <h4 className="text-success">
-                            <strong>
-                                Ice: <span className="text-info">Gaanth</span>&nbsp;<br/>
-                                Strength: <span className="text-info">{ice.strength}</span><br/>
-                            </strong>
-                        </h4>
+                        <IceTitle name="Gaanth" strength={ice.strength} />
                     </div>
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>

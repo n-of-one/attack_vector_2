@@ -3,7 +3,7 @@ import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {WordSearchPuzzle} from "./WordSearchPuzzle";
-import {IceTitle} from "../../../common/component/IceTitle";
+import {IceTitle} from "../../common/IceTitle";
 import {HIDDEN} from "../../IceModel";
 
 export const WordSearchHome = () => {

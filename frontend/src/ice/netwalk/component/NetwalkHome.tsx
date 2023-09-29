@@ -1,7 +1,7 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
-import {IceTitle} from "../../../common/component/IceTitle";
+import {IceTitle} from "../../common/IceTitle";
 import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
 import {netwalkCanvas} from "../canvas/NetwalkCanvas";
 import {HIDDEN} from "../../IceModel";
@@ -13,7 +13,6 @@ interface ImageLoadedProps {
     id: string,
     fileName: string
 }
-
 
 const imageLoaded = () => {
     netwalkCanvas.imageLoaded(12)

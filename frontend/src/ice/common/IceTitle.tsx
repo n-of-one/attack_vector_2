@@ -1,5 +1,5 @@
 import React from "react";
-import {IceStrength} from "../model/IceStrength";
+import {IceStrength} from "../../common/model/IceStrength";
 
 
 interface Props {

@@ -1,5 +1,6 @@
 import {AnyAction} from "redux";
 import {HIDDEN, VISIBLE} from "../../IceModel";
+import {IceStrength} from "../../../common/model/IceStrength";
 
 export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
 export const SERVER_TANGLE_ENTER = "SERVER_TANGLE_ENTER";
@@ -7,7 +8,7 @@ export const SERVER_TANGLE_POINT_MOVED = "SERVER_TANGLE_POINT_MOVED";
 
 export interface TangleIceState {
     layerId: string,
-    strength: string,
+    strength: IceStrength,
     points: TanglePoint[],
     lines: TangleLine[],
     uiState: string,
@@ -28,7 +29,7 @@ export interface TangleLine {
 
 export const defaultState: TangleIceState = {
     layerId: "",
-    strength: "AVERAGE",
+    strength: IceStrength.AVERAGE,
     uiState: HIDDEN,
     points: [],
     lines: []

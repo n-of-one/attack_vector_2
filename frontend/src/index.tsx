@@ -21,7 +21,7 @@ console.log("\nWelcome to _Attack Vector_" +
     "\n" +
     "\nUsing the browser console / dev-tools is not part of this game." +
     "\nYou don't need to do any real-life hacking to play this game." +
-    "\nReal-life hacking is against the spirit of this game." +
+    "\nReal-life hacking is against the spirit of this game. Please close the developer tools if you are seeing this in a LARP." +
     "\n" +
     "\n_Attack Vector_ is open source: https://github.com/n-of-one/attack_vector_2" +
     "\n ")
