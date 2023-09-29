@@ -39,8 +39,9 @@ class HackTerminalService(
 
         when (commandAction) {
             "move" -> commandMoveService.processCommand(runId, tokens, state)
-            "hack" -> commandHackService.process(runId, tokens, state)
+            "hack" -> commandHackService.processHackCommand(runId, tokens, state)
             "view" -> commandViewService.process(runId, state)
+            "connect" -> commandHackService.processConnectCommand(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
             else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
@@ -50,9 +51,10 @@ class HackTerminalService(
     private fun processHelp() {
         stompService.replyTerminalReceive(
                 "Command options:",
-                " [u]move[/] [ok]<network id>[/]     -- for example: [u]mv[ok] 00",
+                " [u]move[/] [ok]<network id>[/]     -- for example: [u]mv[ok] 01",
                 " [u]view",
-                " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 0",
+                " [u]connect[/] [primary]<layer>[/]          -- for example: [u]connect[primary] 1",
+                " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 1",
                 " [u]dc",
                 " [u]/share[/] [info]<user name>")
 //        if (environment.dev) {

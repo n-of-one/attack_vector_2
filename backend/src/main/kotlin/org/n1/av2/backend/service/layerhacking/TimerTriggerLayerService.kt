@@ -54,4 +54,8 @@ class TimerTriggerLayerService(
         stompService.toRun(event.runId, ServerActions.SERVER_COMPLETE_COUNTDOWN)
         tracingPatrollerService.activatePatroller(event.nodeId, event.userId, event.runId)
     }
+
+    fun connect(layer: TimerTriggerLayer) {
+        stompService.replyTerminalReceive("Access to UI denied")
+    }
 }

@@ -1,5 +1,6 @@
 package org.n1.av2.backend.service.layerhacking.app.auth
 
+import org.n1.av2.backend.entity.ice.IcePasswordService
 import org.n1.av2.backend.entity.ice.IceStatus
 import org.n1.av2.backend.entity.ice.IceStatusRepo
 import org.n1.av2.backend.entity.ice.determineIceType
@@ -23,9 +24,11 @@ import kotlin.jvm.optionals.getOrElse
 
 /**
  * Every implementation of ICE has an IceStatus. It represents the status of the ICE when users interact with it
- * through the IceApp.
+ * through the IceApp. Anyone can enter the password if they know it, bypassing the ICE.
  *
- * Password ICE is a bit special, as it ONLY has an IceStatus, but it also has a fixed password and optional password hint.
+ * Most ICE does not have a static password, so a password can only be retrieved from a keystore
+ *
+ * Password ICE is special in that it has a static password
  */
 
 @org.springframework.stereotype.Service
@@ -37,6 +40,7 @@ class AuthAppService(
     private val hackedUtil: HackedUtil,
     private val userIceHackingService: UserIceHackingService,
     private val currentUserService: CurrentUserService,
+    private val icePasswordService: IcePasswordService,
 ) {
 
     fun findOrCreateIceStatus(layer: PasswordIceLayer): IceStatus {
@@ -104,7 +108,8 @@ class AuthAppService(
     )
 
     private fun resolveForUser(password: String, iceStatus: IceStatus, layer: IceLayer) {
-        if (layer is PasswordIceLayer && layer.password == password) {
+        if (checkPassword(password, layer)) {
+            resolveHacked(iceStatus, password)
             val newStatus = iceStatus.copy(authorized = iceStatus.authorized + currentUserService.userId)
             iceStatusRepo.save(newStatus)
             stompService.reply(ServerActions.SERVER_AUTH_APP_PASSWORD_CORRECT, "")
@@ -122,18 +127,24 @@ class AuthAppService(
         }
     }
 
-
     private fun resolveForHacker(password: String, iceStatus: IceStatus, layer: IceLayer) {
         if (iceStatus.hackerAttempts.contains(password)) {
             resolveDuplicate(iceStatus, password)
         }
-        else if (layer is PasswordIceLayer && password == layer.password) {
+        else if (checkPassword(password, layer)) {
             resolveHacked(iceStatus, password)
         }
         else {
             resolveHackAttemptFailed(iceStatus, password)
         }
+    }
 
+    private fun checkPassword(password: String, layer: IceLayer ): Boolean {
+        if (layer is PasswordIceLayer && password == layer.password) {
+            return true
+        }
+
+        return icePasswordService.checkIcePassword(layer.id, password)
     }
 
     private fun resolveDuplicate(iceStatus: IceStatus, password: String) {

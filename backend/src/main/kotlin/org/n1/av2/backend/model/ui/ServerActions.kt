@@ -89,5 +89,6 @@ enum class ServerActions {
     SERVER_TAR_UPDATE,                  // sent to run when a tar ice has change (units hacked)
 
 
+    SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE UI
 
 }

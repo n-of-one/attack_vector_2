@@ -1,7 +1,9 @@
 package org.n1.av2.backend.service.site
 
+import org.n1.av2.backend.entity.ice.IcePasswordService
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
+import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
@@ -19,6 +21,7 @@ class SiteService(
     private val connectionEntityService: ConnectionEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
     private val iceService: IceService,
+    private val icePasswordService: IcePasswordService,
 ) {
 
     fun createSite(name: String): String {
@@ -62,6 +65,7 @@ class SiteService(
             val refreshedNode = node.copy(hacked = false)
             refreshedNode.layers.forEach { layer ->
                 if (layer is IceLayer) { layer.hacked = false }
+                if (layer is KeyStoreLayer) { icePasswordService.deleteIcePassword(layer.iceId) }
             }
 
             nodeEntityService.save(refreshedNode)
@@ -70,8 +74,4 @@ class SiteService(
 
         stompService.toSite(siteId, ServerActions.SERVER_REFRESH_ICE, null)
     }
-
-
-
-
 }

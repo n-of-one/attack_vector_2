@@ -40,6 +40,7 @@ class SyntaxHighlightingService(
         map["move"] = Syntax("u", "ok", "error s")
         map["view"] = Syntax("u", "error s")
         map["hack"] = Syntax("u", "primary", "error s")
+        map["connect"] = Syntax("u", "primary", "error s")
         map["dc"] = Syntax("u", "error s")
         map["/share"] = Syntax("u warn", "info", "error s")
 

@@ -1,16 +1,11 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import {LayerText} from "../../../../../../../../common/model/layer/LayerText"
 import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
 import {EditorState} from "../../../../../../../EditorRootReducer";
-import {avEncodedUrl} from "../../../../../../../../common/util/Util";
-import toast, {Toast} from "react-hot-toast";
-import QRCode from "react-qr-code";
 import {editorCanvas} from "../../../../../middle/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
-import {SilentLink} from "../../../../../../../../common/component/SilentLink";
 import {LayerKeyStore} from "../../../../../../../../common/model/layer/LayerKeystore";
 
 
@@ -28,21 +23,15 @@ export const LayerKeyStorePanel = ({node, layer}: Props) => {
     const dispatch = useDispatch()
     const keystore = new LayerKeyStore(layer, node, dispatch)
     const nodes = useSelector((state: EditorState) => state.nodes)
-    const options = deriveOptions(nodes)
+    const options = iceLayerOptions(nodes)
 
     const iceId = keystore.iceId
-    // const iceLayer = options.find(option => option.value === iceId)
-
-
-
-    const navigateToLayer = (iceId) ? () => {
+    const navigateToLayer = () => {
         const nodeId = iceId.split(":")[0]
         editorCanvas.selectNode(nodeId)
-        // dispatch({type: SELECT_LAYER, layerId: nodes[0].layers[1].id})
         dispatch({type: SELECT_LAYER, layerId: keystore.iceId})
-    } : undefined;
-
-
+    }
+    const navigateIfIceId = (iceId) ? navigateToLayer : undefined
 
     return (
         <LayerPanel typeDisplay="Keystore" layerObject={keystore}>
@@ -51,12 +40,8 @@ export const LayerKeyStorePanel = ({node, layer}: Props) => {
                                 options={options}
                                 save={value => keystore.saveIceId(value)}
                                 tooltipId="forIce" tooltipText="The ICE for which this keystore contains the password/key"
-                                navigate={navigateToLayer}
+                                navigate={navigateIfIceId}
             />
-
-            {/*<LayerField key={key("text")} size="large" label="Hacked text" value={text.text} save={value => text.saveText(value)}*/}
-            {/*            placeholder="* Data found: ..." help="This is the text displayed when a player hacks this layer.*/}
-            {/*                  It can be used to provide data, or to simulate that some effect has taken place."/>*/}
         </LayerPanel>
     )
 }
@@ -67,8 +52,7 @@ type Option = {
     text: string,
 }
 
-
-const deriveOptions = (nodes: Array<NodeI>): Option[] => {
+const iceLayerOptions = (nodes: Array<NodeI>): Option[] => {
     const iceLayers = nodes
         .map(node => {
             return node.layers.map(layer => { return {networkId: node.networkId, layer: layer}})
