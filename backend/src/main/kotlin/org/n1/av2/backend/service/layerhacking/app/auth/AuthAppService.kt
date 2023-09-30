@@ -83,7 +83,7 @@ class AuthAppService(
         val hint = if (layer is PasswordIceLayer) layer.hint else null
         val iceEnter = IceAppEnter(type, layer.strength, hint, iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, iceStatus.hacked)
 
-        stompService.reply(ServerActions.SERVER_AUTH_APP_ENTER, iceEnter)
+        stompService.reply(ServerActions.SERVER_AUTH_ENTER, iceEnter)
         if (userType == UserType.HACKER) {
             userIceHackingService.enter(iceId)
         }
@@ -112,7 +112,7 @@ class AuthAppService(
             resolveHacked(iceStatus, password)
             val newStatus = iceStatus.copy(authorized = iceStatus.authorized + currentUserService.userId)
             iceStatusRepo.save(newStatus)
-            stompService.reply(ServerActions.SERVER_AUTH_APP_PASSWORD_CORRECT, "")
+            stompService.reply(ServerActions.SERVER_AUTH_PASSWORD_CORRECT, "")
 
         } else {
             val timeOutSeconds = calculateTimeOutSeconds(iceStatus.attemptCount)
@@ -123,7 +123,7 @@ class AuthAppService(
             iceStatusRepo.save(newStatus)
             val showHint = showHint(newStatus)
             val result = UiStateUpdate(newStatus.lockedUntil, iceStatus.hackerAttempts, showHint, iceStatus.hacked)
-            stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_APP_UPDATE, result)
+            stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
         }
     }
 
@@ -152,7 +152,7 @@ class AuthAppService(
 
         val showHint = showHint(iceStatus)
         val result = UiStateUpdate(iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, iceStatus.hacked)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_APP_UPDATE, result)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
     }
 
     private fun resolveHacked(iceStatus: IceStatus, password: String) {
@@ -163,7 +163,7 @@ class AuthAppService(
 
         val showHint = showHint(newStatus)
         val result = UiStateUpdate(time.longAgo(), iceStatus.hackerAttempts, showHint, true)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_APP_UPDATE, result)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
 
         if (!iceStatus.hacked) hackedUtil.iceHacked(iceStatus.layerId, 70)
     }
@@ -181,7 +181,7 @@ class AuthAppService(
         stompService.replyNeutral("Password incorrect: ${password}")
         val showHint = showHint(newStatus)
         val result = UiStateUpdate(newStatus.lockedUntil, newStatus.hackerAttempts, showHint, newStatus.hacked)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_APP_UPDATE, result)
+        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
     }
 
     private fun showHint(iceStatus: IceStatus): Boolean {

@@ -7,15 +7,15 @@ import {Login} from "./login/Login"
 import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/util/Notification";
-import {IceRoot} from "./ice/IceRoot";
+import {IceRoot} from "./standalone/ice/IceRoot";
 import {BannerPage} from "./login/Sso";
 import {RequiresRole} from "./common/user/RequiresRole";
 import {larp} from "./common/Larp";
-import {StatusLightRoot} from "./widget/status_light/StatusLightRoot";
+import {StatusLightRoot} from "./standalone/widget/statusLight/StatusLightRoot";
 import {TopLevelError} from "./common/component/TopLevelError";
 import {decodeAppReference} from "./common/util/Util";
-import {AppRoot} from "./app/AppRoot";
-import {IceSelector} from "./ice/IceSelector";
+import {AppRoot} from "./standalone/app/AppRoot";
+import {IceSelector} from "./standalone/ice/IceSelector";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +

@@ -72,9 +72,9 @@ enum class ServerActions {
 
     SERVER_STATUS_LIGHT_UPDATE,         // sent to app and widget when loaded or status changed
 
-    SERVER_AUTH_APP_ENTER,              // sent to hacker or user entering the Ice, first message of Ice window
-    SERVER_AUTH_APP_UPDATE,             // sent to site to inform of hacked status update
-    SERVER_AUTH_APP_PASSWORD_CORRECT,   // sent to user to inform the IceApp that the password/passcode was correct
+    SERVER_AUTH_ENTER,                  // sent to hacker or user entering the Ice, first message of Ice window
+    SERVER_AUTH_UPDATE,                 // sent to site to inform of hacked status update
+    SERVER_AUTH_PASSWORD_CORRECT,       // sent to user to inform the Auth app that the password/passcode was correct
 
     SERVER_TANGLE_ENTER,                // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
