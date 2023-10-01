@@ -2,16 +2,14 @@ package org.n1.av2.backend.entity.run
 
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.entity.user.SYSTEM_USER
+import org.n1.av2.backend.entity.user.SYSTEM_USEREntity
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
 
 @Service
 class HackerStateEntityService(
@@ -60,7 +58,7 @@ class HackerStateEntityService(
     }
 
     fun retrieveForCurrentUser(): HackerState {
-        if (currentUserService.userId == SYSTEM_USER.id) {
+        if (currentUserService.userId == SYSTEM_USEREntity.id) {
             error("Trying to perform action for current user assuming it is a player, but current user SYSTEM for a system event")
         }
         return retrieve(currentUserService.userId)

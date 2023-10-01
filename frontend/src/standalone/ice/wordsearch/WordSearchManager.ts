@@ -1,7 +1,5 @@
-import {Schedule} from "../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../GenericIceManager";
-import {Dispatch, Store} from "redux";
+import {GenericIceManager} from "../common/GenericIceManager";
 import {LETTER_CORRECT, LETTER_CORRECT_HIGHLIGHT, WORD_SEARCH_BEGIN} from "./reducer/WordSearchStateReducer";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {wordSearchCanvas} from "./canvas/WordSearchCanvas";
@@ -11,18 +9,7 @@ import {WordSearchRootState} from "./reducer/WordSearchRootReducer";
 
 class WordSearchManager extends GenericIceManager {
 
-    dispatch: Dispatch = null as unknown as Dispatch
-    schedule: Schedule = null as unknown as Schedule
-
     quickPlaying = true
-
-    init(store: Store, nextUrl: string | null) {
-        this.store = store;
-        this.nextUrl = nextUrl
-        this.dispatch = store.dispatch;
-        this.schedule = new Schedule(store.dispatch);
-    }
-
 
     enter(iceId: string, data: ServerEnterIceWordSearch) {
         if (data.hacked) {

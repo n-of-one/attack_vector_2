@@ -28,7 +28,7 @@ class UserService(
         stompService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
     }
 
-    private fun filteredUsers(): List<User> {
+    private fun filteredUsers(): List<UserEntity> {
         val all = userEntityService.findAll()
         if (!SecurityContextHolder.getContext().authentication.authorities.contains(ROLE_USER_MANAGER)) {
             return all.filter { it.type == UserType.HACKER || it.type == UserType.HACKER_MANAGER }
@@ -42,12 +42,12 @@ class UserService(
         select(user.id)
     }
 
-    fun create(name: String, externalId: String? = null, type: UserType = UserType.HACKER, hacker: Hacker? = null): User {
+    fun create(name: String, externalId: String? = null, type: UserType = UserType.HACKER, hacker: Hacker? = null): UserEntity {
         if (userEntityService.findByNameIgnoreCase(name) != null) {
             throw ValidationException("User with name $name already exists.")
         }
         val userId = userEntityService.createUserId()
-        val userInput = User(
+        val userEntityInput = UserEntity(
             id = userId,
             externalId = externalId,
             email = "",
@@ -55,7 +55,7 @@ class UserService(
             type = type,
             hacker = hacker
         )
-        return userEntityService.save(userInput)
+        return userEntityService.save(userEntityInput)
     }
 
     fun select(userId: String) {
@@ -65,7 +65,7 @@ class UserService(
 
     fun edit(userId: String, field: String, value: String) {
         val user = userEntityService.getById(userId)
-        val editedUser: User = when (field) {
+        val editedUserEntity: UserEntity = when (field) {
             "name" -> user.copy(name = value)
             "email" -> user.copy(email = value)
             "type" -> changeType(user, value)
@@ -77,24 +77,24 @@ class UserService(
             "skillArchitect" -> changeSkill(user, field, value)
             else -> error("Unknown user property: $field")
         }
-        userEntityService.save(editedUser)
-        stompService.reply(ServerActions.SERVER_USER_DETAILS, editedUser)
+        userEntityService.save(editedUserEntity)
+        stompService.reply(ServerActions.SERVER_USER_DETAILS, editedUserEntity)
         overview()
     }
 
-    private fun changeType(user: User, newType: String): User {
+    private fun changeType(userEntity: UserEntity, newType: String): UserEntity {
         if (newType != UserType.HACKER.name) {
-            return user.copy(type = UserType.valueOf(newType))
+            return userEntity.copy(type = UserType.valueOf(newType))
         }
-        if (user.hacker != null) {
-            return user.copy(type = UserType.valueOf(newType))
+        if (userEntity.hacker != null) {
+            return userEntity.copy(type = UserType.valueOf(newType))
         }
         val newHacker = Hacker(HackerIcon.BEAR, HackerSkill(1, 0, 0), "anonymous")
-        return user.copy(type = UserType.valueOf(newType), hacker = newHacker)
+        return userEntity.copy(type = UserType.valueOf(newType), hacker = newHacker)
     }
 
-    private fun changeSkill(user: User, field: String, value: String): User {
-        val skill = user.hacker?.skill ?: error("User is not a hacker")
+    private fun changeSkill(userEntity: UserEntity, field: String, value: String): UserEntity {
+        val skill = userEntity.hacker?.skill ?: error("User is not a hacker")
         if (!value.isInt()) throw ValidationException("Please enter a whole number for skill value: $field")
         val newSkillValue = value.toInt()
         if (newSkillValue < 0 || newSkillValue > 5) throw ValidationException("Skill value must be between 0 and 5: $field")
@@ -105,8 +105,8 @@ class UserService(
             "skillArchitect" -> skill.copy(architect = newSkillValue)
             else -> error("Unknown skill property: $field")
         }
-        val newHacker = user.hacker.copy(skill = newSkill)
-        return user.copy(hacker = newHacker)
+        val newHacker = userEntity.hacker.copy(skill = newSkill)
+        return userEntity.copy(hacker = newHacker)
     }
 
     fun delete(userId: String) {
@@ -117,8 +117,8 @@ class UserService(
         stompService.replyNeutral("User deleted")
     }
 
-    fun update(updatedUser: User): User {
-        return userEntityService.save(updatedUser)
+    fun update(updatedUserEntity: UserEntity): UserEntity {
+        return userEntityService.save(updatedUserEntity)
     }
 
 }

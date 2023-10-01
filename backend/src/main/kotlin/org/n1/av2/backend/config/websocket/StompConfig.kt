@@ -1,7 +1,7 @@
 package org.n1.av2.backend.config.websocket
 
 import org.n1.av2.backend.entity.user.ROLE_USER
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.springframework.context.annotation.Configuration
@@ -55,10 +55,10 @@ class StompConfig(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
                 attributes: Map<String, Any>
             ): Principal {
-                val user = User(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, "")
+                val userEntity = UserEntity(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, "")
                 val connectionId = connectionUtil.create()
-                val name = "${user.name}:${connectionId}"
-                return UserPrincipal(name, connectionId, user, ConnectionType.WS_UNRESTRICTED)
+                val name = "${userEntity.name}:${connectionId}"
+                return UserPrincipal(name, connectionId, userEntity, ConnectionType.WS_UNRESTRICTED)
             }
         }
         registry
@@ -77,12 +77,12 @@ class StompConfig(
 
                 val authentication = SecurityContextHolder.getContext().authentication
 
-                if (authentication !is UserPrincipal || !authentication.user.type.authorities.contains(ROLE_USER)) {
+                if (authentication !is UserPrincipal || !authentication.userEntity.type.authorities.contains(ROLE_USER)) {
                     // signal to the client that they need to log in first.
                     return UserPrincipal(
                         _name = "not-logged-in",
                         connectionId = connectionUtil.create(),
-                        user = User(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, ""),
+                        userEntity = UserEntity(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, ""),
                         type = ConnectionType.NONE,
                     )
                 }

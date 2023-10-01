@@ -7,6 +7,7 @@ export interface AuthAppRootState {
     currentPage: string,
     info: AuthAppInfo
     ui: AuthAppUi,
+    layerId: string,
 }
 
 export const authRootReducer = combineReducers<AuthAppRootState>(
@@ -14,5 +15,6 @@ export const authRootReducer = combineReducers<AuthAppRootState>(
         currentPage: pageReducer,
         info: authInfoReducer,
         ui: authUiReducer,
+        layerId: (state = "") => state,
     }
 )

@@ -7,6 +7,6 @@ interface Props {
 
 export const IceUrlFieldWithQr = ({layerId}: Props) => {
 
-    return <UrlFieldWithQr name="Hacker URL" type="iceLayer" id={layerId} description="Hacker link to ICE"/>
+    return <UrlFieldWithQr name="Hacker URL" type="ice" layerId={layerId} description="Hacker link to ICE"/>
 
 }

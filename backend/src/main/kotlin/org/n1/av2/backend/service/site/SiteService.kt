@@ -49,7 +49,7 @@ class SiteService(
     }
 
     fun removeSite(siteId: String, userPrincipal: UserPrincipal) {
-        stompService.toSite(siteId, ServerActions.SERVER_ERROR, ServerFatal(false, "Site removed by ${userPrincipal.user.name}, please close browser window."))
+        stompService.toSite(siteId, ServerActions.SERVER_ERROR, ServerFatal(false, "Site removed by ${userPrincipal.userEntity.name}, please close browser window."))
         sitePropertiesEntityService.delete(siteId)
         layoutEntityService.delete(siteId)
         nodeEntityService.deleteAllForSite(siteId)
@@ -65,7 +65,7 @@ class SiteService(
             val refreshedNode = node.copy(hacked = false)
             refreshedNode.layers.forEach { layer ->
                 if (layer is IceLayer) { layer.hacked = false }
-                if (layer is KeyStoreLayer) { icePasswordService.deleteIcePassword(layer.iceId) }
+                if (layer is KeyStoreLayer) { icePasswordService.deleteIcePassword(layer.iceLayerId) }
             }
 
             nodeEntityService.save(refreshedNode)

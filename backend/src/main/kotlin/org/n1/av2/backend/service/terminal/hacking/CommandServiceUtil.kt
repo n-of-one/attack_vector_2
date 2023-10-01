@@ -11,6 +11,5 @@ class CommandServiceUtil(
     fun findBlockingIceLayer(node: Node, runId: String): Layer? {
         val iceLayers = node.layers.filterIsInstance<IceLayer>()
         return iceLayers.findLast { !it.hacked }
-
     }
 }

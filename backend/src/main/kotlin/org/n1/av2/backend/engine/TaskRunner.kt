@@ -1,7 +1,7 @@
 package org.n1.av2.backend.engine
 
 import org.n1.av2.backend.config.websocket.ConnectionType
-import org.n1.av2.backend.entity.user.SYSTEM_USER
+import org.n1.av2.backend.entity.user.SYSTEM_USEREntity
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
@@ -86,7 +86,7 @@ class TaskEngine(
         val task = queue.take()
         if (!running) return // this will happen if fun terminate() unblocked the queue.
         try {
-            currentUserService.set(task.userPrincipal.user)
+            currentUserService.set(task.userPrincipal.userEntity)
             SecurityContextHolder.getContext().authentication = task.userPrincipal
             task.action()
         } catch (exception: Exception) {
@@ -100,13 +100,13 @@ class TaskEngine(
             if (exception is FatalException) {
                 val event = ServerFatal(false, exception.message ?: exception.javaClass.name)
                 stompService.reply(ServerActions.SERVER_ERROR, event)
-                logger.warn("${task.userPrincipal.user.name}: ${exception}")
+                logger.warn("${task.userPrincipal.userEntity.name}: ${exception}")
                 return
             }
             if (!currentUserService.isSystemUser) {
                 val event = ServerFatal(true, exception.message ?: exception.javaClass.name)
                 stompService.reply(ServerActions.SERVER_ERROR, event)
-                logger.info("User: ${task.userPrincipal.user.name} - task triggered exception. ", exception)
+                logger.info("User: ${task.userPrincipal.userEntity.name} - task triggered exception. ", exception)
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)
             }
@@ -124,7 +124,7 @@ class TaskEngine(
     @PreDestroy
     fun terminate() {
         this.running = false
-        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USER, ConnectionType.NONE)
+        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USEREntity, ConnectionType.NONE)
 
         // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
         this.queue.add(Task({}, userPrincipal))

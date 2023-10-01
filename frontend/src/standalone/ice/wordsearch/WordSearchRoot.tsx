@@ -9,11 +9,11 @@ import {initGenericServerActions} from "../../../hacker/server/GenericServerActi
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {wordSearchManager} from "./WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
-import {ice} from "../IceModel";
+import {ice} from "../../StandaloneGlobals";
 
 interface Props {
     iceId: string
-    nextUrl: string | null
+    externalHack: boolean,
 }
 export class WordSearchRoot extends Component<Props> {
 
@@ -38,7 +38,7 @@ export class WordSearchRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: ice.id})
         });
 
-        wordSearchManager.init(this.store, props.nextUrl);
+        wordSearchManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions()
         initWordSearchServerActions(this.store)

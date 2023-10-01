@@ -5,10 +5,11 @@ import {TERMINAL_CLEAR} from "../../../../common/terminal/TerminalReducer"
 import {formatTimeInterval} from "../../../../common/util/Util";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {PasswordRootState} from "../reducer/PasswordRootReducer";
-import {HIDDEN, ice,} from "../../IceModel";
+import {HIDDEN} from "../../common/IceModel";
 import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../../../app/auth/reducer/AuthUiReducer";
 import {larp} from "../../../../common/Larp";
 import {PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
+import {ice} from "../../../StandaloneGlobals";
 
 
 

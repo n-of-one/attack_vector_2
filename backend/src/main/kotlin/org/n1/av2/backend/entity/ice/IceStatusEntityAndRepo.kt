@@ -10,12 +10,11 @@ import java.time.ZonedDateTime
 
 @Document
 data class IceStatus(
-    val id: String,
+    val id: String, // iceId
     @Indexed val layerId: String,
     val hackerAttempts: List<String>,  // only attempts by hackers are tracked
     val attemptCount: Int = 0,         // but all attempts count for the purpose of locking
     val lockedUntil: ZonedDateTime,
-    val hacked : Boolean = false,
     val authorized: List<String> = emptyList() // userIds of users who are authorized to pass
 )
 

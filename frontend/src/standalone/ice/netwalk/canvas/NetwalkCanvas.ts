@@ -4,7 +4,7 @@ import {fabric} from "fabric";
 import {NetwalkCellDisplay, PADDING_LEFT, PADDING_TOP} from "./NetwalkCellDisplay";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {NetwalkCell, CellType, NetwalkRotateUpdate, Point, ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
-import {ice} from "../../IceModel";
+import {ice} from "../../../StandaloneGlobals";
 
 type CellById = { [id: string]: NetwalkCellDisplay }
 

@@ -5,7 +5,7 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.ui.NotyMessage
@@ -110,7 +110,7 @@ class RunService(
 
         val nodeScans = scanInfoService.createNodeScans(siteProperties.siteId)
 
-        val user = currentUserService.user
+        val user = currentUserService.userEntity
 
         val runId = createRun(siteProperties.siteId, nodeScans, user)
 
@@ -121,11 +121,11 @@ class RunService(
         scanInfoService.sendScanInfosOfPlayer() // to update the scans in the home screen
     }
 
-    fun createRun(siteId: String, nodeScanById: MutableMap<String, NodeScan>, user: User): String {
+    fun createRun(siteId: String, nodeScanById: MutableMap<String, NodeScan>, userEntity: UserEntity): String {
         val runId = runEntityService.createRunId()
 
-        val run = runEntityService.create(runId, siteId, nodeScanById, user.id)
-        userRunLinkEntityService.createUserScan(run.runId, user)
+        val run = runEntityService.create(runId, siteId, nodeScanById, userEntity.id)
+        userRunLinkEntityService.createUserScan(run.runId, userEntity)
 
         return run.runId
     }

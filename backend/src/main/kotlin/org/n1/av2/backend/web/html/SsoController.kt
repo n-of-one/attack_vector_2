@@ -43,10 +43,10 @@ class SsoController(
         return ""
     }
 
-    private fun getOrCreateUser(hackerInfo: FrontierHackerInfo): User {
-        val existingUser: User? = userEntityService.findByExternalId(hackerInfo.id)
-        if (existingUser != null) {
-            return existingUser
+    private fun getOrCreateUser(hackerInfo: FrontierHackerInfo): UserEntity {
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(hackerInfo.id)
+        if (existingUserEntity != null) {
+            return existingUserEntity
         }
 
         if (hackerInfo.isGm) {
@@ -64,17 +64,17 @@ class SsoController(
         return userService.create(name, hackerInfo.id, UserType.HACKER, hacker)
     }
 
-    private fun updateUserInfo(user: User, hackerInfo: FrontierHackerInfo): User {
-        if (hackerInfo.isGm) return user
+    private fun updateUserInfo(userEntity: UserEntity, hackerInfo: FrontierHackerInfo): UserEntity {
+        if (hackerInfo.isGm) return userEntity
 
-        val hacker = user.hacker!!
+        val hacker = userEntity.hacker!!
         val skills = hackerInfo.skills!!
 
         val updatedHacker = hacker.copy(
             characterName = hackerInfo.characterName!!,
             skill = HackerSkill(hacker = skills.hacker, elite = skills.elite, architect = skills.architect),
         )
-        val updatedUser = user.copy(hacker = updatedHacker)
+        val updatedUser = userEntity.copy(hacker = updatedHacker)
         return userService.update(updatedUser)
     }
 

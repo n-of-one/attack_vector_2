@@ -8,13 +8,11 @@ import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {authRootReducer, AuthAppRootState} from "./reducer/AuthRootReducer";
 import {initAuthServerActions} from "./AuthServerActionProcessor";
 import {AuthContainer} from "./component/AuthContainer";
-import {ice} from "../../ice/IceModel";
-import {app} from "../AppId";
+import {ice, layer} from "../../StandaloneGlobals";
 
 interface Props {
     iceId: string
-    appId: string
-    nextUrl: string
+    layerId: string
 }
 
 export class AuthRoot extends Component<Props> {
@@ -24,7 +22,7 @@ export class AuthRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        app.id = props.appId
+        layer.id = props.layerId
 
         const preLoadedState = {currentPage: "iceApp"}
 
@@ -44,7 +42,7 @@ export class AuthRoot extends Component<Props> {
 
         terminalManager.init(this.store)
         initGenericServerActions()
-        initAuthServerActions(props.nextUrl)
+        initAuthServerActions()
 
         document.body.style.backgroundColor = "#333";
     }

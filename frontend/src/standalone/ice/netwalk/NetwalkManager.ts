@@ -1,7 +1,5 @@
-import {Schedule} from "../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../GenericIceManager";
-import {Dispatch, Store} from "redux";
+import {GenericIceManager} from "../common/GenericIceManager";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {netwalkCanvas} from "./canvas/NetwalkCanvas";
 import {NetwalkRotateUpdate, ServerEnterIceNetwalk} from "./NetwalkServerActionProcessor";
@@ -10,18 +8,9 @@ import {NETWALK_BEGIN} from "./reducer/NetwalkStateReducer";
 
 class NetwalkManager extends GenericIceManager {
 
-    dispatch: Dispatch = null as unknown as Dispatch
-    schedule: Schedule = null as unknown as Schedule
 
     quickPlaying = false
-    nextUrl: string | null = null
 
-    init(store: Store, nextUrl: string | null) {
-        this.store = store;
-        this.nextUrl = nextUrl
-        this.dispatch = store.dispatch;
-        this.schedule = new Schedule(store.dispatch);
-    }
 
     enter(data: ServerEnterIceNetwalk) {
         netwalkCanvas.init(data, this.dispatch, this.store)

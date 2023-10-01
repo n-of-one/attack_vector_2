@@ -1,10 +1,8 @@
-import {Schedule} from "../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../GenericIceManager";
+import {GenericIceManager} from "../common/GenericIceManager";
 import {tangleIceCanvas} from "./canvas/TangleIceCanvas";
 import {notify} from "../../../common/util/Notification";
 import {delay} from "../../../common/util/Util";
-import {Dispatch, Store} from "redux";
 import {ICE_TANGLE_BEGIN, TangleLine, TanglePoint} from "./reducer/TangleIceReducer";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 
@@ -25,16 +23,6 @@ export interface TanglePointMoved {
 
 class TangleIceManager extends GenericIceManager {
     quickPlaying = false
-
-    dispatch: Dispatch = null as unknown as Dispatch
-    schedule: Schedule = null as unknown as Schedule
-
-    init(store: Store, nextUrl: string | null) {
-        this.store = store;
-        this.nextUrl = nextUrl
-        this.dispatch = store.dispatch;
-        this.schedule = new Schedule(store.dispatch);
-    }
 
     enter(puzzle: TanglePuzzle) {
         if (puzzle.hacked) {

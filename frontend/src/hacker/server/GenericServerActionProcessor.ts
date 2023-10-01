@@ -32,4 +32,5 @@ export const initGenericServerActions = () => {
         const type = data.recoverable ? 'error' : 'fatal'
         notify({type: type, message: data.message})
     })
+
 }

@@ -14,7 +14,7 @@ import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
 import {Site} from "../run/reducer/SiteReducer"
 import {HackerPresence} from "../run/reducer/HackersReducer"
 import {Timings} from "../../common/model/Ticks"
-import {delayTicks, avEncodedPath} from "../../common/util/Util"
+import {delayTicks, avEncodedUrl} from "../../common/util/Util"
 import {
     SERVER_FLASH_PATROLLER,
     SERVER_PATROLLER_LOCKS_HACKER,
@@ -40,6 +40,8 @@ export const SERVER_UPDATE_NODE_STATUS = "SERVER_UPDATE_NODE_STATUS"
 export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
 
 export const SERVER_REDIRECT_HACK_ICE = "SERVER_REDIRECT_HACK_ICE"
+export const SERVER_REDIRECT_CONNECT_ICE = "SERVER_REDIRECT_CONNECT_ICE"
+export const SERVER_REDIRECT_CONNECT_APP = "SERVER_REDIRECT_CONNECT_APP"
 
 /** Event to ignore while waiting for the scan full result */
 export const WAITING_FOR_SCAN_IGNORE_LIST =
@@ -142,7 +144,16 @@ interface RemovePatrollerAction {
 }
 
 interface RedirectHackIce {
-    redirectId: string
+    iceId: string
+}
+
+interface RedirectConnectIce {
+    layerId: string
+}
+
+interface RedirectConnectApp {
+    layerId: string,
+    type: string
 }
 
 export const initRunServerActions = (store: Store) => {
@@ -247,8 +258,13 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
-        const param = avEncodedPath(data.redirectId)
-        window.open(`/x/${param}`, param)
+        const url = avEncodedUrl(`ice/siteHack/${data.iceId}`)
+        window.open(url)
+    })
+
+    webSocketConnection.addAction(SERVER_REDIRECT_CONNECT_ICE, (data: RedirectConnectIce) => {
+        const url = avEncodedUrl(`app/auth/${data.layerId}`)
+        window.open(url)
     })
 
     webSocketConnection.addAction(SERVER_NODE_HACKED, (data: NodeHacked) => {
@@ -277,4 +293,8 @@ export const initRunServerActions = (store: Store) => {
         runCanvas.removePatroller(data.patrollerId)
     })
 
+    webSocketConnection.addAction(SERVER_REDIRECT_CONNECT_APP, (data: RedirectConnectApp) => {
+        const url = avEncodedUrl(`app/${data.type}/${data.layerId}`)
+        window.open(url)
+    })
 }

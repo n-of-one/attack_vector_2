@@ -14,7 +14,6 @@ data class TangleIceStatus(
     val originalPoints: MutableList<TanglePoint>,
     val points: MutableList<TanglePoint>,
     val lines: List<TangleLine>,
-    val hacked: Boolean = false,
 )
 
 data class TanglePoint(val id: String, val x: Int, val y: Int)

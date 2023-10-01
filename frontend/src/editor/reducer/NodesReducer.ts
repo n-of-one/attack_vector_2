@@ -58,7 +58,7 @@ export interface LayerDetails {
     textForGreen?: string        // Status Light layer
     textForRed?: string          // Status Light layer
 
-    iceId?: string               // Keystore layer
+    iceLayerId?: string          // Keystore layer
 
 }
 

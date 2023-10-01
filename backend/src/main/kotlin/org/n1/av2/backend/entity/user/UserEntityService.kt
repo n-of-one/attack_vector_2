@@ -12,11 +12,11 @@ class UserEntityService(
 ) {
 
 
-    fun findByNameIgnoreCase(userName: String): User? {
+    fun findByNameIgnoreCase(userName: String): UserEntity? {
         return userRepo.findByNameIgnoreCase(userName)
     }
 
-    fun getByName(userName: String): User {
+    fun getByName(userName: String): UserEntity {
         return findByNameIgnoreCase(userName) ?: throw UsernameNotFoundException("Username not found: ${userName}")
     }
 
@@ -54,34 +54,34 @@ class UserEntityService(
         )
         else null
 
-        val newUser = User(
+        val newUserEntity = UserEntity(
             name = userName,
             type = type,
             id = createUserId(),
             hacker = hacker,
             email = email,
         )
-        userRepo.save(newUser)
+        userRepo.save(newUserEntity)
     }
 
     fun createUserId(): String {
-        fun findExisting(candidate: String): Optional<User> {
+        fun findExisting(candidate: String): Optional<UserEntity> {
             return userRepo.findById(candidate)
         }
 
         return createId("user", ::findExisting)
     }
 
-    fun getById(userId: String): User {
+    fun getById(userId: String): UserEntity {
         return userRepo.findById(userId).orElseGet { error("${userId} not found") }
     }
 
-    fun findAll(): List<User> {
+    fun findAll(): List<UserEntity> {
         return userRepo.findAll().toList()
     }
 
-    fun save(user: User): User {
-        return userRepo.save(user)
+    fun save(userEntity: UserEntity): UserEntity {
+        return userRepo.save(userEntity)
     }
 
     fun delete(userId: String) {
@@ -89,7 +89,7 @@ class UserEntityService(
         userRepo.delete(user)
     }
 
-    fun findByExternalId(externalId: String): User? {
+    fun findByExternalId(externalId: String): UserEntity? {
         return userRepo.findByExternalId(externalId)
     }
 

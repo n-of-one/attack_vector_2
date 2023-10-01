@@ -70,7 +70,7 @@ const updateDiscoveredNodes = (scan: Scan, probeResultConnections: ProbeResultCo
     let intermediateNodeScanById = scan.nodeScanById;
 
     Object.entries(probeResultConnections.nodeStatusById).forEach(([nodeId, status]) => {
-        intermediateNodeScanById = updateNodeScanById(intermediateNodeScanById, nodeId, status)
+        intermediateNodeScanById = updateNodeScanById(intermediateNodeScanById, nodeId, status as NodeScanStatus)
     })
     return {...scan, nodeScanById: intermediateNodeScanById};
 };

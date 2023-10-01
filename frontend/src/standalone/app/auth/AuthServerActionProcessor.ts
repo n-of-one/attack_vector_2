@@ -1,5 +1,5 @@
 import {IceStrength} from "../../../common/model/IceStrength";
-import {IceType} from "../../ice/IceModel";
+import {IceType} from "../../ice/common/IceModel";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {avEncodedUrl} from "../../../common/util/Util";
 
@@ -26,9 +26,17 @@ export interface AuthStateUpdate {
     showHint: boolean,
 }
 
-export const initAuthServerActions = (nextUrl: string) => {
-    webSocketConnection.addAction(SERVER_AUTH_PASSWORD_CORRECT, (_data: any) => {
-        document.location.href = avEncodedUrl(nextUrl)
+interface AuthSuccess {
+    path: string | null
+}
+
+export const initAuthServerActions = () => {
+    webSocketConnection.addAction(SERVER_AUTH_PASSWORD_CORRECT, (data: AuthSuccess) => {
+        setTimeout(() => {
+            if (data.path) {
+                document.location.href = avEncodedUrl(data.path)
+            }
+        }, 2000)
     })
 
 }

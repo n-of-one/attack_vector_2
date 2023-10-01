@@ -6,7 +6,6 @@ import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.user.CurrentUserService
-import org.n1.av2.backend.util.nodeIdFromLayerId
 
 
 @org.springframework.stereotype.Service
@@ -20,8 +19,7 @@ class HackedUtil(
     data class NodeHacked(val nodeId: String, val delay: Int)
 
     fun iceHacked(layerId: String, delay: Int) {
-        val nodeId = nodeIdFromLayerId(layerId)
-        val node = nodeEntityService.getById(nodeId)
+        val node = nodeEntityService.findByLayerId(layerId)
         iceHacked(layerId, node, delay)
     }
 

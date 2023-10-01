@@ -1,4 +1,5 @@
 export enum IceStrength {
+    UNKNOWN = "UNKNOWN",
     VERY_WEAK= "VERY_WEAK",
     WEAK = "WEAK",
     AVERAGE = "AVERAGE",

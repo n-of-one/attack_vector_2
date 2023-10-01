@@ -1,7 +1,5 @@
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer"
-import {Schedule} from "../../../common/util/Schedule"
-import {Dispatch, Store} from "redux"
-import {GenericIceManager} from "../GenericIceManager"
+import {GenericIceManager} from "../common/GenericIceManager"
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer"
 import {terminalManager} from "../../../common/terminal/TerminalManager"
 import {ICE_PASSWORD_BEGIN} from "./reducer/PasswordReducer";
@@ -10,17 +8,7 @@ import {AuthEnter, AuthStateUpdate} from "../../app/auth/AuthServerActionProcess
 
 class PasswordIceManager extends GenericIceManager {
 
-    dispatch: Dispatch = null as unknown as Dispatch
-    schedule: Schedule = null as unknown as Schedule
-
     quickPlaying = false
-
-    init(store: Store, nextUrl: string | null) {
-        this.store = store
-        this.nextUrl = nextUrl
-        this.dispatch = store.dispatch
-        this.schedule = new Schedule(store.dispatch)
-    }
 
     enter(data: AuthEnter) {
         this.schedule.clear()

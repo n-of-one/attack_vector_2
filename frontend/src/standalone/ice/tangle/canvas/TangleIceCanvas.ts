@@ -6,7 +6,7 @@ import {TanglePointMoved, TanglePuzzle} from "../TangleIceManager";
 import {Dispatch, Store} from "redux";
 import {Canvas} from "fabric/fabric-impl";
 import {TangleLine, TanglePoint} from "../reducer/TangleIceReducer";
-import {ice} from "../../IceModel";
+import {ice} from "../../../StandaloneGlobals";
 
 class TangleIceCanvas {
 

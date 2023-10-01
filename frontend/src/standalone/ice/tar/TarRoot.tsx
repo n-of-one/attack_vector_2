@@ -9,11 +9,11 @@ import {TarContainer} from "./component/TarContainer";
 import {tarManager} from "./component/TarManager";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {initTarServerActions} from "./TarServerActionProcessor";
-import {ice} from "../IceModel";
+import {ice} from "../../StandaloneGlobals";
 
 interface Props {
     iceId: string
-    nextUrl: string | null
+    externalHack: boolean,
 }
 
 export class TarRoot extends Component<Props> {
@@ -39,7 +39,7 @@ export class TarRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/tar/enter", {iceId: props.iceId})
         });
 
-        tarManager.init(this.store, props.nextUrl)
+        tarManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
         initGenericServerActions()
         initTarServerActions(this.store)

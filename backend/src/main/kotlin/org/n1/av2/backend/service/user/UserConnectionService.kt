@@ -24,7 +24,7 @@ class UserConnectionService(
         hackerStateEntityService.login(userPrincipal.userId)
 
         class NewConnection(val connectionId: String, val type: ConnectionType)
-        if (userPrincipal.user.type.hacker) {
+        if (userPrincipal.userEntity.type.hacker) {
             stompService.toUser(userPrincipal.userId, ServerActions.SERVER_USER_CONNECTION, NewConnection(userPrincipal.connectionId, ConnectionType.WS_HACKER_MAIN))
         }
     }

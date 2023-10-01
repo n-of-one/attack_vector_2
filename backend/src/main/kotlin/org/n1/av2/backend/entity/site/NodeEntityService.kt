@@ -142,6 +142,11 @@ class NodeEntityService(
         return findById(layerIdParts[0])
     }
 
+    fun findLayer(layerId: String): Layer {
+        val node = findByLayerId(layerId)
+        return node.getLayerById(layerId)
+    }
+
     fun save(node: Node) {
         nodeRepo.save(node)
     }

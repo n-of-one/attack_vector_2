@@ -1,7 +1,7 @@
 package org.n1.av2.backend.model.iam
 
 import org.n1.av2.backend.config.websocket.ConnectionType
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -10,9 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 data class UserPrincipal(
     private val _name: String,
     val connectionId: String,
-    val user: User,
+    val userEntity: UserEntity,
     val type: ConnectionType,
-    val iceId: String? = null
 ): Authentication {
 
     companion object {
@@ -25,10 +24,10 @@ data class UserPrincipal(
     override fun getName() = _name
 
     val userId: String
-        get() = user.id
+        get() = userEntity.id
 
     override fun getAuthorities(): MutableCollection<GrantedAuthority> {
-        return user.type.authorities.toMutableList()
+        return userEntity.type.authorities.toMutableList()
     }
 
     override fun setAuthenticated(p0: Boolean) {
@@ -40,7 +39,7 @@ data class UserPrincipal(
     }
 
     override fun getPrincipal(): Any {
-        return user
+        return userEntity
     }
 
     override fun isAuthenticated(): Boolean {
@@ -48,6 +47,6 @@ data class UserPrincipal(
     }
 
     override fun getDetails(): Any {
-        return user
+        return userEntity
     }
 }

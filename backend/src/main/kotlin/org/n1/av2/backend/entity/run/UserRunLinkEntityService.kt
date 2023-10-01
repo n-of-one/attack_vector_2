@@ -1,8 +1,7 @@
 package org.n1.av2.backend.entity.run
 
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.service.user.CurrentUserService
-import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,12 +10,12 @@ class UserRunLinkEntityService(
     private val currentUserService: CurrentUserService,
 ) {
 
-    fun hasUserScan(user: User, runId: String): Boolean {
-        return userRunLinkRepo.findByUserIdAndRunId(user.id, runId) != null
+    fun hasUserScan(userEntity: UserEntity, runId: String): Boolean {
+        return userRunLinkRepo.findByUserIdAndRunId(userEntity.id, runId) != null
     }
 
-    fun createUserScan(runId: String, user: User) {
-        val userRunLink = UserRunLink(userId = user.id, runId = runId)
+    fun createUserScan(runId: String, userEntity: UserEntity) {
+        val userRunLink = UserRunLink(userId = userEntity.id, runId = runId)
         userRunLinkRepo.save(userRunLink)
     }
 

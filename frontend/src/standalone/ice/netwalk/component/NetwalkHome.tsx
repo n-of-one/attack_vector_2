@@ -4,7 +4,7 @@ import {Terminal} from "../../../../common/terminal/Terminal"
 import {IceTitle} from "../../common/IceTitle";
 import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
 import {netwalkCanvas} from "../canvas/NetwalkCanvas";
-import {HIDDEN} from "../../IceModel";
+import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 
 /* eslint jsx-a11y/alt-text: 0*/

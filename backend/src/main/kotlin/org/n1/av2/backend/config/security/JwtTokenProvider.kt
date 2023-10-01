@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Keys
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntity
 import org.springframework.stereotype.Component
 import java.security.Key
 import java.security.SignatureException
@@ -25,13 +25,13 @@ class JwtTokenProvider {
     final val jwtExpirationInS: Int = 60 * 60 * 5 // 5 hours
     private val jwtExpirationInMs: Int = 1000 * jwtExpirationInS
 
-    fun generateJwt(user: User): String {
+    fun generateJwt(userEntity: UserEntity): String {
 
         val now = Date()
         val expiryDate = Date(now.time + jwtExpirationInMs)
 
         return Jwts.builder()
-                .setSubject(user.id)
+                .setSubject(userEntity.id)
                 .setIssuedAt(Date())
                 .setExpiration(expiryDate)
                 .signWith(key)

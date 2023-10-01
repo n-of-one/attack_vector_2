@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Document
-data class User(
+data class UserEntity(
     @Id val id: String,
     val externalId: String? = null,
     val email: String,
@@ -18,9 +18,9 @@ data class User(
 
 
 @Repository
-interface UserRepo : CrudRepository<User, String> {
-    fun findByNameIgnoreCase(userName: String): User?
-    fun findByExternalId(externalId: String): User?
+interface UserRepo : CrudRepository<UserEntity, String> {
+    fun findByNameIgnoreCase(userName: String): UserEntity?
+    fun findByExternalId(externalId: String): UserEntity?
 }
 
 data class Hacker(
@@ -36,7 +36,7 @@ data class HackerSkill(
 )
 
 // Used for internal activity
-val SYSTEM_USER = User(
+val SYSTEM_USEREntity = UserEntity(
     id = "user-system",
     externalId = "user-system",
     email = "no_email@example.com",

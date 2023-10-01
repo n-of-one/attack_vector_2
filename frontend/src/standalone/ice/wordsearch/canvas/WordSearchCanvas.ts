@@ -5,7 +5,7 @@ import {WordSearchIndicatorDisplay} from "./WordSearchIndicatorDisplay";
 import {LETTERS_SELECTED} from "../reducer/WordSearchStateReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
-import {ice} from "../../IceModel";
+import {ice} from "../../../StandaloneGlobals";
 
 const MARGIN_TOP = 5
 const MARGIN_LEFT = 5

@@ -7,14 +7,12 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
+import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
 import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.KeystoreLayerService
-import org.n1.av2.backend.service.layerhacking.OsLayerService
-import org.n1.av2.backend.service.layerhacking.TextLayerService
-import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.*
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.springframework.stereotype.Service
 
@@ -25,6 +23,7 @@ class CommandHackService(
     private val osLayerService: OsLayerService,
     private val textLayerService: TextLayerService,
     private val snifferLayerService: TimerTriggerLayerService,
+    private val statusLightLayerService: StatusLightLayerService,
     private val commandServiceUtil: CommandServiceUtil,
     private val iceService: IceService,
     private val keystoreLayerService: KeystoreLayerService,
@@ -63,6 +62,7 @@ class CommandHackService(
             is TextLayer -> textLayerService.hack(layer, node)
             is TimerTriggerLayer -> snifferLayerService.hack(layer)
             is IceLayer -> hackIce(layer)
+            is StatusLightLayer -> statusLightLayerService.hack(layer)
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
             else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
@@ -73,10 +73,10 @@ class CommandHackService(
             stompService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
             return
         }
-        val iceId = iceService.findOrCreateIceForLayer(layer).id
+        val iceId = iceService.findOrCreateIceForLayer(layer)
 
-        data class EnterIce(val redirectId: String)
-        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce("ice/${iceId}"))
+        data class EnterIce(val iceId: String)
+        stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce(iceId))
     }
 
     private fun handleConnect(node: Node, layer: Layer) {
@@ -86,15 +86,14 @@ class CommandHackService(
             is TimerTriggerLayer -> snifferLayerService.connect(layer)
             is IceLayer -> connectToIce(layer)
             is KeyStoreLayer -> keystoreLayerService.connect(layer)
+            is StatusLightLayer -> statusLightLayerService.connect(layer)
             else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
 
     fun connectToIce(layer: IceLayer) {
-        val iceId = iceService.findOrCreateIceForLayer(layer).id
-
-        data class EnterIce(val redirectId: String)
-        stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce("ice/${iceId}"))
+        data class EnterIce(val layerId: String)
+        stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce(layer.id))
     }
 
     private fun reportLayerUnknown(node: Node, layerInput: String) {

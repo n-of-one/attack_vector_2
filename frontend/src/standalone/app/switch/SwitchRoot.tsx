@@ -6,7 +6,7 @@ import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {SwitchRootState, swithRootReducer} from "./SwitchReducers";
 import {Switch} from "./Switch";
-import {app} from "../AppId";
+import {app} from "../../StandaloneGlobals";
 
 interface Props {
     appId: string

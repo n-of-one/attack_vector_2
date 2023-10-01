@@ -8,12 +8,12 @@ import {TangleContainer} from "./component/TangleContainer";
 import {tangleRootReducer, TangleRootState} from "./reducer/TangleRootReducer";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
-import {ice} from "../IceModel";
 import {SERVER_TANGLE_ENTER, SERVER_TANGLE_POINT_MOVED} from "./reducer/TangleIceReducer";
+import {ice} from "../../StandaloneGlobals";
 
 interface Props {
-    iceId: string
-    nextUrl: string | null
+    iceId: string,
+    externalHack: boolean,
 }
 export class TangleRoot extends Component<Props> {
 
@@ -38,7 +38,7 @@ export class TangleRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/tangle/enter", {iceId: props.iceId})
         });
 
-        tangleIceManager.init(this.store, props.nextUrl)
+        tangleIceManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
         initGenericServerActions()
         this.initTangleIceServerActions()

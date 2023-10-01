@@ -4,7 +4,7 @@ import {fabric} from "fabric";
 import {TarBlockDisplay} from "./TarBlockDisplay";
 import {hashCode} from "../../../../common/util/Util";
 import {TarEnter, TarStatusUpdate} from "../TarServerActionProcessor";
-import {ice} from "../../IceModel";
+import {ice} from "../../../StandaloneGlobals";
 
 export const BLOCK_WIDTH = 90
 export const BLOCK_PADDING_LEFT = 10

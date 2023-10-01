@@ -6,18 +6,20 @@ import {NetwalkRoot} from "./netwalk/NetwalkRoot";
 import {NETWALK_ICE, PASSWORD_ICE, TAR_ICE, TANGLE_ICE, WORD_SEARCH_ICE} from "../../common/enums/LayerTypes";
 import {TarRoot} from "./tar/TarRoot";
 import {TopLevelError} from "../../common/component/TopLevelError";
+import {layer} from "../StandaloneGlobals";
 
 interface Props {
     layerId: string,
 }
 
-export const IceSelector = (props: Props) => {
+export const ExternalHackIce = (props: Props) => {
 
     const [iceType, setIceType] = useState("")
     const [iceId, setIceId] = useState("")
 
 
     useEffect(() => {
+        layer.id = props.layerId
         const fetchData = async () => {
             const response: Response = await fetch(`/api/ice/${props.layerId}`)
             const text: string = await response.text()
@@ -44,11 +46,11 @@ export const IceSelector = (props: Props) => {
                               description={`(AV server failed to find the ice you want to hack)`}/>
     }
 
-    if (iceType === TANGLE_ICE) return <TangleRoot iceId={iceId} nextUrl={null}/>
-    if (iceType === PASSWORD_ICE) return <PasswordRoot iceId={iceId} nextUrl={null}/>
-    if (iceType === WORD_SEARCH_ICE) return <WordSearchRoot iceId={iceId} nextUrl={null}/>
-    if (iceType === NETWALK_ICE) return <NetwalkRoot iceId={iceId} nextUrl={null}/>
-    if (iceType === TAR_ICE) return <TarRoot iceId={iceId} nextUrl={null}/>
+    if (iceType === TANGLE_ICE) return <TangleRoot iceId={iceId} externalHack={true}/>
+    if (iceType === PASSWORD_ICE) return <PasswordRoot iceId={iceId} externalHack={true}/>
+    if (iceType === WORD_SEARCH_ICE) return <WordSearchRoot iceId={iceId} externalHack={true}/>
+    if (iceType === NETWALK_ICE) return <NetwalkRoot iceId={iceId} externalHack={true}/>
+    if (iceType === TAR_ICE) return <TarRoot iceId={iceId} externalHack={true}/>
 
     if (iceType === "CONNECT_ERROR") return <TopLevelError error="Connection error"
                                                            description={`(Failed to connect to AV server, try again)`}/>

@@ -2,58 +2,66 @@ import {zeroPad} from "../component/Pad";
 import {TICK_MILLIS} from "./Schedule";
 
 export const delay = (toRun: () => void) => {
-  setTimeout(toRun, 1)
+    setTimeout(toRun, 1)
 }
 
 export const delayTicks = (tickCount: number, toRun: () => void) => {
-  setTimeout(toRun, TICK_MILLIS * tickCount)
+    setTimeout(toRun, TICK_MILLIS * tickCount)
 }
 
 
 export const formatTimeInterval = (totalSecondsLeft: number | null) => {
-  if (!totalSecondsLeft) {
-    return "00:00:00"
-  }
-  const waitHours = Math.floor(totalSecondsLeft / (60 * 60));
-  const secondsLeftForMinutes = totalSecondsLeft % (60 * 60);
-  const waitMinutes = Math.floor(secondsLeftForMinutes / 60);
-  const waitSeconds = secondsLeftForMinutes % 60;
+    if (!totalSecondsLeft) {
+        return "00:00:00"
+    }
+    const waitHours = Math.floor(totalSecondsLeft / (60 * 60));
+    const secondsLeftForMinutes = totalSecondsLeft % (60 * 60);
+    const waitMinutes = Math.floor(secondsLeftForMinutes / 60);
+    const waitSeconds = secondsLeftForMinutes % 60;
 
-  return zeroPad(waitHours, 2) + ":" + zeroPad(waitMinutes, 2) + ":" + zeroPad(waitSeconds, 2);
+    return zeroPad(waitHours, 2) + ":" + zeroPad(waitMinutes, 2) + ":" + zeroPad(waitSeconds, 2);
 }
 
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value !== null && value !== undefined
+    return value !== null && value !== undefined
 }
 
 export function hashCode(str: string): number {
-  var h: number = 0;
-  for (var i = 0; i < str.length; i++) {
-    h = 31 * h + str.charCodeAt(i);
-  }
-  return h & 0xFFFFFFFF
+    var h: number = 0;
+    for (var i = 0; i < str.length; i++) {
+        h = 31 * h + str.charCodeAt(i);
+    }
+    return h & 0xFFFFFFFF
 }
 
-export const decodeAppReference = (base64: string) => {
-  const binString = atob(base64);
-  const bytes = new Uint8Array(binString.length);
-  for (let i = 0; i < binString.length; i++) {
-    bytes[i] = binString.charCodeAt(i) ^ (i % 256)
-  }
-  return String.fromCharCode(...bytes)
+
+// URLs with information are encoded to obfuscate the information. This discourages players from chanigng the URL on their own during a game.
+// It potentially increases immersion if you can't see the REST-like urls in the browser.
+
+export const decodePath = (base64PathSafe: string) => {
+    // Base 64 Encoding with URL and Filename Safe Alphabet -> regular base64
+    const base64 = base64PathSafe.replaceAll('_', '/').replaceAll('-', '+')
+
+    const binString = atob(base64);
+    const bytes = new Uint8Array(binString.length);
+    for (let i = 0; i < binString.length; i++) {
+        bytes[i] = binString.charCodeAt(i) ^ (i % 256)
+    }
+    return String.fromCharCode(...bytes)
 }
 
-// xor with index then base64 encode
+// xor with index then base64 encode then repalce / with _ to avoid routing problems
 export const avEncodedPath = (path: string) => {
     const bytes = new Uint8Array(path.length);
 
     for (let i = 0; i < path.length; i++) {
         bytes[i] = path.charCodeAt(i) ^ (i % 256)
     }
-    return btoa(String.fromCharCode(...bytes))
+    const base64Encoded = btoa(String.fromCharCode(...bytes))
+    return base64Encoded.replaceAll('/', '_').replaceAll('+', '-') // make URL path safe
 }
 
 export const avEncodedUrl = (path: string) => {
-  const reference = avEncodedPath(path)
-  return `${window.location.origin}/x/${reference}`
+    const reference = avEncodedPath(path)
+    return `${window.location.origin}/x/${reference}`
 }

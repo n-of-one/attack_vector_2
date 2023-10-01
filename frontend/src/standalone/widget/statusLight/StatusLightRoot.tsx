@@ -6,7 +6,7 @@ import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {StatusLight} from "./StatusLight";
 import {defaultState, statusLightReducer, StatusLightState} from "./StatusLightReducers";
-import {app} from "../../app/AppId";
+import {app} from "../../StandaloneGlobals";
 
 interface Props {
     appId: string

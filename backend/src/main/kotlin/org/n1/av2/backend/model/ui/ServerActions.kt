@@ -89,6 +89,9 @@ enum class ServerActions {
     SERVER_TAR_UPDATE,                  // sent to run when a tar ice has change (units hacked)
 
 
-    SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE UI
+    SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE auth UI
+    SERVER_REDIRECT_CONNECT_APP,        // open a new window to connect to an app
+
+    SERVER_REDIRECT_NEXT_LAYER          // send by server to user when externally hacking ICE and moving player to next layer (ice or app).
 
 }

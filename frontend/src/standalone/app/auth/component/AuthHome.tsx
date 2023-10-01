@@ -4,11 +4,10 @@ import {AuthAppRootState} from "../reducer/AuthRootReducer";
 import {Glyphicon} from "../../../../common/component/icon/Glyphicon";
 import {larp} from "../../../../common/Larp";
 import {PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
-import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/AuthUiReducer";
+import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_PASSWORD_CORRECT, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/AuthUiReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
-import {ice} from "../../../ice/IceModel";
 import {avEncodedUrl} from "../../../../common/util/Util";
-import {app} from "../../AppId";
+import {ice, layer} from "../../../StandaloneGlobals";
 
 export const AuthHome = () => {
 
@@ -76,7 +75,7 @@ const IceBanner = () => {
         const newClickCount = clickCount + 1
         setClickCount(newClickCount)
         if (newClickCount >= 3) {
-            const url = avEncodedUrl(`app/${app.id}?hacking=true`)
+            const url = avEncodedUrl(`ice/externalAccess/${layer.id}`)
             document.location.href = url
         }
     }
@@ -96,6 +95,8 @@ const PasswordSection = () => {
             return <PasswordDisabled/>
         case UI_STATE_LOCKED:
             return <PasswordLocked/>
+        case UI_STATE_PASSWORD_CORRECT:
+            return <PasswordCorrect />
     }
 }
 
@@ -113,13 +114,13 @@ const PasswordInput = () => {
     }
 
     return (
-        <div style={{width: "300px"}}>
+        <div style={{width: "420px"}}>
             <div className="input-group">
                 <input type={showPassword ? "text" : "password"}
                        className="form-control" placeholder={placeHolder}
                        aria-label="Recipient's username"
                        aria-describedby="basic-addon2"
-                       maxLength={19}
+                       maxLength={64}
                        onChange={(e) => setPassword(e.target.value)}
                 />
                 <div className="input-group-append">
@@ -145,7 +146,7 @@ const PasswordInput = () => {
 
 const PasswordDisabled = () => {
     return (
-        <div style={{width: "300px"}}>
+        <div style={{width: "420px"}}>
 
             <div className="input-group">
                 <input type="password"
@@ -174,6 +175,12 @@ const PasswordLocked = () => {
 
     return (
         <div className="text-muted">Invalid input. Please wait {waitSeconds} seconds before retrying</div>
+    )
+}
+
+const PasswordCorrect = () => {
+    return (
+        <div ><h3 className="text-success">Authentication success</h3></div>
     )
 }
 

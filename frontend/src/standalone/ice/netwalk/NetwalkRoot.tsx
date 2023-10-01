@@ -9,11 +9,11 @@ import {initGenericServerActions} from "../../../hacker/server/GenericServerActi
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {initNetwalkServerActions} from "./NetwalkServerActionProcessor";
 import {netwalkManager} from "./NetwalkManager";
-import {ice} from "../IceModel";
+import {ice} from "../../StandaloneGlobals";
 
 interface Props {
     iceId: string
-    nextUrl: string | null
+    externalHack: boolean,
 }
 
 export class NetwalkRoot extends Component<Props> {
@@ -39,7 +39,7 @@ export class NetwalkRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/netwalk/enter", {iceId: ice.id})
         });
 
-        netwalkManager.init(this.store, props.nextUrl);
+        netwalkManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions()
         initNetwalkServerActions(this.store)

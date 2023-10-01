@@ -9,12 +9,12 @@ import {passwordIceManager} from "./PasswordIceManager";
 import {ICE_INPUT_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
-import {ice} from "../IceModel";
 import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_UPDATE} from "../../app/auth/AuthServerActionProcessor";
+import {ice} from "../../StandaloneGlobals";
 
 interface Props {
     iceId: string,
-    nextUrl: string | null
+    externalHack: boolean,
 }
 
 export class PasswordRoot extends Component<Props> {
@@ -41,7 +41,7 @@ export class PasswordRoot extends Component<Props> {
             webSocketConnection.sendObject("/av/ice/password/enter", {iceId: ice.id, userType: "HACKER"})
         });
 
-        passwordIceManager.init(this.store, props.nextUrl)
+        passwordIceManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
         initGenericServerActions()
         this.initPasswordIceServerActions()

@@ -4,6 +4,7 @@ import org.n1.av2.backend.entity.ice.TangleIceStatus
 import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
 import org.n1.av2.backend.entity.ice.TangleLine
 import org.n1.av2.backend.entity.ice.TanglePoint
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.TangleIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
@@ -24,6 +25,7 @@ class TangleService(
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
     private val userIceHackingService: UserIceHackingService,
+    private val nodeEntityService: NodeEntityService,
 ) {
 
     companion object {
@@ -65,8 +67,9 @@ class TangleService(
 
 
     fun enter(iceId: String) {
-        val iceStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
-        val uiState = UiTangleState(iceStatus.strength, iceStatus.points, iceStatus.lines, iceStatus.hacked)
+        val tangleStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
+        val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
+        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.hacked)
         stompService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         userIceHackingService.enter(iceId)
     }
@@ -83,17 +86,16 @@ class TangleService(
         tangleStatus.points.removeIf { it.id == command.pointId }
         val newPoint = TanglePoint(command.pointId, x, y)
         tangleStatus.points.add(newPoint)
+        tangleIceStatusRepo.save(tangleStatus)
 
         val solved = tangleSolved(tangleStatus)
-        tangleIceStatusRepo.save(tangleStatus.copy(hacked = solved))
-
-        val message = TanglePointMoved(command.pointId, x, y, solved)
-
-        stompService.toIce(command.iceId, ServerActions.SERVER_TANGLE_POINT_MOVED, message)
-
         if (solved) {
             hackedUtil.iceHacked(tangleStatus.layerId, 70)
         }
+
+        val message = TanglePointMoved(command.pointId, x, y, solved)
+        stompService.toIce(command.iceId, ServerActions.SERVER_TANGLE_POINT_MOVED, message)
+
 
     }
 

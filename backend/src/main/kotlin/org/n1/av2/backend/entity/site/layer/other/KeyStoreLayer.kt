@@ -6,7 +6,7 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
-private const val ICE_ID = "iceId"
+private const val ICE_LAYER_ID = "iceLayerId"
 
 class KeyStoreLayer(
     id: String,
@@ -14,7 +14,7 @@ class KeyStoreLayer(
     level: Int,
     name: String,
     note: String,
-    var iceId: String?
+    var iceLayerId: String?
 ) : Layer(id, type, level, name, note) {
 
 
@@ -22,8 +22,8 @@ class KeyStoreLayer(
             this(id, LayerType.KEYSTORE, level, defaultName, "", null )
 
     private fun validateText(siteRep: SiteRep) {
-        if (this.iceId == null) throw ValidationException("Choose ICE that keystore provides password for.");
-         findLayerById(this.iceId!!, siteRep.nodes) ?: throw ValidationException("Choose ICE that keystore provides password for.")
+        if (this.iceLayerId == null) throw ValidationException("Choose ICE that keystore provides password for.");
+         findLayerById(this.iceLayerId!!, siteRep.nodes) ?: throw ValidationException("Choose ICE that keystore provides password for.")
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
@@ -32,7 +32,7 @@ class KeyStoreLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            ICE_ID -> iceId = value
+            ICE_LAYER_ID -> iceLayerId = value
             else -> return super.updateInternal(key, value)
         }
         return true

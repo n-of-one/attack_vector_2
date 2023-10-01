@@ -3,18 +3,19 @@ import QRCode from "react-qr-code";
 import React from "react";
 import {avEncodedUrl} from "../../../../../../common/util/Util";
 
-type UrlType = "ice" | "app" | "widget" | "iceLayer"
+type UrlType = "ice" | "app" | "widget"
 
 interface Props {
     name: string,
     type: UrlType,
-    id: string,
+    subType?: string,
+    layerId: string,
     description: string
 }
 
-export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
+export const UrlFieldWithQr = ({name, layerId, type, subType, description}: Props) => {
 
-    const path = `${type}/${id}`
+    const path = createPath(layerId, type, subType)
     const url = avEncodedUrl(path)
 
     const showQR = () => {
@@ -24,7 +25,8 @@ export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
                     <div>
                         <div>{description}</div>
                         <div>&nbsp;</div>
-                        <div>{path}</div>
+                        <div>Path: {path}</div>
+                        <div>&nbsp;</div>
                         <div>{url}</div>
                         <div onClick={dismissMethod}><br/>
                             <QRCode size={256} value={url} viewBox="0 0 256 256"/>
@@ -48,10 +50,10 @@ export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
                     <span>
                         <input type="text" className="form-control input-sm" readOnly={true}
                                value={url}
-                               onClick={(e) => {
-                                   window.open(url, "_blank")
-                               }}
-                               style={{textDecoration: "underline", color: "steelblue"}}
+                               // onClick={(e) => {
+                               //     window.open(url, "_blank")
+                               // }}
+                               // style={{textDecoration: "underline", color: "steelblue"}}
                         />
                     </span>
             </div>
@@ -60,4 +62,13 @@ export const UrlFieldWithQr = ({name, type, id, description}: Props) => {
             </div>
         </div>
     )
+}
+
+const createPath = (layerId: string, type: UrlType, subType?: string): string => {
+    switch(type) {
+        case "ice": return `ice/${layerId}`
+        case "app": return `app/${subType}/${layerId}`
+        case "widget": return `widget/${subType}/${layerId}`
+        default: return `Unknown type: ${type}`
+    }
 }

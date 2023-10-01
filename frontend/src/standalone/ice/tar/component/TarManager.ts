@@ -1,6 +1,6 @@
 import {Schedule} from "../../../../common/util/Schedule";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
-import {GenericIceManager} from "../../GenericIceManager";
+import {GenericIceManager} from "../../common/GenericIceManager";
 import {Dispatch, Store} from "redux";
 import {TERMINAL_CLEAR, TERMINAL_REPLACE_LAST_LINE} from "../../../../common/terminal/TerminalReducer";
 import {tarCanvas} from "../canvas/TarCanvas";
@@ -8,7 +8,7 @@ import {TarEnter, TarStatusUpdate} from "../TarServerActionProcessor";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {formatTimeInterval} from "../../../../common/util/Util";
 import {TAR_BEGIN} from "../reducer/TarReducer";
-import {ice} from "../../IceModel";
+import {ice} from "../../../StandaloneGlobals";
 
 const DELAY_BETWEEN_HACK_TICKS_S = 5
 
@@ -26,13 +26,6 @@ class TarManager extends GenericIceManager {
     totalUnits = -1
     unitsHacked = -1
     lastUnitsHacked = -1
-
-    init(store: Store, nextUrl: string | null) {
-        this.store = store;
-        this.nextUrl = nextUrl
-        this.dispatch = store.dispatch;
-        this.schedule = new Schedule(store.dispatch);
-    }
 
     enter(data: TarEnter) {
 

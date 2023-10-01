@@ -1,7 +1,7 @@
 /**
  * Holds values for the current larp
  */
-import {IceType} from "../standalone/ice/IceModel";
+import {IceType} from "../standalone/ice/common/IceModel";
 import {NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE, TAR_ICE, WORD_SEARCH_ICE} from "./enums/LayerTypes";
 
 export class Larp {

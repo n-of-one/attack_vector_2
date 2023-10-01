@@ -1,19 +1,20 @@
 import {AnyAction} from "redux";
 import {TERMINAL_UPDATE} from "../../../../common/terminal/TerminalReducer";
 import {serverTime} from "../../../../common/server/ServerTime";
-import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_UPDATE} from "../AuthServerActionProcessor";
+import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_PASSWORD_CORRECT, SERVER_AUTH_UPDATE} from "../AuthServerActionProcessor";
 
 export const ICE_PASSWORD_LOCK = "ICE_PASSWORD_LOCK";
 
 export const UI_STATE_UNLOCKED = "UI_STATE_UNLOCKED"
 export const UI_STATE_LOCKED = "UI_STATE_LOCKED"
 export const UI_STATE_SUBMITTING = "UI_STATE_SUBMITTING"
+export const UI_STATE_PASSWORD_CORRECT = "UI_STATE_PASSWORD_CORRECT"
 
 export const SUBMIT_PASSWORD = "SUBMIT_PASSWORD"
 
 
 export interface AuthAppUi {
-    state: "UI_STATE_UNLOCKED" | "UI_STATE_LOCKED" | "UI_STATE_SUBMITTING",
+    state: "UI_STATE_UNLOCKED" | "UI_STATE_LOCKED" | "UI_STATE_SUBMITTING" | "UI_STATE_PASSWORD_CORRECT",
     waitSeconds: number,
     lockedUntil: string  // "2019-08-26T15:38:40.9179757+02:00"
     attempts: string[],
@@ -44,6 +45,8 @@ export const authUiReducer = (state : AuthAppUi = defaultUi, action: AnyAction):
             return processServerUpdate(action.data, state)
         case SUBMIT_PASSWORD:
             return {...state, state: UI_STATE_SUBMITTING}
+        case SERVER_AUTH_PASSWORD_CORRECT:
+        return { ...state, state: UI_STATE_PASSWORD_CORRECT}
         default:
             return state
     }

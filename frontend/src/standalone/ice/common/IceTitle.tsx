@@ -22,7 +22,7 @@ const strengthDescription = (strength: IceStrength) => {
         case IceStrength.ONYX:
             return "Onxy"
         default:
-            return "UNKNOWN"
+            return ""
     }
 
 }

@@ -5,7 +5,7 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 
 
-abstract class IceLayer(
+sealed class IceLayer(
     id: String,
     type: LayerType,
     level: Int,

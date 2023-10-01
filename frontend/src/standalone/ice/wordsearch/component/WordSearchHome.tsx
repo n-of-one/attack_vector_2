@@ -4,7 +4,7 @@ import {Terminal} from "../../../../common/terminal/Terminal"
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {WordSearchPuzzle} from "./WordSearchPuzzle";
 import {IceTitle} from "../../common/IceTitle";
-import {HIDDEN} from "../../IceModel";
+import {HIDDEN} from "../../common/IceModel";
 
 export const WordSearchHome = () => {
 

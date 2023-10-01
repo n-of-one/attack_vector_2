@@ -2,7 +2,7 @@ import React from "react";
 import {useSelector} from "react-redux";
 import {SwitchRootState, SwitchState} from "./SwitchReducers";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
-import {app} from "../AppId";
+import {app} from "../../StandaloneGlobals";
 
 
 export const Switch = () => {

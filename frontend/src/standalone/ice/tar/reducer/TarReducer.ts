@@ -1,5 +1,5 @@
 import {IceStrength} from "../../../../common/model/IceStrength";
-import {HIDDEN, VISIBLE} from "../../IceModel";
+import {HIDDEN, VISIBLE} from "../../common/IceModel";
 import {SERVER_TAR_ENTER} from "../TarServerActionProcessor";
 
 export const TAR_BEGIN = "TAR_BEGIN"

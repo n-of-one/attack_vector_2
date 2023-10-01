@@ -2,7 +2,7 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import {Terminal} from "../../../../common/terminal/Terminal"
 import {IceTitle} from "../../common/IceTitle";
-import {HIDDEN} from "../../IceModel";
+import {HIDDEN} from "../../common/IceModel";
 import {TarRootState} from "../reducer/TarRootReducer";
 import {IceStrength} from "../../../../common/model/IceStrength";
 

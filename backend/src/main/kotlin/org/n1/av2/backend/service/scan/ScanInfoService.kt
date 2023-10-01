@@ -2,14 +2,14 @@ package org.n1.av2.backend.service.scan
 
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.entity.user.User
+import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.terminal.TERMINAL_CHAT
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 
 /** This service deals with the action of scanning (as opposed to the actions performed on a scan). */
@@ -64,26 +64,26 @@ class ScanInfoService(
         stompService.toUser(userId, ServerActions.SERVER_UPDATE_USER_SCANS, scanItems)
     }
 
-    fun shareScan(runId: String, user: User) {
-        if (userRunLinkEntityService.hasUserScan(user, runId)) {
-            stompService.replyTerminalReceive("[info]${user.name}[/] already has this scan.")
+    fun shareScan(runId: String, userEntity: UserEntity) {
+        if (userRunLinkEntityService.hasUserScan(userEntity, runId)) {
+            stompService.replyTerminalReceive("[info]${userEntity.name}[/] already has this scan.")
             return
         }
-        userRunLinkEntityService.createUserScan(runId, user)
-        stompService.replyTerminalReceive("Shared scan with [info]${user.name}[/].")
+        userRunLinkEntityService.createUserScan(runId, userEntity)
+        stompService.replyTerminalReceive("Shared scan with [info]${userEntity.name}[/].")
 
-        val myUserName = currentUserService.user.name
+        val myUserName = currentUserService.userEntity.name
 
         val scan = runEntityService.getByRunId(runId)
         val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
         stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
-        stompService.toUser(user.id,
+        stompService.toUser(userEntity.id,
             ServerActions.SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
         )
 
-        sendScanInfosOfPlayer(user.id)
+        sendScanInfosOfPlayer(userEntity.id)
     }
 
 

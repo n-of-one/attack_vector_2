@@ -5,9 +5,6 @@ import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerStatusLight} from "../../../../../../../../common/model/layer/LayerStatusLight";
 import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
-import QRCode from "react-qr-code"
-import toast, {Toast} from "react-hot-toast";
-import {avEncodedPath} from "../../../../../../../../common/util/Util";
 import {UrlFieldWithQr} from "../../../element/UrlFieldWithQr";
 
 
@@ -41,9 +38,9 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
                         save={value => statusLight.saveTextForGreen(value)}
                         help="Shown in the switch to indicate what this position means"/>
 
-            <UrlFieldWithQr name="App" type="app" id={statusLight.appId} description="App for changing status"/>
+            <UrlFieldWithQr name="Switch" type="app" subType="switch" layerId={statusLight.id} description="App for changing status"/>
 
-            <UrlFieldWithQr name="Widget" type="widget" id={statusLight.appId} description="Widget showing status"/>
+            <UrlFieldWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status"/>
 
         </LayerPanel>
     )

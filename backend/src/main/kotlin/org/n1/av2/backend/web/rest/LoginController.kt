@@ -3,7 +3,6 @@ package org.n1.av2.backend.web.rest
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.config.security.JwtTokenProvider
-import org.n1.av2.backend.entity.user.User
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.LoginService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

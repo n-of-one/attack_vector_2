@@ -21,9 +21,9 @@ class IceController(
     @GetMapping("{layerId}")
     fun getIce(@PathVariable layerId: String): IceBasicInfo {
         val node = nodeEntityService.findByLayerId(layerId)
-        val layer = node.getLayerById(layerId)
-        val iceStatus = iceService.findOrCreateIceForLayer(layer)
+        val layer = node.getLayerById(layerId) as IceLayer
+        val iceId = iceService.findOrCreateIceForLayer(layer)
 
-        return IceBasicInfo(layer.type, iceStatus.id, currentUserService.userId)
+        return IceBasicInfo(layer.type, iceId, currentUserService.userId)
     }
 }

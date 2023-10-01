@@ -8,7 +8,6 @@ const KEY_TEXT_FOR_GREEN = "textForGreen"
 
 export class LayerStatusLight extends Layer {
 
-    appId: string
     status: boolean
     textForGreen: string
     textForRed: string
@@ -16,7 +15,6 @@ export class LayerStatusLight extends Layer {
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 
-        this.appId = layer.appId!
         this.status = layer.status!
         this.textForGreen = layer.textForGreen!
         this.textForRed = layer.textForRed!

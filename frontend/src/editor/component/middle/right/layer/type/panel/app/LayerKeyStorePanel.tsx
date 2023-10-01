@@ -14,8 +14,6 @@ interface Props {
     layer: LayerDetails
 }
 
-const nop = () => {}
-
 export const LayerKeyStorePanel = ({node, layer}: Props) => {
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
     const key = (param: string) => layer.id + ":" + param
@@ -25,18 +23,18 @@ export const LayerKeyStorePanel = ({node, layer}: Props) => {
     const nodes = useSelector((state: EditorState) => state.nodes)
     const options = iceLayerOptions(nodes)
 
-    const iceId = keystore.iceId
+    const iceLayerId = keystore.iceLayerId
     const navigateToLayer = () => {
-        const nodeId = iceId.split(":")[0]
+        const nodeId = iceLayerId.split(":")[0]
         editorCanvas.selectNode(nodeId)
-        dispatch({type: SELECT_LAYER, layerId: keystore.iceId})
+        dispatch({type: SELECT_LAYER, layerId: keystore.iceLayerId})
     }
-    const navigateIfIceId = (iceId) ? navigateToLayer : undefined
+    const navigateIfIceId = (iceLayerId) ? navigateToLayer : undefined
 
     return (
         <LayerPanel typeDisplay="Keystore" layerObject={keystore}>
             <LayerFieldDropdown key={key("status")} label="For ICE"
-                                value={keystore.iceId }
+                                value={keystore.iceLayerId }
                                 options={options}
                                 save={value => keystore.saveIceId(value)}
                                 tooltipId="forIce" tooltipText="The ICE for which this keystore contains the password/key"

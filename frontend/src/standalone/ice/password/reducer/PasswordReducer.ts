@@ -1,4 +1,4 @@
-import {HIDDEN, VISIBLE} from "../../IceModel";
+import {HIDDEN, VISIBLE} from "../../common/IceModel";
 
 export const ICE_PASSWORD_BEGIN = "ICE_PASSWORD_BEGIN"
 

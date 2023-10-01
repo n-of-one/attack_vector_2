@@ -12,11 +12,11 @@ class KeystoreLayerService(
 
     ){
     fun hack(layer: KeyStoreLayer) {
-        if (layer.iceId == null) {
+        if (layer.iceLayerId == null) {
             stompService.replyTerminalReceive("[error]service misconfiguration[/] this keystore is inactive due to misconfiguration.")
             return
         }
-        val password = icePasswordService.getIcePassword(layer.iceId!!).password
+        val password = icePasswordService.getIcePassword(layer.iceLayerId!!).password
 
         stompService.replyTerminalReceive("hacked. Password found: [primary]${password}")
     }
