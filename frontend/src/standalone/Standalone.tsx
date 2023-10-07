@@ -16,16 +16,16 @@ export const Standalone = () => {
     console.log(path)
 
 
-    const [type, subType, id] = path.split("/") // for example: /ice/siteHack/tangle-2123-4552
-    switch (type) {
+    const [category, type, id] = path.split("/") // for example: /ice/siteHack/tangle-2123-4552
+    switch (category) {
         case "ice":
-            return <Ice route={subType} id={id} />
+            return <Ice route={type} id={id} />
         case "app":
-            return <AppSelector type={subType} layerId={id}/>
+            return <AppSelector type={type} layerId={id}/>
         case "widget":
-            return <WidgetSelector type={subType} layerId={id}/>
+            return <WidgetSelector type={type} layerId={id}/>
         default:
-            return <TypeError error={`Unknown app type: ${type}`} />
+            return <TypeError error={`Unknown app category: ${category}`} />
     }
 }
 

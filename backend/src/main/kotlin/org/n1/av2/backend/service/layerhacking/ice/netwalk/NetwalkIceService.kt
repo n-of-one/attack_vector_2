@@ -16,7 +16,7 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class NetwalkIceService(
     private val stompService: StompService,
-    private val netwalkStatusRepo: NetwalkStatusRepo,
+    private val netwalkIceStatusRepo: NetwalkIceStatusRepo,
     private val hackedUtil: HackedUtil,
     private val userIceHackingService: UserIceHackingService,
 
@@ -26,15 +26,15 @@ class NetwalkIceService(
         const val MAX_CREATE_ATTEMPTS = 20
     }
 
-    fun findOrCreateIceByLayerId(layer: NetwalkIceLayer): NetwalkEntity {
-        return netwalkStatusRepo.findByLayerId(layer.id) ?: createIce(layer)
+    fun findOrCreateIceByLayerId(layer: NetwalkIceLayer): NetwalkIceStatus {
+        return netwalkIceStatusRepo.findByLayerId(layer.id) ?: createIce(layer)
     }
 
-    private fun createIce(layer: NetwalkIceLayer): NetwalkEntity {
+    private fun createIce(layer: NetwalkIceLayer): NetwalkIceStatus {
         val puzzle = createNetwalkPuzzle(layer.strength)
-        val id = createId("netwalk", netwalkStatusRepo::findById)
+        val id = createId("netwalk", netwalkIceStatusRepo::findById)
 
-        val netwalkEntity = NetwalkEntity(
+        val netwalkIceStatus = NetwalkIceStatus(
             id = id,
             layerId = layer.id,
             strength = layer.strength,
@@ -42,7 +42,7 @@ class NetwalkIceService(
             hacked = false,
             wrapping = puzzle.wrapping
         )
-        return netwalkStatusRepo.save(netwalkEntity)
+        return netwalkIceStatusRepo.save(netwalkIceStatus)
     }
 
     fun createNetwalkPuzzle(iceStrength: IceStrength): NetwalkPuzzle {
@@ -57,13 +57,13 @@ class NetwalkIceService(
 
     class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, val hacked: Boolean, val wrapping: Boolean)
     fun enter(iceId: String) {
-        val netwalk = netwalkStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
+        val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         stompService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.hacked, netwalk.wrapping))
         userIceHackingService.enter(iceId)
     }
 
     fun rotate(iceId: String, x: Int, y: Int) {
-        val netwalk = netwalkStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
+        val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         if (netwalk.hacked) return
 
         val gridWithRotatedCell = rotateRight(x, y, netwalk.cellGrid)
@@ -79,7 +79,7 @@ class NetwalkIceService(
             hacked = hacked
         )
 
-        netwalkStatusRepo.save(updatedNetWalk)
+        netwalkIceStatusRepo.save(updatedNetWalk)
 
         class NetwalkRotateUpdate(val iceId: String, val x: Int, val y: Int, val connected: List<Point>, val hacked: Boolean)
         val message = NetwalkRotateUpdate(iceId, x, y, connectedList, hacked)
@@ -106,7 +106,7 @@ class NetwalkIceService(
     }
 
     fun deleteByLayerId(layerId: String) {
-        val iceStatus = netwalkStatusRepo.findByLayerId(layerId) ?: return
-        netwalkStatusRepo.delete(iceStatus)
+        val iceStatus = netwalkIceStatusRepo.findByLayerId(layerId) ?: return
+        netwalkIceStatusRepo.delete(iceStatus)
     }
 }

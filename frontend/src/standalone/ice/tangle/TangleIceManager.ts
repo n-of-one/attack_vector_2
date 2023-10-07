@@ -40,7 +40,7 @@ class TangleIceManager extends GenericIceManager {
             this.displayTerminal(20, "↼ Connecting to ice, initiating attack.");
             this.displayTerminal(40, "↼ Network inspection.");
             this.displayTerminal(10, "↼ Complete");
-            this.displayTerminal(10, "↼ Weak encryption detected: Directed Acyclic Graph");
+            this.displayTerminal(10, "↼ Weak encryption detected: Undirected Cyclic Graph");
             this.displayTerminal(20, "↼ Negotiating lowest entropy");
             this.displayTerminal(30, "");
             this.displayTerminal(20, "↼ Negotiation complete.");

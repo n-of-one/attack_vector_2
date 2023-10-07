@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Document
-data class StatusLightEntity (
+data class StatusLightApp (
     @Id val id: String,
     val layerId: String,
     val status: Boolean,
@@ -16,4 +16,4 @@ data class StatusLightEntity (
 )
 
 @Repository
-interface StatusLightRepo : CrudRepository<StatusLightEntity, String>
+interface StatusLightRepo : CrudRepository<StatusLightApp, String>

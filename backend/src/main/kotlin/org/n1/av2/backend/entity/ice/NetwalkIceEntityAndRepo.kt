@@ -73,7 +73,7 @@ data class NetwalkCell(
 )
 
 @Document
-data class NetwalkEntity(
+data class NetwalkIceStatus(
     val id: String,
     @Indexed val layerId: String,
     val strength: IceStrength,
@@ -83,6 +83,6 @@ data class NetwalkEntity(
 )
 
 @Repository
-interface NetwalkStatusRepo : CrudRepository<NetwalkEntity, String> {
-    fun findByLayerId(layerId: String): NetwalkEntity?
+interface NetwalkIceStatusRepo : CrudRepository<NetwalkIceStatus, String> {
+    fun findByLayerId(layerId: String): NetwalkIceStatus?
 }

@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.layerhacking.app.status_light
 
-import org.n1.av2.backend.entity.app.StatusLightEntity
+import org.n1.av2.backend.entity.app.StatusLightApp
+import org.n1.av2.backend.entity.app.StatusLightEntityService
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
@@ -24,17 +25,17 @@ class StatusLightService(
         sendUpdate(updatedEntity)
     }
 
-    fun sendUpdate(statusLightEntity: StatusLightEntity) {
-        val message = StatusLightMessage(statusLightEntity.status, statusLightEntity.description, statusLightEntity.textForRed, statusLightEntity.textForGreen)
-        stompService.toApp(statusLightEntity.id, ServerActions.SERVER_STATUS_LIGHT_UPDATE, message)
+    fun sendUpdate(statusLightApp: StatusLightApp) {
+        val message = StatusLightMessage(statusLightApp.status, statusLightApp.description, statusLightApp.textForRed, statusLightApp.textForGreen)
+        stompService.toApp(statusLightApp.id, ServerActions.SERVER_STATUS_LIGHT_UPDATE, message)
     }
 
-    fun update(statusLightEntity: StatusLightEntity) {
-        statusLightEntityService.update(statusLightEntity)
-        sendUpdate(statusLightEntity)
+    fun update(statusLightApp: StatusLightApp) {
+        statusLightEntityService.update(statusLightApp)
+        sendUpdate(statusLightApp)
     }
 
-    fun findById(appId: String): StatusLightEntity {
+    fun findById(appId: String): StatusLightApp {
         return statusLightEntityService.findById(appId)
     }
 }

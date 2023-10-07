@@ -6,6 +6,7 @@ import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.layerhacking.ice.IceAuthorizationService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service
 class AppService(
     private val nodeEntityService: NodeEntityService,
     private val stompService: StompService,
-    @Lazy private val iceService: IceService,
+    private val iceAuthorizationService: IceAuthorizationService,
 ) {
 
     fun gotoNextLayerAfterExternalHack(layerId: String) {
@@ -39,7 +40,7 @@ class AppService(
             .sortedBy { it.level }
             .reversed()
             .forEach { layer ->
-                if (layer is IceLayer && !iceService.isAuthorized(layer)) {
+                if (layer is IceLayer && !iceAuthorizationService.isAuthorized(layer)) {
                     return layer
                 }
                 if (layer is StatusLightLayer) {

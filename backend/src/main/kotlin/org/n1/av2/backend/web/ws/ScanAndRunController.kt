@@ -4,10 +4,8 @@ import org.n1.av2.backend.engine.TaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.NotyMessage
-import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxEvent
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.scan.ScanInfoService
 import org.n1.av2.backend.service.site.SiteService
@@ -65,7 +63,7 @@ class ScanAndRunController(
     @MessageMapping("/scan/refreshIce")
     fun refreshIce(siteId: String, userPrincipal: UserPrincipal) {
         taskRunner.runTask(userPrincipal) {
-            siteService.refreshIce(siteId)
+            siteService.resetSite(siteId)
             stompService.replyMessage(NotyMessage.neutral("Ice reset"))
         }
     }

@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.layerhacking.ice.wordsearch
 
-import org.n1.av2.backend.entity.ice.WordSearchStatus
-import org.n1.av2.backend.entity.ice.WordSearchStatusRepo
+import org.n1.av2.backend.entity.ice.WordSearchIceStatus
+import org.n1.av2.backend.entity.ice.WordSearchIceStatusRepo
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.WordSearchIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
@@ -16,7 +16,7 @@ import kotlin.system.measureTimeMillis
 
 @Service
 class WordSearchService(
-    private val wordSearchStatusRepo: WordSearchStatusRepo,
+    private val wordSearchIceStatusRepo: WordSearchIceStatusRepo,
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
     private val userIceHackingService: UserIceHackingService,
@@ -29,15 +29,15 @@ class WordSearchService(
         const val CREATION_ATTEMPTS = 50
     }
 
-    fun findOrCreateIceByLayerId(layer: WordSearchIceLayer): WordSearchStatus {
-        return wordSearchStatusRepo.findByLayerId(layer.id) ?: createIce(layer)
+    fun findOrCreateIceByLayerId(layer: WordSearchIceLayer): WordSearchIceStatus {
+        return wordSearchIceStatusRepo.findByLayerId(layer.id) ?: createIce(layer)
     }
 
-    fun createIce(layer: WordSearchIceLayer): WordSearchStatus {
+    fun createIce(layer: WordSearchIceLayer): WordSearchIceStatus {
         val creation = findBestCreation(layer.strength)
 
-        val id = createId("wordSearch", wordSearchStatusRepo::findById)
-        val wordSearchStatus = WordSearchStatus(
+        val id = createId("wordSearch", wordSearchIceStatusRepo::findById)
+        val wordSearchIceStatus = WordSearchIceStatus(
             id = id,
             layerId = layer.id,
             strength = layer.strength,
@@ -48,8 +48,8 @@ class WordSearchService(
             solutions = creation.solutions,
             wordIndex = 0
         )
-        wordSearchStatusRepo.save(wordSearchStatus)
-        return wordSearchStatus
+        wordSearchIceStatusRepo.save(wordSearchIceStatus)
+        return wordSearchIceStatus
     }
 
     fun findBestCreation(strength: IceStrength): WordSearchCreation {
@@ -70,7 +70,7 @@ class WordSearchService(
     }
 
     fun enter(iceId: String) {
-        val iceStatus = wordSearchStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
+        val iceStatus = wordSearchIceStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
         stompService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, iceStatus)
         userIceHackingService.enter(iceId)
     }
@@ -82,7 +82,7 @@ class WordSearchService(
     )
 
     fun selected(iceId: String, letters: List<String>) {
-        val iceStatus = wordSearchStatusRepo.findById(iceId).getOrElse { error("Ice not found for \"${iceId}\"") }
+        val iceStatus = wordSearchIceStatusRepo.findById(iceId).getOrElse { error("Ice not found for \"${iceId}\"") }
         if (iceStatus.hacked) return
         val wordSelected = determineWordSelected(letters, iceStatus.letterGrid)
         val nexWord = iceStatus.words[iceStatus.wordIndex]
@@ -97,7 +97,7 @@ class WordSearchService(
             wordIndex = nextIndex,
             hacked = hacked
         )
-        wordSearchStatusRepo.save(newIceStatus)
+        wordSearchIceStatusRepo.save(newIceStatus)
 
         val updateMessage = WordSearchUpdate(iceStatus.id, nextIndex, letters, hacked)
         stompService.toIce(iceStatus.id, ServerActions.SERVER_WORD_SEARCH_UPDATED, updateMessage)
@@ -116,7 +116,7 @@ class WordSearchService(
     }
 
     fun deleteByLayerId(layerId: String) {
-        val iceStatus = wordSearchStatusRepo.findByLayerId(layerId) ?: return
-        wordSearchStatusRepo.delete(iceStatus)
+        val iceStatus = wordSearchIceStatusRepo.findByLayerId(layerId) ?: return
+        wordSearchIceStatusRepo.delete(iceStatus)
     }
 }

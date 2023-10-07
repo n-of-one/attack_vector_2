@@ -1,5 +1,7 @@
-package org.n1.av2.backend.entity.ice
+package org.n1.av2.backend.service.layerhacking.service
 
+import org.n1.av2.backend.entity.service.IcePassword
+import org.n1.av2.backend.entity.service.IcePasswordRepository
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Service
 import kotlin.random.Random
 
 @Service
-class IcePasswordService(
+class KeystoreService(
     private val icePasswordRepository: IcePasswordRepository,
     private val nodeEntityService: NodeEntityService,
     @Lazy private val iceService: IceService  // avoid circular dependency

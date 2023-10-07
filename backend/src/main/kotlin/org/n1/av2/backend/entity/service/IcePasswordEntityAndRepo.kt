@@ -1,4 +1,4 @@
-package org.n1.av2.backend.entity.ice
+package org.n1.av2.backend.entity.service
 
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository

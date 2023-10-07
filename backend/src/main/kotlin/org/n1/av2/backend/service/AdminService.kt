@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service
 
-import org.n1.av2.backend.entity.ice.IceStatusRepo
+import org.n1.av2.backend.entity.ice.IcePasswordStatusRepo
 import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.*
@@ -27,7 +27,7 @@ class AdminService(
     private val userEntityService: UserEntityService,
     private val userRepo: UserRepo,
     private val tangleIceStatusRepo: TangleIceStatusRepo,
-    private val iceStatusRepo: IceStatusRepo,
+    private val icePasswordStatusRepo: IcePasswordStatusRepo,
     ) {
 
     fun purgeAll() {
@@ -50,7 +50,7 @@ class AdminService(
         userRepo.deleteAll()
 
         tangleIceStatusRepo.deleteAll()
-        iceStatusRepo.deleteAll()
+        icePasswordStatusRepo.deleteAll()
 
         userEntityService.createMandatoryUsers()
         hackerStateEntityService.init()
@@ -65,7 +65,7 @@ class AdminService(
         tracingPatrollerRepo.deleteAll()
 
         tangleIceStatusRepo.deleteAll()
-        iceStatusRepo.deleteAll()
+        icePasswordStatusRepo.deleteAll()
 
         sitePropertiesRepo.findAll().forEach { siteProperties ->
             stompService.toSite(siteProperties.siteId, ServerActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))

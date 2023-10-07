@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service.layerhacking
 
-import org.n1.av2.backend.entity.ice.IcePasswordService
+import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class KeystoreLayerService(
     private val stompService: StompService,
-    private val icePasswordService: IcePasswordService,
+    private val keystoreService: KeystoreService,
 
     ){
     fun hack(layer: KeyStoreLayer) {
@@ -16,7 +16,7 @@ class KeystoreLayerService(
             stompService.replyTerminalReceive("[error]service misconfiguration[/] this keystore is inactive due to misconfiguration.")
             return
         }
-        val password = icePasswordService.getIcePassword(layer.iceLayerId!!).password
+        val password = keystoreService.getIcePassword(layer.iceLayerId!!).password
 
         stompService.replyTerminalReceive("hacked. Password found: [primary]${password}")
     }

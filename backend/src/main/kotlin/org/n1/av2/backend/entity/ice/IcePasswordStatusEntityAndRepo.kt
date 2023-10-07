@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
 
 
 @Document
-data class IceStatus(
+data class IcePasswordStatus(
     val id: String, // iceId
     @Indexed val layerId: String,
     val hackerAttempts: List<String>,  // only attempts by hackers are tracked
@@ -19,8 +19,8 @@ data class IceStatus(
 )
 
 @Repository
-interface IceStatusRepo: CrudRepository<IceStatus, String> {
-    fun findByLayerId(layerId: String): IceStatus?
+interface IcePasswordStatusRepo: CrudRepository<IcePasswordStatus, String> {
+    fun findByLayerId(layerId: String): IcePasswordStatus?
 }
 
 

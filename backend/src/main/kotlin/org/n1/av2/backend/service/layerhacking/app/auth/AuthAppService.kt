@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.layerhacking.app.auth
 
-import org.n1.av2.backend.entity.ice.IcePasswordService
-import org.n1.av2.backend.entity.ice.IceStatus
-import org.n1.av2.backend.entity.ice.IceStatusRepo
+import org.n1.av2.backend.service.layerhacking.service.KeystoreService
+import org.n1.av2.backend.entity.ice.IcePasswordStatus
+import org.n1.av2.backend.entity.ice.IcePasswordStatusRepo
 import org.n1.av2.backend.entity.ice.determineIceType
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.IceStrength
@@ -10,12 +10,12 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.ice.PasswordIceLayer
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.layerhacking.app.AppService
-import org.n1.av2.backend.service.layerhacking.ice.password.UserType
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.user.UserIceHackingService
 import org.n1.av2.backend.util.createId
@@ -35,33 +35,33 @@ import kotlin.jvm.optionals.getOrElse
 @org.springframework.stereotype.Service
 class AuthAppService(
     private val nodeEntityService: NodeEntityService,
-    private val iceStatusRepo: IceStatusRepo,
+    private val icePasswordStatusRepo: IcePasswordStatusRepo,
     private val time: TimeService,
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
     private val userIceHackingService: UserIceHackingService,
-    private val currentUserService: CurrentUserService,
-    private val icePasswordService: IcePasswordService,
+    private val currentUser: CurrentUserService,
+    private val keystoreService: KeystoreService,
     private val appService: AppService,
 ) {
 
-    fun findOrCreateIceStatus(layer: PasswordIceLayer): IceStatus {
-        return iceStatusRepo.findByLayerId(layer.id) ?: findOrCreateIceForPasswordIce(layer)
+    fun findOrCreateIceStatus(layer: PasswordIceLayer): IcePasswordStatus {
+        return icePasswordStatusRepo.findByLayerId(layer.id) ?: findOrCreateIceForPasswordIce(layer)
     }
 
-    private fun findOrCreateIceForPasswordIce(layer: PasswordIceLayer): IceStatus {
-        val id = createId("password", iceStatusRepo::findById)
+    private fun findOrCreateIceForPasswordIce(layer: PasswordIceLayer): IcePasswordStatus {
+        val id = createId("password", icePasswordStatusRepo::findById)
         return createStatus(id, layer)
     }
 
-    fun findOrCreateIceStatus(iceId: String, layer: Layer): IceStatus {
-        return iceStatusRepo.findById(iceId).getOrElse { createStatus(iceId, layer) }
+    fun findOrCreateIceStatus(iceId: String, layer: Layer): IcePasswordStatus {
+        return icePasswordStatusRepo.findById(iceId).getOrElse { createStatus(iceId, layer) }
     }
 
-    fun createStatus(iceId: String, layer: Layer): IceStatus {
-        val iceStatus = IceStatus(iceId, layer.id, LinkedList(), 0, time.longAgo())
-        iceStatusRepo.save(iceStatus)
-        return iceStatus
+    fun createStatus(iceId: String, layer: Layer): IcePasswordStatus {
+        val icePasswordStatus = IcePasswordStatus(iceId, layer.id, LinkedList(), 0, time.longAgo())
+        icePasswordStatusRepo.save(icePasswordStatus)
+        return icePasswordStatus
     }
 
     data class IceAppEnter(
@@ -76,8 +76,8 @@ class AuthAppService(
     )
 
 
-    fun enter(iceId: String, userType: UserType) {
-        val iceStatus = iceStatusRepo.findById(iceId).getOrElse { error("Ice not found for id: ${iceId}") }
+    fun enter(iceId: String) {
+        val iceStatus = icePasswordStatusRepo.findById(iceId).getOrElse { error("Ice not found for id: ${iceId}") }
 
         val layer = findLayer(iceStatus)
         val type = iceId.determineIceType()
@@ -86,19 +86,21 @@ class AuthAppService(
         val iceEnter = IceAppEnter(type, layer.strength, hint, iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, layer.hacked)
 
         stompService.reply(ServerActions.SERVER_AUTH_ENTER, iceEnter)
-        if (userType == UserType.HACKER) {
+
+        if (currentUser.userEntity.type == UserType.HACKER) {
             userIceHackingService.enter(iceId)
         }
     }
 
-    fun submitAttempt(iceId: String, password: String, userType: UserType) {
-        val iceStatus = iceStatusRepo.findById(iceId).getOrElse { error("Ice not found for id: ${iceId}") }
+    fun submitAttempt(iceId: String, password: String) {
+        val iceStatus = icePasswordStatusRepo.findById(iceId).getOrElse { error("Ice not found for id: ${iceId}") }
         val layer = findLayer(iceStatus)
 
-        if (userType == UserType.USER) {
-            resolveForUser(password, iceStatus, layer)
-        } else {
+        if (currentUser.userEntity.type == UserType.HACKER) {
             resolveForHacker(password, iceStatus, layer)
+        }
+        else {
+            resolveForUser(password, iceStatus, layer)
         }
     }
 
@@ -109,23 +111,23 @@ class AuthAppService(
         val hacked: Boolean,
     )
 
-    private fun resolveForUser(password: String, iceStatus: IceStatus, layer: IceLayer) {
-        if (checkPassword(password, layer, iceStatus.id)) {
-            respondStatusHacked(iceStatus, layer)
-            val newStatus = iceStatus.copy(authorized = iceStatus.authorized + currentUserService.userId)
-            iceStatusRepo.save(newStatus)
+    private fun resolveForUser(password: String, icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
+        if (checkPassword(password, layer, icePasswordStatus.id)) {
+            respondStatusHacked(icePasswordStatus, layer)
+            val newStatus = icePasswordStatus.copy(authorized = icePasswordStatus.authorized + currentUser.userId)
+            icePasswordStatusRepo.save(newStatus)
             redirectToNextLayer(layer)
 
         } else {
-            val timeOutSeconds = calculateTimeOutSeconds(iceStatus.attemptCount)
-            val newStatus = iceStatus.copy(
+            val timeOutSeconds = calculateTimeOutSeconds(icePasswordStatus.attemptCount)
+            val newStatus = icePasswordStatus.copy(
                 lockedUntil = time.now().plusSeconds(timeOutSeconds),
-                attemptCount = iceStatus.attemptCount + 1
+                attemptCount = icePasswordStatus.attemptCount + 1
             )
-            iceStatusRepo.save(newStatus)
+            icePasswordStatusRepo.save(newStatus)
             val showHint = showHint(newStatus, layer)
-            val result = UiStateUpdate(newStatus.lockedUntil, iceStatus.hackerAttempts, showHint, layer.hacked)
-            stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
+            val result = UiStateUpdate(newStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint, layer.hacked)
+            stompService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
         }
     }
 
@@ -137,18 +139,18 @@ class AuthAppService(
     }
 
 
-    private fun resolveForHacker(password: String, iceStatus: IceStatus, layer: IceLayer) {
-        if (iceStatus.hackerAttempts.contains(password)) {
-            resolveDuplicate(iceStatus, password, layer)
+    private fun resolveForHacker(password: String, icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
+        if (icePasswordStatus.hackerAttempts.contains(password)) {
+            resolveDuplicate(icePasswordStatus, password, layer)
         }
-        else if (checkPassword(password, layer, iceStatus.id)) {
-            respondStatusHacked(iceStatus, layer)
+        else if (checkPassword(password, layer, icePasswordStatus.id)) {
+            respondStatusHacked(icePasswordStatus, layer)
 
-            if (!layer.hacked) hackedUtil.iceHacked(iceStatus.layerId, 70)
+            if (!layer.hacked) hackedUtil.iceHacked(icePasswordStatus.layerId, 70)
             redirectToNextLayer(layer)
         }
         else {
-            resolveHackAttemptFailed(iceStatus, password, layer)
+            resolveHackAttemptFailed(icePasswordStatus, password, layer)
         }
     }
 
@@ -157,49 +159,49 @@ class AuthAppService(
             return true
         }
 
-        return icePasswordService.checkIcePassword(iceId, password)
+        return keystoreService.checkIcePassword(iceId, password)
     }
 
-    private fun resolveDuplicate(iceStatus: IceStatus, password: String, layer: IceLayer) {
+    private fun resolveDuplicate(icePasswordStatus: IcePasswordStatus, password: String, layer: IceLayer) {
         stompService.replyNeutral("Password \"${password}\" already attempted, ignoring")
 
-        val showHint = showHint(iceStatus, layer)
-        val result = UiStateUpdate(iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, layer.hacked)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
+        val showHint = showHint(icePasswordStatus, layer)
+        val result = UiStateUpdate(icePasswordStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint, layer.hacked)
+        stompService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
     }
 
-    private fun respondStatusHacked(iceStatus: IceStatus, layer: IceLayer) {
-        val showHint = showHint(iceStatus, layer)
-        val result = UiStateUpdate(time.longAgo(), iceStatus.hackerAttempts, showHint, true)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
+    private fun respondStatusHacked(icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
+        val showHint = showHint(icePasswordStatus, layer)
+        val result = UiStateUpdate(time.longAgo(), icePasswordStatus.hackerAttempts, showHint, true)
+        stompService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
 
     }
 
-    private fun resolveHackAttemptFailed(iceStatus: IceStatus, password: String, layer: IceLayer) {
-        val newAttempts = iceStatus.hackerAttempts.plus(password).sorted()
-        val timeOutSeconds = calculateTimeOutSeconds(iceStatus.attemptCount)
+    private fun resolveHackAttemptFailed(icePasswordStatus: IcePasswordStatus, password: String, layer: IceLayer) {
+        val newAttempts = icePasswordStatus.hackerAttempts.plus(password).sorted()
+        val timeOutSeconds = calculateTimeOutSeconds(icePasswordStatus.attemptCount)
 
-        val newStatus = iceStatus.copy(
+        val newStatus = icePasswordStatus.copy(
             hackerAttempts = newAttempts,
-            attemptCount = iceStatus.attemptCount + 1,
+            attemptCount = icePasswordStatus.attemptCount + 1,
             lockedUntil = time.now().plusSeconds(timeOutSeconds)
         )
-        iceStatusRepo.save(newStatus)
+        icePasswordStatusRepo.save(newStatus)
         stompService.replyNeutral("Password incorrect: ${password}")
         val showHint = showHint(newStatus, layer)
         val result = UiStateUpdate(newStatus.lockedUntil, newStatus.hackerAttempts, showHint, layer.hacked)
-        stompService.toIce(iceStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
+        stompService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
     }
 
-    private fun showHint(iceStatus: IceStatus, layer: IceLayer): Boolean {
+    private fun showHint(icePasswordStatus: IcePasswordStatus, layer: IceLayer): Boolean {
         if (layer !is PasswordIceLayer) {
             return false
         }
-        return (layer.hint.trim().isNotEmpty() && iceStatus.attemptCount >= 3)
+        return (layer.hint.trim().isNotEmpty() && icePasswordStatus.attemptCount >= 3)
     }
 
-    private fun findLayer(iceStatus: IceStatus): IceLayer {
-        return nodeEntityService.findLayer(iceStatus.layerId) as IceLayer
+    private fun findLayer(icePasswordStatus: IcePasswordStatus): IceLayer {
+        return nodeEntityService.findLayer(icePasswordStatus.layerId) as IceLayer
     }
 
 
@@ -214,8 +216,8 @@ class AuthAppService(
 
 
     fun deleteByLayerId(layerId: String) {
-        val iceStatus = iceStatusRepo.findByLayerId(layerId) ?: return
-        iceStatusRepo.delete(iceStatus)
+        val iceStatus = icePasswordStatusRepo.findByLayerId(layerId) ?: return
+        icePasswordStatusRepo.delete(iceStatus)
     }
 
 }

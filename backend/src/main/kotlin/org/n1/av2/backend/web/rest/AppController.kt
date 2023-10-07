@@ -1,9 +1,12 @@
 package org.n1.av2.backend.web.rest
 
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.ice.TangleIceLayer
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
+import org.n1.av2.backend.service.layerhacking.ice.IceAuthorizationService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
+import org.springframework.context.annotation.Lazy
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/app/")
 class AppController(
     private val nodeEntityService: NodeEntityService,
+    private val iceAuthorizationService: IceAuthorizationService,
     private val iceService: IceService,
 ) {
 
@@ -29,7 +33,7 @@ class AppController(
         val node = nodeEntityService.findByLayerId(layerId)
         val layer = node.getLayerById(layerId)
 
-        val protectingLayerId = iceService.layerProtectingTargetLayer(node, layer)
+        val protectingLayerId = iceAuthorizationService.layerProtectingTargetLayer(node, layer)
         if (protectingLayerId != null) {
             return AppResponse(null, protectingLayerId, null)
         }
@@ -38,7 +42,7 @@ class AppController(
             is StatusLightLayer -> {
                 AppResponse(layer.appId, null, null)
             }
-            is TangleIceLayer -> {
+            is IceLayer -> {
                 val iceId = iceService.findOrCreateIceForLayer(layer)
                 return AppResponse(iceId, null, null)
             }

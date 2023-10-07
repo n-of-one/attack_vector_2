@@ -44,7 +44,7 @@ export const AppSelector = ({type, layerId}: Props) => {
 
     if (response.error) {
         return <TopLevelError error="Error retrieving data from server"
-                              description={`(${response.error})`}/>
+                              description={`(server: ${response.error})`}/>
     }
 
     if (response.redirectLayerId) {

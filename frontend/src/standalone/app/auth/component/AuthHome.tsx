@@ -108,7 +108,7 @@ const PasswordInput = () => {
     const dispatch = useDispatch()
 
     const submit = () => {
-        const payload = {iceId: ice.id, password: password, userType: "USER"}
+        const payload = {iceId: ice.id, password: password}
         webSocketConnection.sendObject("/av/ice/password/submit", payload)
         dispatch({type: SUBMIT_PASSWORD})
     }

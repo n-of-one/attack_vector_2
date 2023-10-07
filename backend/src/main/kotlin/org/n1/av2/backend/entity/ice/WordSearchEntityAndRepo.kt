@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Document
-data class WordSearchStatus(
+data class WordSearchIceStatus(
     val id: String,
     @Indexed val layerId: String,
     val strength: IceStrength,
@@ -20,6 +20,6 @@ data class WordSearchStatus(
 )
 
 @Repository
-interface WordSearchStatusRepo: CrudRepository<WordSearchStatus, String> {
-    fun findByLayerId(layerId: String): WordSearchStatus?
+interface WordSearchIceStatusRepo: CrudRepository<WordSearchIceStatus, String> {
+    fun findByLayerId(layerId: String): WordSearchIceStatus?
 }
