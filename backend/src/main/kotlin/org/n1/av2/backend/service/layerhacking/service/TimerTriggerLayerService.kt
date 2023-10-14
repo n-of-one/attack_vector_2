@@ -1,7 +1,10 @@
-package org.n1.av2.backend.service.layerhacking
+package org.n1.av2.backend.service.layerhacking.service
 
 import org.n1.av2.backend.engine.GameEvent
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.ScheduledTask
+import org.n1.av2.backend.engine.SystemTaskRunner
+import org.n1.av2.backend.engine.UserTaskRunner
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
@@ -16,10 +19,11 @@ class TimerActivatesGameEvent(val runId: String, val nodeId: String, val userId:
 
 @Service
 class TimerTriggerLayerService(
-    val taskRunner: TaskRunner,
-    val time: TimeService,
-    val stompService: StompService,
-    val tracingPatrollerService: TracingPatrollerService) {
+    private val systemTaskRunner: SystemTaskRunner,
+    private val time: TimeService,
+    private val stompService: StompService,
+    private val nodeEntityService: NodeEntityService,
+    private val tracingPatrollerService: TracingPatrollerService) {
 
 
     fun hack(layer: TimerTriggerLayer) {
@@ -30,7 +34,7 @@ class TimerTriggerLayerService(
 
     private class CountdownStart(val finishAt: ZonedDateTime)
 
-    fun hackerTriggers(layer: TimerTriggerLayer, nodeId: String, userId: String, runId: String) {
+    fun hackerArrivesNode(siteId: String, layer: TimerTriggerLayer, nodeId: String, userId: String, runId: String) {
 
         val alarmTime = time.now()
                 .plusMinutes(layer.minutes)
@@ -43,13 +47,15 @@ class TimerTriggerLayerService(
         stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
 
         val event = TimerActivatesGameEvent(runId, nodeId, userId)
-        taskRunner.queueInMinutesAndSeconds(layer.minutes, layer.seconds) { timerActivates(event) }
+        val timerSeconds = layer.minutes * 60 + layer.seconds
+        systemTaskRunner.queueInSeconds(siteId, timerSeconds) { timerActivates(event) }
     }
 
     private fun detectTime(layer: TimerTriggerLayer): String {
         return "%02d:%02d".format(layer.minutes, layer.seconds)
     }
 
+    @ScheduledTask
     fun timerActivates(event: TimerActivatesGameEvent) {
         stompService.toRun(event.runId, ServerActions.SERVER_COMPLETE_COUNTDOWN)
         tracingPatrollerService.activatePatroller(event.nodeId, event.userId, event.runId)

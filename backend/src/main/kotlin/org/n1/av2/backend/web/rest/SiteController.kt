@@ -1,6 +1,6 @@
 package org.n1.av2.backend.web.rest
 
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.editor.EditorService
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 class SiteController(
     val sitePropertiesEntityService: SitePropertiesEntityService,
     val editorService: EditorService,
-    val taskRunner: TaskRunner,
+    val userTaskRunner: UserTaskRunner,
 ) {
 
     data class SiteNameWrapper(val siteName: String)
@@ -33,7 +33,7 @@ class SiteController(
     data class DeleteResponse(val success: Boolean = true)
     @DeleteMapping("{id}")
     fun post(@PathVariable id: String, principal: UserPrincipal): DeleteResponse {
-        taskRunner.runTask(principal) { editorService.deleteSite(id, principal) }
+        userTaskRunner.runTask(principal) { editorService.deleteSite(id, principal) }
         return DeleteResponse()
     }
 

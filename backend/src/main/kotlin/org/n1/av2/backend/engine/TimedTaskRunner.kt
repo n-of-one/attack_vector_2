@@ -19,7 +19,7 @@ const val MINUTE_MILLIS = 60 * SECOND_MILLIS
  * Tasks can be scheduled to run in the future. Then will be held here and when their time comes,
  * added to the TaskRunner to be executed.
  */
-private class TimedEvent(val omniId: String, val due: Long, val userPrincipal: UserPrincipal, val action: () -> Unit)
+private class TimedTask(val omniId: String, val due: Long, val userPrincipal: UserPrincipal, val action: () -> Unit)
 
 @Component
 class TimedTaskRunner(
@@ -29,7 +29,7 @@ class TimedTaskRunner(
     private val logger = mu.KotlinLogging.logger {}
 
     private var running = true
-    private val timedTasks = LinkedList<TimedEvent>()
+    private val timedTasks = LinkedList<TimedTask>()
     private val lock = ReentrantLock()
 
     @PostConstruct
@@ -60,13 +60,16 @@ class TimedTaskRunner(
 
     fun add(omniId: String, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
         lock.withLock {
-            timedTasks.add(TimedEvent(omniId, due, userPrincipal, action))
+            timedTasks.add(TimedTask(omniId, due, userPrincipal, action))
             timedTasks.sortBy { it.due }
         }
     }
 
-    fun removeAllFor(omniId: String) {
-        timedTasks.removeIf { it.omniId == omniId }
+    fun removeAllFor(userId: String) {
+        lock.withLock {
+            timedTasks.removeIf { it.omniId == userId }
+            taskEngine.removeForUser(userId)
+        }
     }
 
     @PreDestroy

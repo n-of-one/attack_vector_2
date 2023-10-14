@@ -1,73 +1,90 @@
 import {serverTime} from "../../../common/server/ServerTime";
 import {AnyAction} from "redux";
-import {TERMINAL_UPDATE} from "../../../common/terminal/TerminalReducer";
-import {SERVER_HACKER_DC} from "../../server/RunServerActionProcessor";
+import {TICK} from "../../../common/terminal/TerminalReducer";
+import {SERVER_ENTER_RUN} from "../../server/RunServerActionProcessor";
+import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
-export const SERVER_START_COUNTDOWN = "SERVER_START_COUNTDOWN";
-export const SERVER_COMPLETE_COUNTDOWN = "SERVER_COMPLETE_COUNTDOWN";
+export const SERVER_START_COUNTDOWN = "SERVER_START_COUNTDOWN"
+export const SERVER_COMPLETE_COUNTDOWN = "SERVER_COMPLETE_COUNTDOWN"
+export const SERVER_REMOVE_COUNTDOWN = "SERVER_REMOVE_COUNTDOWN"
 
-export const SERVER_FLASH_PATROLLER = "SERVER_FLASH_PATROLLER";
-export const SERVER_START_TRACING_PATROLLER = "SERVER_START_TRACING_PATROLLER";
-export const SERVER_PATROLLER_MOVE = "SERVER_PATROLLER_MOVE";
-export const SERVER_PATROLLER_LOCKS_HACKER = "SERVER_PATROLLER_LOCKS_HACKER";
-export const SERVER_PATROLLER_REMOVE = "SERVER_PATROLLER_REMOVE";
+export const SERVER_FLASH_PATROLLER = "SERVER_FLASH_PATROLLER"
+export const SERVER_START_TRACING_PATROLLER = "SERVER_START_TRACING_PATROLLER"
+export const SERVER_PATROLLER_MOVE = "SERVER_PATROLLER_MOVE"
+export const SERVER_PATROLLER_LOCKS_HACKER = "SERVER_PATROLLER_LOCKS_HACKER"
+export const SERVER_PATROLLER_REMOVE = "SERVER_PATROLLER_REMOVE"
 
 
-export interface CountDownState {
+export interface CountdownTimerState {
+    timerId: string,
     finishAt: string | null,    // "2019-08-26T15:38:40.9179757+02:00",
     secondsLeft: number | null,
-    eventTriggered: boolean,
+    type: string,
+    target: string,
+    effect: string
 }
 
-const defaultState: CountDownState = {
-    finishAt: null,
-    secondsLeft: null,     // 40
-    eventTriggered: false
-};
-
-export const countdownReducer = (state: CountDownState = defaultState, action: AnyAction): CountDownState => {
+export const countdownReducer = (state: CountdownTimerState[] = [], action: AnyAction): CountdownTimerState[] => {
 
     switch (action.type) {
+        case TICK:
+            if (!action.newSecond) {
+                return state
+            }
+            return processSecondElapsed(state)
+        case SERVER_ENTER_RUN:
+            return action.data.countdowns
+        case NAVIGATE_PAGE:
+            return []
         case SERVER_START_COUNTDOWN:
-            return serverAlarmTrigger(state, action.data);
-        case TERMINAL_UPDATE:
-            return processTick(state);
+            return serverStartCountdown(state, action.data)
         case SERVER_COMPLETE_COUNTDOWN:
-            return processExpireTimer(state);
-        case SERVER_HACKER_DC:
-            return processHackerDisconnect(state);
+            return processExpireTimer(state, action.data)
+        case SERVER_REMOVE_COUNTDOWN:
+            return processRemoveTimer(state, action.data)
         default:
-            return state;
+            return state
     }
 }
 
 interface CountdownStart {
+    timerId: string,
     finishAt: string
+    type: string,
+    target: string,
+    effect: string
 }
 
-const serverAlarmTrigger = (state: CountDownState, countDownStart: CountdownStart) => {
-    const secondsLeft = serverTime.secondsLeft(countDownStart.finishAt);
+const serverStartCountdown = (state: CountdownTimerState[], countDownStart: CountdownStart): CountdownTimerState[] => {
+    const secondsLeft = serverTime.secondsLeft(countDownStart.finishAt)
+    const newTimer: CountdownTimerState = {...countDownStart, secondsLeft: secondsLeft}
+    return [...state, newTimer]
+}
 
-    return {finishAt: countDownStart.finishAt, secondsLeft: secondsLeft, eventTriggered: false}
-};
+const processSecondElapsed = (state: CountdownTimerState[]) => {
+    const newTimers = state.map(timer => processTickTimer(timer))
+    return newTimers
+}
 
-const processTick = (state: CountDownState) => {
-    if (!state.finishAt || state.eventTriggered) {
-        return state;
+const processTickTimer = (state: CountdownTimerState): CountdownTimerState => {
+    if (state.secondsLeft === 0 || !state.finishAt) {
+        return state
     }
-    const secondsLeft = serverTime.secondsLeft(state.finishAt);
+    const secondsLeft = Math.max(0, serverTime.secondsLeft(state.finishAt))
+    return {...state, secondsLeft: secondsLeft}
+}
 
-    return {finishAt: state.finishAt, secondsLeft: secondsLeft, eventTriggered: false};
-};
 
-const processExpireTimer = (state: CountDownState) => {
-    return {
-        ...state,
-        secondsLeft: 0,
-        eventTriggered: true
-    };
-};
+interface SpecificTimer {
+    countdownId: string
+}
 
-const processHackerDisconnect = (state: CountDownState) => {
-    return defaultState
+const processExpireTimer = (state: CountdownTimerState[], action: SpecificTimer): CountdownTimerState[] => {
+
+    return state.filter(timer => timer.timerId !== action.countdownId)
+}
+
+const processRemoveTimer = (state: CountdownTimerState[], action: SpecificTimer) => {
+    const newTimers = state.filter(timer => timer.timerId !== action.countdownId)
+    return newTimers
 }

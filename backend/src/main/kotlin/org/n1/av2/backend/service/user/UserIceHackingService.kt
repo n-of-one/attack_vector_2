@@ -18,7 +18,7 @@ class UserIceHackingService(
 ) {
 
 
-    fun connect(userPrincipal: UserPrincipal) {
+    fun browserConnect(userPrincipal: UserPrincipal) {
         val newState = UserIceHackingState(
             userId = userPrincipal.userId,
             connectionId = userPrincipal.connectionId,
@@ -43,7 +43,7 @@ class UserIceHackingService(
         updateIceHackers(iceId, userPrincipal)
     }
 
-    fun disconnect(userPrincipal: UserPrincipal) {
+    fun browserDisconnect(userPrincipal: UserPrincipal) {
         val existingStateOptional = repo.findById(userPrincipal.userId)
         val existingState = if (existingStateOptional.isEmpty) {
             return

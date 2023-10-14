@@ -4,13 +4,10 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.ice.*
-import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
-import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
-import org.n1.av2.backend.entity.site.layer.other.TextLayer
-import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.ThemeService
 import org.n1.av2.backend.entity.app.StatusLightEntityService
+import org.n1.av2.backend.entity.site.layer.other.*
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.util.createLayerId
 import org.springframework.stereotype.Service
@@ -178,6 +175,7 @@ class NodeEntityService(
             LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
             LayerType.LOCK -> createStatusLightLayer(layerId,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
             LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)
+            LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
         }
     }
 

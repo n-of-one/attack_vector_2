@@ -12,19 +12,23 @@ import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";
 
 
-const terminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
+const TerminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
+
+    const timerCount = useSelector((state: HackerState) => state.run.timers.length)
+
     if (infoNodeId) {
         return (<NodeScanInfo/>)
     }
-    return (<>
-            <div className="row">
-                <CountdownTimer/>
-            </div>
-            <div className="row">
-                <Terminal terminalState={terminal} submit={submit} height="780px"/>
-            </div>
-        </>
-    )
+
+    const hastTimers = timerCount > 0
+    const terminalHeight = 847 - (timerCount * 24) - (hastTimers ? 13 : 22)
+
+    return <>
+        <CountdownTimer/>
+        <div className="row">
+            <Terminal terminalState={terminal} submit={submit} height={terminalHeight}/>
+        </div>
+    </>
 }
 
 
@@ -47,10 +51,9 @@ export const RunHome = () => {
     return (
         <div className="row">
             <div className="col-lg-6">
-                {terminalAndScanResultPanel(infoNodeId, terminal, submit)}
+                {TerminalAndScanResultPanel(infoNodeId, terminal, submit)}
             </div>
-            <div className="col-lg-6 rightPane">
-
+            <div className="col-lg-6">
                 <div className="row">
                     <div className="col-lg-12">
                         <span className="text">Site: {siteName}</span>

@@ -2,7 +2,7 @@ import React from "react"
 import {
     CODE,
     CORE,
-    LINK, MONEY, NETWALK_ICE,
+    MONEY, NETWALK_ICE,
     OS,
     PASSWORD_ICE,
     SCAN_BLOCK, TAR_ICE,
@@ -43,7 +43,6 @@ export const glyphiconFromType = (type: string) => {
         case OS : return "glyphicon-home"
         case TEXT : return "glyphicon-file"
         case KEYSTORE : return "glyphicon-briefcase"
-        case LINK : return "glyphicon-link"
         case TRACER : return "glyphicon-transfer"
         case TRACE_LOG : return "glyphicon-erase"
         case SCAN_BLOCK : return "glyphicon-magnet"

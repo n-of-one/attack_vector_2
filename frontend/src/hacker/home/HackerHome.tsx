@@ -10,7 +10,7 @@ import {HIDE_NODE_INFO} from "../run/model/ScanActions";
 import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
 import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
-import {SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
+import {SERVER_ENTER_RUN, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
 import {Dispatch} from "redux";
 import {developmentServer} from "../../common/util/DevEnvironment";
 
@@ -110,9 +110,8 @@ export const HackerHome = () => {
 }
 
 export const enterScan = (runId: string, siteId: string, dispatch: Dispatch, currentPage: string) => {
-    webSocketConnection.waitFor(SERVER_SCAN_FULL, WAITING_FOR_SCAN_IGNORE_LIST)
+    webSocketConnection.waitFor(SERVER_ENTER_RUN, WAITING_FOR_SCAN_IGNORE_LIST)
     webSocketConnection.subscribeForRun(runId, siteId)
-    runCanvas.reset()
     dispatch({type: HIDE_NODE_INFO})
     dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
     dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})

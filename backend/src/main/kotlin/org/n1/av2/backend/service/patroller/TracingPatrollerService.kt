@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.patroller
 
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.ScheduledTask
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.model.Timings
@@ -26,7 +27,7 @@ class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: Lis
 @Service
 class TracingPatrollerService(
     val hackerStateEntityService: HackerStateEntityService,
-    val taskRunner: TaskRunner,
+    val userTaskRunner: UserTaskRunner,
     val tracingPatrollerRepo: TracingPatrollerRepo,
     val traverseNodeService: TraverseNodeService,
     val time: TimeService,
@@ -66,16 +67,17 @@ class TracingPatrollerService(
         messageStartPatroller(patroller, nodeId, runId)
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nodeId, PATROLLER_ARRIVE_FIRST_Timings)
-        taskRunner.queueInTicks(PATROLLER_ARRIVE_FIRST_Timings.totalTicks) { patrollerArrives(next) }
+        userTaskRunner.queueInTicks(PATROLLER_ARRIVE_FIRST_Timings.totalTicks) { patrollerArrives(next) }
     }
 
+    @ScheduledTask
     fun patrollerArrives(event: TracingPatrollerArrivesGameEvent) {
         val patroller = getPatroller(event.patrollerId)
         patroller.currentNodeId = event.nodeId
 
         val targetHackerState = hackerStateEntityService.retrieve(patroller.targetUserId)
         if (targetHackerState.currentNodeId == patroller.currentNodeId) {
-            lockHacker(patroller)
+//            lockHacker(patroller)
         } else {
             patrollerMove(patroller, patroller.runId)
         }
@@ -91,16 +93,16 @@ class TracingPatrollerService(
         messagePatrollerMove(patroller, segment, runId)
 
         val next = TracingPatrollerArrivesGameEvent(patroller.id, nextNodeToTarget.id, PATROLLER_MOVE_Timings)
-        taskRunner.queueInTicks(PATROLLER_MOVE_Timings.totalTicks) { patrollerArrives(next) }
+        userTaskRunner.queueInTicks(PATROLLER_MOVE_Timings.totalTicks) { patrollerArrives(next) }
     }
 
-    private fun lockHacker(patroller: TracingPatroller) {
-        hackerStateEntityService.lockHacker(patroller.targetUserId, patroller.id)
-        messageCatchHacker(patroller)
-        stompService.replyTerminalReceive("[error]critical[/] OS privileges revoked.")
-
-        // TODO start tracing
-    }
+//    private fun lockHacker(patroller: TracingPatroller) {
+//        hackerStateEntityService.lockHacker(patroller.targetUserId, patroller.id)
+//        messageCatchHacker(patroller)
+//        stompService.replyTerminalReceive("[error]critical[/] OS privileges revoked.")
+//
+//        // TODO start tracing
+//    }
 
     private fun findMoveNextNode(patroller: TracingPatroller): TraverseNode {
         val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId)

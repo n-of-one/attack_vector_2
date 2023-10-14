@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.terminal.hacking
 
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.ScheduledTask
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.ConnectionEntityService
@@ -8,10 +9,12 @@ import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
+import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.service.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.scan.ScanProbActionService
 import org.springframework.stereotype.Service
 
@@ -33,8 +36,9 @@ class CommandMoveService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runEntityService: RunEntityService,
     private val timerTriggerLayerService: TimerTriggerLayerService,
+    private val tripwireLayerService: TripwireLayerService,
     private val scanProbeActionService: ScanProbActionService,
-    private val taskRunner: TaskRunner,
+    private val userTaskRunner: UserTaskRunner,
     private val stompService: StompService
 ) {
 
@@ -93,16 +97,16 @@ class CommandMoveService(
         return false
     }
 
-
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
         stompService.replyTerminalSetLocked(true)
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
         stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
 
         val moveArriveEvent = MoveArriveGameEvent(toNode.id, state.userId, runId)
-        taskRunner.queueInTicks(MOVE_START_Timings.totalTicks) { moveArrive(moveArriveEvent) }
+        userTaskRunner.queueInTicks(MOVE_START_Timings.totalTicks) { moveArrive(moveArriveEvent) }
     }
 
+    @ScheduledTask
     fun moveArrive(arriveEvent: MoveArriveGameEvent) {
         val runId = arriveEvent.runId
         val userId = arriveEvent.userId
@@ -110,7 +114,7 @@ class CommandMoveService(
 
         val state = hackerStateEntityService.retrieve(userId).toRunState()
 
-        if (state.locked) {
+        if (!state.masked) {
             class MoveArriveFailAction(val userId: String)
             stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE_FAIL, MoveArriveFailAction(userId))
             return
@@ -127,10 +131,11 @@ class CommandMoveService(
             val action = HackerScansNodeAction(userId, nodeId)
             stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, action)
             val event = HackerScannedNodeEvent(nodeId, userId, runId)
-            taskRunner.queueInTicks(action.timings.totalTicks) { hackerScannedNode(event) }
+            userTaskRunner.queueInTicks(action.timings.totalTicks) { hackerScannedNode(event) }
         }
     }
 
+    @ScheduledTask
     fun hackerScannedNode(event: HackerScannedNodeEvent) {
         val runId = event.runId
         val userId = event.userId
@@ -156,10 +161,9 @@ class CommandMoveService(
         scanProbeActionService.scannedConnections(run, node, nodeScan)
     }
 
-
     private fun arriveComplete(state: HackerStateRunning, nodeId: String, userId: String, runId: String) {
         hackerStateEntityService.arriveAt(state, nodeId)
-        triggerLayersAtArrive(nodeId, userId, runId)
+        triggerLayersAtArrive(state.siteId, nodeId, userId, runId)
 
         class MoveArriveMessage(val nodeId: String, val userId: String, val timings: Timings)
 
@@ -168,16 +172,14 @@ class CommandMoveService(
         stompService.replyTerminalSetLocked(false)
     }
 
-
-    private fun triggerLayersAtArrive(nodeId: String, userId: String, runId: String) {
+    private fun triggerLayersAtArrive(siteId: String, nodeId: String, userId: String, runId: String) {
         val node = nodeEntityService.getById(nodeId)
         node.layers.forEach { layer ->
             when (layer) {
-                is TimerTriggerLayer -> timerTriggerLayerService.hackerTriggers(layer, nodeId, userId, runId)
+                is TimerTriggerLayer -> timerTriggerLayerService.hackerArrivesNode(siteId, layer, nodeId, userId, runId)
+                is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, userId, runId)
                 else -> {} // do nothing
             }
         }
     }
-
-
 }

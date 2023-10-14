@@ -29,7 +29,6 @@ class ScanTerminalService(
         val tokens = command.split(" ")
         when (tokens[0]) {
             "help" -> processHelp()
-            "dc" -> processDisconnect()
             "autoscan" -> processAutoScan(runId)
             "scan" -> processScan(runId, tokens)
             "/share" -> socialTerminalService.processShare(runId, tokens)
@@ -51,18 +50,12 @@ class ScanTerminalService(
         scanningService.performAutoScan(runId)
     }
 
-    private fun processDisconnect() {
-        val hackerState = hackerStateEntityService.retrieveForCurrentUser()
-        runService.leaveRun(hackerState)
-    }
-
     private fun processHelp() {
         stompService.replyTerminalReceive(
                 "Command options:",
                 " [u]autoscan",
                 " [u]attack",
                 " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
-                " [u]dc",
                 " [u]/share[/u] [info]<user name>")
         if (config.dev) {
             stompService.replyTerminalReceive(

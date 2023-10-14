@@ -4,6 +4,7 @@ const val HACKER_ENDPOINT = "/ws_hacker"
 const val NETWORKED_APP_ENDPOINT = "/ws_networked_app"
 const val UNRESTRICTED_ENDPOINT = "/ws_unrestricted"
 
+// See: /doc/WebsocketConnections.md
 enum class ConnectionType {
     WS_UNRESTRICTED,
     WS_HACKER_MAIN,

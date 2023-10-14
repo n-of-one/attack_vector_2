@@ -1,6 +1,7 @@
 package org.n1.av2.backend.model.iam
 
 import org.n1.av2.backend.config.websocket.ConnectionType
+import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.UserEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
@@ -17,6 +18,14 @@ data class UserPrincipal(
     companion object {
         fun fromContext(): UserPrincipal {
             return SecurityContextHolder.getContext().authentication as UserPrincipal
+        }
+        fun system(): UserPrincipal {
+            return UserPrincipal(
+                _name = "system",
+                connectionId = "none",
+                userEntity = SYSTEM_USER,
+                type = ConnectionType.NONE,
+            )
         }
     }
 

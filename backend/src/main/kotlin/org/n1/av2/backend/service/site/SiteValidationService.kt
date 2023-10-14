@@ -6,6 +6,7 @@ import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 @Service
 class SiteValidationService(
@@ -39,11 +40,7 @@ class SiteValidationService(
     }
 
     private fun validateHackTime(data: SiteProperties) {
-        val errorText = "time must be in the format (minutes):(seconds) for example: 12:00 "
-        val parts = data.hackTime.split(":")
-        if (parts.size != 2) throw ValidationException(errorText)
-        parts[0].toIntOrNull() ?: throw ValidationException(errorText)
-        parts[1].toIntOrNull() ?: throw ValidationException(errorText)
+        data.hackTime.toDuration("Hack time")
     }
 
 
@@ -112,4 +109,26 @@ class SiteValidationService(
             stompService.toSite(id, ServerActions.SERVER_UPDATE_SITE_STATE, newState)
         }
     }
+}
+
+fun String.toDuration(type: String): Duration {
+    val errorText = "${type} time must be \"0\" or in the format (hours):(minutes):(seconds) or (minutes):(second) for example: 0:12:00 or 12:00"
+    if (this.trim() == "0") return Duration.ZERO
+
+    val parts = this.split(":")
+
+    if (parts.size < 2 || parts.size > 3) throw ValidationException(errorText)
+
+    val normalizedParts = if (parts.size == 3) parts else listOf("0") + parts
+
+    val hours = normalizedParts[0].toLongOrNull() ?: throw ValidationException(errorText)
+    val minutes = normalizedParts[1].toLongOrNull() ?: throw ValidationException(errorText)
+    val seconds = normalizedParts[2].toLongOrNull() ?: throw ValidationException(errorText)
+
+    if (hours < 0 || minutes < 0 || seconds <0) {
+        throw ValidationException("${type} time must be positive.")
+    }
+
+    return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+
 }

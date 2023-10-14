@@ -1,9 +1,9 @@
 package org.n1.av2.backend.config.websocket
 
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.CurrentUserService
-import org.n1.av2.backend.service.user.UserConnectionService
+import org.n1.av2.backend.service.user.HackerConnectionService
 import org.n1.av2.backend.service.user.UserIceHackingService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
@@ -13,16 +13,16 @@ import javax.annotation.PostConstruct
 // Prevent circular connection
 @Configuration
 class StompConnectionEventServiceInit(
-    val taskRunner: TaskRunner,
-    val userConnectionService: UserConnectionService,
+    val userTaskRunner: UserTaskRunner,
+    val hackerConnectionService: HackerConnectionService,
     val stompConnectionEventService: StompConnectionEventService,
     val userIceHackingService: UserIceHackingService
 ) {
 
     @PostConstruct
     fun postConstruct() {
-        stompConnectionEventService.taskRunner = taskRunner
-        stompConnectionEventService.userConnectionService = userConnectionService
+        stompConnectionEventService.userTaskRunner = userTaskRunner
+        stompConnectionEventService.hackerConnectionService = hackerConnectionService
         stompConnectionEventService.userIceHackingService = userIceHackingService
     }
 }
@@ -32,39 +32,39 @@ class StompConnectionEventService(
     private val currentUserService: CurrentUserService,
 ) {
 
-    lateinit var taskRunner: TaskRunner
-    lateinit var userConnectionService: UserConnectionService
+    lateinit var userTaskRunner: UserTaskRunner
+    lateinit var hackerConnectionService: HackerConnectionService
     lateinit var userIceHackingService: UserIceHackingService
 
     private val logger = mu.KotlinLogging.logger {}
 
     fun connect(userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
 
             if (userPrincipal.type == ConnectionType.WS_HACKER_MAIN) {
-                userConnectionService.connect(userPrincipal)
+                hackerConnectionService.browserConnect(userPrincipal)
             }
             if (userPrincipal.type == ConnectionType.WS_NETWORK_APP) {
-                userIceHackingService.connect(userPrincipal)
+                userIceHackingService.browserConnect(userPrincipal)
             }
         }
     }
 
-    fun disconnect(userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) {
+    fun browserDisconnect(userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
 
             if (userPrincipal.type == ConnectionType.WS_HACKER_MAIN) {
-                userConnectionService.disconnect(userPrincipal)
+                hackerConnectionService.browserDisconnect(userPrincipal)
             }
             if (userPrincipal.type == ConnectionType.WS_NETWORK_APP) {
-                userIceHackingService.disconnect(userPrincipal)
+                userIceHackingService.browserDisconnect(userPrincipal)
             }
         }
     }
 
     fun sendTime(userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) {
-            userConnectionService.sendTime()
+        userTaskRunner.runTask(userPrincipal) {
+            hackerConnectionService.sendTime()
         }
     }
 

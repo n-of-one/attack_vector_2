@@ -1,8 +1,10 @@
 package org.n1.av2.backend.service.run
 
+import org.n1.av2.backend.engine.CalledBySystem
+import org.n1.av2.backend.engine.SystemTaskRunner
 import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.*
-import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.service.DetectionCountdownEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.UserEntity
@@ -13,11 +15,14 @@ import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.layerhacking.service.CountdownInfo
+import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
 import org.n1.av2.backend.service.scan.ScanInfoService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.terminal.SyntaxHighlightingService
+import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 
@@ -33,9 +38,10 @@ class RunService(
     private val syntaxHighlightingService: SyntaxHighlightingService,
     private val stompService: StompService,
     private val userRunLinkEntityService: UserRunLinkEntityService,
-    private val nodeEntityService: NodeEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val scanInfoService: ScanInfoService,
+    private val detectionCountdownEntityService: DetectionCountdownEntityService,
+    private val tripwireLayerService: TripwireLayerService,
 ) {
 
     class HackerPresence(
@@ -43,17 +49,16 @@ class RunService(
         val userName: String,
         val icon: HackerIcon,
         val nodeId: String?,
-        val targetNodeId: String?,
-        val activity: RunActivity,
-        val locked: Boolean
+        val activity: HackerActivity,
+        val masked: Boolean
     )
 
     fun enterRun(runId: String) {
         val run = runEntityService.getByRunId(runId)
-        val thisHackerState = hackerStateEntityService.enterScan(run.siteId, runId)
+        val thisHackerState = hackerStateEntityService.enterSite(run.siteId, runId)
 
         syntaxHighlightingService.sendForScan()
-        stompService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SCAN, toPresence(thisHackerState))
+        stompService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SITE, toPresence(thisHackerState))
 
         val siteFull = siteService.getSiteFull(run.siteId)
         siteFull.sortNodeByDistance(run)
@@ -61,10 +66,11 @@ class RunService(
         val hackerPresences = getPresenceInRun(runId)
         val patrollers = tracingPatrollerService.getAllForRun(runId)
 
-        class ScanAndSite(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val patrollers: List<PatrollerUiData>)
+        val countdowns = tripwireLayerService.findForEnterSite(run.siteId, currentUserService.userId)
 
-        val scanAndSite = ScanAndSite(run, siteFull, hackerPresences, patrollers)
-        stompService.reply(ServerActions.SERVER_SCAN_FULL, scanAndSite)
+        class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val patrollers: List<PatrollerUiData>, val countdowns: List<CountdownInfo>)
+        val siteInfo = SiteInfo(run, siteFull, hackerPresences, patrollers, countdowns)
+        stompService.reply(ServerActions.SERVER_ENTER_RUN, siteInfo)
     }
 
     private fun getPresenceInRun(runId: String): List<HackerPresence> {
@@ -82,23 +88,34 @@ class RunService(
             userName = user.name,
             icon = user.hacker.icon,
             nodeId = state.currentNodeId,
-            targetNodeId = state.currentNodeId,
-            activity = state.runActivity,
-            locked = state.locked
+            masked = state.masked,
+            activity = state.activity
         )
     }
 
-    fun leaveRun(hackerState: HackerState) {
+    @CalledBySystem
+    fun hackerDisconnect(hackerState: HackerState, message: String) {
+        timedTaskRunner.removeAllFor(hackerState.userId)
+        tracingPatrollerService.disconnected(hackerState.userId)
+
+        stompService.toRun(hackerState.runId!!, ServerActions.SERVER_HACKER_DC, "userId" to hackerState.userId)
+        stompService.toUser(hackerState.userId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]${message}", "")))
+        stompService.toUser(hackerState.userId, ServerActions.SERVER_TERMINAL_UPDATE_PROMPT, "prompt" to "⇀ ", "terminalId" to TERMINAL_MAIN)
+
+        hackerStateEntityService.disconnect(hackerState)
+    }
+
+
+    fun leaveSite(hackerState: HackerState) {
         val runId = hackerState.runId ?: return // if somehow the user was already disconnected for another reason
 
         timedTaskRunner.removeAllFor(hackerState.userId)
         tracingPatrollerService.disconnected(hackerState.userId)
 
         class HackerLeaveNotification(val userId: String)
-        stompService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SCAN, HackerLeaveNotification(hackerState.userId))
-        stompService.reply(ServerActions.SERVER_HACKER_DC, "-")
+        stompService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
 
-        hackerStateEntityService.leaveRun(hackerState.userId)
+        hackerStateEntityService.leaveSite(hackerState)
     }
 
     fun startNewRun(siteName: String) {
@@ -131,28 +148,32 @@ class RunService(
     }
 
     fun deleteSite(siteId: String) {
-        val site = sitePropertiesEntityService.getBySiteId(siteId)
+        val siteProps = sitePropertiesEntityService.getBySiteId(siteId)
         val runs = runEntityService.findAllForSiteId(siteId)
 
         userRunLinkEntityService.deleteAllForRuns(runs)
 
         runs.map { run -> hackerStateEntityService.findAllHackersInRun(run.runId) }
             .flatten()
-            .onEach { userId: String ->
-                scanInfoService.sendScanInfosOfPlayer(userId)
-                hackerStateEntityService.leaveRun(userId)
-                timedTaskRunner.removeAllFor(userId)
+            .onEach { hackerState: HackerState ->
+                scanInfoService.sendScanInfosOfPlayer(hackerState.userId)
+                hackerStateEntityService.leaveSite(hackerState)
+                timedTaskRunner.removeAllFor(hackerState.userId)
             }
 
         runs.forEach { run ->
             stompService.toRun(
                 run.runId,
                 ServerActions.SERVER_NOTIFICATION,
-                NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${site.name}")
+                NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteProps.name}")
             )
-            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
+            // FIXME: properly inform browser that they need to move to home screen
+//            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
         }
 
         tracingPatrollerService.deleteAllForRuns(runs)
+        detectionCountdownEntityService.deleteBySiteId(siteId)
+
+        timedTaskRunner.removeAllFor(siteId)
     }
 }

@@ -1,7 +1,7 @@
 package org.n1.av2.backend.engine
 
 import org.n1.av2.backend.config.websocket.ConnectionType
-import org.n1.av2.backend.entity.user.SYSTEM_USEREntity
+import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
@@ -22,7 +22,7 @@ private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
  * and we don't worry about parallel execution in the rest of our code.
  */
 @Component
-class TaskRunner(
+class UserTaskRunner(
     private val taskEngine: TaskEngine,
     private val timedTaskRunner: TimedTaskRunner,
     private val currentUserService: CurrentUserService
@@ -30,6 +30,40 @@ class TaskRunner(
 
     fun runTask(userPrincipal: UserPrincipal, action: () -> Unit) {
         taskEngine.runForUser(userPrincipal, action)
+    }
+
+    fun queueInTicks(waitTicks: Int, action: () -> Unit) {
+        val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
+        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
+        timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
+    }
+
+
+    /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
+    @Deprecated(
+        message = ">> Do not use run, Use runTask() instead",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("userTaskRunner.runTask(principal) {}")
+    )
+    fun run(action: () -> Unit) {
+        error(">> Do not use run, this is ambiguous with Kotlin run. Use runTask() instead")
+    }
+
+}
+
+
+/**
+ * All actions are performed on a single thread, this way the execution becomes very predictable,
+ * and we don't worry about parallel execution in the rest of our code.
+ */
+@Component
+class SystemTaskRunner(
+    private val timedTaskRunner: TimedTaskRunner,
+) {
+
+    fun queueInSeconds( omniId: String, seconds: Long, action: () -> Unit) {
+        val due = System.currentTimeMillis() + seconds * 1000
+        timedTaskRunner.add(omniId, due, UserPrincipal.system(), action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
@@ -41,19 +75,12 @@ class TaskRunner(
     fun run(action: () -> Unit) {
         error(">> Do not use run, this is ambiguous with Kotlin run. Use runTask() instead")
     }
-
-    fun queueInTicks(waitTicks: Int, action: () -> Unit) {
-        val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
-        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
-        timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
-    }
-
-    fun queueInMinutesAndSeconds(minutes: Long, seconds: Long, action: () -> Unit) {
-        val due = System.currentTimeMillis() + SECOND_MILLIS * seconds + MINUTE_MILLIS * minutes
-        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
-        timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
-    }
 }
+
+// Marker annotation to indicate that a function is called by the system, so the currentUser is not set, and stompService.reply does not work here.
+@Target(AnnotationTarget.FUNCTION)
+annotation class CalledBySystem
+
 
 @Component
 class TaskEngine(
@@ -84,6 +111,7 @@ class TaskEngine(
 
     private fun runTask() {
         val task = queue.take()
+
         if (!running) return // this will happen if fun terminate() unblocked the queue.
         try {
             currentUserService.set(task.userPrincipal.userEntity)
@@ -124,9 +152,13 @@ class TaskEngine(
     @PreDestroy
     fun terminate() {
         this.running = false
-        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USEREntity, ConnectionType.NONE)
+        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USER, ConnectionType.NONE)
 
         // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
         this.queue.add(Task({}, userPrincipal))
+    }
+
+    fun removeForUser(userId: String) {
+        this.queue.removeIf { it.userPrincipal.userId == userId }
     }
 }

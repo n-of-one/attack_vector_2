@@ -25,7 +25,7 @@ export class WebSocketConnection {
     waitingForType: string | null = null
     waitingIgnoreList: string[] | null = []
 
-    subscriptions: Subscription[] = []
+    subscriptions: {[key: string] : Subscription} = {}
 
     actions: { [key: string]: (action: any) => void } = {}
 
@@ -74,9 +74,9 @@ export class WebSocketConnection {
         this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"})
 
         this.setupHeartbeat()
-        this.subscribe('/user/reply', false) /// This will receive messages for this specific connection
-        this.subscribe(`/topic/user/${userId}`, false) /// messages for this user on all connections
-        this.subscribe(`/topic/user/${userIdAndConnection}`, false) /// messages for this user connection specifically (/reply does not work)
+        this.subscribe('/user/reply') /// This will receive messages for this specific connection
+        this.subscribe(`/topic/user/${userId}`) /// messages for this user on all connections
+        this.subscribe(`/topic/user/${userIdAndConnection}`) /// messages for this user connection specifically (/reply does not work)
         additionalOnWsOpen()
     }
 
@@ -115,14 +115,24 @@ export class WebSocketConnection {
         }
     }
 
-
-    subscribe(path: string, canUnsubscribe: boolean = false) {
+    subscribe(path: string) {
+        const existingSubscription = this.subscriptions[path]
+        if ( existingSubscription) {
+            existingSubscription.unsubscribe()
+        }
         const subscription = this.client.subscribe(path, (wsMessage) => {
             this.handleEvent(wsMessage)
         })
-        if (canUnsubscribe) {
-            this.subscriptions.push(subscription)
+        this.subscriptions[path] = subscription
+    }
+
+    unsubscribe(path: string) {
+        const existingSubscription = this.subscriptions[path]
+        if ( !existingSubscription) {
+            throw Error( `Subscription not found for: ${path}`)
         }
+        existingSubscription.unsubscribe()
+        delete this.subscriptions[path]
     }
 
     handleEvent(wsMessage: Message) {
@@ -161,9 +171,16 @@ export class WebSocketConnection {
     }
 
     subscribeForRun(runId: string, siteId: string) {
-        this.subscribe('/topic/run/' + runId, true)
-        this.subscribe('/topic/site/' + siteId, true)
+        this.subscribe(`/topic/run/${runId}`)
+        this.subscribe(`/topic/site/${siteId}`)
     }
+
+    unsubscribeForRun(runId: string | null, siteId: string | null) {
+        this.unsubscribe(`/topic/run/${runId}`)
+        this.unsubscribe(`/topic/site/${siteId}`)
+    }
+
+
 
     sendObject(path: string, payload: any) {
         let data = JSON.stringify(payload)
@@ -186,13 +203,6 @@ export class WebSocketConnection {
     waitFor(type: string, ignoreList: string[] | null) {
         this.waitingForType = type
         this.waitingIgnoreList = ignoreList
-    }
-
-    unsubscribe() {
-        this.subscriptions.forEach(subscription => {
-            subscription.unsubscribe()
-        })
-        this.subscriptions = []
     }
 
     abort(message: string) {

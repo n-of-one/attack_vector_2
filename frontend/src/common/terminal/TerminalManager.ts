@@ -1,7 +1,7 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {delay} from "../util/Util";
 import {Dispatch, Store} from "redux";
-import {TERMINAL_KEY_PRESS, TERMINAL_UPDATE, TerminalState} from "./TerminalReducer";
+import {TERMINAL_KEY_PRESS, TICK, TerminalState} from "./TerminalReducer";
 import {ICE_INPUT_TERMINAL_ID, MAIN_TERMINAL_ID} from "./ActiveTerminalIdReducer";
 
 export const TERMINAL_UPDATE_MILLIS = 20 // 50 updates/s
@@ -18,9 +18,14 @@ class TerminalManager {
         this.store = store;
         this.dispatch = store.dispatch;
         delay(() => {
+            let currentSecond = Math.floor(Date.now()/1000)
 
             setInterval(() => {
-                this.dispatch({type: TERMINAL_UPDATE});
+                const tickSecond =  Math.floor(Date.now() / 1000)
+                const isNewSecond = tickSecond !== currentSecond
+                currentSecond = tickSecond
+
+                this.dispatch({type: TICK, newSecond: isNewSecond});
             }, TERMINAL_UPDATE_MILLIS);
         })
 

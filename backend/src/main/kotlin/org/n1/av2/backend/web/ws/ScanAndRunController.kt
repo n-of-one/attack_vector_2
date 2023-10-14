@@ -1,6 +1,6 @@
 package org.n1.av2.backend.web.ws
 
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.NotyMessage
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller
 
 @Controller
 class ScanAndRunController(
-    private val taskRunner: TaskRunner,
+    private val userTaskRunner: UserTaskRunner,
     private val scanInfoService: ScanInfoService,
     private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
@@ -31,30 +31,30 @@ class ScanAndRunController(
 
     @MessageMapping("/scan/scansOfPlayer")
     fun scansOfPlayer(userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) { scanInfoService.sendScanInfosOfPlayer() }
+        userTaskRunner.runTask(userPrincipal) { scanInfoService.sendScanInfosOfPlayer() }
     }
 
     @MessageMapping("/scan/scanForName")
     fun scanForName(siteName: String, userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) { runService.startNewRun(siteName) }
+        userTaskRunner.runTask(userPrincipal) { runService.startNewRun(siteName) }
     }
 
     @MessageMapping("/scan/deleteScan")
     fun deleteScan(runId: String, userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) { scanInfoService.deleteScan(runId) }
+        userTaskRunner.runTask(userPrincipal) { scanInfoService.deleteScan(runId) }
     }
 
 
     @MessageMapping("/scan/enterScan")
     fun enterScan(siteId: String, userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) { runService.enterRun(siteId) }
+        userTaskRunner.runTask(userPrincipal) { runService.enterRun(siteId) }
     }
 
-    @MessageMapping("/run/leaveRun")
+    @MessageMapping("/run/leaveSite")
     fun leaveScan(runId: String, userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
             val state = hackerStateEntityService.retrieveForCurrentUser()
-            runService.leaveRun(state) }
+            runService.leaveSite(state) }
     }
 
 
@@ -62,7 +62,7 @@ class ScanAndRunController(
 
     @MessageMapping("/scan/refreshIce")
     fun refreshIce(siteId: String, userPrincipal: UserPrincipal) {
-        taskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
             siteService.resetSite(siteId)
             stompService.replyMessage(NotyMessage.neutral("Ice reset"))
         }

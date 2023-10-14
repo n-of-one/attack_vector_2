@@ -107,10 +107,6 @@ export class TracingPatrollerDisplay implements Display {
         });
     }
 
-    lock(hackerId: string) {
-        this.hackerDisplays.get(hackerId).lockByPatroller();
-    }
-
     disappear() {
         this.schedule.run(20, () => {
             animate(this.canvas, this.patrollerIcon, "opacity", 0, 20);

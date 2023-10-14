@@ -5,19 +5,17 @@ import {
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
     OFFSET,
-    COLOR_PATROLLER_LINE,
     SCALE_NORMAL,
     SCALE_SMALL,
     COLOR_HACKER_LINE, IMAGE_SIZE
 } from "./util/DisplayConstants"
 import {ConnectionVisual} from "../visuals/ConnectionVisual"
-import {HACKER_RUN_ACTIVITY_MOVING, HACKER_RUN_ACTIVITY_SCANNING, HACKER_RUN_ACTIVITY_STARTING} from "../../enums/HackerState"
-import {Display} from "./Display"
+import {Display, Graphics} from "./Display"
 import {Dispatch} from "redux"
 import {DisplayCollection} from "./util/DisplayCollection"
 import {NodeDisplay} from "./NodeDisplay"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
-import {HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
+import {HACKER_ACTIVITY_SCANNING, HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
 import {notEmpty} from "../../util/Util";
 import {Timings} from "../../model/Ticks";
 
@@ -36,6 +34,7 @@ export class HackerDisplay implements Display {
 
     canvas: fabric.Canvas
     schedule: Schedule
+    gfx: Graphics
 
     dispatch: Dispatch
     nodeDisplays: DisplayCollection<NodeDisplay>
@@ -56,14 +55,13 @@ export class HackerDisplay implements Display {
     labelIcon: fabric.Text = null as unknown as fabric.Text
     startLineIcon: fabric.Line = null as unknown as fabric.Line
 
-    lockIcon: fabric.Rect | null = null
     moveLineElement: ConnectionVisual | null = null
 
     targetNodeDisplay: NodeDisplay | null = null
 
     y: number
     x: number
-    locked = false
+    masked = true
 
     size = 30
 
@@ -78,6 +76,7 @@ export class HackerDisplay implements Display {
 
 
         this.canvas = canvas
+        this.gfx = new Graphics(canvas)
         this.schedule = new Schedule(dispatch)
         this.hackerData = hackerData
 
@@ -94,7 +93,7 @@ export class HackerDisplay implements Display {
 
         let identifierOppacity, lineOpacity
 
-        if (hackerData.activity === HACKER_RUN_ACTIVITY_SCANNING) {
+        if (hackerData.activity === HACKER_ACTIVITY_SCANNING) {
             this.currentNodeDisplay = null
 
             identifierOppacity = IDENTIFIER_OPACITY_SCANNING
@@ -107,15 +106,20 @@ export class HackerDisplay implements Display {
             lineOpacity = LINE_OPACITY_HACKING
         }
 
-        animate(this.canvas, this.hackerIdentifierIcon, "opacity", identifierOppacity, APPEAR_TIME)
-        animate(this.canvas, this.startLineIcon, "opacity", lineOpacity, 40)
-        animate(this.canvas, this.labelIcon, "opacity", lineOpacity, APPEAR_TIME)
+        this.gfx.fade(APPEAR_TIME, identifierOppacity, this.hackerIdentifierIcon)
+        this.gfx.fade(APPEAR_TIME, lineOpacity, this.labelIcon)
+        this.gfx.fade(40, lineOpacity, this.startLineIcon)
+
+
+        // animate(this.canvas, this.hackerIdentifierIcon, "opacity", identifierOppacity, APPEAR_TIME)
+        // animate(this.canvas, this.startLineIcon, "opacity", lineOpacity, 40)
+        // animate(this.canvas, this.labelIcon, "opacity", lineOpacity, APPEAR_TIME)
 
         this.schedule.wait(3)
     }
 
     getAllIcons(): fabric.Object[] {
-        const potentials: (fabric.Object | null)[] = [this.hackerIcon, this.hackerIdentifierIcon, this.hackerHider, this.labelIcon, this.startLineIcon, this.lockIcon]
+        const potentials: (fabric.Object | null)[] = [this.hackerIcon, this.hackerIdentifierIcon, this.hackerHider, this.labelIcon, this.startLineIcon]
         if (this.moveLineElement) {
             potentials.push(this.moveLineElement.line)
         }
@@ -124,21 +128,16 @@ export class HackerDisplay implements Display {
 
     addHackingHacker(hackerData: HackerPresence) {
         // If the hacker is in transit or still starting the run, then we are displaying them as arrived at the node.
-        const moveIncomplete = (hackerData.activity === HACKER_RUN_ACTIVITY_STARTING || hackerData.activity === HACKER_RUN_ACTIVITY_MOVING)
-        const nodeId = (moveIncomplete) ? hackerData.targetNodeId : hackerData.nodeId
 
-        if (nodeId === null || nodeId === undefined) throw Error("nodeId undefined: " + JSON.stringify(hackerData))
+        if (hackerData.nodeId === null || hackerData.nodeId === undefined) throw Error("nodeId undefined: " + JSON.stringify(hackerData))
 
-        this.currentNodeDisplay = this.nodeDisplays.get(nodeId)
+        this.currentNodeDisplay = this.nodeDisplays.get(hackerData.nodeId)
 
-        const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay, moveIncomplete)
+        const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay)
         this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.currentNodeDisplay, xOffset, yOffset)
         this.canvas.add(this.hackerIcon)
 
-        this.locked = hackerData.locked
-        if (this.locked) {
-            this.lockByPatroller()
-        }
+        this.masked = hackerData.masked
     }
 
     createHackerIcon(scale: number, opacity: number, display: Display, offsetX: number = 0, offsetY: number = 0) {
@@ -219,14 +218,16 @@ export class HackerDisplay implements Display {
             if (this.currentNodeDisplay) {
                 this.currentNodeDisplay.unregisterHacker(this)
             }
-            animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0, DISAPPEAR_TIME)
-            animate(this.canvas, this.startLineIcon, "opacity", 0, DISAPPEAR_TIME)
-            animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME)
+            this.gfx.fadeOut(DISAPPEAR_TIME, this.hackerIdentifierIcon )
+            this.gfx.fadeOut(DISAPPEAR_TIME, this.startLineIcon)
+            this.gfx.fadeOut(DISAPPEAR_TIME, this.labelIcon)
+
+            // animate(this.canvas, this.hackerIdentifierIcon, "opacity", 0, DISAPPEAR_TIME)
+            // animate(this.canvas, this.startLineIcon, "opacity", 0, DISAPPEAR_TIME)
+            // animate(this.canvas, this.labelIcon, "opacity", 0, DISAPPEAR_TIME)
             if (this.hackerIcon) {
-                animate(this.canvas, this.hackerIcon, "opacity", 0, DISAPPEAR_TIME)
-            }
-            if (this.lockIcon) {
-                animate(this.canvas, this.lockIcon, 'opacity', 0, DISAPPEAR_TIME)
+                this.gfx.fadeOut(DISAPPEAR_TIME, this.hackerIcon)
+                // animate(this.canvas, this.hackerIcon, "opacity", 0, DISAPPEAR_TIME)
             }
         })
         this.schedule.run(0, () => {
@@ -236,9 +237,6 @@ export class HackerDisplay implements Display {
             this.canvas.remove(this.hackerHider)
             if (this.hackerIcon) {
                 this.canvas.remove(this.hackerIcon)
-            }
-            if (this.lockIcon) {
-                this.canvas.remove(this.lockIcon)
             }
         })
     }
@@ -304,12 +302,12 @@ export class HackerDisplay implements Display {
         })
 
         const oldNodeDisplay = this.currentNodeDisplay!
-        const oldOffset = this.processOffset(nodeDisplay, false)
+        const oldOffset = this.processOffset(nodeDisplay)
 
         this.currentNodeDisplay = nodeDisplay
         this.targetNodeDisplay = null
 
-        const newOffset = this.processOffset(nodeDisplay, false)
+        const newOffset = this.processOffset(nodeDisplay)
 
         nodeDisplay.unregisterHacker(this)
 
@@ -341,10 +339,7 @@ export class HackerDisplay implements Display {
         this.moveLineElement?.disappear(10)
     }
 
-    processOffset(nodeDisplay: NodeDisplay, moveIncomplete: boolean): { xOffset: number, yOffset: number } {
-        if (moveIncomplete) {
-            return {xOffset: 0, yOffset: 0}
-        }
+    processOffset(nodeDisplay: NodeDisplay): { xOffset: number, yOffset: number } {
 
         if (this.you) {
             return {xOffset: OFFSET, yOffset: OFFSET}
@@ -402,25 +397,15 @@ export class HackerDisplay implements Display {
         this.schedule.terminate()
     }
 
-    lockByPatroller() {
-        this.schedule.run(0, () => {
-            this.lockIcon = new fabric.Rect({
-                width: 35,
-                height: 35,
-                fill: COLOR_PATROLLER_LINE,
-                left: this.hackerIcon!.left,
-                top: this.hackerIcon!.top! - 1,
-                opacity: 0,
-                hoverCursor: 'default',
-                selectable: false,
-            })
-            this.lockIcon.rotate(45)
-            this.canvas.add(this.lockIcon)
-            this.canvas.bringToFront(this.lockIcon)
-            this.canvas.bringToFront(this.hackerIcon!)
+    disconnect() {
+        const ticks = 20
 
-            animate(this.canvas, this.lockIcon, "opacity", 1, 20)
-        })
+        if (this.moveLineElement) {this.moveLineElement.disappear(ticks)}
+        this.gfx.fadeOutAndRemove(ticks, this.hackerIcon!)
+        this.gfx.fade(ticks, IDENTIFIER_OPACITY_SCANNING, this.hackerIdentifierIcon)
+        this.gfx.fade(ticks, LINE_OPACITY_SCANNING, this.labelIcon)
+        this.gfx.fade(ticks, LINE_OPACITY_SCANNING, this.startLineIcon)
+
+
     }
-
 }

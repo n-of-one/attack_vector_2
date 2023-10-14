@@ -1,7 +1,7 @@
 import {SERVER_DISCOVER_NODES} from "../model/ScanActions";
 import {NodeScanStatus} from "../../../common/enums/NodeStatus";
 import {AnyAction} from "redux";
-import {ProbeResultConnections, SERVER_SCAN_FULL, SERVER_UPDATE_NODE_STATUS} from "../../server/RunServerActionProcessor";
+import {ProbeResultConnections, SERVER_ENTER_RUN, SERVER_UPDATE_NODE_STATUS} from "../../server/RunServerActionProcessor";
 
 export interface Scan {
     runId: string,
@@ -41,7 +41,7 @@ const defaultState = {
 
 export const scanReducer = (state: Scan = defaultState, action: AnyAction) => {
     switch (action.type) {
-        case SERVER_SCAN_FULL:
+        case SERVER_ENTER_RUN:
             return action.data.run;
         case SERVER_UPDATE_NODE_STATUS:
             return updateNodeStatus(state, action.data);

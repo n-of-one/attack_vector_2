@@ -36,34 +36,56 @@ class StompService(
         }
     }
 
-    private fun sendToDestination(path: String, actionType: ServerActions, data: Any? = null) {
+    private fun sendToDestination(path: String, actionType: ServerActions, data: Array<*>) {
         simulateNonLocalhost()
         logger.debug("-> ${path} ${actionType}")
-        val event = ReduxEvent(actionType, data)
+
+        val processedData = processData(data)
+        val event = ReduxEvent(actionType, processedData)
         stompTemplate.convertAndSend(path, event)
     }
 
-    fun toSite(siteId: String, actionType: ServerActions, data: Any? = null) {
+    private fun processData(data: Array<*>): Any? {
+        if (data.isEmpty()) {
+            return null
+        }
+        val dataAsPairs = data.filterIsInstance<Pair<*, *>>()
+        if (dataAsPairs.size == data.size) {
+            val map = HashMap<String, Any?>()
+            dataAsPairs.forEach { pair  ->
+                val first = pair.first ?: error("null keys not supported for stomp call")
+                if (first !is String) error("keys must be strings, otherwise it's invalid json")
+                map[first] = pair.second
+            }
+            return map
+        }
+        if (data.size == 1) {
+            return data[0]
+        }
+        error("Cannot send multi-arg if it's not all pairs")
+    }
+
+    fun toSite(siteId: String, actionType: ServerActions, vararg data: Any) {
         sendToDestination("/topic/site/${siteId}", actionType, data)
     }
 
-    fun toRun(runId: String, actionType: ServerActions, data: Any? = null) {
+    fun toRun(runId: String, actionType: ServerActions, vararg data: Any) {
         sendToDestination("/topic/run/${runId}", actionType, data)
     }
 
-    fun toIce(iceId: String, actionType: ServerActions, data: Any? = null) {
+    fun toIce(iceId: String, actionType: ServerActions, vararg data: Any) {
         sendToDestination("/topic/ice/${iceId}", actionType, data)
     }
 
-    fun toApp(appId: String, actionType: ServerActions, data: Any) {
+    fun toApp(appId: String, actionType: ServerActions, vararg data: Any) {
         sendToDestination("/topic/app/${appId}", actionType, data)
     }
 
-    fun toUser(userId: String, actionType: ServerActions, data: Any) {
+    fun toUser(userId: String, actionType: ServerActions, vararg data: Any) {
         sendToDestination("/topic/user/${userId}", actionType, data)
     }
 
-    fun reply(actionType: ServerActions, data: Any) {
+    fun reply(actionType: ServerActions, vararg data: Any) {
         val name = SecurityContextHolder.getContext().authentication.name
         sendToDestination("/topic/user/${name}", actionType, data)
     }

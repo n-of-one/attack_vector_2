@@ -8,8 +8,9 @@ const TERMINAL_UPDATES_PER_TICK = 8
 export const SERVER_TERMINAL_SYNTAX_HIGHLIGHTING = "SERVER_TERMINAL_SYNTAX_HIGHLIGHTING"
 export const TERMINAL_KEY_PRESS = "TERMINAL_KEY_PRESS"
 export const TERMINAL_SUBMIT = "TERMINAL_SUBMIT"
-export const TERMINAL_UPDATE = "TERMINAL_UPDATE"
+export const TICK = "TICK"
 export const TERMINAL_RECEIVE = "TERMINAL_RECEIVE"
+export const SERVER_TERMINAL_UPDATE_PROMPT = "SERVER_TERMINAL_UPDATE_PROMPT"
 export const SERVER_TERMINAL_RECEIVE = "SERVER_TERMINAL_RECEIVE"
 export const TERMINAL_CLEAR = "TERMINAL_CLEAR"
 export const TERMINAL_LOCK = "TERMINAL_LOCK"
@@ -54,7 +55,7 @@ export interface TerminalState {
 export const terminalStateDefault: TerminalState = {
     id: "",
     lines: [],              // lines that are fully shown
-    prompt: "⇋ ",
+    prompt: "⇀ ",
     readOnly: false,        // only allow user input if true
     blockedWhileRendering: false, // Use for terminal to block input while "command" is "running".
     renderOutput: true,     // If false, this Terminal acts like an input prompt
@@ -83,7 +84,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
     const defaultState = {...terminalStateDefault, ...config, id: id}
 
     return (terminal: TerminalState | undefined = defaultState, action: AnyAction) => {
-        if (action.type === TERMINAL_UPDATE) {
+        if (action.type === TICK) {
             let state = terminal
             for (let i = 0; i < TERMINAL_UPDATES_PER_TICK; i++) {
                 state = processUpdate(state)
@@ -119,6 +120,8 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
                 return processSyntaxHighlighting(terminal, action.data)
             case TERMINAL_REPLACE_LAST_LINE:
                 return replaceLastLine(terminal, action.data)
+            case SERVER_TERMINAL_UPDATE_PROMPT:
+                return updatePrompt(terminal, action.data)
             default:
                 return terminal
         }
@@ -309,4 +312,12 @@ const replaceLastLine = (terminal: TerminalState, line: string) => {
     }
     lines.push({type: TerminalLineType.TEXT, data: line})
     return {...terminal, lines: lines}
+}
+
+interface TerminalUpdatePrompt {
+    prompt: string
+}
+
+const updatePrompt = (terminal: TerminalState, data: TerminalUpdatePrompt) => {
+    return {...terminal, prompt: data.prompt}
 }

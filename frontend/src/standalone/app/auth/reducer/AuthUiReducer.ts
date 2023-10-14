@@ -1,5 +1,5 @@
 import {AnyAction} from "redux";
-import {TERMINAL_UPDATE} from "../../../../common/terminal/TerminalReducer";
+import {TICK} from "../../../../common/terminal/TerminalReducer";
 import {serverTime} from "../../../../common/server/ServerTime";
 import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_PASSWORD_CORRECT, SERVER_AUTH_UPDATE} from "../AuthServerActionProcessor";
 
@@ -35,7 +35,7 @@ export const defaultUi = {
 export const authUiReducer = (state : AuthAppUi = defaultUi, action: AnyAction): AuthAppUi => {
 
     switch (action.type) {
-        case TERMINAL_UPDATE: {
+        case TICK: {
             return processTick(state)
         }
 

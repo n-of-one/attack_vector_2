@@ -21,10 +21,6 @@ export const AppSelector = ({type, layerId}: Props) => {
 
     const [response, setResponse] = useState(null as ServerResponse | null)
 
-    // TODO: check if we still need the query.
-    // const query = new Query(props.query)
-
-
     useEffect(() => {
         const fetchData = async () => {
             const response: Response = await fetch(`/api/app/${layerId}`)

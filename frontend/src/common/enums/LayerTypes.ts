@@ -1,6 +1,5 @@
 export const OS = "OS"
 export const TEXT = "TEXT"
-export const LINK = "LINK"
 export const TRACER = "TRACER"
 export const TRACE_LOG = "TRACE_LOG"
 export const SCAN_BLOCK = "SCAN_BLOCK"
@@ -19,6 +18,7 @@ export const LOCK = "LOCK"
 export const STATUS_LIGHT = "STATUS_LIGHT"
 
 export const KEYSTORE = "KEYSTORE"
+export const TRIPWIRE = "TRIPWIRE"
 
 export enum LayerType {
     OS = "OS",
@@ -32,6 +32,7 @@ export enum LayerType {
     LOCK = "LOCK",
     STATUS_LIGHT = "STATUS_LIGHT",
     KEYSTORE = "KEYSTORE",
+    TRIPWIRE = "TRIPWIRE",
 
 }
 
@@ -46,6 +47,3 @@ export const layerTypeFromIceId = (iceId: string): LayerType | null => {
         default: return null
     }
 }
-
-
-

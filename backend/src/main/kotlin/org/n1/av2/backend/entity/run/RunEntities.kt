@@ -26,32 +26,6 @@ data class UserRunLink(
 )
 
 @Document
-data class HackerState(
-    @Id val userId: String,
-    val connectionId: String,
-    val runId: String?,
-    val siteId: String?,
-    val currentNodeId: String?,
-    val previousNodeId: String?,
-    val targetNodeId: String?, // target of current move TODO can we remove this?
-    val generalActivity: HackerGeneralActivity,
-    val runActivity: RunActivity,
-    val hookPatrollerId: String?, // Hooked means that a patroller has either locked the hacker, is about to lock the hacker and they cannot escape. TODO remove?
-    val locked: Boolean
-) {
-
-    fun toRunState(): HackerStateRunning {
-        return HackerStateRunning(
-            userId, connectionId,
-            runId ?: error("runId null for ${userId}"),
-            siteId ?: error("siteId null for ${userId}"),
-            currentNodeId ?: error("currentNodeId null for ${userId}"),
-            previousNodeId, targetNodeId, runActivity, hookPatrollerId, locked
-        )
-    }
-}
-
-@Document
 data class TracingPatroller(
     @Id val id: String,
     @Indexed val runId: String,
@@ -80,38 +54,3 @@ class PatrollerPathSegment(
     val fromNodeId: String,
     val toNodeId: String
 )
-
-enum class HackerGeneralActivity {
-    OFFLINE,    // this hacker is not online
-    ONLINE,     // this hacker is online, but not in a run
-    RUNNING,    // this hacker is in a run
-}
-
-enum class RunActivity {
-    NA,         // not in a run
-    SCANNING,   // hacker has not yet started the attack
-    AT_NODE,    // hacker is at rest at a node
-}
-
-
-/** Convenience class that mimicks HackerState but enforces non-null state of all fields that are used in a run */
-class HackerStateRunning(
-    val userId: String,
-    val connectionId: String,
-    val runId: String,
-    val siteId: String,
-    val currentNodeId: String,
-    val previousNodeId: String?,
-    val targetNodeId: String?,
-    val runActivity: RunActivity,
-    val hookPatrollerId: String?,
-    val locked: Boolean
-) {
-
-    fun toState(): HackerState {
-        return HackerState(
-            userId, connectionId, runId, siteId, currentNodeId, previousNodeId, targetNodeId,
-            HackerGeneralActivity.RUNNING, runActivity, hookPatrollerId, locked
-        )
-    }
-}

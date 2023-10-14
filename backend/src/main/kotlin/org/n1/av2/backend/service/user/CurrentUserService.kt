@@ -1,6 +1,6 @@
 package org.n1.av2.backend.service.user
 
-import org.n1.av2.backend.entity.user.SYSTEM_USEREntity
+import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserType.ADMIN
 import org.springframework.stereotype.Service
@@ -23,14 +23,14 @@ class CurrentUserService {
     val userId: String
         get () {
             val userId = userEntityStore.get().id
-            if (userId == SYSTEM_USEREntity.id) error("Tried to access the current user from a game event context.")
+            if (userId == SYSTEM_USER.id) error("Tried to access the current user from a game event context.")
             return userId
         }
 
     val isSystemUser: Boolean
         get() {
             val user = userEntityStore.get() ?: return true
-            return user.id == SYSTEM_USEREntity.id
+            return user.id == SYSTEM_USER.id
         }
 
     val isAdmin: Boolean

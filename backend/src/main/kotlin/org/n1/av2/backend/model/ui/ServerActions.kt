@@ -32,23 +32,24 @@ enum class ServerActions {
     SERVER_UPDATE_USER_SCANS,       // Sent to user to update the scans shown on home page of that user
     SERVER_UPDATE_SCAN_INFO,        // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
-    SERVER_SCAN_FULL,               // Result of user enter scan (for the user itself)
+    SERVER_ENTER_RUN,               // Result of user entering a run (for the user itself)
 
-    SERVER_REFRESH_ICE,             // All ice is reset and unhacked, all nodes are unhacked
+    SERVER_SITE_RESET,              // All ice is reset and unhacked, all nodes are unhacked, threats reset
 
 
     SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, // transfer syntax highlighting to terminal
     SERVER_TERMINAL_RECEIVE,
+    SERVER_TERMINAL_UPDATE_PROMPT,         // Update the prompt of the terminal
     SERVER_PROBE_LAUNCH,
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
 
-    SERVER_HACKER_DC,                   // You have left the scan/run
 
-    SERVER_HACKER_ENTER_SCAN,           // A hacker enters a scan (notify other hackers about this)
-    SERVER_HACKER_LEAVE_SCAN,           // A hacker leaves a scan (if it's you then you will also receive a SERVER_HACKER_DC)
+    SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
+    SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.
+    SERVER_HACKER_DC,                   // A hacker disconnects from the site but is still at the site
 
-    SERVER_HACKER_START_ATTACK,
+    SERVER_HACKER_START_ATTACK,         // A hacker starts the attack (connects to the entry site node)
     SERVER_HACKER_MOVE_START,           // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,          // step two of the move
     SERVER_HACKER_MOVE_ARRIVE_FAIL,     // step two of the move if the hacker could not complete the move (for instance because it was locked in place)

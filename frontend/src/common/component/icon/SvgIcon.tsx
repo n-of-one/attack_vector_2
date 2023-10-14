@@ -1,5 +1,5 @@
 import React from "react"
-import {LOCK, STATUS_LIGHT} from "../../enums/LayerTypes";
+import {LOCK, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -18,6 +18,7 @@ const determinePath = (type: string| undefined) => {
     switch(type) {
         case LOCK: return "/img/editor/tabler/9081099_square_lock_lock_square.svg"
         case STATUS_LIGHT: return "/img/editor/tabler/9080499_bulb.svg"
+        case TRIPWIRE: return "/img/editor/tabler/9080987_history_history.svg"
         default: return "unknown-type:" + type
     }
 }

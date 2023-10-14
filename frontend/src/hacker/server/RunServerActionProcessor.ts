@@ -1,13 +1,11 @@
-import {Store} from "redux"
+import {AnyAction, Store} from "redux"
 import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {initGenericServerActions} from "./GenericServerActionProcessor"
-import {HACKER_HOME, NAVIGATE_PAGE} from "../../common/menu/pageReducer"
-import {terminalManager} from "../../common/terminal/TerminalManager"
 import {NodeScanType, runCanvas} from "../run/component/RunCanvas"
 import {
     SERVER_DISCOVER_NODES,
-    SERVER_HACKER_ENTER_SCAN,
-    SERVER_HACKER_LEAVE_SCAN,
+    SERVER_HACKER_ENTER_SITE,
+    SERVER_HACKER_LEAVE_SITE,
     SERVER_PROBE_LAUNCH
 } from "../run/model/ScanActions"
 import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
@@ -22,9 +20,11 @@ import {
     SERVER_START_TRACING_PATROLLER
 } from "../run/coundown/CountdownReducer"
 import {enterScan} from "../home/HackerHome"
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK} from "../../common/terminal/TerminalReducer"
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_RECEIVE, TERMINAL_UNLOCK} from "../../common/terminal/TerminalReducer"
 import {Schedule} from "../../common/util/Schedule"
 import {NodeScanStatus} from "../../common/enums/NodeStatus";
+import {ICE_DISPLAY_TERMINAL_ID, MAIN_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
+import {currentUser} from "../../common/user/CurrentUser";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
@@ -35,13 +35,16 @@ export const SERVER_LAYER_HACKED = "SERVER_LAYER_HACKED"
 export const SERVER_NODE_HACKED = "SERVER_NODE_HACKED"
 
 export const SERVER_HACKER_DC = "SERVER_HACKER_DC"
-export const SERVER_SCAN_FULL = "SERVER_SCAN_FULL"
+export const SERVER_ENTER_RUN = "SERVER_ENTER_RUN"
 export const SERVER_UPDATE_NODE_STATUS = "SERVER_UPDATE_NODE_STATUS"
 export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
 
 export const SERVER_REDIRECT_HACK_ICE = "SERVER_REDIRECT_HACK_ICE"
 export const SERVER_REDIRECT_CONNECT_ICE = "SERVER_REDIRECT_CONNECT_ICE"
 export const SERVER_REDIRECT_CONNECT_APP = "SERVER_REDIRECT_CONNECT_APP"
+
+export const SERVER_SITE_RESET = "SERVER_SITE_RESET"
+
 
 /** Event to ignore while waiting for the scan full result */
 export const WAITING_FOR_SCAN_IGNORE_LIST =
@@ -165,27 +168,17 @@ export const initRunServerActions = (store: Store) => {
 
     const echo = (time: number, message: string) => {
         hackerSchedule!.run(time, () => {
-            dispatch({type: SERVER_TERMINAL_RECEIVE, data: {terminalId: "main", lines: [message]}})
+            dispatch({type: SERVER_TERMINAL_RECEIVE, data: {terminalId: MAIN_TERMINAL_ID, lines: [message]}})
         })
     }
-
-    webSocketConnection.addAction(SERVER_HACKER_DC, (_: any) => {
-        const currentPage = store.getState().currentPage
-
-        webSocketConnection.unsubscribe()
-        terminalManager.stop()
-        runCanvas.stop()
-
-        dispatch({type: NAVIGATE_PAGE, to: HACKER_HOME, from: currentPage})
-    })
 
     webSocketConnection.addAction(SERVER_SITE_DISCOVERED, ({runId, siteId}: { runId: string, siteId: string }) => {
         const currentPage = store.getState().currentPage
         enterScan(runId, siteId, dispatch, currentPage)
     })
 
-    webSocketConnection.addAction(SERVER_SCAN_FULL, (data: SiteAndScan) => {
-        runCanvas.loadScan(data)
+    webSocketConnection.addAction(SERVER_ENTER_RUN, (data: SiteAndScan) => {
+        runCanvas.enterSite(data)
     })
 
     webSocketConnection.addAction(SERVER_UPDATE_NODE_STATUS, (data: UpdateNodeStatusAction) => {
@@ -200,18 +193,20 @@ export const initRunServerActions = (store: Store) => {
         runCanvas.launchProbe(data)
     })
 
-    webSocketConnection.addAction(SERVER_HACKER_ENTER_SCAN, (data: HackerPresence) => {
+    webSocketConnection.addAction(SERVER_HACKER_ENTER_SITE, (data: HackerPresence) => {
+        console.log("SERVER_HACKER_ENTER_SITE" + JSON.stringify(data))
         runCanvas.hackerEnter(data)
     })
 
-    webSocketConnection.addAction(SERVER_HACKER_LEAVE_SCAN, (data: any) => {
+    webSocketConnection.addAction(SERVER_HACKER_LEAVE_SITE, (data: any) => {
+        console.log("SERVER_HACKER_LEAVE_SITE" + JSON.stringify(data))
         runCanvas.hackerLeave(data.userId)
     })
 
     webSocketConnection.addAction(SERVER_HACKER_START_ATTACK, (data: StartRun) => {
         runCanvas.startAttack(data.userId, data.quick, data.timings)
-        if (data.userId === store.getState().userId) {
-            dispatch({type: TERMINAL_LOCK, terminalId: "main"})
+        if (data.userId === currentUser.id) {
+            // dispatch({type: TERMINAL_LOCK, terminalId: MAIN_TERMINAL_ID})
             const random = (max: number) => Math.floor(Math.random() * max)
             const personaId = "" + random(10) + random(10) + random(10) + random(10) + random(10) + random(10) + '-' +
                 random(10) + random(10) + random(10) + random(10) + '/' + random(10)
@@ -220,6 +215,7 @@ export const initRunServerActions = (store: Store) => {
 
             if (data.quick) {
                 echo(0, "[info]Persona established, hack started.")
+                echo(0, "")
             }
             else {
                 echo(20, "")
@@ -235,11 +231,20 @@ export const initRunServerActions = (store: Store) => {
                 echo(0, "")
                 echo(80, "Entering node")
                 echo(0, "Persona accepted by node OS.")
+                echo(0, "")
             }
 
         }
     })
 
+    interface DisconnectAction { userId: string }
+    webSocketConnection.addAction(SERVER_HACKER_DC, (action: DisconnectAction ) => {
+        runCanvas.disconnect(action.userId)
+    })
+
+    webSocketConnection.addAction(SERVER_SITE_RESET, (action: AnyAction ) => {
+        runCanvas.siteReset()
+    })
 
     webSocketConnection.addAction(SERVER_HACKER_MOVE_START, (data: MoveStartAction) => {
         runCanvas.moveStart(data)

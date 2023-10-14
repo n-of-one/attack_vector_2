@@ -1,8 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
+import org.n1.av2.backend.entity.run.HackerActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.entity.run.RunActivity.AT_NODE
-import org.n1.av2.backend.entity.run.RunActivity.SCANNING
 import org.n1.av2.backend.service.StompService
 import org.springframework.stereotype.Service
 
@@ -23,10 +22,10 @@ class TerminalService(
         if (command.trim().isBlank()) {
             return
         }
-        val type = hackerStateEntityService.retrieveForCurrentUser().runActivity
+        val type = hackerStateEntityService.retrieveForCurrentUser().activity
         when (type) {
-            SCANNING -> scanTerminalService.processCommand(runId, command)
-            AT_NODE -> hackTerminalService.processCommand(runId, command)
+            HackerActivity.SCANNING -> scanTerminalService.processCommand(runId, command)
+            HackerActivity.ATTACKING -> hackTerminalService.processCommand(runId, command)
 
             else -> {
                 logger.error("Received terminal command for user that is doing: ${type}")

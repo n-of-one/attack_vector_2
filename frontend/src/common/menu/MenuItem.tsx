@@ -17,12 +17,11 @@ interface Props {
 export const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
 
     if (currentPage === RUN && targetPage !== RUN) {
-        webSocketConnection.send("/av/run/leaveRun", runId);
+        webSocketConnection.send("/av/run/leaveSite", runId);
     }
-    else {
-        console.log("Navigating to page: " + targetPage);
-        dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
-    }
+
+    console.log("Navigating to page: " + targetPage);
+    dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
 }
 
 export const MenuItem = (props: Props) => {

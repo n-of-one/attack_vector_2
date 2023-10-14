@@ -12,7 +12,7 @@ export const delayTicks = (tickCount: number, toRun: () => void) => {
 
 export const formatTimeInterval = (totalSecondsLeft: number | null) => {
     if (!totalSecondsLeft) {
-        return "00:00:00"
+        return "--:--:--"
     }
     const waitHours = Math.floor(totalSecondsLeft / (60 * 60));
     const secondsLeftForMinutes = totalSecondsLeft % (60 * 60);

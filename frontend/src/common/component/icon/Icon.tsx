@@ -4,7 +4,6 @@ import {SvgIcon} from "./SvgIcon";
 import {
     CODE,
     CORE, LOCK,
-    LINK,
     MONEY,
     NETWALK_ICE,
     OS,
@@ -16,7 +15,7 @@ import {
     TIMER_TRIGGER,
     TRACE_LOG,
     TRACER,
-    WORD_SEARCH_ICE, KEYSTORE
+    WORD_SEARCH_ICE, KEYSTORE, TRIPWIRE
 } from "../../enums/LayerTypes";
 
 interface Props {
@@ -45,7 +44,6 @@ const iconFamily = (type: string) => {
     switch (type) {
         case OS:
         case TEXT:
-        case LINK:
         case TRACER:
         case TRACE_LOG:
         case SCAN_BLOCK:
@@ -61,6 +59,7 @@ const iconFamily = (type: string) => {
         case KEYSTORE:
             return "glyphicon"
         case LOCK:
+        case TRIPWIRE:
         case STATUS_LIGHT:
             return "svg"
     }

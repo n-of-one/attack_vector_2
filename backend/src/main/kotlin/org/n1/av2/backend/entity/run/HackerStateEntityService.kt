@@ -2,7 +2,7 @@ package org.n1.av2.backend.entity.run
 
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.entity.user.SYSTEM_USEREntity
+import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.user.CurrentUserService
@@ -33,9 +33,8 @@ class HackerStateEntityService(
         }
     }
 
-    fun enterScan(siteId: String, runId: String): HackerState {
+    fun enterSite(siteId: String, runId: String): HackerState {
         val userId = currentUserService.userId
-
 
         val newState = HackerState(
             userId = userId,
@@ -44,10 +43,8 @@ class HackerStateEntityService(
             siteId = siteId,
             currentNodeId = null,
             previousNodeId = null,
-            targetNodeId = null,
-            generalActivity = HackerGeneralActivity.RUNNING,
-            runActivity = RunActivity.SCANNING,
-            hookPatrollerId = null, locked = false
+            activity = HackerActivity.SCANNING,
+            masked = true // TODO  - unmasked is not automatically reset at start of hack
         )
         hackerStateRepo.save(newState)
         return newState
@@ -58,7 +55,7 @@ class HackerStateEntityService(
     }
 
     fun retrieveForCurrentUser(): HackerState {
-        if (currentUserService.userId == SYSTEM_USEREntity.id) {
+        if (currentUserService.userId == SYSTEM_USER.id) {
             error("Trying to perform action for current user assuming it is a player, but current user SYSTEM for a system event")
         }
         return retrieve(currentUserService.userId)
@@ -69,32 +66,32 @@ class HackerStateEntityService(
     }
 
     fun startRun(userId: String, runId: String) {
-        val scan = runEntityService.getByRunId(runId)
-        val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
-        val nodes = nodeEntityService.getAll(scan.siteId)
-        val startNode = nodes.find { it.networkId == siteProperties.startNodeNetworkId }!!
+        val run = runEntityService.getByRunId(runId)
 
         val newState = HackerState(
             runId = runId,
             connectionId = currentUserConnectionId(),
-            siteId = scan.siteId,
+            siteId = run.siteId,
             userId = userId,
             currentNodeId = null,
             previousNodeId = null,
-            targetNodeId = startNode.id,
-            generalActivity = HackerGeneralActivity.RUNNING,
-            runActivity = RunActivity.SCANNING,
-            hookPatrollerId = null, locked = false
+            activity = HackerActivity.SCANNING,
+            masked = true
         )
         hackerStateRepo.save(newState)
     }
 
     fun startedRun(userId: String, runId: String): HackerStateRunning {
+        val run = runEntityService.getByRunId(runId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        val nodes = nodeEntityService.getAll(run.siteId)
+        val startNode = nodes.find { it.networkId == siteProperties.startNodeNetworkId }!!
+
+
         val oldState = retrieve(userId)
         val newState = oldState.copy(
-            runActivity = RunActivity.AT_NODE,
-            currentNodeId = oldState.targetNodeId,
-            targetNodeId = null
+            activity = HackerActivity.ATTACKING,
+            currentNodeId = startNode.id,
         )
         hackerStateRepo.save(newState)
 
@@ -103,40 +100,40 @@ class HackerStateEntityService(
 
     fun arriveAt(position: HackerStateRunning, nodeId: String) {
         val newPosition = position.toState().copy(
-            runActivity = RunActivity.AT_NODE,
             currentNodeId = nodeId,
             previousNodeId = position.currentNodeId,
-            targetNodeId = null
         )
         hackerStateRepo.save(newPosition)
     }
 
     fun lockHacker(hackerId: String, patrollerId: String) {
-        val position = retrieve(hackerId)
-        val newPosition = position.copy(
-            locked = true,
-            hookPatrollerId = patrollerId,
-            runActivity = RunActivity.AT_NODE,
-            targetNodeId = null
-        )
-        hackerStateRepo.save(newPosition)
-    }
-
-    fun leaveRun(userId: String) {
-        val newState = HackerState(
-            userId = userId,
-            connectionId = currentUserConnectionId(),
-            runId = null, siteId = null,
-            currentNodeId = null,
-            previousNodeId = null,
-            targetNodeId = null,
-            generalActivity = HackerGeneralActivity.ONLINE,
-            runActivity = RunActivity.NA,
-            hookPatrollerId = null,
-            locked = false
+        val currentState = retrieve(hackerId)
+        val newState = currentState.copy(
+            masked = false,
         )
         hackerStateRepo.save(newState)
+    }
 
+    // FIXME: create 2 types of leaving: away from site and DC
+
+    fun disconnect(currentState: HackerState) {
+        val newState = currentState.copy(
+            currentNodeId = null,
+            previousNodeId = null,
+            activity = HackerActivity.SCANNING,
+        )
+        hackerStateRepo.save(newState)
+    }
+
+    fun leaveSite(currentState: HackerState) {
+        val newState = currentState.copy(
+            runId = null,
+            siteId = null,
+            currentNodeId = null,
+            previousNodeId = null,
+            activity = HackerActivity.ONLINE,
+        )
+        hackerStateRepo.save(newState)
     }
 
     fun login(userId: String) {
@@ -145,11 +142,8 @@ class HackerStateEntityService(
             connectionId = currentUserConnectionId(),
             runId = null, siteId = null,
             currentNodeId = null, previousNodeId = null,
-            targetNodeId = null,
-            generalActivity = HackerGeneralActivity.ONLINE,
-            runActivity = RunActivity.NA,
-            hookPatrollerId = null,
-            locked = false
+            activity = HackerActivity.ONLINE,
+            masked = true
         )
         hackerStateRepo.save(newState)
     }
@@ -166,21 +160,22 @@ class HackerStateEntityService(
             runId = null, siteId = null,
             currentNodeId = null,
             previousNodeId = null,
-            targetNodeId = null,
-            generalActivity = HackerGeneralActivity.OFFLINE,
-            runActivity = RunActivity.NA,
-            hookPatrollerId = null,
-            locked = false
+            activity = HackerActivity.OFFLINE,
+            masked = true
         )
     }
 
-    fun findAllHackersInRun(runId: String): List<String> {
-        return hackerStateRepo.findByRunId(runId).map { it.userId }
+    fun findAllHackersInRun(runId: String): List<HackerState> {
+        return hackerStateRepo.findByRunId(runId)
+    }
+
+    fun findAllHackersInSite(siteId: String): List<HackerState> {
+        return hackerStateRepo.findBySiteId(siteId)
     }
 
     fun isOnline(userId: String): Boolean {
         val state = hackerStateRepo.findByUserId(userId) ?: return false
-        return state.generalActivity != HackerGeneralActivity.OFFLINE
+        return state.activity != HackerActivity.OFFLINE
     }
 
     fun currentUserConnectionId(): String {

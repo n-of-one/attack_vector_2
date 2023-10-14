@@ -1,7 +1,8 @@
 package org.n1.av2.backend.service.scan
 
+import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.TICK_MILLIS
-import org.n1.av2.backend.engine.TaskRunner
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.NodeScan
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.Run
@@ -29,7 +30,7 @@ class ScanningService(
     private val currentUserService: CurrentUserService,
     private val traverseNodeService: TraverseNodeService,
     private val time: TimeService,
-    private val taskRunner: TaskRunner,
+    private val userTaskRunner: UserTaskRunner,
     private val scanInfoService: ScanInfoService,
     private val scanProbActionService: ScanProbActionService,
     private val layoutEntityService: LayoutEntityService,
@@ -73,14 +74,19 @@ class ScanningService(
         stompService.toRun(run.runId, ServerActions.SERVER_PROBE_LAUNCH, probeAction)
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-        taskRunner.queueInTicks(totalTicks - 20) {
-            scanProbActionService.probeCompleted(run, node, scanType)
+        userTaskRunner.queueInTicks(totalTicks - 20) {
+            probeComplete(run, node, scanType, autoScan)
+        }
+    }
 
-            if (allNodesScanned(run)) {
-                completeScan(run)
-            } else if (autoScan) {
-                performAutoScan(run.runId)
-            }
+    @ScheduledTask
+    private fun probeComplete(run: Run, node: Node, scanType: NodeScanType, autoScan: Boolean) {
+        scanProbActionService.probeCompleted(run, node, scanType)
+
+        if (allNodesScanned(run)) {
+            completeScan(run)
+        } else if (autoScan) {
+            performAutoScan(run.runId)
         }
     }
 

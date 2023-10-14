@@ -36,7 +36,7 @@ data class HackerSkill(
 )
 
 // Used for internal activity
-val SYSTEM_USEREntity = UserEntity(
+val SYSTEM_USER = UserEntity(
     id = "user-system",
     externalId = "user-system",
     email = "no_email@example.com",

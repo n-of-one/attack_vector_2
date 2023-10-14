@@ -133,7 +133,7 @@ class StompConfig(
     @EventListener
     fun handleDisconnectEvent(event: SessionDisconnectEvent) {
         val userPrincipal = event.user!! as UserPrincipal
-        stompConnectionEventService.disconnect(userPrincipal)
+        stompConnectionEventService.browserDisconnect(userPrincipal)
         logger.debug { "<= disconnect ${userPrincipal.name}" }
     }
 

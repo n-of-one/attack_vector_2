@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.terminal
 
 import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.terminal.hacking.CommandHackService
@@ -35,7 +36,7 @@ class HackTerminalService(
 
     private fun processPrivilegedCommand(runId: String, tokens: List<String>, commandAction: String) {
         val state = hackerStateEntityService.retrieveForCurrentUser().toRunState()
-        if (state.hookPatrollerId != null) return reportLocked()
+        if (!state.masked) return reportLocked()
 
         when (commandAction) {
             "move" -> commandMoveService.processCommand(runId, tokens, state)
@@ -57,18 +58,11 @@ class HackTerminalService(
                 " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 1",
                 " [u]dc",
                 " [u]/share[/] [info]<user name>")
-//        if (environment.dev) {
-//            stompService.terminalReceive(
-//                    "",
-//                    "[i]Available only during development and testing:[/]",
-//                    " [u]quickscan"
-//            )
-//        }
     }
 
     fun processDc(runId: String) {
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
-        runService.leaveRun(hackerState)
+        runService.hackerDisconnect(hackerState, "Disconnected")
     }
 
     fun reportLocked() {

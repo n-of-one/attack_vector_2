@@ -6,25 +6,18 @@ enum class LayerType(
 
     OS,
     TEXT,
-//    IMAGE,
-//    LINK,
     TIMER_TRIGGER,
     KEYSTORE,
-//    SYSCON,
-//    CODE,
-//    RESOURCE,
-//    SCAN_BLOCKER,
-
-    LOCK (false),
-    STATUS_LIGHT(false),
+    TRIPWIRE,
+    LOCK,
+    STATUS_LIGHT,
 
     WORD_SEARCH_ICE(true),
-//    ICE_MAGIC_EYE,
     PASSWORD_ICE(true),
     TANGLE_ICE(true),
     NETWALK_ICE(true),
-//    ICE_MANUAL,
     TAR_ICE(true),
+
 
 
 }
