@@ -15,13 +15,13 @@ import {currentUser} from "../../../common/user/CurrentUser";
 const TerminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
 
     const timerCount = useSelector((state: HackerState) => state.run.timers.length)
+    const adjustedTimerCount = timerCount > 0 ? timerCount : 1
 
     if (infoNodeId) {
         return (<NodeScanInfo/>)
     }
 
-    const hastTimers = timerCount > 0
-    const terminalHeight = 847 - (timerCount * 24) - (hastTimers ? 13 : 22)
+    const terminalHeight = 847 - (adjustedTimerCount * 24) - 23
 
     return <>
         <Timers/>

@@ -5,17 +5,19 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.ZonedDateTime
 import java.util.*
 
 @Document
 data class SiteProperties(
-        @Id val siteId: String,
-        var name: String,
-        var description: String = "",
-        var creator: String = "",
-        var hackTime: String = "15:00",
-        var startNodeNetworkId: String = "00",
-        var hackable: Boolean = true
+    @Id val siteId: String,
+    var name: String,
+    var description: String = "",
+    var creator: String = "",
+    var hackTime: String = "15:00",
+    var startNodeNetworkId: String = "00",
+    var hackable: Boolean = true,
+    val shutdownEnd: ZonedDateTime?,
 )
 
 @Document
@@ -31,30 +33,30 @@ data class Node(
     @Indexed val networkId: String
 ) {
     fun getLayerById(layerId: String): Layer {
-        return layers.find {it.id == layerId}!!
+        return layers.find { it.id == layerId }!!
     }
 }
 
 @Document
 data class Layout(
-        @Id val siteId: String,
-        val nodeIds: MutableList<String> = ArrayList(),
-        val connectionIds: MutableList<String> = ArrayList()
+    @Id val siteId: String,
+    val nodeIds: MutableList<String> = ArrayList(),
+    val connectionIds: MutableList<String> = ArrayList()
 )
 
 @Document
 data class Connection(
-        @Id val id: String,
-        @Indexed val siteId: String,
-        val fromId: String,
-        val toId: String
+    @Id val id: String,
+    @Indexed val siteId: String,
+    val fromId: String,
+    val toId: String
 )
 
 @Document
 data class SiteEditorState(
-        @Id val siteId: String,
-        val ok: Boolean = true,
-        val messages: MutableList<SiteStateMessage> = Collections.emptyList()
+    @Id val siteId: String,
+    val ok: Boolean = true,
+    val messages: MutableList<SiteStateMessage> = Collections.emptyList()
 )
 
 data class SiteStateMessage(

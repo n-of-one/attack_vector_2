@@ -77,11 +77,6 @@ class SystemTaskRunner(
     }
 }
 
-// Marker annotation to indicate that a function is called by the system, so the currentUser is not set, and stompService.reply does not work here.
-@Target(AnnotationTarget.FUNCTION)
-annotation class CalledBySystem
-
-
 @Component
 class TaskEngine(
     val stompService: StompService,

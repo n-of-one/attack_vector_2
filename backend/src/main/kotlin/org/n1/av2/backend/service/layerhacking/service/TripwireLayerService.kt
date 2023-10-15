@@ -1,9 +1,11 @@
 package org.n1.av2.backend.service.layerhacking.service
 
+import org.n1.av2.backend.engine.CalledBySystem
 import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.SystemTaskRunner
 import org.n1.av2.backend.entity.run.HackerActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.service.Timer
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.service.TimerType
 import org.n1.av2.backend.entity.site.NodeEntityService
@@ -15,11 +17,12 @@ import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.toDuration
+import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.springframework.context.annotation.Lazy
 import java.time.Duration
 import java.time.ZonedDateTime
 
-class TimerInfo(val timerId: String, val finishAt: ZonedDateTime, val type: String, val target: String, val effect: String)
+class TimerInfo(val timerId: String, val finishAt: ZonedDateTime, val type: TimerType, val target: String, val effect: String)
 
 
 @org.springframework.stereotype.Service
@@ -50,43 +53,51 @@ class TripwireLayerService(
         }
 
         val duration = layer.countdown.toDuration("tripwire ${layer.id}")
-        val alarmTime = time.now().plus(duration)
+        val shutdownTime = time.now().plus(duration)
 
-        val timer = timerEntityService.create(layer.id, null, alarmTime, siteId, siteId, TimerType.SITE_RESET)
-        val effect = determineEffect(layer.shutdown)
+        val timer = timerEntityService.create(layer.id, null, shutdownTime, siteId, siteId, TimerType.SHUTDOWN_START)
 
-        stompService.reply(ServerActions.SERVER_START_TIMER, TimerInfo(timer.id, alarmTime, "tripwire", "site", effect))
-
+        stompService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(timer, layer))
         stompService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [error]site reset[/] in ${toDurationString(duration)}[/].")
 
-        class FlashPatroller(val nodeId: String)
-        stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
+        stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, "nodeId" to nodeId)
 
-        systemTaskRunner.queueInSeconds(siteId, duration.seconds) { timerActivates(siteId, timer.id) }
+        systemTaskRunner.queueInSeconds(siteId, duration.seconds) { timerActivates(siteId, timer.id, layer) }
     }
 
     @ScheduledTask
-    fun timerActivates(siteId: String, timerId: String) {
+    @CalledBySystem
+    fun timerActivates(siteId: String, timerId: String, layer: TripwireLayer) {
         stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timerId)
+        timerEntityService.deleteById(timerId)
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
-        siteService.resetSite(siteId)
+        siteService.resetSite(siteId, layer.shutdown)
         hackerStates
             .filter { it.activity == HackerActivity.ATTACKING }
             .forEach { hackerState ->
                 runService.hackerDisconnect(hackerState, "Disconnected (server abort)")
             }
 
-        // FIXME: also possibly shut down
+        val shutdownDuration = layer.shutdown.toDuration("shutdown")
+        val shutdownEndTime = time.now().plus(shutdownDuration)
+
+        val shutdownTimer = timerEntityService.create(layer.id, null, shutdownEndTime, siteId, siteId, TimerType.SHUTDOWN_END)
+        stompService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(shutdownTimer, layer))
+
+        siteService.shutdownSite(siteId, shutdownEndTime)
+        systemTaskRunner.queueInSeconds(siteId, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
     }
 
-    private fun determineEffect(shutdownTime: String): String {
-        val shutdownDuration = shutdownTime.toDuration("shutdown")
-        if (shutdownDuration.isZero) {
-            return "site reset"
-        }
-        return "shutdown (${toDurationString(shutdownDuration)})"
+    @ScheduledTask
+    @CalledBySystem
+    fun shutdownFinished(siteId: String, shutdownTimerId: String) {
+        siteService.shutdownFinished(siteId)
+        timerEntityService.deleteById(shutdownTimerId)
+        stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to shutdownTimerId)
+        stompService.toSite(siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site connection available again.")))
     }
+
 
     private fun toDurationString(duration: Duration): String {
         if (duration.toHoursPart() > 0) {
@@ -100,9 +111,23 @@ class TripwireLayerService(
 
         val countdowns = timers.map { timer ->
             val layer = nodeEntityService.findLayer(timer.layerId) as TripwireLayer
-            TimerInfo(timer.id, timer.finishAt, "tripwire", "site", determineEffect(layer.shutdown))
+            toTimerInfo(timer, layer)
         }
 
         return countdowns
     }
+
+    fun toTimerInfo(timer: Timer, layer: TripwireLayer): TimerInfo {
+        return TimerInfo(timer.id, timer.finishAt, timer.type, "site", determineEffect(timer.type, layer.shutdown))
+    }
+
+    private fun determineEffect(type: TimerType, shutdownTime: String): String {
+        return when (type) {
+            TimerType.SHUTDOWN_START -> "shutdown in ${shutdownTime})"
+            TimerType.SHUTDOWN_END -> "site available"
+            else -> "Unknown"
+        }
+    }
+
+
 }

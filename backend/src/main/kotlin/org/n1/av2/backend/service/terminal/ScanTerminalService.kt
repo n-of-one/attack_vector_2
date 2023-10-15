@@ -101,7 +101,6 @@ class ScanTerminalService(
     }
 
     private fun processAttack(runId: String, quick: Boolean) {
-        stompService.replyTerminalSetLocked(true)
         startAttackService.startAttack(runId, quick)
     }
 

@@ -29,9 +29,13 @@ class TimerEntityService(
         return repository.save(timer)
     }
 
+    fun deleteById(timerId: String) {
+        repository.deleteById(timerId)
+    }
+
     fun deleteByLayerId(layerId: String) {
-        val detection = repository.findByLayerId(layerId) ?: return
-        repository.delete(detection)
+        val timer = repository.findByLayerId(layerId) ?: return
+        repository.delete(timer)
     }
 
     fun deleteBySiteId(siteId: String) {

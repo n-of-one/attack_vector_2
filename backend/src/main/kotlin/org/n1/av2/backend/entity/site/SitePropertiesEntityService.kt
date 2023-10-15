@@ -32,7 +32,7 @@ class SitePropertiesEntityService(
     }
 
     fun create(id: String, name: String): SiteProperties {
-        val data = SiteProperties(siteId = id, name = name, hackTime = "15:00", startNodeNetworkId = "00")
+        val data = SiteProperties(siteId = id, name = name, hackTime = "15:00", startNodeNetworkId = "00", shutdownEnd = null)
         sitePropertiesRepo.save(data)
         return data
     }

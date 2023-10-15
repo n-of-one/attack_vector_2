@@ -14,7 +14,7 @@ class TerminalService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val scanTerminalService: ScanTerminalService,
     private val hackTerminalService: HackTerminalService,
-    private val stompService: StompService) {
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 

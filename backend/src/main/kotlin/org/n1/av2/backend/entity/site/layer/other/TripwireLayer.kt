@@ -5,9 +5,12 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.site.toDuration
+import java.time.Duration
 
 private const val COUNTDOWN = "countdown"
 private const val SHUTDOWN = "shutdown"
+
+private val MINIMUM_SHUTDOWN = Duration.ofMinutes(1)
 
 class TripwireLayer(
     id: String,
@@ -30,7 +33,11 @@ class TripwireLayer(
     }
 
     private fun validateShutdown(siteRep: SiteRep) {
-        this.shutdown.toDuration("shutdown")
+        val duration = this.shutdown.toDuration("shutdown")
+
+        if (duration < MINIMUM_SHUTDOWN) {
+            throw ValidationException("Shutdown must be at least 01:00 (1 minute).")
+        }
     }
 
 

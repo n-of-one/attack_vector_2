@@ -86,6 +86,7 @@ class StompService(
     }
 
     fun reply(actionType: ServerActions, vararg data: Any) {
+        if (currentUserService.isSystemUser) error("Cannot reply to system user")
         val name = SecurityContextHolder.getContext().authentication.name
         sendToDestination("/topic/user/${name}", actionType, data)
     }

@@ -15,6 +15,8 @@ import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.stereotype.Service
+import java.time.Duration
+import java.time.ZonedDateTime
 
 @Service
 class SiteService(
@@ -65,7 +67,7 @@ class SiteService(
     }
 
     @CalledBySystem
-    fun resetSite(siteId: String) {
+    fun resetSite(siteId: String, shutdownDuration: String) {
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach {node ->
             val refreshedNode = node.copy(hacked = false)
@@ -77,10 +79,25 @@ class SiteService(
 
             nodeEntityService.save(refreshedNode)
         }
+        timerEntityService.deleteBySiteId(siteId)
+        shutdownFinished(siteId)
+
         iceService.deleteIce(siteId)
 
         stompService.toSite(siteId, ServerActions.SERVER_SITE_RESET)
-        stompService.toSite(siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Full site reset")))
+        stompService.toSite(siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${shutdownDuration}")))
 
+    }
+
+    fun shutdownSite(siteId: String, shutdownEndTime: ZonedDateTime) {
+        val properties = sitePropertiesEntityService.getBySiteId(siteId)
+        val shutdownProperties = properties.copy(shutdownEnd = shutdownEndTime)
+        sitePropertiesEntityService.save(shutdownProperties)
+    }
+
+    fun shutdownFinished(siteId: String) {
+        val properties = sitePropertiesEntityService.getBySiteId(siteId)
+        val shutdownProperties = properties.copy(shutdownEnd = null)
+        sitePropertiesEntityService.save(shutdownProperties)
     }
 }

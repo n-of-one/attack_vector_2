@@ -1,15 +1,16 @@
 package org.n1.av2.backend.entity.service
 
+import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.time.ZonedDateTime
 
-enum class TimerType { SITE_RESET, SHUTDOWN }
+enum class TimerType { SHUTDOWN_START, SHUTDOWN_END }
 
 @Document
 data class Timer(
-    val id: String,
+    @Id val id: String,
     val layerId: String,
     val siteId: String,
     val targetSiteId: String,

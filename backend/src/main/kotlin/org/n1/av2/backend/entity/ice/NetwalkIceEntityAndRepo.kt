@@ -1,6 +1,7 @@
 package org.n1.av2.backend.entity.ice
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
+import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
@@ -74,7 +75,7 @@ data class NetwalkCell(
 
 @Document
 data class NetwalkIceStatus(
-    val id: String,
+    @Id val id: String,
     @Indexed val layerId: String,
     val strength: IceStrength,
     val wrapping: Boolean,

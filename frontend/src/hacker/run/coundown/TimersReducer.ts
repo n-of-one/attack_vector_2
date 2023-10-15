@@ -13,12 +13,16 @@ export const SERVER_PATROLLER_MOVE = "SERVER_PATROLLER_MOVE"
 export const SERVER_PATROLLER_LOCKS_HACKER = "SERVER_PATROLLER_LOCKS_HACKER"
 export const SERVER_PATROLLER_REMOVE = "SERVER_PATROLLER_REMOVE"
 
+export enum TimerType {
+    SHUTDOWN_START = "SHUTDOWN_START",
+    SHUTDOWN_END = "SHUTDOWN_END",
+}
 
 export interface TimerState {
     timerId: string,
     finishAt: string | null,    // "2019-08-26T15:38:40.9179757+02:00",
     secondsLeft: number | null,
-    type: string,
+    type: TimerType,
     target: string,
     effect: string
 }
@@ -47,7 +51,7 @@ export const timersReducer = (state: TimerState[] = [], action: AnyAction): Time
 interface TimerStart {
     timerId: string,
     finishAt: string
-    type: string,
+    type: TimerType,
     target: string,
     effect: string
 }

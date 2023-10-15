@@ -1,6 +1,7 @@
 package org.n1.av2.backend.entity.ice
 
 import org.n1.av2.backend.entity.site.enums.LayerType
+import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
@@ -10,7 +11,7 @@ import java.time.ZonedDateTime
 
 @Document
 data class IcePasswordStatus(
-    val id: String, // iceId
+    @Id val id: String, // iceId
     @Indexed val layerId: String,
     val hackerAttempts: List<String>,  // only attempts by hackers are tracked
     val attemptCount: Int = 0,         // but all attempts count for the purpose of locking
