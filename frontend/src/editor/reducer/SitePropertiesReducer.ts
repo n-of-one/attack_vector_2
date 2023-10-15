@@ -10,6 +10,7 @@ export interface SiteProperties {
     hackTime: string
     startNodeNetworkId: string
     hackable: boolean
+    shutdownEnd: string | null
 }
 
 
@@ -20,7 +21,8 @@ export const sitePropertiesDefault: SiteProperties = {
     creator: "",
     hackTime: "-",
     startNodeNetworkId: "00",
-    hackable: false
+    hackable: false,
+    shutdownEnd: null // "2023-10-15T12:24:53.259+02:00"
 }
 
 export const SitePropertiesReducer = (state: SiteProperties = sitePropertiesDefault, action: AnyAction) => {

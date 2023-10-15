@@ -5,6 +5,7 @@ import {TICK_MILLIS} from "../util/Schedule";
 
 
 export const animate = (canvas: Canvas, toAnimate: fabric.Object, attribute: string | null, value: any, durationTicks: number, easing: IUtilAminEaseFunction | null = null) => {
+    if (!toAnimate) return
 
     const easingFunction = (easing) ? easing : fabric.util.ease.easeInOutSine
     if (attribute) {

@@ -63,8 +63,8 @@ class ScanAndRunController(
     @MessageMapping("/scan/refreshIce")
     fun refreshIce(siteId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
-            siteService.resetSite(siteId, "00:00")
-            stompService.replyMessage(NotyMessage.neutral("Ice reset"))
+            siteService.refreshSite(siteId, "00:00")
+            stompService.replyMessage(NotyMessage.neutral("site refreshed"))
         }
     }
 

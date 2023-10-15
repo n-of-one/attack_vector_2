@@ -5,7 +5,9 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.run.StartAttackService
 import org.n1.av2.backend.service.scan.ScanningService
@@ -14,14 +16,15 @@ import org.springframework.stereotype.Service
 @Service
 class ScanTerminalService(
     private val scanningService: ScanningService,
-    private val runEntityService: RunEntityService,
     private val nodeEntityService: NodeEntityService,
     private val socialTerminalService: SocialTerminalService,
     private val startAttackService: StartAttackService,
-    private val hackerStateEntityService: HackerStateEntityService,
-    private val runService: RunService,
     private val stompService: StompService,
     private val config: ServerConfig,
+    private val runEntityService: RunEntityService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val timeService: TimeService,
+
     ) {
 
 
@@ -29,14 +32,14 @@ class ScanTerminalService(
         val tokens = command.split(" ")
         when (tokens[0]) {
             "help" -> processHelp()
-            "autoscan" -> processAutoScan(runId)
-            "scan" -> processScan(runId, tokens)
+            "autoscan" -> doIfSiteNotShutdown(runId) { processAutoScan(runId) }
+            "scan" -> doIfSiteNotShutdown(runId) {processScan(runId, tokens) }
             "/share" -> socialTerminalService.processShare(runId, tokens)
             "servererror" -> error("gah")
-            "quickscan", "qs" -> processQuickscan(runId)
-            "attack" -> processAttack(runId, false)
-            "quickattack", "qa" -> processAttack(runId, true)
-            "move", "view", "hack" -> reportHackCommand()
+            "quickscan", "qs" -> doIfSiteNotShutdown(runId) { processQuickscan(runId) }
+            "attack" -> doIfSiteNotShutdown(runId) { processAttack(runId, false) }
+            "quickattack", "qa" -> doIfSiteNotShutdown(runId) { processAttack(runId, true) }
+            "move", "view", "hack", "connect" -> reportHackCommand()
             else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
         }
     }
@@ -52,17 +55,18 @@ class ScanTerminalService(
 
     private fun processHelp() {
         stompService.replyTerminalReceive(
-                "Command options:",
-                " [u]autoscan",
-                " [u]attack",
-                " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
-                " [u]/share[/u] [info]<user name>")
+            "Command options:",
+            " [u]autoscan",
+            " [u]attack",
+            " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
+            " [u]/share[/u] [info]<user name>"
+        )
         if (config.dev) {
             stompService.replyTerminalReceive(
-                    "",
-                    "[i]Available only during development and testing:[/]",
-                    " [u]quickscan[/] or [u]qs",
-                    " [u]quickattack[/] or [u]qa"
+                "",
+                "[i]Available only during development and testing:[/]",
+                " [u]quickscan[/] or [u]qs",
+                " [u]quickattack[/] or [u]qa"
             )
         }
     }
@@ -105,7 +109,15 @@ class ScanTerminalService(
     }
 
 
-
-
+    fun doIfSiteNotShutdown(runId: String, action: () -> Unit) {
+        val run = runEntityService.getByRunId(runId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        val now = timeService.now()
+        if (siteProperties.shutdownEnd != null && now < siteProperties.shutdownEnd) {
+            stompService.replyTerminalReceive("Connection refused. (site is in shutdown mode)")
+            return
+        }
+        action.invoke()
+    }
 
 }

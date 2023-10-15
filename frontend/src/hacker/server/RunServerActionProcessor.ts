@@ -43,7 +43,8 @@ export const SERVER_REDIRECT_HACK_ICE = "SERVER_REDIRECT_HACK_ICE"
 export const SERVER_REDIRECT_CONNECT_ICE = "SERVER_REDIRECT_CONNECT_ICE"
 export const SERVER_REDIRECT_CONNECT_APP = "SERVER_REDIRECT_CONNECT_APP"
 
-export const SERVER_SITE_RESET = "SERVER_SITE_RESET"
+export const SERVER_SITE_SHUTDOWN_START = "SERVER_SITE_SHUTDOWN_START"
+export const SERVER_SITE_SHUTDOWN_FINISH = "SERVER_SITE_SHUTDOWN_FINISH"
 
 
 /** Event to ignore while waiting for the scan full result */
@@ -242,8 +243,12 @@ export const initRunServerActions = (store: Store) => {
         runCanvas.disconnect(action.userId)
     })
 
-    webSocketConnection.addAction(SERVER_SITE_RESET, (action: AnyAction ) => {
-        runCanvas.siteReset()
+    webSocketConnection.addAction(SERVER_SITE_SHUTDOWN_START, (action: AnyAction ) => {
+        runCanvas.siteShutdownStart()
+    })
+
+    webSocketConnection.addAction(SERVER_SITE_SHUTDOWN_FINISH, (action: AnyAction ) => {
+        runCanvas.siteShutdownFinish()
     })
 
     webSocketConnection.addAction(SERVER_HACKER_MOVE_START, (data: MoveStartAction) => {

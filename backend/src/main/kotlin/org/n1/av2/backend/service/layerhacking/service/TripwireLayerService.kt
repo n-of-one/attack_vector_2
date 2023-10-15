@@ -58,7 +58,7 @@ class TripwireLayerService(
         val timer = timerEntityService.create(layer.id, null, shutdownTime, siteId, siteId, TimerType.SHUTDOWN_START)
 
         stompService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(timer, layer))
-        stompService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [error]site reset[/] in ${toDurationString(duration)}[/].")
+        stompService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [warn]site reset[/] in ${toDurationString(duration)}[/].")
 
         stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, "nodeId" to nodeId)
 
@@ -82,7 +82,7 @@ class TripwireLayerService(
         val shutdownDuration = layer.shutdown.toDuration("shutdown")
         val shutdownEndTime = time.now().plus(shutdownDuration)
 
-        val shutdownTimer = timerEntityService.create(layer.id, null, shutdownEndTime, siteId, siteId, TimerType.SHUTDOWN_END)
+        val shutdownTimer = timerEntityService.create(layer.id, null, shutdownEndTime, siteId, siteId, TimerType.SHUTDOWN_FINISH)
         stompService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(shutdownTimer, layer))
 
         siteService.shutdownSite(siteId, shutdownEndTime)
@@ -124,7 +124,7 @@ class TripwireLayerService(
     private fun determineEffect(type: TimerType, shutdownTime: String): String {
         return when (type) {
             TimerType.SHUTDOWN_START -> "shutdown in ${shutdownTime})"
-            TimerType.SHUTDOWN_END -> "site available"
+            TimerType.SHUTDOWN_FINISH -> "site available"
             else -> "Unknown"
         }
     }

@@ -30,23 +30,11 @@ class StartAttackService(
     private val commandMoveService: CommandMoveService,
     private val syntaxHighlightingService: SyntaxHighlightingService,
     private val stompService: StompService,
-    private val runEntityService: RunEntityService,
-    private val sitePropertiesEntityService: SitePropertiesEntityService,
-    private val timeService: TimeService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
     fun startAttack(runId: String, quick: Boolean) {
-
-        val run = runEntityService.getByRunId(runId)
-        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
-        val now = timeService.now()
-
-        if ( siteProperties.shutdownEnd != null && now < siteProperties.shutdownEnd ) {
-            stompService.replyTerminalReceive("Connection refused. (site is in shutdown mode)")
-            return
-        }
 
         val userId = currentUserService.userId
 

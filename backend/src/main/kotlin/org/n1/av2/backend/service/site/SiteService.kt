@@ -15,7 +15,6 @@ import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.stereotype.Service
-import java.time.Duration
 import java.time.ZonedDateTime
 
 @Service
@@ -66,8 +65,14 @@ class SiteService(
         iceService.deleteIce(siteId)
     }
 
+    fun refreshSite(siteId: String, shutdownDuration: String) {
+        resetSite(siteId, null)
+        shutdownFinished(siteId)
+        timerEntityService.deleteBySiteId(siteId)
+    }
+
     @CalledBySystem
-    fun resetSite(siteId: String, shutdownDuration: String) {
+    fun resetSite(siteId: String, shutdownDuration: String?) {
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach {node ->
             val refreshedNode = node.copy(hacked = false)
@@ -76,28 +81,27 @@ class SiteService(
                 if (layer is KeyStoreLayer) { keystoreService.deleteIcePassword(layer.iceLayerId) }
                 if (layer is TripwireLayer) { timerEntityService.deleteByLayerId(layer.id) }
             }
-
             nodeEntityService.save(refreshedNode)
         }
-        timerEntityService.deleteBySiteId(siteId)
-        shutdownFinished(siteId)
 
         iceService.deleteIce(siteId)
 
-        stompService.toSite(siteId, ServerActions.SERVER_SITE_RESET)
-        stompService.toSite(siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${shutdownDuration}")))
-
+        if (shutdownDuration != null) {
+            stompService.toSite( siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${shutdownDuration}")))
+        }
     }
 
     fun shutdownSite(siteId: String, shutdownEndTime: ZonedDateTime) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
         val shutdownProperties = properties.copy(shutdownEnd = shutdownEndTime)
         sitePropertiesEntityService.save(shutdownProperties)
+        stompService.toSite(siteId, ServerActions.SERVER_SITE_SHUTDOWN_START)
     }
 
     fun shutdownFinished(siteId: String) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
         val shutdownProperties = properties.copy(shutdownEnd = null)
         sitePropertiesEntityService.save(shutdownProperties)
+        stompService.toSite(siteId, ServerActions.SERVER_SITE_SHUTDOWN_FINISH)
     }
 }

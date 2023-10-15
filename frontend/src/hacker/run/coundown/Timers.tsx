@@ -23,7 +23,7 @@ export const Timers = () => {
 
 const TimerDisplay = (props: TimerState) => {
 
-    const textColor = props.type === TimerType.SHUTDOWN_START ? "text-danger" : "text-info"
+    const textColor = props.type === TimerType.SHUTDOWN_START ? "text-warning" : "text-info"
 
     return <div className="row">
         <div className="col-lg-12">
@@ -38,7 +38,7 @@ const TimerDisplay = (props: TimerState) => {
 const typeText = (timer: TimerState) => {
     switch (timer.type) {
         case TimerType.SHUTDOWN_START: return "tripwire"
-        case TimerType.SHUTDOWN_END: return "shutdown"
+        case TimerType.SHUTDOWN_FINISH: return "shutdown"
         default: return ""
     }
 }

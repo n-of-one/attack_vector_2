@@ -15,7 +15,7 @@ export const SERVER_PATROLLER_REMOVE = "SERVER_PATROLLER_REMOVE"
 
 export enum TimerType {
     SHUTDOWN_START = "SHUTDOWN_START",
-    SHUTDOWN_END = "SHUTDOWN_END",
+    SHUTDOWN_FINISH = "SHUTDOWN_FINISH",
 }
 
 export interface TimerState {

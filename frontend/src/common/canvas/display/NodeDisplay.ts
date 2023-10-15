@@ -1,7 +1,7 @@
 import {fabric} from "fabric"
 import {toType} from "../../enums/NodeTypesNames"
 import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FREE, HACKED, PROTECTED, FULLY_SCANNED_4, TYPE_KNOWN_2, NodeScanStatus} from "../../enums/NodeStatus"
-import {animate, getHtmlImage} from "../CanvasUtils"
+import {getHtmlImage} from "../CanvasUtils"
 import {IMAGE_SIZE} from "./util/DisplayConstants"
 import {Display, Graphics} from "./Display"
 import {Schedule} from "../../util/Schedule"
@@ -12,6 +12,10 @@ import {delayTicks} from "../../util/Util";
 const SCAN_OPACITY = 0.3
 const HACK_OPACITY = 1
 
+export enum SiteStatus {
+    SCANNING, HACKING, SHUTDOWN
+}
+
 export class NodeDisplay implements Display {
 
     canvas: fabric.Canvas
@@ -21,10 +25,10 @@ export class NodeDisplay implements Display {
     id: string
     nodeData: NodeI
 
-    status = null
-    hacking: boolean
+    siteStatus: SiteStatus
+    movable: boolean
 
-    nodeIcon: fabric.Image
+    nodeIcon: fabric.Image = null as unknown as fabric.Image // constructor init via this.addNodeIcon()
     labelIcon: fabric.Text
     labelBackgroundIcon: fabric.Rect
     crossFadeNodeIcon: fabric.Image | null = null
@@ -35,19 +39,18 @@ export class NodeDisplay implements Display {
     x: number
     size: number = 33
 
-    constructor(canvas: fabric.Canvas, schedule: Schedule | null, nodeData: NodeI, movable: boolean, hacking: boolean) {
+    constructor(canvas: fabric.Canvas, schedule: Schedule | null, nodeData: NodeI, movable: boolean, iconStatus: SiteStatus) {
         this.id = nodeData.id
         this.canvas = canvas
         this.schedule = schedule
         this.gfx = new Graphics(canvas)
         this.nodeData = nodeData
-        this.hacking = hacking
+        this.siteStatus = iconStatus
         this.x = nodeData.x
         this.y = nodeData.y
+        this.movable = movable
 
-        this.nodeIcon = this.createNodeIcon(movable)
-        this.canvas.add(this.nodeIcon)
-        this.canvas.sendToBack(this.nodeIcon)
+        this.addNodeIcon()
 
         this.labelIcon = new fabric.Text(nodeData.networkId, {
             // fill: "#bbbbbb", // just simple grey
@@ -89,21 +92,31 @@ export class NodeDisplay implements Display {
         return [this.nodeIcon, this.labelIcon, this.labelBackgroundIcon]
     }
 
-    createNodeIcon(movable: boolean) {
-        const image = this.getNodeIconImage()
-        return this.createNodeIconInternal(image, movable)
+    addNodeIcon() {
+        this.nodeIcon = this.createNodeIcon()
+        this.canvas.add(this.nodeIcon)
+        this.canvas.sendToBack(this.nodeIcon)
     }
 
-    createResetNodeIcon() {
+    private createNodeIcon() {
+        if (this.siteStatus === SiteStatus.SHUTDOWN) {
+            return this.createShutdownNodeIcon()
+        }
+
+        const image = this.getNodeIconImage()
+        return this.createNodeIconInternal(image)
+    }
+
+    createShutdownNodeIcon() {
         const type = toType(this.nodeData.type)
         const imageId = type.name + "_DISCOVERED"
         const image = getHtmlImage(imageId)
 
-        return this.createNodeIconInternal(image, false)
+        return this.createNodeIconInternal(image)
     }
 
-    private createNodeIconInternal(image: HTMLImageElement, movable: boolean) {
-        const cursor = movable ? "move" : "pointer"
+    private createNodeIconInternal(image: HTMLImageElement) {
+        const cursor = this.movable ? "move" : "pointer"
 
         const nodeIcon = new fabric.Image(image, {
             left: this.nodeData.x, top: this.nodeData.y,
@@ -113,7 +126,7 @@ export class NodeDisplay implements Display {
             type: "node",
             lockRotation: true,
             lockScalingX: true, lockScalingY: true,
-            lockMovementX: !movable, lockMovementY: !movable,
+            lockMovementX: !this.movable, lockMovementY: !this.movable,
             hoverCursor: cursor,
         })
         nodeIcon.setControlsVisibility({tl: false, tr: false, br: false, bl: false, ml: false, mt: false, mr: false, mb: false, mtr: false,})
@@ -123,14 +136,14 @@ export class NodeDisplay implements Display {
 
 
     getNodeIconImage(): HTMLImageElement {
-        const imageStatus = this.determineStatusForIcon()
+        const nodeStatus = this.determineNodeStatusForIcon()
         const type = toType(this.nodeData.type)
 
-        const imageId = type.name + "_" + imageStatus
+        const imageId = type.name + "_" + nodeStatus
         return getHtmlImage(imageId)
     }
 
-    determineStatusForIcon() {
+    determineNodeStatusForIcon() {
         switch (this.nodeData.status) {
             case DISCOVERED_1:
                 return "DISCOVERED"
@@ -170,17 +183,15 @@ export class NodeDisplay implements Display {
 
     transitionToHack(quick: boolean, canvasSelectedIcon: fabric.Image | null) {
         const delay = (quick) ? 0 : 5
-        this.hacking = true
+        this.siteStatus = SiteStatus.HACKING
         if (this.nodeData.status === FULLY_SCANNED_4) {
             this.crossFadeToNewIconStart(delay, canvasSelectedIcon)
         }
     }
 
     transitionToScan() {
-        this.hacking = false
+        this.siteStatus = SiteStatus.SCANNING
         this.gfx.fade(20, this.determineNodeIconOpacity(), this.nodeIcon)
-
-        // animate(this.canvas, this.nodeIcon, "opacity", this.determineNodeIconOpacity(), 20)
     }
 
 
@@ -191,9 +202,7 @@ export class NodeDisplay implements Display {
         this.schedule.run(delay, () => {
 
             this.crossFadeNodeIcon = this.nodeIcon
-            this.nodeIcon = this.createNodeIcon(false)
-            this.canvas.add(this.nodeIcon)
-            this.canvas.sendToBack(this.nodeIcon)
+            this.addNodeIcon()
             this.canvas.sendToBack(this.crossFadeNodeIcon)
 
             // this.nodeIcon.set("left", this.x - 10)
@@ -205,25 +214,19 @@ export class NodeDisplay implements Display {
 
             // animate(this.canvas, this.nodeIcon, "opacity", this.determineNodeIconOpacity(), crossFadeTime)
             // animate(this.canvas, this.oldNodeIcon, "opacity", 0, crossFadeTime)
-        })
-        delayTicks(crossFadeTime, () => {
-            if (!this.crossFadeNodeIcon) {
-                return
-            }
-            this.canvas.remove(this.crossFadeNodeIcon)
-            if (canvasSelectedIcon === this.crossFadeNodeIcon) {
-                this.select()
-            }
-            this.crossFadeNodeIcon = null
-        })
-    }
 
-
-    crossFadeToNewIconFinish() {
-        if (this.schedule == null) throw new Error("schedule not initialized")
-
-        this.schedule.run(0, () => {
+            delayTicks(crossFadeTime, () => {
+                if (!this.crossFadeNodeIcon) {
+                    return
+                }
+                this.canvas.remove(this.crossFadeNodeIcon)
+                if (canvasSelectedIcon === this.crossFadeNodeIcon) {
+                    this.select()
+                }
+                this.crossFadeNodeIcon = null
+            })
         })
+
     }
 
     remove() {
@@ -244,7 +247,7 @@ export class NodeDisplay implements Display {
 
 
     determineNodeIconOpacity() {
-        if (this.hacking) {
+        if (this.siteStatus === SiteStatus.HACKING) {
             switch (this.nodeData.status) {
                 case FULLY_SCANNED_4:
                     return HACK_OPACITY
@@ -315,13 +318,12 @@ export class NodeDisplay implements Display {
     terminate() {
         if (this.schedule != null) this.schedule.terminate()
     }
-
-    siteResetStart() {
+    siteShutdownStart() {
         if (this.schedule == null) throw new Error("schedule not initialized")
 
         const crossFadeTime = 20
-        this.schedule.run(5, () => {
-            this.crossFadeNodeIcon = this.createResetNodeIcon()
+        this.schedule.run(3, () => {
+            this.crossFadeNodeIcon = this.createShutdownNodeIcon()
             this.canvas.add(this.crossFadeNodeIcon)
             this.canvas.sendToBack(this.crossFadeNodeIcon)
             this.canvas.sendToBack(this.nodeIcon)
@@ -331,17 +333,22 @@ export class NodeDisplay implements Display {
         })
     }
 
-    siteResetEnd() {
+    siteShutdownFinish() {
         if (this.schedule == null) throw new Error("schedule not initialized")
 
         const crossFadeTime = 20
-        this.schedule.run(5, () => {
+        this.schedule.run(3, () => {
+            this.siteStatus = SiteStatus.SCANNING
+            this.canvas.remove(this.nodeIcon)
+            this.addNodeIcon()
+
             this.gfx.fadeOut(crossFadeTime, this.crossFadeNodeIcon!)
             this.gfx.fade(crossFadeTime, this.determineNodeIconOpacity(), this.nodeIcon)
-        })
-        this.schedule.run(0, () => {
-            this.canvas.remove(this.crossFadeNodeIcon!)
-            this.crossFadeNodeIcon = null
+
+            delayTicks(crossFadeTime, () => {
+                this.canvas.remove(this.crossFadeNodeIcon!)
+                this.crossFadeNodeIcon = null
+            })
         })
     }
 }

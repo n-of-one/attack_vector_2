@@ -34,7 +34,8 @@ enum class ServerActions {
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_ENTER_RUN,               // Result of user entering a run (for the user itself)
 
-    SERVER_SITE_RESET,              // All ice is reset and unhacked, all nodes are unhacked, threats reset
+    SERVER_SITE_SHUTDOWN_START,     // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
+    SERVER_SITE_SHUTDOWN_FINISH,    // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
 
 
     SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, // transfer syntax highlighting to terminal

@@ -1,7 +1,7 @@
 import {fabric} from "fabric"
 import {Schedule} from "../../../common/util/Schedule"
 import {NodeScanStatus, UNDISCOVERED_0} from "../../../common/enums/NodeStatus"
-import {NodeDisplay} from "../../../common/canvas/display/NodeDisplay"
+import {NodeDisplay, SiteStatus} from "../../../common/canvas/display/NodeDisplay"
 import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
 import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
@@ -62,6 +62,7 @@ class RunCanvas {
     canvas: Canvas = null as unknown as Canvas // lateinit
     selectedObject: fabric.Image | null = null
     hacking = false
+    shutdown = false
 
 
     init(userId: string, dispatch: Dispatch) {
@@ -118,6 +119,9 @@ class RunCanvas {
         this.runId = null
         this.siteId = null
 
+        this.hacking = false
+        this.shutdown = false
+
         this.render()
     }
 
@@ -138,6 +142,8 @@ class RunCanvas {
 
         const nodes = site.nodes
         const connections = site.connections
+
+        this.shutdown = site.siteProperties.shutdownEnd !== null
 
         this.nodeDataById = {}
         this.sortAndAddHackers(hackers)
@@ -185,7 +191,7 @@ class RunCanvas {
         this.active = true
     }
 
-    sortAndAddHackers(hackers: HackerPresence[]) {
+    private sortAndAddHackers(hackers: HackerPresence[]) {
         const you = hackers.find(hacker => hacker.userId === this.userId)!
         const others = hackers.filter(hacker => hacker.userId !== this.userId)
         others.sort((a, b) => (a.userName > b.userName) ? 1 : ((b.userName > a.userName) ? -1 : 0))
@@ -194,27 +200,35 @@ class RunCanvas {
         this.hackers.splice(midIndex, 0, you)
     }
 
-    addHackersDisplays() {
+    private addHackersDisplays() {
         const step = Math.floor(CANVAS_WIDTH / (this.hackers.length + 1))
         this.hackers.forEach((hacker, index) => {
             this.addHackerDisplay(hacker, step * (index + 1))
         })
     }
 
-    addHackerDisplay(hacker: HackerPresence, offset: number) {
+    private addHackerDisplay(hacker: HackerPresence, offset: number) {
         const you = hacker.userId === this.userId
         const hackerDisplay = new HackerDisplay(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, this.nodeDisplays)
         this.hackerDisplays.add(hacker.userId, hackerDisplay)
     }
 
 
-    addNodeDisplay(node: NodeI) {
-        const nodeDisplay = new NodeDisplay(this.canvas, this.iconSchedule, node, false, this.hacking)
+    private addNodeDisplay(node: NodeI) {
+        const nodeSiteStatus = this.determineNodeSiteStatus(this.hacking, this.shutdown)
+
+        const nodeDisplay = new NodeDisplay(this.canvas, this.iconSchedule, node, false, nodeSiteStatus)
         this.nodeDisplays.add(node.id, nodeDisplay)
         nodeDisplay.appear()
     }
 
-    addConnectionDisplay(connection: Connection, fromDisplay: NodeDisplay, toDisplay: NodeDisplay) {
+    private determineNodeSiteStatus(hacking: boolean, shutdown: boolean): SiteStatus {
+        if (this.shutdown) return SiteStatus.SHUTDOWN
+        return (this.hacking) ? SiteStatus.HACKING : SiteStatus.SCANNING
+    }
+
+
+    private addConnectionDisplay(connection: Connection, fromDisplay: NodeDisplay, toDisplay: NodeDisplay) {
         const connectionDisplay = new ConnectionDisplay(this.canvas, this.iconSchedule, connection, fromDisplay, toDisplay)
         this.connectionDisplays.add(connection.id, connectionDisplay)
         connectionDisplay.appear()
@@ -352,18 +366,6 @@ class RunCanvas {
         hackerDisplay.disappear()
     }
 
-    disconnect(userId: string) {
-        if (!this.active) return
-
-        if (userId === this.userId) {
-            this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
-                nodeDisplay.transitionToScan()
-            })
-        }
-
-
-        this.hackerDisplays.get(userId).disconnect()
-    }
 
     moveStart({userId, nodeId, timings}: MoveStartAction) {
         if (!this.active) return
@@ -444,14 +446,30 @@ class RunCanvas {
         this.patrollerDisplays.remove(patrollerId)
     }
 
-    siteReset() {
-        this.iconSchedule.wait(20)
+
+    disconnect(userId: string) {
+        if (!this.active) return
+        console.log("disconnect")
+
+        if (userId === this.userId) {
+            this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
+                nodeDisplay.transitionToScan()
+            })
+            this.iconSchedule.wait(20)
+        }
+
+        this.hackerDisplays.get(userId).disconnect()
+    }
+
+    siteShutdownStart() {
         this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
-            nodeDisplay.siteResetStart()
+            nodeDisplay.siteShutdownStart()
         })
-        this.iconSchedule.wait(100)
+    }
+
+    siteShutdownFinish() {
         this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
-            nodeDisplay.siteResetEnd()
+            nodeDisplay.siteShutdownFinish()
         })
     }
 }

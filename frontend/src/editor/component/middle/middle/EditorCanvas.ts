@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {assertNotNullUndef} from "../../../../common/util/Assert"
-import {NodeDisplay} from "../../../../common/canvas/display/NodeDisplay"
+import {NodeDisplay, SiteStatus} from "../../../../common/canvas/display/NodeDisplay"
 import {ConnectionDisplay} from "../../../../common/canvas/display/ConnectionDisplay"
 import {Dispatch} from "redux"
 import {Connection} from "../../../reducer/ConnectionsReducer"
@@ -82,7 +82,7 @@ class EditorCanvas {
 
     addNode(nodeDataInput: NodeI) {
         const nodeData = { ...nodeDataInput, status: FULLY_SCANNED_4, hacked: false}
-        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, true, false)
+        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, true, SiteStatus.SCANNING)
         nodeDisplay.show()
 
         this.nodeDisplays.add(nodeData.id, nodeDisplay)

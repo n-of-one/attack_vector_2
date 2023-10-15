@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.time.ZonedDateTime
 
-enum class TimerType { SHUTDOWN_START, SHUTDOWN_END }
+enum class TimerType { SHUTDOWN_START, SHUTDOWN_FINISH }
 
 @Document
 data class Timer(
