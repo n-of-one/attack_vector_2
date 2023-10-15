@@ -5,20 +5,23 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.time.ZonedDateTime
 
+enum class TimerType { SITE_RESET, SHUTDOWN }
+
 @Document
-data class DetectionCountdown(
+data class Timer(
     val id: String,
     val layerId: String,
     val siteId: String,
     val targetSiteId: String,
     val userId: String?,
     val finishAt: ZonedDateTime,
+    val type: TimerType,
 )
 
 @Repository
-interface DetectionCountdownRepository: CrudRepository<DetectionCountdown, String> {
-    fun findByLayerId(layerId: String): DetectionCountdown?
-    fun findBySiteId(siteId: String): List<DetectionCountdown>
-    fun findByTargetSiteId(targetSiteId: String): List<DetectionCountdown>
-    fun findByUserId(userId: String): List<DetectionCountdown>
+interface TimerRepository : CrudRepository<Timer, String> {
+    fun findByLayerId(layerId: String): Timer?
+    fun findBySiteId(siteId: String): List<Timer>
+    fun findByTargetSiteId(targetSiteId: String): List<Timer>
+    fun findByUserId(userId: String): List<Timer>
 }

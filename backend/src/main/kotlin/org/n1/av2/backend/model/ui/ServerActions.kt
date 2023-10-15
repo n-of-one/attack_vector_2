@@ -56,8 +56,8 @@ enum class ServerActions {
 
     SERVER_HACKER_SCANS_NODE,           // when arriving at a node that is state DISCOVERED or TYPE
 
-    SERVER_START_COUNTDOWN,             // The client can show the countdown clock
-    SERVER_COMPLETE_COUNTDOWN,          // The countdown completes
+    SERVER_START_TIMER,                 // The client can show the timer countdown
+    SERVER_COMPLETE_TIMER,              // The timer countdown completes
 
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
     SERVER_START_TRACING_PATROLLER,     // Client shows a patroller (for example as a result of an alarm countdown)

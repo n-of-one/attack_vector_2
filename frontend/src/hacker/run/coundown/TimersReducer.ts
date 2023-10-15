@@ -4,9 +4,8 @@ import {TICK} from "../../../common/terminal/TerminalReducer";
 import {SERVER_ENTER_RUN} from "../../server/RunServerActionProcessor";
 import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
-export const SERVER_START_COUNTDOWN = "SERVER_START_COUNTDOWN"
-export const SERVER_COMPLETE_COUNTDOWN = "SERVER_COMPLETE_COUNTDOWN"
-export const SERVER_REMOVE_COUNTDOWN = "SERVER_REMOVE_COUNTDOWN"
+export const SERVER_START_TIMER = "SERVER_START_TIMER"
+export const SERVER_COMPLETE_TIMER = "SERVER_COMPLETE_TIMER"
 
 export const SERVER_FLASH_PATROLLER = "SERVER_FLASH_PATROLLER"
 export const SERVER_START_TRACING_PATROLLER = "SERVER_START_TRACING_PATROLLER"
@@ -15,7 +14,7 @@ export const SERVER_PATROLLER_LOCKS_HACKER = "SERVER_PATROLLER_LOCKS_HACKER"
 export const SERVER_PATROLLER_REMOVE = "SERVER_PATROLLER_REMOVE"
 
 
-export interface CountdownTimerState {
+export interface TimerState {
     timerId: string,
     finishAt: string | null,    // "2019-08-26T15:38:40.9179757+02:00",
     secondsLeft: number | null,
@@ -24,7 +23,7 @@ export interface CountdownTimerState {
     effect: string
 }
 
-export const countdownReducer = (state: CountdownTimerState[] = [], action: AnyAction): CountdownTimerState[] => {
+export const timersReducer = (state: TimerState[] = [], action: AnyAction): TimerState[] => {
 
     switch (action.type) {
         case TICK:
@@ -33,21 +32,19 @@ export const countdownReducer = (state: CountdownTimerState[] = [], action: AnyA
             }
             return processSecondElapsed(state)
         case SERVER_ENTER_RUN:
-            return action.data.countdowns
+            return action.data.timers
         case NAVIGATE_PAGE:
             return []
-        case SERVER_START_COUNTDOWN:
-            return serverStartCountdown(state, action.data)
-        case SERVER_COMPLETE_COUNTDOWN:
-            return processExpireTimer(state, action.data)
-        case SERVER_REMOVE_COUNTDOWN:
-            return processRemoveTimer(state, action.data)
+        case SERVER_START_TIMER:
+            return startTimer(state, action.data)
+        case SERVER_COMPLETE_TIMER:
+            return completeTimer(state, action.data)
         default:
             return state
     }
 }
 
-interface CountdownStart {
+interface TimerStart {
     timerId: string,
     finishAt: string
     type: string,
@@ -55,18 +52,18 @@ interface CountdownStart {
     effect: string
 }
 
-const serverStartCountdown = (state: CountdownTimerState[], countDownStart: CountdownStart): CountdownTimerState[] => {
-    const secondsLeft = serverTime.secondsLeft(countDownStart.finishAt)
-    const newTimer: CountdownTimerState = {...countDownStart, secondsLeft: secondsLeft}
+const startTimer = (state: TimerState[], timerStart: TimerStart): TimerState[] => {
+    const secondsLeft = serverTime.secondsLeft(timerStart.finishAt)
+    const newTimer: TimerState = {...timerStart, secondsLeft: secondsLeft}
     return [...state, newTimer]
 }
 
-const processSecondElapsed = (state: CountdownTimerState[]) => {
+const processSecondElapsed = (state: TimerState[]) => {
     const newTimers = state.map(timer => processTickTimer(timer))
     return newTimers
 }
 
-const processTickTimer = (state: CountdownTimerState): CountdownTimerState => {
+const processTickTimer = (state: TimerState): TimerState => {
     if (state.secondsLeft === 0 || !state.finishAt) {
         return state
     }
@@ -76,15 +73,9 @@ const processTickTimer = (state: CountdownTimerState): CountdownTimerState => {
 
 
 interface SpecificTimer {
-    countdownId: string
+    timerId: string
 }
 
-const processExpireTimer = (state: CountdownTimerState[], action: SpecificTimer): CountdownTimerState[] => {
-
-    return state.filter(timer => timer.timerId !== action.countdownId)
-}
-
-const processRemoveTimer = (state: CountdownTimerState[], action: SpecificTimer) => {
-    const newTimers = state.filter(timer => timer.timerId !== action.countdownId)
-    return newTimers
+const completeTimer = (state: TimerState[], action: SpecificTimer): TimerState[] => {
+    return state.filter(timer => timer.timerId !== action.timerId)
 }

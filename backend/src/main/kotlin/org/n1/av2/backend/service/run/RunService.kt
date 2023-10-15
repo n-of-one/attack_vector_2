@@ -1,10 +1,9 @@
 package org.n1.av2.backend.service.run
 
 import org.n1.av2.backend.engine.CalledBySystem
-import org.n1.av2.backend.engine.SystemTaskRunner
 import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.*
-import org.n1.av2.backend.entity.service.DetectionCountdownEntityService
+import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.UserEntity
@@ -15,7 +14,7 @@ import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.layerhacking.service.CountdownInfo
+import org.n1.av2.backend.service.layerhacking.service.TimerInfo
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
@@ -40,7 +39,7 @@ class RunService(
     private val userRunLinkEntityService: UserRunLinkEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val scanInfoService: ScanInfoService,
-    private val detectionCountdownEntityService: DetectionCountdownEntityService,
+    private val timerEntityService: TimerEntityService,
     private val tripwireLayerService: TripwireLayerService,
 ) {
 
@@ -66,10 +65,10 @@ class RunService(
         val hackerPresences = getPresenceInRun(runId)
         val patrollers = tracingPatrollerService.getAllForRun(runId)
 
-        val countdowns = tripwireLayerService.findForEnterSite(run.siteId, currentUserService.userId)
+        val timers = tripwireLayerService.findForEnterSite(run.siteId, currentUserService.userId)
 
-        class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val patrollers: List<PatrollerUiData>, val countdowns: List<CountdownInfo>)
-        val siteInfo = SiteInfo(run, siteFull, hackerPresences, patrollers, countdowns)
+        class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val patrollers: List<PatrollerUiData>, val timers: List<TimerInfo>)
+        val siteInfo = SiteInfo(run, siteFull, hackerPresences, patrollers, timers)
         stompService.reply(ServerActions.SERVER_ENTER_RUN, siteInfo)
     }
 
@@ -172,7 +171,7 @@ class RunService(
         }
 
         tracingPatrollerService.deleteAllForRuns(runs)
-        detectionCountdownEntityService.deleteBySiteId(siteId)
+        timerEntityService.deleteBySiteId(siteId)
 
         timedTaskRunner.removeAllFor(siteId)
     }

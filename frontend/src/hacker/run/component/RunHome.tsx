@@ -6,7 +6,7 @@ import {NodeScanInfo} from "./scaninfo/NodeScanInfo"
 import {HackerState} from "../../HackerRootReducer"
 import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
-import {CountdownTimer} from "../coundown/CountdownTimer";
+import {Timers} from "../coundown/Timers";
 import {ENTER_KEY} from "../../../KeyCodes";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";
@@ -24,7 +24,7 @@ const TerminalAndScanResultPanel = (infoNodeId: string | null, terminal: Termina
     const terminalHeight = 847 - (timerCount * 24) - (hastTimers ? 13 : 22)
 
     return <>
-        <CountdownTimer/>
+        <Timers/>
         <div className="row">
             <Terminal terminalState={terminal} submit={submit} height={terminalHeight}/>
         </div>

@@ -4,7 +4,8 @@ import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.SystemTaskRunner
 import org.n1.av2.backend.entity.run.HackerActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.entity.service.DetectionCountdownEntityService
+import org.n1.av2.backend.entity.service.TimerEntityService
+import org.n1.av2.backend.entity.service.TimerType
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Lazy
 import java.time.Duration
 import java.time.ZonedDateTime
 
-class CountdownInfo(val timerId: String, val finishAt: ZonedDateTime, val type: String, val target: String, val effect: String)
+class TimerInfo(val timerId: String, val finishAt: ZonedDateTime, val type: String, val target: String, val effect: String)
 
 
 @org.springframework.stereotype.Service
@@ -26,7 +27,7 @@ class TripwireLayerService(
     private val stompService: StompService,
     private val time: TimeService,
     private val systemTaskRunner: SystemTaskRunner,
-    private val detectionCountdownEntityService: DetectionCountdownEntityService,
+    private val timerEntityService: TimerEntityService,
     private val nodeEntityService: NodeEntityService,
     @Lazy private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
@@ -43,7 +44,7 @@ class TripwireLayerService(
     }
 
     fun hackerArrivesNode(siteId: String, layer: TripwireLayer, nodeId: String, userId: String, runId: String) {
-        val existingDetection = detectionCountdownEntityService.findByLayer(layer.id)
+        val existingDetection = timerEntityService.findByLayer(layer.id)
         if (existingDetection != null) {
             return
         }
@@ -51,22 +52,22 @@ class TripwireLayerService(
         val duration = layer.countdown.toDuration("tripwire ${layer.id}")
         val alarmTime = time.now().plus(duration)
 
-        val detection = detectionCountdownEntityService.create(layer.id, null, alarmTime, siteId, siteId)
+        val timer = timerEntityService.create(layer.id, null, alarmTime, siteId, siteId, TimerType.SITE_RESET)
         val effect = determineEffect(layer.shutdown)
 
-        stompService.reply(ServerActions.SERVER_START_COUNTDOWN, CountdownInfo(detection.id, alarmTime, "tripwire", "site", effect))
+        stompService.reply(ServerActions.SERVER_START_TIMER, TimerInfo(timer.id, alarmTime, "tripwire", "site", effect))
 
-        stompService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire: site reset in  [error]${toDurationString(duration)}[/].")
+        stompService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [error]site reset[/] in ${toDurationString(duration)}[/].")
 
         class FlashPatroller(val nodeId: String)
         stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, FlashPatroller(nodeId))
 
-        systemTaskRunner.queueInSeconds(siteId, duration.seconds) { timerActivates(siteId, detection.id) }
+        systemTaskRunner.queueInSeconds(siteId, duration.seconds) { timerActivates(siteId, timer.id) }
     }
 
     @ScheduledTask
-    fun timerActivates(siteId: String, detectionId: String) {
-        stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_COUNTDOWN, "countdownId" to detectionId)
+    fun timerActivates(siteId: String, timerId: String) {
+        stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timerId)
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
         siteService.resetSite(siteId)
@@ -94,12 +95,12 @@ class TripwireLayerService(
         return "%02d:%02d".format(duration.toMinutesPart(), duration.toSecondsPart())
     }
 
-    fun findForEnterSite(siteId: String, userId: String): List<CountdownInfo> {
-        val detections = detectionCountdownEntityService.findForEnterSite(siteId, userId)
+    fun findForEnterSite(siteId: String, userId: String): List<TimerInfo> {
+        val timers = timerEntityService.findForEnterSite(siteId, userId)
 
-        val countdowns = detections.map { detection ->
-            val layer = nodeEntityService.findLayer(detection.layerId) as TripwireLayer
-            CountdownInfo(detection.id, detection.finishAt, "tripwire", "site", determineEffect(layer.shutdown))
+        val countdowns = timers.map { timer ->
+            val layer = nodeEntityService.findLayer(timer.layerId) as TripwireLayer
+            TimerInfo(timer.id, timer.finishAt, "tripwire", "site", determineEffect(layer.shutdown))
         }
 
         return countdowns

@@ -18,12 +18,12 @@ import {
     SERVER_PATROLLER_LOCKS_HACKER,
     SERVER_PATROLLER_MOVE, SERVER_PATROLLER_REMOVE,
     SERVER_START_TRACING_PATROLLER
-} from "../run/coundown/CountdownReducer"
+} from "../run/coundown/TimersReducer"
 import {enterScan} from "../home/HackerHome"
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_LOCK, TERMINAL_RECEIVE, TERMINAL_UNLOCK} from "../../common/terminal/TerminalReducer"
+import {SERVER_TERMINAL_RECEIVE} from "../../common/terminal/TerminalReducer"
 import {Schedule} from "../../common/util/Schedule"
 import {NodeScanStatus} from "../../common/enums/NodeStatus";
-import {ICE_DISPLAY_TERMINAL_ID, MAIN_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
+import {MAIN_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {currentUser} from "../../common/user/CurrentUser";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"

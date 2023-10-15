@@ -5,27 +5,28 @@ import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
 @Service
-class DetectionCountdownEntityService(
-    private val repository: DetectionCountdownRepository
+class TimerEntityService(
+    private val repository: TimerRepository
 ) {
 
-    fun findByLayer(layerId: String): DetectionCountdown? {
+    fun findByLayer(layerId: String): Timer? {
         return repository.findByLayerId(layerId)
     }
 
-    fun create(layerId: String, userId: String?, finishAt: ZonedDateTime, siteId: String, targetSiteId: String): DetectionCountdown {
-        val id = createId("detection", repository::findById)
+    fun create(layerId: String, userId: String?, finishAt: ZonedDateTime, siteId: String, targetSiteId: String, type: TimerType): Timer {
+        val id = createId("timer", repository::findById)
 
-        val detectionCountdown = DetectionCountdown(
-            id=id,
-            layerId=layerId,
-            userId=userId,
-            finishAt=finishAt,
-            siteId= siteId,
-            targetSiteId = targetSiteId
+        val timer = Timer(
+            id = id,
+            layerId = layerId,
+            userId = userId,
+            finishAt = finishAt,
+            siteId = siteId,
+            targetSiteId = targetSiteId,
+            type = type,
         )
 
-        return repository.save(detectionCountdown)
+        return repository.save(timer)
     }
 
     fun deleteByLayerId(layerId: String) {
@@ -39,7 +40,7 @@ class DetectionCountdownEntityService(
             .forEach { repository.delete(it) }
     }
 
-    fun findForEnterSite(siteId: String, userId: String): List<DetectionCountdown> {
+    fun findForEnterSite(siteId: String, userId: String): List<Timer> {
         val forSite = repository.findBySiteId(siteId)
         val forTargetSite = repository.findByTargetSiteId(siteId)
         val forUser = repository.findByUserId(userId)
