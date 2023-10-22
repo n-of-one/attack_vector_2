@@ -1,16 +1,16 @@
-package org.n1.av2.backend.service.terminal
+package org.n1.av2.backend.service.run.inside
 
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.terminal.hacking.CommandHackService
-import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
-import org.n1.av2.backend.service.terminal.hacking.CommandViewService
+import org.n1.av2.backend.service.run.inside.command.CommandHackService
+import org.n1.av2.backend.service.run.inside.command.CommandMoveService
+import org.n1.av2.backend.service.run.inside.command.CommandViewService
+import org.n1.av2.backend.service.run.terminal.SocialTerminalService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service
-class HackTerminalService(
+class InsideTerminalService(
     private val stompService: StompService,
     private val socialTerminalService: SocialTerminalService,
     private val commandHackService: CommandHackService,

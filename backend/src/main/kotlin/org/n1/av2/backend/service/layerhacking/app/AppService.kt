@@ -5,10 +5,8 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.ice.IceAuthorizationService
-import org.n1.av2.backend.service.layerhacking.ice.IceService
-import org.springframework.context.annotation.Lazy
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,8 +1,7 @@
 package org.n1.av2.backend.service.layerhacking.service
 
-import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service

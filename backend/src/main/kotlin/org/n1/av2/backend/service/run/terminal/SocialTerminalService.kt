@@ -1,9 +1,9 @@
-package org.n1.av2.backend.service.terminal
+package org.n1.av2.backend.service.run.terminal
 
 import org.n1.av2.backend.entity.user.UserEntityService
+import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.user.CurrentUserService
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.scan.ScanInfoService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import java.util.stream.Collectors
 

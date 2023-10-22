@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.larp
 
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.springframework.stereotype.Service

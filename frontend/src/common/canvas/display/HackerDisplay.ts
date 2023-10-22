@@ -1,21 +1,14 @@
 import {fabric} from "fabric"
 import {animate, calcLine, easeInOutSine, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
 import {Schedule} from "../../util/Schedule"
-import {
-    IDENTIFICATION_SCALE_LARGE,
-    IDENTIFICATION_SCALE_NORMAL,
-    OFFSET,
-    SCALE_NORMAL,
-    SCALE_SMALL,
-    COLOR_HACKER_LINE, IMAGE_SIZE
-} from "./util/DisplayConstants"
+import {COLOR_HACKER_LINE, IDENTIFICATION_SCALE_LARGE, IDENTIFICATION_SCALE_NORMAL, IMAGE_SIZE, OFFSET, SCALE_NORMAL, SCALE_SMALL} from "./util/DisplayConstants"
 import {ConnectionVisual} from "../visuals/ConnectionVisual"
 import {Display, Graphics} from "./Display"
 import {Dispatch} from "redux"
 import {DisplayCollection} from "./util/DisplayCollection"
 import {NodeDisplay} from "./NodeDisplay"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
-import {HACKER_ACTIVITY_SCANNING, HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
+import {HackerActivity, HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
 import {notEmpty} from "../../util/Util";
 import {Timings} from "../../model/Ticks";
 
@@ -93,7 +86,7 @@ export class HackerDisplay implements Display {
 
         let identifierOppacity, lineOpacity
 
-        if (hackerData.activity === HACKER_ACTIVITY_SCANNING) {
+        if (hackerData.activity === HackerActivity.OUTSIDE) {
             this.currentNodeDisplay = null
 
             identifierOppacity = IDENTIFIER_OPACITY_SCANNING
@@ -109,11 +102,6 @@ export class HackerDisplay implements Display {
         this.gfx.fade(APPEAR_TIME, identifierOppacity, this.hackerIdentifierIcon)
         this.gfx.fade(APPEAR_TIME, lineOpacity, this.labelIcon)
         this.gfx.fade(40, lineOpacity, this.startLineIcon)
-
-
-        // animate(this.canvas, this.hackerIdentifierIcon, "opacity", identifierOppacity, APPEAR_TIME)
-        // animate(this.canvas, this.startLineIcon, "opacity", lineOpacity, 40)
-        // animate(this.canvas, this.labelIcon, "opacity", lineOpacity, APPEAR_TIME)
 
         this.schedule.wait(3)
     }

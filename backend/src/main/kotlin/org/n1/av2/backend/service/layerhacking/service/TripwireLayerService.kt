@@ -12,12 +12,12 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.run.RunService
+import org.n1.av2.backend.service.run.TERMINAL_MAIN
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.toDuration
-import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
+import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.service.util.TimeService
 import org.springframework.context.annotation.Lazy
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -74,7 +74,7 @@ class TripwireLayerService(
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
         siteService.resetSite(siteId, layer.shutdown)
         hackerStates
-            .filter { it.activity == HackerActivity.ATTACKING }
+            .filter { it.activity == HackerActivity.INSIDE }
             .forEach { hackerState ->
                 runService.hackerDisconnect(hackerState, "Disconnected (server abort)")
             }

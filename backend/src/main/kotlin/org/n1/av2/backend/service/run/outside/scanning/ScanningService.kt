@@ -1,7 +1,5 @@
-package org.n1.av2.backend.service.scan
+package org.n1.av2.backend.service.run.outside.scanning
 
-import org.n1.av2.backend.engine.ScheduledTask
-import org.n1.av2.backend.engine.TICK_MILLIS
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.NodeScan
 import org.n1.av2.backend.entity.run.NodeScanStatus
@@ -13,14 +11,11 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.user.CurrentUserService
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.TimeService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
-import java.time.Duration
-import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.math.roundToInt
 
 @Service
 class ScanningService(
@@ -29,7 +24,6 @@ class ScanningService(
     private val nodeEntityService: NodeEntityService,
     private val currentUserService: CurrentUserService,
     private val traverseNodeService: TraverseNodeService,
-    private val time: TimeService,
     private val userTaskRunner: UserTaskRunner,
     private val scanInfoService: ScanInfoService,
     private val scanProbActionService: ScanProbActionService,
@@ -38,30 +32,15 @@ class ScanningService(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    fun performAutoScan(runId: String) {
-        val run = runEntityService.getByRunId(runId)
-        val targetTraverseNode = findProbeTarget(run)
-        if (targetTraverseNode != null) {
-            launchProbe(targetTraverseNode, run, true)
-        }
-        else {
-            stompService.replyTerminalReceiveAndLocked(false, "Scan already complete")
-        }
-    }
-
     fun performManualScan(run: Run, node: Node, status: NodeScanStatus) {
-        if (run.scanDuration != null ) {
-            stompService.replyTerminalReceiveAndLocked(false, "Scan already complete")
-            return
-        }
         val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(run)
         val targetTraverseNode: TraverseNode = traverseNodesById[node.id]!!
-        launchProbe(targetTraverseNode, run, false)
+        launchProbe(targetTraverseNode, run)
     }
 
     data class ProbeAction(val probeUserId: String, val path: List<String>, val scanType: NodeScanType, val timings: Timings)
 
-    private fun launchProbe(targetNode: TraverseNode, run: Run, autoScan: Boolean) {
+    private fun launchProbe(targetNode: TraverseNode, run: Run) {
         val status = run.nodeScanById[targetNode.id]!!.status
         val scanType = determineNodeScanType(status)
         val path = createNodePath(targetNode)
@@ -75,18 +54,7 @@ class ScanningService(
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
         userTaskRunner.queueInTicks(totalTicks - 20) {
-            probeComplete(run, node, scanType, autoScan)
-        }
-    }
-
-    @ScheduledTask
-    private fun probeComplete(run: Run, node: Node, scanType: NodeScanType, autoScan: Boolean) {
-        scanProbActionService.probeCompleted(run, node, scanType)
-
-        if (allNodesScanned(run)) {
-            completeScan(run)
-        } else if (autoScan) {
-            performAutoScan(run.runId)
+            scanProbActionService.probeCompleted(run, node, scanType)
         }
     }
 
@@ -131,38 +99,6 @@ class ScanningService(
         return run.nodeScanById
             .filter { it.value.status !== NodeScanStatus.FULLY_SCANNED_4 }
             .isEmpty()
-    }
-
-    private fun completeScan(run: Run) {
-        val now = time.now()
-        val durationMillis = ChronoUnit.MILLIS.between(run.scanStartTime, now)
-        val duration = Duration.ofMillis(durationMillis)
-        run.scanDuration = (durationMillis / 1000.0).roundToInt()
-        run.scanEfficiency = calculateEfficiency(run, durationMillis)
-        runEntityService.save(run)
-        stompService.replyTerminalReceive("Scan completed in ${time.formatDuration(duration)}, with efficiency: ${run.scanEfficiency}%")
-        scanInfoService.updateScanInfoToPlayers(run)
-    }
-
-    private fun calculateEfficiency(run: Run, durationMillis: Long): Int {
-        val nodeCount = run.nodeScanById.keys.size
-        val scanTicksTravel = run.totalDistanceScanned * NodeScanType.SCAN_CONNECTIONS.timings.connection
-        val scanTicksInitial = nodeCount * NodeScanType.SCAN_NODE_INITIAL.timings.totalWithoutConnection
-        val scanTicksConnections = nodeCount * NodeScanType.SCAN_CONNECTIONS.timings.totalWithoutConnection
-        val scanTicksDeep = nodeCount * NodeScanType.SCAN_NODE_DEEP.timings.totalWithoutConnection
-
-        val totalTicsk = scanTicksTravel + scanTicksInitial + scanTicksConnections + scanTicksDeep
-        val minimumScanMillis = (totalTicsk * TICK_MILLIS)
-
-
-        val efficiency = (100 * minimumScanMillis / durationMillis).toInt()
-        logger.debug("Efficiency calculation:")
-        logger.debug("timeForNodes: ${scanTicksInitial + scanTicksConnections + scanTicksDeep}")
-        logger.debug("timeForPaths: ${scanTicksTravel}")
-        logger.debug("expectedTime: ${minimumScanMillis}")
-        logger.debug("duration: ${durationMillis}")
-        logger.debug("efficiency: ${efficiency}")
-        return efficiency
     }
 
     fun quickScan(runId: String) {

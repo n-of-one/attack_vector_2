@@ -5,7 +5,6 @@ import {SilentLink} from "../../common/component/SilentLink";
 import {HackerState} from "../HackerRootReducer";
 import {ScanInfo} from "./ScansReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {runCanvas} from "../run/component/RunCanvas";
 import {HIDE_NODE_INFO} from "../run/model/ScanActions";
 import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
 import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
@@ -73,9 +72,7 @@ export const HackerHome = () => {
                                 <tr>
                                     <td className="strong">Site Name</td>
                                     <td className="strong">Nodes</td>
-                                    <td className="strong">Initiator</td>
-                                    <td className="strong">Efficiency</td>
-                                    <td className="strong">&nbsp;</td>
+                                    <td className="strong">Actions</td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -90,8 +87,6 @@ export const HackerHome = () => {
                                                     </SilentLink>
                                                 </td>
                                                 <td className="table-very-condensed">{scanInfo.nodes}</td>
-                                                <td className="table-very-condensed">{scanInfo.initiatorName}</td>
-                                                <td className="table-very-condensed">{scanInfo.efficiency}</td>
                                                 <td className="table-very-condensed">
                                                     <DeleteScanLink runId={scanInfo.runId}/>
                                                     <ResetIceLink siteId={scanInfo.siteId}/>

@@ -1,26 +1,20 @@
-package org.n1.av2.backend.service.run
+package org.n1.av2.backend.service.run.outside
 
 import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.entity.run.RunEntityService
-import org.n1.av2.backend.entity.site.SiteProperties
-import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.run.TERMINAL_MAIN
+import org.n1.av2.backend.service.run.inside.command.CommandMoveService
+import org.n1.av2.backend.service.run.inside.command.MoveArriveGameEvent
+import org.n1.av2.backend.service.run.terminal.SyntaxHighlightingService
 import org.n1.av2.backend.service.user.CurrentUserService
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.terminal.SyntaxHighlightingService
-import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
-import org.n1.av2.backend.service.terminal.hacking.CommandMoveService
-import org.n1.av2.backend.service.terminal.hacking.MoveArriveGameEvent
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
+private val START_ATTACK_FAST = Timings("main" to 0)
 private val START_ATTACK_SLOW = Timings("main" to 250)
-private val NO_Timings = Timings("main" to 0)
-private val START_ATTACK_FAST = NO_Timings
-
 
 @Service
 class StartAttackService(
@@ -56,7 +50,7 @@ class StartAttackService(
         syntaxHighlightingService.sendForAttack()
         val state = hackerStateEntityService.startedRun(userId, runId)
 
-        val arrive = MoveArriveGameEvent(state.currentNodeId, userId, runId )
+        val arrive = MoveArriveGameEvent(state.currentNodeId, userId, runId)
         commandMoveService.moveArrive(arrive)
     }
 

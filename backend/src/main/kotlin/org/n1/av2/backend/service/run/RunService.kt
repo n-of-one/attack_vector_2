@@ -6,23 +6,21 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
-import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.service.TimerInfo
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.patroller.PatrollerUiData
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
-import org.n1.av2.backend.service.scan.ScanInfoService
+import org.n1.av2.backend.service.run.terminal.SyntaxHighlightingService
+import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.site.SiteService
-import org.n1.av2.backend.service.terminal.SyntaxHighlightingService
-import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
 import org.n1.av2.backend.service.user.CurrentUserService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service
@@ -51,6 +49,23 @@ class RunService(
         val activity: HackerActivity,
         val masked: Boolean
     )
+
+    fun startNewRun(siteName: String) {
+        val siteProperties = sitePropertiesEntityService.findByName(siteName)
+        if (siteProperties == null) {
+            stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+            return
+        }
+
+        val nodeScanById = scanInfoService.createNodeScans(siteProperties.siteId)
+        val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
+        userRunLinkEntityService.createUserScan(run.runId, currentUserService.userEntity)
+
+        stompService.reply(ServerActions.SERVER_SITE_DISCOVERED, "runId" to run.runId, "siteId" to siteProperties.siteId)
+        scanInfoService.sendScanInfosOfPlayer() // to update the scans in the home screen
+
+        // enterRun will be called by the browser, the frontend needs to configure websocket connection for the run.
+    }
 
     fun enterRun(runId: String) {
         val run = runEntityService.getByRunId(runId)
@@ -115,35 +130,6 @@ class RunService(
         stompService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
 
         hackerStateEntityService.leaveSite(hackerState)
-    }
-
-    fun startNewRun(siteName: String) {
-        val siteProperties = sitePropertiesEntityService.findByName(siteName)
-        if (siteProperties == null) {
-            stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
-            return
-        }
-
-        val nodeScans = scanInfoService.createNodeScans(siteProperties.siteId)
-
-        val user = currentUserService.userEntity
-
-        val runId = createRun(siteProperties.siteId, nodeScans, user)
-
-        data class ScanSiteResponse(val runId: String, val siteId: String)
-
-        val response = ScanSiteResponse(runId, siteProperties.siteId)
-        stompService.reply(ServerActions.SERVER_SITE_DISCOVERED, response)
-        scanInfoService.sendScanInfosOfPlayer() // to update the scans in the home screen
-    }
-
-    fun createRun(siteId: String, nodeScanById: MutableMap<String, NodeScan>, userEntity: UserEntity): String {
-        val runId = runEntityService.createRunId()
-
-        val run = runEntityService.create(runId, siteId, nodeScanById, userEntity.id)
-        userRunLinkEntityService.createUserScan(run.runId, userEntity)
-
-        return run.runId
     }
 
     fun deleteSite(siteId: String) {

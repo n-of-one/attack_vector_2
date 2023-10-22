@@ -3,7 +3,7 @@ package org.n1.av2.backend.web.ws
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.*
-import org.n1.av2.backend.service.editor.EditorService
+import org.n1.av2.backend.service.site.EditorService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping

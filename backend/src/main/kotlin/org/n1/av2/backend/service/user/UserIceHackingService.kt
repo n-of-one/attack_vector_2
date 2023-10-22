@@ -7,7 +7,7 @@ import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service

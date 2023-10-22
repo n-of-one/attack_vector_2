@@ -5,10 +5,10 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ReduxEvent
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.scan.ScanInfoService
+import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.site.SiteService
+import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.messaging.handler.annotation.MessageMapping

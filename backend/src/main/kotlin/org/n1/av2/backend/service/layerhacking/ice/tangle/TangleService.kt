@@ -8,9 +8,9 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.TangleIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.user.UserIceHackingService
+import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.web.ws.ice.TangleIceController
 import org.springframework.stereotype.Service

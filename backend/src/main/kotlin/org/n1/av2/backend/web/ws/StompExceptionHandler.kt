@@ -1,7 +1,7 @@
 package org.n1.av2.backend.web.ws
 
 import jakarta.validation.ConstraintViolationException
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler
 import org.springframework.web.bind.annotation.ControllerAdvice
 

@@ -1,11 +1,12 @@
 package org.n1.av2.backend.service.layerhacking.service
 
 import org.n1.av2.backend.entity.site.layer.Layer
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 
 @org.springframework.stereotype.Service
 class OsLayerService(
-    private val stompService: StompService) {
+    private val stompService: StompService
+) {
 
 
     fun hack(layer: Layer) {

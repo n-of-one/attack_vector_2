@@ -1,9 +1,13 @@
 import {AnyAction} from "redux";
 import {SERVER_ENTER_RUN} from "../../server/RunServerActionProcessor";
 
-export const HACKER_ACTIVITY_SCANNING = "SCANNING";
 
-export type HackerActivity = "NA" | "SCANNING" | "ATTACKING";
+export enum HackerActivity {
+    OFFLINE = "OFFLINE",
+    ONLINE = "ONLINE",
+    OUTSIDE = "OUTSIDE",
+    INSIDE = "INSIDE"
+}
 
 export interface HackerPresence {
     userId: string,

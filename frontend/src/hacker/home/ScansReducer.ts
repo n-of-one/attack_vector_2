@@ -8,9 +8,7 @@ export interface ScanInfo {
     runId: string,
     siteName: string,
     siteId: string,
-    initiatorName: string,
     nodes: string,
-    efficiency: string,
 }
 
 

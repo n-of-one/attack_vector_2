@@ -10,8 +10,8 @@ enum class HackerActivity(val inRun: Boolean) {
     OFFLINE(false),    // hacker is not online
     ONLINE(false),     // hacker is online, but not in a run
 
-    SCANNING(true),   // hacker has approached a site, scanning from a distance
-    ATTACKING(true),    // hacker has entered the site and is in a run
+    OUTSIDE(true),   // hacker has approached a site, has a connection but not yet an avatar inside
+    INSIDE(true),    // hacker has entered the site, has an avatar inside
 }
 
 @Document
@@ -50,7 +50,7 @@ class HackerStateRunning(
     fun toState(): HackerState {
         return HackerState(
             userId, connectionId, runId, siteId, currentNodeId, previousNodeId,
-            HackerActivity.ATTACKING, masked
+            HackerActivity.INSIDE, masked
         )
     }
 }

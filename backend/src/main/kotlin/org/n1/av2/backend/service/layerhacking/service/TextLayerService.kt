@@ -3,7 +3,7 @@ package org.n1.av2.backend.service.layerhacking.service
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.other.TextLayer
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 
 @org.springframework.stereotype.Service
 class TextLayerService(

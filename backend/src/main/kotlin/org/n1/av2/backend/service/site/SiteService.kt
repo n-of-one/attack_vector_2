@@ -9,10 +9,10 @@ import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.layerhacking.service.KeystoreService
-import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
+import org.n1.av2.backend.service.run.TERMINAL_MAIN
+import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime

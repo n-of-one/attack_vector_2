@@ -1,11 +1,11 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.util
 
 import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxEvent
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.terminal.TERMINAL_MAIN
+import org.n1.av2.backend.service.run.TERMINAL_MAIN
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.security.core.context.SecurityContextHolder

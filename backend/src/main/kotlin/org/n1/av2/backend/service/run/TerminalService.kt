@@ -1,8 +1,9 @@
-package org.n1.av2.backend.service.terminal
+package org.n1.av2.backend.service.run
 
 import org.n1.av2.backend.entity.run.HackerActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.run.inside.InsideTerminalService
+import org.n1.av2.backend.service.run.outside.OutsideTerminalService
 import org.springframework.stereotype.Service
 
 const val TERMINAL_MAIN = "main"
@@ -12,8 +13,8 @@ const val TERMINAL_CHAT = "chat"
 @Service
 class TerminalService(
     private val hackerStateEntityService: HackerStateEntityService,
-    private val scanTerminalService: ScanTerminalService,
-    private val hackTerminalService: HackTerminalService,
+    private val outsideTerminalService: OutsideTerminalService,
+    private val insideTerminalService: InsideTerminalService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -24,14 +25,12 @@ class TerminalService(
         }
         val type = hackerStateEntityService.retrieveForCurrentUser().activity
         when (type) {
-            HackerActivity.SCANNING -> scanTerminalService.processCommand(runId, command)
-            HackerActivity.ATTACKING -> hackTerminalService.processCommand(runId, command)
+            HackerActivity.OUTSIDE -> outsideTerminalService.processCommand(runId, command)
+            HackerActivity.INSIDE -> insideTerminalService.processCommand(runId, command)
 
             else -> {
                 logger.error("Received terminal command for user that is doing: ${type}")
             }
         }
     }
-
-
 }

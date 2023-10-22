@@ -1,20 +1,18 @@
-package org.n1.av2.backend.service.terminal
+package org.n1.av2.backend.service.run.outside
 
 import org.n1.av2.backend.config.ServerConfig
-import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.run.StartAttackService
-import org.n1.av2.backend.service.scan.ScanningService
+import org.n1.av2.backend.service.run.outside.scanning.ScanningService
+import org.n1.av2.backend.service.run.terminal.SocialTerminalService
+import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.service.util.TimeService
 import org.springframework.stereotype.Service
 
 @Service
-class ScanTerminalService(
+class OutsideTerminalService(
     private val scanningService: ScanningService,
     private val nodeEntityService: NodeEntityService,
     private val socialTerminalService: SocialTerminalService,
@@ -32,14 +30,13 @@ class ScanTerminalService(
         val tokens = command.split(" ")
         when (tokens[0]) {
             "help" -> processHelp()
-            "autoscan" -> doIfSiteNotShutdown(runId) { processAutoScan(runId) }
             "scan" -> doIfSiteNotShutdown(runId) {processScan(runId, tokens) }
             "/share" -> socialTerminalService.processShare(runId, tokens)
-            "servererror" -> error("gah")
             "quickscan", "qs" -> doIfSiteNotShutdown(runId) { processQuickscan(runId) }
             "attack" -> doIfSiteNotShutdown(runId) { processAttack(runId, false) }
             "quickattack", "qa" -> doIfSiteNotShutdown(runId) { processAttack(runId, true) }
             "move", "view", "hack", "connect" -> reportHackCommand()
+            "servererror" -> error("gah")
             else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
         }
     }
@@ -48,15 +45,10 @@ class ScanTerminalService(
         stompService.replyTerminalReceive("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
     }
 
-    private fun processAutoScan(runId: String) {
-        stompService.replyTerminalReceiveAndLocked(true, "Autoscan started. [i]Click on nodes for information retreived by scan.[/]")
-        scanningService.performAutoScan(runId)
-    }
 
     private fun processHelp() {
         stompService.replyTerminalReceive(
             "Command options:",
-            " [u]autoscan",
             " [u]attack",
             " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
             " [u]/share[/u] [info]<user name>"

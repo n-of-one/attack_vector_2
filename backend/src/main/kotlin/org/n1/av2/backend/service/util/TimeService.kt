@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.util
 
 import org.n1.av2.backend.config.ServerConfig
 import org.springframework.stereotype.Service

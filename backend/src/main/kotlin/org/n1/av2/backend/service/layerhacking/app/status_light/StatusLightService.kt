@@ -3,7 +3,7 @@ package org.n1.av2.backend.service.layerhacking.app.status_light
 import org.n1.av2.backend.entity.app.StatusLightApp
 import org.n1.av2.backend.entity.app.StatusLightEntityService
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service

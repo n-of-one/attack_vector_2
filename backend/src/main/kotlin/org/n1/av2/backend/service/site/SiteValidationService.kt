@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import java.time.Duration
 

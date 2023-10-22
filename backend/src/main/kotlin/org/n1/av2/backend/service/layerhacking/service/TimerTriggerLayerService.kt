@@ -6,9 +6,9 @@ import org.n1.av2.backend.engine.SystemTaskRunner
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.TimeService
 import org.n1.av2.backend.service.patroller.TracingPatrollerService
+import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.service.util.TimeService
 import org.springframework.stereotype.Service
 
 

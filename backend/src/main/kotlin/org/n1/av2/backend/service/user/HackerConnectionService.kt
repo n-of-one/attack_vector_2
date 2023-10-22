@@ -4,8 +4,8 @@ import org.n1.av2.backend.config.websocket.ConnectionType
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.run.RunService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
@@ -14,7 +14,8 @@ import java.time.ZonedDateTime
 class HackerConnectionService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runService: RunService,
-    private val stompService: StompService) {
+    private val stompService: StompService
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 

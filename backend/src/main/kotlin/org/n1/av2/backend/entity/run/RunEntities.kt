@@ -3,7 +3,6 @@ package org.n1.av2.backend.entity.run
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.ZonedDateTime
 
 
 @Document
@@ -11,10 +10,6 @@ data class Run(
     @Id val runId: String,
     val initiatorId: String,
     val siteId: String,
-    var totalDistanceScanned: Int = 0,
-    var scanStartTime: ZonedDateTime,
-    var scanDuration: Int? = null,
-    var scanEfficiency: Int? = null,
     val nodeScanById: MutableMap<String, NodeScan>
 )
 
@@ -37,11 +32,17 @@ data class TracingPatroller(
 )
 
 enum class NodeScanStatus(val level: Int) {
+
     UNDISCOVERED_0(0),             // scan, run: the existence of this node has not been discovered      [ - no image - ]
     DISCOVERED_1(1),               // scan, run: existence is known, but the type of node is not known   [empty.png]
+
+    ICE_PROTECTED_2(2),            // scan, run: this node has ICE that is blocking the scan             [protected\...]
+
+    FULLY_SCANNED_4(4),            // scan, run: the layers of this node are known                       [free\..., hacked\...]
+
+
     TYPE_KNOWN_2(2),               // scan, run: type and number of services known                       [type\...]
     CONNECTIONS_KNOWN_3(3),        // scan, run: the connections of this node are known.                 [connections\...]
-    FULLY_SCANNED_4(4),            // scan, run: the layers of this node are known                       [free\..., protected\..., hacked\...]
 }
 
 data class NodeScan(

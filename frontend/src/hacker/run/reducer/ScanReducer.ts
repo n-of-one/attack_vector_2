@@ -10,7 +10,6 @@ export interface Scan {
     totalDistanceScanned: number,
     startTime: string,
     duration?: number,
-    efficiency?: number,
     nodeScanById: NodeScanById
 }
 

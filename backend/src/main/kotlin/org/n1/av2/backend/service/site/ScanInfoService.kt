@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.scan
+package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
@@ -7,12 +7,13 @@ import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.terminal.TERMINAL_CHAT
+import org.n1.av2.backend.service.run.TERMINAL_CHAT
+import org.n1.av2.backend.service.run.outside.scanning.TraverseNodeService
 import org.n1.av2.backend.service.user.CurrentUserService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
-/** This service deals with the action of scanning (as opposed to the actions performed on a scan). */
+/** This service is about ScanInfo: . */
 @Service
 class ScanInfoService(
     private val runEntityService: RunEntityService,
@@ -48,19 +49,10 @@ class ScanInfoService(
         sendScanInfosOfPlayer(userId)
     }
 
-    data class ScanInfo(
-        val runId: String,
-        val siteName: String,
-        val siteId: String,
-        val initiatorName: String,
-        val nodes: String,
-        val efficiency: String
-    )
-
     fun sendScanInfosOfPlayer(userId: String) {
         val runLinks = userRunLinkEntityService.findAllByUserId(userId)
-        val scans = runEntityService.getAll(runLinks)
-        val scanItems = scans.map(::createScanInfo)
+        val runs = runEntityService.getAll(runLinks)
+        val scanItems = runs.map(::createScanInfo)
         stompService.toUser(userId, ServerActions.SERVER_UPDATE_USER_SCANS, scanItems)
     }
 
@@ -78,7 +70,8 @@ class ScanInfoService(
         val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
         stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
-        stompService.toUser(userEntity.id,
+        stompService.toUser(
+            userEntity.id,
             ServerActions.SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
         )
@@ -86,22 +79,11 @@ class ScanInfoService(
         sendScanInfosOfPlayer(userEntity.id)
     }
 
-
-
+    data class ScanInfo(val runId: String, val siteName: String, val siteId: String, val nodes: String)
     fun createScanInfo(run: Run): ScanInfo {
         val site = sitePropertiesEntityService.getBySiteId(run.siteId)
-        val nodes = run.nodeScanById.filterValues { it.status != NodeScanStatus.UNDISCOVERED_0 }.size
-        val nodesText = if (run.scanDuration != null) "${nodes}" else "${nodes}+"
-        val userName = userEntityService.getById(run.initiatorId).name
-        val efficiencyText = efficiencyText(run)
-        return ScanInfo(run.runId, site.name, site.siteId, userName, nodesText, efficiencyText)
-    }
-
-    private fun efficiencyText(run: Run): String {
-        if (run.scanEfficiency == null) {
-            return "(scanning)"
-        }
-        return "${run.scanEfficiency}%"
+        val nodesCount = run.nodeScanById.filterValues { it.status != NodeScanStatus.UNDISCOVERED_0 }.size
+        return ScanInfo(run.runId, site.name, site.siteId, "${nodesCount}+")
     }
 
     fun updateScanInfoToPlayers(run: Run) {

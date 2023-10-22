@@ -43,7 +43,7 @@ class HackerStateEntityService(
             siteId = siteId,
             currentNodeId = null,
             previousNodeId = null,
-            activity = HackerActivity.SCANNING,
+            activity = HackerActivity.OUTSIDE,
             masked = true // TODO  - unmasked is not automatically reset at start of hack
         )
         hackerStateRepo.save(newState)
@@ -75,7 +75,7 @@ class HackerStateEntityService(
             userId = userId,
             currentNodeId = null,
             previousNodeId = null,
-            activity = HackerActivity.SCANNING,
+            activity = HackerActivity.OUTSIDE,
             masked = true
         )
         hackerStateRepo.save(newState)
@@ -90,7 +90,7 @@ class HackerStateEntityService(
 
         val oldState = retrieve(userId)
         val newState = oldState.copy(
-            activity = HackerActivity.ATTACKING,
+            activity = HackerActivity.INSIDE,
             currentNodeId = startNode.id,
         )
         hackerStateRepo.save(newState)
@@ -114,13 +114,11 @@ class HackerStateEntityService(
         hackerStateRepo.save(newState)
     }
 
-    // FIXME: create 2 types of leaving: away from site and DC
-
     fun disconnect(currentState: HackerState) {
         val newState = currentState.copy(
             currentNodeId = null,
             previousNodeId = null,
-            activity = HackerActivity.SCANNING,
+            activity = HackerActivity.OUTSIDE,
         )
         hackerStateRepo.save(newState)
     }

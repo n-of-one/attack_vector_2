@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.config.security.JwtTokenProvider
 import org.n1.av2.backend.entity.user.*
 import org.n1.av2.backend.model.validation.LoginRedirectParam
-import org.n1.av2.backend.service.FrontierHackerInfo
-import org.n1.av2.backend.service.FrontierService
 import org.n1.av2.backend.service.LoginService
+import org.n1.av2.backend.service.larp.FrontierHackerInfo
+import org.n1.av2.backend.service.larp.FrontierService
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping

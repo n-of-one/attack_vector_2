@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.user.*
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.isInt
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service

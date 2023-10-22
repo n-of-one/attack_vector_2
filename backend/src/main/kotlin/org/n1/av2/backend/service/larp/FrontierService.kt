@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.larp
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.type.TypeReference
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.Cookie
 import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.entity.user.HackerSkill
+import org.n1.av2.backend.service.util.HttpClient
 import org.springframework.stereotype.Service
 
 const val FRONTIER_GM_GROUP = "30"

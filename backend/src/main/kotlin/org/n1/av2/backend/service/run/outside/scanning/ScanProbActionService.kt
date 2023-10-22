@@ -1,5 +1,6 @@
-package org.n1.av2.backend.service.scan
+package org.n1.av2.backend.service.run.outside.scanning
 
+import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.entity.run.NodeScan
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.Run
@@ -9,7 +10,8 @@ import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.ui.NodeScanType
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
+import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.s
 import org.springframework.stereotype.Service
 import java.util.*
@@ -25,7 +27,7 @@ class ScanProbActionService(
     private val scanInfoService: ScanInfoService,
 ) {
 
-
+    @ScheduledTask
     fun probeCompleted(run: Run, node: Node, action: NodeScanType) {
         val updateScanInfo = processProbeAction(run, node, action)
         if (updateScanInfo) {
@@ -101,7 +103,6 @@ class ScanProbActionService(
         discoveredConnectionIds.addAll(extraDiscoveredConnections)
 
 
-        run.totalDistanceScanned += nodeScan.distance!!
         runEntityService.save(run)
 
 
@@ -117,7 +118,6 @@ class ScanProbActionService(
 
     fun scannedSingleNode(nodeScan: NodeScan, run: Run, nodeId: String, newStatus: NodeScanStatus) {
         nodeScan.status = newStatus
-        run.totalDistanceScanned += nodeScan.distance!!
         runEntityService.save(run)
         stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, ProbeResultSingleNode(nodeId, nodeScan.status))
     }

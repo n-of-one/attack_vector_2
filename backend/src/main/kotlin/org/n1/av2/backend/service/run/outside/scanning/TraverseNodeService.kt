@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.scan
+package org.n1.av2.backend.service.run.outside.scanning
 
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.site.ConnectionEntityService

@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.editor
+package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.LayoutEntityService
@@ -11,11 +11,9 @@ import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_GREEN
 import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_RED
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.*
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightService
 import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.site.SiteService
-import org.n1.av2.backend.service.site.SiteValidationService
+import org.n1.av2.backend.service.util.StompService
 
 @org.springframework.stereotype.Service
 class EditorService(

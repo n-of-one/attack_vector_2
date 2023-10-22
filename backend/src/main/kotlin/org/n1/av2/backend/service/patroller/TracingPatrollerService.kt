@@ -1,15 +1,15 @@
 package org.n1.av2.backend.service.patroller
 
 import org.n1.av2.backend.engine.ScheduledTask
-import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
-import org.n1.av2.backend.service.TimeService
-import org.n1.av2.backend.service.scan.TraverseNode
-import org.n1.av2.backend.service.scan.TraverseNodeService
+import org.n1.av2.backend.service.run.outside.scanning.TraverseNode
+import org.n1.av2.backend.service.run.outside.scanning.TraverseNodeService
+import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.service.util.TimeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct

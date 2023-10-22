@@ -1,8 +1,8 @@
-package org.n1.av2.backend.service.terminal.hacking
+package org.n1.av2.backend.service.run.inside.command
 
 import org.n1.av2.backend.engine.ScheduledTask
-import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.engine.TicksGameEvent
+import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
@@ -12,10 +12,10 @@ import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.StompService
 import org.n1.av2.backend.service.layerhacking.service.TimerTriggerLayerService
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
-import org.n1.av2.backend.service.scan.ScanProbActionService
+import org.n1.av2.backend.service.run.outside.scanning.ScanProbActionService
+import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 
