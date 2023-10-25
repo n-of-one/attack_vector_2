@@ -10,11 +10,11 @@ import {NodeI} from "../../../../editor/reducer/NodesReducer";
 
 const statusText = (status: NodeScanStatus) => {
     switch (status) {
-        case NodeScanStatus.DISCOVERED_1:
+        case NodeScanStatus.UNCONNECTABLE_1:
             return "0/3"
-        case NodeScanStatus.TYPE_KNOWN_2:
+        case NodeScanStatus.CONNECTABLE_2:
             return "1/3"
-        case NodeScanStatus.CONNECTIONS_KNOWN_3:
+        case NodeScanStatus.ICE_PROTECTED_3:
             return "2/3"
         case NodeScanStatus.FULLY_SCANNED_4:
             return "3/3 (complete)"
@@ -48,6 +48,8 @@ export const NodeScanInfo = () => {
         runCanvas.unSelect()
     }
 
+    const networkId = status === NodeScanStatus.UNCONNECTABLE_1 ? "??" : node.networkId
+
     return (
         <div className="row nodeInfo text" id="scanInfo">
             <div className="col-lg-12">
@@ -60,7 +62,7 @@ export const NodeScanInfo = () => {
                     <div className="col-lg-12">
                         <div className="d-flex justify-content-between">
                             <div className="">
-                                Scan info on <span className="networkId">{node.networkId}</span><Pad length={10} textValue={node.networkId}/>
+                                Scan info on <span className="networkId">{networkId}</span><Pad length={10} textValue={networkId}/>
                                 <span className="text-muted">scan progress: {statusText(status)}</span><br/>
                                 <br/>
                                 <NodeScanInfoByStatus node={node} status={status}/>

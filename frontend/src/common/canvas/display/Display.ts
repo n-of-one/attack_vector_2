@@ -20,8 +20,9 @@ export class Graphics {
         this.canvas = canvas
     }
 
-    fade(durationTicks: number, opacity: number, target: fabric.Object ) {
-        animate(this.canvas, target, "opacity", opacity, durationTicks)
+    fade(durationTicks: number, opacity: number, target: fabric.Object | null ) {
+        if (target)
+            animate(this.canvas, target, "opacity", opacity, durationTicks)
     }
 
     fadeOut(durationTicks: number, target: fabric.Object) {

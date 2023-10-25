@@ -24,10 +24,16 @@ class CommandViewService(
 
         lines.add("Node service layers:")
         node.layers.forEach { layer ->
-            val blocked = if (layer.level < blockingIceLevel) "* " else ""
+            val blocked = (layer.level < blockingIceLevel)
+
             val hacked = if (layer is IceLayer && layer.hacked) " [mute]hacked[/]" else ""
             val iceSuffix = if (layer is IceLayer) " ICE" else ""
-            lines.add("${blocked}[pri]${layer.level}[/] ${layer.name}${iceSuffix}${hacked}")
+            if (blocked) {
+                lines.add("[pri]${layer.level}[/] unknown (shielded by ICE)")
+            }
+            else {
+                lines.add("[pri]${layer.level}[/] ${layer.name}${iceSuffix}${hacked}")
+            }
         }
 
         stompService.reply(ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive("main", lines.map { it }.toTypedArray()))

@@ -3,7 +3,9 @@ package org.n1.av2.backend.service.run
 import org.n1.av2.backend.engine.CalledBySystem
 import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.*
+import org.n1.av2.backend.entity.run.NodeScanStatus.*
 import org.n1.av2.backend.entity.service.TimerEntityService
+import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.UserEntityService
@@ -160,5 +162,25 @@ class RunService(
         timerEntityService.deleteBySiteId(siteId)
 
         timedTaskRunner.removeAllFor(siteId)
+    }
+
+    fun updateNodeStatusToHacked(node: Node) {
+        val runs = runEntityService.findAllForSiteId(node.siteId)
+
+        val neighboringNodeIds = siteService.findNeighboringNodeIds(node)
+
+        runs.forEach{run ->
+            run.updateScanStatus(node.id, FULLY_SCANNED_4)
+            stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, "nodeId" to node.id, "newStatus" to FULLY_SCANNED_4)
+
+            run.nodeScanById.filterKeys { nodeId -> neighboringNodeIds.contains(nodeId) }
+                .forEach { (neighboringNodeId, nodeScan) ->
+                    if (nodeScan.status == UNDISCOVERED_0 || nodeScan.status == UNCONNECTABLE_1) {
+                        run.updateScanStatus(neighboringNodeId, CONNECTABLE_2)
+                        stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, "nodeId" to neighboringNodeId, "newStatus" to CONNECTABLE_2)
+                    }
+                }
+            runEntityService.save(run)
+        }
     }
 }

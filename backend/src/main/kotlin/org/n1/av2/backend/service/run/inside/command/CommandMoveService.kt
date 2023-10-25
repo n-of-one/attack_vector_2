@@ -3,7 +3,10 @@ package org.n1.av2.backend.service.run.inside.command
 import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.engine.UserTaskRunner
-import org.n1.av2.backend.entity.run.*
+import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.run.HackerStateRunning
+import org.n1.av2.backend.entity.run.NodeScanStatus.*
+import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
@@ -16,6 +19,7 @@ import org.n1.av2.backend.service.layerhacking.service.TimerTriggerLayerService
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.run.outside.scanning.ScanProbActionService
 import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.util.isOneOf
 import org.springframework.stereotype.Service
 
 
@@ -61,7 +65,7 @@ class CommandMoveService(
         if (state.previousNodeId == toNode.id) return true /// can always go back to previous node, regardless of ice
 
         val scan = runEntityService.getByRunId(runId)
-        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status == NodeScanStatus.UNDISCOVERED_0) {
+        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status.isOneOf(UNDISCOVERED_0, UNCONNECTABLE_1)) {
             reportNodeNotFound(networkId)
             return false
         }
@@ -88,7 +92,7 @@ class CommandMoveService(
     }
 
     private fun hasActiveIce(node: Node): Boolean {
-        return node.layers.any { it is IceLayer && !it.hacked}
+        return node.layers.any { it is IceLayer && !it.hacked }
 
     }
 
@@ -123,52 +127,41 @@ class CommandMoveService(
         val scan = runEntityService.getByRunId(runId)
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
-        if (nodeStatus == NodeScanStatus.FULLY_SCANNED_4) {
+        if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
             arriveComplete(state, nodeId, userId, runId)
         } else {
             class HackerScansNodeAction(val userId: String, val nodeId: String, val timings: Timings = HACKER_SCANS_NODE_Timings)
 
             val action = HackerScansNodeAction(userId, nodeId)
             stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, action)
-            val event = HackerScannedNodeEvent(nodeId, userId, runId)
-            userTaskRunner.queueInTicks(action.timings.totalTicks) { hackerScannedNode(event) }
+
+            userTaskRunner.queueInTicks(action.timings.totalTicks) { hackerScannedNode(nodeId, userId, runId) }
         }
     }
 
     @ScheduledTask
-    fun hackerScannedNode(event: HackerScannedNodeEvent) {
-        val runId = event.runId
-        val userId = event.userId
-        val nodeId = event.nodeId
+    fun hackerScannedNode(nodeId: String, userId: String, runId: String) {
 
-        val scan = runEntityService.getByRunId(runId)
-        val nodeScan = scan.nodeScanById[nodeId]!!
+        val run = runEntityService.getByRunId(runId)
+        val nodeScan = run.nodeScanById[nodeId]!!
 
-        when (nodeScan.status) {
-            NodeScanStatus.DISCOVERED_1 -> hackerScannedNodeAndConnections(scan, nodeId, nodeScan)
-            NodeScanStatus.TYPE_KNOWN_2 -> hackerScannedNodeAndConnections(scan, nodeId, nodeScan)
-            NodeScanStatus.CONNECTIONS_KNOWN_3 -> scanProbeActionService.scannedSingleNode(nodeScan, scan, nodeId, NodeScanStatus.FULLY_SCANNED_4)
-            NodeScanStatus.FULLY_SCANNED_4 -> return
-            else -> error("Unexpected status: " + nodeScan.status)
+        if (nodeScan.status == CONNECTABLE_2) {
+            val node = nodeEntityService.getById(nodeId)
+            scanProbeActionService.scannedNodeAndConnections(run, node, nodeScan)
         }
-
         val state = hackerStateEntityService.retrieve(userId).toRunState()
         arriveComplete(state, nodeId, userId, runId)
     }
 
-    private fun hackerScannedNodeAndConnections(run: Run, nodeId: String, nodeScan: NodeScan) {
-        val node = nodeEntityService.getById(nodeId)
-        scanProbeActionService.scannedConnections(run, node, nodeScan)
-    }
 
     private fun arriveComplete(state: HackerStateRunning, nodeId: String, userId: String, runId: String) {
         hackerStateEntityService.arriveAt(state, nodeId)
         triggerLayersAtArrive(state.siteId, nodeId, userId, runId)
 
-        class MoveArriveMessage(val nodeId: String, val userId: String, val timings: Timings)
-
-        val data = MoveArriveMessage(nodeId, userId, MOVE_ARRIVE_Timings)
-        stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE, data)
+        stompService.toRun(
+            runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE,
+            "nodeId" to nodeId, "userId" to userId, "timings" to MOVE_ARRIVE_Timings
+        )
         stompService.replyTerminalSetLocked(false)
     }
 

@@ -104,4 +104,11 @@ class SiteService(
         sitePropertiesEntityService.save(shutdownProperties)
         stompService.toSite(siteId, ServerActions.SERVER_SITE_SHUTDOWN_FINISH)
     }
+
+    fun findNeighboringNodeIds(node: Node): List<String> {
+        val connections = connectionEntityService.findByNodeId(node.id)
+        return connections.map { connection ->
+            if (connection.fromId == node.id) connection.toId else connection.fromId
+        }
+    }
 }

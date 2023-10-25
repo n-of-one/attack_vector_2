@@ -117,7 +117,7 @@ export const easeInOutSine = fabric.util.ease.easeInOutSine
 
 export const getHtmlImage = (id: string): HTMLImageElement =>  {
     const image = document.getElementById(id)
-    if (image === null || image === undefined) throw new Error("Hacker icon not found by id: " + id)
-    if (!(image instanceof HTMLImageElement)) throw new Error("Hacker icon not an id: " + id)
+    if (image === null || image === undefined) throw new Error("Html image not found by id: " + id)
+    if (!(image instanceof HTMLImageElement)) throw new Error("Html image not an image: " + id)
     return image
 }

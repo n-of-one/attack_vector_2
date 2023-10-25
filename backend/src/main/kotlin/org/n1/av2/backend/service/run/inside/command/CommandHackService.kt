@@ -1,5 +1,6 @@
 package org.n1.av2.backend.service.run.inside.command
 
+import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.entity.run.HackerStateRunning
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
@@ -11,6 +12,7 @@ import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
 import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.layerhacking.app.StatusLightLayerService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.layerhacking.service.KeystoreLayerService
@@ -31,17 +33,28 @@ class CommandHackService(
     private val commandServiceUtil: CommandServiceUtil,
     private val iceService: IceService,
     private val keystoreLayerService: KeystoreLayerService,
+    private val config: ServerConfig,
+    private val hackedUtil: HackedUtil,
 ) {
 
     fun processHackCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         process(runId, tokens, state, "hack", ::handleHack)
     }
 
+
+    fun processQuickHack(runId: String, tokens: List<String>, state: HackerStateRunning) {
+        if (!config.dev) {
+            stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
+            return
+        }
+        process(runId, tokens, state, "hack", ::handleQuickHack)
+    }
+
     fun processConnectCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         process(runId, tokens, state, "connect ", ::handleConnect)
     }
 
-    fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer) -> Unit) {
+    private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer) -> Unit) {
         if (tokens.size == 1) {
             return stompService.replyTerminalReceive("Missing [primary]<layer>[/]        -- for example: [u]${commandName}[primary] 1")
         }
@@ -72,7 +85,7 @@ class CommandHackService(
         }
     }
 
-    fun hackIce(layer: IceLayer) {
+    private fun hackIce(layer: IceLayer) {
         if (layer.hacked) {
             stompService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
             return
@@ -100,6 +113,10 @@ class CommandHackService(
         stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce(layer.id))
     }
 
+    private fun handleQuickHack(node: Node, layer: Layer) {
+        hackedUtil.iceHacked(layer.id, node, 0)
+    }
+
     private fun reportLayerUnknown(node: Node, layerInput: String) {
         val layerCount = node.layers.size
         if (layerCount == 1) {
@@ -114,6 +131,4 @@ class CommandHackService(
     private fun reportBlockingIce(blockingIceLayer: Layer) {
         stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
     }
-
-
 }

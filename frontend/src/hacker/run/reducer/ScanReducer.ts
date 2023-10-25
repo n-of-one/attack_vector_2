@@ -15,7 +15,7 @@ export interface Scan {
 
 export interface NodeScan {
     status: NodeScanStatus,
-    distance?: number
+    distance: number
 }
 
 

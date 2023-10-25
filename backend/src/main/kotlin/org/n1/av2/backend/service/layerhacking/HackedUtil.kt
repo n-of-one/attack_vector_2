@@ -4,15 +4,18 @@ import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
+import org.springframework.context.annotation.Lazy
 
 
 @org.springframework.stereotype.Service
 class HackedUtil(
-    val currentUser: CurrentUserService,
-    val nodeEntityService: NodeEntityService,
-    val stompService: StompService
+    private val currentUser: CurrentUserService,
+    private val nodeEntityService: NodeEntityService,
+    private val stompService: StompService,
+    @Lazy private val runService: RunService,
 ) {
 
     data class IceHackedUpdate(val layerId: String, val nodeId: String)
@@ -32,6 +35,8 @@ class HackedUtil(
 
         val activeIceLeft = node.layers.any { it is IceLayer && !it.hacked }
         if (!activeIceLeft) {
+            runService.updateNodeStatusToHacked(node)
+
             val hackedNode = node.copy(hacked = true)
             nodeEntityService.save(hackedNode)
 

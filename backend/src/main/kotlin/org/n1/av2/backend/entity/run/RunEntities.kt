@@ -11,7 +11,15 @@ data class Run(
     val initiatorId: String,
     val siteId: String,
     val nodeScanById: MutableMap<String, NodeScan>
-)
+) {
+
+    fun updateScanStatus(nodeId: String, status: NodeScanStatus) {
+        nodeScanById.compute(nodeId) { _, existingValue ->
+            if (existingValue == null) error("run $runId does not contain node $nodeId")
+            existingValue.copy(status = status)
+        }
+    }
+}
 
 @Document
 data class UserRunLink(
@@ -31,23 +39,17 @@ data class TracingPatroller(
     val path: MutableList<PatrollerPathSegment>
 )
 
-enum class NodeScanStatus(val level: Int) {
-
-    UNDISCOVERED_0(0),             // scan, run: the existence of this node has not been discovered      [ - no image - ]
-    DISCOVERED_1(1),               // scan, run: existence is known, but the type of node is not known   [empty.png]
-
-    ICE_PROTECTED_2(2),            // scan, run: this node has ICE that is blocking the scan             [protected\...]
-
-    FULLY_SCANNED_4(4),            // scan, run: the layers of this node are known                       [free\..., hacked\...]
-
-
-    TYPE_KNOWN_2(2),               // scan, run: type and number of services known                       [type\...]
-    CONNECTIONS_KNOWN_3(3),        // scan, run: the connections of this node are known.                 [connections\...]
+enum class NodeScanStatus() {
+    UNDISCOVERED_0,             // the existence of this node has not been discovered                [ - no image - ]
+    UNCONNECTABLE_1,            // existence is known, but not the network id                        [empty.png]
+    CONNECTABLE_2,              // existence is known and the network id, but not the type of node   [empty.png]
+    ICE_PROTECTED_3,            // this node has ICE that is blocking the scan                       [protected\...]
+    FULLY_SCANNED_4,            // the layers of this node are known                                 [free\..., hacked\...]
 }
 
 data class NodeScan(
-    var status: NodeScanStatus,
-    var distance: Int? = null
+    val status: NodeScanStatus,
+    val distance: Int
 )
 
 

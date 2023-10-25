@@ -10,6 +10,7 @@ import {
     SERVER_UPDATE_NETWORK_ID
 } from "../server/EditorServerActionProcessor"
 import {LayerType} from "../../common/enums/LayerTypes";
+import {NodeScanStatus} from "../../common/enums/NodeStatus";
 
 export const TRANSIT_1 = "transit_1"
 export const TRANSIT_2 = "transit_2"
@@ -77,8 +78,8 @@ export interface NodeI {
     networkId: string
 
     hacked : boolean
-    status: string
-    distance?: number
+    status: NodeScanStatus
+    distance: number
 }
 
 export interface MoveNodeI {nodeId: string, x: number, y: number}

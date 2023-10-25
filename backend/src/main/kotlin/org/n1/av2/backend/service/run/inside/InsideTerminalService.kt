@@ -41,6 +41,7 @@ class InsideTerminalService(
         when (commandAction) {
             "move" -> commandMoveService.processCommand(runId, tokens, state)
             "hack" -> commandHackService.processHackCommand(runId, tokens, state)
+            "qhack" -> commandHackService.processQuickHack(runId, tokens, state)
             "view" -> commandViewService.process(runId, state)
             "connect" -> commandHackService.processConnectCommand(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)

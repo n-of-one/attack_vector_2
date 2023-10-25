@@ -30,12 +30,17 @@ const renderLayer = (layer: LayerDetails) => {
     }
 }
 
-export const LayerInfo = ({layer}:{layer: LayerDetails}) => {
+export const LayerInfo = ({layer, revealed}:{layer: LayerDetails, revealed: boolean} ) => {
+
+    const layerDetails = revealed ?
+        <><Pad length={3}/>{layer.name}{renderLayer(layer)}<br/></> :
+        <><Pad length={3}/>unknown (shielded by ICE)<br/></>
+
     return (
         <>
             <Pad length={3} numberValue={layer.level}/>
             <span className="text-primary">{layer.level}</span>
-            <Pad length={3}/>{layer.name}{renderLayer(layer)}<br/>
+            {layerDetails}
         </>
     )
 }

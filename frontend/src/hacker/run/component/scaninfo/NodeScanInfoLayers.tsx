@@ -5,14 +5,15 @@ import {LayerDetails, NodeI} from "../../../../editor/reducer/NodesReducer"
 function findProtectedLayer(layers: LayerDetails[]) {
     for (let i = layers.length - 1; i >= 0; i--) {
         const layer = layers[i]
-        if (layer.ice && !layer.hacked ) {
+        if (layer.ice && !layer.hacked) {
             return i
         }
     }
     return -1
 }
 
-export const NodeScanInfoLayers = ({node}: {node: NodeI}) => {
+
+export const NodeScanInfoLayers = ({node, allLayersRevealed}: { node: NodeI, allLayersRevealed: boolean }) => {
 
     const layers = node.layers
     const rendered = []
@@ -25,7 +26,8 @@ export const NodeScanInfoLayers = ({node}: {node: NodeI}) => {
         if (i === protectedLayer) {
             rendered.push(<span key="_1"><br/>--- Layers above are protected by ice --- <br/><br/></span>)
         }
-        rendered.push(<LayerInfo layer={layer} key={i}/>)
+        const layerRevealed = i > protectedLayer || allLayersRevealed
+        rendered.push(<LayerInfo layer={layer} key={i} revealed={layerRevealed}/>)
     }
     return <>{rendered}</>
 }

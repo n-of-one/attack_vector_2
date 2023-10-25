@@ -1,20 +1,17 @@
 import React from "react"
-import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FULLY_SCANNED_4, NodeScanStatus, TYPE_KNOWN_2} from "../../../../common/enums/NodeStatus"
+import {NodeScanStatus} from "../../../../common/enums/NodeStatus"
 import {NodeScanInfoLayers} from "./NodeScanInfoLayers"
 import {Pad} from "../../../../common/component/Pad"
 import {LayerDetails, NodeI} from "../../../../editor/reducer/NodesReducer"
 
-function renderDiscovered() {
+function renderUnconnectable() {
     return <>
-        No information about layers discovered yet.<br/>
-        <br/>
-        No information about additional neighbouring nodes discovered yet.<br/>
+        No information node discovered yet.<br/>
     </>
 }
-
-function renderStatusType(node: NodeI) {
+function renderConnectable() {
     return <>
-        {renderLayersAsUnknown(node)}
+        No information about layers discovered yet.<br/>
         <br/>
         No information about additional neighbouring nodes discovered yet.<br/>
     </>
@@ -28,7 +25,11 @@ function renderLayersAsUnknown(node: NodeI) {
     })
     return <>{lines}</>
 }
-function renderStatusConnections(node: NodeI) {
+
+function renderStatusIceProtected(node: NodeI) {
+    const layers = node.layers.sort((a, b) => a.level - b.level)
+
+    // FIXME show layers above ICE layers
     return <>
         {renderLayersAsUnknown(node)}
         <br/>
@@ -53,14 +54,14 @@ function renderError(node: NodeI, status: NodeScanStatus) {
 
 export const NodeScanInfoByStatus = ({node, status}: {node: NodeI, status: NodeScanStatus}) => {
     switch (status) {
-        case DISCOVERED_1:
-            return renderDiscovered()
-        case TYPE_KNOWN_2:
-            return renderStatusType(node)
-        case CONNECTIONS_KNOWN_3:
-            return renderStatusConnections(node)
-        case FULLY_SCANNED_4:
-            return <NodeScanInfoLayers node={node}/>
+        case NodeScanStatus.UNCONNECTABLE_1:
+            return renderUnconnectable()
+        case NodeScanStatus.CONNECTABLE_2:
+            return renderConnectable()
+        case NodeScanStatus.ICE_PROTECTED_3:
+            return <NodeScanInfoLayers node={node} allLayersRevealed={false}/>
+        case NodeScanStatus.FULLY_SCANNED_4:
+            return <NodeScanInfoLayers node={node} allLayersRevealed={true}/>
         default:
             return renderError(node, status)
     }

@@ -1,9 +1,9 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.run.*
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.UserEntity
-import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
@@ -18,23 +18,24 @@ import org.springframework.stereotype.Service
 class ScanInfoService(
     private val runEntityService: RunEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
-    private val userEntityService: UserEntityService,
     private val currentUserService: CurrentUserService,
     private val stompService: StompService,
     private val traverseNodeService: TraverseNodeService,
     private val userRunLinkEntityService: UserRunLinkEntityService,
+    private val nodeEntityService: NodeEntityService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
     fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
-        val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId)
+        val nodes = nodeEntityService.getAll(siteId)
+        val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId, nodes)
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
-                1 -> NodeScanStatus.DISCOVERED_1
+                1 -> NodeScanStatus.CONNECTABLE_2
                 else -> NodeScanStatus.UNDISCOVERED_0
             }
-            it.key to NodeScan(status = nodeStatus, distance = it.value.distance)
+            it.key to NodeScan(status = nodeStatus, distance = it.value.distance!!)
         }.toMap().toMutableMap()
     }
 

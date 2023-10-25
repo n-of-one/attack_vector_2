@@ -32,43 +32,37 @@ class ScanningService(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    fun performManualScan(run: Run, node: Node, status: NodeScanStatus) {
-        val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(run)
+    fun performManualScan(run: Run, node: Node) {
+        val nodes = nodeEntityService.getAll(run.siteId)
+        val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(run, nodes)
         val targetTraverseNode: TraverseNode = traverseNodesById[node.id]!!
-        launchProbe(targetTraverseNode, run)
+        launchProbe(targetTraverseNode, run, nodes)
     }
 
     data class ProbeAction(val probeUserId: String, val path: List<String>, val scanType: NodeScanType, val timings: Timings)
 
-    private fun launchProbe(targetNode: TraverseNode, run: Run) {
-        val status = run.nodeScanById[targetNode.id]!!.status
-        val scanType = determineNodeScanType(status)
+    private fun launchProbe(targetNode: TraverseNode, run: Run, nodes: List<Node>) {
         val path = createNodePath(targetNode)
-        val userId = currentUserService.userId
+
+        if (pathCrossesIce(path, nodes)) {
+            stompService.replyTerminalReceiveAndLocked(false, "Scan blocked by ICE at [ok]${targetNode.networkId}")
+            return
+        }
+
         val node = nodeEntityService.findById(targetNode.id)
 
-        val timings = scanType.timings
-        val probeAction = ProbeAction(userId, path, scanType, timings)
+        val timings = NodeScanType.SCAN_CONNECTIONS.timings
+        val probeAction = ProbeAction(currentUserService.userId, path, NodeScanType.SCAN_CONNECTIONS, timings)
 
         stompService.toRun(run.runId, ServerActions.SERVER_PROBE_LAUNCH, probeAction)
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
         userTaskRunner.queueInTicks(totalTicks - 20) {
-            scanProbActionService.probeCompleted(run, node, scanType)
+            scanProbActionService.probeCompleted(run, node)
         }
     }
 
-    fun determineNodeScanType(status: NodeScanStatus): NodeScanType {
-        return when (status) {
-            NodeScanStatus.DISCOVERED_1 -> NodeScanType.SCAN_NODE_INITIAL
-            NodeScanStatus.TYPE_KNOWN_2 -> NodeScanType.SCAN_CONNECTIONS
-            NodeScanStatus.CONNECTIONS_KNOWN_3 -> NodeScanType.SCAN_NODE_DEEP
-            NodeScanStatus.FULLY_SCANNED_4 -> NodeScanType.SCAN_NODE_DEEP
-            NodeScanStatus.UNDISCOVERED_0 -> error("Cannot scan a node that has not yet been discovered.")
-        }
-    }
-
-    fun createNodePath(targetNode: TraverseNode): LinkedList<String> {
+    fun createNodePath(targetNode: TraverseNode): List<String> {
         val path = LinkedList<String>()
         path.add(targetNode.id)
         var currentNode = targetNode
@@ -79,27 +73,17 @@ class ScanningService(
         return path
     }
 
-    /**
-     * Of all nodes that are know to the players, find the one of which the least is known (lowest scan status level).
-     */
-    private fun findProbeTarget(run: Run): TraverseNode? {
-        val traverseNodeValues = traverseNodeService.createTraverseNodesWithDistance(run).values
-        val traverseNodes = traverseNodeValues.filter { run.nodeScanById[it.id]!!.status != NodeScanStatus.UNDISCOVERED_0 }
-        val distanceSortedNodes = traverseNodes.sortedBy { it.distance }
-        val targetNode = distanceSortedNodes.minBy {
-            run.nodeScanById[it.id]!!.status.level
+    private fun pathCrossesIce(path: List<String>, nodes: List<Node>): Boolean {
+        if (path.size == 1) return false
+
+        path.drop(1).forEach { nodeId ->
+            val node = nodes.find { it.id === nodeId }!!
+            if (node.ice && !node.hacked)
+                return true
         }
-        return if (run.nodeScanById[targetNode.id]!!.status == NodeScanStatus.FULLY_SCANNED_4) {
-            null
-        } else targetNode
+        return false
     }
 
-
-    private fun allNodesScanned(run: Run): Boolean {
-        return run.nodeScanById
-            .filter { it.value.status !== NodeScanStatus.FULLY_SCANNED_4 }
-            .isEmpty()
-    }
 
     fun quickScan(runId: String) {
         val run = runEntityService.getByRunId(runId)
@@ -116,7 +100,7 @@ class ScanningService(
             it to NodeScanStatus.FULLY_SCANNED_4
         }.toMap()
 
-        stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, ProbeResultConnections(nodeStatusById, layout.connectionIds))
+        stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
         scanInfoService.updateScanInfoToPlayers(run)
     }
 

@@ -4,6 +4,7 @@ import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.*
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.run.outside.scanning.TraverseNode
@@ -26,12 +27,13 @@ class PatrollerUiData(val patrollerId: String, val nodeId: String, val path: Lis
 
 @Service
 class TracingPatrollerService(
-    val hackerStateEntityService: HackerStateEntityService,
-    val userTaskRunner: UserTaskRunner,
-    val tracingPatrollerRepo: TracingPatrollerRepo,
-    val traverseNodeService: TraverseNodeService,
-    val time: TimeService,
-    val stompService: StompService
+    private val hackerStateEntityService: HackerStateEntityService,
+    private val userTaskRunner: UserTaskRunner,
+    private val tracingPatrollerRepo: TracingPatrollerRepo,
+    private val traverseNodeService: TraverseNodeService,
+    private val time: TimeService,
+    private val stompService: StompService,
+    private val nodeEntityService: NodeEntityService,
 ) {
 
     @PostConstruct
@@ -105,7 +107,8 @@ class TracingPatrollerService(
 //    }
 
     private fun findMoveNextNode(patroller: TracingPatroller): TraverseNode {
-        val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId)
+        val nodes = nodeEntityService.getAll(patroller.siteId)
+        val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId, nodes)
         val startTraverseNode = traverseNodesById[patroller.currentNodeId]!!
         startTraverseNode.fillDistanceFromHere(0)
         val targetNodeId = hackerStateEntityService.retrieve(patroller.targetUserId).toRunState().currentNodeId

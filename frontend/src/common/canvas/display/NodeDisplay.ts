@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {toType} from "../../enums/NodeTypesNames"
-import {CONNECTIONS_KNOWN_3, DISCOVERED_1, FREE, HACKED, PROTECTED, FULLY_SCANNED_4, TYPE_KNOWN_2, NodeScanStatus} from "../../enums/NodeStatus"
+import {FREE, HACKED, PROTECTED, NodeScanStatus, DISCOVERED} from "../../enums/NodeStatus"
 import {getHtmlImage} from "../CanvasUtils"
 import {IMAGE_SIZE} from "./util/DisplayConstants"
 import {Display, Graphics} from "./Display"
@@ -52,6 +52,7 @@ export class NodeDisplay implements Display {
 
         this.addNodeIcon()
 
+
         this.labelIcon = new fabric.Text(nodeData.networkId, {
             // fill: "#bbbbbb", // just simple grey
             fill: "#5cb85c",    // color-ok
@@ -80,9 +81,9 @@ export class NodeDisplay implements Display {
             selectable: false,
         })
         this.canvas.add(this.labelBackgroundIcon)
-
         this.canvas.sendToBack(this.labelBackgroundIcon)
         this.canvas.bringToFront(this.labelIcon)
+
     }
 
     getAllIcons() {
@@ -109,7 +110,7 @@ export class NodeDisplay implements Display {
 
     createShutdownNodeIcon() {
         const type = toType(this.nodeData.type)
-        const imageId = type.name + "_DISCOVERED"
+        const imageId = type.name + "_" + DISCOVERED
         const image = getHtmlImage(imageId)
 
         return this.createNodeIconInternal(image)
@@ -145,19 +146,15 @@ export class NodeDisplay implements Display {
 
     determineNodeStatusForIcon() {
         switch (this.nodeData.status) {
-            case DISCOVERED_1:
-                return "DISCOVERED"
-            case TYPE_KNOWN_2:
-                return "TYPE"
-            case CONNECTIONS_KNOWN_3:
-                return "CONNECTIONS"
-            case FULLY_SCANNED_4:
+            case NodeScanStatus.UNCONNECTABLE_1:
+            case NodeScanStatus.CONNECTABLE_2:
+                return DISCOVERED
+            case NodeScanStatus.ICE_PROTECTED_3:
+                return PROTECTED
+            case NodeScanStatus.FULLY_SCANNED_4:
                 if (this.nodeData.ice) {
-                    if (this.nodeData.hacked) {
-                        return HACKED
-                    } else {
-                        return PROTECTED
-                    }
+                    if (this.nodeData.hacked) return HACKED
+                    else return PROTECTED
                 } else {
                     return FREE
                 }
@@ -170,21 +167,32 @@ export class NodeDisplay implements Display {
         if (!this.schedule) throw new Error("schedule not initialized")
 
         this.schedule.run(3, () => {
-
-            this.gfx.fade(40, 1, this.labelIcon)
-            this.gfx.fade(40, 0.8, this.labelBackgroundIcon)
             this.gfx.fade(40, SCAN_OPACITY, this.nodeIcon)
 
-            // animate(this.canvas, this.labelIcon, "opacity", 1, 40)
-            // animate(this.canvas, this.labelBackgroundIcon, "opacity", 0.8, 40)
-            // animate(this.canvas, this.nodeIcon, "opacity", SCAN_OPACITY, 40)
+            if (this.nodeData.distance === 1) {
+                this.fadeInLabel()
+            }
+            this.updateLabel(NodeScanStatus.UNDISCOVERED_0)
         })
+    }
+
+    updateLabel(previousScanStatus: NodeScanStatus) {
+        if (this.nodeData.distance === 1) return // label always visible
+        if ((previousScanStatus === NodeScanStatus.UNDISCOVERED_0 || previousScanStatus === NodeScanStatus.UNCONNECTABLE_1)
+            && ( this.nodeData.status !== NodeScanStatus.UNDISCOVERED_0 && this.nodeData.status !== NodeScanStatus.UNCONNECTABLE_1)) {
+            this.fadeInLabel()
+        }
+    }
+
+    private fadeInLabel() {
+        this.gfx.fade(40, 1, this.labelIcon)
+        this.gfx.fade(40, 0.8, this.labelBackgroundIcon)
     }
 
     transitionToHack(quick: boolean, canvasSelectedIcon: fabric.Image | null) {
         const delay = (quick) ? 0 : 5
         this.siteStatus = SiteStatus.HACKING
-        if (this.nodeData.status === FULLY_SCANNED_4) {
+        if (this.determineNodeIconOpacity() === HACK_OPACITY) {
             this.crossFadeToNewIconStart(delay, canvasSelectedIcon)
         }
     }
@@ -236,8 +244,10 @@ export class NodeDisplay implements Display {
     }
 
     updateStatus(newStatus: NodeScanStatus, canvasSelectedIcon: fabric.Image | null) {
+        const oldStatus = this.nodeData.status
         this.nodeData.status = newStatus
         this.updateNodeIcon(canvasSelectedIcon)
+        this.updateLabel(oldStatus)
     }
 
 
@@ -249,7 +259,8 @@ export class NodeDisplay implements Display {
     determineNodeIconOpacity() {
         if (this.siteStatus === SiteStatus.HACKING) {
             switch (this.nodeData.status) {
-                case FULLY_SCANNED_4:
+                case NodeScanStatus.ICE_PROTECTED_3:
+                case NodeScanStatus.FULLY_SCANNED_4:
                     return HACK_OPACITY
                 default:
                     return SCAN_OPACITY
@@ -318,6 +329,7 @@ export class NodeDisplay implements Display {
     terminate() {
         if (this.schedule != null) this.schedule.terminate()
     }
+
     siteShutdownStart() {
         if (this.schedule == null) throw new Error("schedule not initialized")
 
@@ -351,4 +363,5 @@ export class NodeDisplay implements Display {
             })
         })
     }
+
 }

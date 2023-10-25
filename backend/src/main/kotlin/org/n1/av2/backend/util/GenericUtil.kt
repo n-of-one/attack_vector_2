@@ -10,3 +10,7 @@ fun toServerFatalReduxEvent(exception: Exception): ReduxEvent {
     val event = ServerFatal(recoverable, exception.message ?: "-")
     return ReduxEvent(ServerActions.SERVER_ERROR, event)
 }
+
+fun <T> T?.isOneOf(vararg candidates: T) : Boolean {
+    return candidates.contains(this)
+}

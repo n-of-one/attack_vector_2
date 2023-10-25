@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {Schedule} from "../../../common/util/Schedule"
-import {NodeScanStatus, UNDISCOVERED_0} from "../../../common/enums/NodeStatus"
+import {NodeScanStatus} from "../../../common/enums/NodeStatus"
 import {NodeDisplay, SiteStatus} from "../../../common/canvas/display/NodeDisplay"
 import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
 import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
@@ -163,7 +163,7 @@ class RunCanvas {
             nodeData.distance = nodeScan.distance
         })
         nodes.forEach(node => {
-            if (node.status !== UNDISCOVERED_0) {
+            if (node.status !== NodeScanStatus.UNDISCOVERED_0) {
                 this.addNodeDisplay(node)
             }
         })
@@ -252,28 +252,53 @@ class RunCanvas {
 
         if (this.nodeDisplays.has(nodeId)) {
             this.nodeDisplays.get(nodeId).updateStatus(status, this.selectedObject)
+
+            return false // already displayed
         } else {
             const nodeData = this.nodeDataById[nodeId]
             nodeData.status = status
             this.addNodeDisplay(nodeData)
+            return true // new node to display
         }
     }
 
-    discoverNodes(nodeStatusById: NodeStatusById, connectionIds: string[]) {
+    discoverNodes(nodeStatusById: NodeStatusById) {
         if (!this.active) return
 
+        const newNodes: string[] = []
         Object.entries(nodeStatusById).forEach(([nodeId, status]) => {
-            this.updateNodeStatus(nodeId, status)
+            if (this.updateNodeStatus(nodeId, status)) {
+                newNodes.push(nodeId)
+            }
+        })
+
+        let connectionIds = new Set<string>()
+        newNodes.forEach((nodeId) => {
+            this.findConnections(nodeId).forEach((connectionId) => {
+                connectionIds.add(connectionId)
+            })
         })
 
         connectionIds.forEach((id) => {
             if (!this.connectionDisplays.has(id)) {
                 const connection = this.connectionDataById[id]
-                const fromIcon = this.nodeDisplays.get(connection.fromId)
-                const toIcon = this.nodeDisplays.get(connection.toId)
-                this.addConnectionDisplay(connection, fromIcon, toIcon)
+                const fromIcon = this.nodeDisplays.getOrNull(connection.fromId)
+                const toIcon = this.nodeDisplays.getOrNull(connection.toId)
+                if (fromIcon && toIcon) {
+                    this.addConnectionDisplay(connection, fromIcon, toIcon)
+                }
             }
         })
+    }
+
+    findConnections(nodeId: string): string[] {
+        const connectionsForNode: string[] = []
+        Object.entries(this.connectionDataById).forEach(([connectionId, connection]) => {
+            if (connection.fromId === nodeId || connection.toId === nodeId) {
+                connectionsForNode.push(connectionId)
+            }
+        })
+        return connectionsForNode
     }
 
     hackerEnter(newHacker: HackerPresence) {

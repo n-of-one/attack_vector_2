@@ -2,7 +2,9 @@ package org.n1.av2.backend.service.run.outside
 
 import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.entity.run.NodeScanStatus
+import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.run.RunEntityService
+import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.service.run.outside.scanning.ScanningService
@@ -79,13 +81,19 @@ class OutsideTerminalService(
                 return reportNodeNotFound(networkId)
             }
 
-        val status: NodeScanStatus = run.nodeScanById[node.id]!!.status
-        if (status == NodeScanStatus.UNDISCOVERED_0) {
+        if (!canScanNode(run, node)) {
             return reportNodeNotFound(networkId)
         }
 
         stompService.replyTerminalSetLocked(true)
-        scanningService.performManualScan(run, node, status)
+        scanningService.performManualScan(run, node)
+    }
+
+    private fun canScanNode(run: Run, node: Node): Boolean {
+        val status: NodeScanStatus = run.nodeScanById[node.id]!!.status
+
+        return status != NodeScanStatus.UNDISCOVERED_0 && status != NodeScanStatus.UNCONNECTABLE_1
+
     }
 
     private fun reportNodeNotFound(networkId: String) {

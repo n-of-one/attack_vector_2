@@ -67,7 +67,6 @@ export interface NodeStatusById {
 }
 export interface ProbeResultConnections {
     nodeStatusById: NodeStatusById,
-    connectionIds: string[]
 }
 
 export interface ProbeAction {
@@ -186,8 +185,8 @@ export const initRunServerActions = (store: Store) => {
         runCanvas.updateNodeStatus(data.nodeId, data.newStatus)
     })
 
-    webSocketConnection.addAction(SERVER_DISCOVER_NODES, ({nodeStatusById, connectionIds}: ProbeResultConnections) => {
-        runCanvas.discoverNodes(nodeStatusById, connectionIds)
+    webSocketConnection.addAction(SERVER_DISCOVER_NODES, ({nodeStatusById}: ProbeResultConnections) => {
+        runCanvas.discoverNodes(nodeStatusById)
     })
 
     webSocketConnection.addAction(SERVER_PROBE_LAUNCH, (data: ProbeAction) => {
