@@ -27,46 +27,47 @@ import org.springframework.stereotype.Service
 
 data class Syntax(val main: List<String>, val rest: String) {
 
-    constructor(first: String, rest: String): this(listOf<String>(first), rest)
-    constructor(first: String, second: String, rest: String): this(listOf<String>(first, second), rest)
+    constructor(first: String): this(listOf<String>(first), "error s")
+    constructor(first: String, second: String ): this(listOf<String>(first, second), "error s")
 
 }
 
 @Service
 class SyntaxHighlightingService(
     private val stompService: StompService,
-
     ) {
 
-    fun sendForScan() {
-        val map = HashMap<String, Syntax>()
+    private val syntaxOutside = HashMap<String, Syntax>()
+    private val syntaxInside = HashMap<String, Syntax>()
 
-        map["help"] = Syntax("u", "error s")
-        map["autoscan"] = Syntax("u", "error s")
-        map["attack"] = Syntax("u", "error s")
-        map["scan"] = Syntax("u", "ok", "error s")
-        map["dc"] = Syntax("u", "error s")
-        map["/share"] = Syntax("u warn", "info", "error s")
+    init {
+        syntaxOutside["help"] = Syntax("u")
+        syntaxOutside["autoscan"] = Syntax("u")
+        syntaxOutside["attack"] = Syntax("u")
+        syntaxOutside["scan"] = Syntax("u", "ok")
+        syntaxOutside["dc"] = Syntax("u", "error s")
+        syntaxOutside["/share"] = Syntax("u warn", "info")
+        syntaxOutside["move"] = Syntax("error s")
+        syntaxOutside["view"] = Syntax("error s")
+        syntaxOutside["hack"] = Syntax("error s")
 
-        map["move"] = Syntax("error s", "error s")
-        map["view"] = Syntax("error s", "error s")
-        map["hack"] = Syntax("error s", "error s")
-
-        stompService.reply(ServerActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, "highlighting" to map, "terminalId" to "main")
+        syntaxInside["help"] = Syntax("u")
+        syntaxInside["move"] = Syntax("u", "ok")
+        syntaxInside["view"] = Syntax("u")
+        syntaxInside["hack"] = Syntax("u", "primary")
+        syntaxInside["connect"] = Syntax("u", "primary")
+        syntaxInside["scan"] = Syntax("u")
+        syntaxInside["dc"] = Syntax("u")
+        syntaxInside["/share"] = Syntax("u warn", "info")
     }
 
-    fun sendForAttack() {
-        val map = HashMap<String, Syntax>()
 
-        map["help"] = Syntax("u", "error s")
-        map["move"] = Syntax("u", "ok", "error s")
-        map["view"] = Syntax("u", "error s")
-        map["hack"] = Syntax("u", "primary", "error s")
-        map["connect"] = Syntax("u", "primary", "error s")
-        map["dc"] = Syntax("u", "error s")
-        map["/share"] = Syntax("u warn", "info", "error s")
+    fun sendForOutside() {
+        stompService.reply(ServerActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, "highlighting" to syntaxOutside, "terminalId" to "main")
+    }
 
-        stompService.reply(ServerActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, "highlighting" to map, "terminalId" to "main")
+    fun sendForInside() {
+        stompService.reply(ServerActions.SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, "highlighting" to syntaxInside, "terminalId" to "main")
     }
 
 }

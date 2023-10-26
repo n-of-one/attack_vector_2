@@ -7,8 +7,8 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.run.outside.scanning.TraverseNode
-import org.n1.av2.backend.service.run.outside.scanning.TraverseNodeService
+import org.n1.av2.backend.service.run.terminal.scanning.TraverseNode
+import org.n1.av2.backend.service.run.terminal.scanning.TraverseNodeService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.service.util.TimeService
 import org.n1.av2.backend.util.createId

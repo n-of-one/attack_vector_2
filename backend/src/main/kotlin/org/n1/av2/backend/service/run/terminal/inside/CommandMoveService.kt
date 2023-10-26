@@ -1,7 +1,6 @@
-package org.n1.av2.backend.service.run.inside.command
+package org.n1.av2.backend.service.run.terminal.inside
 
 import org.n1.av2.backend.engine.ScheduledTask
-import org.n1.av2.backend.engine.TicksGameEvent
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.HackerStateRunning
@@ -17,7 +16,7 @@ import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.service.TimerTriggerLayerService
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
-import org.n1.av2.backend.service.run.outside.scanning.ScanProbActionService
+import org.n1.av2.backend.service.run.terminal.scanning.ScanResultService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.isOneOf
 import org.springframework.stereotype.Service
@@ -26,11 +25,7 @@ import org.springframework.stereotype.Service
 private val MOVE_START_Timings = Timings("main" to 30)
 private val MOVE_ARRIVE_Timings = Timings("main" to 8)
 
-class MoveArriveGameEvent(val nodeId: String, val userId: String, val runId: String, timings: Timings = MOVE_ARRIVE_Timings) : TicksGameEvent(timings)
-
-private val HACKER_SCANS_NODE_Timings = Timings("in" to 50, "out" to 25)
-
-class HackerScannedNodeEvent(val nodeId: String, val userId: String, val runId: String)
+val HACKER_SCANS_NODE_Timings = Timings("in" to 50, "out" to 25)
 
 
 @Service
@@ -41,7 +36,7 @@ class CommandMoveService(
     private val runEntityService: RunEntityService,
     private val timerTriggerLayerService: TimerTriggerLayerService,
     private val tripwireLayerService: TripwireLayerService,
-    private val scanProbeActionService: ScanProbActionService,
+    private val scanProbeActionService: ScanResultService,
     private val userTaskRunner: UserTaskRunner,
     private val stompService: StompService
 ) {
@@ -106,16 +101,11 @@ class CommandMoveService(
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
         stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
 
-        val moveArriveEvent = MoveArriveGameEvent(toNode.id, state.userId, runId)
-        userTaskRunner.queueInTicks(MOVE_START_Timings.totalTicks) { moveArrive(moveArriveEvent) }
+        userTaskRunner.queueInTicks(MOVE_START_Timings.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
     }
 
     @ScheduledTask
-    fun moveArrive(arriveEvent: MoveArriveGameEvent) {
-        val runId = arriveEvent.runId
-        val userId = arriveEvent.userId
-        val nodeId = arriveEvent.nodeId
-
+    fun moveArrive(nodeId: String, userId: String, runId: String ) {
         val state = hackerStateEntityService.retrieve(userId).toRunState()
 
         if (!state.masked) {
@@ -128,33 +118,19 @@ class CommandMoveService(
         val nodeStatus = scan.nodeScanById[nodeId]!!.status
 
         if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
-            arriveComplete(state, nodeId, userId, runId)
+            arriveComplete(nodeId, userId, runId)
         } else {
-            class HackerScansNodeAction(val userId: String, val nodeId: String, val timings: Timings = HACKER_SCANS_NODE_Timings)
-
-            val action = HackerScansNodeAction(userId, nodeId)
-            stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, action)
-
-            userTaskRunner.queueInTicks(action.timings.totalTicks) { hackerScannedNode(nodeId, userId, runId) }
+            stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to HACKER_SCANS_NODE_Timings)
+            userTaskRunner.queueInTicks(HACKER_SCANS_NODE_Timings.totalTicks) {
+                scanProbeActionService.hackerArrivedNodeScan(nodeId, userId, runId)
+                arriveComplete(nodeId, userId, runId)
+            }
         }
     }
 
-    @ScheduledTask
-    fun hackerScannedNode(nodeId: String, userId: String, runId: String) {
 
-        val run = runEntityService.getByRunId(runId)
-        val nodeScan = run.nodeScanById[nodeId]!!
-
-        if (nodeScan.status == CONNECTABLE_2) {
-            val node = nodeEntityService.getById(nodeId)
-            scanProbeActionService.scannedNodeAndConnections(run, node, nodeScan)
-        }
+    private fun arriveComplete(nodeId: String, userId: String, runId: String) {
         val state = hackerStateEntityService.retrieve(userId).toRunState()
-        arriveComplete(state, nodeId, userId, runId)
-    }
-
-
-    private fun arriveComplete(state: HackerStateRunning, nodeId: String, userId: String, runId: String) {
         hackerStateEntityService.arriveAt(state, nodeId)
         triggerLayersAtArrive(state.siteId, nodeId, userId, runId)
 

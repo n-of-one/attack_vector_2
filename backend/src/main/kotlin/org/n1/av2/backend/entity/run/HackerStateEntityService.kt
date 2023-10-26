@@ -65,11 +65,9 @@ class HackerStateEntityService(
         return hackerStateRepo.findByUserId(userId) ?: createLoggedOutState(userId, "no-connection")
     }
 
-    fun startRun(userId: String, runId: String) {
-        val run = runEntityService.getByRunId(runId)
-
+    fun startRun(userId: String, run: Run ) {
         val newState = HackerState(
-            runId = runId,
+            runId = run.runId,
             connectionId = currentUserConnectionId(),
             siteId = run.siteId,
             userId = userId,

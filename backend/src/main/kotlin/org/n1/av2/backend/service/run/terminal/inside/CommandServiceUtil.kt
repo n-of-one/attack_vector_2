@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.run.inside.command
+package org.n1.av2.backend.service.run.terminal.inside
 
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.layer.Layer

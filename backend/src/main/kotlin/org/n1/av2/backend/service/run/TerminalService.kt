@@ -2,8 +2,8 @@ package org.n1.av2.backend.service.run
 
 import org.n1.av2.backend.entity.run.HackerActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
-import org.n1.av2.backend.service.run.inside.InsideTerminalService
-import org.n1.av2.backend.service.run.outside.OutsideTerminalService
+import org.n1.av2.backend.service.run.terminal.inside.InsideTerminalService
+import org.n1.av2.backend.service.run.terminal.outside.OutsideTerminalService
 import org.springframework.stereotype.Service
 
 const val TERMINAL_MAIN = "main"

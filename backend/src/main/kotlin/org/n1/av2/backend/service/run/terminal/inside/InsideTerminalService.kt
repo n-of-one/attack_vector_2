@@ -1,10 +1,8 @@
-package org.n1.av2.backend.service.run.inside
+package org.n1.av2.backend.service.run.terminal.inside
 
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.run.inside.command.CommandHackService
-import org.n1.av2.backend.service.run.inside.command.CommandMoveService
-import org.n1.av2.backend.service.run.inside.command.CommandViewService
+import org.n1.av2.backend.service.run.terminal.CommandScanService
 import org.n1.av2.backend.service.run.terminal.SocialTerminalService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
@@ -18,6 +16,7 @@ class InsideTerminalService(
     private val commandViewService: CommandViewService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val runService: RunService,
+    private val commandScanService: CommandScanService,
 ) {
 
     fun processCommand(runId: String, command: String) {
@@ -44,6 +43,7 @@ class InsideTerminalService(
             "qhack" -> commandHackService.processQuickHack(runId, tokens, state)
             "view" -> commandViewService.process(runId, state)
             "connect" -> commandHackService.processConnectCommand(runId, tokens, state)
+            "scan" -> commandScanService.processScanFromInside(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
             else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
@@ -57,6 +57,7 @@ class InsideTerminalService(
                 " [u]view",
                 " [u]connect[/] [primary]<layer>[/]          -- for example: [u]connect[primary] 1",
                 " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 1",
+                " [u]scan[/]",
                 " [u]dc",
                 " [u]/share[/] [info]<user name>")
     }
@@ -69,8 +70,5 @@ class InsideTerminalService(
     fun reportLocked() {
         stompService.replyTerminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
-
-
-
 
 }

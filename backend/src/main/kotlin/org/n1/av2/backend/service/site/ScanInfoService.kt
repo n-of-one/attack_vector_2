@@ -8,7 +8,7 @@ import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.run.TERMINAL_CHAT
-import org.n1.av2.backend.service.run.outside.scanning.TraverseNodeService
+import org.n1.av2.backend.service.run.terminal.scanning.TraverseNodeService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service

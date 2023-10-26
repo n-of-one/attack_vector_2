@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.run.outside.scanning
+package org.n1.av2.backend.service.run.terminal.scanning
 
 import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.entity.run.NodeScan
@@ -16,10 +16,9 @@ import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.s
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
-class ScanProbActionService(
+class ScanResultService(
     private val runEntityService: RunEntityService,
     private val stompService: StompService,
     private val nodeEntityService: NodeEntityService,
@@ -27,8 +26,56 @@ class ScanProbActionService(
     private val scanInfoService: ScanInfoService,
 ) {
 
+
     @ScheduledTask
-    fun probeCompleted(run: Run, node: Node) {
+    fun hackerArrivedNodeScan(nodeId: String, userId: String, runId: String) {
+        val run = runEntityService.getByRunId(runId)
+        val nodeScan = run.nodeScanById[nodeId]!!
+
+        if (nodeScan.status != CONNECTABLE_2) { return }  // another @ScheduledTask has changed the state of things, nothing left to do.
+
+        val node = nodeEntityService.getById(nodeId)
+
+        val (newStatus, discoveredNeighbourStatus) = determineStatuses(node)
+        run.updateScanStatus(node.id, newStatus)
+        val discoveredNodeIds = discoverNodesFromHackerArriveScan(node, run, discoveredNeighbourStatus)
+
+        val nodeStatusById = discoveredNodeIds.map { it to discoveredNeighbourStatus }.toMap()
+        stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
+        stompService.toRun(run.runId, SERVER_UPDATE_NODE_STATUS, "nodeId" to node.id, "newStatus" to newStatus)
+
+        runEntityService.save(run)
+        stompService.replyTerminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}")
+    }
+
+    private fun determineStatuses(node: Node): Pair<NodeScanStatus, NodeScanStatus> {
+        val iceLeft = node.layers
+            .filterIsInstance<IceLayer>()
+            .any { !it.hacked }
+        val newStatus = if (iceLeft) ICE_PROTECTED_3 else FULLY_SCANNED_4
+        val discoveredNodeStatus = if (iceLeft) UNCONNECTABLE_1 else CONNECTABLE_2
+        return Pair(newStatus, discoveredNodeStatus)
+    }
+
+    private fun discoverNodesFromHackerArriveScan(node: Node, run: Run, discoveredNodeStatus: NodeScanStatus): List<String> {
+
+        val discoveredNodeIds = connectionEntityService.findByNodeId(node.id)
+            .filter { connection ->
+                val connectedNodeId = if (connection.fromId == node.id) connection.toId else connection.fromId
+                val connectedNodeScanStatus = run.nodeScanById[connectedNodeId]!!.status
+                ((connectedNodeScanStatus == UNDISCOVERED_0) || (connectedNodeScanStatus == UNCONNECTABLE_1 && discoveredNodeStatus == CONNECTABLE_2))
+            }
+            .map { connection ->
+                if (connection.fromId == node.id) connection.toId else connection.fromId
+            }
+
+        discoveredNodeIds.forEach { discoveredNodeId -> run.updateScanStatus(discoveredNodeId, discoveredNodeStatus) }
+        return discoveredNodeIds
+    }
+
+
+    @ScheduledTask
+    fun areaScan(run: Run, node: Node) {
 
         val discoveries = traverseScanNodes(node.id, run).sortedBy { it.distance }
 
@@ -82,38 +129,6 @@ class ScanProbActionService(
             .flatMap { neighbourNodeId -> traverseScanNodes(neighbourNodeId, run) }
             .distinct()
             .plus(Discovery(nodeId, DiscoveryType.FULL, currentDistance))
-    }
-
-    fun scannedNodeAndConnections(run: Run, node: Node, nodeScan: NodeScan): Boolean {
-
-        val iceLeft = node.layers
-            .filterIsInstance<IceLayer>()
-            .any { !it.hacked }
-        val newStatus = if (iceLeft) ICE_PROTECTED_3 else FULLY_SCANNED_4
-        run.updateScanStatus(node.id, newStatus)
-
-        val discoveredNodeStatus = if (iceLeft) UNCONNECTABLE_1 else CONNECTABLE_2
-
-        val discoveredNodeIds = LinkedList<String>()
-        val connections = connectionEntityService.findByNodeId(node.id)
-        connections.forEach { connection ->
-            val connectedNodeId = if (connection.fromId == node.id) connection.toId else connection.fromId
-            val connectedNodeScanStatus = run.nodeScanById[connectedNodeId]!!.status
-            if ((connectedNodeScanStatus == UNDISCOVERED_0) || (connectedNodeScanStatus == UNCONNECTABLE_1 && discoveredNodeStatus == CONNECTABLE_2)) {
-                discoveredNodeIds.add(connectedNodeId)
-                run.updateScanStatus(connectedNodeId, discoveredNodeStatus)
-            }
-        }
-
-        val nodeStatusById = discoveredNodeIds.map { it to discoveredNodeStatus }.toMap()
-        stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
-
-        stompService.toRun(run.runId, SERVER_UPDATE_NODE_STATUS, "nodeId" to node.id, "newStatus" to newStatus)
-
-        runEntityService.save(run)
-
-        stompService.replyTerminalReceive("Scanned node ${node.networkId} - discovered ${discoveredNodeIds.size} ${"neighbour".s(discoveredNodeIds.size)}")
-        return discoveredNodeIds.isNotEmpty()
     }
 
 

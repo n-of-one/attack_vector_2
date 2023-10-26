@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.run.outside.scanning
+package org.n1.av2.backend.service.run.terminal.scanning
 
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.NodeScan
@@ -8,9 +8,9 @@ import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.model.Timings
-import org.n1.av2.backend.model.ui.NodeScanType
+import org.n1.av2.backend.model.ui.NodeScanType.SCAN_CONNECTIONS
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.run.terminal.inside.HACKER_SCANS_NODE_Timings
 import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
@@ -26,39 +26,41 @@ class ScanningService(
     private val traverseNodeService: TraverseNodeService,
     private val userTaskRunner: UserTaskRunner,
     private val scanInfoService: ScanInfoService,
-    private val scanProbActionService: ScanProbActionService,
+    private val scanResultService: ScanResultService,
     private val layoutEntityService: LayoutEntityService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
-    fun performManualScan(run: Run, node: Node) {
+    fun scanFromOutside(run: Run, node: Node) {
         val nodes = nodeEntityService.getAll(run.siteId)
         val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(run, nodes)
         val targetTraverseNode: TraverseNode = traverseNodesById[node.id]!!
-        launchProbe(targetTraverseNode, run, nodes)
-    }
-
-    data class ProbeAction(val probeUserId: String, val path: List<String>, val scanType: NodeScanType, val timings: Timings)
-
-    private fun launchProbe(targetNode: TraverseNode, run: Run, nodes: List<Node>) {
-        val path = createNodePath(targetNode)
+        val path = createNodePath(targetTraverseNode)
 
         if (pathCrossesIce(path, nodes)) {
-            stompService.replyTerminalReceiveAndLocked(false, "Scan blocked by ICE at [ok]${targetNode.networkId}")
+            stompService.replyTerminalReceiveAndLocked(false, "Scan blocked by ICE at [ok]${targetTraverseNode.networkId}")
             return
         }
 
-        val node = nodeEntityService.findById(targetNode.id)
+        val node = nodeEntityService.findById(targetTraverseNode.id)
 
-        val timings = NodeScanType.SCAN_CONNECTIONS.timings
-        val probeAction = ProbeAction(currentUserService.userId, path, NodeScanType.SCAN_CONNECTIONS, timings)
+        val timings = SCAN_CONNECTIONS.timings
 
-        stompService.toRun(run.runId, ServerActions.SERVER_PROBE_LAUNCH, probeAction)
+        stompService.toRun(run.runId, ServerActions.SERVER_PROBE_LAUNCH,
+            "probeUserId" to currentUserService.userId  , "path" to path, "scanType" to SCAN_CONNECTIONS, "timings" to timings
+        )
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
         userTaskRunner.queueInTicks(totalTicks - 20) {
-            scanProbActionService.probeCompleted(run, node)
+            scanResultService.areaScan(run, node)
+        }
+    }
+
+    fun scanFromInside(run: Run, node: Node) {
+        stompService.toRun(run.runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to currentUserService.userId, "nodeId" to node.id, "timings" to HACKER_SCANS_NODE_Timings)
+        userTaskRunner.queueInTicks(HACKER_SCANS_NODE_Timings.totalTicks) {
+            scanResultService.areaScan(run, node)
         }
     }
 
@@ -85,9 +87,7 @@ class ScanningService(
     }
 
 
-    fun quickScan(runId: String) {
-        val run = runEntityService.getByRunId(runId)
-
+    fun quickScan(run: Run) {
         val layout = layoutEntityService.getBySiteId(run.siteId)
 
         layout.nodeIds.forEach {

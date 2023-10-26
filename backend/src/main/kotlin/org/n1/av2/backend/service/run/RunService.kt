@@ -73,7 +73,7 @@ class RunService(
         val run = runEntityService.getByRunId(runId)
         val thisHackerState = hackerStateEntityService.enterSite(run.siteId, runId)
 
-        syntaxHighlightingService.sendForScan()
+        syntaxHighlightingService.sendForOutside()
         stompService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SITE, toPresence(thisHackerState))
 
         val siteFull = siteService.getSiteFull(run.siteId)
