@@ -83,7 +83,7 @@ class ScanResultService(
 
         discoveries.forEach { discovery: Discovery ->
             val oldStatus = run.nodeScanById[discovery.nodeId]!!
-            val newStatus = discovery.type.nodeScanStatus
+            val newStatus = discovery.scanStatus
             run.nodeScanById[discovery.nodeId] = NodeScan(newStatus, oldStatus.distance)
             if (oldStatus.status == UNDISCOVERED_0) {
                 newNodesDiscoveredCount++
@@ -91,24 +91,18 @@ class ScanResultService(
         }
         runEntityService.save(run)
 
-        val nodeStatusById = discoveries.map { it.nodeId to it.type.nodeScanStatus }.toMap()
+        val nodeStatusById = discoveries.map { it.nodeId to it.scanStatus }.toMap()
 
         stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
         scanInfoService.updateScanInfoToPlayers(run)
 
         stompService.replyTerminalReceive("New nodes discovered: ${newNodesDiscoveredCount}")
-        if (node.ice && !node.hacked) {
+        if (node.ice) {
             stompService.replyTerminalReceive("Scan blocked by ICE at [ok]${node.networkId}")
         }
     }
 
-    enum class DiscoveryType(val nodeScanStatus: NodeScanStatus) {
-        FULL(FULLY_SCANNED_4),
-        ICE(ICE_PROTECTED_3),
-        EXISTENCE(UNCONNECTABLE_1)
-    }
-
-    class Discovery(val nodeId: String, val type: DiscoveryType, val distance: Int)
+    class Discovery(val nodeId: String, val scanStatus: NodeScanStatus, val distance: Int)
 
     fun traverseScanNodes(nodeId: String, run: Run): List<Discovery> {
         val node = nodeEntityService.findById(nodeId)
@@ -119,16 +113,18 @@ class ScanResultService(
             .filter { (_, nodeScan) -> nodeScan.distance == currentDistance + 1 }
             .map { it.key }
 
-        if (node.ice && !node.hacked) {
+        if (node.ice) {
+            val iceNodeDiscoveryType = if (node.hacked) FULLY_SCANNED_4 else ICE_PROTECTED_3
+            val neighbourDiscoveryType = if (node.hacked) CONNECTABLE_2 else UNCONNECTABLE_1
             return connectedNodeIds
-                .map { afterIceNodeId -> Discovery(afterIceNodeId, DiscoveryType.EXISTENCE, currentDistance + 1) }
-                .plus(Discovery(nodeId, DiscoveryType.ICE, currentDistance))
+                .map { afterIceNodeId -> Discovery(afterIceNodeId, neighbourDiscoveryType, currentDistance + 1) }
+                .plus(Discovery(nodeId, iceNodeDiscoveryType, currentDistance))
         }
 
         return connectedNodeIds
             .flatMap { neighbourNodeId -> traverseScanNodes(neighbourNodeId, run) }
             .distinct()
-            .plus(Discovery(nodeId, DiscoveryType.FULL, currentDistance))
+            .plus(Discovery(nodeId, FULLY_SCANNED_4, currentDistance))
     }
 
 
