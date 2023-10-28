@@ -5,10 +5,8 @@ import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
-import org.n1.av2.backend.entity.site.layer.other.STATUS
+import org.n1.av2.backend.entity.site.layer.other.StatusLightField.*
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
-import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_GREEN
-import org.n1.av2.backend.entity.site.layer.other.TEXT_FOR_RED
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightService
@@ -148,9 +146,9 @@ class EditorService(
         if (layer is StatusLightLayer) {
             val entity = statusLightService.findById(layer.appId)
             when (key) {
-                STATUS -> statusLightService.update(entity.copy(status = value.toBoolean()))
-                TEXT_FOR_RED -> statusLightService.update(entity.copy(textForRed = value))
-                TEXT_FOR_GREEN -> statusLightService.update(entity.copy(textForGreen = value))
+                STATUS.name -> statusLightService.update(entity.copy(status = value.toBoolean()))
+                TEXT_FOR_RED.name -> statusLightService.update(entity.copy(textForRed = value))
+                TEXT_FOR_GREEN.name -> statusLightService.update(entity.copy(textForGreen = value))
                 else -> Unit
             }
         }

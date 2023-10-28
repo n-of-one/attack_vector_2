@@ -4,15 +4,13 @@ import {sendEditNetworkId} from "../../../editor/server/EditorServerClient";
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 
-const NODE_NAME = "nodeName";
-
 export class LayerOs extends Layer {
 
     networkId: string
     nodeName: string
 
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
-        super(layer, node, dispatch);
+        super(layer, node, dispatch)
 
         this.networkId = node.networkId
         this.nodeName = layer.nodeName!
@@ -21,9 +19,9 @@ export class LayerOs extends Layer {
     saveNetworkId(value: string) {
         sendEditNetworkId({nodeId: this.node.id, value})
         editorCanvas.updateNetworkId({nodeId: this.node.id, value})
-    };
+    }
 
     saveNodeName(value: string) {
-        super._save(NODE_NAME, value );
+        super._save("NODE_NAME", value )
     }
 }

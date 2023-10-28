@@ -33,7 +33,7 @@ export enum LayerType {
     STATUS_LIGHT = "STATUS_LIGHT",
     KEYSTORE = "KEYSTORE",
     TRIPWIRE = "TRIPWIRE",
-
+    CORE = "CORE",
 }
 
 export const layerTypeFromIceId = (iceId: string): LayerType | null => {

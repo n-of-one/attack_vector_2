@@ -9,10 +9,11 @@ class ThemeService {
     fun getDefaultName(serviceType: LayerType): String {
         return when(serviceType) {
             LayerType.OS -> "OS"
-            LayerType.TEXT -> "Data vault"
+            LayerType.TEXT -> "Database"
             LayerType.TIMER_TRIGGER -> "Network Sniffer"
             LayerType.KEYSTORE -> "Keystore"
             LayerType.TRIPWIRE -> "Tripwire"
+            LayerType.CORE -> "Core"
 
             LayerType.STATUS_LIGHT -> "Status Light"
             LayerType.LOCK -> "Lock"

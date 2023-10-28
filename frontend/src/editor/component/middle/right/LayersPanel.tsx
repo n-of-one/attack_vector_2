@@ -2,7 +2,7 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import {
     CODE, CORE, TAR_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
-    WORD_SEARCH_ICE, MONEY, SCAN_BLOCK, TEXT, TIMER_TRIGGER, TRACE_LOG, TRACER, LOCK, STATUS_LIGHT, KEYSTORE, TRIPWIRE
+    WORD_SEARCH_ICE, MONEY, SCAN_BLOCK, TEXT, TRACE_LOG, TRACER, LOCK, STATUS_LIGHT, KEYSTORE, TRIPWIRE
 } from "../../../../common/enums/LayerTypes"
 import {EditorState} from "../../../EditorRootReducer"
 import {editorSiteId} from "../../../EditorRoot";
@@ -49,13 +49,13 @@ export const LayersPanel = () => {
                     {regular(TEXT, "white")}
                     {regular(KEYSTORE, "white")}
                     {regular(TRIPWIRE, "white")}
+                    {regular(CORE, "white")}
                     {/*{unImplemented(TIMER_TRIGGER)}*/}
                     {unImplemented(TRACER)}
                     {unImplemented(TRACE_LOG)}
                     {unImplemented(SCAN_BLOCK)}
                     {unImplemented(MONEY)}
                     {unImplemented(CODE)}
-                    {unImplemented(CORE)}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>

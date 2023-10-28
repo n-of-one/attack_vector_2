@@ -3,7 +3,9 @@ package org.n1.av2.backend.entity.site.layer.ice
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.entity.site.layer.ice.IceLayerFields.STRENGTH
 
+enum class IceLayerFields { STRENGTH }
 
 sealed class IceLayer(
     id: String,
@@ -13,12 +15,7 @@ sealed class IceLayer(
     note: String,
     var strength: IceStrength,
     var hacked: Boolean,
-
     ) : Layer(id, type, level, name, note) {
-
-    companion object {
-        const val STRENGTH = "strength"
-    }
 
     @Suppress("UNUSED_PARAMETER")
     var ice: Boolean
@@ -31,10 +28,9 @@ sealed class IceLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when (key) {
-            STRENGTH -> strength = IceStrength.valueOf(value)
+            STRENGTH.name -> strength = IceStrength.valueOf(value)
             else -> return super.updateInternal(key, value)
         }
         return true
     }
-
 }

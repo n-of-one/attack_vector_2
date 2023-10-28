@@ -2,17 +2,17 @@ import {Layer} from "./Layer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Dispatch} from "redux"
 
-export class LayerIce extends Layer {
+export class LayerCore extends Layer {
 
-    strength: string
+    revealNetwork: boolean
 
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 
-        this.strength = layer.strength!
+        this.revealNetwork = layer.revealNetwork!
     }
 
-    saveStrength(value: string) {
-        super._save("STRENGTH", value )
+    saveRevealNetwork(value: string) {
+        super._save("REVEAL_NETWORK", value)
     }
 }

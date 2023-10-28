@@ -19,6 +19,7 @@ import {Icon} from "../../../../../common/component/icon/Icon";
 import {createSelector} from "@reduxjs/toolkit";
 import {LayerKeyStorePanel} from "./type/panel/app/LayerKeyStorePanel";
 import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
+import {LayerCorePanel} from "./type/panel/app/LayerCorePanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -52,6 +53,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerKeyStorePanel node={node} layer={layer}/>
         case LayerType.TRIPWIRE:
             return <LayerTripwirePanel node={node} layer={layer}/>
+        case LayerType.CORE:
+            return <LayerCorePanel node={node} layer={layer}/>
 
         default:
             return <div className="text">NodeDetailsPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>

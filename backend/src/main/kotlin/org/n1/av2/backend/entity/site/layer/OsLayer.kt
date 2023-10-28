@@ -4,8 +4,6 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
-private const val NODE_NAME = "nodeName"
-
 class OsLayer(
     id: String,
     type: LayerType,
@@ -33,10 +31,9 @@ class OsLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            NODE_NAME -> nodeName = value
+            "NODE_NAME" -> nodeName = value
             else -> return super.updateInternal(key, value)
         }
         return true
     }
-
 }

@@ -65,6 +65,8 @@ export interface LayerDetails {
 
     iceLayerId?: string          // Keystore layer
 
+    revealNetwork: boolean       // Core layer
+
 }
 
 export interface NodeI {

@@ -2,11 +2,13 @@ package org.n1.av2.backend.entity.site.layer.other
 
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.entity.site.layer.other.StatusLightField.*
 
-const val STATUS = "status"
-const val TEXT_FOR_RED = "textForRed"
-const val TEXT_FOR_GREEN = "textForGreen"
-
+enum class StatusLightField {
+    STATUS,
+    TEXT_FOR_RED,
+    TEXT_FOR_GREEN
+}
 
 class StatusLightLayer(
     id: String,
@@ -26,9 +28,9 @@ class StatusLightLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            STATUS -> status = value.toBoolean()
-            TEXT_FOR_RED -> textForRed = value
-            TEXT_FOR_GREEN -> textForGreen = value
+            STATUS.name -> status = value.toBoolean()
+            TEXT_FOR_RED.name -> textForRed = value
+            TEXT_FOR_GREEN.name -> textForGreen = value
             else -> return super.updateInternal(key, value)
         }
         return true

@@ -23,7 +23,6 @@ export class Layer {
         this.note = layer.note;
     }
 
-
     _save(key: string, value: string) {
         sendEditLayerData( {nodeId: this.node.id, layerId: this.layer.id, key: key, value: value})
     }
@@ -35,5 +34,4 @@ export class Layer {
     saveName(value: string) {
         this._save(NAME, value );
     }
-
 }

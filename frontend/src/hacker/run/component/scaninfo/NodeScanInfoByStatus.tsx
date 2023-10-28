@@ -1,8 +1,7 @@
 import React from "react"
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus"
 import {NodeScanInfoLayers} from "./NodeScanInfoLayers"
-import {Pad} from "../../../../common/component/Pad"
-import {LayerDetails, NodeI} from "../../../../editor/reducer/NodesReducer"
+import {NodeI} from "../../../../editor/reducer/NodesReducer"
 
 function renderUnconnectable() {
     return <>
@@ -15,24 +14,6 @@ function renderConnectable() {
         <br/>
         No information about additional neighbouring nodes discovered yet.<br/>
     </>
-}
-
-function renderLayersAsUnknown(node: NodeI) {
-    const lines = []
-    lines.push(<span key="_0">Level Layer<br/></span>)
-    node.layers.forEach(layer => {
-        lines.push(renderLayerIsIce(layer))
-    })
-    return <>{lines}</>
-}
-
-function renderLayerIsIce(layer: LayerDetails) {
-    const text = layer.ice ? "ICE" : "layer"
-    return <span key={layer.level}>
-        <Pad length={3} numberValue={layer.level}/>
-        <span className="text-primary">{layer.level}</span>
-        <Pad length={3} /> unknown {text}<br/>
-    </span>
 }
 
 function renderError(node: NodeI, status: NodeScanStatus) {

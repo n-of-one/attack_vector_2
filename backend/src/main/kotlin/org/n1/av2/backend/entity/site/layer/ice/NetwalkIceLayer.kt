@@ -16,5 +16,4 @@ class NetwalkIceLayer(
 
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.NETWALK_ICE, level, defaultName, "", IceStrength.AVERAGE, false)
-
 }

@@ -2,6 +2,7 @@ package org.n1.av2.backend.entity.site.layer.ice
 
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.enums.LayerType
+import org.n1.av2.backend.entity.site.layer.ice.IceLayerFields.STRENGTH
 import org.n1.av2.backend.service.layerhacking.ice.tar.TarCreator
 import org.n1.av2.backend.service.layerhacking.ice.tar.TarCreator.Companion.defaultTimeHackerGroup
 
@@ -30,7 +31,7 @@ class TarIceLayer(
                 )
 
     override fun updateInternal(key: String, value: String): Boolean {
-        if (key == STRENGTH) {
+        if (key == STRENGTH.name) {
             super.updateInternal(key, value)
             this.totalUnits = TarCreator.totalUnitsByStrength[strength]!!
             this.time1Level1Hacker = defaultTimeHackerGroup(strength, 1, 1)

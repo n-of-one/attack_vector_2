@@ -49,7 +49,6 @@ export const glyphiconFromType = (type: string) => {
         case MONEY : return "glyphicon-usd"
         case CODE : return "glyphicon-ok-circle"
         case TIMER_TRIGGER : return "glyphicon-time"
-        case CORE : return "glyphicon-th-large"
         case PASSWORD_ICE : return "glyphicon-console"
         case TANGLE_ICE: return "glyphicon-asterisk"
         case TAR_ICE : return "glyphicon-hourglass"

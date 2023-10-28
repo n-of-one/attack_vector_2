@@ -5,10 +5,6 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
-private const val MINUTES = "minutes"
-private const val SECONDS = "seconds"
-
-
 class TimerTriggerLayer(
     id: String,
     type: LayerType,
@@ -34,8 +30,8 @@ class TimerTriggerLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            MINUTES -> this.minutes = toNumberOrZero(value)
-            SECONDS -> this.seconds = toNumberOrZero(value)
+            "MINUTES" -> this.minutes = toNumberOrZero(value)
+            "SECONDS" -> this.seconds = toNumberOrZero(value)
             else -> return super.updateInternal(key, value)
         }
         return true
@@ -49,6 +45,4 @@ class TimerTriggerLayer(
             return 0
         }
     }
-
-
 }

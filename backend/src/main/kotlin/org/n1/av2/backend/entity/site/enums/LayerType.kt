@@ -11,6 +11,7 @@ enum class LayerType(
     TRIPWIRE,
     LOCK,
     STATUS_LIGHT,
+    CORE,
 
     WORD_SEARCH_ICE(true),
     PASSWORD_ICE(true),

@@ -98,14 +98,6 @@ class TracingPatrollerService(
         userTaskRunner.queueInTicks(PATROLLER_MOVE_Timings.totalTicks) { patrollerArrives(next) }
     }
 
-//    private fun lockHacker(patroller: TracingPatroller) {
-//        hackerStateEntityService.lockHacker(patroller.targetUserId, patroller.id)
-//        messageCatchHacker(patroller)
-//        stompService.replyTerminalReceive("[error]critical[/] OS privileges revoked.")
-//
-//        // TODO start tracing
-//    }
-
     private fun findMoveNextNode(patroller: TracingPatroller): TraverseNode {
         val nodes = nodeEntityService.getAll(patroller.siteId)
         val traverseNodesById = traverseNodeService.createTraverseNodesWithoutDistance(patroller.siteId, nodes)

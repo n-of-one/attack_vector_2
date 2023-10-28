@@ -2,8 +2,6 @@ import {Layer} from "./Layer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Dispatch} from "redux"
 
-const KEY_TEXT = "text"
-
 export class LayerText extends Layer {
 
     text: string
@@ -15,6 +13,6 @@ export class LayerText extends Layer {
     }
 
     saveText(value: string) {
-        super._save(KEY_TEXT, value )
+        super._save("TEXT", value )
     }
 }

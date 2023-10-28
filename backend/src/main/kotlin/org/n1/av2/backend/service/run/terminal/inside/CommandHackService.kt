@@ -7,18 +7,12 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
-import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
-import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
-import org.n1.av2.backend.entity.site.layer.other.TextLayer
-import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
+import org.n1.av2.backend.entity.site.layer.other.*
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.layerhacking.app.StatusLightLayerService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
-import org.n1.av2.backend.service.layerhacking.service.KeystoreLayerService
-import org.n1.av2.backend.service.layerhacking.service.OsLayerService
-import org.n1.av2.backend.service.layerhacking.service.TextLayerService
-import org.n1.av2.backend.service.layerhacking.service.TimerTriggerLayerService
+import org.n1.av2.backend.service.layerhacking.service.*
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
@@ -35,6 +29,7 @@ class CommandHackService(
     private val keystoreLayerService: KeystoreLayerService,
     private val config: ServerConfig,
     private val hackedUtil: HackedUtil,
+    private val coreLayerService: CoreLayerService,
 ) {
 
     fun processHackCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -54,7 +49,7 @@ class CommandHackService(
         process(runId, tokens, state, "connect ", ::handleConnect)
     }
 
-    private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer) -> Unit) {
+    private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
         if (tokens.size == 1) {
             return stompService.replyTerminalReceive("Missing [primary]<layer>[/]        -- for example: [u]${commandName}[primary] 1")
         }
@@ -69,11 +64,11 @@ class CommandHackService(
 
         val layer = node.layers.find { it.level == level }!!
 
-        commandFunction(node, layer)
+        commandFunction(node, layer, runId)
     }
 
 
-    private fun handleHack(node: Node, layer: Layer) {
+    private fun handleHack(node: Node, layer: Layer, runId: String) {
         when (layer) {
             is OsLayer -> osLayerService.hack(layer)
             is TextLayer -> textLayerService.hack(layer, node)
@@ -81,6 +76,7 @@ class CommandHackService(
             is IceLayer -> hackIce(layer)
             is StatusLightLayer -> statusLightLayerService.hack(layer)
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
+            is CoreLayer -> coreLayerService.hack(layer, runId)
             else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
@@ -96,7 +92,7 @@ class CommandHackService(
         stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce(iceId))
     }
 
-    private fun handleConnect(node: Node, layer: Layer) {
+    private fun handleConnect(node: Node, layer: Layer, runId: String) {
         when (layer) {
             is OsLayer -> osLayerService.connect(layer)
             is TextLayer -> textLayerService.connect(layer, node)
@@ -113,7 +109,7 @@ class CommandHackService(
         stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce(layer.id))
     }
 
-    private fun handleQuickHack(node: Node, layer: Layer) {
+    private fun handleQuickHack(node: Node, layer: Layer, runId: String) {
         hackedUtil.iceHacked(layer.id, node, 0)
     }
 

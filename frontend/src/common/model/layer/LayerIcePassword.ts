@@ -2,9 +2,6 @@ import {LayerIce} from "./LayerIce";
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
 
-const PASSWORD = "password";
-const HINT = "hint";
-
 export class LayerIcePassword extends LayerIce {
 
     password: string
@@ -18,10 +15,10 @@ export class LayerIcePassword extends LayerIce {
     }
 
     savePassword(value: string) {
-        super._save(PASSWORD, value );
+        super._save("PASSWORD", value );
     }
 
     saveHint(value: string) {
-        super._save(HINT, value );
+        super._save("HINT", value );
     }
 }

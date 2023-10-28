@@ -6,8 +6,6 @@ import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
-private const val ICE_LAYER_ID = "iceLayerId"
-
 class KeyStoreLayer(
     id: String,
     type: LayerType,
@@ -32,7 +30,7 @@ class KeyStoreLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            ICE_LAYER_ID -> iceLayerId = value
+            "ICE_LAYER_ID" -> iceLayerId = value
             else -> return super.updateInternal(key, value)
         }
         return true

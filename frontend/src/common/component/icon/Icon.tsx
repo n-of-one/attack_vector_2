@@ -50,7 +50,6 @@ const iconFamily = (type: string) => {
         case MONEY:
         case CODE:
         case TIMER_TRIGGER:
-        case CORE:
         case PASSWORD_ICE:
         case TANGLE_ICE:
         case TAR_ICE:
@@ -61,6 +60,8 @@ const iconFamily = (type: string) => {
         case LOCK:
         case TRIPWIRE:
         case STATUS_LIGHT:
+        case CORE:
             return "svg"
+        default: throw new Error("Unknown icon family for type: " + type)
     }
 }

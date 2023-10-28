@@ -5,9 +5,6 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ValidationException
 
-const val PASSWORD = "password"
-const val HINT = "hint"
-
 class PasswordIceLayer(
     id: String,
     type: LayerType,
@@ -34,8 +31,8 @@ class PasswordIceLayer(
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
-            PASSWORD -> password = value
-            HINT -> hint = value
+            "PASSWORD" -> password = value
+            "HINT" -> hint = value
             else -> return super.updateInternal(key, value)
         }
         return true

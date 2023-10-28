@@ -2,8 +2,6 @@ import {Layer} from "./Layer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Dispatch} from "redux"
 
-const KEY_ICE_LAYER_ID = "iceLayerId"
-
 export class LayerKeyStore extends Layer {
 
     iceLayerId: string
@@ -15,7 +13,6 @@ export class LayerKeyStore extends Layer {
     }
 
     saveIceId(value: string) {
-        super._save(KEY_ICE_LAYER_ID, value )
+        super._save("ICE_LAYER_ID", value )
     }
-
 }

@@ -176,6 +176,7 @@ class NodeEntityService(
             LayerType.LOCK -> createStatusLightLayer(layerId,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
             LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)
             LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
+            LayerType.CORE -> CoreLayer(layerId, level, defaultName)
         }
     }
 

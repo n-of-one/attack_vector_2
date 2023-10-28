@@ -7,4 +7,3 @@ export enum IceStrength {
     VERY_STRONG = "VERY_STRONG",
     ONYX = "ONYX",
 }
-
