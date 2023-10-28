@@ -17,12 +17,15 @@ export const Switch = () => {
         webSocketConnection.sendObject("/av/app/statusLight/setValue", { appId: app.id, value: newValue})
     }
 
+    const idParts = app.id.split("-")
+    const id = `${idParts[1]}:${idParts[2]}`
+
     return (
         <>
             <div className="container-fluid" data-bs-theme="dark">
                 <div className="row">
                     <div className="col-12">
-                        <h2>Light switch 3293</h2>
+                        <h2>Switch {id}</h2>
                     </div>
                 </div>
                 <div className="d-flex flex-row mb-3">

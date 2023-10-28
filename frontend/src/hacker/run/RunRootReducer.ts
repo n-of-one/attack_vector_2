@@ -15,7 +15,7 @@ export interface RunState {
     timers: TimerState[]
 }
 
-const chatTerminalReducer = createTerminalReducer(CHAT_TERMINAL_ID, {readOnly: true, receiveBuffer: [{type: TerminalLineType.TEXT, data: "= chat offline ="}]})
+const chatTerminalReducer = createTerminalReducer(CHAT_TERMINAL_ID, {readOnly: true, receiveBuffer: [{type: TerminalLineType.TEXT, data: "= chat ="}]})
 
 export const runRootReducer =
     combineReducers<RunState>({

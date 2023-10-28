@@ -203,7 +203,7 @@ export const initRunServerActions = (store: Store) => {
                 echo(30, "  - [ok]ok[/] Network origin obfuscated ")
                 echo(20, "- Persona creation [info]complete")
                 echo(0, "")
-                echo(80, "Entering node")
+                echo(20, "Entering node")
                 echo(0, "Connection established.")
                 echo(0, "")
             }

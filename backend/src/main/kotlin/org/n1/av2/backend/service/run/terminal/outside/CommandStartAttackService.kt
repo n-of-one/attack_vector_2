@@ -14,7 +14,7 @@ import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 private val START_ATTACK_FAST = Timings("main" to 0)
-private val START_ATTACK_SLOW = Timings("main" to 250)
+private val START_ATTACK_SLOW = Timings("main" to 190)
 
 @Service
 class CommandStartAttackService(
