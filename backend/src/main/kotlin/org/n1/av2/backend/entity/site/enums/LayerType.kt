@@ -6,7 +6,6 @@ enum class LayerType(
 
     OS,
     TEXT,
-    TIMER_TRIGGER,
     KEYSTORE,
     TRIPWIRE,
     LOCK,

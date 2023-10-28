@@ -5,7 +5,6 @@ export const TRACE_LOG = "TRACE_LOG"
 export const SCAN_BLOCK = "SCAN_BLOCK"
 export const MONEY = "MONEY"
 export const CODE = "CODE"
-export const TIMER_TRIGGER = "TIMER_TRIGGER"
 export const CORE = "CORE"
 
 export const PASSWORD_ICE = "PASSWORD_ICE"
@@ -23,7 +22,6 @@ export const TRIPWIRE = "TRIPWIRE"
 export enum LayerType {
     OS = "OS",
     TEXT= "TEXT",
-    TIMER_TRIGGER = "TIMER_TRIGGER",
     PASSWORD_ICE = "PASSWORD_ICE",
     TANGLE_ICE = "TANGLE_ICE",
     WORD_SEARCH_ICE = "WORD_SEARCH_ICE",

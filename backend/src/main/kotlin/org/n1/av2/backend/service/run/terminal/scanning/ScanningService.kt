@@ -43,8 +43,6 @@ class ScanningService(
             return
         }
 
-        val node = nodeEntityService.findById(targetTraverseNode.id)
-
         val timings = SCAN_CONNECTIONS.timings
 
         stompService.toRun(run.runId, ServerActions.SERVER_PROBE_LAUNCH,
@@ -52,14 +50,14 @@ class ScanningService(
         )
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-        userTaskRunner.queueInTicks(totalTicks - 20) {
+        userTaskRunner.queueInTicksForSite(node.siteId, totalTicks - 20) {
             scanResultService.areaScan(run, node)
         }
     }
 
     fun scanFromInside(run: Run, node: Node) {
         stompService.toRun(run.runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to currentUserService.userId, "nodeId" to node.id, "timings" to HACKER_SCANS_NODE_Timings)
-        userTaskRunner.queueInTicks(HACKER_SCANS_NODE_Timings.totalTicks) {
+        userTaskRunner.queueInTicksForSite(run.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
             scanResultService.areaScan(run, node)
         }
     }

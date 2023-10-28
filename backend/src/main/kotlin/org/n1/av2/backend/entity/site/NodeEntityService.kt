@@ -171,7 +171,6 @@ class NodeEntityService(
             LayerType.NETWALK_ICE -> NetwalkIceLayer(layerId, level, defaultName)
             LayerType.TAR_ICE -> TarIceLayer(layerId, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
-            LayerType.TIMER_TRIGGER -> TimerTriggerLayer(layerId, level, defaultName)
             LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
             LayerType.LOCK -> createStatusLightLayer(layerId,LayerType.LOCK, level, defaultName,  "locked", "unlocked")
             LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)

@@ -1,5 +1,5 @@
 import React from 'react'
-import {LayerInfo} from "./layer/LayerInfo"
+import {LayerInfo} from "./LayerInfo"
 import {LayerDetails, NodeI} from "../../../../editor/reducer/NodesReducer"
 
 function findProtectedLayer(layers: LayerDetails[]) {

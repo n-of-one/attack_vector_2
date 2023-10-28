@@ -28,16 +28,6 @@ data class UserRunLink(
     @Indexed val runId: String
 )
 
-@Document
-data class TracingPatroller(
-    @Id val id: String,
-    @Indexed val runId: String,
-    val siteId: String,
-    val originatingNodeId: String,
-    val targetUserId: String,
-    var currentNodeId: String,
-    val path: MutableList<PatrollerPathSegment>
-)
 
 enum class NodeScanStatus() {
     UNDISCOVERED_0,             // the existence of this node has not been discovered                [ - no image - ]

@@ -7,12 +7,18 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
-import org.n1.av2.backend.entity.site.layer.other.*
+import org.n1.av2.backend.entity.site.layer.other.CoreLayer
+import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
+import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
+import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.layerhacking.app.StatusLightLayerService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
-import org.n1.av2.backend.service.layerhacking.service.*
+import org.n1.av2.backend.service.layerhacking.service.CoreLayerService
+import org.n1.av2.backend.service.layerhacking.service.KeystoreLayerService
+import org.n1.av2.backend.service.layerhacking.service.OsLayerService
+import org.n1.av2.backend.service.layerhacking.service.TextLayerService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
@@ -22,7 +28,6 @@ class CommandHackService(
     private val nodeEntityService: NodeEntityService,
     private val osLayerService: OsLayerService,
     private val textLayerService: TextLayerService,
-    private val snifferLayerService: TimerTriggerLayerService,
     private val statusLightLayerService: StatusLightLayerService,
     private val commandServiceUtil: CommandServiceUtil,
     private val iceService: IceService,
@@ -72,7 +77,6 @@ class CommandHackService(
         when (layer) {
             is OsLayer -> osLayerService.hack(layer)
             is TextLayer -> textLayerService.hack(layer, node)
-            is TimerTriggerLayer -> snifferLayerService.hack(layer)
             is IceLayer -> hackIce(layer)
             is StatusLightLayer -> statusLightLayerService.hack(layer)
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
@@ -92,11 +96,11 @@ class CommandHackService(
         stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce(iceId))
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun handleConnect(node: Node, layer: Layer, runId: String) {
         when (layer) {
             is OsLayer -> osLayerService.connect(layer)
             is TextLayer -> textLayerService.connect(layer, node)
-            is TimerTriggerLayer -> snifferLayerService.connect(layer)
             is IceLayer -> connectToIce(layer)
             is KeyStoreLayer -> keystoreLayerService.connect(layer)
             is StatusLightLayer -> statusLightLayerService.connect(layer)
@@ -109,6 +113,7 @@ class CommandHackService(
         stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce(layer.id))
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun handleQuickHack(node: Node, layer: Layer, runId: String) {
         hackedUtil.iceHacked(layer.id, node, 0)
     }

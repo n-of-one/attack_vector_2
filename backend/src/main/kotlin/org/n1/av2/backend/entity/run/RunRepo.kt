@@ -18,10 +18,3 @@ interface UserRunLinkRepo : CrudRepository<UserRunLink, String> {
     fun deleteByUserIdAndRunId(userId: String, runId: String)
     fun deleteAllByRunId(runId: String)
 }
-
-@Repository
-interface TracingPatrollerRepo: CrudRepository<TracingPatroller, String> {
-    fun findAllByRunId(runId: String): List<TracingPatroller>
-    fun findAllByTargetUserId(userId: String): List<TracingPatroller>
-    fun deleteAllByRunId(runId: String)
-}

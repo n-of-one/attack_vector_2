@@ -7,6 +7,7 @@ import {EditorState} from "../../../../../../../EditorRootReducer";
 import {editorCanvas} from "../../../../../middle/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
 import {LayerKeyStore} from "../../../../../../../../common/model/layer/LayerKeystore";
+import {iceLayerOptions} from "./LayerUtil";
 
 
 interface Props {
@@ -27,7 +28,7 @@ export const LayerKeyStorePanel = ({node, layer}: Props) => {
     const navigateToLayer = () => {
         const nodeId = iceLayerId.split(":")[0]
         editorCanvas.selectNode(nodeId)
-        dispatch({type: SELECT_LAYER, layerId: keystore.iceLayerId})
+        dispatch({type: SELECT_LAYER, layerId: iceLayerId})
     }
     const navigateIfIceId = (iceLayerId) ? navigateToLayer : undefined
 
@@ -45,26 +46,4 @@ export const LayerKeyStorePanel = ({node, layer}: Props) => {
 }
 
 
-type Option = {
-    value: string,
-    text: string,
-}
 
-const iceLayerOptions = (nodes: Array<NodeI>): Option[] => {
-    const iceLayers = nodes
-        .map(node => {
-            return node.layers.map(layer => { return {networkId: node.networkId, layer: layer}})
-        })
-        .flat()
-        .filter(layerWithNetwork => layerWithNetwork.layer.ice)
-        .sort((a, b) => a.layer.level - b.layer.level)
-        .sort((a, b) => a.networkId.localeCompare(b.networkId))
-        .map(layerWithNetwork => {
-            const location = layerWithNetwork.networkId + ":" + layerWithNetwork.layer.level
-            return {
-                value: layerWithNetwork.layer.id,
-                text: `${location} ${layerWithNetwork.layer.name} ${layerWithNetwork.layer.type}`,
-            }
-        })
-    return [{value: "", text: "Choose Ice"}, ...iceLayers ]
-}

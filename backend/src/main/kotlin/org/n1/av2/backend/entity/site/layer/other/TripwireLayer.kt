@@ -17,17 +17,19 @@ class TripwireLayer(
     note: String,
     var countdown: String,
     var shutdown: String,
+    var coreLayerId: String? = null,
 
 ) : Layer(id, type, level, name, note) {
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00")
+            this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00", null)
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateCountdown(siteRep: SiteRep) {
         this.countdown.toDuration("countdown")
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun validateShutdown(siteRep: SiteRep) {
         val duration = this.shutdown.toDuration("shutdown")
 
@@ -36,14 +38,21 @@ class TripwireLayer(
         }
     }
 
+    private fun validateCoreLayerId(siteRep: SiteRep) {
+        if (this.coreLayerId == null) throw ValidationException("Tripwire not connected to core, no way to reset.")
+        val layer = siteRep.findLayer(this.coreLayerId!!) ?: throw ValidationException("Tripwire not connected to core, no way to reset.")
+        if (layer !is CoreLayer) throw ValidationException("Trip wire connected to a layer that is not a core.")
+    }
+
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
-        return  listOf(::validateCountdown, ::validateShutdown )
+        return  listOf(::validateCountdown, ::validateShutdown, ::validateCoreLayerId )
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
             "COUNTDOWN" -> this.countdown = value
             "SHUTDOWN" -> this.shutdown = value
+            "CORE_LAYER_ID" -> this.coreLayerId = value
             else -> return super.updateInternal(key, value)
         }
         return true

@@ -12,7 +12,6 @@ import {
     TAR_ICE, STATUS_LIGHT,
     TANGLE_ICE,
     TEXT,
-    TIMER_TRIGGER,
     TRACE_LOG,
     TRACER,
     WORD_SEARCH_ICE, KEYSTORE, TRIPWIRE
@@ -49,7 +48,6 @@ const iconFamily = (type: string) => {
         case SCAN_BLOCK:
         case MONEY:
         case CODE:
-        case TIMER_TRIGGER:
         case PASSWORD_ICE:
         case TANGLE_ICE:
         case TAR_ICE:

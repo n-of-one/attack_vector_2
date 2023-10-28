@@ -15,9 +15,6 @@ import {Timings} from "../../common/model/Ticks"
 import {delayTicks, avEncodedUrl} from "../../common/util/Util"
 import {
     SERVER_FLASH_PATROLLER,
-    SERVER_PATROLLER_LOCKS_HACKER,
-    SERVER_PATROLLER_MOVE, SERVER_PATROLLER_REMOVE,
-    SERVER_START_TRACING_PATROLLER
 } from "../run/coundown/TimersReducer"
 import {enterScan} from "../home/HackerHome"
 import {SERVER_TERMINAL_RECEIVE} from "../../common/terminal/TerminalReducer"
@@ -59,7 +56,6 @@ export interface SiteAndScan {
     run: Scan,
     site: Site,
     hackers: HackerPresence[],
-    patrollers: PatrollerData[],
 }
 
 export interface NodeStatusById {
@@ -121,29 +117,7 @@ interface FlashPatrollerAction {
 export interface PatrollerData {
     patrollerId: string | null,
     nodeId: string,
-    path: PatrollerPathSegment[],
     timings: Timings
-}
-
-export interface PatrollerPathSegment {
-    fromNodeId: string,
-    toNodeId: string
-}
-
-export interface ActionPatrollerCatchesHacker {
-    patrollerId: string,
-    hackerId: string
-}
-
-export interface ActionPatrollerMove {
-    patrollerId: string
-    fromNodeId: string,
-    toNodeId: string,
-    timings: Timings
-}
-
-interface RemovePatrollerAction {
-    patrollerId: string
 }
 
 interface RedirectHackIce {
@@ -284,22 +258,6 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_FLASH_PATROLLER, (data: FlashPatrollerAction) => {
         runCanvas.flashTracingPatroller(data.nodeId)
-    })
-
-    webSocketConnection.addAction(SERVER_START_TRACING_PATROLLER, (data: PatrollerData) => {
-        runCanvas.activateTracingPatroller(data)
-    })
-
-    webSocketConnection.addAction(SERVER_PATROLLER_MOVE, (data: ActionPatrollerMove) => {
-        runCanvas.movePatroller(data)
-    })
-
-    webSocketConnection.addAction(SERVER_PATROLLER_LOCKS_HACKER, (data: ActionPatrollerCatchesHacker) => {
-        runCanvas.patrollerLocksHacker(data)
-    })
-
-    webSocketConnection.addAction(SERVER_PATROLLER_REMOVE, (data: RemovePatrollerAction) => {
-        runCanvas.removePatroller(data.patrollerId)
     })
 
     webSocketConnection.addAction(SERVER_REDIRECT_CONNECT_APP, (data: RedirectConnectApp) => {

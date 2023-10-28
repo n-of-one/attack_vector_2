@@ -32,10 +32,15 @@ class UserTaskRunner(
         taskEngine.runForUser(userPrincipal, action)
     }
 
-    fun queueInTicks(waitTicks: Int, action: () -> Unit) {
+    fun queueInTicksForSite(siteId: String, waitTicks: Int, action: () -> Unit) {
+        val identifiers = TaskIdentifiers(currentUserService.userId, siteId, null)
+        queueInTicks(identifiers, waitTicks, action)
+    }
+
+    fun queueInTicks(identifiers: TaskIdentifiers, waitTicks: Int, action: () -> Unit) {
         val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
         val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
-        timedTaskRunner.add(currentUserService.userId, due, userPrincipal, action)
+        timedTaskRunner.add(identifiers, due, userPrincipal, action)
     }
 
 
@@ -61,9 +66,9 @@ class SystemTaskRunner(
     private val timedTaskRunner: TimedTaskRunner,
 ) {
 
-    fun queueInSeconds( omniId: String, seconds: Long, action: () -> Unit) {
+    fun queueInSeconds( identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + seconds * 1000
-        timedTaskRunner.add(omniId, due, UserPrincipal.system(), action)
+        timedTaskRunner.add(identifiers, due, UserPrincipal.system(), action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs

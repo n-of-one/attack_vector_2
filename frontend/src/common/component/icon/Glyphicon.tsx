@@ -1,14 +1,12 @@
 import React from "react"
 import {
     CODE,
-    CORE,
     MONEY, NETWALK_ICE,
     OS,
     PASSWORD_ICE,
     SCAN_BLOCK, TAR_ICE,
     TANGLE_ICE,
     TEXT,
-    TIMER_TRIGGER,
     TRACE_LOG,
     TRACER, WORD_SEARCH_ICE, KEYSTORE
 } from "../../enums/LayerTypes"
@@ -48,7 +46,6 @@ export const glyphiconFromType = (type: string) => {
         case SCAN_BLOCK : return "glyphicon-magnet"
         case MONEY : return "glyphicon-usd"
         case CODE : return "glyphicon-ok-circle"
-        case TIMER_TRIGGER : return "glyphicon-time"
         case PASSWORD_ICE : return "glyphicon-console"
         case TANGLE_ICE: return "glyphicon-asterisk"
         case TAR_ICE : return "glyphicon-hourglass"

@@ -1,12 +1,14 @@
 package org.n1.av2.backend.entity.service
 
+import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
 @Service
 class TimerEntityService(
-    private val repository: TimerRepository
+    private val repository: TimerRepository,
+    private val stompService: StompService,
 ) {
 
     fun findByLayer(layerId: String): Timer? {
@@ -33,9 +35,10 @@ class TimerEntityService(
         repository.deleteById(timerId)
     }
 
-    fun deleteByLayerId(layerId: String) {
-        val timer = repository.findByLayerId(layerId) ?: return
+    fun deleteByLayerId(layerId: String): Timer? {
+        val timer = repository.findByLayerId(layerId) ?: return null
         repository.delete(timer)
+        return timer
     }
 
     fun deleteBySiteId(siteId: String) {

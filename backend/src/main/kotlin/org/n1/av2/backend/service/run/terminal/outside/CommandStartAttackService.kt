@@ -41,8 +41,7 @@ class CommandStartAttackService(
         stompService.toRun(run.runId, ServerActions.SERVER_HACKER_START_ATTACK, data)
         stompService.reply(ServerActions.SERVER_TERMINAL_UPDATE_PROMPT, "prompt" to "⇋ ", "terminalId" to TERMINAL_MAIN)
 
-
-        userTaskRunner.queueInTicks(timings.totalTicks) { startAttackArrive(userId, run.runId) }
+        userTaskRunner.queueInTicksForSite(run.siteId, timings.totalTicks) { startAttackArrive(userId, run.runId) }
     }
 
     @ScheduledTask

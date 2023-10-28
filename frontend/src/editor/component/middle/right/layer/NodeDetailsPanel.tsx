@@ -2,12 +2,11 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerOsPanel} from "./type/panel/app/LayerOsPanel"
 import {findElementById} from "../../../../../common/util/Immutable"
-import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, TIMER_TRIGGER, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
+import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {LayerTextPanel} from "./type/panel/app/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {LayerIcePasswordPanel} from "./type/panel/ice/LayerIcePasswordPanel"
 import {LayerIceTanglePanel} from "./type/panel/ice/LayerIceTanglePanel"
-import {LayerTimerTriggerPanel} from "./type/panel/app/LayerTimerTriggerPanel"
 import {EditorState} from "../../../../EditorRootReducer"
 import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
@@ -33,8 +32,6 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerOsPanel node={node} layer={layer}/>
         case TEXT:
             return <LayerTextPanel node={node} layer={layer}/>
-        case TIMER_TRIGGER:
-            return <LayerTimerTriggerPanel node={node} layer={layer}/>
         case PASSWORD_ICE:
             return <LayerIcePasswordPanel node={node} layer={layer}/>
         case TANGLE_ICE:

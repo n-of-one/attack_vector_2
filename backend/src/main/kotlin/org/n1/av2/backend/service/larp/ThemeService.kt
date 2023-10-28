@@ -10,7 +10,6 @@ class ThemeService {
         return when(serviceType) {
             LayerType.OS -> "OS"
             LayerType.TEXT -> "Database"
-            LayerType.TIMER_TRIGGER -> "Network Sniffer"
             LayerType.KEYSTORE -> "Keystore"
             LayerType.TRIPWIRE -> "Tripwire"
             LayerType.CORE -> "Core"

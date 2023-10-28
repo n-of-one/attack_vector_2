@@ -42,12 +42,9 @@ export interface LayerDetails {
 
     nodeName?: string                 // OS layer
     text?: string                     // Text layer
-    minutes?: number                  // Layer Timer Trigger
-    seconds?: number                  // Layer Timer Trigger
     shutdown?: string                 // Layer Trip wire
     countdown?: string                // Layer Trip wire
-
-
+    coreLayerId?: string              // Layer Trip wire
 
     strength? : "VERY_WEAK" | "WEAK" | "AVERAGE" | "STRONG" | "VERY_STRONG" | "ONYX"
     password? : string  // Password Ice layer
@@ -65,7 +62,7 @@ export interface LayerDetails {
 
     iceLayerId?: string          // Keystore layer
 
-    revealNetwork: boolean       // Core layer
+    revealNetwork?: boolean       // Core layer
 
 }
 

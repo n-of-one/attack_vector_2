@@ -6,7 +6,6 @@ import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
 import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions"
-import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPatrollerDisplay"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackersReducer"
@@ -15,18 +14,16 @@ import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
 import {
-    ActionPatrollerCatchesHacker,
-    ActionPatrollerMove,
     HackerScansNodeAction,
     MoveArriveAction, MoveArriveFailAction,
     MoveStartAction, NodeStatusById,
-    PatrollerData,
     ProbeAction,
     SiteAndScan
 } from "../../server/RunServerActionProcessor";
 import {ProbeVisual} from "../../../common/canvas/visuals/ProbeVisual";
 import {Timings} from "../../../common/model/Ticks";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
+import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPatrollerDisplay";
 
 
 export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"
@@ -49,7 +46,6 @@ class RunCanvas {
     hackerDisplays = new DisplayCollection<HackerDisplay>("HackerDisplay")
     connectionDisplays = new DisplayCollection<ConnectionDisplay>("ConnectionDisplay")
     probeDisplays = new DisplayCollection<ProbeDisplay>("ProbeDisplay")
-    patrollerDisplays = new DisplayCollection<TracingPatrollerDisplay>("TracingPatrollerDisplay")
 
     dispatch: Dispatch = null as unknown as Dispatch // lateinit
     iconSchedule: Schedule = null as unknown as Schedule // lateinit
@@ -138,7 +134,6 @@ class RunCanvas {
         const scan = structuredClone(actionData.run)
         const site = structuredClone(actionData.site)
         const hackers = structuredClone(actionData.hackers)
-        const patrollers = structuredClone(actionData.patrollers)
 
         const nodes = site.nodes
         const connections = site.connections
@@ -183,10 +178,6 @@ class RunCanvas {
 
         this.startNodeDisplay = this.nodeDisplays.get(nodes[0].id)
         this.addHackersDisplays()
-
-        patrollers.forEach((patrollerData) => {
-            this.activateTracingPatroller(patrollerData)
-        })
 
         this.active = true
     }
@@ -443,34 +434,6 @@ class RunCanvas {
         }
         new TracingPatrollerDisplay(patrollerData, this.canvas, this.dispatch, this.nodeDisplays, this.hackerDisplays).disappear()
     }
-
-    activateTracingPatroller(patrollerData: PatrollerData) {
-        if (!this.active) return
-
-        const patrollerDisplay = new TracingPatrollerDisplay(patrollerData, this.canvas, this.dispatch, this.nodeDisplays, this.hackerDisplays)
-        this.patrollerDisplays.add(patrollerData.patrollerId!, patrollerDisplay)
-    }
-
-    patrollerLocksHacker({patrollerId, hackerId}: ActionPatrollerCatchesHacker) {
-        // if (!this.active) return
-
-        // const patroller = this.patrollerDisplays.get(patrollerId)
-        // patroller.lock(hackerId)
-    }
-
-    movePatroller({patrollerId, fromNodeId, toNodeId, timings}: ActionPatrollerMove) {
-        if (!this.active) return
-
-        this.patrollerDisplays.get(patrollerId).move(fromNodeId, toNodeId, timings)
-    }
-
-    removePatroller(patrollerId: string) {
-        if (!this.active) return
-
-        this.patrollerDisplays.get(patrollerId).disappear()
-        this.patrollerDisplays.remove(patrollerId)
-    }
-
 
     disconnect(userId: string) {
         if (!this.active) return

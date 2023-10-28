@@ -3,6 +3,7 @@ package org.n1.av2.backend.service.layerhacking.service
 import org.n1.av2.backend.engine.CalledBySystem
 import org.n1.av2.backend.engine.ScheduledTask
 import org.n1.av2.backend.engine.SystemTaskRunner
+import org.n1.av2.backend.engine.TaskIdentifiers
 import org.n1.av2.backend.entity.run.HackerActivity
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.service.Timer
@@ -12,11 +13,13 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.model.ui.ServerActions.SERVER_TERMINAL_RECEIVE
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.run.TERMINAL_MAIN
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.toDuration
 import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.service.util.StompService.TerminalReceive
 import org.n1.av2.backend.service.util.TimeService
 import org.springframework.context.annotation.Lazy
 import java.time.Duration
@@ -62,7 +65,8 @@ class TripwireLayerService(
 
         stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, "nodeId" to nodeId)
 
-        systemTaskRunner.queueInSeconds(siteId, duration.seconds) { timerActivates(siteId, timer.id, layer) }
+        val identifiers = TaskIdentifiers(null, siteId, layer.id)
+        systemTaskRunner.queueInSeconds(identifiers, duration.seconds) { timerActivates(siteId, timer.id, layer) }
     }
 
     @ScheduledTask
@@ -72,7 +76,8 @@ class TripwireLayerService(
         timerEntityService.deleteById(timerId)
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
-        siteService.resetSite(siteId, layer.shutdown)
+        siteService.resetSite(siteId)
+        stompService.toSite( siteId, SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${layer.shutdown}")))
         hackerStates
             .filter { it.activity == HackerActivity.INSIDE }
             .forEach { hackerState ->
@@ -86,7 +91,8 @@ class TripwireLayerService(
         stompService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(shutdownTimer, layer))
 
         siteService.shutdownSite(siteId, shutdownEndTime)
-        systemTaskRunner.queueInSeconds(siteId, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
+        val identifiers = TaskIdentifiers(null, siteId, null)
+        systemTaskRunner.queueInSeconds(identifiers, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
     }
 
     @ScheduledTask
@@ -95,7 +101,7 @@ class TripwireLayerService(
         siteService.shutdownFinished(siteId)
         timerEntityService.deleteById(shutdownTimerId)
         stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to shutdownTimerId)
-        stompService.toSite(siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site connection available again.")))
+        stompService.toSite(siteId, SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site connection available again.")))
     }
 
 
@@ -125,7 +131,6 @@ class TripwireLayerService(
         return when (type) {
             TimerType.SHUTDOWN_START -> "shutdown in ${shutdownTime})"
             TimerType.SHUTDOWN_FINISH -> "site available"
-            else -> "Unknown"
         }
     }
 

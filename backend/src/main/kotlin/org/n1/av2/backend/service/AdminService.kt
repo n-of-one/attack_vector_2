@@ -2,7 +2,10 @@ package org.n1.av2.backend.service
 
 import org.n1.av2.backend.entity.ice.IcePasswordStatusRepo
 import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
-import org.n1.av2.backend.entity.run.*
+import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.run.HackerStateRepo
+import org.n1.av2.backend.entity.run.RunRepo
+import org.n1.av2.backend.entity.run.UserRunLinkRepo
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserRepo
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Service
 class AdminService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val hackerStateRepo: HackerStateRepo,
-    private val tracingPatrollerRepo: TracingPatrollerRepo,
     private val sitePropertiesRepo: SitePropertiesRepo,
     private val layoutRepo: LayoutRepo,
     private val nodeRepo: NodeRepo,
@@ -32,8 +34,6 @@ class AdminService(
     ) {
 
     fun purgeAll() {
-        tracingPatrollerRepo.deleteAll()
-
         sitePropertiesRepo.findAll().forEach { siteProperties ->
             stompService.toSite(siteProperties.siteId, ServerActions.SERVER_FORCE_DISCONNECT, NotyMessage(NotyType.FATAL, "Admin action", "Purging all sites."))
         }
@@ -60,10 +60,8 @@ class AdminService(
     }
 
     fun reset() {
-        tracingPatrollerRepo.deleteAll()
         hackerStateRepo.deleteAll()
         hackerStateEntityService.init()
-        tracingPatrollerRepo.deleteAll()
 
         tangleIceStatusRepo.deleteAll()
         icePasswordStatusRepo.deleteAll()

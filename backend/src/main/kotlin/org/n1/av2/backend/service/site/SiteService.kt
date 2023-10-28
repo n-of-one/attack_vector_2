@@ -1,6 +1,8 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.engine.CalledBySystem
+import org.n1.av2.backend.engine.TaskIdentifiers
+import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
@@ -11,7 +13,6 @@ import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.layerhacking.service.KeystoreService
-import org.n1.av2.backend.service.run.TERMINAL_MAIN
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.stereotype.Service
@@ -27,7 +28,8 @@ class SiteService(
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
     private val iceService: IceService,
     private val keystoreService: KeystoreService,
-    private val timerEntityService: TimerEntityService
+    private val timerEntityService: TimerEntityService,
+    private val timedTaskRunner: TimedTaskRunner,
 ) {
 
     fun createSite(name: String): String {
@@ -66,29 +68,30 @@ class SiteService(
     }
 
     fun refreshSite(siteId: String, shutdownDuration: String) {
-        resetSite(siteId, null)
+        resetSite(siteId)
         shutdownFinished(siteId)
         timerEntityService.deleteBySiteId(siteId)
     }
 
     @CalledBySystem
-    fun resetSite(siteId: String, shutdownDuration: String?) {
+    fun resetSite(siteId: String) {
+        timedTaskRunner.removeAll(TaskIdentifiers(null, siteId, null))
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach {node ->
             val refreshedNode = node.copy(hacked = false)
             refreshedNode.layers.forEach { layer ->
                 if (layer is IceLayer) { layer.hacked = false }
                 if (layer is KeyStoreLayer) { keystoreService.deleteIcePassword(layer.iceLayerId) }
-                if (layer is TripwireLayer) { timerEntityService.deleteByLayerId(layer.id) }
+                if (layer is TripwireLayer) {
+                    val timer = timerEntityService.deleteByLayerId(layer.id)
+                    if (timer != null) {
+                        stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)
+                    }
+                }
             }
             nodeEntityService.save(refreshedNode)
         }
-
         iceService.deleteIce(siteId)
-
-        if (shutdownDuration != null) {
-            stompService.toSite( siteId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${shutdownDuration}")))
-        }
     }
 
     fun shutdownSite(siteId: String, shutdownEndTime: ZonedDateTime) {

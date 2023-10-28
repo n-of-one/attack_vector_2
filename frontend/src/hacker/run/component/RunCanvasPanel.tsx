@@ -7,8 +7,8 @@ import {
 import {RunNodeImage} from "./RunNodeImage";
 import {HackerImage} from "../../../common/component/HackerImage";
 import {ScanProbeImages} from "./ScanProbeImages";
-import {PatrollerImage} from "../../../common/component/PatrollerImage";
 import {Dispatch} from "redux";
+import {PatrollerImage} from "../../../common/component/PatrollerImage";
 
 interface Props {
     dispatch: Dispatch,

@@ -10,11 +10,9 @@ import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
-import org.n1.av2.backend.entity.site.layer.other.TimerTriggerLayer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.layerhacking.service.TimerTriggerLayerService
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.run.terminal.scanning.ScanResultService
 import org.n1.av2.backend.service.util.StompService
@@ -34,7 +32,6 @@ class CommandMoveService(
     private val connectionEntityService: ConnectionEntityService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val runEntityService: RunEntityService,
-    private val timerTriggerLayerService: TimerTriggerLayerService,
     private val tripwireLayerService: TripwireLayerService,
     private val scanProbeActionService: ScanResultService,
     private val userTaskRunner: UserTaskRunner,
@@ -101,7 +98,7 @@ class CommandMoveService(
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
         stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
 
-        userTaskRunner.queueInTicks(MOVE_START_Timings.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
+        userTaskRunner.queueInTicksForSite(state.siteId, MOVE_START_Timings.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
     }
 
     @ScheduledTask
@@ -121,13 +118,13 @@ class CommandMoveService(
             arriveComplete(nodeId, userId, runId)
         } else {
             stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to HACKER_SCANS_NODE_Timings)
-            userTaskRunner.queueInTicks(HACKER_SCANS_NODE_Timings.totalTicks) {
+
+            userTaskRunner.queueInTicksForSite(state.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
                 scanProbeActionService.hackerArrivedNodeScan(nodeId, userId, runId)
                 arriveComplete(nodeId, userId, runId)
             }
         }
     }
-
 
     private fun arriveComplete(nodeId: String, userId: String, runId: String) {
         val state = hackerStateEntityService.retrieve(userId).toRunState()
@@ -145,7 +142,6 @@ class CommandMoveService(
         val node = nodeEntityService.getById(nodeId)
         node.layers.forEach { layer ->
             when (layer) {
-                is TimerTriggerLayer -> timerTriggerLayerService.hackerArrivesNode(siteId, layer, nodeId, userId, runId)
                 is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, userId, runId)
                 else -> {} // do nothing
             }

@@ -1,8 +1,7 @@
 import {fabric} from "fabric";
-import {animate, calcLine, getHtmlImage, LinePositions} from "../CanvasUtils";
+import {animate, getHtmlImage} from "../CanvasUtils";
 import {Schedule} from "../../util/Schedule";
-import {COLOR_PATROLLER_LINE, IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
-import {ConnectionVisual} from "../visuals/ConnectionVisual";
+import {IMAGE_SIZE, SCALE_NORMAL} from "./util/DisplayConstants";
 import {Display} from "./Display";
 import {Canvas} from "fabric/fabric-impl";
 import {Dispatch} from "redux";
@@ -10,7 +9,6 @@ import {DisplayCollection} from "./util/DisplayCollection";
 import {NodeDisplay} from "./NodeDisplay";
 import {HackerDisplay} from "./HackerDisplay";
 import {PatrollerData} from "../../../hacker/server/RunServerActionProcessor";
-import {Timings} from "../../model/Ticks";
 
 
 export class TracingPatrollerDisplay implements Display {
@@ -27,15 +25,13 @@ export class TracingPatrollerDisplay implements Display {
     schedule: Schedule
 
     patrollerIcon: fabric.Image
-    lineElements: ConnectionVisual[] = []
 
-    aborted = false;
 
     x: number
     y: number
     size = 0
 
-    constructor({patrollerId, nodeId, path, timings}: PatrollerData, canvas: Canvas, dispatch: Dispatch,
+    constructor({patrollerId, nodeId, timings}: PatrollerData, canvas: Canvas, dispatch: Dispatch,
                 nodeDisplays: DisplayCollection<NodeDisplay>,
                 hackerDisplays: DisplayCollection<HackerDisplay>) {
 
@@ -68,18 +64,6 @@ export class TracingPatrollerDisplay implements Display {
         this.canvas.add(this.patrollerIcon);
         this.canvas.bringToFront(this.patrollerIcon);
 
-        if (path) {
-            path.forEach((segment) => {
-                const fromNodeDisplay = this.nodeDisplays.get(segment.fromNodeId);
-                const toNodeDisplay = this.nodeDisplays.get(segment.toNodeId);
-                const lineEndData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
-                const styling = {"opacity": 0}
-                const lineElement = new ConnectionVisual(lineEndData, COLOR_PATROLLER_LINE, this.canvas, styling);
-                this.lineElements.push(lineElement);
-
-                lineElement.appear(timings.appear * 2);
-            });
-        }
 
         animate(this.canvas, this.patrollerIcon, "opacity", 1, timings.appear);
         this.schedule.wait(timings.appear);
@@ -87,38 +71,16 @@ export class TracingPatrollerDisplay implements Display {
 
     getAllIcons(): fabric.Object[] {
         const objects: fabric.Object[] =  [this.patrollerIcon]
-        this.lineElements.forEach( element => objects.push(element.line))
         return objects
     }
 
-    move(fromNodeId: string, toNodeId: string, timings: Timings) {
-
-        this.schedule.run(timings.move, () => {
-            const fromNodeDisplay = this.nodeDisplays.get(fromNodeId)
-            const toNodeDisplay = this.nodeDisplays.get(toNodeId)
-
-            const lineData = calcLine(fromNodeDisplay, toNodeDisplay, 4);
-            const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
-
-            const lineElement = new ConnectionVisual(lineStart, COLOR_PATROLLER_LINE, this.canvas);
-            this.lineElements.push(lineElement);
-
-            lineElement.extendTo(lineData, timings.move);
-        });
-    }
 
     disappear() {
         this.schedule.run(20, () => {
             animate(this.canvas, this.patrollerIcon, "opacity", 0, 20);
-            this.lineElements.forEach( (element) => {
-                element.disappear(20);
-            });
         });
         this.schedule.run(0, () => {
             this.canvas.remove(this.patrollerIcon);
-            this.lineElements.forEach( (element) => {
-                element.remove();
-            });
         });
     }
 

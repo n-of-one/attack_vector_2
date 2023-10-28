@@ -61,10 +61,6 @@ enum class ServerActions {
     SERVER_COMPLETE_TIMER,              // The timer countdown completes
 
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
-    SERVER_START_TRACING_PATROLLER,     // Client shows a patroller (for example as a result of an alarm countdown)
-    SERVER_PATROLLER_MOVE,              // Client can show this
-    SERVER_PATROLLER_LOCKS_HACKER,      // Client can show this
-    SERVER_PATROLLER_REMOVE,            // Client can remove it
 
     SERVER_REDIRECT_HACK_ICE,           // open a new window to start hacking ICE
     SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
