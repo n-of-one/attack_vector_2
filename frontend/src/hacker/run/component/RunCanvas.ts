@@ -224,7 +224,7 @@ class RunCanvas {
 
     private determineNodeSiteStatus(hacking: boolean, shutdown: boolean): SiteStatus {
         if (this.shutdown) return SiteStatus.SHUTDOWN
-        return (this.hacking) ? SiteStatus.HACKING : SiteStatus.SCANNING
+        return (this.hacking) ? SiteStatus.INSIDE : SiteStatus.OUTSIDE
     }
 
 
@@ -357,14 +357,14 @@ class RunCanvas {
     startAttack(userId: string, quick: boolean, timings: Timings) {
         if (!this.active) return
 
-        this.hacking = true
         if (this.userId === userId) {
+            this.hacking = true
             if (!quick) {
                 this.iconSchedule.wait(30)
             }
 
             this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
-                nodeDisplay.transitionToHack(quick, this.selectedObject)
+                nodeDisplay.transitionToInside(quick, this.selectedObject)
             })
         }
         this.hackerDisplays.get(userId).startRun(quick, timings)
@@ -478,7 +478,7 @@ class RunCanvas {
 
         if (userId === this.userId) {
             this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
-                nodeDisplay.transitionToScan()
+                nodeDisplay.transitionToOutside()
             })
             this.iconSchedule.wait(20)
         }

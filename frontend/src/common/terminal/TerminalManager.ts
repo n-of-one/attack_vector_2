@@ -10,7 +10,7 @@ class TerminalManager {
 
     store: Store = null as unknown as Store
     dispatch = null as unknown as Dispatch
-    running: boolean = false
+    terminalActive: boolean = false
 
     terminalSubmit: {[key: string]: () => void } = {}
 
@@ -30,18 +30,18 @@ class TerminalManager {
         })
 
         window.onkeydown = (event: KeyboardEvent) => {
-            if (this.running) {
+            if (this.terminalActive) {
                 this.handleKeyDown(event);
             }
         }
     }
 
     start() {
-        this.running = true;
+        this.terminalActive = true;
     }
 
     stop() {
-        this.running = false;
+        this.terminalActive = false;
     }
 
     handleKeyDown(event: KeyboardEvent) {

@@ -82,7 +82,7 @@ class EditorCanvas {
 
     addNode(nodeDataInput: NodeI) {
         const nodeData = { ...nodeDataInput, status: NodeScanStatus.FULLY_SCANNED_4, hacked: false}
-        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, true, SiteStatus.SCANNING)
+        const nodeDisplay = new NodeDisplay(this.canvas, null, nodeData, true, SiteStatus.OUTSIDE)
         nodeDisplay.show()
 
         this.nodeDisplays.add(nodeData.id, nodeDisplay)

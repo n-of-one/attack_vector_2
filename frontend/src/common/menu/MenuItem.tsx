@@ -5,6 +5,7 @@ import {NAVIGATE_PAGE, RUN} from "./pageReducer";
 import {HackerState} from "../../hacker/HackerRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {Dispatch} from "redux";
+import {terminalManager} from "../terminal/TerminalManager";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -12,16 +13,6 @@ interface Props {
     targetPage: string,
     label: string,
     requriesRole: string,
-}
-
-export const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
-
-    if (currentPage === RUN && targetPage !== RUN) {
-        webSocketConnection.send("/av/run/leaveSite", runId);
-    }
-
-    console.log("Navigating to page: " + targetPage);
-    dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
 }
 
 export const MenuItem = (props: Props) => {
@@ -50,4 +41,24 @@ export const MenuItem = (props: Props) => {
         return <></>
     }
 
+}
+
+const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
+
+    updateTerminalState(targetPage)
+
+    if (currentPage === RUN && targetPage !== RUN) {
+        webSocketConnection.send("/av/run/leaveSite", runId);
+    }
+
+    console.log("Navigating to page: " + targetPage);
+    dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
+}
+
+export const updateTerminalState = (targetPage: string) => {
+    if (targetPage === RUN) {
+        terminalManager.start()
+    } else {
+        terminalManager.stop()
+    }
 }

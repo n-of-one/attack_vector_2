@@ -13,7 +13,7 @@ const SCAN_OPACITY = 0.3
 const HACK_OPACITY = 1
 
 export enum SiteStatus {
-    SCANNING, HACKING, SHUTDOWN
+    OUTSIDE, INSIDE, SHUTDOWN
 }
 
 export class NodeDisplay implements Display {
@@ -167,7 +167,7 @@ export class NodeDisplay implements Display {
         if (!this.schedule) throw new Error("schedule not initialized")
 
         this.schedule.run(3, () => {
-            this.gfx.fade(40, SCAN_OPACITY, this.nodeIcon)
+            this.gfx.fade(40, this.determineNodeIconOpacity(), this.nodeIcon)
 
             if (this.nodeData.distance === 1) {
                 this.fadeInLabel()
@@ -189,16 +189,16 @@ export class NodeDisplay implements Display {
         this.gfx.fade(40, 0.8, this.labelBackgroundIcon)
     }
 
-    transitionToHack(quick: boolean, canvasSelectedIcon: fabric.Image | null) {
+    transitionToInside(quick: boolean, canvasSelectedIcon: fabric.Image | null) {
         const delay = (quick) ? 0 : 5
-        this.siteStatus = SiteStatus.HACKING
+        this.siteStatus = SiteStatus.INSIDE
         if (this.determineNodeIconOpacity() === HACK_OPACITY) {
             this.crossFadeToNewIconStart(delay, canvasSelectedIcon)
         }
     }
 
-    transitionToScan() {
-        this.siteStatus = SiteStatus.SCANNING
+    transitionToOutside() {
+        this.siteStatus = SiteStatus.OUTSIDE
         this.gfx.fade(20, this.determineNodeIconOpacity(), this.nodeIcon)
     }
 
@@ -257,16 +257,12 @@ export class NodeDisplay implements Display {
 
 
     determineNodeIconOpacity() {
-        if (this.siteStatus === SiteStatus.HACKING) {
-            switch (this.nodeData.status) {
-                case NodeScanStatus.ICE_PROTECTED_3:
-                case NodeScanStatus.FULLY_SCANNED_4:
-                    return HACK_OPACITY
-                default:
-                    return SCAN_OPACITY
-            }
-        } else {
-            return SCAN_OPACITY
+        switch (this.siteStatus) {
+            case SiteStatus.INSIDE: return HACK_OPACITY
+            case SiteStatus.OUTSIDE: return SCAN_OPACITY
+            case SiteStatus.SHUTDOWN: return SCAN_OPACITY
+            default: throw new Error("Unknown siteStatus: " + this.siteStatus)
+
         }
     }
 
@@ -340,7 +336,7 @@ export class NodeDisplay implements Display {
             this.canvas.sendToBack(this.crossFadeNodeIcon)
             this.canvas.sendToBack(this.nodeIcon)
 
-            this.gfx.fade(crossFadeTime, 1, this.crossFadeNodeIcon)
+            this.gfx.fade(crossFadeTime, this.determineNodeIconOpacity(), this.crossFadeNodeIcon)
             this.gfx.fadeOut(crossFadeTime, this.nodeIcon)
         })
     }
@@ -350,7 +346,7 @@ export class NodeDisplay implements Display {
 
         const crossFadeTime = 20
         this.schedule.run(3, () => {
-            this.siteStatus = SiteStatus.SCANNING
+            this.siteStatus = SiteStatus.OUTSIDE
             this.canvas.remove(this.nodeIcon)
             this.addNodeIcon()
 
