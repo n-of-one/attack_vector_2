@@ -40,7 +40,7 @@ export interface TerminalState {
     prompt: string,
     readOnly: boolean,
     blockedWhileRendering: boolean,
-    renderOutput: boolean,  /// if false it means input only TODO: refactor terminalInput into a separate component.
+    renderOutput: boolean,  /// if false it means input only
     autoScroll: boolean,
     input: string,
     renderingLine: TerminalLine | null,

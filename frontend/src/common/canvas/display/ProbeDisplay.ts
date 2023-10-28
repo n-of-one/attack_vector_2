@@ -20,7 +20,6 @@ export class ProbeDisplay implements Display {
     id = null
     schedule
     yourProbe
-    aborted = false
     probeVisual: ProbeVisual | null = null
 
     connectionVisuals: ConnectionVisual[] = []
@@ -57,17 +56,11 @@ export class ProbeDisplay implements Display {
         return objects
     }
 
-    // TODO: scans should be abortable if the hacker leaves the run where this scan is taking place.
-    abort() {
-        this.aborted = true
-    }
-
     scheduleMoveStep(nextDisplay: Display, currentDisplay: Display, durationTicks: number) {
         this.schedule.run(22, () => this.moveStep(nextDisplay, currentDisplay, durationTicks))
     }
 
     moveStep(nextDisplay: Display, currentDisplay: Display, duration: number) {
-        if (this.aborted) return
 
         const lineData = calcLine(currentDisplay, nextDisplay, this.padding)
         const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
@@ -80,7 +73,6 @@ export class ProbeDisplay implements Display {
     }
 
     processProbeArrive(scanType: NodeScanType, nodeId: string, currentDisplay: Display, timings: Timings) {
-        if (this.aborted) return
 
         this.probeVisual = new ProbeVisual(this.canvas, currentDisplay as NodeDisplay, this.schedule)
 

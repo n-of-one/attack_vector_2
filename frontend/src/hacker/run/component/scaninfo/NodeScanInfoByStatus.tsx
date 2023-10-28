@@ -26,19 +26,6 @@ function renderLayersAsUnknown(node: NodeI) {
     return <>{lines}</>
 }
 
-function renderStatusIceProtected(node: NodeI) {
-    const layers = node.layers.sort((a, b) => a.level - b.level)
-
-    // FIXME show layers above ICE layers
-    return <>
-        {renderLayersAsUnknown(node)}
-        <br/>
-        Neighbouring nodes discovered.<br/>
-    </>
-}
-
-
-
 function renderLayerIsIce(layer: LayerDetails) {
     const text = layer.ice ? "ICE" : "layer"
     return <span key={layer.level}>

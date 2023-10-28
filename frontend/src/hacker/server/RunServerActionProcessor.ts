@@ -230,7 +230,7 @@ export const initRunServerActions = (store: Store) => {
                 echo(20, "- Persona creation [info]complete")
                 echo(0, "")
                 echo(80, "Entering node")
-                echo(0, "Persona accepted by node OS.")
+                echo(0, "Connection established.")
                 echo(0, "")
             }
 

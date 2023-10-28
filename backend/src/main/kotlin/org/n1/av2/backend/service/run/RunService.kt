@@ -23,6 +23,7 @@ import org.n1.av2.backend.service.site.ScanInfoService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
+import org.n1.av2.backend.util.isOneOf
 import org.springframework.stereotype.Service
 
 @Service
@@ -170,6 +171,9 @@ class RunService(
         val neighboringNodeIds = siteService.findNeighboringNodeIds(node)
 
         runs.forEach{run ->
+            val currentStatus = run.nodeScanById[node.id]!!.status
+            if (!currentStatus.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
+
             run.updateScanStatus(node.id, FULLY_SCANNED_4)
             stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, "nodeId" to node.id, "newStatus" to FULLY_SCANNED_4)
 
