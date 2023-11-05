@@ -50,7 +50,7 @@ class SsoController(
         }
 
         if (hackerInfo.isGm) {
-            return userService.create(hackerInfo.id, hackerInfo.id, UserType.GM)
+            return userService.create(hackerInfo.id, hackerInfo.id, UserType.GM, null)
         }
 
         val name = findFreeUserName(hackerInfo.characterName!!)

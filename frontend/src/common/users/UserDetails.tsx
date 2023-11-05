@@ -9,6 +9,7 @@ import {useDispatch} from "react-redux";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {currentUser} from "../user/CurrentUser";
 import {larp} from "../Larp";
+import {HackerIcon} from "./HackerIcon";
 
 type SaveFunction = (field: string, value: string) => void
 
@@ -107,6 +108,19 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             readonly={!larp.userEditCharacterName}
         />
 
+        <div className="row form-group">
+            <label htmlFor="type" className="col-lg-4 control-label text-muted">Type</label>
+            <div className="col-lg-3">
+                <DropDownSaveInput id="type" className="form-control"
+                                   selectedValue={user.hacker!!.icon}
+                                   save={(value: string) => save("hackerIcon", value)}
+                                   readonly={false}>
+                    <>{hackerIconOptions()}
+                    </>
+                </DropDownSaveInput>
+            </div>
+        </div>
+
         <UserAttribute
             label="Hacker level" id="skillHacker" size={2}
             value={user.hacker?.skill.hacker}
@@ -182,4 +196,12 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
             <button className="btn btn-info btn-sm pull-right" onClick={deleteFun}>Delete</button>
         </div>
     </>
+}
+
+const hackerIconOptions = () => {
+    const options = Object.keys(HackerIcon)
+        .map( (icon) => {
+            return <option value={icon}>{icon}</option>
+        })
+    return options
 }

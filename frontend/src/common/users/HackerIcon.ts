@@ -1,4 +1,55 @@
-export const hackerIconFilename: { [key: string]: string } = {
+export enum HackerIcon {
+    BEAR = "BEAR",
+    BIRD_1 = "BIRD_1",
+    CAT = "CAT",
+    CRAB = "CRAB",
+    DINO_1 = "DINO_1",
+    DINO_2 = "DINO_2",
+    DRAGON_1 = "DRAGON_1",
+    LION = "LION",
+    GECKO = "GECKO",
+    LIZARD = "LIZARD",
+    LIONESS = "LIONESS",
+    MONKEY = "MONKEY",
+    COBRA = "COBRA",
+    LOBSTER_1 = "LOBSTER_1",
+    SHARK = "SHARK",
+    STINGRAY = "STINGRAY",
+    FROG = "FROG",
+    BULL = "BULL",
+    CROCODILE = "CROCODILE",
+    DOG = "DOG",
+    DRAGON_2 = "DRAGON_2",
+    FISH_1 = "FISH_1",
+    HIPPO = "HIPPO",
+    HORSE = "HORSE",
+    KOALA = "KOALA",
+    SEAHORSE = "SEAHORSE",
+    SNAKE_2 = "SNAKE_2",
+    UNICORN = "UNICORN",
+    WOLF = "WOLF",
+    TURTLE = "TURTLE",
+    MOOSE = "MOOSE",
+    CAMEL = "CAMEL",
+    EAGLE = "EAGLE",
+    DINO_3 = "DINO_3",
+    DRAGON_3 = "DRAGON_3",
+    ELEPHANT = "ELEPHANT",
+    FISH_2 = "FISH_2",
+    LOBSTER_2 = "LOBSTER_2",
+    CAT_2 = "CAT_2",
+    BIRD_2 = "BIRD_2",
+    NOT = "NOT",
+}
+
+export const hackerIconPath = (type: string) => {
+    const fileName = iconFilename[type]
+    const theme = "frontier"
+    const root = "/img/" + theme + "/actors/hackers/";
+    return root + fileName;
+}
+
+const iconFilename: { [key: string]: string } = {
 
     "BEAR": "animal-bear4-sc44.png",
     "BIRD_1": "animal-bird2.png",
