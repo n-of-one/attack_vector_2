@@ -316,13 +316,15 @@ a.textLink {
     color: #aaa;
 }
 
-.countdown {
-    color: RED;
+.timer {
+    /*color: RED;*/
     /*top: 1px;*/
     left: 200px;
-    position: relative;
+    /*position: relative;*/
     z-index: 100;
 }
+
+
 
 .svg-color-royalblue {
     filter: invert(52%) sepia(91%) saturate(5135%) hue-rotate(215deg) brightness(93%) contrast(88%);

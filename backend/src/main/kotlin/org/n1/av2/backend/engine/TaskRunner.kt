@@ -110,7 +110,9 @@ class TaskEngine(
     }
 
     private fun runTask() {
+//        println("waiting for task")
         val task = queue.take()
+//        println("task received")
 
         if (!running) return // this will happen if fun terminate() unblocked the queue.
         try {

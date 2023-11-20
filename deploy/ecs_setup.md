@@ -71,6 +71,10 @@ Create a new endpoint
 
 Go to the ECR service in AWS. Create a new private repository.
 
+## Push your docker to ECR
+
+See backend/doc/Docker.txt for details on this.
+
 ## Create Cloudwatch log group
 
 Go to the Cloudwatch service in AWS.
