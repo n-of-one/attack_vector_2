@@ -1,7 +1,7 @@
 import React from 'react';
 import {useSelector} from "react-redux";
 import {HackerState} from "../../hacker/HackerRootReducer";
-import {hackerIconFilename} from "../canvas/HackerIconFilename";
+import {hackerIconPath} from "../users/HackerIcon";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -12,14 +12,9 @@ interface Props {
 
 export const HackerImage = ({type, onLoad}: Props) => {
 
-    const fileName = hackerIconFilename[type]
-
-    const theme = useSelector((state: HackerState) => state.theme)
-
-    const root = "/img/" + theme + "/actors/hackers/";
-    const dirAndName = root + fileName;
+    const iconPath = hackerIconPath(type)
 
     return (
-        <img src={dirAndName} height="80" width="80" id={type} onLoad={onLoad}/>
+        <img src={iconPath} height="80" width="80" id={type} onLoad={onLoad}/>
     )
 }

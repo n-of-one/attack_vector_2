@@ -37,12 +37,13 @@ class UserService(
     }
 
     fun createFromScreen(name: String, externalId: String? = null) {
-        val user = create(name, externalId)
+        val hacker = Hacker(HackerIcon.KOALA, HackerSkill(1,0,0), "anonymous")
+        val user = create(name, externalId, UserType.HACKER, hacker)
         overview()
         select(user.id)
     }
 
-    fun create(name: String, externalId: String? = null, type: UserType = UserType.HACKER, hacker: Hacker? = null): UserEntity {
+    fun create(name: String, externalId: String? = null, type: UserType, hacker: Hacker?): UserEntity {
         if (userEntityService.findByNameIgnoreCase(name) != null) {
             throw ValidationException("User with name $name already exists.")
         }
@@ -53,7 +54,8 @@ class UserService(
             email = "",
             name = name,
             type = type,
-            hacker = hacker
+            hacker = hacker,
+
         )
         return userEntityService.save(userEntityInput)
     }

@@ -1,4 +1,5 @@
 import {AnyAction} from "redux";
+import {HackerIcon} from "./HackerIcon";
 
 export const SERVER_USER_DETAILS = "SERVER_USER_DETAILS"
 
@@ -21,6 +22,7 @@ export interface User {
 
 export interface Hacker {
     characterName: string,
+    icon: HackerIcon,
     skill: HackerSkill,
 }
 
