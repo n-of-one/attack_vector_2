@@ -43,7 +43,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/ice/**").permitAll()
             .requestMatchers("/manual/**").permitAll()
             .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/asset-manifest.json").permitAll()
-            .requestMatchers("/localLogout", "/loggedOut", "/login", "/sso",).permitAll()
+            .requestMatchers("/localLogout", "/loggedOut", "/login", "/sso").permitAll()
             .requestMatchers("/about").permitAll()
             .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
             .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)
@@ -63,7 +63,6 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .and()
             .csrf()
             .disable()
-            .cors().disable()
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
@@ -93,6 +92,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 @Configuration
 class WebConfiguration : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost.eosfrontier.space").allowedMethods("*")
+        registry.addMapping("/**").allowedOrigins("*").allowedMethods("*")
     }
 }
+
