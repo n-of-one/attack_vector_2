@@ -125,6 +125,7 @@ class StompConfig(
             logger.debug { "<= connect ${userPrincipal.name}" }
             SecurityContextHolder.getContext().authentication = userPrincipal
             stompConnectionEventService.connect(userPrincipal)
+            stompConnectionEventService.sendTime(userPrincipal)
         } finally {
             SecurityContextHolder.clearContext()
         }
@@ -140,7 +141,5 @@ class StompConfig(
     @EventListener
     fun handleSubscribeEvent(event: SessionSubscribeEvent) {
         logger.debug { "<= subscribe ${event.user!!.name} ${event.message.headers["nativeHeaders"]}" }
-        val principal = event.user!! as UserPrincipal
-        stompConnectionEventService.sendTime(principal)
     }
 }

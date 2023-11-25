@@ -22,28 +22,28 @@ class UserEntityService(
 
     @PostConstruct
     fun createMandatoryUsers() {
-        mandatoryUser("admin", "", UserType.ADMIN)
-        mandatoryUser("gm", "", UserType.GM)
-        mandatoryUser("hacker", "hacker@mailinator.com", UserType.HACKER, HackerIcon.CROCODILE)
-        mandatoryUser("h", "h@mailinator.com", UserType.HACKER, HackerIcon.KOALA)
-        mandatoryUser("Stalker", "stalker@mailinator.com", UserType.HACKER, HackerIcon.BEAR)
-        mandatoryUser("Obsidian", "obsidian@mailinator.com", UserType.HACKER, HackerIcon.BIRD_1)
-        mandatoryUser("Paradox", "paradox@mailinator.com", UserType.HACKER, HackerIcon.BULL)
-        mandatoryUser("Shade_zero", "Shade_zero@mailinator.com", UserType.HACKER, HackerIcon.EAGLE)
-        mandatoryUser("eternity", "eternity@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
-        mandatoryUser("BoltBishop", "boltbishop@mailinator.com", UserType.HACKER, HackerIcon.DRAGON_1)
-        mandatoryUser("CryptoLaw", "cryptoLaw@mailinator.com", UserType.HACKER, HackerIcon.FROG)
-        mandatoryUser("Moonshine", "moonshine@mailinator.com", UserType.HACKER, HackerIcon.LION)
-        mandatoryUser("Angler", "angler@mailinator.com", UserType.HACKER, HackerIcon.SHARK)
-        mandatoryUser("N1X", "N1X@mailinator.com", UserType.HACKER, HackerIcon.STINGRAY)
-        mandatoryUser("Face.dread", "face.dread@mailinator.com", UserType.HACKER, HackerIcon.LIZARD)
-        mandatoryUser("Silver", "silver@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
-        mandatoryUser("C_H_I_E_F", "c_h_i_e_f@mailinator.com", UserType.HACKER_MANAGER, HackerIcon.WOLF)
-        mandatoryUser("Specter", "specter@mailinator.com", UserType.HACKER, HackerIcon.UNICORN)
+        createUser("admin", "", UserType.ADMIN)
+        createUser("gm", "", UserType.GM)
+        createUser("hacker", "hacker@mailinator.com", UserType.HACKER, HackerIcon.CROCODILE)
+        createUser("h", "h@mailinator.com", UserType.HACKER, HackerIcon.KOALA)
+        createUser("Stalker", "stalker@mailinator.com", UserType.HACKER, HackerIcon.BEAR)
+        createUser("Obsidian", "obsidian@mailinator.com", UserType.HACKER, HackerIcon.BIRD_1)
+        createUser("Paradox", "paradox@mailinator.com", UserType.HACKER, HackerIcon.BULL)
+        createUser("Shade_zero", "Shade_zero@mailinator.com", UserType.HACKER, HackerIcon.EAGLE)
+        createUser("eternity", "eternity@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
+        createUser("BoltBishop", "boltbishop@mailinator.com", UserType.HACKER, HackerIcon.DRAGON_1)
+        createUser("CryptoLaw", "cryptoLaw@mailinator.com", UserType.HACKER, HackerIcon.FROG)
+        createUser("Moonshine", "moonshine@mailinator.com", UserType.HACKER, HackerIcon.LION)
+        createUser("Angler", "angler@mailinator.com", UserType.HACKER, HackerIcon.SHARK)
+        createUser("N1X", "N1X@mailinator.com", UserType.HACKER, HackerIcon.STINGRAY)
+        createUser("Face.dread", "face.dread@mailinator.com", UserType.HACKER, HackerIcon.LIZARD)
+        createUser("Silver", "silver@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
+        createUser("C_H_I_E_F", "c_h_i_e_f@mailinator.com", UserType.HACKER_MANAGER, HackerIcon.WOLF)
+        createUser("Specter", "specter@mailinator.com", UserType.HACKER, HackerIcon.UNICORN)
     }
 
 
-    fun mandatoryUser(userName: String, email: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
+    fun createUser(userName: String, email: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
         val user = findByNameIgnoreCase(userName)
         if (user != null) return
 

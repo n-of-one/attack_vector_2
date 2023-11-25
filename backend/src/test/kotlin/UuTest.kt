@@ -24,7 +24,7 @@ fun deterministicShuffle(numbers: MutableList<Int>, seed: Int) {
 }
 
 fun main() {
-    val numbers = (1..100).toMutableList()
+    val numbers = (1..10).toMutableList()
     deterministicShuffle(numbers, 12345) // Replace 12345 with any integer seed
 
     println("---")

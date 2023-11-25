@@ -7,20 +7,20 @@ interface SimpleLogin {
 }
 
 const simpleLogins = [
-    {name: "[Corne]", login: "Stalker"},
-    {name: "[Josh]", login: "Shade_zero"},
-    {name: "[Rob]", login: "Paradox"},
-    {name: "[Sander]", login: "Angler"},
-    {name: "[Silvester]", login: "eternity"},
-    {name: "[Thijs]", login: "C_H_I_E_F"},
-    {name: "[Verik]", login: "Silver"},
-    {name: "*unclaimed*", login: "Obsidian"},
-    {name: "*unclaimed*", login: "BoltBishop"},
-    {name: "*unclaimed*", login: "CryptoLaw"},
-    {name: "*unclaimed*", login: "Moonshine"},
-    {name: "*unclaimed*", login: "N1X"},
-    {name: "*unclaimed*", login: "Face.dread"},
-    {name: "*unclaimed*", login: "Specter"},
+    {name: "", login: "Stalker"},
+    {name: "", login: "Shade_zero"},
+    {name: "", login: "Paradox"},
+    {name: "", login: "Angler"},
+    {name: "", login: "eternity"},
+    {name: "", login: "C_H_I_E_F"},
+    {name: "", login: "Silver"},
+    {name: "", login: "Obsidian"},
+    {name: "", login: "BoltBishop"},
+    {name: "", login: "CryptoLaw"},
+    {name: "", login: "Moonshine"},
+    {name: "", login: "N1X"},
+    {name: "", login: "Face.dread"},
+    {name: "", login: "Specter"},
 ]
 
 if (window.location.port === "3000") {

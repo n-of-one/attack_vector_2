@@ -84,7 +84,6 @@ class TimedTaskRunner(
 
     fun removeAll(identifiers: TaskIdentifiers) {
         lock.withLock {
-            println("Before")
             timedTasks.forEach { task ->
                 println( "identifiers: ${task.identifiers} ${task.due}")
             }
@@ -98,7 +97,6 @@ class TimedTaskRunner(
                 taskEngine.removeForUser(identifiers.userId)
             }
 
-            println("After")
             timedTasks.forEach { task ->
                 println( "identifiers: ${task.identifiers} ${task.due}")
             }

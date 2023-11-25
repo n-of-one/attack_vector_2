@@ -8,6 +8,7 @@ import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.model.ui.NodeScanType.SCAN_CONNECTIONS
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.run.terminal.inside.HACKER_SCANS_NODE_Timings
@@ -32,10 +33,11 @@ class ScanningService(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    fun scanFromOutside(run: Run, node: Node) {
+    fun scanFromOutside(run: Run, targetNode: Node) {
+        doubleCheckNodeStatus(targetNode)
         val nodes = nodeEntityService.getAll(run.siteId)
         val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(run, nodes)
-        val targetTraverseNode: TraverseNode = traverseNodesById[node.id]!!
+        val targetTraverseNode: TraverseNode = traverseNodesById[targetNode.id]!!
         val path = createNodePath(targetTraverseNode)
 
         if (pathCrossesIce(path, nodes)) {
@@ -50,15 +52,16 @@ class ScanningService(
         )
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-        userTaskRunner.queueInTicksForSite(node.siteId, totalTicks - 20) {
-            scanResultService.areaScan(run, node)
+        userTaskRunner.queueInTicksForSite(targetNode.siteId, totalTicks - 20) {
+            scanResultService.areaScan(run, targetNode)
         }
     }
 
-    fun scanFromInside(run: Run, node: Node) {
-        stompService.toRun(run.runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to currentUserService.userId, "nodeId" to node.id, "timings" to HACKER_SCANS_NODE_Timings)
+    fun scanFromInside(run: Run, targetNode: Node) {
+        doubleCheckNodeStatus(targetNode)
+        stompService.toRun(run.runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to currentUserService.userId, "nodeId" to targetNode.id, "timings" to HACKER_SCANS_NODE_Timings)
         userTaskRunner.queueInTicksForSite(run.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
-            scanResultService.areaScan(run, node)
+            scanResultService.areaScan(run, targetNode)
         }
     }
 
@@ -82,6 +85,17 @@ class ScanningService(
                 return true
         }
         return false
+    }
+
+    // Fix bug where node was not marked as hacked
+    private fun doubleCheckNodeStatus(node: Node) {
+        if (!node.ice || node.hacked) return
+        val shouldBeHacked = node.layers.filterIsInstance<IceLayer>().any { ! it.hacked }
+        if (shouldBeHacked) {
+            val hackedNode = node.copy(hacked = true)
+            nodeEntityService.save(node)
+        }
+
     }
 
 

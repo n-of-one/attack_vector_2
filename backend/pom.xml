@@ -25,6 +25,7 @@
 
 		<java.version>17</java.version>
 		<kotlin.version>1.8.10</kotlin.version>
+		<kotlinx-coroutines-core.version>1.7.3</kotlinx-coroutines-core.version>
 
 		<kotlin-logging>3.0.3</kotlin-logging>
 		<logback-classic>1.4.5</logback-classic>
@@ -81,6 +82,11 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
@@ -99,6 +105,15 @@
 			<version>${annotation-api}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core -->
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-coroutines-core</artifactId>
+			<version>${kotlinx-coroutines-core.version}</version>
+			<type>pom</type>
+		</dependency>
+
+
 
 		<dependency>
 			<groupId>io.github.microutils</groupId>
@@ -110,11 +125,11 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${logback-classic}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>${gson}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.google.code.gson</groupId>-->
+<!--			<artifactId>gson</artifactId>-->
+<!--			<version>${gson}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-kotlin</artifactId>
