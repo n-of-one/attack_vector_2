@@ -42,11 +42,12 @@ export enum HackerIcon {
     NOT = "NOT",
 }
 
-export const hackerIconPath = (type: string) => {
+export const hackerIconPath = (type: string, you: boolean) => {
     const fileName = iconFilename[type]
     const theme = "frontier"
     const root = "/img/" + theme + "/actors/hackers/";
-    return root + fileName;
+    const color = you ? "red/" : "yellow/";
+    return root + color + fileName;
 }
 
 const iconFilename: { [key: string]: string } = {

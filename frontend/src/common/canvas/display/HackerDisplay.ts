@@ -129,7 +129,8 @@ export class HackerDisplay implements Display {
     }
 
     createHackerIcon(scale: number, opacity: number, display: Display, offsetX: number = 0, offsetY: number = 0) {
-        const image = getHtmlImage(this.hackerData.icon)
+        const id = this.you ? `${this.hackerData.icon}-red` : this.hackerData.icon
+        const image = getHtmlImage(id)
         const icon = new fabric.Image(image, {
             left: display.x + offsetX,
             top: display.y + offsetY,
