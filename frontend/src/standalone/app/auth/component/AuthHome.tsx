@@ -8,6 +8,7 @@ import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_PASSWORD_CORRECT, UI_STATE_SU
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {avEncodedUrl} from "../../../../common/util/Util";
 import {ice, layer} from "../../../StandaloneGlobals";
+import {CloseTabButton} from "../../../ice/common/CloseTabButton";
 
 export const AuthHome = () => {
 
@@ -18,8 +19,13 @@ export const AuthHome = () => {
         <>
             <div className="row">
                 <div className="col-lg-12">
-                    <br/>
-                    <br/>
+                    <span className="d-flex flex-row-reverse">
+                        <CloseTabButton/>
+                    </span>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-lg-12">
                     <div className="d-flex justify-content-center">
                         <h2 className="text-info">
                             <strong>Authorization required</strong>

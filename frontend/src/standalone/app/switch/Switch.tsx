@@ -3,6 +3,7 @@ import {useSelector} from "react-redux";
 import {SwitchRootState, SwitchState} from "./SwitchReducers";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {app} from "../../StandaloneGlobals";
+import {CloseTabButton} from "../../ice/common/CloseTabButton";
 
 
 export const Switch = () => {
@@ -25,7 +26,10 @@ export const Switch = () => {
             <div className="container-fluid" data-bs-theme="dark">
                 <div className="row">
                     <div className="col-12">
+                        <span className="d-flex justify-content-between">
                         <h2>Switch {id}</h2>
+                        <CloseTabButton/>
+                        </span>
                     </div>
                 </div>
                 <div className="d-flex flex-row mb-3">

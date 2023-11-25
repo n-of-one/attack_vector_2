@@ -337,3 +337,17 @@ a.textLink {
 .svg-color-white {
     filter: invert(88%) sepia(46%) saturate(3%) hue-rotate(118deg) brightness(114%) contrast(100%);
 }
+
+.closeButtonLarge {
+    top: 10px;
+    height: 25px;
+    width: 25px;
+}
+
+.closeButtonLargeIcon {
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    top: -1px!important;
+    left: -1px!important;
+}

@@ -1,5 +1,6 @@
 import React from "react";
 import {IceStrength} from "../../../common/model/IceStrength";
+import {CloseTabButton} from "./CloseTabButton";
 
 
 interface Props {
@@ -20,7 +21,7 @@ const strengthDescription = (strength: IceStrength) => {
         case IceStrength.VERY_STRONG:
             return "Very strong"
         case IceStrength.ONYX:
-            return "Onxy"
+            return "Onyx"
         default:
             return ""
     }
@@ -28,10 +29,11 @@ const strengthDescription = (strength: IceStrength) => {
 }
 
 export const IceTitle = ({name, strength}: Props) => {
-    return <h4 className="text-success">
+    return <h4 className="text-success d-flex justify-content-between">
         <strong>
             Ice: <span className="text-info">{name}</span>&nbsp;<br/>
             Strength: <span className="text-info">{strengthDescription(strength)}</span><br/>
         </strong>
+        <CloseTabButton/>
     </h4>
 }
