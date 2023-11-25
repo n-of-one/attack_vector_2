@@ -6,6 +6,7 @@ import {notify} from "../../common/util/Notification"
 import {SilentLink} from "../../common/component/SilentLink"
 import {GmSite, RECEIVE_SITES} from "./GmSitesReducer"
 import {GmState} from "../GmRootReducer";
+import {webSocketConnection} from "../../common/server/WebSocketConnection";
 
 /* eslint react-hooks/exhaustive-deps: 0*/
 
@@ -64,7 +65,17 @@ export const GmSites = () => {
         }
     }
 
+    const resetSite = (siteId: string, name: string) => {
+        if (window.confirm(`Confirm that you want to reset site ${name}. (Refresh ICE, reset all timers, change non-hardcoded passwords, ...)`)) {
+            webSocketConnection.send("/av/site/resetSite", siteId)
+        }
+    }
 
+    const deleteRuns = (siteId: string, name: string) => {
+        if (window.confirm(`Confirm that you want to delete all runs for this site? This will also reset the site (refresh ICE, etc.)`)) {
+            webSocketConnection.send("/av/site/deleteRuns", siteId)
+        }
+    }
     return (
         <div className="row">
             <div className="col-lg-2">
@@ -98,7 +109,7 @@ export const GmSites = () => {
                             {/*<td className="text-strong">Link</td>*/}
                             <td className="strong">Name</td>
                             {/*<td className="text-strong">Hackable</td>*/}
-                            {/*<td className="text-strong">Action</td>*/}
+                            <td className="strong">Actions</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -113,9 +124,21 @@ export const GmSites = () => {
                                         </td>
                                         <td>
                                             <SilentLink onClick={() => {
-                                                deleteSite(site.id, site.name);
-                                            }}>
+                                                resetSite(site.id, site.name);
+                                            }} title="Reset site">
+                                                <span className="glyphicon glyphicon-refresh"/>
+                                            </SilentLink>
+                                            &nbsp;
+                                            <SilentLink onClick={() => {
+                                                deleteRuns(site.id, site.name);
+                                            }} title="Delete all runs">
                                                 <span className="glyphicon glyphicon-remove-circle"/>
+                                            </SilentLink>
+                                            &nbsp;
+                                            <SilentLink onClick={() => {
+                                                deleteSite(site.id, site.name);
+                                            }} title="Delete site">
+                                                <span className="glyphicon glyphicon-trash"/>
                                             </SilentLink>
                                         </td>
                                     </tr>)

@@ -58,13 +58,23 @@ class ScanAndRunController(
     }
 
 
-    //     --- --- --- --- For testing purposes
+    //     --- --- --- --- For GMs
 
-    @MessageMapping("/scan/refreshIce")
-    fun refreshIce(siteId: String, userPrincipal: UserPrincipal) {
+    @MessageMapping("/site/resetSite")
+    fun resetSite(siteId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            runService.gmRefreshSite(siteId)
+            siteService.refreshSite(siteId, "00:00")
+            stompService.replyMessage(NotyMessage.neutral("site reset"))
+        }
+    }
+
+    @MessageMapping("/site/deleteRuns")
+    fun deleteRuns(siteId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             siteService.refreshSite(siteId, "00:00")
-            stompService.replyMessage(NotyMessage.neutral("site refreshed"))
+            val count = runService.deleteRuns(siteId)
+            stompService.replyMessage(NotyMessage.neutral("Site reset and ${count} runs removed"))
         }
     }
 

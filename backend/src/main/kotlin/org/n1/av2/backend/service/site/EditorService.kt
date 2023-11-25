@@ -183,7 +183,7 @@ class EditorService(
     }
 
     fun deleteSite(siteId: String, userPrincipal: UserPrincipal) {
-        runService.deleteSite(siteId)
+        runService.deleteRuns(siteId)
         siteService.removeSite(siteId, userPrincipal)
     }
 

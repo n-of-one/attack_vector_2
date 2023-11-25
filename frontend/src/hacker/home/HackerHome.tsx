@@ -120,7 +120,7 @@ const DeleteScanLink = (props: { runId: string }) => {
         webSocketConnection.send("/av/scan/deleteScan", props.runId)
     }
 
-    return <SilentLink onClick={deleteScan}>
+    return <SilentLink onClick={deleteScan} title="Remove run">
         <span className="glyphicon glyphicon-remove-circle"/>
     </SilentLink>
 }
@@ -135,7 +135,7 @@ const ResetIceLink = (props: { siteId: string }) => {
     }
 
     return <>
-        &nbsp;<SilentLink onClick={resetIce}>
+        &nbsp;<SilentLink onClick={resetIce} title="Reset site">
         <span className="glyphicon glyphicon-refresh"/>
     </SilentLink>
     </>

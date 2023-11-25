@@ -32,8 +32,8 @@ class UserRunLinkEntityService(
         return userRunLinkRepo.findAllByUserId(userId)
     }
 
-    fun deleteAllForRuns(runs: List<Run>) {
-        runs.forEach { userRunLinkRepo.deleteAllByRunId(it.runId) }
+    fun deleteAllForRun(run: Run) {
+        userRunLinkRepo.deleteAllByRunId(run.runId)
     }
 
 }

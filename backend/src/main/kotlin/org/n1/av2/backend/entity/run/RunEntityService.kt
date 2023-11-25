@@ -36,12 +36,8 @@ class RunEntityService(
         return runRepo.findByRunIdIn(runIds)
     }
 
-    fun deleteAllForSite(siteId: String): List<Run> {
-        return runRepo
-            .findBySiteId(siteId)
-            .onEach {
-                runRepo.delete(it)
-            }
+    fun delete(run: Run) {
+        runRepo.delete(run)
     }
 
     fun findAllForSiteId(siteId: String): List<Run> {

@@ -130,35 +130,6 @@ class RunService(
         hackerStateEntityService.leaveSite(hackerState)
     }
 
-    fun deleteSite(siteId: String) {
-        val siteProps = sitePropertiesEntityService.getBySiteId(siteId)
-        val runs = runEntityService.findAllForSiteId(siteId)
-
-        userRunLinkEntityService.deleteAllForRuns(runs)
-
-        val identifiers = TaskIdentifiers(null, siteId, null)
-        timedTaskRunner.removeAll(identifiers)
-
-        runs.map { run -> hackerStateEntityService.findAllHackersInRun(run.runId) }
-            .flatten()
-            .onEach { hackerState: HackerState ->
-                scanInfoService.sendScanInfosOfPlayer(hackerState.userId)
-                hackerStateEntityService.leaveSite(hackerState)
-                timedTaskRunner.removeAllForUser(hackerState.userId)
-            }
-
-        runs.forEach { run ->
-            stompService.toRun(
-                run.runId,
-                ServerActions.SERVER_NOTIFICATION,
-                NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteProps.name}")
-            )
-            // FIXME: properly inform browser that they need to move to home screen
-//            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
-        }
-
-        timerEntityService.deleteBySiteId(siteId)
-    }
 
     fun updateNodeStatusToHacked(node: Node) {
         val runs = runEntityService.findAllForSiteId(node.siteId)
@@ -181,5 +152,49 @@ class RunService(
                 }
             runEntityService.save(run)
         }
+    }
+
+    fun gmRefreshSite(siteId: String) {
+        val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
+        stompService.toSite( siteId,
+            ServerActions.SERVER_TERMINAL_RECEIVE,
+            StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site reboot"))
+        )
+        hackerStates
+            .filter { it.activity == HackerActivity.INSIDE }
+            .forEach { hackerState ->
+                hackerDisconnect(hackerState, "Disconnected (server abort)")
+            }
+    }
+
+    fun deleteRuns(siteId: String): Int {
+        timerEntityService.deleteBySiteId(siteId)
+        timedTaskRunner.removeAll(TaskIdentifiers(null, siteId, null))
+
+        val siteName = sitePropertiesEntityService.getBySiteId(siteId).name
+        val runs = runEntityService.findAllForSiteId(siteId)
+        runs.forEach { deleteRun(it, siteName) }
+
+        return runs.size
+    }
+
+    private fun deleteRun(run: Run, siteName: String) {
+        userRunLinkEntityService.deleteAllForRun(run)
+        runEntityService.delete(run)
+
+        hackerStateEntityService.findAllHackersInRun(run.runId)
+            .onEach { hackerState: HackerState ->
+                scanInfoService.sendScanInfosOfPlayer(hackerState.userId)
+                hackerStateEntityService.leaveSite(hackerState)
+                timedTaskRunner.removeAllForUser(hackerState.userId)
+            }
+
+        stompService.toRun(
+            run.runId,
+            ServerActions.SERVER_NOTIFICATION,
+            NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteName}")
+        )
+        // FIXME: properly inform browser that they need to move to home screen
+//            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
     }
 }
