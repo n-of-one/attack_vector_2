@@ -21,7 +21,7 @@ class CommandScanService(
 
     fun processScanFromOutside(run: Run, tokens: List<String>) {
         if (tokens.size == 1) {
-            stompService.replyTerminalReceive("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/] . Or did you mean [u]autoscan[/]?")
+            stompService.replyTerminalReceive("[warn]error[/] - Missing [ok]<network id>[/], for example: [u]scan[/] [ok]00[/]?")
             return
         }
         val networkId = tokens[1]
@@ -44,8 +44,7 @@ class CommandScanService(
 
     fun processScanFromInside(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size > 1) {
-            stompService.replyTerminalReceive("[warn]error[/] too many arguments. Can only scan current node. Try: [u]scan")
-            return
+            stompService.replyTerminalReceive("ignoring arguments, scanning current node")
         }
         stompService.replyTerminalSetLocked(true)
         val run = runEntityService.getByRunId(runId)
