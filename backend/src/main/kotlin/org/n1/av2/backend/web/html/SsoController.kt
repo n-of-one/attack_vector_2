@@ -29,9 +29,11 @@ class SsoController(
     @ResponseBody
     fun sso(request: HttpServletRequest, response: HttpServletResponse, @LoginRedirectParam @RequestParam next: String?): String {
         val cookies = request.cookies ?: emptyArray()
-        val frontierHackerInfo =
-            frontierService.getFrontierHackerInfo(cookies) ?: return "Please log in to <a href=\"https://eosfrontier.space\" target=\"eosFrontier\">Eos Frontier</a> first, and then come back to this page."
-
+        val frontierHackerInfo = frontierService.getFrontierHackerInfo(cookies)
+        if (frontierHackerInfo == null) {
+            response.sendRedirect("https://www.eosfrontier.space/return-to-attack-vector")
+            return ""
+        }
         val user = getOrCreateUser(frontierHackerInfo)
         val updatedUser = updateUserInfo(user, frontierHackerInfo)
 
