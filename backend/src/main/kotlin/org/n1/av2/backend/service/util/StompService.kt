@@ -36,7 +36,7 @@ class StompService(
         }
     }
 
-    private fun sendToDestination(path: String, actionType: ServerActions, data: Array<*>) {
+    fun sendToDestination(path: String, actionType: ServerActions, data: Array<*>) {
         simulateNonLocalhost()
         logger.debug("-> ${path} ${actionType}")
 

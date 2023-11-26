@@ -42,7 +42,7 @@ export const TextInput = (props: Props) => {
             <div className="col-lg-6" style={{fontSize: "12px"}}>
                 <input type="text" className="form-control"
                        placeholder={props.placeholder}
-                       // value={text}
+                       value={text}
                        onChange={(event) => handleChange(event)}
                        onKeyDown={(event) => handleKeyDown(event)}
                        autoFocus={autofocus}

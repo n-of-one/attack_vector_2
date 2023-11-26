@@ -66,6 +66,7 @@ class StompConfig(
             .setAllowedOrigins("*")
             .setHandshakeHandler(UnauthenticatedHandshakeHandler())
 
+        registry.setPreserveReceiveOrder(true);
 
         class AuthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
@@ -109,6 +110,8 @@ class StompConfig(
         registry.setApplicationDestinationPrefixes("/av")
         registry.enableSimpleBroker("/topic", "/reply", "/error")
         registry.setUserDestinationPrefix("/user")
+        registry.setPreservePublishOrder(true)
+
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {
