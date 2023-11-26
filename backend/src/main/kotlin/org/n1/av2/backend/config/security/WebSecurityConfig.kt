@@ -63,6 +63,9 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .and()
             .csrf()
             .disable()
+            .headers()
+            .frameOptions()
+            .disable()
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
