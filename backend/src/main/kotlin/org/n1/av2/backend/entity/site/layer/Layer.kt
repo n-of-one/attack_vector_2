@@ -8,7 +8,7 @@ import org.n1.av2.backend.model.ui.ValidationException
 private const val NAME = "name"
 private const val NOTE = "note"
 
-abstract class Layer(
+open class Layer(
     val id: String,
     val type: LayerType,
     var level: Int,

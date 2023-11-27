@@ -1,15 +1,13 @@
 package org.n1.av2.backend.integration
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.n1.av2.backend.integration.stomp.HackerClient
 import org.n1.av2.backend.integration.stomp.StompClientService
-import org.n1.av2.backend.service.site.ScanInfoService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -31,65 +29,58 @@ class WebsocketTest {
     }
 
 
-
     @Test
     fun testWebSocketCommunication(): Unit = runBlocking {
 
-        val followerCount = 2
+        // FIXME auto-create a site with two nodes.
+
+        val followerCount = 10
 
         val followers = (1..followerCount).map { stompClientService.createAndConnect("$it") }
-        followers.forEach {follower ->
-            follower.removeUserScans()
-        }
 
         val leader = stompClientService.createAndConnect("leader")
-        leader.removeUserScans()
-        leader.enterAndScan("test")
+        leader.startRun("test")
+        leader.scan()
 
-
-        followers.forEach {follower ->
+        followers.forEach { follower ->
             leader.shareSiteWith(follower)
         }
 
 
-//        followers.forEach {follower ->
-//            attackAndMove(follower, leader.siteId, leader.runId)
-//        }
+        followers.all { follower ->
+            follower.waitForSiteInfo("test")
+            follower.joinRun()
+            follower.startAttack()
+        }
 
-
-
-
-
-//
-
-
-//        val hackers = listOf(
-////            "Stalker",
-////            "Shade_zero",
-////        )
-//        hackers.forEach {name ->
-//            launch {
-//                attackAndMove(name)
-//                delay(1000)
-//            }
-//            delay(10)
-//        }
-
-
-//        Thread.sleep(1000)
-//        println("before send")
-//        avClient.send("/av/scan/scansOfPlayer", "")
-//
-//        Thread.sleep(1000)
+        (1..2).forEach {
+            moveBackAndForth(followers)
+        }
     }
 
-    private suspend fun attackAndMove(hacker: HackerClient) {
-        hacker.connectTo("site-49c3-434b", "run-9ec8-447a")
-        hacker.startAttack()
-        hacker.waitForAttackArrive()
-        hacker.move("01")
-        hacker.waitForMoveArrive()
+    private suspend fun moveBackAndForth(followers: List<HackerClient>) {
+        followers.all { follower ->
+            follower.move("01")
+        }
+        followers.all { follower ->
+            follower.move("00")
+        }
     }
+
+
+    suspend fun List<HackerClient>.all(action: suspend (HackerClient) -> Unit) {
+        val followers = this
+
+        runBlocking {
+            val jobs = followers.map { follower ->
+                launch {
+                    action(follower)
+                }
+            }
+            jobs.joinAll()
+        }
+    }
+
 
 }
 

@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.user
 
 import org.n1.av2.backend.entity.run.HackerStateEntityService
+import org.n1.av2.backend.entity.run.UserRunLinkEntityService
 import org.n1.av2.backend.entity.user.*
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
@@ -14,6 +15,7 @@ class UserService(
     private val userEntityService: UserEntityService,
     private val stompService: StompService,
     private val hackerStateEntityService: HackerStateEntityService,
+    private val userRunLinkEntityService: UserRunLinkEntityService,
 ) {
 
     class UserOverview(
@@ -114,6 +116,7 @@ class UserService(
     fun delete(userId: String) {
         if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
 
+        userRunLinkEntityService.deleteAllForUser(userId)
         userEntityService.delete(userId)
         overview()
         stompService.replyNeutral("User deleted")

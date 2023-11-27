@@ -17,4 +17,5 @@ interface UserRunLinkRepo : CrudRepository<UserRunLink, String> {
     fun findByUserIdAndRunId(userId: String, runId: String): UserRunLink?
     fun deleteByUserIdAndRunId(userId: String, runId: String)
     fun deleteAllByRunId(runId: String)
+    fun deleteAllByUserId(userId: String)
 }

@@ -25,21 +25,9 @@ class UserEntityService(
         createUser("admin", "", UserType.ADMIN)
         createUser("gm", "", UserType.GM)
         createUser("hacker", "hacker@mailinator.com", UserType.HACKER, HackerIcon.CROCODILE)
-        createUser("h", "h@mailinator.com", UserType.HACKER, HackerIcon.KOALA)
         createUser("Stalker", "stalker@mailinator.com", UserType.HACKER, HackerIcon.BEAR)
-        createUser("Obsidian", "obsidian@mailinator.com", UserType.HACKER, HackerIcon.BIRD_1)
         createUser("Paradox", "paradox@mailinator.com", UserType.HACKER, HackerIcon.BULL)
-        createUser("Shade_zero", "Shade_zero@mailinator.com", UserType.HACKER, HackerIcon.EAGLE)
-        createUser("eternity", "eternity@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
-        createUser("BoltBishop", "boltbishop@mailinator.com", UserType.HACKER, HackerIcon.DRAGON_1)
-        createUser("CryptoLaw", "cryptoLaw@mailinator.com", UserType.HACKER, HackerIcon.FROG)
-        createUser("Moonshine", "moonshine@mailinator.com", UserType.HACKER, HackerIcon.LION)
         createUser("Angler", "angler@mailinator.com", UserType.HACKER, HackerIcon.SHARK)
-        createUser("N1X", "N1X@mailinator.com", UserType.HACKER, HackerIcon.STINGRAY)
-        createUser("Face.dread", "face.dread@mailinator.com", UserType.HACKER, HackerIcon.LIZARD)
-        createUser("Silver", "silver@mailinator.com", UserType.HACKER, HackerIcon.COBRA)
-        createUser("C_H_I_E_F", "c_h_i_e_f@mailinator.com", UserType.HACKER_MANAGER, HackerIcon.WOLF)
-        createUser("Specter", "specter@mailinator.com", UserType.HACKER, HackerIcon.UNICORN)
     }
 
 
@@ -94,4 +82,31 @@ class UserEntityService(
     }
 
 
+
+    fun createUserForTest(name: String) {
+        val newUserEntity = UserEntity(
+            id = testUserId(name),
+            name = name,
+            type = UserType.HACKER,
+            hacker = Hacker(
+                icon = HackerIcon.COBRA,
+                skill = HackerSkill(5, 0, 0),
+                characterName = "char for ${name}"
+            ),
+            email = "",
+        )
+        userRepo.save(newUserEntity)
+    }
+
+    fun deleteTestUserIfExists(name: String) {
+        val id = testUserId(name)
+        if (userRepo.existsById(id)) {
+            userRepo.deleteById(id)
+        }
+    }
+
+
+    private fun testUserId(name: String): String {
+        return name
+    }
 }

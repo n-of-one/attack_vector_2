@@ -36,7 +36,7 @@ class AvClient(
     private var stompSessionFuture: CompletableFuture<StompSession>? = null
     private lateinit var stompSession: StompSession
 
-    fun connect() {
+    suspend fun connect() {
         val webSocketClient: WebSocketClient = StandardWebSocketClient()
         val stompClient = WebSocketStompClient(webSocketClient)
         stompClient.defaultHeartbeat = longArrayOf(0, 0)
@@ -48,19 +48,18 @@ class AvClient(
 
         this.stompSessionFuture = stompClient.connectAsync(url, headers, sessionHandler)
 
-    }
-
-    fun send(destination: String, payload: Any) {
-        sessionHandler.send(destination, payload)
-    }
-
-    suspend fun waitForConnection() {
-        stompSession = stompSessionFuture!!.await()
+        this.stompSession = this.stompSessionFuture!!.await()
 
         subscribe("/user/reply")
         subscribe("/topic/user/${sessionHandler.userAndConnectionName}")
         subscribe("/topic/user/${sessionHandler.userName}")
     }
+
+
+    fun send(destination: String, payload: Any) {
+        sessionHandler.send(destination, payload)
+    }
+
 
     fun subscribe(topic: String) {
         this.sessionHandler.subscribe(topic)

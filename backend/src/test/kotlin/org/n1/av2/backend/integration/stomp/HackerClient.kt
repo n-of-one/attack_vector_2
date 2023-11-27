@@ -1,11 +1,11 @@
 package org.n1.av2.backend.integration.stomp
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.ScanInfoService
 
 class HackerClient(
@@ -15,49 +15,24 @@ class HackerClient(
 
     private lateinit var siteId: String
     private lateinit var runId: String
+    private lateinit var siteInfo: RunService.SiteInfo
     private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).registerKotlinModule()
 
 
-    suspend fun waitForConnection() {
-        client.waitForConnection()
-    }
 
-    suspend fun connectTo(siteId: String, runId: String) {
-        this.siteId = siteId
-        this.runId = runId
-
-        client.subscribe("/topic/run/${runId}")
-        client.subscribe("/site/run/${siteId}")
-        client.send("/av/scan/enterScan", runId)
-
-        client.waitFor(ServerActions.SERVER_ENTER_RUN, "\"runId\":\"${runId}\"")
-        client.clearMessage()
-    }
-
-    fun startAttack() {
+    suspend fun startAttack() {
         sendCommand("attack")
-    }
 
-    fun sendCommand(command:String) {
-        client.send("/av/terminal/main", "{\"command\":\"${command}\",\"runId\":\"${runId}\"}")
-    }
-
-    suspend fun waitForAttackArrive() {
         val nodeId = "node-679a-4033"
 
         client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${nodeId}\",\"userId\":\"${client.userId}\"", 10)
         client.clearMessage()
     }
 
-    fun move(networkId: String) {
-        client.send("/av/terminal/main", "{\"command\":\"move ${networkId}\",\"runId\":\"${runId}\"}")
+    fun sendCommand(command:String) {
+        client.send("/av/terminal/main", "{\"command\":\"${command}\",\"runId\":\"${runId}\"}")
     }
 
-    suspend fun waitForMoveArrive() {
-        client.waitFor(ServerActions.SERVER_HACKER_MOVE_START, "\"userId\":\"${client.userId}\"", 1)
-        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"node-abbc-4262\",\"userId\":\"${client.userId}\"", 3)
-        client.clearMessage()
-    }
 
     suspend fun removeUserScans() {
         client.send("/av/scan/scansOfPlayer", "")
@@ -73,15 +48,32 @@ class HackerClient(
         client.clearMessage()
     }
 
-    suspend fun enterAndScan(siteName: String) {
+    suspend fun startRun(siteName: String) {
         client.send("/av/scan/scanForName", siteName)
-        val siteJson = client.waitFor(ServerActions.SERVER_SITE_DISCOVERED, "")
-        val siteInfo = objectMapper.readValue<Map<String, String>>(siteJson)
-        val siteId = siteInfo["siteId"]!!
-        val runId = siteInfo["runId"]!!
+        waitForSiteInfo(siteName)
+        joinRun()
+    }
 
-        connectTo(siteId, runId)
+    suspend fun joinRun() {
+        client.subscribe("/topic/run/${runId}")
+        client.subscribe("/site/run/${siteId}")
+        client.send("/av/scan/enterScan", runId)
 
+        val siteInfoJson = client.waitFor(ServerActions.SERVER_ENTER_RUN, "\"runId\":\"${runId}\"")
+        this.siteInfo = objectMapper.readValue(siteInfoJson)
+        client.clearMessage()
+    }
+
+    suspend fun waitForSiteInfo(siteName: String) {
+        val sitesJson = client.waitFor(ServerActions.SERVER_UPDATE_USER_SCANS, """"siteName":"${siteName}"""")
+        val sites: List<ScanInfoService.ScanInfo> = objectMapper.readValue(sitesJson)
+        val site = sites.find { it.siteName == siteName } ?: error("Did not receive site with name ${siteName}, but got: ${sitesJson}")
+        siteId = site.siteId
+        runId = site.runId
+    }
+
+
+    suspend fun scan() {
         sendCommand("scan 00")
 
         client.waitFor(ServerActions.SERVER_DISCOVER_NODES, "", 10)
@@ -94,5 +86,13 @@ class HackerClient(
         client.clearMessage()
     }
 
+    suspend fun move(networkId: String) {
+        val node = this.siteInfo.site.nodes.find { it.networkId == networkId } ?: error("Could not find node with networkId ${networkId}")
+        client.send("/av/terminal/main", "{\"command\":\"move ${networkId}\",\"runId\":\"${runId}\"}")
+
+        client.waitFor(ServerActions.SERVER_HACKER_MOVE_START, "\"userId\":\"${client.userId}\"", 1)
+        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${node.id}\",\"userId\":\"${client.userId}\"", 3)
+        client.clearMessage()
+    }
 
 }

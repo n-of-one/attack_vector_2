@@ -51,6 +51,8 @@ class RunService(
         val masked: Boolean
     )
 
+    class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val timers: List<TimerInfo>)
+
     fun startNewRun(siteName: String) {
         val siteProperties = sitePropertiesEntityService.findByName(siteName)
         if (siteProperties == null) {
@@ -82,7 +84,6 @@ class RunService(
 
         val timers = tripwireLayerService.findForEnterSite(run.siteId, currentUserService.userId)
 
-        class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val timers: List<TimerInfo>)
         val siteInfo = SiteInfo(run, siteFull, hackerPresences, timers)
         stompService.reply(ServerActions.SERVER_ENTER_RUN, siteInfo)
     }
@@ -112,7 +113,11 @@ class RunService(
         timedTaskRunner.removeAllForUser(hackerState.userId)
 
         stompService.toRun(hackerState.runId!!, ServerActions.SERVER_HACKER_DC, "userId" to hackerState.userId)
-        stompService.toUser(hackerState.userId, ServerActions.SERVER_TERMINAL_RECEIVE, StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]${message}", "")))
+        stompService.toUser(
+            hackerState.userId,
+            ServerActions.SERVER_TERMINAL_RECEIVE,
+            StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]${message}", ""))
+        )
         stompService.toUser(hackerState.userId, ServerActions.SERVER_TERMINAL_UPDATE_PROMPT, "prompt" to "⇀ ", "terminalId" to TERMINAL_MAIN)
 
         hackerStateEntityService.disconnect(hackerState)
@@ -136,7 +141,7 @@ class RunService(
 
         val neighboringNodeIds = siteService.findNeighboringNodeIds(node)
 
-        runs.forEach{run ->
+        runs.forEach { run ->
             val currentStatus = run.nodeScanById[node.id]!!.status
             if (!currentStatus.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
 
@@ -156,7 +161,8 @@ class RunService(
 
     fun gmRefreshSite(siteId: String) {
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
-        stompService.toSite( siteId,
+        stompService.toSite(
+            siteId,
             ServerActions.SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site reboot"))
         )
