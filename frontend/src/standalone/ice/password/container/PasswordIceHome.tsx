@@ -7,10 +7,9 @@ import {webSocketConnection} from "../../../../common/server/WebSocketConnection
 import {PasswordRootState} from "../reducer/PasswordRootReducer";
 import {HIDDEN} from "../../common/IceModel";
 import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../../../app/auth/reducer/AuthUiReducer";
-import {larp} from "../../../../common/Larp";
-import {PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
 import {ice} from "../../../StandaloneGlobals";
-
+import {IceTitle} from "../../common/IceTitle";
+import {IceStrength} from "../../../../common/model/IceStrength";
 
 
 export const PasswordIceHome = () => {
@@ -24,12 +23,7 @@ export const PasswordIceHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-12">
-                        <h4 className="text-success">
-                            <strong>
-                                Ice: <span className="text-info">{larp.iceName(PASSWORD_ICE)}</span>&nbsp;<br/>
-                                Strength: <span className="text-info">Unknown</span><br/>
-                            </strong>
-                        </h4>
+                        <IceTitle name="Rahasy" strength={IceStrength.UNKNOWN} />
                     </div>
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
