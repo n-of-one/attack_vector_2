@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 @Service
 class RunEntityService(
     private val runRepo: RunRepo,
-    private val time: TimeService,
 ) {
 
     fun getByRunId(runId: String): Run {

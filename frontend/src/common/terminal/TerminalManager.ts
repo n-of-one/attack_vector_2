@@ -1,7 +1,7 @@
 import {ENTER_KEY, F12_KEY, F2_KEY} from "../../KeyCodes";
 import {delay} from "../util/Util";
 import {Dispatch, Store} from "redux";
-import {TERMINAL_KEY_PRESS, TICK, TerminalState} from "./TerminalReducer";
+import {TERMINAL_KEY_PRESS, TerminalState, TICK} from "./TerminalReducer";
 import {ICE_INPUT_TERMINAL_ID, MAIN_TERMINAL_ID} from "./ActiveTerminalIdReducer";
 
 export const TERMINAL_UPDATE_MILLIS = 20 // 50 updates/s
@@ -14,7 +14,7 @@ class TerminalManager {
 
     terminalSubmit: {[key: string]: () => void } = {}
 
-    init(store: Store) {
+    async init(store: Store) {
         this.store = store;
         this.dispatch = store.dispatch;
         delay(() => {
@@ -34,6 +34,7 @@ class TerminalManager {
                 this.handleKeyDown(event);
             }
         }
+
     }
 
     start() {
@@ -44,15 +45,18 @@ class TerminalManager {
         this.terminalActive = false;
     }
 
-    handleKeyDown(event: KeyboardEvent) {
+    async handleKeyDown(event: KeyboardEvent) {
         let {keyCode, key} = event;
-        if (keyCode >= F2_KEY && keyCode <= F12_KEY) {
+        if (key === "Control" || key === "Alt" || key === "Shift" || ( keyCode >= F2_KEY && keyCode <= F12_KEY)) {
             return;
         }
+        if (event.ctrlKey && key === "c") return
 
         event.preventDefault();
 
-        const terminalId = this.store.getState().activeTerminalId;
+       const terminalId = this.store.getState().activeTerminalId;
+
+        const pastedText= (event.ctrlKey && key === "v") ? await navigator.clipboard.readText() : null
 
         if (keyCode === ENTER_KEY) {
             const terminalState = this.terminalStateById(terminalId)
@@ -61,7 +65,7 @@ class TerminalManager {
             const submit = this.terminalSubmit[terminalId]
             if (submit) { submit() }
         } else {
-            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId});
+            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId, pastedText: pastedText})
         }
     }
 

@@ -214,16 +214,19 @@ const receiveFromServer = (terminal: TerminalState, action: AnyAction) => {
 }
 
 const handlePressKey = (terminal: TerminalState, action: AnyAction): TerminalState => {
-    const {keyCode, key} = action
+    const {keyCode, key, pastedText} = action
     if (keyCode === UP || keyCode === DOWN) {
         return handleHistory(terminal, keyCode)
     }
 
-    const newInput = determineInput(terminal.input, keyCode, key)
+    const newInput = determineInput(terminal.input, keyCode, key, pastedText)
     return {...terminal, input: newInput}
 }
 
-const determineInput = (input: string, keyCode: number, key: string) => {
+const determineInput = (input: string, keyCode: number, key: string, pastedText: string | null) => {
+    if (pastedText != null) {
+        return input + pastedText
+    }
     if (keyCode === BACKSPACE && input.length > 0) {
         return input.substr(0, input.length - 1)
     }
