@@ -12,7 +12,7 @@ const renderRemove = (layer: LayerDetails, remove: () => void) => {
     return (
         <span className="pull-right">
             <SilentLink onClick={() => remove()}>
-                <Glyphicon name="glyphicon-remove"/>
+                <Glyphicon name="glyphicon-trash"/>
             </SilentLink>
         </span>
     )
