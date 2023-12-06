@@ -1,4 +1,4 @@
-import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
+import webstomp, {Client, Frame, Message, SubscribeHeaders, Subscription} from 'webstomp-client'
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
@@ -15,6 +15,8 @@ export const WS_NETWORK_APP = "WS_NETWORK_APP"
 export type ConnectionType = "WS_UNRESTRICTED" | "WS_HACKER_MAIN" | "WS_NETWORK_APP"
 
 const pathByConnectionType = { WS_UNRESTRICTED: "/ws_unrestricted", WS_HACKER_MAIN: "/ws_hacker", WS_NETWORK_APP: "/ws_networked_app" }
+
+let connectionIdCount = 0
 
 export class WebSocketConnection {
 
@@ -120,9 +122,11 @@ export class WebSocketConnection {
         if ( existingSubscription) {
             existingSubscription.unsubscribe()
         }
+        const id = `${currentUser.id}_${this.connectionId}_${connectionIdCount}`
+        connectionIdCount ++
         const subscription = this.client.subscribe(path, (wsMessage) => {
             this.handleEvent(wsMessage)
-        })
+        }, { id: id})
         this.subscriptions[path] = subscription
     }
 

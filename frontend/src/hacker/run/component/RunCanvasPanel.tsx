@@ -71,10 +71,10 @@ export class RunCanvasPanel extends Component<Props> {
                     {
                         Object.keys(HackerIcon).map( icon => {
                             return (
-                            <>
+                            <span key={`hacker_icon_${icon}`}>
                                 <HackerImage type={icon} you={true} onLoad={onLoad}/>
                                 <HackerImage type={icon} you={false} onLoad={onLoad}/>
-                            </>
+                            </span>
                         )
                         } )
                     }
