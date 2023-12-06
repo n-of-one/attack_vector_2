@@ -11,9 +11,13 @@ import org.n1.av2.backend.util.FatalException
 import org.n1.av2.backend.util.ServerFatal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import kotlin.concurrent.withLock
 
 private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 
@@ -24,7 +28,6 @@ private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 @Component
 class UserTaskRunner(
     private val taskEngine: TaskEngine,
-    private val timedTaskRunner: TimedTaskRunner,
     private val currentUserService: CurrentUserService
 ) {
 
@@ -40,7 +43,7 @@ class UserTaskRunner(
     fun queueInTicks(identifiers: TaskIdentifiers, waitTicks: Int, action: () -> Unit) {
         val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
         val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
-        timedTaskRunner.add(identifiers, due, userPrincipal, action)
+        taskEngine.queueInMillis(identifiers, due, userPrincipal, action)
     }
 
 
@@ -63,12 +66,12 @@ class UserTaskRunner(
  */
 @Component
 class SystemTaskRunner(
-    private val timedTaskRunner: TimedTaskRunner,
+    private val taskEngine: TaskEngine,
 ) {
 
     fun queueInSeconds( identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + seconds * 1000
-        timedTaskRunner.add(identifiers, due, UserPrincipal.system(), action)
+        taskEngine.queueInMillis(identifiers, due, UserPrincipal.system(), action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
@@ -85,11 +88,12 @@ class SystemTaskRunner(
 @Component
 class TaskEngine(
     val stompService: StompService,
-    val currentUserService: CurrentUserService
+    val currentUserService: CurrentUserService,
 ) : Runnable {
 
     private val logger = mu.KotlinLogging.logger {}
 
+    private val timedTaskRunner = TimedTaskRunner()
     private val queue = LinkedBlockingQueue<Task>()
     private var running = true
 
@@ -103,6 +107,10 @@ class TaskEngine(
         queue.put(task)
     }
 
+    fun queueInMillis(identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
+        timedTaskRunner.queueInMillis(identifiers, due, userPrincipal, action)
+    }
+
     override fun run() {
         while (running) {
             runTask()
@@ -110,9 +118,8 @@ class TaskEngine(
     }
 
     private fun runTask() {
-//        println("waiting for task")
-        val task = queue.take()
-//        println("task received")
+        val task = queue.poll(1, TimeUnit.MILLISECONDS)
+
 
         if (!running) return // this will happen if fun terminate() unblocked the queue.
         try {
@@ -163,4 +170,68 @@ class TaskEngine(
     fun removeForUser(userId: String) {
         this.queue.removeIf { it.userPrincipal.userId == userId }
     }
+
+    fun removeAll(identifiers: TaskIdentifiers) {
+        timedTaskRunner.removeAll(identifiers)
+        if (identifiers.userId != null) {
+            removeForUser(identifiers.userId)
+        }
+    }
+}
+
+data class TaskIdentifiers(val userId: String?, val siteId: String?, val layerId: String?)
+
+/**
+ * Tasks can be scheduled to run in the future. Then will be held here and when their time comes,
+ * added to the TaskRunner to be executed.
+ */
+private class TimedTask(
+    val due: Long,
+    val userPrincipal: UserPrincipal,
+    val action: () -> Unit,
+    val identifiers: TaskIdentifiers,
+)
+
+
+private class TimedTaskRunner(
+)  {
+
+    private var running = true
+    private val timedTasks = LinkedList<TimedTask>()
+    private val lock = ReentrantLock()
+
+
+    private fun getEvent(): TimedTask? {
+        lock.withLock {
+            if (timedTasks.isEmpty()) {
+                return null
+            }
+            val event = timedTasks.removeAt(0)
+            return event
+        }
+    }
+
+    fun queueInMillis(identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
+        lock.withLock {
+            val task = TimedTask(due, userPrincipal, action, identifiers)
+            timedTasks.add(task)
+            timedTasks.sortBy { it.due }
+        }
+    }
+
+    fun removeAll(identifiers: TaskIdentifiers) {
+        lock.withLock {
+            timedTasks.removeIf {task ->
+                task.identifiers.userId == identifiers.userId ||
+                        task.identifiers.siteId == identifiers.siteId ||
+                        task.identifiers.layerId == identifiers.layerId
+            }
+        }
+    }
+
+    @PreDestroy
+    fun terminate() {
+        running = false
+    }
+
 }

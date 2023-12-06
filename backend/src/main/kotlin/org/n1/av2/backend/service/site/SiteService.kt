@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.engine.CalledBySystem
+import org.n1.av2.backend.engine.TaskEngine
 import org.n1.av2.backend.engine.TaskIdentifiers
-import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
@@ -29,7 +29,7 @@ class SiteService(
     private val iceService: IceService,
     private val keystoreService: KeystoreService,
     private val timerEntityService: TimerEntityService,
-    private val timedTaskRunner: TimedTaskRunner,
+    private val taskEngine: TaskEngine,
 ) {
 
     fun createSite(name: String): String {
@@ -75,7 +75,7 @@ class SiteService(
 
     @CalledBySystem
     fun resetSite(siteId: String) {
-        timedTaskRunner.removeAll(TaskIdentifiers(null, siteId, null))
+        taskEngine.removeAll(TaskIdentifiers(null, siteId, null))
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach {node ->
             val refreshedNode = node.copy(hacked = false)

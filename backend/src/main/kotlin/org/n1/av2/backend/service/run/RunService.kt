@@ -1,8 +1,8 @@
 package org.n1.av2.backend.service.run
 
 import org.n1.av2.backend.engine.CalledBySystem
+import org.n1.av2.backend.engine.TaskEngine
 import org.n1.av2.backend.engine.TaskIdentifiers
-import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.run.NodeScanStatus.*
 import org.n1.av2.backend.entity.service.TimerEntityService
@@ -32,7 +32,7 @@ class RunService(
     private val siteService: SiteService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val userEntityService: UserEntityService,
-    private val timedTaskRunner: TimedTaskRunner,
+    private val taskEngine: TaskEngine,
     private val syntaxHighlightingService: SyntaxHighlightingService,
     private val stompService: StompService,
     private val userRunLinkEntityService: UserRunLinkEntityService,
@@ -110,7 +110,7 @@ class RunService(
 
     @CalledBySystem
     fun hackerDisconnect(hackerState: HackerState, message: String) {
-        timedTaskRunner.removeAllForUser(hackerState.userId)
+        taskEngine.removeForUser(hackerState.userId)
 
         stompService.toRun(hackerState.runId!!, ServerActions.SERVER_HACKER_DC, "userId" to hackerState.userId)
         stompService.toUser(
@@ -127,7 +127,7 @@ class RunService(
     fun leaveSite(hackerState: HackerState) {
         val runId = hackerState.runId ?: return // if somehow the user was already disconnected for another reason
 
-        timedTaskRunner.removeAllForUser(hackerState.userId)
+        taskEngine.removeForUser(hackerState.userId)
 
         class HackerLeaveNotification(val userId: String)
         stompService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
@@ -175,7 +175,8 @@ class RunService(
 
     fun deleteRuns(siteId: String): Int {
         timerEntityService.deleteBySiteId(siteId)
-        timedTaskRunner.removeAll(TaskIdentifiers(null, siteId, null))
+        taskEngine.removeAll(TaskIdentifiers(null, siteId, null))
+
 
         val siteName = sitePropertiesEntityService.getBySiteId(siteId).name
         val runs = runEntityService.findAllForSiteId(siteId)
@@ -192,7 +193,7 @@ class RunService(
             .onEach { hackerState: HackerState ->
                 scanInfoService.sendScanInfosOfPlayer(hackerState.userId)
                 hackerStateEntityService.leaveSite(hackerState)
-                timedTaskRunner.removeAllForUser(hackerState.userId)
+                taskEngine.removeForUser(hackerState.userId)
             }
 
         stompService.toRun(

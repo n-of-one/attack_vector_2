@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.layerhacking.service
 
+import org.n1.av2.backend.engine.TaskEngine
 import org.n1.av2.backend.engine.TaskIdentifiers
-import org.n1.av2.backend.engine.TimedTaskRunner
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.service.Timer
 import org.n1.av2.backend.entity.service.TimerEntityService
@@ -22,7 +22,7 @@ class CoreLayerService(
     private val runEntityService: RunEntityService,
     private val nodeEntityService: NodeEntityService,
     private val timerEntityService: TimerEntityService,
-    private val timedTaskRunner: TimedTaskRunner,
+    private val taskEngine: TaskEngine,
 ) {
 
     fun hack(layer: CoreLayer, runId: String) {
@@ -60,7 +60,9 @@ class CoreLayerService(
             timerEntityService.deleteById(timer.id)
 
             val identifiers = TaskIdentifiers(null, null, timer.layerId)
-            timedTaskRunner.removeAll(identifiers)
+//            timedTaskRunner.removeAll(identifiers)
+            taskEngine.removeAll(identifiers)
+
 
             stompService.toSite(run.siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)
         }
