@@ -1,4 +1,4 @@
-import webstomp, {Client, Frame, Message, SubscribeHeaders, Subscription} from 'webstomp-client'
+import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
@@ -70,8 +70,13 @@ export class WebSocketConnection {
         }
 
         const [userId, connectionId ] = userIdAndConnection.split("_")
-        currentUser.id = userId
-        this.connectionId = connectionId
+        if ( connectionId !== undefined) {
+            currentUser.id = userId
+            this.connectionId = connectionId
+        }
+        else {
+            this.connectionId = userIdAndConnection
+        }
 
         this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"})
 
@@ -122,12 +127,21 @@ export class WebSocketConnection {
         if ( existingSubscription) {
             existingSubscription.unsubscribe()
         }
-        const id = `${currentUser.id}_${this.connectionId}_${connectionIdCount}`
-        connectionIdCount ++
+
+        const id = this.makeId()
         const subscription = this.client.subscribe(path, (wsMessage) => {
             this.handleEvent(wsMessage)
         }, { id: id})
         this.subscriptions[path] = subscription
+    }
+
+    makeId(): string {
+        connectionIdCount ++
+        if (currentUser.isSet()) {
+            return `${currentUser.id}_${this.connectionId}_${connectionIdCount}`
+        }
+        const random = Math.floor(Math.random() * 1000000)
+        return `${random}_${this.connectionId}_${connectionIdCount}`
     }
 
     unsubscribe(path: string) {
