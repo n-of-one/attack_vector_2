@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Provider} from "react-redux"
 import {EditorHome} from "./component/EditorHome"
-import {editorRootReducer, editorRootDefaultState, EditorState} from "./EditorRootReducer"
+import {editorRootDefaultState, editorRootReducer, EditorState} from "./EditorRootReducer"
 import {Reducer, Store} from "redux"
 import {RequiresRole} from "../common/user/RequiresRole"
 import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketConnection"
@@ -47,7 +47,7 @@ export class EditorRoot extends Component<Props> {
 
         webSocketConnection.create(WS_UNRESTRICTED, this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + props.siteId)
-            webSocketConnection.send("/av/editor/siteFull", props.siteId)
+            webSocketConnection.send("/editor/siteFull", props.siteId)
         }, SERVER_SITE_FULL)
 
         initEditorServerActions()

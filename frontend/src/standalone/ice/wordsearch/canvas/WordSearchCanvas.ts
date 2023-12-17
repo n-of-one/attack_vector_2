@@ -172,7 +172,7 @@ class WordSearchCanvas {
             // Delay the sending, so that the selected cells have some time to fade out.
             setTimeout(()=> {
                 const payload = {iceId: ice.id, letters: toSend}
-                webSocketConnection.send("/av/ice/wordSearch/selected", JSON.stringify(payload))
+                webSocketConnection.send("/ice/wordSearch/selected", JSON.stringify(payload))
             },200)
         }
 

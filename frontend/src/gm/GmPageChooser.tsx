@@ -4,8 +4,8 @@ import {useSelector} from "react-redux"
 import {GmSites} from "./sites/GmSites";
 import {UserManagement} from "../common/users/UserManagement";
 import {GmState} from "./GmRootReducer";
-import {ADMIN, GM_SITES, LOGS, MISSIONS, USERS} from "../common/menu/pageReducer";
-
+import {ADMIN, GM_SITES, LOGS, MISSIONS, TASKS, USERS} from "../common/menu/pageReducer";
+import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
 
 
 const renderCurrentPage = (currentPage: string) => {
@@ -18,6 +18,8 @@ const renderCurrentPage = (currentPage: string) => {
             return <GmSites/>
         case MISSIONS:
             return <GmSites/>
+        case TASKS:
+            return <TaskMonitorHome/>
         case ADMIN:
             return <GmSites/>
         default:

@@ -52,7 +52,7 @@ class ScanningService(
         )
 
         val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-        userTaskRunner.queueInTicksForSite(targetNode.siteId, totalTicks - 20) {
+        userTaskRunner.queueInTicksForSite("scan-arrive", targetNode.siteId, totalTicks - 20) {
             scanResultService.areaScan(run, targetNode)
         }
     }
@@ -60,7 +60,7 @@ class ScanningService(
     fun scanFromInside(run: Run, targetNode: Node) {
         doubleCheckNodeStatus(targetNode)
         stompService.toRun(run.runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to currentUserService.userId, "nodeId" to targetNode.id, "timings" to HACKER_SCANS_NODE_Timings)
-        userTaskRunner.queueInTicksForSite(run.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
+        userTaskRunner.queueInTicksForSite("internalscan-complete", run.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
             scanResultService.areaScan(run, targetNode)
         }
     }
@@ -93,7 +93,7 @@ class ScanningService(
         val shouldBeHacked = node.layers.filterIsInstance<IceLayer>().any { ! it.hacked }
         if (shouldBeHacked) {
             val hackedNode = node.copy(hacked = true)
-            nodeEntityService.save(node)
+            nodeEntityService.save(hackedNode)
         }
 
     }

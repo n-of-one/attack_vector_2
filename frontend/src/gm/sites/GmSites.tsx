@@ -67,13 +67,13 @@ export const GmSites = () => {
 
     const resetSite = (siteId: string, name: string) => {
         if (window.confirm(`Confirm that you want to reset site ${name}. (Refresh ICE, reset all timers, change non-hardcoded passwords, ...)`)) {
-            webSocketConnection.send("/av/site/resetSite", siteId)
+            webSocketConnection.send("/site/resetSite", siteId)
         }
     }
 
     const deleteRuns = (siteId: string, name: string) => {
         if (window.confirm(`Confirm that you want to delete all runs for this site? This will also reset the site (refresh ICE, etc.)`)) {
-            webSocketConnection.send("/av/site/deleteRuns", siteId)
+            webSocketConnection.send("/site/deleteRuns", siteId)
         }
     }
     return (

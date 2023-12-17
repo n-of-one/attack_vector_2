@@ -24,7 +24,7 @@ export const HackerHome = () => {
 
     const scanSite = (siteName: string) => {
         if (siteName) {
-            webSocketConnection.send("/av/scan/scanForName", siteName)
+            webSocketConnection.send("/scan/scanForName", siteName)
         }
     }
     const enterScanLink = (scanInfo: ScanInfo) => {
@@ -110,14 +110,14 @@ export const enterScan = (runId: string, siteId: string, dispatch: Dispatch, cur
     dispatch({type: HIDE_NODE_INFO})
     dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
     dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
-    webSocketConnection.send("/av/scan/enterScan", runId)
+    webSocketConnection.send("/scan/enterScan", runId)
     terminalManager.start()
 }
 
 
 const DeleteScanLink = (props: { runId: string }) => {
     const deleteScan = () => {
-        webSocketConnection.send("/av/scan/deleteScan", props.runId)
+        webSocketConnection.send("/scan/deleteScan", props.runId)
     }
 
     return <SilentLink onClick={deleteScan} title="Remove run">
@@ -131,7 +131,7 @@ const ResetIceLink = (props: { siteId: string }) => {
     }
 
     const resetIce = () => {
-        webSocketConnection.send("/av/scan/refreshIce", props.siteId)
+        webSocketConnection.send("/scan/refreshIce", props.siteId)
     }
 
     return <>

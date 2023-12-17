@@ -42,7 +42,7 @@ export const RunHome = () => {
     const terminal = useSelector((state: HackerState) => state.terminal)
     const submit = () => {
         const payload = {command: terminal.input};
-        webSocketConnection.sendObjectWithRunId("/av/terminal/main", payload);
+        webSocketConnection.sendObjectWithRunId("/terminal/main", payload);
 
         dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: terminal.input, terminalId: terminal.id});
     }

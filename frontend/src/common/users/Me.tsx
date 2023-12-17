@@ -9,7 +9,7 @@ import {currentUser} from "../user/CurrentUser";
 export const Me = () => {
 
     useEffect(() => {
-        webSocketConnection.send("/av/user/select", currentUser.id)
+        webSocketConnection.send("/user/select", currentUser.id)
     }, [])
 
     const user = useSelector((state: GenericUserRootState) => state.currentUser)

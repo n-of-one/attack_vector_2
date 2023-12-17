@@ -35,7 +35,7 @@ export class TangleRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/tangle/enter", {iceId: props.iceId})
+            webSocketConnection.sendObject("/ice/tangle/enter", {iceId: props.iceId})
         });
 
         tangleIceManager.init(this.store, props.externalHack)

@@ -1,8 +1,22 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {
-    CODE, CORE, TAR_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE,
-    WORD_SEARCH_ICE, MONEY, SCAN_BLOCK, TEXT, TRACE_LOG, TRACER, LOCK, STATUS_LIGHT, KEYSTORE, TRIPWIRE
+    CODE,
+    CORE,
+    KEYSTORE,
+    LOCK,
+    MONEY,
+    NETWALK_ICE,
+    PASSWORD_ICE,
+    SCAN_BLOCK,
+    STATUS_LIGHT,
+    TANGLE_ICE,
+    TAR_ICE,
+    TEXT,
+    TRACE_LOG,
+    TRACER,
+    TRIPWIRE,
+    WORD_SEARCH_ICE
 } from "../../../../common/enums/LayerTypes"
 import {EditorState} from "../../../EditorRootReducer"
 import {editorSiteId} from "../../../EditorRoot";
@@ -17,7 +31,7 @@ export const LayersPanel = () => {
     const add = (type: string, implemented?: boolean) => {
         if (implemented && currentNodeId != null) {
             const payload = {siteId: editorSiteId, layerType: type, nodeId: currentNodeId}
-            webSocketConnection.send("/av/editor/addLayer", payload)
+            webSocketConnection.send("/editor/addLayer", payload)
         }
     }
 

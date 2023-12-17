@@ -66,7 +66,7 @@ class TripwireLayerService(
         stompService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, "nodeId" to nodeId)
 
         val identifiers = TaskIdentifiers(null, siteId, layer.id)
-        systemTaskRunner.queueInSeconds(identifiers, duration.seconds) { timerActivates(siteId, timer.id, layer) }
+        systemTaskRunner.queueInSeconds("tripwire effect", identifiers, duration.seconds) { timerActivates(siteId, timer.id, layer) }
     }
 
     @ScheduledTask
@@ -92,7 +92,7 @@ class TripwireLayerService(
 
         siteService.shutdownSite(siteId, shutdownEndTime)
         val identifiers = TaskIdentifiers(null, siteId, null)
-        systemTaskRunner.queueInSeconds(identifiers, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
+        systemTaskRunner.queueInSeconds("site shutdown end", identifiers, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
     }
 
     @ScheduledTask

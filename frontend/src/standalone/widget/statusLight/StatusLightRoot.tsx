@@ -32,7 +32,7 @@ export class StatusLightRoot extends Component<Props> {
 
         webSocketConnection.create(WS_UNRESTRICTED, this.store, () => {
             webSocketConnection.subscribe(`/topic/app/${app.id}`)
-            webSocketConnection.sendObject("/av/app/statusLight/enter", {appId: app.id})
+            webSocketConnection.sendObject("/app/statusLight/enter", {appId: app.id})
         });
 
         initGenericServerActions()

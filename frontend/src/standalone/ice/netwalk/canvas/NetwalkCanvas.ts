@@ -3,7 +3,7 @@ import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {NetwalkCellDisplay, PADDING_LEFT, PADDING_TOP} from "./NetwalkCellDisplay";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
-import {NetwalkCell, CellType, NetwalkRotateUpdate, Point, ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
+import {CellType, NetwalkCell, NetwalkRotateUpdate, Point, ServerEnterIceNetwalk} from "../NetwalkServerActionProcessor";
 import {ice} from "../../../StandaloneGlobals";
 
 type CellById = { [id: string]: NetwalkCellDisplay }
@@ -159,7 +159,7 @@ class NetwalkCanvas {
             const cell: NetwalkCellDisplay = event.target.data
 
             const payload = {iceId: ice.id, x: cell.x, y: cell.y}
-            webSocketConnection.send("/av/ice/netwalk/rotate", JSON.stringify(payload))
+            webSocketConnection.send("/ice/netwalk/rotate", JSON.stringify(payload))
         }
     }
 

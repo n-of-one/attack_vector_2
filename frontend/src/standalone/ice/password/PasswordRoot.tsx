@@ -38,7 +38,7 @@ export class PasswordRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${ice.id}`)
-            webSocketConnection.sendObject("/av/ice/password/enter", {iceId: ice.id })
+            webSocketConnection.sendObject("/ice/password/enter", {iceId: ice.id })
         });
 
         passwordIceManager.init(this.store, props.externalHack)

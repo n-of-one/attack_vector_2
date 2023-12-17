@@ -3,6 +3,7 @@ import {GmSite, gmSitesReducer} from "./sites/GmSitesReducer";
 import {combineReducers} from "redux";
 import {editUserReducer, userOverviewReducer} from "../common/users/UsersReducer";
 import {currentUserReducer, GenericUserRootState, User} from "../common/users/UserReducer";
+import {Task, tasksReducer} from "./taskmonitor/TaskReducer";
 
 
 export const usersReducer = combineReducers({
@@ -15,18 +16,19 @@ export interface Users {
     edit: User | null
 }
 
+
 export interface GmState extends GenericUserRootState {
     currentPage: string,
     users: Users,
     sites: Array<GmSite>,
     currentUser: User | null,
+    tasks: Array<Task>
 }
-
-
 
 export const gmRootReducer = combineReducers({
     currentPage: pageReducer,
     users: usersReducer,
     sites: gmSitesReducer,
     currentUser: currentUserReducer,
+    tasks: tasksReducer,
 })

@@ -65,7 +65,7 @@ class TarManager extends GenericIceManager {
                 const random = Math.floor(Math.random() * 11) - 5
                 const unitsHacked = data.unitsPerSecond * DELAY_BETWEEN_HACK_TICKS_S + random
 
-                webSocketConnection.sendObject("/av/ice/tar/hackedUnits", {
+                webSocketConnection.sendObject("/ice/tar/hackedUnits", {
                     iceId: ice.id, units: unitsHacked
                 })
             }, DELAY_BETWEEN_HACK_TICKS_S * 1000)

@@ -15,7 +15,7 @@ export const Switch = () => {
     }
 
     const setValue = (newValue: boolean) => {
-        webSocketConnection.sendObject("/av/app/statusLight/setValue", { appId: app.id, value: newValue})
+        webSocketConnection.sendObject("/app/statusLight/setValue", { appId: app.id, value: newValue})
     }
 
     const idParts = app.id.split("-")

@@ -98,7 +98,7 @@ class CommandMoveService(
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
         stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
 
-        userTaskRunner.queueInTicksForSite(state.siteId, MOVE_START_Timings.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
+        userTaskRunner.queueInTicksForSite("move-arrive", state.siteId, MOVE_START_Timings.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
     }
 
     @ScheduledTask
@@ -119,7 +119,7 @@ class CommandMoveService(
         } else {
             stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to HACKER_SCANS_NODE_Timings)
 
-            userTaskRunner.queueInTicksForSite(state.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
+            userTaskRunner.queueInTicksForSite("internal-scan", state.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
                 scanProbeActionService.hackerArrivedNodeScan(nodeId, userId, runId)
                 arriveComplete(nodeId, userId, runId)
             }

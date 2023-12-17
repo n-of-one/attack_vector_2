@@ -37,15 +37,15 @@ class UserTaskRunner(
         taskEngine.runForUser(userPrincipal, action)
     }
 
-    fun queueInTicksForSite(siteId: String, waitTicks: Int, action: () -> Unit) {
+    fun queueInTicksForSite(description: String, siteId: String, waitTicks: Int, action: () -> Unit) {
         val identifiers = TaskIdentifiers(currentUserService.userId, siteId, null)
-        queueInTicks(identifiers, waitTicks, action)
+        queueInTicks(description, identifiers, waitTicks, action)
     }
 
-    fun queueInTicks(identifiers: TaskIdentifiers, waitTicks: Int, action: () -> Unit) {
+    fun queueInTicks(description: String, identifiers: TaskIdentifiers, waitTicks: Int, action: () -> Unit) {
         val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
         val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
-        taskEngine.queueInMillis(identifiers, due, userPrincipal, action)
+        taskEngine.queueInMillis(description, identifiers, due, userPrincipal, action)
     }
 
 
@@ -71,9 +71,9 @@ class SystemTaskRunner(
     private val taskEngine: TaskEngine,
 ) {
 
-    fun queueInSeconds(identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
+    fun queueInSeconds(description: String, identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + seconds * 1000
-        taskEngine.queueInMillis(identifiers, due, UserPrincipal.system(), action)
+        taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
@@ -109,8 +109,8 @@ class TaskEngine(
         queue.put(task)
     }
 
-    fun queueInMillis(identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
-        timedTaskRunner.queueInMillis(identifiers, due, userPrincipal, action)
+    fun queueInMillis(description: String, identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
+        timedTaskRunner.queueInMillis(description, identifiers, due, userPrincipal, action)
     }
 
     override fun run() {
@@ -118,6 +118,11 @@ class TaskEngine(
             runTask()
             checkTimedTasks()
         }
+    }
+
+    fun checkTimedTasks() {
+        val event = timedTaskRunner.getEvent() ?: return
+        runForUser(event.userPrincipal, event.action)
     }
 
     private fun runTask() {
@@ -174,16 +179,23 @@ class TaskEngine(
         }
     }
 
-    fun checkTimedTasks() {
-        val event = timedTaskRunner.getEvent() ?: return
-        runForUser(event.userPrincipal, event.action)
-    }
-}
+    fun sendTasks(userPrincipal: UserPrincipal) {
+        class TaskInfo(val due: Long, val description: String, val userName: String, val layerId: String, val siteId: String)
 
+        val tasks = timedTaskRunner.getTasks().map { task ->
+            val userName = task.userPrincipal.userEntity.name
+            TaskInfo(task.due, task.description, userName, task.identifiers.layerId ?: "", task.identifiers.siteId ?: "")
+        }
+
+        stompService.toUser(userPrincipal.name, ServerActions.SERVER_TASKS, tasks)
+    }
+
+}
 
 
 private class TimedTask(
     val due: Long,
+    val description: String,
     val userPrincipal: UserPrincipal,
     val action: () -> Unit,
     val identifiers: TaskIdentifiers,
@@ -193,7 +205,7 @@ private class TimedTaskRunner {
 
     private val timedTasks = LinkedList<TimedTask>()
 
-    private var nextDue:Long? = null
+    private var nextDue: Long? = null
 
     fun getEvent(): TimedTask? {
         if (nextDue == null || nextDue!! > System.currentTimeMillis()) {
@@ -204,8 +216,8 @@ private class TimedTaskRunner {
         return task
     }
 
-    fun queueInMillis(identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
-        val task = TimedTask(due, userPrincipal, action, identifiers)
+    fun queueInMillis(description: String, identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
+        val task = TimedTask(due, description, userPrincipal, action, identifiers)
         timedTasks.add(task)
         this.sort()
     }
@@ -226,5 +238,9 @@ private class TimedTaskRunner {
         }
         timedTasks.sortBy { it.due }
         this.nextDue = timedTasks.first().due
+    }
+
+    fun getTasks(): List<TimedTask> {
+        return timedTasks
     }
 }

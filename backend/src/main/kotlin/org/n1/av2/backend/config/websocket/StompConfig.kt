@@ -62,12 +62,7 @@ class StompConfig(
                 return UserPrincipal(name, connectionId, userEntity, ConnectionType.WS_UNRESTRICTED)
             }
         }
-        registry
-            .addEndpoint(UNRESTRICTED_ENDPOINT)
-            .setAllowedOrigins("*")
-            .setHandshakeHandler(UnauthenticatedHandshakeHandler())
 
-        registry.setPreserveReceiveOrder(true);
 
         class AuthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
@@ -96,6 +91,11 @@ class StompConfig(
         }
 
         registry
+            .addEndpoint(UNRESTRICTED_ENDPOINT)
+            .setAllowedOrigins("*")
+            .setHandshakeHandler(AuthenticatedHandshakeHandler())
+
+        registry
             .addEndpoint(HACKER_ENDPOINT)
             .setAllowedOrigins("*")
             .setHandshakeHandler(AuthenticatedHandshakeHandler())
@@ -103,7 +103,9 @@ class StompConfig(
         registry
             .addEndpoint(NETWORKED_APP_ENDPOINT)
             .setAllowedOrigins("*")
-            .setHandshakeHandler(AuthenticatedHandshakeHandler())
+            .setHandshakeHandler(UnauthenticatedHandshakeHandler())
+
+        registry.setPreserveReceiveOrder(true);
 
     }
 

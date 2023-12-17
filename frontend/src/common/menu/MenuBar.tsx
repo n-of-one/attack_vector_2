@@ -2,7 +2,7 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
-import {ADMIN, GM_SITES, HACKER_COMMUNITY, HACKER_HOME, LOGS, MAIL, ME, MISSIONS, RUN, USERS} from "./pageReducer"
+import {ADMIN, GM_SITES, HACKER_COMMUNITY, HACKER_HOME, LOGS, MAIL, ME, MISSIONS, RUN, TASKS, USERS} from "./pageReducer"
 import {HackerState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_MISSION_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 
@@ -57,6 +57,7 @@ export const MenuBar = () => {
                                 <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={USERS} label="Users"/>
                                 <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={USERS} label="Users"/>
                                 <MenuItem requriesRole={ROLE_ADMIN} targetPage={ADMIN} label="Admin"/>
+                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={TASKS} label="Tasks"/>
                                 <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={HACKER_COMMUNITY}
                                           label="Hacker Community"/>
                             </ul>

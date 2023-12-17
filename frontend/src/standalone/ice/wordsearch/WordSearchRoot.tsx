@@ -35,7 +35,7 @@ export class WordSearchRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${ice.id}`)
-            webSocketConnection.sendObject("/av/ice/wordSearch/enter", {iceId: ice.id})
+            webSocketConnection.sendObject("/ice/wordSearch/enter", {iceId: ice.id})
         });
 
         wordSearchManager.init(this.store, props.externalHack);

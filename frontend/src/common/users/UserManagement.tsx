@@ -21,13 +21,13 @@ export const UserManagement = () => {
 export const UserManagementAuthorized = () => {
 
     useEffect(() => {
-        webSocketConnection.send("/av/user/overview", "")
+        webSocketConnection.send("/user/overview", "")
     }, [])
 
     const users: UserOverview[] = useSelector((state: GmState) => state.users.overview)
 
     const selectUser = (userId: string) => {
-        webSocketConnection.send("/av/user/select", userId)
+        webSocketConnection.send("/user/select", userId)
     }
 
     const user = useSelector((state: GmState) => state.users.edit)
@@ -83,7 +83,7 @@ const CreateUser = (user: User | null) => {
     if (user) return null
 
     const createUser = (name: string) => {
-        webSocketConnection.send("/av/user/create", name)
+        webSocketConnection.send("/user/create", name)
     }
 
     return <div className="row form-group">

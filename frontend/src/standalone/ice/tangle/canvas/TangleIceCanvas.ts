@@ -96,7 +96,7 @@ class TangleIceCanvas {
             // this.dispatch({type: ICE_TANGLE_MOVE_POINT, id: this.currentSelected.id, x: icon.left, y: icon.top});
 
             const payload = {iceId: ice.id, pointId: this.currentSelected.id, x: icon.left, y: icon.top};
-            webSocketConnection.send("/av/ice/tangle/moved", JSON.stringify(payload));
+            webSocketConnection.send("/ice/tangle/moved", JSON.stringify(payload));
 
 
             this.currentSelected.unHighlight();

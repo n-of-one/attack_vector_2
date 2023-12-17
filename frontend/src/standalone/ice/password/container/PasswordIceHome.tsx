@@ -91,7 +91,7 @@ const PasswordInput = () => {
         dispatch({type: TERMINAL_CLEAR, terminalId: inputTerminal.id})
 
         const payload = {iceId: ice.id, password: password }
-        webSocketConnection.sendObject("/av/ice/password/submit", payload)
+        webSocketConnection.sendObject("/ice/password/submit", payload)
         dispatch({type: SUBMIT_PASSWORD})
     }
 

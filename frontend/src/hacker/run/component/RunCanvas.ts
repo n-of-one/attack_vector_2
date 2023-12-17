@@ -15,8 +15,10 @@ import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDispla
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
 import {
     HackerScansNodeAction,
-    MoveArriveAction, MoveArriveFailAction,
-    MoveStartAction, NodeStatusById,
+    MoveArriveAction,
+    MoveArriveFailAction,
+    MoveStartAction,
+    NodeStatusById,
     ProbeAction,
     SiteAndScan
 } from "../../server/RunServerActionProcessor";
@@ -361,7 +363,7 @@ class RunCanvas {
         this.hackerDisplays.get(userId).startRun(quick, timings)
     }
 
-    // Called as a consequence of SERVER_HACKER_LEAVE_SCAN, which is a consequence of MenuItem calling: /av/run/leaveRun
+    // Called as a consequence of SERVER_HACKER_LEAVE_SCAN, which is a consequence of MenuItem calling: /run/leaveRun
     hackerLeave(leavingHackerUserId: string) {
         if (!this.active) return
 

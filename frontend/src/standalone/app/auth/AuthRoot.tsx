@@ -5,7 +5,7 @@ import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSoc
 import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
-import {authRootReducer, AuthAppRootState} from "./reducer/AuthRootReducer";
+import {AuthAppRootState, authRootReducer} from "./reducer/AuthRootReducer";
 import {initAuthServerActions} from "./AuthServerActionProcessor";
 import {AuthContainer} from "./component/AuthContainer";
 import {ice, layer} from "../../StandaloneGlobals";
@@ -37,7 +37,7 @@ export class AuthRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${ice.id}`)
-            webSocketConnection.sendObject("/av/ice/password/enter", {iceId: ice.id})
+            webSocketConnection.sendObject("/ice/password/enter", {iceId: ice.id})
         });
 
         terminalManager.init(this.store)

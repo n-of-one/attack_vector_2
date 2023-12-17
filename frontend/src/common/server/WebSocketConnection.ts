@@ -212,7 +212,7 @@ export class WebSocketConnection {
 
     send(path: string, data: string | any) {
         const payload = (typeof data === 'object') ? JSON.stringify(data) : data
-        this.client.send(path, payload)
+        this.client.send(`/av${path}`, payload)
     }
 
     /** Ignore certain actions until an action with a specific type is received.

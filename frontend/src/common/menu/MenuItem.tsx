@@ -48,7 +48,7 @@ const navigateTo = (currentPage: string, targetPage: string, runId: string | nul
     updateTerminalState(targetPage)
 
     if (currentPage === RUN && targetPage !== RUN) {
-        webSocketConnection.send("/av/run/leaveSite", runId);
+        webSocketConnection.send("/run/leaveSite", runId);
     }
 
     console.log("Navigating to page: " + targetPage);

@@ -1,5 +1,5 @@
 import React from 'react'
-import {CLOSE_USER_EDIT } from "./UsersReducer";
+import {CLOSE_USER_EDIT} from "./UsersReducer";
 import {User, USER_TYPE_ADMIN, USER_TYPE_GM, USER_TYPE_HACKER, USER_TYPE_HACKER_MANAGER} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
@@ -37,7 +37,7 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
 
     const save = (field: string, value: string) => {
         const message = {userId: user.id, field, value}
-        webSocketConnection.send("/av/user/edit", message)
+        webSocketConnection.send("/user/edit", message)
     }
 
 
@@ -186,7 +186,7 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
     const deleteFun = () => {
         const confirmResult = window.confirm("Are you sure you want to delete user " + user.name + "?")
         if (!confirmResult) return
-        webSocketConnection.send("/av/user/delete", user.id)
+        webSocketConnection.send("/user/delete", user.id)
         closeUserEdit()
     }
 

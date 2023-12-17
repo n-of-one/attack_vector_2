@@ -15,6 +15,7 @@ export const LOGS = "LOGS"
 export const MISSIONS = "MISSIONS"
 export const USERS = "USERS"
 export const ADMIN = "ADMIN"
+export const TASKS = "TASKS"
 
 // Display this page when another tab was opened for the same hacker / app connection.
 export const FORCE_DISCONNECT = "FORCE_DISCONNECT"

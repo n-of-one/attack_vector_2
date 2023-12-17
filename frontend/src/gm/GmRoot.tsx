@@ -24,7 +24,7 @@ export class GmRoot extends Component<Props>{
         })
 
         webSocketConnection.create(WS_UNRESTRICTED, this.gmStore, () => {
-            webSocketConnection.send("/av/scan/scansOfPlayer", "")
+            webSocketConnection.send("/scan/scansOfPlayer", "")
         })
         initGenericServerActions()
 

@@ -51,7 +51,7 @@ export class GenericIceManager {
 
     requestNextLayer() {
         if (this.externalHack) {
-            webSocketConnection.send("/av/ice/next", JSON.stringify({layerId: layer.id}))
+            webSocketConnection.send("/ice/next", JSON.stringify({layerId: layer.id}))
         }
     }
 

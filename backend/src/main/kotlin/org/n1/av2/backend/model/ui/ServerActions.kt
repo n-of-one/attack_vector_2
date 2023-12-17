@@ -10,6 +10,8 @@ enum class ServerActions {
     SERVER_NOTIFICATION,
     SERVER_ERROR,
 
+    SERVER_TASKS,                   // send all timed tasks to the server for debugging purpose
+
     SERVER_ADD_NODE,
     SERVER_ADD_CONNECTION,
     SERVER_FORCE_DISCONNECT,

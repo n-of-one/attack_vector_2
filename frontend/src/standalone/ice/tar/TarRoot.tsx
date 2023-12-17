@@ -36,7 +36,7 @@ export class TarRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/av/ice/tar/enter", {iceId: props.iceId})
+            webSocketConnection.sendObject("/ice/tar/enter", {iceId: props.iceId})
         });
 
         tarManager.init(this.store, props.externalHack)
