@@ -53,7 +53,7 @@ class WebsocketTest {
             follower.startAttack()
         }
 
-        (1..2).forEach {
+        (1..4).forEach {
             moveBackAndForth(followers)
         }
     }

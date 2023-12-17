@@ -16,6 +16,8 @@ export type ConnectionType = "WS_UNRESTRICTED" | "WS_HACKER_MAIN" | "WS_NETWORK_
 
 const pathByConnectionType = { WS_UNRESTRICTED: "/ws_unrestricted", WS_HACKER_MAIN: "/ws_hacker", WS_NETWORK_APP: "/ws_networked_app" }
 
+let connectionIdCount = 0
+
 export class WebSocketConnection {
 
     client: Client = null as unknown as Client
@@ -68,8 +70,13 @@ export class WebSocketConnection {
         }
 
         const [userId, connectionId ] = userIdAndConnection.split("_")
-        currentUser.id = userId
-        this.connectionId = connectionId
+        if ( connectionId !== undefined) {
+            currentUser.id = userId
+            this.connectionId = connectionId
+        }
+        else {
+            this.connectionId = userIdAndConnection
+        }
 
         this.store.dispatch({type: TERMINAL_RECEIVE, data: "Logged in as [info]" + userId, terminalId: "main"})
 
@@ -120,10 +127,21 @@ export class WebSocketConnection {
         if ( existingSubscription) {
             existingSubscription.unsubscribe()
         }
+
+        const id = this.makeId()
         const subscription = this.client.subscribe(path, (wsMessage) => {
             this.handleEvent(wsMessage)
-        })
+        }, { id: id})
         this.subscriptions[path] = subscription
+    }
+
+    makeId(): string {
+        connectionIdCount ++
+        if (currentUser.isSet()) {
+            return `${currentUser.id}_${this.connectionId}_${connectionIdCount}`
+        }
+        const random = Math.floor(Math.random() * 1000000)
+        return `${random}_${this.connectionId}_${connectionIdCount}`
     }
 
     unsubscribe(path: string) {

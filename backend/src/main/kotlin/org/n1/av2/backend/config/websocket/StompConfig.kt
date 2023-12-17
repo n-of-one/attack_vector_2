@@ -50,6 +50,7 @@ class StompConfig(
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
 
+        // FIXME why is the GM using an unauthenticated handler?
         class UnauthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
@@ -57,7 +58,7 @@ class StompConfig(
             ): Principal {
                 val userEntity = UserEntity(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, "")
                 val connectionId = connectionUtil.create()
-                val name = "${userEntity.name}:${connectionId}"
+                val name = "unauthenticated_${connectionId}"
                 return UserPrincipal(name, connectionId, userEntity, ConnectionType.WS_UNRESTRICTED)
             }
         }

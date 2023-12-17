@@ -168,12 +168,10 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_HACKER_ENTER_SITE, (data: HackerPresence) => {
-        console.log("SERVER_HACKER_ENTER_SITE" + JSON.stringify(data))
         runCanvas.hackerEnter(data)
     })
 
     webSocketConnection.addAction(SERVER_HACKER_LEAVE_SITE, (data: any) => {
-        console.log("SERVER_HACKER_LEAVE_SITE" + JSON.stringify(data))
         runCanvas.hackerLeave(data.userId)
     })
 
