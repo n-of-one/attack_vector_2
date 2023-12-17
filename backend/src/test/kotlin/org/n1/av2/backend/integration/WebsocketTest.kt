@@ -1,5 +1,6 @@
 package org.n1.av2.backend.integration
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -11,6 +12,7 @@ import org.n1.av2.backend.integration.stomp.StompClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import kotlin.random.Random
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -22,6 +24,8 @@ class WebsocketTest {
 
     @LocalServerPort
     private val port = 0
+
+    private val random = Random(System.currentTimeMillis())
 
     @BeforeAll
     fun setup() {
@@ -74,6 +78,7 @@ class WebsocketTest {
         runBlocking {
             val jobs = followers.map { follower ->
                 launch {
+                    delay(random.nextLong(1000) )
                     action(follower)
                 }
             }

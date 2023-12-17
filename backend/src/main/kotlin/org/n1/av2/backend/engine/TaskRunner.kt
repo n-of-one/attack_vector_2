@@ -1,7 +1,5 @@
 package org.n1.av2.backend.engine
 
-import org.n1.av2.backend.config.websocket.ConnectionType
-import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
@@ -14,10 +12,14 @@ import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
-import kotlin.concurrent.withLock
+
+const val TICK_MILLIS = 50
+const val SECOND_MILLIS = 1000
+const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS
+
+data class TaskIdentifiers(val userId: String?, val siteId: String?, val layerId: String?)
 
 private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 
@@ -69,7 +71,7 @@ class SystemTaskRunner(
     private val taskEngine: TaskEngine,
 ) {
 
-    fun queueInSeconds( identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
+    fun queueInSeconds(identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + seconds * 1000
         taskEngine.queueInMillis(identifiers, due, UserPrincipal.system(), action)
     }
@@ -114,14 +116,12 @@ class TaskEngine(
     override fun run() {
         while (running) {
             runTask()
+            checkTimedTasks()
         }
     }
 
     private fun runTask() {
-        val task = queue.poll(1, TimeUnit.MILLISECONDS)
-
-
-        if (!running) return // this will happen if fun terminate() unblocked the queue.
+        val task = queue.poll(1, TimeUnit.MILLISECONDS) ?: return
         try {
             currentUserService.set(task.userPrincipal.userEntity)
             SecurityContextHolder.getContext().authentication = task.userPrincipal
@@ -161,10 +161,6 @@ class TaskEngine(
     @PreDestroy
     fun terminate() {
         this.running = false
-        val userPrincipal = UserPrincipal("system:system-connection", "system-connection", SYSTEM_USER, ConnectionType.NONE)
-
-        // Add a task to unblock the running thread in the likely case it's blocked waiting on the queue.
-        this.queue.add(Task({}, userPrincipal))
     }
 
     fun removeForUser(userId: String) {
@@ -177,14 +173,15 @@ class TaskEngine(
             removeForUser(identifiers.userId)
         }
     }
+
+    fun checkTimedTasks() {
+        val event = timedTaskRunner.getEvent() ?: return
+        runForUser(event.userPrincipal, event.action)
+    }
 }
 
-data class TaskIdentifiers(val userId: String?, val siteId: String?, val layerId: String?)
 
-/**
- * Tasks can be scheduled to run in the future. Then will be held here and when their time comes,
- * added to the TaskRunner to be executed.
- */
+
 private class TimedTask(
     val due: Long,
     val userPrincipal: UserPrincipal,
@@ -192,46 +189,42 @@ private class TimedTask(
     val identifiers: TaskIdentifiers,
 )
 
+private class TimedTaskRunner {
 
-private class TimedTaskRunner(
-)  {
-
-    private var running = true
     private val timedTasks = LinkedList<TimedTask>()
-    private val lock = ReentrantLock()
 
+    private var nextDue:Long? = null
 
-    private fun getEvent(): TimedTask? {
-        lock.withLock {
-            if (timedTasks.isEmpty()) {
-                return null
-            }
-            val event = timedTasks.removeAt(0)
-            return event
+    fun getEvent(): TimedTask? {
+        if (nextDue == null || nextDue!! > System.currentTimeMillis()) {
+            return null
         }
+        val task = timedTasks.removeFirst()
+        this.nextDue = timedTasks.firstOrNull()?.due
+        return task
     }
 
     fun queueInMillis(identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
-        lock.withLock {
-            val task = TimedTask(due, userPrincipal, action, identifiers)
-            timedTasks.add(task)
-            timedTasks.sortBy { it.due }
-        }
+        val task = TimedTask(due, userPrincipal, action, identifiers)
+        timedTasks.add(task)
+        this.sort()
     }
 
     fun removeAll(identifiers: TaskIdentifiers) {
-        lock.withLock {
-            timedTasks.removeIf {task ->
-                task.identifiers.userId == identifiers.userId ||
-                        task.identifiers.siteId == identifiers.siteId ||
-                        task.identifiers.layerId == identifiers.layerId
-            }
+        timedTasks.removeIf { task ->
+            task.identifiers.userId == identifiers.userId ||
+                    task.identifiers.siteId == identifiers.siteId ||
+                    task.identifiers.layerId == identifiers.layerId
         }
+        this.sort()
     }
 
-    @PreDestroy
-    fun terminate() {
-        running = false
+    fun sort() {
+        if (timedTasks.isEmpty()) {
+            this.nextDue = null
+            return
+        }
+        timedTasks.sortBy { it.due }
+        this.nextDue = timedTasks.first().due
     }
-
 }
