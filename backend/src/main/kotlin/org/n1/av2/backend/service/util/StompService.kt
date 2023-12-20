@@ -1,6 +1,7 @@
 package org.n1.av2.backend.service.util
 
 import org.n1.av2.backend.config.ServerConfig
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ReduxEvent

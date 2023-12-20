@@ -12,6 +12,8 @@ enum class ServerActions {
 
     SERVER_TASKS,                   // send all timed tasks to the server for debugging purpose
 
+    SERVER_SITES_LIST,              // send list of sites
+
     SERVER_ADD_NODE,
     SERVER_ADD_CONNECTION,
     SERVER_FORCE_DISCONNECT,

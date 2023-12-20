@@ -215,6 +215,17 @@ export class WebSocketConnection {
         this.client.send(`/av${path}`, payload)
     }
 
+    sendWhenReady(path: string, data: string | any) {
+        if (this.client.connected) {
+            this.send(path, data)
+        }
+        else {
+            setTimeout(() => {
+                this.sendWhenReady(path, data)
+            }, 10)
+        }
+    }
+
     /** Ignore certain actions until an action with a specific type is received.
      * For example: make sure we get the init scan event before we start parsing changes to the site.
      * if ignoreList is null, then all events are ignored that are not the specified type.*/

@@ -9,6 +9,11 @@ class SitePropertiesEntityService(
     private val sitePropertiesRepo: SitePropertiesRepo,
 ) {
 
+    fun existsById(siteId: String): Boolean {
+        return sitePropertiesRepo.existsById(siteId)
+    }
+
+
     fun getBySiteId(id: String): SiteProperties {
         return sitePropertiesRepo.findBySiteId(id) ?: error ("No SiteProperties found for id: ${id}")
     }

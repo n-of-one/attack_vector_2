@@ -21,14 +21,24 @@ class TarIceLayer(
 
 ) : IceLayer(id, type, level, name, note, strength, hacked) {
 
+    constructor(id: String, type: LayerType, level: Int, name: String, note: String, strength: IceStrength, hacked: Boolean) :
+            this(
+                id, type, level, name, note, strength, hacked,
+                TarCreator.totalUnitsByStrength[strength]!!,
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 1, 1),
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 5, 1),
+                defaultTimeHackerGroup(IceStrength.AVERAGE, 10, 5),
+            )
+
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.TAR_ICE, level, defaultName, "",
+            this(
+                id, LayerType.TAR_ICE, level, defaultName, "",
                 IceStrength.AVERAGE, false,
                 TarCreator.totalUnitsByStrength[IceStrength.AVERAGE]!!,
                 defaultTimeHackerGroup(IceStrength.AVERAGE, 1, 1),
                 defaultTimeHackerGroup(IceStrength.AVERAGE, 5, 1),
                 defaultTimeHackerGroup(IceStrength.AVERAGE, 10, 5),
-                )
+            )
 
     override fun updateInternal(key: String, value: String): Boolean {
         if (key == STRENGTH.name) {

@@ -9,12 +9,14 @@ import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.ServerFatal
+import org.n1.av2.backend.web.rest.SiteController
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
@@ -32,6 +34,13 @@ class SiteService(
     private val taskEngine: TaskEngine,
 ) {
 
+    data class SiteListItem(val id: String, val name: String)
+
+    fun sendSitesList() {
+        val list = sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name) }
+        stompService.reply(actionType = ServerActions.SERVER_SITES_LIST, list)
+    }
+
     fun createSite(name: String): String {
         val id = sitePropertiesEntityService.createId()
         sitePropertiesEntityService.create(id, name)
@@ -39,7 +48,6 @@ class SiteService(
         siteEditorStateEntityService.create(id)
         return id
     }
-
 
     fun getSiteFull(siteId: String): SiteFull {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)

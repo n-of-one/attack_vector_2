@@ -1,7 +1,7 @@
 import React from "react"
 import {MenuBar} from "../common/menu/MenuBar"
 import {useSelector} from "react-redux"
-import {GmSites} from "./sites/GmSites";
+import {GmSitesHome} from "./sites/GmSitesHome";
 import {UserManagement} from "../common/users/UserManagement";
 import {GmState} from "./GmRootReducer";
 import {ADMIN, GM_SITES, LOGS, MISSIONS, TASKS, USERS} from "../common/menu/pageReducer";
@@ -11,19 +11,19 @@ import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
         case GM_SITES:
-            return <GmSites/>
+            return <GmSitesHome/>
         case USERS:
             return <UserManagement/>
         case LOGS:
-            return <GmSites/>
+            return <GmSitesHome/>
         case MISSIONS:
-            return <GmSites/>
+            return <GmSitesHome/>
         case TASKS:
             return <TaskMonitorHome/>
         case ADMIN:
-            return <GmSites/>
+            return <GmSitesHome/>
         default:
-            return <GmSites/>
+            return <GmSitesHome/>
     }
 }
 

@@ -1,38 +1,24 @@
 package org.n1.av2.backend
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 class SimpleTest {
 
-
-    data class Played(val heart: Boolean)
-
-    data class Oops(val did: String, val player: Played?)
     @Test
-    fun testDeserialize() {
+    fun test() {
 
-        val input = """{ "did": "again" }"""
+        val now = ZonedDateTime.now(ZoneId.systemDefault())
 
-//        val gson = Gson()
-//        val britney = gson.fromJson(input, Oops::class.java)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-        val objectMapper = ObjectMapper().registerKotlinModule()
-        val britney:Oops = objectMapper.readValue(input)
-
-        println(britney)
-
-        Assertions.assertEquals("again", britney.did)
-
-        val complex = """{ "did": "again", "played": { "heart": true } }"""
-
-        val map = objectMapper.readValue<Map<String, Any>>(complex)
-        println(map["did"])
-        println((map["played"] as Map<*, *>)["heart"])
-
+        val result = now.format(formatter)
+        println(result)
     }
+
+
 }

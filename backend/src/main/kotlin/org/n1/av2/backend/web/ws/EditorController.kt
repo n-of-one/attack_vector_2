@@ -13,8 +13,8 @@ import javax.annotation.security.RolesAllowed
 
 @Controller
 class EditorController(
-    val editorService: EditorService,
-    val userTaskRunner: UserTaskRunner
+    private val editorService: EditorService,
+    private val userTaskRunner: UserTaskRunner
 ) {
     private val logger = mu.KotlinLogging.logger {}
 

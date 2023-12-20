@@ -6,3 +6,8 @@ const isDevelopmentEnvironment = () => {
 }
 
 export const developmentServer = isDevelopmentEnvironment()
+
+export const toServerUrl = (path: string) => {
+    if (developmentServer) return `http://localhost${path}`
+    return path
+}

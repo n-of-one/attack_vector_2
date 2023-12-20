@@ -4,11 +4,15 @@ import org.n1.av2.backend.config.ServerConfig
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class TimeService(
     val config: ServerConfig
 ) {
+
+    private val dateTimeFOrmat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
 
     fun now(): ZonedDateTime {
         return ZonedDateTime.now(config.timeZoneId)
@@ -21,6 +25,10 @@ class TimeService(
 
     fun formatDuration(duration: Duration): String {
         return String.format("%d:%02d:%02d", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart())
+    }
+
+    fun formatDateTime(zonedDateTime: ZonedDateTime): String {
+        return zonedDateTime.format(dateTimeFOrmat)
     }
 
 }

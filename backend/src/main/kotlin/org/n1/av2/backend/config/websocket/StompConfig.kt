@@ -50,7 +50,6 @@ class StompConfig(
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
 
-        // FIXME why is the GM using an unauthenticated handler?
         class UnauthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
@@ -71,7 +70,6 @@ class StompConfig(
             ): Principal {
 
                 // If the user is logged in, the UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
-
                 val authentication = SecurityContextHolder.getContext().authentication
 
                 if (authentication !is UserPrincipal || !authentication.userEntity.type.authorities.contains(ROLE_USER)) {

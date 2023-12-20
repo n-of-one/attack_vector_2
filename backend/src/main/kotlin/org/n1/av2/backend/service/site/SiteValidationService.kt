@@ -16,19 +16,18 @@ class SiteValidationService(
     val siteEditorStateEntityService: SiteEditorStateEntityService
 ) {
 
-    fun validate(id: String) {
+    fun validate(siteId: String) {
         val messages = ArrayList<SiteStateMessage>()
-        val siteProperties = sitePropertiesEntityService.getBySiteId(id)
-        val nodes = nodeEntityService.getAll(id)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
+        val nodes = nodeEntityService.getAll(siteId)
 
         validateSiteProperties(siteProperties, nodes, messages)
         validateNodes(siteProperties, nodes, messages)
 
-        processValidationMessages(messages, id)
+        processValidationMessages(messages, siteId)
     }
 
     private fun validateSiteProperties(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
-        validate(messages) { validateHackTime(siteProperties) }
         validate(messages) { validateSiteName(siteProperties)}
         validate(messages) { validateStartNode(siteProperties, nodes) }
     }
@@ -38,11 +37,6 @@ class SiteValidationService(
             throw ValidationException("Site name too long to be displayed nicely.")
         }
     }
-
-    private fun validateHackTime(data: SiteProperties) {
-        data.hackTime.toDuration("Hack time")
-    }
-
 
     private fun validateStartNode(data: SiteProperties, nodes: List<Node>) {
         if (data.startNodeNetworkId.isBlank()) {

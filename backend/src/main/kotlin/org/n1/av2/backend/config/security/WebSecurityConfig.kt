@@ -1,5 +1,6 @@
 package org.n1.av2.backend.config.security
 
+import org.n1.av2.backend.entity.user.ROLE_ADMIN
 import org.n1.av2.backend.entity.user.ROLE_GM
 import org.n1.av2.backend.entity.user.ROLE_SITE_MANAGER
 import org.n1.av2.backend.entity.user.ROLE_USER
@@ -95,7 +96,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 @Configuration
 class WebConfiguration : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**").allowedOrigins("*").allowedMethods("*")
+        registry.addMapping("/**").allowedOrigins("http://localhost", "http://localhost:3000", "https://av.eosfrontier.space", "https://eosfrontier.space").allowedMethods("*").allowCredentials(true)
     }
 }
 
