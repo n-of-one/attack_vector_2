@@ -78,8 +78,7 @@ class SiteService(
         taskEngine.removeAll(TaskIdentifiers(null, siteId, null))
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach {node ->
-            val refreshedNode = node.copy(hacked = false)
-            refreshedNode.layers.forEach { layer ->
+            node.layers.forEach { layer ->
                 if (layer is IceLayer) { layer.hacked = false }
                 if (layer is KeyStoreLayer) { keystoreService.deleteIcePassword(layer.iceLayerId) }
                 if (layer is TripwireLayer) {
@@ -89,7 +88,7 @@ class SiteService(
                     }
                 }
             }
-            nodeEntityService.save(refreshedNode)
+            nodeEntityService.save(node)
         }
         iceService.deleteIce(siteId)
     }

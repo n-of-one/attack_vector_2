@@ -2,6 +2,7 @@ package org.n1.av2.backend.entity.site
 
 import org.n1.av2.backend.entity.site.enums.NodeType
 import org.n1.av2.backend.entity.site.layer.Layer
+import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
@@ -27,14 +28,16 @@ data class Node(
     val type: NodeType,
     val x: Int,
     val y: Int,
-    var ice: Boolean,
-    val hacked: Boolean,
     val layers: MutableList<Layer>,
     @Indexed val networkId: String
 ) {
     fun getLayerById(layerId: String): Layer {
         return layers.find { it.id == layerId }!!
     }
+
+    val ice get() = layers.any { it is IceLayer }
+    val hacked get() = if (!ice) true else layers.filterIsInstance<IceLayer>().all { it.hacked }
+
 }
 
 @Document

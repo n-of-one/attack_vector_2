@@ -28,13 +28,12 @@ data class UserRunLink(
     @Indexed val runId: String
 )
 
-
-enum class NodeScanStatus() {
-    UNDISCOVERED_0,             // the existence of this node has not been discovered                [ - no image - ]
-    UNCONNECTABLE_1,            // existence is known, but not the network id                        [empty.png]
-    CONNECTABLE_2,              // existence is known and the network id, but not the type of node   [empty.png]
-    ICE_PROTECTED_3,            // this node has ICE that is blocking the scan                       [protected\...]
-    FULLY_SCANNED_4,            // the layers of this node are known                                 [free\..., hacked\...]
+enum class NodeScanStatus(val rank: Int) {
+    UNDISCOVERED_0(0),             // the existence of this node has not been discovered                [ - no image - ]
+    UNCONNECTABLE_1(1),            // existence is known, but not the network id                        [empty.png]
+    CONNECTABLE_2(2),              // existence is known and the network id, but not the type of node   [empty.png]
+    ICE_PROTECTED_3(3),            // this node has ICE that is blocking the scan                       [protected\...]
+    FULLY_SCANNED_4(4),            // the layers of this node are known                                 [free\..., hacked\...]
 }
 
 data class NodeScan(

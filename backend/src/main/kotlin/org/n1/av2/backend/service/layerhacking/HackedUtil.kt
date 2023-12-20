@@ -33,15 +33,11 @@ class HackedUtil(
         val update = IceHackedUpdate(layerId, node.id)
         stompService.toSite(node.siteId, ServerActions.SERVER_LAYER_HACKED, update) // to update scan status of site
 
-        val activeIceLeft = node.layers.any { it is IceLayer && !it.hacked }
-        if (!activeIceLeft) {
+        if (node.hacked) {
             runService.updateNodeStatusToHacked(node)
 
-            val hackedNode = node.copy(hacked = true)
-            nodeEntityService.save(hackedNode)
-
-            val nodeHackedUpdate = NodeHacked(hackedNode.id, delay)
-            stompService.toSite(hackedNode.siteId, ServerActions.SERVER_NODE_HACKED, nodeHackedUpdate)
+            val nodeHackedUpdate = NodeHacked(node.id, delay)
+            stompService.toSite(node.siteId, ServerActions.SERVER_NODE_HACKED, nodeHackedUpdate)
         }
     }
 

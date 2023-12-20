@@ -76,8 +76,11 @@ class ScanResultService(
 
     @ScheduledTask
     fun areaScan(run: Run, node: Node) {
+        if (node.ice && !node.hacked) {
+            stompService.replyTerminalReceive("Scan blocked by ICE at [ok]${node.networkId}")
+        }
 
-        val discoveries = traverseScanNodes(node.id, run).sortedBy { it.distance }
+        val discoveries = determineDiscoveries(node.id, run)
 
         var newNodesDiscoveredCount = 0
 
@@ -97,12 +100,26 @@ class ScanResultService(
         scanInfoService.updateScanInfoToPlayers(run)
 
         stompService.replyTerminalReceive("New nodes discovered: ${newNodesDiscoveredCount}")
-        if (node.ice) {
-            stompService.replyTerminalReceive("Scan blocked by ICE at [ok]${node.networkId}")
-        }
     }
 
     class Discovery(val nodeId: String, val scanStatus: NodeScanStatus, val distance: Int)
+
+
+    private fun determineDiscoveries(nodeId: String, run: Run): List<Discovery> {
+        val discoveries = traverseScanNodes(nodeId, run)
+
+        // deduplicate nodes that were discovered multiple times
+        val discoveriesById = HashMap<String, Discovery>()
+        discoveries.forEach { discovery ->
+            val previousDiscovery = discoveriesById[discovery.nodeId]
+            if (previousDiscovery == null || previousDiscovery.scanStatus.rank < discovery.scanStatus.rank) {
+                discoveriesById[discovery.nodeId] = discovery
+            }
+        }
+
+        return discoveriesById.values.toList().sortedBy { it.distance }
+    }
+
 
     fun traverseScanNodes(nodeId: String, run: Run): List<Discovery> {
         val node = nodeEntityService.findById(nodeId)
@@ -113,12 +130,10 @@ class ScanResultService(
             .filter { (_, nodeScan) -> nodeScan.distance == currentDistance + 1 }
             .map { it.key }
 
-        if (node.ice) {
-            val iceNodeDiscoveryType = if (node.hacked) FULLY_SCANNED_4 else ICE_PROTECTED_3
-            val neighbourDiscoveryType = if (node.hacked) CONNECTABLE_2 else UNCONNECTABLE_1
+        if (node.ice && !node.hacked) {
             return connectedNodeIds
-                .map { afterIceNodeId -> Discovery(afterIceNodeId, neighbourDiscoveryType, currentDistance + 1) }
-                .plus(Discovery(nodeId, iceNodeDiscoveryType, currentDistance))
+                .map { afterIceNodeId -> Discovery(afterIceNodeId, UNCONNECTABLE_1, currentDistance + 1) }
+                .plus(Discovery(nodeId, ICE_PROTECTED_3, currentDistance))
         }
 
         return connectedNodeIds

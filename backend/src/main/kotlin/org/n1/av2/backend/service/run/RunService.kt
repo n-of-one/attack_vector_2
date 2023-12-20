@@ -142,8 +142,10 @@ class RunService(
         val neighboringNodeIds = siteService.findNeighboringNodeIds(node)
 
         runs.forEach { run ->
-            val currentStatus = run.nodeScanById[node.id]!!.status
-            if (!currentStatus.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
+            val nodeScan = run.nodeScanById[node.id]
+                ?: // this node did not exist when the previous run was created, probably added later by a GM. Skipping
+                return@forEach
+            if (!nodeScan.status.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
 
             run.updateScanStatus(node.id, FULLY_SCANNED_4)
             stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, "nodeId" to node.id, "newStatus" to FULLY_SCANNED_4)

@@ -40,8 +40,6 @@ class NodeEntityService(
                 type = command.type,
                 x = command.x,
                 y = command.y,
-                ice = command.type.ice,
-                hacked = false,
                 layers = layers,
                 networkId = networkId)
         nodeRepo.save(node)
@@ -152,7 +150,6 @@ class NodeEntityService(
         val node = getById(command.nodeId)
         val layer = createLayer(command.layerType, node)
         node.layers.add(layer)
-        node.ice = node.layers.any{it.type.ice}
         nodeRepo.save(node)
         return layer
     }
@@ -192,7 +189,6 @@ class NodeEntityService(
         node.layers.remove(toRemove)
         node.layers.sortBy { it.level }
         node.layers.forEachIndexed { level, layer -> layer.level = level }
-        node.ice = node.layers.any{it.type.ice}
         nodeRepo.save(node)
         val newFocusLayer = node.layers[toRemove.level - 1]
         return LayersUpdated(node, newFocusLayer.id)
