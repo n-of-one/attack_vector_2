@@ -11,14 +11,14 @@ import org.n1.av2.backend.entity.site.layer.other.CoreLayer
 import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.run.terminal.scanning.ScanningService
+import org.n1.av2.backend.service.run.terminal.scanning.InitiateScanService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
 @Service
 class CoreLayerService(
     private val stompService: StompService,
-    private val scanningService: ScanningService,
+    private val initiateScanService: InitiateScanService,
     private val runEntityService: RunEntityService,
     private val nodeEntityService: NodeEntityService,
     private val timerEntityService: TimerEntityService,
@@ -29,7 +29,7 @@ class CoreLayerService(
         var hackingDetails = ""
         if (layer.revealNetwork) {
             val run = runEntityService.getByRunId(runId)
-            scanningService.quickScan(run)
+            initiateScanService.quickScan(run)
             hackingDetails += " revealed network"
         }
 

@@ -14,7 +14,7 @@ import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.Timings
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
-import org.n1.av2.backend.service.run.terminal.scanning.ScanResultService
+import org.n1.av2.backend.service.run.terminal.scanning.ScanService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.isOneOf
 import org.springframework.stereotype.Service
@@ -33,7 +33,7 @@ class CommandMoveService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runEntityService: RunEntityService,
     private val tripwireLayerService: TripwireLayerService,
-    private val scanProbeActionService: ScanResultService,
+    private val scanService: ScanService,
     private val userTaskRunner: UserTaskRunner,
     private val stompService: StompService
 ) {
@@ -111,8 +111,8 @@ class CommandMoveService(
             return
         }
 
-        val scan = runEntityService.getByRunId(runId)
-        val nodeStatus = scan.nodeScanById[nodeId]!!.status
+        val run = runEntityService.getByRunId(runId)
+        val nodeStatus = run.nodeScanById[nodeId]!!.status
 
         if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
             arriveComplete(nodeId, userId, runId)
@@ -120,7 +120,7 @@ class CommandMoveService(
             stompService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to HACKER_SCANS_NODE_Timings)
 
             userTaskRunner.queueInTicksForSite("internal-scan", state.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
-                scanProbeActionService.hackerArrivedNodeScan(nodeId, userId, runId)
+                scanService.hackerArrivedNodeScan(nodeId, userId, runId)
                 arriveComplete(nodeId, userId, runId)
             }
         }

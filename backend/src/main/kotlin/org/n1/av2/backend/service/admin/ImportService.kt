@@ -16,7 +16,6 @@ import org.n1.av2.backend.model.ui.AddConnection
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.SiteValidationService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.asList
@@ -35,22 +34,22 @@ class ImportService(
     private val stompService: StompService,
 ) {
 
-    private val objectMapper = ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private val logger = mu.KotlinLogging.logger {}
+
+    private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
 
     fun import(json: String) {
         try {
             val siteName = importSite(json)
-            sendResponse("Imported site: $siteName", NotyType.NEUTRAL)
-        }
-        catch (e: Exception) {
-            sendResponse(e.message ?: "Import failed.", NotyType.ERROR)
+            sendResponse("Imported site", siteName, NotyType.NEUTRAL)
+        } catch (e: Exception) {
+            logger.error(e.message, e)
+            sendResponse("Error", e.message ?: "Import failed.", NotyType.ERROR)
         }
     }
 
-    private fun sendResponse(message: String, type: NotyType) {
-        val title = if (type == NotyType.ERROR) "Error" else "Success"
-
+    private fun sendResponse(title: String, message: String, type: NotyType) {
         val userId = (SecurityContextHolder.getContext().authentication as UserPrincipal).userId
         stompService.sendToDestination("/topic/user/${userId}", ServerActions.SERVER_NOTIFICATION, arrayOf(NotyMessage(type, title, message)))
     }
@@ -129,7 +128,7 @@ class ImportService(
             siteId = siteId,
             nodeIds = nodes.map { it.id }.toMutableList(),
             connectionIds = connections.map { it.id }.toMutableList(),
-            )
+        )
         layoutEntityService.save(layout)
     }
 
@@ -153,10 +152,26 @@ class ImportService(
         val note = input.get("note").asText()
 
         return when (layerType) {
-            LayerType.OS -> OsLayer(type = LayerType.OS, id = id, level = level, name = name, note = note,nodeName = input.get("nodeName").asText())
-            LayerType.TEXT -> TextLayer(type = LayerType.TEXT, id = id, level = level, name = name, note = note,text = input.get("text").asText())
-            LayerType.CORE -> CoreLayer(type = LayerType.CORE, id = id, level = level, name = name, note = note, revealNetwork = input.get("revealNetwork").asBoolean())
-            LayerType.KEYSTORE -> KeyStoreLayer(type = LayerType.KEYSTORE, id = id, level = level, name = name, note = note,iceLayerId = input.get("iceLayerId").asText())
+            LayerType.OS -> OsLayer(type = LayerType.OS, id = id, level = level, name = name, note = note, nodeName = input.get("nodeName").asText())
+            LayerType.TEXT -> TextLayer(type = LayerType.TEXT, id = id, level = level, name = name, note = note, text = input.get("text").asText())
+            LayerType.CORE -> CoreLayer(
+                type = LayerType.CORE,
+                id = id,
+                level = level,
+                name = name,
+                note = note,
+                revealNetwork = input.get("revealNetwork").asBoolean()
+            )
+
+            LayerType.KEYSTORE -> KeyStoreLayer(
+                type = LayerType.KEYSTORE,
+                id = id,
+                level = level,
+                name = name,
+                note = note,
+                iceLayerId = input.get("iceLayerId").asText()
+            )
+
             LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
@@ -170,7 +185,8 @@ class ImportService(
 
     private fun mapLayerStatusLight(input: JsonNode, id: String, level: Int, name: String, note: String): StatusLightLayer {
         val type = LayerType.valueOf(input.get("type").asText())
-        return StatusLightLayer(type = type,
+        return StatusLightLayer(
+            type = type,
             id = id, level = level, name = name, note = note,
             appId = input.get("appId").asText(),
             status = input.get("status").asBoolean(),
@@ -180,7 +196,8 @@ class ImportService(
     }
 
     private fun mapLayerTripWire(input: JsonNode, id: String, level: Int, name: String, note: String): TripwireLayer {
-        return TripwireLayer( type= LayerType.TRIPWIRE,
+        return TripwireLayer(
+            type = LayerType.TRIPWIRE,
             id = id, level = level, name = name, note = note,
             countdown = input.get("countdown").asText(),
             shutdown = input.get("shutdown").asText(),

@@ -6,7 +6,7 @@ import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.service.run.terminal.scanning.ScanningService
+import org.n1.av2.backend.service.run.terminal.scanning.InitiateScanService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
@@ -15,7 +15,7 @@ class CommandScanService(
     private val stompService: StompService,
     private val runEntityService: RunEntityService,
     private val nodeEntityService: NodeEntityService,
-    private val scanningService: ScanningService,
+    private val initiateScanService: InitiateScanService,
 ) {
 
 
@@ -38,7 +38,7 @@ class CommandScanService(
         }
 
         stompService.replyTerminalSetLocked(true)
-        scanningService.scanFromOutside(run, node)
+        initiateScanService.scanFromOutside(run, node)
     }
 
 
@@ -49,7 +49,7 @@ class CommandScanService(
         stompService.replyTerminalSetLocked(true)
         val run = runEntityService.getByRunId(runId)
         val node = nodeEntityService.findById(state.currentNodeId)
-        scanningService.scanFromInside(run, node)
+        initiateScanService.scanFromInside(run, node)
     }
 
 
@@ -64,6 +64,6 @@ class CommandScanService(
     }
 
     fun processQuickScan(run: Run) {
-        scanningService.quickScan(run)
+        initiateScanService.quickScan(run)
     }
 }

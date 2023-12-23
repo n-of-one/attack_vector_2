@@ -30,6 +30,7 @@ class ScanInfoService(
     fun createNodeScans(siteId: String): MutableMap<String, NodeScan> {
         val nodes = nodeEntityService.getAll(siteId)
         val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId, nodes)
+
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
                 1 -> NodeScanStatus.CONNECTABLE_2

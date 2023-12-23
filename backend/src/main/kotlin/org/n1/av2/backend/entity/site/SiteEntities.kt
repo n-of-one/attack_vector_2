@@ -4,6 +4,7 @@ import org.n1.av2.backend.entity.site.enums.NodeType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.ZonedDateTime
@@ -35,8 +36,14 @@ data class Node(
         return layers.find { it.id == layerId }!!
     }
 
-    val ice get() = layers.any { it is IceLayer }
-    val hacked get() = if (!ice) true else layers.filterIsInstance<IceLayer>().all { it.hacked }
+    @Transient
+    val ice  = layers.any { it is IceLayer } // used in frontend as well
+
+    @Transient
+    val hacked = if (ice) true else layers.filterIsInstance<IceLayer>().all { it.hacked }
+
+    @Transient
+    val unhackedIce = layers.filterIsInstance<IceLayer>().any { !it.hacked }
 
 }
 
