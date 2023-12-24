@@ -11,10 +11,10 @@ interface RunRepo : CrudRepository<Run, String> {
 }
 
 @Repository
-interface UserRunLinkRepo : CrudRepository<UserRunLink, String> {
-    fun findAllByUserId(userId:String): List<UserRunLink>
-    fun findAllByRunId(runId: String): List<UserRunLink>
-    fun findByUserIdAndRunId(userId: String, runId: String): UserRunLink?
+interface RunLinkRepo : CrudRepository<RunLink, String> {
+    fun findAllByUserId(userId:String): List<RunLink>
+    fun findAllByRunId(runId: String): List<RunLink>
+    fun findByUserIdAndRunId(userId: String, runId: String): RunLink?
     fun deleteByUserIdAndRunId(userId: String, runId: String)
     fun deleteAllByRunId(runId: String)
     fun deleteAllByUserId(userId: String)

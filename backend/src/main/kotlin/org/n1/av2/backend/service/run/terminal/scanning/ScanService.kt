@@ -9,7 +9,7 @@ import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.site.RunLinkService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
@@ -18,7 +18,7 @@ class ScanService(
     private val runEntityService: RunEntityService,
     private val stompService: StompService,
     private val nodeEntityService: NodeEntityService,
-    private val scanInfoService: ScanInfoService,
+    private val runLinkService: RunLinkService,
     private val traverseNodeService: TraverseNodeService,
 ) {
 
@@ -59,7 +59,7 @@ class ScanService(
         val nodeStatusById = discoveries.map { it.nodeId to it.scanStatus }.toMap()
 
         stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
-        scanInfoService.updateScanInfoToPlayers(run)
+        runLinkService.sendUpdatedRunInfoToHackers(run)
 
         stompService.replyTerminalReceive("New nodes discovered: ${newNodesDiscoveredCount}")
     }
@@ -86,5 +86,19 @@ class ScanService(
 
         return (iceDiscoveries + regularDiscoveris + neighborDiscoveries)
     }
+
+    fun createInitialNodeScans(siteId: String): MutableMap<String, NodeScan> {
+        val nodes = nodeEntityService.getAll(siteId)
+        val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId, nodes)
+
+        return traverseNodes.map {
+            val nodeStatus = when (it.value.distance) {
+                1 -> NodeScanStatus.CONNECTABLE_2
+                else -> NodeScanStatus.UNDISCOVERED_0
+            }
+            it.key to NodeScan(status = nodeStatus, distance = it.value.distance!!)
+        }.toMap().toMutableMap()
+    }
+
 
 }

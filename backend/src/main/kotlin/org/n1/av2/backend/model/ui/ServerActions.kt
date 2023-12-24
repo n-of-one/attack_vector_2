@@ -33,8 +33,8 @@ enum class ServerActions {
     SERVER_USER_DETAILS,            // User details for editing
 
 
-    SERVER_UPDATE_USER_SCANS,       // Sent to user to update the scans shown on home page of that user
-    SERVER_UPDATE_SCAN_INFO,        // Scan info has changed (as displayed on home screen)
+    SERVER_UPDATE_USER_RUNS,       // Sent to user to update the scans shown on home page of that user
+    SERVER_UPDATE_RUN_INFO,        // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_ENTER_RUN,               // Result of user entering a run (for the user itself)
 

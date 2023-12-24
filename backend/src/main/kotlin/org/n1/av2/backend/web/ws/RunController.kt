@@ -6,7 +6,7 @@ import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ReduxEvent
 import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.site.RunLinkService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.toServerFatalReduxEvent
@@ -16,9 +16,9 @@ import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.stereotype.Controller
 
 @Controller
-class ScanAndRunController(
+class RunController(
     private val userTaskRunner: UserTaskRunner,
-    private val scanInfoService: ScanInfoService,
+    private val runLinkService: RunLinkService,
     private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val siteService: SiteService,
@@ -31,7 +31,7 @@ class ScanAndRunController(
 
     @MessageMapping("/scan/scansOfPlayer")
     fun scansOfPlayer(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { scanInfoService.sendScanInfosOfPlayer() }
+        userTaskRunner.runTask(userPrincipal) { runLinkService.sendRunInfosToUser() }
     }
 
     @MessageMapping("/scan/scanForName")
@@ -41,7 +41,7 @@ class ScanAndRunController(
 
     @MessageMapping("/scan/deleteScan")
     fun deleteScan(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { scanInfoService.deleteScan(runId) }
+        userTaskRunner.runTask(userPrincipal) { runLinkService.deleteRunLink(runId) }
     }
 
 

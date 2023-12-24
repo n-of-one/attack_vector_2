@@ -1,7 +1,7 @@
 package org.n1.av2.backend.service.run.terminal
 
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.site.RunLinkService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ class SocialTerminalService(
     val stompService: StompService,
     val currentUserService: CurrentUserService,
     val userEntityService: UserEntityService,
-    val scanInfoService: ScanInfoService
+    val runLinkService: RunLinkService
         ) {
 
     fun processShare(runId: String, tokens: List<String>) {
@@ -26,7 +26,7 @@ class SocialTerminalService(
             stompService.replyTerminalReceive("[warn]not found[/] - user [info]${userName}[/] not found.")
             return
         }
-        scanInfoService.shareScan(runId, user)
+        runLinkService.shareRun(runId, user)
     }
 
 }

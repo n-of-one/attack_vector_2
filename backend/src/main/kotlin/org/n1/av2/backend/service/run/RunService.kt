@@ -18,7 +18,8 @@ import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.layerhacking.service.TimerInfo
 import org.n1.av2.backend.service.layerhacking.service.TripwireLayerService
 import org.n1.av2.backend.service.run.terminal.SyntaxHighlightingService
-import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.run.terminal.scanning.ScanService
+import org.n1.av2.backend.service.site.RunLinkService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
@@ -35,11 +36,12 @@ class RunService(
     private val taskEngine: TaskEngine,
     private val syntaxHighlightingService: SyntaxHighlightingService,
     private val stompService: StompService,
-    private val userRunLinkEntityService: UserRunLinkEntityService,
+    private val runLinkEntityService: RunLinkEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
-    private val scanInfoService: ScanInfoService,
+    private val runLinkService: RunLinkService,
     private val timerEntityService: TimerEntityService,
     private val tripwireLayerService: TripwireLayerService,
+    private val scanService: ScanService,
 ) {
 
     class HackerPresence(
@@ -60,12 +62,12 @@ class RunService(
             return
         }
 
-        val nodeScanById = scanInfoService.createNodeScans(siteProperties.siteId)
+        val nodeScanById = scanService.createInitialNodeScans(siteProperties.siteId)
         val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
-        userRunLinkEntityService.createUserScan(run.runId, currentUserService.userEntity)
+        runLinkEntityService.createRunLink(run.runId, currentUserService.userEntity)
 
         stompService.reply(ServerActions.SERVER_SITE_DISCOVERED, "runId" to run.runId, "siteId" to siteProperties.siteId)
-        scanInfoService.sendScanInfosOfPlayer() // to update the scans in the home screen
+        runLinkService.sendRunInfosToUser() // to update the scans in the home screen
 
         // enterRun will be called by the browser, the frontend needs to configure websocket connection for the run.
     }
@@ -188,12 +190,12 @@ class RunService(
     }
 
     private fun deleteRun(run: Run, siteName: String) {
-        userRunLinkEntityService.deleteAllForRun(run)
+        runLinkEntityService.deleteAllForRun(run)
         runEntityService.delete(run)
 
         hackerStateEntityService.findAllHackersInRun(run.runId)
             .onEach { hackerState: HackerState ->
-                scanInfoService.sendScanInfosOfPlayer(hackerState.userId)
+                runLinkService.sendRunInfosToUser(hackerState.userId)
                 hackerStateEntityService.leaveSite(hackerState)
                 taskEngine.removeForUser(hackerState.userId)
             }

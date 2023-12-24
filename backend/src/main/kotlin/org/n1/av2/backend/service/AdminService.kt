@@ -4,9 +4,12 @@ import org.n1.av2.backend.entity.ice.IcePasswordStatusRepo
 import org.n1.av2.backend.entity.ice.TangleIceStatusRepo
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.HackerStateRepo
+import org.n1.av2.backend.entity.run.RunLinkRepo
 import org.n1.av2.backend.entity.run.RunRepo
-import org.n1.av2.backend.entity.run.UserRunLinkRepo
-import org.n1.av2.backend.entity.site.*
+import org.n1.av2.backend.entity.site.ConnectionRepo
+import org.n1.av2.backend.entity.site.NodeRepo
+import org.n1.av2.backend.entity.site.SiteEditorStateRepo
+import org.n1.av2.backend.entity.site.SitePropertiesRepo
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserRepo
 import org.n1.av2.backend.model.ui.NotyMessage
@@ -25,7 +28,7 @@ class AdminService(
     private val siteEditorStateRepo: SiteEditorStateRepo,
     private val stompService: StompService,
     private val runRepo: RunRepo,
-    private val userRunLinkRepo: UserRunLinkRepo,
+    private val runLinkRepo: RunLinkRepo,
     private val userEntityService: UserEntityService,
     private val userRepo: UserRepo,
     private val tangleIceStatusRepo: TangleIceStatusRepo,
@@ -43,7 +46,7 @@ class AdminService(
         siteEditorStateRepo.deleteAll()
 
         runRepo.deleteAll()
-        userRunLinkRepo.deleteAll()
+        runLinkRepo.deleteAll()
 
         hackerStateRepo.deleteAll()
         userRepo.deleteAll()

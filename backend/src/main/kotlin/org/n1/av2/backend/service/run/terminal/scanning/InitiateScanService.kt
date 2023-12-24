@@ -11,7 +11,7 @@ import org.n1.av2.backend.model.ui.NodeScanType.SCAN_CONNECTIONS
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ServerActions.SERVER_PROBE_LAUNCH
 import org.n1.av2.backend.service.run.terminal.inside.HACKER_SCANS_NODE_Timings
-import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.site.RunLinkService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
@@ -24,7 +24,7 @@ class InitiateScanService(
     private val currentUserService: CurrentUserService,
     private val traverseNodeService: TraverseNodeService,
     private val userTaskRunner: UserTaskRunner,
-    private val scanInfoService: ScanInfoService,
+    private val runLinkService: RunLinkService,
     private val scanService: ScanService,
 ) {
 
@@ -86,6 +86,6 @@ class InitiateScanService(
         }.toMap()
 
         stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
-        scanInfoService.updateScanInfoToPlayers(run)
+        runLinkService.sendUpdatedRunInfoToHackers(run)
     }
 }

@@ -1,8 +1,8 @@
 import {updateArrayById} from "../../common/util/Immutable";
 import {AnyAction} from "redux";
 
-export const SERVER_UPDATE_USER_SCANS = "SERVER_UPDATE_USER_SCANS";
-export const SERVER_UPDATE_SCAN_INFO = "SERVER_UPDATE_SCAN_INFO";
+export const SERVER_UPDATE_USER_RUNS = "SERVER_UPDATE_USER_RUNS";
+export const SERVER_UPDATE_RUN_INFO = "SERVER_UPDATE_RUN_INFO";
 
 export interface ScanInfo {
     runId: string,
@@ -16,8 +16,8 @@ const defaultState: ScanInfo[] = [];
 
 export const scansReducer = (state: ScanInfo[] = defaultState, action: AnyAction): ScanInfo[] => {
     switch(action.type) {
-        case SERVER_UPDATE_USER_SCANS : return action.data
-        case SERVER_UPDATE_SCAN_INFO: return processScanInfoUpdate(state, action.data);
+        case SERVER_UPDATE_USER_RUNS : return action.data
+        case SERVER_UPDATE_RUN_INFO: return processScanInfoUpdate(state, action.data);
         default: return state
     }
 }

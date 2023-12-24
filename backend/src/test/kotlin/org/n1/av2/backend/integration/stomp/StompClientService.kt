@@ -1,6 +1,6 @@
 package org.n1.av2.backend.integration.stomp
 
-import org.n1.av2.backend.entity.run.UserRunLinkEntityService
+import org.n1.av2.backend.entity.run.RunLinkEntityService
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.LoginService
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +14,7 @@ class StompClientService {
     private lateinit var userEntityService: UserEntityService
 
     @Autowired
-    private lateinit var userRunLinkEntityService: UserRunLinkEntityService
+    private lateinit var runLinkEntityService: RunLinkEntityService
 
     @Autowired
     private lateinit var loginService: LoginService
@@ -27,7 +27,7 @@ class StompClientService {
 
     suspend fun createAndConnect(name: String): HackerClient {
         userEntityService.deleteTestUserIfExists(name)
-        userRunLinkEntityService.deleteAllForUser(name)
+        runLinkEntityService.deleteAllForUser(name)
         userEntityService.createUserForTest(name)
 
         val hacker = connectFor(name)

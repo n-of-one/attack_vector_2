@@ -22,7 +22,7 @@ data class Run(
 }
 
 @Document
-data class UserRunLink(
+data class RunLink(
     @Id val _mongoId_: String? = null,
     @Indexed val userId: String,
     @Indexed val runId: String
@@ -41,8 +41,3 @@ data class NodeScan(
     val distance: Int
 )
 
-
-class PatrollerPathSegment(
-    val fromNodeId: String,
-    val toNodeId: String
-)

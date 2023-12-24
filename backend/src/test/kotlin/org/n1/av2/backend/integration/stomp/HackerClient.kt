@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.site.ScanInfoService
+import org.n1.av2.backend.service.site.RunLinkService
 
 class HackerClient(
     private val client: AvClient,
@@ -37,14 +37,14 @@ class HackerClient(
     suspend fun removeUserScans() {
         client.send("/av/scan/scansOfPlayer", "")
 
-        val userScansJson = client.waitFor(ServerActions.SERVER_UPDATE_USER_SCANS, "")
-        val userScans: List<ScanInfoService.ScanInfo> = objectMapper.readValue(userScansJson)
+        val userScansJson = client.waitFor(ServerActions.SERVER_UPDATE_USER_RUNS, "")
+        val userScans: List<RunLinkService.RunInfo> = objectMapper.readValue(userScansJson)
 
         userScans.forEach { scanInfo ->
             client.send("/av/scan/deleteScan", scanInfo.runId)
         }
 
-        client.waitFor(ServerActions.SERVER_UPDATE_USER_SCANS, "[]")
+        client.waitFor(ServerActions.SERVER_UPDATE_USER_RUNS, "[]")
         client.clearMessage()
     }
 
@@ -65,8 +65,8 @@ class HackerClient(
     }
 
     suspend fun waitForSiteInfo(siteName: String) {
-        val sitesJson = client.waitFor(ServerActions.SERVER_UPDATE_USER_SCANS, """"siteName":"${siteName}"""")
-        val sites: List<ScanInfoService.ScanInfo> = objectMapper.readValue(sitesJson)
+        val sitesJson = client.waitFor(ServerActions.SERVER_UPDATE_USER_RUNS, """"siteName":"${siteName}"""")
+        val sites: List<RunLinkService.RunInfo> = objectMapper.readValue(sitesJson)
         val site = sites.find { it.siteName == siteName } ?: error("Did not receive site with name ${siteName}, but got: ${sitesJson}")
         siteId = site.siteId
         runId = site.runId

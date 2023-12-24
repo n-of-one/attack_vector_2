@@ -1,6 +1,5 @@
 package org.n1.av2.backend.entity.run
 
-import org.n1.av2.backend.service.util.TimeService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 
@@ -30,7 +29,7 @@ class RunEntityService(
         runRepo.save(run)
     }
 
-    fun getAll(runLinks: List<UserRunLink>): List<Run> {
+    fun getAll(runLinks: List<RunLink>): List<Run> {
         val runIds = runLinks.map { it.runId }
         return runRepo.findByRunIdIn(runIds)
     }
