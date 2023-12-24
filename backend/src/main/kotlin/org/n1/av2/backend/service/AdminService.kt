@@ -20,7 +20,6 @@ class AdminService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val hackerStateRepo: HackerStateRepo,
     private val sitePropertiesRepo: SitePropertiesRepo,
-    private val layoutRepo: LayoutRepo,
     private val nodeRepo: NodeRepo,
     private val connectionRepo: ConnectionRepo,
     private val siteEditorStateRepo: SiteEditorStateRepo,
@@ -39,7 +38,6 @@ class AdminService(
         }
 
         sitePropertiesRepo.deleteAll()
-        layoutRepo.deleteAll()
         nodeRepo.deleteAll()
         connectionRepo.deleteAll()
         siteEditorStateRepo.deleteAll()

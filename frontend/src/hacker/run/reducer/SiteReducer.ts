@@ -1,17 +1,15 @@
 import {findElementById, updateArrayById} from "../../../common/util/Immutable";
 import {SiteProperties, sitePropertiesDefault} from "../../../editor/reducer/SitePropertiesReducer";
-import {defaultLayout, Layout} from "../../../editor/reducer/LayoutReducer";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {siteStateDefault, SiteStateI} from "../../../editor/reducer/SiteStateReducer";
 import {NodeI} from "../../../editor/reducer/NodesReducer";
 import {AnyAction} from "redux";
-import {SERVER_LAYER_HACKED, SERVER_ENTER_RUN} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTER_RUN, SERVER_LAYER_HACKED} from "../../server/RunServerActionProcessor";
 
 
 export interface Site {
     id: string,
     siteProperties: SiteProperties,
-    layout: Layout,
     nodes: NodeI[],
     connections: Connection[],
     state: SiteStateI,
@@ -38,7 +36,6 @@ export interface LayerStatus {
 const defaultState = {
     id: "",
     siteProperties: sitePropertiesDefault,
-    layout: defaultLayout,
     nodes: [],
     connections: [],
     state: siteStateDefault,

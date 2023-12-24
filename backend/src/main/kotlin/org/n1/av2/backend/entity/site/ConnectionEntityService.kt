@@ -6,24 +6,23 @@ import org.springframework.stereotype.Service
 
 @Service
 class ConnectionEntityService(
-        private val connectionRepo: ConnectionRepo
+    private val connectionRepo: ConnectionRepo
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
 
     fun findConnection(startId: String, endId: String): Connection? {
-//        return logNanoTime("findConnection", logger) {
-            val startConnections = findByNodeId(startId)
-            return startConnections.find { it.fromId == endId || it.toId == endId }
-//        }
+        val startConnections = findByNodeId(startId)
+        return startConnections.find { it.fromId == endId || it.toId == endId }
     }
 
     fun createConnection(command: AddConnection): Connection {
         val connection = Connection(
-                id = createId("con", connectionRepo::findById),
-                siteId = command.siteId,
-                fromId = command.fromId,
-                toId = command.toId)
+            id = createId("con", connectionRepo::findById),
+            siteId = command.siteId,
+            fromId = command.fromId,
+            toId = command.toId
+        )
         connectionRepo.save(connection)
 
         return connection

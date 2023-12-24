@@ -95,9 +95,9 @@ class NodeEntityService(
         nodeRepo.delete(node)
     }
 
-    fun snap(nodeIds: List<String>) {
-        nodeIds.forEach { nodeId ->
-            val node = getById(nodeId)
+    fun snap(siteId: String) {
+        val nodes = getAll(siteId)
+        nodes.forEach { node ->
 
             val x = capX(40 * ((node.x + 20) / 40))
             val y = capY(40 * ((node.y + 20) / 40))

@@ -1,7 +1,6 @@
 import {dragAndDropReducer, defaultDragAndDropState, DragAndDropState} from "./reducer/DragAndDropReducer"
 import {themeReducer} from "../common/reducer/ThemeReducer"
 import {connectionsReducer, Connection} from "./reducer/ConnectionsReducer"
-import {layoutReducer, defaultLayout, Layout} from "./reducer/LayoutReducer"
 import {SiteProperties, sitePropertiesDefault, SitePropertiesReducer} from "./reducer/SitePropertiesReducer"
 import {NodeI, nodesReducer} from "./reducer/NodesReducer"
 import {currentNodeIdReducer} from "./reducer/CurrentNodeIdReducer"
@@ -11,7 +10,6 @@ import {AnyAction} from "redux"
 
 export interface EditorState {
     siteProperties: SiteProperties,
-    layout: Layout,
     dragAndDrop: DragAndDropState,
     theme: string,
     nodes: Array<NodeI>,
@@ -23,7 +21,6 @@ export interface EditorState {
 
 export const editorRootDefaultState: EditorState = {
     siteProperties: { ...sitePropertiesDefault},
-    layout: defaultLayout,
     dragAndDrop: defaultDragAndDropState,
     theme: "frontier",
     nodes: [],
@@ -37,7 +34,6 @@ export const editorRootReducer = (state:EditorState, action: AnyAction): EditorS
     const nodes = (state.nodes) ? state.nodes : []
     return {
         siteProperties: SitePropertiesReducer(state.siteProperties, action),
-        layout: layoutReducer(state.layout, action),
         dragAndDrop: dragAndDropReducer(state.dragAndDrop, action),
         theme: themeReducer(state.theme, action),
         nodes: nodesReducer(state.nodes, action),

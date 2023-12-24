@@ -9,21 +9,18 @@ import org.n1.av2.backend.entity.site.layer.ice.IceLayer
 import org.n1.av2.backend.entity.site.layer.other.KeyStoreLayer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.SiteFull
 import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.ServerFatal
-import org.n1.av2.backend.web.rest.SiteController
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
 @Service
 class SiteService(
     private val stompService: StompService,
-    private val layoutEntityService: LayoutEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
@@ -44,20 +41,18 @@ class SiteService(
     fun createSite(name: String): String {
         val id = sitePropertiesEntityService.createId()
         sitePropertiesEntityService.create(id, name)
-        layoutEntityService.create(id)
         siteEditorStateEntityService.create(id)
         return id
     }
 
     fun getSiteFull(siteId: String): SiteFull {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        val layout = layoutEntityService.getBySiteId(siteId)
         val nodes = nodeEntityService.getAll(siteId).toMutableList()
         val startNodeId = findStartNode(siteProperties.startNodeNetworkId, nodes)?.id
         val connections = connectionEntityService.getAll(siteId)
         val state = siteEditorStateEntityService.getById(siteId)
 
-        return SiteFull(siteId, siteProperties, layout, nodes, connections, state, startNodeId)
+        return SiteFull(siteId, siteProperties, nodes, connections, state, startNodeId)
     }
 
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
@@ -67,7 +62,6 @@ class SiteService(
     fun removeSite(siteId: String, userPrincipal: UserPrincipal) {
         stompService.toSite(siteId, ServerActions.SERVER_ERROR, ServerFatal(false, "Site removed by ${userPrincipal.userEntity.name}, please close browser window."))
         sitePropertiesEntityService.delete(siteId)
-        layoutEntityService.delete(siteId)
         nodeEntityService.deleteAllForSite(siteId)
         connectionEntityService.deleteAllForSite(siteId)
         siteEditorStateEntityService.delete(siteId)

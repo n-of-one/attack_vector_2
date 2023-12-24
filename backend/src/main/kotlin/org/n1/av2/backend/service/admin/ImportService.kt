@@ -28,7 +28,6 @@ class ImportService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
-    private val layoutEntityService: LayoutEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
     private val siteValidationService: SiteValidationService,
     private val stompService: StompService,
@@ -69,10 +68,6 @@ class ImportService(
 
     private fun importV1(root: JsonNode): String {
         val siteProperties = importV1SiteProperties(root)
-        val nodes = importV1Nodes(root)
-        val connections = importV1Connections(root)
-
-        storeLayout(siteProperties.siteId, nodes, connections)
         recreateSiteState(siteProperties.siteId)
 
         return siteProperties.name
@@ -121,15 +116,6 @@ class ImportService(
         nodes.forEach { nodeEntityService.save(it) }
 
         return nodes
-    }
-
-    private fun storeLayout(siteId: String, nodes: List<Node>, connections: List<Connection>) {
-        val layout = Layout(
-            siteId = siteId,
-            nodeIds = nodes.map { it.id }.toMutableList(),
-            connectionIds = connections.map { it.id }.toMutableList(),
-        )
-        layoutEntityService.save(layout)
     }
 
     private fun recreateSiteState(siteId: String) {

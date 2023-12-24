@@ -8,7 +8,6 @@ import org.n1.av2.backend.entity.site.enums.NodeType
 data class SiteFull(
     val id: String,
     val siteProperties: SiteProperties,
-    val layout: Layout,
     val nodes: MutableList<Node>,
     val connections: List<Connection>,
     val state: SiteEditorState,

@@ -48,13 +48,6 @@ data class Node(
 }
 
 @Document
-data class Layout(
-    @Id val siteId: String,
-    val nodeIds: MutableList<String> = ArrayList(),
-    val connectionIds: MutableList<String> = ArrayList()
-)
-
-@Document
 data class Connection(
     @Id val id: String,
     @Indexed val siteId: String,

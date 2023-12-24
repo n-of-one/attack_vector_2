@@ -25,12 +25,6 @@ interface ConnectionRepo : CrudRepository<Connection, String> {
 }
 
 @Repository
-interface LayoutRepo : CrudRepository<Layout, String> {
-    fun findBySiteId(siteId: String): Layout?
-}
-
-
-@Repository
 interface SiteEditorStateRepo : CrudRepository<SiteEditorState, String> {
     fun findBySiteId(siteId: String): SiteEditorState?
 }

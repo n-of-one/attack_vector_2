@@ -1,7 +1,6 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.ConnectionEntityService
-import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
@@ -16,7 +15,6 @@ import org.n1.av2.backend.service.util.StompService
 @org.springframework.stereotype.Service
 class EditorService(
     private val siteService: SiteService,
-    private val layoutEntityService: LayoutEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
@@ -31,14 +29,11 @@ class EditorService(
     }
 
     fun addNode(command: AddNode) {
-        val layout = layoutEntityService.getBySiteId(command.siteId)
         val node = nodeEntityService.createNode(command)
-        layoutEntityService.addNode(layout, node)
         stompService.toSite(command.siteId, ServerActions.SERVER_ADD_NODE, node)
     }
 
     fun addConnection(command: AddConnection) {
-        val layout = layoutEntityService.getBySiteId(command.siteId)
         val existing = connectionEntityService.findConnection(command.fromId, command.toId)
         if (existing != null) {
             throw ValidationException("Connection already exists there")
@@ -46,7 +41,6 @@ class EditorService(
 
         val connection = connectionEntityService.createConnection(command)
 
-        layoutEntityService.addConnection(layout, connection)
         stompService.toSite(command.siteId, ServerActions.SERVER_ADD_CONNECTION, connection)
     }
 
@@ -57,10 +51,8 @@ class EditorService(
     }
 
     private fun deleteConnectionsInternal(siteId: String, nodeId: String) {
-        val layout = layoutEntityService.getBySiteId(siteId)
         val connections = connectionEntityService.findByNodeId(nodeId)
         connectionEntityService.deleteAll(connections)
-        layoutEntityService.deleteConnections(layout, connections)
     }
 
 
@@ -106,15 +98,13 @@ class EditorService(
 
     fun deleteNode(siteId: String, nodeId: String) {
         deleteConnectionsInternal(siteId, nodeId)
-        layoutEntityService.deleteNode(siteId, nodeId)
         nodeEntityService.deleteNode(nodeId)
 
         sendSiteFull(siteId)
     }
 
     fun snap(siteId: String) {
-        val layout = layoutEntityService.getBySiteId(siteId)
-        nodeEntityService.snap(layout.nodeIds)
+        nodeEntityService.snap(siteId)
         sendSiteFull(siteId)
     }
 

@@ -5,7 +5,6 @@ import org.n1.av2.backend.entity.run.NodeScan
 import org.n1.av2.backend.entity.run.NodeScanStatus
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.run.RunEntityService
-import org.n1.av2.backend.entity.site.LayoutEntityService
 import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.ui.NodeScanType.SCAN_CONNECTIONS
@@ -27,7 +26,6 @@ class InitiateScanService(
     private val userTaskRunner: UserTaskRunner,
     private val scanInfoService: ScanInfoService,
     private val scanService: ScanService,
-    private val layoutEntityService: LayoutEntityService,
 ) {
 
     fun scanFromOutside(run: Run, targetNode: Node) {
@@ -75,16 +73,16 @@ class InitiateScanService(
     }
 
     fun quickScan(run: Run) {
-        val layout = layoutEntityService.getBySiteId(run.siteId)
+        val nodes = nodeEntityService.getAll(run.siteId)
 
-        layout.nodeIds.forEach {
-            val oldStatus = run.nodeScanById[it]
-            run.nodeScanById[it] = NodeScan(NodeScanStatus.FULLY_SCANNED_4, oldStatus!!.distance)
+        nodes.forEach {node ->
+            val oldStatus = run.nodeScanById[node.id]
+            run.nodeScanById[node.id] = NodeScan(NodeScanStatus.FULLY_SCANNED_4, oldStatus!!.distance)
         }
         runEntityService.save(run)
 
-        val nodeStatusById = layout.nodeIds.map {
-            it to NodeScanStatus.FULLY_SCANNED_4
+        val nodeStatusById = nodes.map { node ->
+            node.id to NodeScanStatus.FULLY_SCANNED_4
         }.toMap()
 
         stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
