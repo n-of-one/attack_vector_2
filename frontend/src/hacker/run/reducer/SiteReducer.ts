@@ -4,7 +4,7 @@ import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {siteStateDefault, SiteStateI} from "../../../editor/reducer/SiteStateReducer";
 import {NodeI} from "../../../editor/reducer/NodesReducer";
 import {AnyAction} from "redux";
-import {SERVER_ENTER_RUN, SERVER_LAYER_HACKED} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN, SERVER_LAYER_HACKED} from "../../server/RunServerActionProcessor";
 
 
 export interface Site {
@@ -46,7 +46,7 @@ const defaultState = {
 
 export const siteReducer = (state: Site = defaultState, action: AnyAction) => {
     switch (action.type) {
-        case SERVER_ENTER_RUN:
+        case SERVER_ENTERED_RUN:
             return action.data.site;
         case SERVER_LAYER_HACKED:
             return serverIceHacked(action.data, state);

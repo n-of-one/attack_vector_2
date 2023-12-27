@@ -1,6 +1,6 @@
 import {AnyAction} from "redux"
 import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../server/EditorServerActionProcessor"
-import {SERVER_ENTER_RUN} from "../../hacker/server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN} from "../../hacker/server/RunServerActionProcessor";
 
 export interface SiteProperties {
     siteId: string,
@@ -29,7 +29,7 @@ export const SitePropertiesReducer = (state: SiteProperties = sitePropertiesDefa
     switch (action.type) {
         case SERVER_SITE_FULL:
             return action.data.siteProperties
-        case SERVER_ENTER_RUN:
+        case SERVER_ENTERED_RUN:
             return action.data.site.siteProperties
         case SERVER_UPDATE_SITE_DATA:
             return action.data

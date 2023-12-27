@@ -3,7 +3,7 @@ package org.n1.av2.backend.entity.site.layer.ice
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.site.SiteValidationException
 
 class PasswordIceLayer(
     id: String,
@@ -22,7 +22,7 @@ class PasswordIceLayer(
 
     @Suppress("UNUSED_PARAMETER")
     private fun validatePassword(siteRep: SiteRep) {
-        if (this.password.isEmpty()) throw ValidationException("Password cannot be empty.")
+        if (this.password.isEmpty()) throw SiteValidationException("Password cannot be empty.")
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {

@@ -5,7 +5,6 @@ import {NodeDisplay, SiteStatus} from "../../../common/canvas/display/NodeDispla
 import {HackerDisplay} from "../../../common/canvas/display/HackerDisplay"
 import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
-import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackersReducer"
@@ -13,19 +12,12 @@ import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
-import {
-    HackerScansNodeAction,
-    MoveArriveAction,
-    MoveArriveFailAction,
-    MoveStartAction,
-    NodeStatusById,
-    ProbeAction,
-    SiteAndScan
-} from "../../server/RunServerActionProcessor";
+import {HackerScansNodeAction, MoveArriveAction, MoveStartAction, NodeStatusById, ProbeAction, SiteAndScan} from "../../server/RunServerActionProcessor";
 import {ProbeVisual} from "../../../common/canvas/visuals/ProbeVisual";
 import {Timings} from "../../../common/model/Ticks";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPatrollerDisplay";
+import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../reducer/InfoNodeIdReducer";
 
 
 export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"

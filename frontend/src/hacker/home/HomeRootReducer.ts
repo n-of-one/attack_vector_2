@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux'
-import {ScanInfo, scansReducer} from "./ScansReducer";
+import {scansReducer, SiteInfo} from "./ScansReducer";
 
 export interface HomeState {
-    scans: ScanInfo[]
+    scans: SiteInfo[]
 }
 
 export const homeRootReducer = combineReducers({

@@ -1,17 +1,13 @@
 import {serverTime} from "../../../common/server/ServerTime";
 import {AnyAction} from "redux";
 import {TICK} from "../../../common/terminal/TerminalReducer";
-import {SERVER_ENTER_RUN} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN} from "../../server/RunServerActionProcessor";
 import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
 export const SERVER_START_TIMER = "SERVER_START_TIMER"
 export const SERVER_COMPLETE_TIMER = "SERVER_COMPLETE_TIMER"
 
 export const SERVER_FLASH_PATROLLER = "SERVER_FLASH_PATROLLER"
-export const SERVER_START_TRACING_PATROLLER = "SERVER_START_TRACING_PATROLLER"
-export const SERVER_PATROLLER_MOVE = "SERVER_PATROLLER_MOVE"
-export const SERVER_PATROLLER_LOCKS_HACKER = "SERVER_PATROLLER_LOCKS_HACKER"
-export const SERVER_PATROLLER_REMOVE = "SERVER_PATROLLER_REMOVE"
 
 export enum TimerType {
     SHUTDOWN_START = "SHUTDOWN_START",
@@ -35,7 +31,7 @@ export const timersReducer = (state: TimerState[] = [], action: AnyAction): Time
                 return state
             }
             return processSecondElapsed(state)
-        case SERVER_ENTER_RUN:
+        case SERVER_ENTERED_RUN:
             return action.data.timers
         case NAVIGATE_PAGE:
             return []

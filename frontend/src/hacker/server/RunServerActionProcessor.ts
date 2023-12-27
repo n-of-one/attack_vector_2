@@ -2,26 +2,21 @@ import {AnyAction, Store} from "redux"
 import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {initGenericServerActions} from "./GenericServerActionProcessor"
 import {NodeScanType, runCanvas} from "../run/component/RunCanvas"
-import {
-    SERVER_DISCOVER_NODES,
-    SERVER_HACKER_ENTER_SITE,
-    SERVER_HACKER_LEAVE_SITE,
-    SERVER_PROBE_LAUNCH
-} from "../run/model/ScanActions"
 import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
 import {Site} from "../run/reducer/SiteReducer"
 import {HackerPresence} from "../run/reducer/HackersReducer"
 import {Timings} from "../../common/model/Ticks"
-import {delayTicks, avEncodedUrl} from "../../common/util/Util"
-import {
-    SERVER_FLASH_PATROLLER,
-} from "../run/coundown/TimersReducer"
-import {enterScan} from "../home/HackerHome"
-import {SERVER_TERMINAL_RECEIVE} from "../../common/terminal/TerminalReducer"
+import {avEncodedUrl, delayTicks} from "../../common/util/Util"
+import {SERVER_FLASH_PATROLLER,} from "../run/coundown/TimersReducer"
+import {prepareToEnterRun} from "../home/HackerHome"
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer"
 import {Schedule} from "../../common/util/Schedule"
 import {NodeScanStatus} from "../../common/enums/NodeStatus";
 import {MAIN_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
 import {currentUser} from "../../common/user/CurrentUser";
+import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
+import {terminalManager} from "../../common/terminal/TerminalManager";
+import {HIDE_NODE_INFO} from "../run/reducer/InfoNodeIdReducer";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
@@ -29,23 +24,42 @@ export const SERVER_HACKER_MOVE_ARRIVE = "SERVER_HACKER_MOVE_ARRIVE"
 export const SERVER_HACKER_SCANS_NODE = "SERVER_HACKER_SCANS_NODE"
 export const SERVER_LAYER_HACKED = "SERVER_LAYER_HACKED"
 export const SERVER_NODE_HACKED = "SERVER_NODE_HACKED"
-
 export const SERVER_HACKER_DC = "SERVER_HACKER_DC"
-export const SERVER_ENTER_RUN = "SERVER_ENTER_RUN"
+export const SERVER_ENTERING_RUN = "SERVER_ENTERING_RUN"
+export const SERVER_ENTERED_RUN = "SERVER_ENTERED_RUN"
 export const SERVER_UPDATE_NODE_STATUS = "SERVER_UPDATE_NODE_STATUS"
 export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
-
 export const SERVER_REDIRECT_HACK_ICE = "SERVER_REDIRECT_HACK_ICE"
+export const SERVER_HACKER_ENTER_SITE = "SERVER_HACKER_ENTER_SITE"
+export const SERVER_HACKER_LEAVE_SITE = "SERVER_HACKER_LEAVE_SITE"
+
+export const SERVER_PROBE_LAUNCH = "SERVER_PROBE_LAUNCH"
+
 export const SERVER_REDIRECT_CONNECT_ICE = "SERVER_REDIRECT_CONNECT_ICE"
 export const SERVER_REDIRECT_CONNECT_APP = "SERVER_REDIRECT_CONNECT_APP"
 
 export const SERVER_SITE_SHUTDOWN_START = "SERVER_SITE_SHUTDOWN_START"
 export const SERVER_SITE_SHUTDOWN_FINISH = "SERVER_SITE_SHUTDOWN_FINISH"
 
+export const SERVER_DISCOVER_NODES = "SERVER_DISCOVER_NODES"
+
 
 /** Event to ignore while waiting for the scan full result */
-export const WAITING_FOR_SCAN_IGNORE_LIST =
+export const IGNORELIST_WHILE_ENTERING_RUN =
     [
+        SERVER_HACKER_MOVE_ARRIVE,
+        SERVER_HACKER_SCANS_NODE,
+        SERVER_LAYER_HACKED,
+        SERVER_NODE_HACKED,
+        SERVER_HACKER_DC,
+        SERVER_UPDATE_NODE_STATUS,
+        SERVER_SITE_DISCOVERED,
+        SERVER_SITE_SHUTDOWN_START,
+        SERVER_SITE_SHUTDOWN_FINISH,
+
+        SERVER_HACKER_ENTER_SITE,
+        SERVER_HACKER_LEAVE_SITE,
+
         SERVER_PROBE_LAUNCH,
         SERVER_UPDATE_NODE_STATUS,
         SERVER_DISCOVER_NODES,
@@ -89,19 +103,10 @@ export interface MoveArriveAction {
     timings: Timings
 }
 
-export interface MoveArriveFailAction {
-    userId: string,
-}
-
 export interface HackerScansNodeAction {
     userId: string,
     nodeId: string,
     timings: Timings
-}
-
-export interface HackerProbeConnectionsAction {
-    nodeId: string,
-    userId: string
 }
 
 export interface NodeHacked {
@@ -132,6 +137,11 @@ interface RedirectConnectApp {
     type: string
 }
 
+interface RunAndSite {
+    runId: string,
+    siteId: string
+}
+
 export const initRunServerActions = (store: Store) => {
 
     const dispatch = store.dispatch
@@ -146,11 +156,23 @@ export const initRunServerActions = (store: Store) => {
     }
 
     webSocketConnection.addAction(SERVER_SITE_DISCOVERED, ({runId, siteId}: { runId: string, siteId: string }) => {
-        const currentPage = store.getState().currentPage
-        enterScan(runId, siteId, dispatch, currentPage)
+        prepareToEnterRun(runId)
     })
 
-    webSocketConnection.addAction(SERVER_ENTER_RUN, (data: SiteAndScan) => {
+    webSocketConnection.addAction(SERVER_ENTERING_RUN, (data: RunAndSite) => {
+
+        webSocketConnection.waitFor(SERVER_ENTERED_RUN, IGNORELIST_WHILE_ENTERING_RUN)
+        webSocketConnection.subscribeForRun(data.runId, data.siteId)
+        dispatch({type: HIDE_NODE_INFO})
+        dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
+        const currentPage = store.getState().currentPage
+        dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
+        terminalManager.start()
+
+        webSocketConnection.send("/run/enterRun", data.runId)
+    })
+
+    webSocketConnection.addAction(SERVER_ENTERED_RUN, (data: SiteAndScan) => {
         runCanvas.enterSite(data)
     })
 

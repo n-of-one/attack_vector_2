@@ -3,7 +3,6 @@ package org.n1.av2.backend.web.ws
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.ReduxEvent
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.RunLinkService
@@ -34,7 +33,7 @@ class RunController(
         userTaskRunner.runTask(userPrincipal) { runLinkService.sendRunInfosToUser() }
     }
 
-    @MessageMapping("/scan/scanForName")
+    @MessageMapping("/run/newRun")
     fun scanForName(siteName: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) { runService.startNewRun(siteName) }
     }
@@ -45,37 +44,22 @@ class RunController(
     }
 
 
-    @MessageMapping("/scan/enterScan")
-    fun enterScan(siteId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runService.enterRun(siteId) }
+    @MessageMapping("/run/prepareToEnterRun")
+    fun prepareToEnterRun(runId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { runService.prepareToEnterRun(runId) }
     }
+
+    @MessageMapping("/run/enterRun")
+    fun enterRun(runId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { runService.enterRun(runId) }
+    }
+
 
     @MessageMapping("/run/leaveSite")
     fun leaveScan(runId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             val state = hackerStateEntityService.retrieveForCurrentUser()
             runService.leaveSite(state, true) }
-    }
-
-
-    //     --- --- --- --- For GMs
-
-    @MessageMapping("/site/resetSite")
-    fun resetSite(siteId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
-            runService.gmRefreshSite(siteId)
-            siteService.refreshSite(siteId, "00:00")
-            stompService.replyMessage(NotyMessage.neutral("site reset"))
-        }
-    }
-
-    @MessageMapping("/site/deleteRuns")
-    fun deleteRuns(siteId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
-            siteService.refreshSite(siteId, "00:00")
-            val count = runService.deleteRuns(siteId)
-            stompService.replyMessage(NotyMessage.neutral("Site reset and ${count} runs removed"))
-        }
     }
 
 

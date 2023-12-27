@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/site/")
-class SiteController(
+class ApiSiteController(
     val sitePropertiesEntityService: SitePropertiesEntityService,
     val editorService: EditorService,
     val userTaskRunner: UserTaskRunner,
@@ -31,5 +31,6 @@ class SiteController(
         userTaskRunner.runTask(principal) { editorService.deleteSite(id, principal) }
         return DeleteResponse()
     }
+
 
 }

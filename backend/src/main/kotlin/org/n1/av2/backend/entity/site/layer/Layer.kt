@@ -2,7 +2,7 @@ package org.n1.av2.backend.entity.site.layer
 
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.site.SiteValidationException
 
 
 private const val NAME = "name"
@@ -22,7 +22,7 @@ open class Layer(
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateName(siteRep: SiteRep) {
-        if (this.name.isEmpty()) throw ValidationException("Service name cannot be empty.")
+        if (this.name.isEmpty()) throw SiteValidationException("Service name cannot be empty.")
     }
 
     open fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {

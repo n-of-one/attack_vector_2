@@ -1,16 +1,10 @@
 import React from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {TextInput} from "../../common/component/TextInput";
 import {SilentLink} from "../../common/component/SilentLink";
 import {HackerState} from "../HackerRootReducer";
-import {ScanInfo} from "./ScansReducer";
+import {SiteInfo} from "./ScansReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {HIDE_NODE_INFO} from "../run/model/ScanActions";
-import {TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer";
-import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
-import {terminalManager} from "../../common/terminal/TerminalManager";
-import {SERVER_ENTER_RUN, WAITING_FOR_SCAN_IGNORE_LIST} from "../server/RunServerActionProcessor";
-import {Dispatch} from "redux";
 import {developmentServer} from "../../common/util/DevEnvironment";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
@@ -18,19 +12,13 @@ import {developmentServer} from "../../common/util/DevEnvironment";
 
 export const HackerHome = () => {
 
-    const dispatch = useDispatch()
-    const scans: ScanInfo[] = useSelector((state: HackerState) => state.home.scans)
-    const currentPage: string = useSelector((state: HackerState) => state.currentPage)
+    const sites: SiteInfo[] = useSelector((state: HackerState) => state.home.scans)
 
-    const scanSite = (siteName: string) => {
+    const startRunByName = (siteName: string) => {
         if (siteName) {
-            webSocketConnection.send("/scan/scanForName", siteName)
+            webSocketConnection.send("/run/newRun", siteName)
         }
     }
-    const enterScanLink = (scanInfo: ScanInfo) => {
-        enterScan(scanInfo.runId, scanInfo.siteId, dispatch, currentPage)
-    }
-
 
     return (
         <div className="row">
@@ -53,7 +41,7 @@ export const HackerHome = () => {
                 <TextInput placeholder="Site name"
                            buttonLabel="Scan"
                            buttonClass="btn-info"
-                           save={(siteName) => scanSite(siteName)}
+                           save={(siteName) => startRunByName(siteName)}
                            clearAfterSubmit={true}
                            autofocus={true}
                 />
@@ -77,12 +65,12 @@ export const HackerHome = () => {
                                 </thead>
                                 <tbody>
                                 {
-                                    scans.map((scanInfo: ScanInfo) => {
+                                    sites.map((scanInfo: SiteInfo) => {
                                         return (
                                             <tr key={scanInfo.runId}>
                                                 <td className="table-very-condensed">
                                                     <SilentLink title={scanInfo.runId} onClick={() => {
-                                                        enterScanLink(scanInfo);
+                                                        prepareToEnterRun(scanInfo.runId);
                                                     }}><>{scanInfo.siteName}</>
                                                     </SilentLink>
                                                 </td>
@@ -104,16 +92,9 @@ export const HackerHome = () => {
     )
 }
 
-export const enterScan = (runId: string, siteId: string, dispatch: Dispatch, currentPage: string) => {
-    webSocketConnection.waitFor(SERVER_ENTER_RUN, WAITING_FOR_SCAN_IGNORE_LIST)
-    webSocketConnection.subscribeForRun(runId, siteId)
-    dispatch({type: HIDE_NODE_INFO})
-    dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
-    dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
-    webSocketConnection.send("/scan/enterScan", runId)
-    terminalManager.start()
+export const prepareToEnterRun = (runId: string) => {
+    webSocketConnection.send("/run/prepareToEnterRun", runId)
 }
-
 
 const DeleteScanLink = (props: { runId: string }) => {
     const deleteScan = () => {

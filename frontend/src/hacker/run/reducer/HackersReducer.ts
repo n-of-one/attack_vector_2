@@ -1,5 +1,5 @@
 import {AnyAction} from "redux";
-import {SERVER_ENTER_RUN} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN} from "../../server/RunServerActionProcessor";
 
 
 export enum HackerActivity {
@@ -22,7 +22,7 @@ const defaultState: HackerPresence[] = [];
 
 export const hackersReducer = (state: HackerPresence[] = defaultState, action: AnyAction): HackerPresence[] => {
     switch (action.type) {
-        case SERVER_ENTER_RUN:
+        case SERVER_ENTERED_RUN:
             return action.data.hackers;
         default:
             return state;

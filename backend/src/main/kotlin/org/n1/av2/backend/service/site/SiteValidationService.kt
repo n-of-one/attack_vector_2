@@ -3,7 +3,6 @@ package org.n1.av2.backend.service.site
 import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.model.ui.ValidationException
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -30,20 +29,27 @@ class SiteValidationService(
     private fun validateSiteProperties(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         validate(messages) { validateSiteName(siteProperties)}
         validate(messages) { validateStartNode(siteProperties, nodes) }
+        validate(messages) { validateSiteCreator(siteProperties) }
     }
 
     private fun validateSiteName(siteProperties: SiteProperties) {
         if (siteProperties.name.length > 40) {
-            throw ValidationException("Site name too long to be displayed nicely.")
+            throw SiteValidationException("Site name too long to be displayed nicely.", SiteStateMessageType.INFO)
+        }
+    }
+
+    private fun validateSiteCreator(siteProperties: SiteProperties) {
+        if (siteProperties.creator.isBlank()) {
+            throw SiteValidationException("Please fill in the site creator name.", SiteStateMessageType.INFO)
         }
     }
 
     private fun validateStartNode(data: SiteProperties, nodes: List<Node>) {
         if (data.startNodeNetworkId.isBlank()) {
-            throw ValidationException("Set the start node network id.")
+            throw SiteValidationException("Set the start node network id.")
         }
         nodes.find { node -> node.networkId == data.startNodeNetworkId }
-                ?: throw ValidationException("Start node network id not found: ${data.startNodeNetworkId}.")
+                ?: throw SiteValidationException("Start node network id not found: ${data.startNodeNetworkId}.")
     }
 
     private fun validateNodes(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
@@ -76,8 +82,8 @@ class SiteValidationService(
             service.allValidationMethods().forEach { validateMethod ->
                 try {
                     validateMethod(siteRep)
-                } catch (exception: ValidationException) {
-                    val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage, node.id, service.id)
+                } catch (exception: SiteValidationException) {
+                    val message = SiteStateMessage(exception.type, exception.message!!, node.id, service.id)
                     messages.add(message)
                 }
             }
@@ -87,8 +93,8 @@ class SiteValidationService(
     private fun validate(messages: MutableList<SiteStateMessage>, method: () -> Unit) {
         try {
             method()
-        } catch (exception: ValidationException) {
-            val message = SiteStateMessage(SiteStateMessageType.ERROR, exception.errorMessage)
+        } catch (exception: SiteValidationException) {
+            val message = SiteStateMessage(exception.type, exception.message!!)
             messages.add(message)
         }
     }
@@ -111,18 +117,20 @@ fun String.toDuration(type: String): Duration {
 
     val parts = this.split(":")
 
-    if (parts.size < 2 || parts.size > 3) throw ValidationException(errorText)
+    if (parts.size < 2 || parts.size > 3) throw SiteValidationException(errorText)
 
     val normalizedParts = if (parts.size == 3) parts else listOf("0") + parts
 
-    val hours = normalizedParts[0].toLongOrNull() ?: throw ValidationException(errorText)
-    val minutes = normalizedParts[1].toLongOrNull() ?: throw ValidationException(errorText)
-    val seconds = normalizedParts[2].toLongOrNull() ?: throw ValidationException(errorText)
+    val hours = normalizedParts[0].toLongOrNull() ?: throw SiteValidationException(errorText)
+    val minutes = normalizedParts[1].toLongOrNull() ?: throw SiteValidationException(errorText)
+    val seconds = normalizedParts[2].toLongOrNull() ?: throw SiteValidationException(errorText)
 
     if (hours < 0 || minutes < 0 || seconds <0) {
-        throw ValidationException("${type} time must be positive.")
+        throw SiteValidationException("${type} time must be positive.")
     }
 
     return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
 
 }
+
+class SiteValidationException(message: String, val type: SiteStateMessageType = SiteStateMessageType.ERROR) : Exception(message)

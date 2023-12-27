@@ -55,11 +55,14 @@ class HackerClient(
     }
 
     suspend fun joinRun() {
+        client.send("/av/run/prepareToEnterRun", runId)
+        client.waitFor(ServerActions.SERVER_ENTERING_RUN, runId)
+
         client.subscribe("/topic/run/${runId}")
         client.subscribe("/site/run/${siteId}")
-        client.send("/av/scan/enterScan", runId)
+        client.send("/av/run/enterRun", runId)
 
-        val siteInfoJson = client.waitFor(ServerActions.SERVER_ENTER_RUN, "\"runId\":\"${runId}\"")
+        val siteInfoJson = client.waitFor(ServerActions.SERVER_ENTERED_RUN, "\"runId\":\"${runId}\"")
         this.siteInfo = objectMapper.readValue(siteInfoJson)
         client.clearMessage()
     }

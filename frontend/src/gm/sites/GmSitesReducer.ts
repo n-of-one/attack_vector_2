@@ -2,7 +2,11 @@ import {AnyAction} from "redux"
 
 export const SERVER_SITES_LIST = "SERVER_SITES_LIST"
 
-export interface GmSite { id: string, name: string }
+export interface GmSite {
+    id: string,
+    name: string,
+    hackable: boolean
+}
 
 export const gmSitesReducer = (state: Array<GmSite> = [], action: AnyAction) => {
     switch (action.type) {

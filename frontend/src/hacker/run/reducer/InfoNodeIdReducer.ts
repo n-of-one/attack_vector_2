@@ -1,5 +1,7 @@
-import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../model/ScanActions";
 import {AnyAction} from "redux";
+
+export const DISPLAY_NODE_INFO = "DISPLAY_NODE_INFO"
+export const HIDE_NODE_INFO = "HIDE_NODE_INFO"
 
 const defaultState = null;
 

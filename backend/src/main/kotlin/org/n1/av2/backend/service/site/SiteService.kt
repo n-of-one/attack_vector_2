@@ -43,10 +43,10 @@ class SiteService(
 
     lateinit var iceService: IceService
 
-    data class SiteListItem(val id: String, val name: String)
+    data class SiteListItem(val id: String, val name: String, val hackable: Boolean)
 
     fun sendSitesList() {
-        val list = sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name) }
+        val list = sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name, hackable = it.hackable) }
         stompService.reply(actionType = ServerActions.SERVER_SITES_LIST, list)
     }
 
@@ -134,5 +134,12 @@ class SiteService(
         return connections.map { connection ->
             if (connection.fromId == node.id) connection.toId else connection.fromId
         }
+    }
+
+    fun updateHackable(siteId: String, hackable: Boolean) {
+        val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
+        val newSiteProperties = siteProperties.copy(hackable = hackable)
+        sitePropertiesEntityService.save(newSiteProperties)
+        sendSitesList()
     }
 }

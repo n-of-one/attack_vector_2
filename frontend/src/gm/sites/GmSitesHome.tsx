@@ -17,6 +17,10 @@ const askForSitesList = () => {
 export const GmSitesHome = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
+
+    const hackableSites = sites.filter(site => site.hackable).sort((a, b) => a.name.localeCompare(b.name))
+    const unhackableSites = sites.filter(site => !site.hackable).sort((a, b) => a.name.localeCompare(b.name))
+
     const [file, setFile] = useState()
 
     useEffect(() => {
@@ -80,9 +84,9 @@ export const GmSitesHome = () => {
 
                     </div>
                 </div>
-                <br />
-                <hr />
-                <br />
+                <br/>
+                <hr/>
+                <br/>
                 <div id="Upload">
                     <div className="text">
                         <label htmlFor="formFile" className="form-label">Import sites from file</label>
@@ -101,7 +105,12 @@ export const GmSitesHome = () => {
                 </div>
             </div>
             <div className="col-lg-5 rightPane rightPane">
-                <SiteList sites={sites}/>
+                <div className="siteMap">
+                    <div className="text">Hackable sites</div>
+                    <SiteList sites={hackableSites}/>
+                    <div className="text">Unhackable sites</div>
+                    <SiteList sites={unhackableSites}/>
+                </div>
             </div>
         </div>
     )

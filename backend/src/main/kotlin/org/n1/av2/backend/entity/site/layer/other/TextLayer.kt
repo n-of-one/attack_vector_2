@@ -3,7 +3,7 @@ package org.n1.av2.backend.entity.site.layer.other
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.site.SiteValidationException
 
 class TextLayer(
     id: String,
@@ -18,7 +18,7 @@ class TextLayer(
             this(id, LayerType.TEXT, level, defaultName, "", "No data of value found.")
 
     private fun validateText(siteRep: SiteRep) {
-        if (this.text.isEmpty()) throw ValidationException("Hacked text cannot be empty.")
+        if (this.text.isEmpty()) throw SiteValidationException("Hacked text cannot be empty.")
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {

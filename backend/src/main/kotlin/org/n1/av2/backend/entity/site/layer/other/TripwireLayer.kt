@@ -1,9 +1,10 @@
 package org.n1.av2.backend.entity.site.layer.other
 
+import org.n1.av2.backend.entity.site.SiteStateMessageType
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.site.SiteValidationException
 import org.n1.av2.backend.service.site.toDuration
 import java.time.Duration
 
@@ -34,14 +35,14 @@ class TripwireLayer(
         val duration = this.shutdown.toDuration("shutdown")
 
         if (duration < MINIMUM_SHUTDOWN) {
-            throw ValidationException("Shutdown must be at least 01:00 (1 minute).")
+            throw SiteValidationException("Shutdown must be at least 01:00 (1 minute).")
         }
     }
 
     private fun validateCoreLayerId(siteRep: SiteRep) {
-        if (this.coreLayerId == null) throw ValidationException("Tripwire not connected to core, no way to reset.")
-        val layer = siteRep.findLayer(this.coreLayerId!!) ?: throw ValidationException("Tripwire not connected to core, no way to reset.")
-        if (layer !is CoreLayer) throw ValidationException("Trip wire connected to a layer that is not a core.")
+        if (this.coreLayerId == null) throw SiteValidationException("Tripwire not connected to core, no way to reset.", SiteStateMessageType.INFO)
+        val layer = siteRep.findLayer(this.coreLayerId!!) ?: throw SiteValidationException("Tripwire connected to core layer that was later removed.")
+        if (layer !is CoreLayer) throw SiteValidationException("Trip wire connected to a layer that is not a core.")
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {

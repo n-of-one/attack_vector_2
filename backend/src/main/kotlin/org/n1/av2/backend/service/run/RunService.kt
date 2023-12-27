@@ -7,6 +7,7 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.run.NodeScanStatus.*
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.SiteProperties
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
 import org.n1.av2.backend.entity.user.UserEntityService
@@ -60,6 +61,10 @@ class RunService(
             stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
             return
         }
+        if (!siteProperties.hackable) {
+            replyNotHackable(siteProperties)
+            return
+        }
 
         val nodeScanById = scanService.createInitialNodeScans(siteProperties.siteId)
         val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
@@ -69,6 +74,21 @@ class RunService(
         runLinkService.sendRunInfosToUser() // to update the scans in the home screen
 
         // enterRun will be called by the browser, the frontend needs to configure websocket connection for the run.
+    }
+
+    fun prepareToEnterRun(runId: String) {
+        val run = runEntityService.getByRunId(runId)
+        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        if (!siteProperties.hackable) {
+            replyNotHackable(siteProperties)
+            return
+        }
+
+        stompService.reply(ServerActions.SERVER_ENTERING_RUN, "runId" to runId, "siteId" to run.siteId)
+    }
+
+    private fun replyNotHackable(siteProperties: SiteProperties) {
+        stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Site '${siteProperties.name}'", "currently not hackable"))
     }
 
     fun enterRun(runId: String) {
@@ -86,7 +106,7 @@ class RunService(
         val timers = tripwireLayerService.findForEnterSite(run.siteId, currentUserService.userId)
 
         val siteInfo = SiteInfo(run, siteFull, hackerPresences, timers)
-        stompService.reply(ServerActions.SERVER_ENTER_RUN, siteInfo)
+        stompService.reply(ServerActions.SERVER_ENTERED_RUN, siteInfo)
     }
 
     private fun getPresenceInRun(runId: String): List<HackerPresence> {

@@ -4,7 +4,7 @@ import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.findLayerById
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.model.SiteRep
-import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.site.SiteValidationException
 
 class KeyStoreLayer(
     id: String,
@@ -20,8 +20,8 @@ class KeyStoreLayer(
             this(id, LayerType.KEYSTORE, level, defaultName, "", null )
 
     private fun validateText(siteRep: SiteRep) {
-        if (this.iceLayerId == null) throw ValidationException("Choose ICE that keystore provides password for.");
-         findLayerById(this.iceLayerId!!, siteRep.nodes) ?: throw ValidationException("Choose ICE that keystore provides password for.")
+        if (this.iceLayerId == null) throw SiteValidationException("Choose ICE that keystore provides password for.");
+         findLayerById(this.iceLayerId!!, siteRep.nodes) ?: throw SiteValidationException("Choose ICE that keystore provides password for.")
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {

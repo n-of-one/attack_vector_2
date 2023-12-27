@@ -33,10 +33,11 @@ enum class ServerActions {
     SERVER_USER_DETAILS,            // User details for editing
 
 
-    SERVER_UPDATE_USER_RUNS,       // Sent to user to update the scans shown on home page of that user
-    SERVER_UPDATE_RUN_INFO,        // Scan info has changed (as displayed on home screen)
+    SERVER_UPDATE_USER_RUNS,        // Sent to user to update the scans shown on home page of that user
+    SERVER_UPDATE_RUN_INFO,         // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
-    SERVER_ENTER_RUN,               // Result of user entering a run (for the user itself)
+    SERVER_ENTERING_RUN,            // Step 1 of entering a run: frontend can subscribe to topics and wait for SERVER_ENTERED_RUN
+    SERVER_ENTERED_RUN,             // Step 2 of entering a run: frontend can now start processing messages for this run
 
     SERVER_SITE_SHUTDOWN_START,     // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
     SERVER_SITE_SHUTDOWN_FINISH,    // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
