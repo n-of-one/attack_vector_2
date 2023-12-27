@@ -18,8 +18,8 @@ export const GmSitesHome = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
 
-    const hackableSites = sites.filter(site => site.hackable).sort((a, b) => a.name.localeCompare(b.name))
-    const unhackableSites = sites.filter(site => !site.hackable).sort((a, b) => a.name.localeCompare(b.name))
+    const hackableSites = sites.filter(site => site.hackable)
+    const unhackableSites = sites.filter(site => !site.hackable)
 
     const [file, setFile] = useState()
 

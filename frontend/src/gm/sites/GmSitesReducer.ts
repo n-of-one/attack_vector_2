@@ -5,6 +5,7 @@ export const SERVER_SITES_LIST = "SERVER_SITES_LIST"
 export interface GmSite {
     id: string,
     name: string,
+    creator: string,
     hackable: boolean
 }
 

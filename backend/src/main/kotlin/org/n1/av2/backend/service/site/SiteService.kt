@@ -43,10 +43,10 @@ class SiteService(
 
     lateinit var iceService: IceService
 
-    data class SiteListItem(val id: String, val name: String, val hackable: Boolean)
+    data class SiteListItem(val id: String, val name: String, val hackable: Boolean, val creator: String)
 
     fun sendSitesList() {
-        val list = sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name, hackable = it.hackable) }
+        val list = sitePropertiesEntityService.findAll().map { SiteListItem(id = it.siteId, name = it.name, hackable = it.hackable, creator = it.creator) }
         stompService.reply(actionType = ServerActions.SERVER_SITES_LIST, list)
     }
 

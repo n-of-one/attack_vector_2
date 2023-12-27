@@ -13,6 +13,11 @@ interface Props {
 
 export const SiteList = (props: Props) => {
 
+    const sites = [...props.sites]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b)=> a.creator.localeCompare(b.creator))
+
+
     const deleteSite = (siteId: string, name: string) => {
         if (window.confirm(`Confirm that you want to delete site ${name}. `)) {
             deleteCall({
@@ -56,15 +61,14 @@ export const SiteList = (props: Props) => {
         <table className="table table-sm text-muted text" id="sitesTable">
             <thead>
             <tr>
-                {/*<td className="text-strong">Link</td>*/}
-                <td className="strong" style={{width: "400px"}}></td>
-                {/*<td className="text-strong">Hackable</td>*/}
+                <td className="strong" style={{width: "300px"}}></td>
+                <td className="strong" style={{width: "150px"}}></td>
                 <td className="strong"></td>
             </tr>
             </thead>
             <tbody>
             {
-                props.sites.map((site: GmSite) => {
+                sites.map((site: GmSite) => {
                     return (
                         <tr key={site.id}>
                             <td className="table-very-condensed">
@@ -74,6 +78,7 @@ export const SiteList = (props: Props) => {
                                 }}><>{site.name}</>
                                 </SilentLink>
                             </td>
+                            <td className="table-very-condensed">{site.creator}</td>
                             <td>
                                 <SilentLink onClick={() => {
                                     resetSite(site.id, site.name);
