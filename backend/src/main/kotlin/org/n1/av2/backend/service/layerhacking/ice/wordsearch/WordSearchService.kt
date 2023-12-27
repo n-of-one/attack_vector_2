@@ -6,7 +6,7 @@ import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.WordSearchIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.HackedUtil
-import org.n1.av2.backend.service.user.UserIceHackingService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
@@ -19,8 +19,7 @@ class WordSearchService(
     private val wordSearchIceStatusRepo: WordSearchIceStatusRepo,
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
-    private val userIceHackingService: UserIceHackingService,
-
+    private val runService: RunService,
     ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -72,7 +71,7 @@ class WordSearchService(
     fun enter(iceId: String) {
         val iceStatus = wordSearchIceStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
         stompService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, iceStatus)
-        userIceHackingService.enter(iceId)
+        runService.enterNetworkedApp(iceId)
     }
 
     class WordSearchUpdate(

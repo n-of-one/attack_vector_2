@@ -54,7 +54,6 @@ export class HackerDisplay implements Display {
 
     y: number
     x: number
-    masked = true
 
     size = 30
 
@@ -124,8 +123,6 @@ export class HackerDisplay implements Display {
         const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay)
         this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.currentNodeDisplay, xOffset, yOffset)
         this.canvas.add(this.hackerIcon)
-
-        this.masked = hackerData.masked
     }
 
     createHackerIcon(scale: number, opacity: number, display: Display, offsetX: number = 0, offsetY: number = 0) {
@@ -322,10 +319,6 @@ export class HackerDisplay implements Display {
             this.canvas.remove(afterImage)
         })
 
-    }
-
-    moveArriveFail() {
-        this.moveLineElement?.disappear(10)
     }
 
     processOffset(nodeDisplay: NodeDisplay): { xOffset: number, yOffset: number } {

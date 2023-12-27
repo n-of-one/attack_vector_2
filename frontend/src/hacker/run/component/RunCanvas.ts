@@ -399,12 +399,6 @@ class RunCanvas {
         this.hackerDisplays.get(userId).moveArrive(nodeDisplay, timings)
     }
 
-    moveArriveFail(data: MoveArriveFailAction) {
-        if (!this.active) return
-
-        this.hackerDisplays.get(data.userId).moveArriveFail()
-    }
-
     hackerScansNode({userId, nodeId, timings}: HackerScansNodeAction) {
         if (!this.active) return
 

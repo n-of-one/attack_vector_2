@@ -15,8 +15,19 @@ import org.n1.av2.backend.service.layerhacking.ice.IceService
 import org.n1.av2.backend.service.layerhacking.service.KeystoreService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.ServerFatal
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
+
+@Configuration
+class InitSiteService(val siteService: SiteService, val iceService: IceService) {
+
+    @PostConstruct
+    fun postConstruct() {
+        siteService.iceService = iceService
+    }
+}
 
 @Service
 class SiteService(
@@ -25,11 +36,12 @@ class SiteService(
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
-    private val iceService: IceService,
     private val keystoreService: KeystoreService,
     private val timerEntityService: TimerEntityService,
     private val taskEngine: TaskEngine,
 ) {
+
+    lateinit var iceService: IceService
 
     data class SiteListItem(val id: String, val name: String)
 
@@ -60,7 +72,11 @@ class SiteService(
     }
 
     fun removeSite(siteId: String, userPrincipal: UserPrincipal) {
-        stompService.toSite(siteId, ServerActions.SERVER_ERROR, ServerFatal(false, "Site removed by ${userPrincipal.userEntity.name}, please close browser window."))
+        stompService.toSite(
+            siteId,
+            ServerActions.SERVER_ERROR,
+            ServerFatal(false, "Site removed by ${userPrincipal.userEntity.name}, please close browser window.")
+        )
         sitePropertiesEntityService.delete(siteId)
         nodeEntityService.deleteAllForSite(siteId)
         connectionEntityService.deleteAllForSite(siteId)
@@ -79,10 +95,14 @@ class SiteService(
     fun resetSite(siteId: String) {
         taskEngine.removeAll(TaskIdentifiers(null, siteId, null))
         val nodes = nodeEntityService.getAll(siteId)
-        nodes.forEach {node ->
+        nodes.forEach { node ->
             node.layers.forEach { layer ->
-                if (layer is IceLayer) { layer.hacked = false }
-                if (layer is KeyStoreLayer) { keystoreService.deleteIcePassword(layer.iceLayerId) }
+                if (layer is IceLayer) {
+                    layer.hacked = false
+                }
+                if (layer is KeyStoreLayer) {
+                    keystoreService.deleteIcePassword(layer.iceLayerId)
+                }
                 if (layer is TripwireLayer) {
                     val timer = timerEntityService.deleteByLayerId(layer.id)
                     if (timer != null) {

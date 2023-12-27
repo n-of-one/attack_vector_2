@@ -35,7 +35,6 @@ class InsideTerminalService(
 
     private fun processPrivilegedCommand(runId: String, tokens: List<String>, commandAction: String) {
         val state = hackerStateEntityService.retrieveForCurrentUser().toRunState()
-        if (!state.masked) return reportLocked()
 
         when (commandAction) {
             "move" -> commandMoveService.processCommand(runId, tokens, state)
@@ -65,10 +64,6 @@ class InsideTerminalService(
     fun processDc(runId: String) {
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
         runService.hackerDisconnect(hackerState, "Disconnected")
-    }
-
-    fun reportLocked() {
-        stompService.replyTerminalReceive("[error]critical[/] OS refuses operation with error message [error]unauthorized[/].")
     }
 
 }

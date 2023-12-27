@@ -105,12 +105,6 @@ class CommandMoveService(
     fun moveArrive(nodeId: String, userId: String, runId: String ) {
         val state = hackerStateEntityService.retrieve(userId).toRunState()
 
-        if (!state.masked) {
-            class MoveArriveFailAction(val userId: String)
-            stompService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE_FAIL, MoveArriveFailAction(userId))
-            return
-        }
-
         val run = runEntityService.getByRunId(runId)
         val nodeStatus = run.nodeScanById[nodeId]!!.status
 

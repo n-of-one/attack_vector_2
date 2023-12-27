@@ -3,6 +3,8 @@ package org.n1.av2.backend.service.user
 import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserType.ADMIN
+import org.n1.av2.backend.model.iam.UserPrincipal
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,12 +18,12 @@ class CurrentUserService {
     }
 
     val userEntity: UserEntity
-        get () {
+        get() {
             return userEntityStore.get()
         }
 
     val userId: String
-        get () {
+        get() {
             val userId = userEntityStore.get().id
             if (userId == SYSTEM_USER.id) error("Tried to access the current user from a game event context.")
             return userId
@@ -43,5 +45,8 @@ class CurrentUserService {
         userEntityStore.remove()
     }
 
-
+    val connectionId: String
+        get() {
+            return (SecurityContextHolder.getContext().authentication as UserPrincipal).connectionId
+        }
 }

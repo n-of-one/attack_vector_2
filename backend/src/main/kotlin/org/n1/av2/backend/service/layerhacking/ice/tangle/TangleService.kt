@@ -9,7 +9,7 @@ import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.TangleIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.HackedUtil
-import org.n1.av2.backend.service.user.UserIceHackingService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.createId
 import org.n1.av2.backend.web.ws.ice.TangleIceController
@@ -24,7 +24,7 @@ class TangleService(
     private val tangleIceStatusRepo: TangleIceStatusRepo,
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
-    private val userIceHackingService: UserIceHackingService,
+    private val runService: RunService,
     private val nodeEntityService: NodeEntityService,
 ) {
 
@@ -71,7 +71,7 @@ class TangleService(
         val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
         val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.hacked)
         stompService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
-        userIceHackingService.enter(iceId)
+        runService.enterNetworkedApp(iceId)
     }
     // Puzzle solving //
 

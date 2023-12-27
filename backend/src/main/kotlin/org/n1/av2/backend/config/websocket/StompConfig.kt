@@ -91,7 +91,7 @@ class StompConfig(
         registry
             .addEndpoint(UNRESTRICTED_ENDPOINT)
             .setAllowedOrigins("*")
-            .setHandshakeHandler(AuthenticatedHandshakeHandler())
+            .setHandshakeHandler(UnauthenticatedHandshakeHandler())
 
         registry
             .addEndpoint(HACKER_ENDPOINT)
@@ -101,7 +101,7 @@ class StompConfig(
         registry
             .addEndpoint(NETWORKED_APP_ENDPOINT)
             .setAllowedOrigins("*")
-            .setHandshakeHandler(UnauthenticatedHandshakeHandler())
+            .setHandshakeHandler(AuthenticatedHandshakeHandler())
 
         registry.setPreserveReceiveOrder(true);
 

@@ -54,7 +54,7 @@ class RunController(
     fun leaveScan(runId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             val state = hackerStateEntityService.retrieveForCurrentUser()
-            runService.leaveSite(state) }
+            runService.leaveSite(state, true) }
     }
 
 

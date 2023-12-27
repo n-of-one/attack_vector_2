@@ -15,7 +15,6 @@ export interface HackerPresence {
     icon: string,
     nodeId?: string,
     activity: HackerActivity,
-    masked: boolean
 }
 
 

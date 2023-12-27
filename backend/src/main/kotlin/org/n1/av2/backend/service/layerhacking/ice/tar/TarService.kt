@@ -8,7 +8,7 @@ import org.n1.av2.backend.entity.site.layer.ice.TarIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.HackedUtil
 import org.n1.av2.backend.service.layerhacking.ice.tar.TarCreator.Companion.unitsPerSecond
-import org.n1.av2.backend.service.user.UserIceHackingService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
@@ -19,7 +19,7 @@ class TarService(
     private val tarIceStatusRepo: TarIceStatusRepo,
     private val stompService: StompService,
     private val hackedUtil: HackedUtil,
-    private val userIceHackingService: UserIceHackingService,
+    private val runService: RunService,
 ) {
 
     fun findOrCreateIceByLayerId(layer: TarIceLayer): TarIceStatus {
@@ -53,7 +53,7 @@ class TarService(
             ServerActions.SERVER_TAR_ENTER,
             TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, tarIceStatus.hacked, unitsPerSecond)
         )
-        userIceHackingService.enter(iceId)
+        runService.enterNetworkedApp(iceId)
     }
 
     fun hackedUnits(iceId: String, units: Int) {

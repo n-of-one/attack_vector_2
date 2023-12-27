@@ -32,7 +32,7 @@ class CommandStartAttackService(
 
         val userId = currentUserService.userId
 
-        hackerStateEntityService.startRun(userId, run)
+        hackerStateEntityService.startAttack(userId, run)
 
         data class StartRun(val userId: String, val quick: Boolean, val timings: Timings)
         val timings = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW

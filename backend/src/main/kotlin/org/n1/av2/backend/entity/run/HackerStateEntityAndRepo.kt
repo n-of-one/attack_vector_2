@@ -23,8 +23,9 @@ data class HackerState(
     val currentNodeId: String?,
     val previousNodeId: String?,
     val activity: HackerActivity,
-    val masked: Boolean
-) {
+    val networkedAppId: String?,
+    val networkedConnectionId: String?,
+    ) {
 
     fun toRunState(): HackerStateRunning {
         return HackerStateRunning(
@@ -32,7 +33,7 @@ data class HackerState(
             runId ?: error("runId null for ${userId}"),
             siteId ?: error("siteId null for ${userId}"),
             currentNodeId ?: error("currentNodeId null for ${userId}"),
-            previousNodeId, masked
+            previousNodeId, networkedAppId, networkedConnectionId
         )
     }
 }
@@ -45,19 +46,19 @@ class HackerStateRunning(
     val siteId: String,
     val currentNodeId: String,
     val previousNodeId: String?,
-    val masked: Boolean
-) {
+    val networkedAppId: String?,
+    val networkedConnectionId: String?) {
     fun toState(): HackerState {
         return HackerState(
             userId, connectionId, runId, siteId, currentNodeId, previousNodeId,
-            HackerActivity.INSIDE, masked
+            HackerActivity.INSIDE, networkedAppId, networkedConnectionId
         )
     }
 }
 
 @Repository
 interface HackerStateRepo : CrudRepository<HackerState, String> {
-    fun findByUserId(userId: String): HackerState?
     fun findByRunId(runId: String):List<HackerState>
     fun findBySiteId(siteId: String):List<HackerState>
+    fun findByRunIdAndNetworkedAppId(runId: String, networkedAppId: String): List<HackerState>
 }

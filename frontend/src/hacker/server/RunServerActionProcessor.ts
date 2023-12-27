@@ -26,7 +26,6 @@ import {currentUser} from "../../common/user/CurrentUser";
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
 export const SERVER_HACKER_MOVE_ARRIVE = "SERVER_HACKER_MOVE_ARRIVE"
-export const SERVER_HACKER_MOVE_ARRIVE_FAIL = "SERVER_HACKER_MOVE_ARRIVE_FAIL"
 export const SERVER_HACKER_SCANS_NODE = "SERVER_HACKER_SCANS_NODE"
 export const SERVER_LAYER_HACKED = "SERVER_LAYER_HACKED"
 export const SERVER_NODE_HACKED = "SERVER_NODE_HACKED"
@@ -228,10 +227,6 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_HACKER_MOVE_ARRIVE, (data: MoveArriveAction) => {
         runCanvas.moveArrive(data)
-    })
-
-    webSocketConnection.addAction(SERVER_HACKER_MOVE_ARRIVE_FAIL, (data: MoveArriveAction) => {
-        runCanvas.moveArriveFail(data)
     })
 
     webSocketConnection.addAction(SERVER_HACKER_SCANS_NODE, (data: HackerScansNodeAction) => {

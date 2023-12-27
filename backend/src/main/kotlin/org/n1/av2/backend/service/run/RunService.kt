@@ -50,7 +50,6 @@ class RunService(
         val icon: HackerIcon,
         val nodeId: String?,
         val activity: HackerActivity,
-        val masked: Boolean
     )
 
     class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val timers: List<TimerInfo>)
@@ -74,7 +73,7 @@ class RunService(
 
     fun enterRun(runId: String) {
         val run = runEntityService.getByRunId(runId)
-        val thisHackerState = hackerStateEntityService.enterSite(run.siteId, runId)
+        val thisHackerState = hackerStateEntityService.enterRun(run.siteId, runId)
 
         syntaxHighlightingService.sendForOutside()
         stompService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SITE, toPresence(thisHackerState))
@@ -105,7 +104,6 @@ class RunService(
             userName = user.name,
             icon = user.hacker.icon,
             nodeId = state.currentNodeId,
-            masked = state.masked,
             activity = state.activity
         )
     }
@@ -126,7 +124,7 @@ class RunService(
     }
 
 
-    fun leaveSite(hackerState: HackerState) {
+    fun leaveSite(hackerState: HackerState, updateHackerState: Boolean) {
         val runId = hackerState.runId ?: return // if somehow the user was already disconnected for another reason
 
         taskEngine.removeForUser(hackerState.userId)
@@ -134,7 +132,35 @@ class RunService(
         class HackerLeaveNotification(val userId: String)
         stompService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
 
-        hackerStateEntityService.leaveSite(hackerState)
+        if (updateHackerState) {
+            hackerStateEntityService.leaveSite(hackerState)
+        }
+    }
+
+
+    fun enterNetworkedApp(networkedAppId: String) {
+        hackerStateEntityService.enterNetworkedApp(networkedAppId)
+
+        val hackerState = hackerStateEntityService.retrieveForCurrentUser().toRunState()
+        updateIceHackers(hackerState.runId, networkedAppId)
+    }
+
+    class IceHacker(val userId: String, val name: String, val icon: HackerIcon)
+
+    fun updateIceHackers(runId: String, iceId: String) {
+        val usersInIce = hackerStateEntityService.findHackersINetworkedApp(runId, iceId)
+
+        val iceHackers = usersInIce.map { userIceHackingState ->
+            val user = userEntityService.getById(userIceHackingState.userId)
+            IceHacker(user.id, user.name, user.hacker!!.icon)
+        }
+
+        stompService.toIce(
+            iceId,
+            ServerActions.SERVER_ICE_HACKERS_UPDATED,
+            iceHackers
+        )
+
     }
 
 

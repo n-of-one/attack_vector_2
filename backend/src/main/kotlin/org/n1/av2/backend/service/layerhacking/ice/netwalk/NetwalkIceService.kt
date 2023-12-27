@@ -7,7 +7,7 @@ import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.entity.site.layer.ice.NetwalkIceLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.layerhacking.HackedUtil
-import org.n1.av2.backend.service.user.UserIceHackingService
+import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
@@ -18,8 +18,7 @@ class NetwalkIceService(
     private val stompService: StompService,
     private val netwalkIceStatusRepo: NetwalkIceStatusRepo,
     private val hackedUtil: HackedUtil,
-    private val userIceHackingService: UserIceHackingService,
-
+    private val runService: RunService,
     ) {
 
     companion object {
@@ -59,7 +58,7 @@ class NetwalkIceService(
     fun enter(iceId: String) {
         val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         stompService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.hacked, netwalk.wrapping))
-        userIceHackingService.enter(iceId)
+        runService.enterNetworkedApp(iceId)
     }
 
     fun rotate(iceId: String, x: Int, y: Int) {
