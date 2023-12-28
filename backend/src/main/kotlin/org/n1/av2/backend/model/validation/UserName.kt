@@ -13,8 +13,8 @@ import kotlin.reflect.KClass
     AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.VALUE_PARAMETER
 )
 @Retention(AnnotationRetention.RUNTIME)
-@Pattern(regexp = "[a-zA-Z0-9_-]+", message = "Usernames are 3-10 characters, alphanumeric and - and _")
-@Size(min = 3, max = 10, message = "Usernames are 3-10 characters, alphanumeric and - and _")
+@Pattern(regexp = "[a-zA-Z0-9_-]+", message = "Usernames can only contain alphanumeric and - and _ characters")
+@Size(min = 3, max = 10, message = "Usernames are 3-10 characters")
 annotation class UserName(
     val message: String = "",
     val groups: Array<KClass<out Any>> = [],

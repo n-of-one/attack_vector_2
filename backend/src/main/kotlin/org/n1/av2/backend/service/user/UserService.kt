@@ -1,5 +1,7 @@
 package org.n1.av2.backend.service.user
 
+import jakarta.validation.Validation
+import jakarta.validation.Validator
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.entity.run.RunLinkEntityService
 import org.n1.av2.backend.entity.user.*
@@ -17,6 +19,8 @@ class UserService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runLinkEntityService: RunLinkEntityService,
 ) {
+
+    private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
     class UserOverview(
         val id: String,
@@ -81,10 +85,24 @@ class UserService(
             "skillArchitect" -> changeSkill(user, field, value)
             else -> error("Unknown user property: $field")
         }
+        validate(editedUserEntity, user)
+
         userEntityService.save(editedUserEntity)
         stompService.reply(ServerActions.SERVER_USER_DETAILS, editedUserEntity)
         overview()
     }
+
+    protected fun validate(editedUserEntity: UserEntity, user: UserEntity) {
+        val violations = validator.validate(editedUserEntity)
+        if (violations.isEmpty()) return
+
+        // Restore olds values in frontend
+        stompService.reply(ServerActions.SERVER_USER_DETAILS, user)
+
+        val message = violations.joinToString(", ") { it.message }
+        throw ValidationException(message)
+    }
+
 
     private fun changeType(userEntity: UserEntity, newType: String): UserEntity {
         if (newType != UserType.HACKER.name) {

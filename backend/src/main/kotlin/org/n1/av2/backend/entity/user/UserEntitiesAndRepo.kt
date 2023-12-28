@@ -1,5 +1,6 @@
 package org.n1.av2.backend.entity.user
 
+import org.n1.av2.backend.model.validation.UserName
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
@@ -10,7 +11,7 @@ data class UserEntity(
     @Id val id: String,
     val externalId: String? = null,
     val email: String,
-    var name: String = "",
+    @field:UserName var name: String = "",
     var type: UserType = UserType.NOT_LOGGED_IN,
     val hacker: Hacker?,
     val gmNote: String = "",

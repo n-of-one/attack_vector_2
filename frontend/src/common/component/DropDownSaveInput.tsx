@@ -49,7 +49,7 @@ export const DropDownSaveInput = (props: Props) => {
         props.save(newValue)
     }
 
-    let icon = (saving) ? (<span className="form-control-feedback d-flex justify-content-end"><span className="glyphicon glyphicon-floppy-save"
+    let icon = (saving) ? (<span className="form-control-feedback d-flex justify-content-end"><span className="glyphicon glyphicon-floppy-save saveIcon"
                                                                                                     aria-hidden="true"/></span>) : ''
 
 

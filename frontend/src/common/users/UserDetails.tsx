@@ -201,7 +201,7 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
 const hackerIconOptions = () => {
     const options = Object.keys(HackerIcon)
         .map( (icon) => {
-            return <option value={icon}>{icon}</option>
+            return <option key={icon} value={icon}>{icon}</option>
         })
     return options
 }
