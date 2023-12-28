@@ -74,7 +74,7 @@ class UserService(
     fun edit(userId: String, field: String, value: String) {
         val user = userEntityService.getById(userId)
         val editedUserEntity: UserEntity = when (field) {
-            "name" -> user.copy(name = value)
+            "name" -> changeName(user, value)
             "email" -> user.copy(email = value)
             "type" -> changeType(user, value)
             "gmNote" -> user.copy(gmNote = value)
@@ -96,13 +96,22 @@ class UserService(
         val violations = validator.validate(editedUserEntity)
         if (violations.isEmpty()) return
 
-        // Restore olds values in frontend
-        stompService.reply(ServerActions.SERVER_USER_DETAILS, user)
+        stompService.reply(ServerActions.SERVER_USER_DETAILS, user) // Restore olds values in frontend
 
         val message = violations.joinToString(", ") { it.message }
         throw ValidationException(message)
     }
 
+    private fun changeName(userEntity: UserEntity, newName: String): UserEntity {
+        if (userEntity.name == newName) return userEntity
+        if (userEntityService.findByNameIgnoreCase(newName) != null) {
+            stompService.reply(ServerActions.SERVER_USER_DETAILS, userEntity) // Restore olds values in frontend
+            throw ValidationException("User with name $newName already exists.")
+        }
+        val newEntity = userEntity.copy(name = newName)
+        validate(newEntity, userEntity)
+        return newEntity
+    }
 
     private fun changeType(userEntity: UserEntity, newType: String): UserEntity {
         if (newType != UserType.HACKER.name) {
