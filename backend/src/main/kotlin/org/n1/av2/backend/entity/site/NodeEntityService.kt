@@ -1,6 +1,5 @@
 package org.n1.av2.backend.entity.site
 
-import org.n1.av2.backend.entity.app.StatusLightEntityService
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.OsLayer
@@ -24,7 +23,6 @@ const val NODE_MAX_Y = 815 - 48 - 100
 class NodeEntityService(
     private val nodeRepo: NodeRepo,
     private val themeService: ThemeService,
-    private val statusLightEntityService: StatusLightEntityService,
 ) {
 
     fun createNode(command: AddNode): Node {
@@ -177,8 +175,7 @@ class NodeEntityService(
     }
 
     private fun createStatusLightLayer(layerId: String, type: LayerType, level: Int, defaultName: String, textForRed: String, textForGreen: String): StatusLightLayer {
-        val entity = statusLightEntityService.create(layerId, false, defaultName, textForRed, textForGreen)
-        return  StatusLightLayer(layerId, type, level, defaultName, entity.id, textForRed, textForGreen)
+        return  StatusLightLayer(layerId, type, level, defaultName, null, textForRed, textForGreen)
     }
 
     data class LayersUpdated(val node: Node, val layerId: String?)

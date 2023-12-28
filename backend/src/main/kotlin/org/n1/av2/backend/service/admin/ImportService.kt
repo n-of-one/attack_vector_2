@@ -68,6 +68,8 @@ class ImportService(
 
     private fun importV1(root: JsonNode): String {
         val siteProperties = importV1SiteProperties(root)
+        importV1Nodes(root)
+        importV1Connections(root)
         recreateSiteState(siteProperties.siteId)
 
         return siteProperties.name

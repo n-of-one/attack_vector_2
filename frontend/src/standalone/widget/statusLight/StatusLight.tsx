@@ -52,5 +52,4 @@ const statusClass = (status: boolean | null) => {
         return "status-light-on"
     }
     return "status-light-off"
-
 }

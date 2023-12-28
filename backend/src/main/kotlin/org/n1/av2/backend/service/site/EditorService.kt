@@ -125,20 +125,24 @@ class EditorService(
         val node = nodeEntityService.getById(command.nodeId)
         val layer = node.layers.find { it.id == command.layerId } ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
         layer.update(command.key, command.value)
-        processUpdateToApp(layer, command.key, command.value)
+        processUpdateToApp(layer, command.key)
         nodeEntityService.save(node)
-        val message = ServerUpdateLayer(command.nodeId, layer.id, layer)
-        stompService.toSite(command.siteId, ServerActions.SERVER_UPDATE_LAYER, message)
+        sendLayerUpdateMessage(command.siteId, command.nodeId, layer)
         siteValidationService.validate(command.siteId)
     }
 
-    private fun processUpdateToApp(layer: Layer, key: String, value: String) {
+    fun sendLayerUpdateMessage(siteId: String, nodeId: String, layer: Layer) {
+        val message = ServerUpdateLayer(nodeId, layer.id, layer)
+        stompService.toSite(siteId, ServerActions.SERVER_UPDATE_LAYER, message)
+    }
+
+
+    private fun processUpdateToApp(layer: Layer, key: String) {
         if (layer is StatusLightLayer) {
-            val entity = statusLightService.findById(layer.appId)
             when (key) {
-                STATUS.name -> statusLightService.update(entity.copy(status = value.toBoolean()))
-                TEXT_FOR_RED.name -> statusLightService.update(entity.copy(textForRed = value))
-                TEXT_FOR_GREEN.name -> statusLightService.update(entity.copy(textForGreen = value))
+                STATUS.name -> statusLightService.sendUpdate(layer)
+                TEXT_FOR_RED.name -> statusLightService.sendUpdate(layer)
+                TEXT_FOR_GREEN.name -> statusLightService.sendUpdate(layer)
                 else -> Unit
             }
         }

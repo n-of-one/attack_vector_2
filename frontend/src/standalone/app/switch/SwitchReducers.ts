@@ -5,14 +5,12 @@ const SERVER_STATUS_LIGHT_UPDATE = "SERVER_STATUS_LIGHT_UPDATE"
 
 export interface SwitchState {
     status: boolean | null,
-    description: string,
     textForRed: string,
     textForGreen: string
 }
 
 const defaultState = {
     status: null,
-    description: "",
     textForRed: "",
     textForGreen: "",
 }

@@ -2,7 +2,7 @@ import React from "react";
 import {useSelector} from "react-redux";
 import {SwitchRootState, SwitchState} from "./SwitchReducers";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
-import {app} from "../../StandaloneGlobals";
+import {layer} from "../../StandaloneGlobals";
 import {CloseTabButton} from "../../ice/common/CloseTabButton";
 
 
@@ -15,11 +15,9 @@ export const Switch = () => {
     }
 
     const setValue = (newValue: boolean) => {
-        webSocketConnection.sendObject("/app/statusLight/setValue", { appId: app.id, value: newValue})
+        webSocketConnection.sendObject("/app/statusLight/setValue", { layerId: layer.id, value: newValue})
     }
 
-    const idParts = app.id.split("-")
-    const id = `${idParts[1]}:${idParts[2]}`
 
     return (
         <>
@@ -27,7 +25,7 @@ export const Switch = () => {
                 <div className="row">
                     <div className="col-12">
                         <span className="d-flex justify-content-between">
-                        <h2>Switch {id}</h2>
+                        <h2>Switch</h2>
                         <CloseTabButton/>
                         </span>
                     </div>

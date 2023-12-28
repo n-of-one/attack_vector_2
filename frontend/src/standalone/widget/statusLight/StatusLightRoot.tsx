@@ -6,10 +6,10 @@ import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {StatusLight} from "./StatusLight";
 import {defaultState, statusLightReducer, StatusLightState} from "./StatusLightReducers";
-import {app} from "../../StandaloneGlobals";
+import {layer} from "../../StandaloneGlobals";
 
 interface Props {
-    appId: string
+    layerId: string
 }
 
 export class StatusLightRoot extends Component<Props> {
@@ -18,7 +18,7 @@ export class StatusLightRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        app.id = props.appId
+        layer.id = props.layerId
         const preLoadedState = defaultState
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
@@ -31,8 +31,8 @@ export class StatusLightRoot extends Component<Props> {
         })
 
         webSocketConnection.create(WS_UNRESTRICTED, this.store, () => {
-            webSocketConnection.subscribe(`/topic/app/${app.id}`)
-            webSocketConnection.sendObject("/app/statusLight/enter", {appId: app.id})
+            webSocketConnection.subscribe(`/topic/app/${layer.id}`)
+            webSocketConnection.sendObject("/app/statusLight/enter", {layerId: layer.id})
         });
 
         initGenericServerActions()

@@ -16,15 +16,15 @@ class StatusLightLayer(
     level: Int,
     name: String,
     note: String,
-    val appId: String,
+    val appId: String?, // obsolete
     var status: Boolean,
     var textForRed: String,
     var textForGreen: String,
 
     ) : Layer(id, type, level, name, note) {
 
-    constructor(id: String, type: LayerType, level: Int, defaultName: String, appId: String, textForRed: String, textForGreen: String) :
-            this(id, type, level, defaultName, "", appId, false, textForRed, textForGreen)
+    constructor(id: String, type: LayerType, level: Int, defaultName: String, appId: String?, textForRed: String, textForGreen: String) :
+            this(id, type, level, defaultName, "", null, false, textForRed, textForGreen)
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {

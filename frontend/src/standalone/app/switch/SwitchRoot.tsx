@@ -6,10 +6,10 @@ import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
 import {SwitchRootState, swithRootReducer} from "./SwitchReducers";
 import {Switch} from "./Switch";
-import {app} from "../../StandaloneGlobals";
+import {layer} from "../../StandaloneGlobals";
 
 interface Props {
-    appId: string
+    layerId: string
 }
 
 export class SwitchRoot extends Component<Props> {
@@ -18,7 +18,7 @@ export class SwitchRoot extends Component<Props> {
 
     constructor(props: Props) {
         super(props)
-        app.id = props.appId
+        layer.id = props.layerId
         const preLoadedState = {}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
@@ -31,8 +31,8 @@ export class SwitchRoot extends Component<Props> {
         })
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
-            webSocketConnection.subscribe(`/topic/app/${app.id}`)
-            webSocketConnection.sendObject("/app/statusLight/enter", {appId: app.id})
+            webSocketConnection.subscribe(`/topic/app/${layer.id}`)
+            webSocketConnection.sendObject("/app/statusLight/enter", {layerId: layer.id})
         });
 
         initGenericServerActions()

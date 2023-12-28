@@ -52,7 +52,7 @@ export const AppSelector = ({type, layerId}: Props) => {
 
     switch (type) {
         case "switch":
-            return <SwitchRoot appId={response.appId}/>
+            return <SwitchRoot layerId={layerId}/>
         case "auth":
             return <AuthRoot iceId={response.appId} layerId={layerId}/>
         default:

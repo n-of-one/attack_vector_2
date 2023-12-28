@@ -9,18 +9,6 @@ import org.springframework.stereotype.Service
 
 const val V1 = "v1"
 
-class ExportDetails(
-    val version: String,
-    val exportTimeStamp: String,
-)
-
-class SiteExportResult(
-    val siteName: String,
-    val version: String,
-    val exportTime: String,
-    val json: String
-)
-
 class SiteExportV1(
     val exportDetails: ExportDetails,
     val siteProperties: V1SiteProperties,
@@ -42,7 +30,7 @@ class V1SiteProperties(
 )
 
 @Service
-class V1ExportHelper(
+class V1Exporter(
     private val timeService: TimeService,
 ) {
 
