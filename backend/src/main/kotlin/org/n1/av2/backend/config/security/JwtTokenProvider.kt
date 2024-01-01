@@ -11,6 +11,7 @@ import java.security.Key
 import java.security.SignatureException
 import java.util.*
 
+const val expirationInS: Int = 60 * 60 * 5 // 5 hours
 
 @Component
 class JwtTokenProvider {
@@ -22,8 +23,7 @@ class JwtTokenProvider {
     private val JwtParser = Jwts.parserBuilder().setSigningKey(key).build()
 
 
-    final val jwtExpirationInS: Int = 60 * 60 * 5 // 5 hours
-    private val jwtExpirationInMs: Int = 1000 * jwtExpirationInS
+    private val jwtExpirationInMs: Int = 1000 * expirationInS
 
     fun generateJwt(userEntity: UserEntity): String {
 
@@ -47,7 +47,7 @@ class JwtTokenProvider {
 
     fun validateToken(authToken: String): Boolean {
         try {
-            JwtParser. parseClaimsJws(authToken)
+            JwtParser.parseClaimsJws(authToken)
             return true
         } catch (ex: SignatureException) {
             logger.error("Invalid JWT signature")

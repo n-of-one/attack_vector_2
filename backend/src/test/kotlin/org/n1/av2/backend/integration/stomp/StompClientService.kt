@@ -2,7 +2,7 @@ package org.n1.av2.backend.integration.stomp
 
 import org.n1.av2.backend.entity.run.RunLinkEntityService
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.service.LoginService
+import org.n1.av2.backend.service.security.LoginService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

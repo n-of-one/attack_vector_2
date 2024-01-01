@@ -7,6 +7,7 @@ import org.n1.av2.backend.entity.run.RunLinkEntityService
 import org.n1.av2.backend.entity.user.*
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.larp.FrontierHackerInfo
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.isInt
 import org.springframework.security.core.context.SecurityContextHolder
@@ -151,6 +152,69 @@ class UserService(
 
     fun update(updatedUserEntity: UserEntity): UserEntity {
         return userEntityService.save(updatedUserEntity)
+    }
+
+    fun getOrCreateUser(hackerInfo: FrontierHackerInfo): UserEntity {
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(hackerInfo.id)
+        if (existingUserEntity != null) {
+            return existingUserEntity
+        }
+
+        if (hackerInfo.isGm) {
+            return create(hackerInfo.id, hackerInfo.id, UserType.GM, null)
+        }
+
+        val name = findFreeUserName(hackerInfo.characterName!!)
+
+        val hacker = Hacker(
+            icon = HackerIcon.FROG,
+            skill = HackerSkill(0,0,0),
+            characterName = "not yet set"
+        )
+
+        return create(name, hackerInfo.id, UserType.HACKER, hacker)
+    }
+
+    fun updateUserInfo(userEntity: UserEntity, hackerInfo: FrontierHackerInfo): UserEntity {
+        if (hackerInfo.isGm) return userEntity
+
+        val hacker = userEntity.hacker!!
+        val skills = hackerInfo.skills!!
+
+        val updatedHacker = hacker.copy(
+            characterName = hackerInfo.characterName!!,
+            skill = HackerSkill(hacker = skills.hacker, elite = skills.elite, architect = skills.architect),
+        )
+        val updatedUser = userEntity.copy(hacker = updatedHacker)
+        return update(updatedUser)
+    }
+
+    private fun findFreeUserName(input: String): String {
+        if (userEntityService.findByNameIgnoreCase(input) == null) return input
+
+        for (i in 1..100) {
+            val name = "$input$i"
+            if (userEntityService.findByNameIgnoreCase(name) == null) return name
+
+        }
+        error("Failed to logon, failed to create user account. No free user name found")
+    }
+
+    fun getOrCreateUser(externalId: String): UserEntity {
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(externalId)
+        if (existingUserEntity != null) {
+            return existingUserEntity
+        }
+
+        val name = findFreeUserName("user")
+
+        val hacker = Hacker(
+            icon = HackerIcon.FROG,
+            skill = HackerSkill(0,0,0),
+            characterName = "not yet set"
+        )
+
+        return create(name, externalId, UserType.HACKER, hacker)
     }
 
 }

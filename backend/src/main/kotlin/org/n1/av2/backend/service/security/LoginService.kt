@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service
+package org.n1.av2.backend.service.security
 
 import jakarta.servlet.http.Cookie
 import org.n1.av2.backend.config.security.JwtTokenProvider

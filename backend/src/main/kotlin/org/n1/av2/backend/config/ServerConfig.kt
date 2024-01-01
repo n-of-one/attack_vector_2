@@ -19,8 +19,15 @@ class ServerConfig(
     @Value("\${environment.TIME_ZONE:default}")
     private val timeZoneInput: String,
 
+    // SSO Frontier larp
     @Value("\${FRONTIER_ORTHANK_TOKEN:none}")
-    val orthankToken: String
+    val orthankToken: String,
+
+    // Google oauth
+    @Value("\${GOOGLE_CLIENT_ID:none}")
+    val googleClientId: String,
+
+
 
 ) {
     val timeZoneId: ZoneId = if (timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(timeZoneInput)

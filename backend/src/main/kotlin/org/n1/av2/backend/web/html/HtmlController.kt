@@ -2,7 +2,7 @@ package org.n1.av2.backend.web.html
 
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
-import org.n1.av2.backend.service.LoginService
+import org.n1.av2.backend.service.security.LoginService
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping

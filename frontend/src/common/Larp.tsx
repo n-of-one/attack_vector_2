@@ -13,13 +13,22 @@ export class Larp {
 
     constructor() {
         const frontier = window.location.href.indexOf("eosfrontier.space") !== -1
+        const local = window.location.href.indexOf("localhost") !== -1
+
+        if (local) {
+            this.name = "frontier"
+            this.userEmailEnabled = false
+            this.userEditSkills = true
+            this.userEditCharacterName = true
+            this.loginUrl = "/login"
+        }
 
         if (frontier) {
             this.name = "frontier"
             this.userEmailEnabled = false
             this.userEditSkills = false
-            this.userEditCharacterName = false
-            this.loginUrl = "/sso"
+            this.userEditCharacterName = true
+            this.loginUrl = "/login/frontier"
         }
     }
 

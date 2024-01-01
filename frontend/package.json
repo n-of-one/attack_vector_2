@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-oauth/google": "^0.12.1",
     "bootstrap": "^5.2.3",
     "fabric": "^5.3.0",
     "js-cookie": "^3.0.1",

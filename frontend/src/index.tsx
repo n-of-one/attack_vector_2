@@ -10,6 +10,7 @@ import {ToasterConfig} from "./common/util/Notification";
 import {BannerPage} from "./login/Sso";
 import {larp} from "./common/Larp";
 import {Standalone} from "./standalone/Standalone";
+import {GoogleAuth} from "./login/GoogleAuth";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -52,11 +53,26 @@ const Editor = () => {
     return (<EditorRoot siteId={siteId as string}/>)
 }
 
+const determineLoginElement = () => {
+    larp.
+    if (local) {
+        return <Login/>
+    }
+
+    if (frontier) {
+        return <BannerPage/>
+    }
+
+    return <BannerPage/>
+}
+const loginElement = determineLoginElement()
+
 root.render(
     <>
         <BrowserRouter>
             <Routes>
-                <Route path="/login" element={<Login/>}/>
+                {/*<Route path="/login" element={<Login/>}/>*/}
+                <Route path="/login" element={<GoogleAuth/>}/>
                 <Route path="/loggedOut" element={<BannerPage/>}/>
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
