@@ -27,10 +27,14 @@ class ServerConfig(
     @Value("\${GOOGLE_CLIENT_ID:none}")
     val googleClientId: String,
 
+    // Google oauth
+    @Value("\${ADMIN_PASSWORD:disabled}")
+    val adminPassword: String,
+
 
 
 ) {
     val timeZoneId: ZoneId = if (timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(timeZoneInput)
 
-    val dev: Boolean = environment.startsWith("dev")
+    val dev: Boolean = environment.startsWith("aev")
 }

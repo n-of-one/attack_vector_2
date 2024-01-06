@@ -11,6 +11,7 @@ import {Standalone} from "./standalone/Standalone";
 import {LoggedOut} from "./login/LoggedOut";
 import {About} from "./About";
 import {Privacy} from "./Privacy";
+import {AdminLogin} from "./login/AdminLogin";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -59,6 +60,7 @@ root.render(
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={larp.loginElement()}/>
+                <Route path="/adminLogin" element={<AdminLogin/>}/>
                 <Route path="/loggedOut" element={<LoggedOut/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/privacy" element={<Privacy/>}/>

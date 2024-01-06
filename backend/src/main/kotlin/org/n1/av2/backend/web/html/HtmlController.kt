@@ -15,7 +15,7 @@ class HtmlController(
     private val loginService: LoginService
 ) : ErrorController {
 
-    @GetMapping("/", "/login", "/loggedOut", "/about", "/privacy", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}")
+    @GetMapping("/", "/login", "/adminLogin", "/loggedOut", "/about", "/privacy", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}")
     fun default(): String {
         return INDEX
     }

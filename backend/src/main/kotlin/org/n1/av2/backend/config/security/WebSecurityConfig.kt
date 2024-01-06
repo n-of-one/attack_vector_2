@@ -44,7 +44,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/manual/**").permitAll()
             .requestMatchers("/openapi/**").permitAll()
             .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json").permitAll()
-            .requestMatchers("/localLogout", "/loggedOut", "/login").permitAll()
+            .requestMatchers("/localLogout", "/loggedOut", "/login", "/adminLogin").permitAll()
             .requestMatchers("/about", "/privacy").permitAll()
             .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
             .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)

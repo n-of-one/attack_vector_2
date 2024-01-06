@@ -1,5 +1,6 @@
 import React from "react";
 import {larp} from "../common/Larp";
+import {SilentLink} from "../common/component/SilentLink";
 
 export const Banner = () => {
     return (<>
@@ -15,11 +16,11 @@ export const Banner = () => {
                         <br/>
                         <br/>
 
-                        &nbsp; &nbsp;&nbsp;      _|_|      _|      _|                          _|            _|      _|                        _|                              <i>  _|_|</i><br/>
-                        &nbsp; &nbsp; &nbsp; &nbsp; _|    _|  _|_|_|_|_|_|_|_|    _|_|_|    _|_|_|  _|  _|        _|      _|    _|_|      _|_|_|  _|_|_|_|    _|_|    _|  _|_| <i>     _|    _|</i><br/>
-                        &nbsp; &nbsp; &nbsp; &nbsp; _|_|_|_|    _|      _|      _|    _|  _|        _|_|          _|      _|  _|_|_|_|  _|          _|      _|    _|  _|_|     <i>         _|</i><br/>
-                        &nbsp; &nbsp; &nbsp; &nbsp; _|    _|    _|      _|      _|    _|  _|        _|  _|          _|  _|    _|        _|          _|      _|    _|  _|       <i>       _|</i><br/>
-                        &nbsp; &nbsp; &nbsp; &nbsp; _|    _|      _|_|    _|_|    _|_|_|    _|_|_|  _|    _|          _|        _|_|_|    _|_|_|      _|_|    _|_|    _|       <i>     _|_|_|_|</i><br/>
+                        &nbsp; &nbsp;&nbsp;      _|_|      _|      _|                          _|            _|      _|                        _|                              <i onClick={adminLogin}>  _|_|</i><br/>
+                        &nbsp; &nbsp; &nbsp; &nbsp; _|    _|  _|_|_|_|_|_|_|_|    _|_|_|    _|_|_|  _|  _|        _|      _|    _|_|      _|_|_|  _|_|_|_|    _|_|    _|  _|_| <i onClick={adminLogin}>     _|    _|</i><br/>
+                        &nbsp; &nbsp; &nbsp; &nbsp; _|_|_|_|    _|      _|      _|    _|  _|        _|_|          _|      _|  _|_|_|_|  _|          _|      _|    _|  _|_|     <i onClick={adminLogin}>         _|</i><br/>
+                        &nbsp; &nbsp; &nbsp; &nbsp; _|    _|    _|      _|      _|    _|  _|        _|  _|          _|  _|    _|        _|          _|      _|    _|  _|       <i onClick={adminLogin}>       _|</i><br/>
+                        &nbsp; &nbsp; &nbsp; &nbsp; _|    _|      _|_|    _|_|    _|_|_|    _|_|_|  _|    _|          _|        _|_|_|    _|_|_|      _|_|    _|_|    _|       <i onClick={adminLogin}>     _|_|_|_|</i><br/>
                     <br/>
                     <br/>
                     <br/>
@@ -32,5 +33,8 @@ export const Banner = () => {
     )
 }
 
+const adminLogin = () => {
+    window.location.href = "/adminLogin"
+}
 
 

@@ -36,7 +36,7 @@ class StompClientService {
 
     private suspend fun connectFor(userName: String): HackerClient {
         val user = userEntityService.getByName(userName)
-        val cookies = loginService.login(user)
+        val cookies = loginService.login(userName, "")
         val cookie = cookies[0]
         val cookieString = "${cookie.name}=${cookie.value}"
 

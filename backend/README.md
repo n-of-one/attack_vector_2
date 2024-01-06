@@ -36,6 +36,11 @@ If the environment name starts with: `dev` then the `quickscan` & `qs` and `quic
 
 `FRONTIER_ORTHANK_TOKEN`   Security token to access Orthank (Frontier Larp only). Defaults to: none 
 
+`ADMIN_PASSWORD`   Password for Admin logins. Defaults to: disabled (with this value, admin logins are disabled)
+
+The application allows admins to log in with username and password. There is only one password for the entire site. Please use a strong password for this,
+for example a 32 character random string.
+
 ## Running:
 
 The application is a Spring boot standalone java app, the main method class is: org.n1.av2.backend
