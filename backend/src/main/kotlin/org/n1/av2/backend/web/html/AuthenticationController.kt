@@ -10,7 +10,9 @@ import org.n1.av2.backend.service.security.LoginService
 import org.n1.av2.backend.service.user.UserService
 import org.n1.av2.backend.web.rest.addLoginCookies
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
 class AuthenticationController(
@@ -41,22 +43,4 @@ class AuthenticationController(
         response.sendRedirect(redirectPath)
         return ""
     }
-
-    class GoogleJwtToken(val jwt: String)
-
-    @RequestMapping("/login/google")
-    @ResponseBody
-    fun googleAuthenticate(@ModelAttribute request: GoogleJwtToken, response: HttpServletResponse): String {
-        val next:String? = null
-        val externalId = googleOauthService.parse(request.jwt)
-        val user = userService.getOrCreateUser(externalId)
-
-        val loginCookies = loginService.login(user)
-        response.addLoginCookies(loginCookies)
-
-        val redirectPath = next ?: "/"
-        response.sendRedirect(redirectPath)
-        return ""
-    }
-
 }

@@ -105,6 +105,17 @@ input {
     line-height: 14px;
 }
 
+.dark {
+    color: #777; !important;
+}
+
+.button-text {
+    color: #fff;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+
 .errorPage {
     padding: 20px 20px 20px 20px
 }

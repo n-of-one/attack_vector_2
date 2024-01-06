@@ -1,6 +1,5 @@
 package org.n1.av2.backend.config.security
 
-import org.n1.av2.backend.entity.user.ROLE_ADMIN
 import org.n1.av2.backend.entity.user.ROLE_GM
 import org.n1.av2.backend.entity.user.ROLE_SITE_MANAGER
 import org.n1.av2.backend.entity.user.ROLE_USER
@@ -45,8 +44,8 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/manual/**").permitAll()
             .requestMatchers("/openapi/**").permitAll()
             .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/asset-manifest.json").permitAll()
-            .requestMatchers("/localLogout", "/loggedOut", "/login", "/login/google").permitAll()
-            .requestMatchers("/about").permitAll()
+            .requestMatchers("/localLogout", "/loggedOut", "/login").permitAll()
+            .requestMatchers("/about", "/privacy").permitAll()
             .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
             .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)
 

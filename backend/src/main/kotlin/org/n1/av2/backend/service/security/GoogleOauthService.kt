@@ -5,18 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import org.n1.av2.backend.config.ServerConfig
-import org.n1.av2.backend.config.security.JwtTokenProvider
-import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
 import java.net.URL
 import java.security.MessageDigest
-import java.security.SecureRandom
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.*
-import javax.crypto.Cipher
-import javax.crypto.SecretKeyFactory
-import kotlin.collections.HashMap
 
 @Service
 class GoogleOauthService(
@@ -39,6 +33,7 @@ class GoogleOauthService(
         val keyId = headerNode.get("kid").asText()
         val jwtParser = getParser(keyId)
         val claims = jwtParser.parseClaimsJws(jwt).body
+
         if (!claims.containsKey("sub")) error("No sub field in JWT, cannot login")
         val aud = claims.get("aud") as String
         if (aud != serverConfig.googleClientId) error("Google oauth jwt not intended for AV. aud=$aud")

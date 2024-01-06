@@ -78,7 +78,6 @@ class FrontierService(
         }
 
         val idAndGroupsText = httpClient.get("https://ic.eosfrontier.space/assets/idandgroups.php", emptyMap(), cookies)
-        println(idAndGroupsText)
         val idAndGroups = objectMapper.readValue(idAndGroupsText, IdAndGroupResponse::class.java)
         val gm = idAndGroups.groups?.contains(FRONTIER_GM_GROUP) ?: false
 

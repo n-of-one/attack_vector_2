@@ -3,14 +3,16 @@ import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Route, Routes, useParams} from 'react-router-dom'
 import {GmRoot} from "./gm/GmRoot"
 import {EditorRoot} from "./editor/EditorRoot"
-import {Login} from "./login/Login"
+import {DevLogin} from "./login/DevLogin"
 import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/util/Notification";
-import {BannerPage} from "./login/Sso";
 import {larp} from "./common/Larp";
 import {Standalone} from "./standalone/Standalone";
 import {GoogleAuth} from "./login/GoogleAuth";
+import {LoggedOut} from "./login/LoggedOut";
+import {About} from "./About";
+import {Privacy} from "./Privacy";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -22,7 +24,7 @@ console.log("\nWelcome to _Attack Vector_" +
     "\n ")
 
 
-const ReRoute = (): JSX.Element => {
+const ReRoute = (): React.JSX.Element => {
 
     let type = Cookies.get("type")
     if (type === "ADMIN") {
@@ -53,27 +55,15 @@ const Editor = () => {
     return (<EditorRoot siteId={siteId as string}/>)
 }
 
-const determineLoginElement = () => {
-    larp.
-    if (local) {
-        return <Login/>
-    }
-
-    if (frontier) {
-        return <BannerPage/>
-    }
-
-    return <BannerPage/>
-}
-const loginElement = determineLoginElement()
 
 root.render(
     <>
         <BrowserRouter>
             <Routes>
-                {/*<Route path="/login" element={<Login/>}/>*/}
-                <Route path="/login" element={<GoogleAuth/>}/>
-                <Route path="/loggedOut" element={<BannerPage/>}/>
+                <Route path="/login" element={larp.loginElement()}/>
+                <Route path="/loggedOut" element={<LoggedOut/>}/>
+                <Route path="/about" element={<About/>}/>
+                <Route path="/privacy" element={<Privacy/>}/>
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/edit/:siteId" element={<Editor/>}/>

@@ -46,7 +46,7 @@ export const MenuBar = () => {
                     <div className="container-fluid">
                         <div className="d-flex justify-content-between">
                             <ul className="navbar-nav mr-auto">
-                                <li className="nav-item"><a className="nav-link disabled" href="#">↼ Attack Vector ⇁</a></li>
+                                <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
                                 {/*<MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />*/}
                                 <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}

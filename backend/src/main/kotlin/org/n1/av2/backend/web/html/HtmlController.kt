@@ -15,20 +15,10 @@ class HtmlController(
     private val loginService: LoginService
 ) : ErrorController {
 
-    @GetMapping("/", "/login", "/login/", "/loggedOut", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}")
+    @GetMapping("/", "/login", "/loggedOut", "/about", "/privacy", "/hacker", "/hacker/", "/gm", "/gm/", "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}")
     fun default(): String {
         return INDEX
     }
-
-//    @GetMapping("/about")
-//    @ResponseBody
-//    fun about(request: HttpServletRequest): String {
-//        val cookie = request.cookies.find { it.name == "5d69be776f972f618357ed7009ea7ccb" }?.value ?: return "No joomla cookie found"
-//
-//
-////        return getInfo(cookie)
-////        return "about"
-//    }
 
     @GetMapping("/localLogout")
     fun logout(response: HttpServletResponse) {

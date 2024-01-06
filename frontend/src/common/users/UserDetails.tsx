@@ -56,14 +56,6 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
         />
 
         <UserAttribute
-            label="Email" id="email" size={8}
-            value={user.email}
-            save={save} attributeSaveName="email"
-            readonly={false}
-            show = {larp.userEmailEnabled}
-        />
-
-        <UserAttribute
             label="GM Note" id="gmNote" size={8}
             value={user.gmNote}
             save={save} attributeSaveName="gmNote"

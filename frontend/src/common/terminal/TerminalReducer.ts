@@ -1,5 +1,5 @@
 import {AnyAction} from "redux"
-import {BACKSPACE, DOWN, TAB, UP} from "../../KeyCodes"
+import {BACKSPACE, DOWN, TAB, UP} from "../util/KeyCodes"
 import {SERVER_ERROR} from "../../hacker/server/GenericServerActionProcessor"
 
 const LINE_LIMIT = 100
