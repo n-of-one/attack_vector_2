@@ -43,7 +43,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .requestMatchers("/ice/**").permitAll()
             .requestMatchers("/manual/**").permitAll()
             .requestMatchers("/openapi/**").permitAll()
-            .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/asset-manifest.json").permitAll()
+            .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json").permitAll()
             .requestMatchers("/localLogout", "/loggedOut", "/login").permitAll()
             .requestMatchers("/about", "/privacy").permitAll()
             .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
