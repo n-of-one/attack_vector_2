@@ -36,5 +36,5 @@ class ServerConfig(
 ) {
     val timeZoneId: ZoneId = if (timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(timeZoneInput)
 
-    val dev: Boolean = environment.startsWith("aev")
+    val dev: Boolean = environment.startsWith("dev")
 }
