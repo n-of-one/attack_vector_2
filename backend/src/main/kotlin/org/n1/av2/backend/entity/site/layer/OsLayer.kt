@@ -16,6 +16,9 @@ class OsLayer(
     constructor(id: String, defaultName: String) :
             this(id, LayerType.OS, 0, defaultName, "", "")
 
+    constructor(id: String, toClone: OsLayer) :
+            this(id, LayerType.OS, toClone.level, toClone.name, toClone.note, toClone.nodeName)
+
     private fun validateNetworkId(siteRep: SiteRep) {
 
         if (siteRep.node.networkId.isBlank()) throw SiteValidationException("Network Id cannot be empty.")

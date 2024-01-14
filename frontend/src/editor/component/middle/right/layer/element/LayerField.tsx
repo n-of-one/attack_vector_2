@@ -1,16 +1,16 @@
 import React from 'react'
-import {TextSaveInput} from "../../../../../../common/component/TextSaveInput"
+import {TextSaveInput, TextSaveType} from "../../../../../../common/component/TextSaveInput"
 import {OverlayTrigger, Tooltip} from "react-bootstrap"
 
 
-const renderInput = (value: string | number, readOnly: boolean, save?: (value: string) => void, placeholder?: string) => {
+const renderInput = (value: string | number, readOnly: boolean, id?: string, type?: TextSaveType, save?: (value: string) => void, placeholder?: string) => {
     if (readOnly) {
         return (
             <span><input type="text" className="form-control input-sm" disabled={readOnly} value={value}/></span>
         )
     }
     return (
-        <TextSaveInput className="form-control input-sm" placeholder={placeholder} value={value}
+        <TextSaveInput className="form-control input-sm" placeholder={placeholder} value={value} id={id} type={type}
                        save={value => save!(value)}/>
 
     )
@@ -23,10 +23,12 @@ interface Props {
     value: string | number,
     save?: (value: string) => void,
     placeholder?: string,
-    help: string
+    help: string,
+    id?: string,
+    type?: TextSaveType
 }
 
-export const LayerField = ({label, size, readOnly, value, save, placeholder, help} : Props) => {
+export const LayerField = ({label, size, readOnly, value, type, save, placeholder, help, id}: Props) => {
     if (!readOnly) {
         readOnly = false
     }
@@ -36,7 +38,7 @@ export const LayerField = ({label, size, readOnly, value, save, placeholder, hel
         <div className="row form-group layerFieldRow">
             <div className="col-lg-3 layerLabel">{label}</div>
             <div className={colSize}>
-                {renderInput(value, readOnly, save, placeholder)}
+                {renderInput(value, readOnly, id, type, save, placeholder)}
             </div>
             <div className="col-lg-1 layerHelpColumn">
                 <OverlayTrigger

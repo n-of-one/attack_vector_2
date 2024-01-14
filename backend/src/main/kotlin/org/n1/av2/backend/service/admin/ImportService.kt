@@ -53,7 +53,7 @@ class ImportService(
         stompService.sendToDestination("/topic/user/${userId}", ServerActions.SERVER_NOTIFICATION, arrayOf(NotyMessage(type, title, message)))
     }
 
-    private fun importSite(json: String): String {
+    fun importSite(json: String): String {
         val root: JsonNode = objectMapper.readTree(json)
 
         val version = detectVersion(root)

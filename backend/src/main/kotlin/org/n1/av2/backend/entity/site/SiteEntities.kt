@@ -19,7 +19,7 @@ data class SiteProperties(
     var hackTime: String = "15:00",
     var startNodeNetworkId: String = "00",
     var hackable: Boolean = true,
-    val shutdownEnd: ZonedDateTime?,
+    val shutdownEnd: ZonedDateTime? = null,
 )
 
 @Document

@@ -6,6 +6,7 @@ import org.n1.av2.backend.config.security.JwtTokenProvider
 import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.larp.FrontierHackerInfo
+import org.n1.av2.backend.service.site.TutorialService
 import org.n1.av2.backend.service.user.UserService
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
@@ -17,6 +18,7 @@ class LoginService(
     private val serverConfig: ServerConfig,
     private val jwtTokenProvider: JwtTokenProvider,
     private val googleOauthService: GoogleOauthService,
+    private val tutorialService: TutorialService,
 ) {
 
     fun login(userName: String, password: String?): List<Cookie> {
@@ -43,6 +45,7 @@ class LoginService(
     fun googleLogin(jwt: String): List<Cookie> {
         val externalId = googleOauthService.parse(jwt)
         val user = userService.getOrCreateUser(externalId)
+        tutorialService.createIfNotExistsFor(user)
         return getCookies(user)
     }
 

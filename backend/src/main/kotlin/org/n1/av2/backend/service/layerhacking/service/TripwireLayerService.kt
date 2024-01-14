@@ -41,8 +41,13 @@ class TripwireLayerService(
 ) {
 
 
-    fun hack(layer: Layer) {
-        stompService.replyTerminalReceive("Hack failed. Countdown timer is not managed from service.")
+    fun hack(layer: TripwireLayer) {
+        if (layer.coreLayerId == null) {
+            stompService.replyTerminalReceive("This tripwire is irreversible.")
+            return
+        }
+        val node = nodeEntityService.findByLayerId(layer.coreLayerId!!)
+        stompService.replyTerminalReceive("This tripwire is managed by core in node [ok]${node.networkId}")
     }
 
     fun connect(layer: Layer) {

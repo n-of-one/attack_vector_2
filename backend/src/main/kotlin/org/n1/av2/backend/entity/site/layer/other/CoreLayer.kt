@@ -15,6 +15,9 @@ class CoreLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.CORE, level, defaultName, "", false)
 
+    constructor(id: String, toClone: CoreLayer) :
+            this(id, LayerType.CORE, toClone.level, toClone.name, toClone.note, toClone.revealNetwork)
+
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {
             "REVEAL_NETWORK" -> revealNetwork = value.toBoolean()

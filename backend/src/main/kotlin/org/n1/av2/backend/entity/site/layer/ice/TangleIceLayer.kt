@@ -17,4 +17,7 @@ class TangleIceLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.TANGLE_ICE, level, defaultName, "", IceStrength.AVERAGE, false)
 
+    constructor(id: String, toClone: TangleIceLayer) :
+            this(id, LayerType.TANGLE_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked)
+
 }

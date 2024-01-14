@@ -40,6 +40,11 @@ class TarIceLayer(
                 defaultTimeHackerGroup(IceStrength.AVERAGE, 10, 5),
             )
 
+    constructor(id: String, toClone: TarIceLayer) :
+            this(
+                id, LayerType.TAR_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked,
+                toClone.totalUnits, toClone.time1Level1Hacker, toClone.time1Level5Hacker, toClone.time5Level10Hackers)
+
     override fun updateInternal(key: String, value: String): Boolean {
         if (key == STRENGTH.name) {
             super.updateInternal(key, value)

@@ -15,7 +15,7 @@ class SiteValidationService(
     val siteEditorStateEntityService: SiteEditorStateEntityService
 ) {
 
-    fun validate(siteId: String) {
+    fun validate(siteId: String): List<SiteStateMessage> {
         val messages = ArrayList<SiteStateMessage>()
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         val nodes = nodeEntityService.getAll(siteId)
@@ -24,6 +24,7 @@ class SiteValidationService(
         validateNodes(siteProperties, nodes, messages)
 
         processValidationMessages(messages, siteId)
+        return messages
     }
 
     private fun validateSiteProperties(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {

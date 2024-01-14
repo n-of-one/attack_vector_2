@@ -25,6 +25,9 @@ class TripwireLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00", null)
 
+    constructor(id: String, toClone: TripwireLayer) :
+            this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown, toClone.coreLayerId)
+
     @Suppress("UNUSED_PARAMETER")
     private fun validateCountdown(siteRep: SiteRep) {
         this.countdown.toDuration("countdown")

@@ -11,6 +11,7 @@ import {sendAddConnection, sendMoveNode} from "../../../server/EditorServerClien
 import {SELECT_NODE} from "../../../reducer/CurrentNodeIdReducer"
 import {DisplayCollection} from "../../../../common/canvas/display/util/DisplayCollection";
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus";
+import {saveTextInput} from "../../../../common/component/TextSaveInput";
 
 export interface LoadSiteData {
     id: string,
@@ -164,6 +165,8 @@ class EditorCanvas {
     }
 
     canvasObjectSelected(event: IEvent<MouseEvent>) {
+        console.log("canvasObjectSelected")
+        saveTextInput() // save any text input when clicking the an object
         let selectedObjects = event.selected
 
         if (!selectedObjects || selectedObjects.length === 0) {

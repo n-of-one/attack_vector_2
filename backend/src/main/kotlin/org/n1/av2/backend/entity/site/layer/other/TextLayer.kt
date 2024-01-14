@@ -17,6 +17,10 @@ class TextLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.TEXT, level, defaultName, "", "No data of value found.")
 
+    constructor(id: String, toClone: TextLayer) :
+            this(id, LayerType.TEXT, toClone.level, toClone.name, toClone.note, toClone.text)
+
+
     private fun validateText(siteRep: SiteRep) {
         if (this.text.isEmpty()) throw SiteValidationException("Hacked text cannot be empty.")
     }

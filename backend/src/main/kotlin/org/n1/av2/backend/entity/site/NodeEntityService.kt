@@ -45,12 +45,16 @@ class NodeEntityService(
     }
 
     private fun createOsLayer(nodeId: String): Layer {
-        val id = "${nodeId}-layer-0000"
         val name = themeService.getDefaultName(LayerType.OS)
-        return OsLayer(id, name)
+        val layerId = createOsLayerId(nodeId)
+        return OsLayer(layerId, name)
     }
 
-    private fun createLayerId(node: Node): String {
+    fun createOsLayerId(nodeId: String): String {
+        return "${nodeId}-layer-0000"
+    }
+
+    fun createLayerId(node: Node): String {
         val findExisting = fun(candidate: String): String? {
             return node.layers.find{ it.id == candidate }?.id
         }

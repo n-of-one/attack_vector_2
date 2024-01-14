@@ -17,7 +17,8 @@ export enum LarpType {
 
 export class Larp {
 
-    type: LarpType = this.determineLarpType()
+    // type: LarpType = this.determineLarpType()
+    type: LarpType = LarpType.GENERIC
 
     name: string
     userEditSkills : boolean

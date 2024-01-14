@@ -20,6 +20,9 @@ class PasswordIceLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.PASSWORD_ICE, level, defaultName, "", IceStrength.AVERAGE, false,"", "")
 
+    constructor(id: String, toClone: PasswordIceLayer) :
+            this(id, LayerType.PASSWORD_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked, toClone.password, toClone.hint)
+
     @Suppress("UNUSED_PARAMETER")
     private fun validatePassword(siteRep: SiteRep) {
         if (this.password.isEmpty()) throw SiteValidationException("Password cannot be empty.")

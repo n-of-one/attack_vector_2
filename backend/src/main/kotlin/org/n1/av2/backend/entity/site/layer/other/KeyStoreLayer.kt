@@ -19,6 +19,9 @@ class KeyStoreLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.KEYSTORE, level, defaultName, "", null )
 
+    constructor(id: String, toClone: KeyStoreLayer) :
+            this(id, LayerType.KEYSTORE, toClone.level, toClone.name, toClone.note, toClone.iceLayerId)
+
     private fun validateText(siteRep: SiteRep) {
         if (this.iceLayerId == null) throw SiteValidationException("Choose ICE that keystore provides password for.");
          findLayerById(this.iceLayerId!!, siteRep.nodes) ?: throw SiteValidationException("Choose ICE that keystore provides password for.")

@@ -17,4 +17,7 @@ class WordSearchIceLayer(
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.WORD_SEARCH_ICE, level, defaultName, "", IceStrength.AVERAGE, false)
 
+    constructor(id: String, toClone: WordSearchIceLayer) :
+            this(id, LayerType.WORD_SEARCH_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked)
+
 }
