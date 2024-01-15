@@ -6,7 +6,7 @@
 #
 # Then run this script:
 #
-# cd attack_vector_2/backend/server/install
+# cd attack_vector_2
 # chmod 770 install.sh
 # ./install.sh
 #
@@ -39,10 +39,16 @@ chmod 770 upgrade.sh
 # Allow Java to bind to port 80
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/lib/jvm/java-17-openjdk-arm64/bin/java
 
-# Compile
-cd backend
-mvn package -DskipTests
+# prepare regular scripts for running the application
+cp install/setenv.sh ~
+cp install/run.sh ~
+cp install/upgrade.sh ~
 
-# Run
 cd ..
-./run.sh
+chmod 770 setenv.sh
+chmod 770 run.sh
+chmod 770 upgrade.sh
+
+echo "Installation complete. To run the application, execute the following command:"
+echo
+echo "./upgrade.sh"
