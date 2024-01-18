@@ -7,6 +7,6 @@ interface Props {
 }
 
 export const WebsiteImage = ({path, alt = "", width=""}: Props) => {
-    return <a href={path}><img src={path} className="img-fluid" alt={alt} width={width}/></a>
+    return<img src={path} className="img-fluid" alt={alt} width={width}/>
+    // return <a href={path}><img src={path} className="img-fluid" alt={alt} width={width}/></a>
 }
-

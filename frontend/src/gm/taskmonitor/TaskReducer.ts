@@ -15,7 +15,6 @@ const defaultState: Array<Task> = []
 
 
 export const tasksReducer = (state: Array<Task> = defaultState, action: any) => {
-    console.log("processing event: " + action.type)
     switch (action.type) {
         case SERVER_TASKS:
             return action.data

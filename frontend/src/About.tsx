@@ -9,9 +9,7 @@ export const Link = ({href}: { href: string }) => {
 
 export const About = () => {
     return (<div className="container" data-bs-theme="dark">
-        <Banner/>
-        <br/>
-        <br/>
+        <Banner image={true}/>
         <div className="row text">
             <div className="col-12">
                 <h3>About</h3>
@@ -21,13 +19,11 @@ export const About = () => {
                 <p>
                     The game aims to do the following:
                 </p>
-                <p>
-                    <ul>
-                        <li>Make players to feel like hackers, even if they know nothing about real-world hacking</li>
-                        <li>Stimulate cooperative play between hackers</li>
-                        <li>Provide ways to interact with the non-computer world</li>
-                    </ul>
-                </p>
+                <ul>
+                    <li>Make players to feel like hackers, even if they know nothing about real-world hacking</li>
+                    <li>Stimulate cooperative play between hackers</li>
+                    <li>Provide ways to interact with the non-computer world</li>
+                </ul>
                 <p>
                     The setting is a non-descript science fiction setting. Hacker character hack 'sites' that are protected by 'ICE'. The hacking takes the form of
                     solving
@@ -58,29 +54,26 @@ export const About = () => {
                 <p>
                     Attack Vector 2 is built using many other open source projects, and public domain images.<br/>
                     <br/>
-                    Concepts<br/>
-                    <br/>
-                    <ul>
-                        <li>Untangle - Simon Tatham's - <Link href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/untangle.html"/></li>
-                        <li>Netwalk - Simon Tatham's - <Link href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/net.html"/></li>
-                    </ul>
-                    Graphics<br/>
-                    <br/>
-                    <ul>
-                        <li>Background Untangle ICE - Image by Pete Linforth from Pixabay - <Link href="https://pixabay.com/users/thedigitalartist-202249/"/></li>
-                        <li>Background Sanrachana (Netwalk) - Image by Piro from Pixabay - <Link href="https://pixabay.com/users/piro4d-2707530/"/></li>
-                        <li>In game icons - My site my way & Icons etc. - links no longer work: http://icons.mysitemyway.com & http://iconsetc.com</li>
-                        <li>Artwork for Netwalk ICE game - anonymous</li>
-                        <li>Glyphicons Halflings from Bootstrap - Jan Kovařík - <License name="MIT" href="https://github.com/twbs/bootstrap/blob/main/LICENSE"/></li>
-                        <li>Tabler Icons - ICONFINDER - <Link href="https://www.iconfinder.com/search/icons?family=tabler"/> <License name="CC BY 4.0"
-                                                                                                                                      href="https://creativecommons.org/licenses/by/4.0/"/>
-                        </li>
-                        <li>Photo Attack Vector on Frontier 17 - Hephaestus Aperture <Link href="https://www.hephaestus-aperture.com"/></li>
-                    </ul>
-                    <br/>
-                    Javascript libraries<br/>
-                    <br/>
-                    <pre>
+                    </p>
+                <h6>Concepts</h6>
+                <ul>
+                    <li>Untangle - Simon Tatham's - <Link href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/untangle.html"/></li>
+                    <li>Netwalk - Simon Tatham's - <Link href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/net.html"/></li>
+                </ul>
+                <h6> Graphics </h6>
+                <ul>
+                    <li>Background Untangle ICE - Image by Pete Linforth from Pixabay - <Link href="https://pixabay.com/users/thedigitalartist-202249/"/></li>
+                    <li>Background Sanrachana (Netwalk) - Image by Piro from Pixabay - <Link href="https://pixabay.com/users/piro4d-2707530/"/></li>
+                    <li>In game icons - My site my way & Icons etc. - links no longer work: http://icons.mysitemyway.com & http://iconsetc.com</li>
+                    <li>Artwork for Netwalk ICE game - anonymous</li>
+                    <li>Glyphicons Halflings from Bootstrap - Jan Kovařík - <License name="MIT" href="https://github.com/twbs/bootstrap/blob/main/LICENSE"/></li>
+                    <li>Tabler Icons - ICONFINDER - <Link href="https://www.iconfinder.com/search/icons?family=tabler"/> <License name="CC BY 4.0"
+                                                                                                                                  href="https://creativecommons.org/licenses/by/4.0/"/>
+                    </li>
+                    <li>Photo Attack Vector on Frontier 17 - Hephaestus Aperture <Link href="https://www.hephaestus-aperture.com"/></li>
+                </ul>
+                <h6> Javascript libraries </h6>
+                <pre>
 bootstrap                                          MIT           https://github.com/twbs/bootstrap.git                       The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)<br/>
 fabric                                             MIT           https://github.com/fabricjs/fabric.js.git                   Juriy Zaytsev &lt;kangax@gmail.com&gt;<br/>
 js-cookie                                          MIT           https://github.com/js-cookie/js-cookie.git                  Klaus Hartl<br/>
@@ -101,20 +94,15 @@ webstomp-client                                    Apache-2.0    https://github.
 @types/...                                         MIT           https://github.com/DefinitelyTyped/DefinitelyTyped.git      various<br/>
 react-scripts                                      MIT           https://github.com/facebook/create-react-app.git            Facebook<br/>
 redux-devtools-extension                           MIT           https://github.com/zalmoxisus/redux-devtools-extension.git  Mihail Diordiev &lt;zalmoxisus@gmail.com&gt; (https://github.com/zalmoxisus)<br/>
-                    </pre>
-                    <br/>
-                    Java open source licenses<br/>
-                    <br/>
-                    <pre>
+                </pre>
+                <h6>Java libraries</h6>
+                <pre>
 kotlin                                             Apache-2.0    https://github.com/JetBrains/kotlin                          Jetbrains<br/>
 springframework                                    Apache-2.0    https://github.com/spring-projects                           VMware<br/>
 logback                                            LGPL 2.1      https://github.com/qos-ch/logback                            QOS.ch Sarl<br/>
 io.jsonwebtoken                                    Apache-2.0    https://github.com/jwtk/jjwt                                 Les Hazlewood<br/>
 kotlin-logging-jvm                                 Apache-2.0    https://github.com/oshai/kotlin-logging                      <br/>
-                    </pre>
-                    <br/>
-                    <br/>
-                </p>
+                </pre>
             </div>
         </div>
     </div>)
