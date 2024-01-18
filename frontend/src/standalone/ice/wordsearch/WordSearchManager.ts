@@ -9,7 +9,7 @@ import {WordSearchRootState} from "./reducer/WordSearchRootReducer";
 
 class WordSearchManager extends GenericIceManager {
 
-    quickPlaying = true
+    quickPlaying = false
 
     enter(iceId: string, data: ServerEnterIceWordSearch) {
         if (data.hacked) {

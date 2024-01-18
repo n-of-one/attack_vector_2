@@ -71,7 +71,7 @@ export const GoogleAuth = () => {
 
     if (state === LoginState.INACTIVE) {
         return (<div className="container" data-bs-theme="dark">
-            <Banner/>
+            <Banner hiddenAdminLogin={true}/>
             <div className="row text">
                 <div className="d-flex justify-content-center">
                     <br/>
@@ -89,7 +89,7 @@ export const GoogleAuth = () => {
 
     if (state === LoginState.ACTIVE) {
         return (<div className="container" data-bs-theme="dark">
-            <Banner/>
+            <Banner hiddenAdminLogin={true}/>
             <div className="row text">
                 <div className="d-flex justify-content-center">
                     <br/>
@@ -113,7 +113,7 @@ export const GoogleAuth = () => {
 
     // state === LoginState.ERROR
     return (<div className="container" data-bs-theme="dark">
-        <Banner/>
+        <Banner hiddenAdminLogin={true}/>
         <div className="row text">
             <div className="d-flex justify-content-center">
                 <h5>There was a problem logging in</h5>

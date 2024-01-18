@@ -31,11 +31,6 @@ mongosh -file install/createUser.js
 sudo apt install -y openjdk-17-jre-headless
 sudo apt install -y maven
 
-# Make server scripts executable
-chmod 770 run.sh
-chmod 770 setenv.sh
-chmod 770 upgrade.sh
-
 # Allow Java to bind to port 80
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/lib/jvm/java-17-openjdk-arm64/bin/java
 
@@ -43,12 +38,25 @@ sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/lib/jvm/java-17-openjdk-arm64/bin/jav
 cp install/setenv.sh ~
 cp install/run.sh ~
 cp install/upgrade.sh ~
-
 cd ..
 chmod 770 setenv.sh
 chmod 770 run.sh
 chmod 770 upgrade.sh
 
+
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+
 echo "Installation complete. To run the application, execute the following command:"
 echo
 echo "./upgrade.sh"
+echo
+echo "or create the certificate using: sudo certbot certonly --standalone -d ld50.nl --register-unsafely-without-email"
+echo
+echo
+
+# cd /etc/letsencrypt/live/ld50.nl
+# openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12  -name tomcat -CAfile chain.pem -caname root
+# move keystore.p12 to src/main/resources
+

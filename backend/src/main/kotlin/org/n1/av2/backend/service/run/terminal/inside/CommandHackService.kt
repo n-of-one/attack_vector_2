@@ -45,8 +45,8 @@ class CommandHackService(
         process(runId, tokens, state, "hack", ::handleQuickHack)
     }
 
-    fun processConnectCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        process(runId, tokens, state, "connect ", ::handleConnect)
+    fun processOpenCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
+        process(runId, tokens, state, "open ", ::handleConnect)
     }
 
     private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {

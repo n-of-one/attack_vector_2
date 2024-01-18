@@ -109,6 +109,10 @@ input {
     color: #777; !important;
 }
 
+.muted {
+    color: #ccc; !important;
+}
+
 .button-text {
     color: #fff;
     font-size: 12px;
@@ -330,4 +334,8 @@ a.textLink {
 
 .saveIcon {
     color: black;
+}
+
+li.lvl2 {
+    margin-left: 16px;
 }

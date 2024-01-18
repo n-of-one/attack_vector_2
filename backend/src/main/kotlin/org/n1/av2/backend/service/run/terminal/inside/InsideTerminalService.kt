@@ -41,7 +41,7 @@ class InsideTerminalService(
             "hack" -> commandHackService.processHackCommand(runId, tokens, state)
             "qhack" -> commandHackService.processQuickHack(runId, tokens, state)
             "view" -> commandViewService.process(runId, state)
-            "connect" -> commandHackService.processConnectCommand(runId, tokens, state)
+            "open" -> commandHackService.processOpenCommand(runId, tokens, state)
             "scan" -> commandScanService.processScanFromInside(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
@@ -54,7 +54,7 @@ class InsideTerminalService(
                 "Command options:",
                 " [u]move[/] [ok]<network id>[/]     -- for example: [u]mv[ok] 01",
                 " [u]view",
-                " [u]connect[/] [primary]<layer>[/]          -- for example: [u]connect[primary] 1",
+                " [u]open[/] [primary]<layer>[/]          -- for example: [u]open[primary] 1",
                 " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 1",
                 " [u]scan[/]",
                 " [u]dc",

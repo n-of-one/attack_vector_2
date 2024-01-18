@@ -9,20 +9,21 @@ export const Privacy = () => {
             <div className="col-12">
                 <h1>Privacy policy</h1>
                 <p>
-                    Attack Vector 2 is very privacy conscious and does not inherently collect or store any personal information.
+                    Attack Vector 2 is very privacy conscious and does not inherently collect or store any personal information. It does not use cookies to track users,
+                    it does not store any personal information other than the information stored in there by the game masters.
                 </p>
                 <p>
-                    It uses external identity providers for logon. Ideally it is tied to the larp's website, but it can also use Google.
+                    It uses external identity providers for logon. Ideally it is tied to the event's website, but it can also use Google.
                 </p>
                 <h5>Login with larp website</h5>
                 <p>
-                    When using the larp website, the larp's identifier for your account is stored. Additional information on your character may be retrieved, but this
-                    does not include personal information.
+                    When using the website of the organizers, the identifier for your account is stored. Additional information on your character may be retrieved,
+                    depending on the event. But this does not include personal information.
                 </p>
                 <h5>Login with Google</h5>
                 <p>
-                    When using Google login, Google returns a unique account id, along with the user's email, name and profile picture. Only the account id is used and
-                    this is stored as a one-way hash. The email, name and profile picture are not stored or used anywhere.
+                    When using Google login, Google returns a unique account id, along with the user's email, name and profile picture. The account id and email address
+                    are used to create a unique user-id via a secure one-way hash. The name and profile picture are not stored or used anywhere.
                 </p>
                 <h5>Account names</h5>
                 <p>

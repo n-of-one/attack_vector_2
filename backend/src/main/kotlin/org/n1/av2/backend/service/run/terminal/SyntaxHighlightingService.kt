@@ -55,7 +55,7 @@ class SyntaxHighlightingService(
         syntaxInside["move"] = Syntax("u", "ok")
         syntaxInside["view"] = Syntax("u")
         syntaxInside["hack"] = Syntax("u", "primary")
-        syntaxInside["connect"] = Syntax("u", "primary")
+        syntaxInside["open"] = Syntax("u", "primary")
         syntaxInside["scan"] = Syntax("u")
         syntaxInside["dc"] = Syntax("u")
         syntaxInside["/share"] = Syntax("u warn", "info")

@@ -24,7 +24,7 @@ export const NodeScanInfoLayers = ({node, allLayersRevealed}: { node: NodeI, all
     for (let i = 0; i < layers.length; i++) {
         const layer = layers[i]
         if (i === protectedLayer) {
-            rendered.push(<span key="_1"><br/>--- Layers above are protected by ice --- <br/><br/></span>)
+            rendered.push(<span key="_1"><br/>--- Layers above are protected by ICE --- <br/><br/></span>)
         }
         const layerRevealed = (i >= protectedLayer) || allLayersRevealed
         rendered.push(<LayerInfo layer={layer} key={i} revealed={layerRevealed}/>)

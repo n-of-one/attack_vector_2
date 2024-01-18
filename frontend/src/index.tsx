@@ -12,6 +12,8 @@ import {LoggedOut} from "./login/LoggedOut";
 import {About} from "./About";
 import {Privacy} from "./Privacy";
 import {AdminLogin} from "./login/AdminLogin";
+import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
+import {WebsiteRouting} from "./website/WebsiteRouting";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -68,6 +70,8 @@ root.render(
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/edit/:siteId" element={<Editor/>}/>
                 <Route path="/x/:encodedParam" element={<Standalone/>}/>
+                <Route path="/website" element={<WebsiteLandingPage/>}/>
+                <Route path="/website/:path" element={<WebsiteRouting/>}/>
                 <Route path="/" element={<ReRoute/>}/>
                 <Route path="*" element={<ReRoute/>}/>
             </Routes>

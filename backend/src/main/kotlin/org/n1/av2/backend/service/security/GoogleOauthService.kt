@@ -20,14 +20,14 @@ class GoogleOauthService(
     private val jwtParserByKeyId: MutableMap<String, JwtParser> = HashMap()
 
     fun parse(jwt: String): String {
-        val sub = validateJwt(jwt)
-        val googleId = "google-id:$sub"
-        val hashBytes = MessageDigest.getInstance("SHA-256").digest(googleId.toByteArray())
+        val (sub, email) = validateJwt(jwt)
+        val googleId = "google-id:$sub:$email:${serverConfig.googleClientId}"
+        val hashBytes = MessageDigest.getInstance("SHA-512").digest(googleId.toByteArray())
         val externalId = Base64.getEncoder().encodeToString(hashBytes)
         return externalId
     }
 
-    private fun validateJwt(jwt: String): String {
+    private fun validateJwt(jwt: String): Pair<String, String> {
         val headerString = jwt.split(".")[0]
         val headerNode = parseToJson(headerString)
         val keyId = headerNode.get("kid").asText()
@@ -35,9 +35,12 @@ class GoogleOauthService(
         val claims = jwtParser.parseClaimsJws(jwt).body
 
         if (!claims.containsKey("sub")) error("No sub field in JWT, cannot login")
+        if (!claims.containsKey("email")) error("No email field in JWT, cannot login")
         val aud = claims.get("aud") as String
         if (aud != serverConfig.googleClientId) error("Google oauth jwt not intended for AV. aud=$aud")
-        return claims.get("sub") as String
+        val sub = claims.get("sub") as String
+        val email = claims.get("email") as String
+        return Pair(sub, email)
     }
 
     private fun parseToJson(base64Encoded: String): JsonNode {
