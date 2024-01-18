@@ -36,6 +36,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             .authorizeHttpRequests()
 
             // HTML routes
+            .requestMatchers("/website/**").permitAll()
             .requestMatchers("/x/**").permitAll()
             .requestMatchers("/widget/**").permitAll()
             .requestMatchers("/app/**").permitAll()

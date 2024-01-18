@@ -113,15 +113,6 @@ input {
     color: #ccc; !important;
 }
 
-
-.softLink {
-    color: #b47193; !important;
-    cursor: pointer;
-    text-decoration: none;
-
-}
-
-
 .button-text {
     color: #fff;
     font-size: 12px;

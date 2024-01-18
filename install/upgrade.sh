@@ -1,4 +1,5 @@
 #!/bin/sh
+killall java
 cd attack_vector_2
 git pull
 cd backend

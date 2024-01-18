@@ -53,7 +53,7 @@ export const WebsiteGms = () => {
                         <br/>
                         <WebsiteImage path="/img/website/gm/status-light-green.png" alt="A picture of a switch"/><br/>
                         <br/>
-                        The words on a switch & status light can be changed, so it can also be used disarm a bomb, or turn off the life-support of a patient, etc.
+                        The words on a switch & status light can be changed, so it can also be used disarm a trap, or turn off the life-support of a patient, etc.
 
                     </p>
                 </div>
