@@ -25,7 +25,7 @@ export const tasksReducer = (state: Array<Task> = defaultState, action: any) => 
     }
 }
 
-let processId: NodeJS.Timer | null = null
+let processId: NodeJS.Timeout | null = null
 
 const navigatePage = (page: string) => {
     if (page === TASKS) {

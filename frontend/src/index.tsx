@@ -69,7 +69,8 @@ root.render(
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/edit/:siteId" element={<Editor/>}/>
-                <Route path="/x/:encodedParam" element={<Standalone/>}/>
+                <Route path="/x/:encodedParam" element={<Standalone/>}/> { /*path that require login and will redirect to login if not logged in */ }
+                <Route path="/o/:encodedParam" element={<Standalone/>}/> { /* path that does not require login*/ }
                 <Route path="/website" element={<WebsiteLandingPage/>}/>
                 <Route path="/website/:path" element={<WebsiteRouting/>}/>
                 <Route path="/" element={<ReRoute/>}/>

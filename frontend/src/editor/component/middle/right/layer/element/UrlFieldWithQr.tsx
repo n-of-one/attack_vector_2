@@ -1,7 +1,7 @@
 import toast, {Toast} from "react-hot-toast";
 import QRCode from "react-qr-code";
 import React from "react";
-import {avEncodedUrl} from "../../../../../../common/util/Util";
+import {avEncodedUrl} from "../../../../../../common/util/PathEncodeUtils";
 
 type UrlType = "ice" | "app" | "widget"
 
@@ -10,13 +10,14 @@ interface Props {
     type: UrlType,
     subType?: string,
     layerId: string,
-    description: string
+    description: string,
+    requireLogin?: boolean
 }
 
-export const UrlFieldWithQr = ({name, layerId, type, subType, description}: Props) => {
+export const UrlFieldWithQr = ({name, layerId, type, subType, description, requireLogin = true}: Props) => {
 
     const path = createPath(layerId, type, subType)
-    const url = avEncodedUrl(path)
+    const url = avEncodedUrl(path, requireLogin)
 
     const showQR = () => {
         toast((t: Toast) => {

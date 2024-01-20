@@ -40,7 +40,7 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
 
             <UrlFieldWithQr name="Switch" type="app" subType="switch" layerId={statusLight.id} description="App for changing status"/>
 
-            <UrlFieldWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status"/>
+            <UrlFieldWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status" requireLogin={false}/>
 
         </LayerPanel>
     )

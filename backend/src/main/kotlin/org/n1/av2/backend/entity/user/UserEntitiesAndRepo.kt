@@ -45,3 +45,12 @@ val SYSTEM_USER = UserEntity(
     type = UserType.NOT_LOGGED_IN,
     hacker = null
 )
+
+val NOT_LOGGED_IN_USER = UserEntity(
+    id = "user-not-logged-in",
+    externalId = "user-not-logged-in",
+    email = "no_email@example.com",
+    name = "notLoggedIn",
+    type = UserType.NOT_LOGGED_IN,
+    hacker = null
+)

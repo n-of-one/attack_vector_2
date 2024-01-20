@@ -28,11 +28,11 @@ sleep 2
 mongosh -file install/createUser.js
 
 # Install Java & Maven
-sudo apt install -y openjdk-17-jre-headless
+sudo apt install -y openjdk-21-jre-headless
 sudo apt install -y maven
 
 # Allow Java to bind to port 80
-sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/lib/jvm/java-17-openjdk-arm64/bin/java
+sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/lib/jvm/java-21-openjdk-arm64/bin/java
 
 # prepare regular scripts for running the application
 cp install/setenv.sh ~
@@ -52,11 +52,9 @@ echo "Installation complete. To run the application, execute the following comma
 echo
 echo "./upgrade.sh"
 echo
-echo "or create the certificate using: sudo certbot certonly --standalone -d ld50.nl --register-unsafely-without-email"
+echo "or create the certificate using:"
+echo "sudo certbot certonly --standalone -d attackvector.nl --register-unsafely-without-email"
 echo
-echo
+echo "sudo openssl pkcs12 -export -in /etc/letsencrypt/live/attackvector.nl/fullchain.pem -inkey /etc/letsencrypt/live/attackvector.nl/privkey.pem -out ~ubuntu/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/attackvector.nl/chain.pem -caname root"
 
-# cd /etc/letsencrypt/live/ld50.nl
-# openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12  -name tomcat -CAfile chain.pem -caname root
-# move keystore.p12 to src/main/resources
 

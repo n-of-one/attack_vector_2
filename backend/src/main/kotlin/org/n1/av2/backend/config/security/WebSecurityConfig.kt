@@ -1,103 +1,82 @@
 package org.n1.av2.backend.config.security
 
-import org.n1.av2.backend.entity.user.ROLE_GM
-import org.n1.av2.backend.entity.user.ROLE_SITE_MANAGER
-import org.n1.av2.backend.entity.user.ROLE_USER
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.n1.av2.backend.entity.user.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
+private val OPEN_PATHS = listOf(
+    "/", "/index.html",
+    "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
+    "/about", "/privacy", "/website/**",
+    "/loggedOut", "/login", "/adminLogin", "/logout", "/localLogout",
 
-/**
- * Security config for the application
- */
+    "/o/**", // for widgets and other apps that don't require any authentication
+    "/openapi/**", // open api calls
+
+    "/ws_unrestricted", // websocket path for widgets and other apps that don't require any authentication
+
+    // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
+    // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
+    // the handshake handler. See: StompConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
+    "/ws_hacker", "/ws_networked_app"
+)
+
+private val HACKER_PATHS = listOf(
+    "/hacker/**",
+    "/x/**", // for widgets and other apps that require hacker authentication
+)
+
+private val GM_PATHS = listOf("/gm/**", "/edit/**")
+private val USER_PATHS = listOf("/api/**")
+
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
-
 
     @Bean
     @Throws(Exception::class)
     fun configure(http: HttpSecurity): SecurityFilterChain {
 
-        http
-//                .exceptionHandling()
-//                .authenticationEntryPoint(unauthorizedHandler)
-//            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeHttpRequests()
+        http.authorizeHttpRequests { requests ->
+            OPEN_PATHS.forEach { path -> requests.requestMatchers(path).permitAll() }
+            HACKER_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_HACKER.authority) }
+            GM_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_GM.authority) }
+            USER_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_USER.authority) }
+        }
+        http.csrf { it.disable() }
+        http.headers { headers -> headers.frameOptions { it.disable() } } // for IMD.html
+        http.exceptionHandling { customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler()) }
 
-            // HTML routes
-            .requestMatchers("/website/**").permitAll()
-            .requestMatchers("/x/**").permitAll()
-            .requestMatchers("/widget/**").permitAll()
-            .requestMatchers("/app/**").permitAll()
-            .requestMatchers("/hacker/**").permitAll()
-            .requestMatchers("/ice/**").permitAll()
-            .requestMatchers("/manual/**").permitAll()
-            .requestMatchers("/openapi/**").permitAll()
-            .requestMatchers("/", "/css/**", "/img/**", "/resources/**", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json").permitAll()
-            .requestMatchers("/localLogout", "/loggedOut", "/login", "/adminLogin").permitAll()
-            .requestMatchers("/about", "/privacy").permitAll()
-            .requestMatchers("/edit/**").hasAuthority(ROLE_SITE_MANAGER.authority)
-            .requestMatchers("/gm/**").hasAuthority(ROLE_GM.authority)
-
-            // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
-            // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
-            // the handshake handler. See: StompConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
-            .requestMatchers("/ws_hacker").permitAll() // .hasAuthority(ROLE_USER.authority)
-            .requestMatchers("/ws_networked_app").permitAll() // .hasAuthority(ROLE_USER.authority)
-
-            // This one really is permitAll()
-            .requestMatchers("/ws_unrestricted").permitAll()
-
-            .requestMatchers("/login/*", "/api/login", "/signUp", "/logout").permitAll()
-            .requestMatchers("/api/**").hasAuthority(ROLE_USER.authority)
-
-            .and()
-            .csrf()
-            .disable()
-            .headers()
-            .frameOptions()
-            .disable()
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
 
-//    @Throws(Exception::class)
-//    public override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder?) {
-//        authenticationManagerBuilder!!
-//                .userDetailsService(customUserDetailsService)
-//                .passwordEncoder(passwordEncoder())
-//    }
-
-//    @Bean(BeanIds.AUTHENTICATION_MANAGER)
-//    @Throws(Exception::class)
-//    override fun authenticationManagerBean(): AuthenticationManager {
-//        return super.authenticationManagerBean()
-//    }
-//
-//    @Bean
-//    fun passwordEncoder(): PasswordEncoder {
-//        return BCryptPasswordEncoder()
-//    }
-
-
+    @Bean
+    fun customAccessDeniedHandler(): AccessDeniedHandler {
+        return AccessDeniedHandler { request: HttpServletRequest, response: HttpServletResponse, _: AccessDeniedException? ->
+            val path = request.requestURI
+            val redirectUrl = request.contextPath + "/login?next=$path"
+            response.sendRedirect(redirectUrl)
+        }
+    }
 }
 
 @Configuration
 class WebConfiguration : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost", "http://localhost:3000", "https://av.eosfrontier.space", "https://eosfrontier.space").allowedMethods("*").allowCredentials(true)
+        // disable CORS for local development
+        registry.addMapping("/**").allowedOrigins("http://localhost", "http://localhost:3000", "https://av.eosfrontier.space", "https://eosfrontier.space")
+            .allowedMethods("*").allowCredentials(true)
     }
 }
-

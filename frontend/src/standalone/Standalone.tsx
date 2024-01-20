@@ -1,5 +1,4 @@
 import {useParams} from "react-router-dom";
-import {decodePath} from "../common/util/Util";
 import {RequiresRole} from "../common/user/RequiresRole";
 import {SiteHackIce} from "./ice/SiteHackIce";
 import {ExternalHackIce} from "./ice/ExternalHackIce";
@@ -7,6 +6,7 @@ import {AppSelector} from "./app/AppSelector";
 import {TopLevelError} from "../common/component/TopLevelError";
 import React from "react";
 import {WidgetSelector} from "./widget/WidgetSelector";
+import {decodePath} from "../common/util/PathEncodeUtils";
 
 
 export const Standalone = () => {

@@ -13,6 +13,8 @@ class LoginController(
     private val loginService: LoginService,
 ) {
 
+    private val logger = mu.KotlinLogging.logger {}
+
     class LoginInput(val name: String, val password: String)
     class LoginResponse(val success: Boolean, val message: String? = null)
 
@@ -42,6 +44,7 @@ class LoginController(
 
             return LoginResponse(true)
         } catch (exception: Exception) {
+            logger.error("Google login failed", exception)
             return LoginResponse(false, exception.message)
         }
     }

@@ -45,12 +45,12 @@ class EditorService(
     }
 
     fun deleteConnections(siteId: String, nodeId: String) {
-        deleteConnectionsInternal(siteId, nodeId)
+        deleteConnectionsInternal(nodeId)
 
         sendSiteFull(siteId)
     }
 
-    private fun deleteConnectionsInternal(siteId: String, nodeId: String) {
+    private fun deleteConnectionsInternal(nodeId: String) {
         val connections = connectionEntityService.findByNodeId(nodeId)
         connectionEntityService.deleteAll(connections)
     }
@@ -97,7 +97,7 @@ class EditorService(
     }
 
     fun deleteNode(siteId: String, nodeId: String) {
-        deleteConnectionsInternal(siteId, nodeId)
+        deleteConnectionsInternal(nodeId)
         nodeEntityService.deleteNode(nodeId)
 
         sendSiteFull(siteId)

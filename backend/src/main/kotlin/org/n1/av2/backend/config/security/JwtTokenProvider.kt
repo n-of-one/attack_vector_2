@@ -7,7 +7,6 @@ import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Keys
 import org.n1.av2.backend.entity.user.UserEntity
 import org.springframework.stereotype.Component
-import java.security.Key
 import java.security.SignatureException
 import java.util.*
 
@@ -19,9 +18,8 @@ class JwtTokenProvider {
     private val logger = mu.KotlinLogging.logger {}
 
     private val jwtSecret: String = "SuperSecretKeyForHS512NeedsToBeLongEnoughToContainAtLeast512BitsOfEntropySoThisShouldDoIt"
-    private val key: Key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
-    private val JwtParser = Jwts.parserBuilder().setSigningKey(key).build()
-
+    private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+    private val jwtParser = Jwts.parser().verifyWith(key).build()
 
     private val jwtExpirationInMs: Int = 1000 * expirationInS
 
@@ -31,23 +29,23 @@ class JwtTokenProvider {
         val expiryDate = Date(now.time + jwtExpirationInMs)
 
         return Jwts.builder()
-                .setSubject(userEntity.id)
-                .setIssuedAt(Date())
-                .setExpiration(expiryDate)
+                .subject(userEntity.id)
+                .issuedAt(Date())
+                .expiration(expiryDate)
                 .signWith(key)
                 .compact()
     }
 
     fun getUserIdFromJWT(token: String): String {
-        val claims = JwtParser
-                .parseClaimsJws(token)
-                .body
+        val claims = jwtParser
+                .parseSignedClaims(token)
+                .payload
         return claims.subject
     }
 
     fun validateToken(authToken: String): Boolean {
         try {
-            JwtParser.parseClaimsJws(authToken)
+            jwtParser.parseSignedClaims(authToken)
             return true
         } catch (ex: SignatureException) {
             logger.error("Invalid JWT signature")
@@ -60,8 +58,6 @@ class JwtTokenProvider {
         } catch (ex: IllegalArgumentException) {
             logger.error("JWT claims string is empty.")
         }
-
         return false
     }
-
 }

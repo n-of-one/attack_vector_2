@@ -22,8 +22,6 @@ class JwtAuthenticationFilter(
     private val connectionUtil: ConnectionUtil,
 ) : OncePerRequestFilter() {
 
-    private val logger = mu.KotlinLogging.logger {}
-
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
 
@@ -43,14 +41,17 @@ class JwtAuthenticationFilter(
             logger.error("Could not set user authentication in security context: ", exception)
         }
 
+        if (authentication == null) {
+            authentication = UserPrincipal.notLoggedIn()
+            SecurityContextHolder.getContext().authentication = authentication
+        }
+
         try {
             filterChain.doFilter(request, response)
         } finally {
-            if (authentication != null) {
-                currentUserService.remove()
-                connectionUtil.recycle(authentication.connectionId)
-                SecurityContextHolder.clearContext()
-            }
+            currentUserService.remove()
+            connectionUtil.recycle(authentication.connectionId)
+            SecurityContextHolder.clearContext()
         }
     }
 
@@ -62,7 +63,6 @@ class JwtAuthenticationFilter(
         val user = userEntityService.getById(userId)
         val connectionId = connectionUtil.create()
 
-        // TODO: remove authentication, it's not used in this flow. We're just setting the user
         val type = connectionTypeFromPath(request.requestURI)
         val authentication = UserPrincipal("", connectionId, user, type)
         SecurityContextHolder.getContext().authentication = authentication
@@ -72,16 +72,13 @@ class JwtAuthenticationFilter(
     }
 
     private fun dontNeedAuthentication(request: HttpServletRequest): Boolean {
+        // don't parse JWT for static resources
         request.requestURI.let {
-            return (it.startsWith("/api/health/") ||
-                    it.startsWith("/logout") ||
-                    it.startsWith("/login") ||
-                    it.startsWith("/sso") ||
-                    it.startsWith("/css") ||
-                    it.startsWith("/img") ||
-                    it.startsWith("/static") ||
+            return (
                     it.startsWith("/resources") ||
-                    it.startsWith("/favicon.ico")
+                    it.startsWith("/img") ||
+                    it.startsWith("/css") ||
+                    it.startsWith("/static")
                     )
         }
     }

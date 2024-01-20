@@ -6,7 +6,7 @@ import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
 import {Site} from "../run/reducer/SiteReducer"
 import {HackerPresence} from "../run/reducer/HackersReducer"
 import {Timings} from "../../common/model/Ticks"
-import {avEncodedUrl, delayTicks} from "../../common/util/Util"
+import {delayTicks} from "../../common/util/Util"
 import {SERVER_FLASH_PATROLLER,} from "../run/coundown/TimersReducer"
 import {prepareToEnterRun} from "../home/HackerHome"
 import {SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer"
@@ -17,6 +17,7 @@ import {currentUser} from "../../common/user/CurrentUser";
 import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {HIDE_NODE_INFO} from "../run/reducer/InfoNodeIdReducer";
+import {avEncodedUrl} from "../../common/util/PathEncodeUtils";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"

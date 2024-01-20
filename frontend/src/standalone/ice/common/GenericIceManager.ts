@@ -2,9 +2,9 @@ import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalId
 import {Schedule} from "../../../common/util/Schedule";
 import {TERMINAL_RECEIVE} from "../../../common/terminal/TerminalReducer";
 import {Dispatch, Store} from "redux";
-import {avEncodedUrl} from "../../../common/util/Util";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {layer} from "../../StandaloneGlobals";
+import {avEncodedUrl} from "../../../common/util/PathEncodeUtils";
 
 const SERVER_REDIRECT_NEXT_LAYER = "SERVER_REDIRECT_NEXT_LAYER"
 

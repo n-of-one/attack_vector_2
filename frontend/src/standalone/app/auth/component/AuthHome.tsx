@@ -6,9 +6,9 @@ import {larp} from "../../../../common/Larp";
 import {PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
 import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_PASSWORD_CORRECT, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/AuthUiReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
-import {avEncodedUrl} from "../../../../common/util/Util";
 import {ice, layer} from "../../../StandaloneGlobals";
 import {CloseTabButton} from "../../../ice/common/CloseTabButton";
+import {avEncodedUrl} from "../../../../common/util/PathEncodeUtils";
 
 export const AuthHome = () => {
 

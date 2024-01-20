@@ -1,6 +1,7 @@
 package org.n1.av2.backend.model.iam
 
 import org.n1.av2.backend.config.websocket.ConnectionType
+import org.n1.av2.backend.entity.user.NOT_LOGGED_IN_USER
 import org.n1.av2.backend.entity.user.SYSTEM_USER
 import org.n1.av2.backend.entity.user.UserEntity
 import org.springframework.security.core.Authentication
@@ -24,6 +25,14 @@ data class UserPrincipal(
                 _name = "system",
                 connectionId = "none",
                 userEntity = SYSTEM_USER,
+                type = ConnectionType.NONE,
+            )
+        }
+        fun notLoggedIn(): UserPrincipal {
+            return UserPrincipal(
+                _name = "notLoggedIn",
+                connectionId = "none",
+                userEntity = NOT_LOGGED_IN_USER,
                 type = ConnectionType.NONE,
             )
         }

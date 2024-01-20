@@ -4,12 +4,11 @@ import {Banner} from "./Banner";
 
 
 export const redirect = () => {
-    const search = document.location.search
-    if (search.length <= 5) {
+    const next = new URLSearchParams(window.location.search).get("next")
+    if (next === null) {
         document.location.href = "/"
     } else {
-        const next = search.substring(search.indexOf('next=') + 5)
-        const allowedRedirect = /^[a-zA-Z0-9_/-\\!]{1,100}$/g
+        const allowedRedirect = /^[a-zA-Z0-9\/_\-=]{1,200}$/g // allow only a-z A-Z 0-9 / _ - =   the URL-base64 characters and /
         if (allowedRedirect.test(next)) {
             document.location.href = next
         } else {

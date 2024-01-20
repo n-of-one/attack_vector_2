@@ -2,7 +2,7 @@ package org.n1.av2.backend.service.util
 
 import jakarta.servlet.http.Cookie
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 
 class HttpClient {
 
@@ -11,7 +11,7 @@ class HttpClient {
         props: Map<String, String>,
         cookies: Array<Cookie> = emptyArray()
     ): String {
-        val url = URL(urlString)
+        val url = URI(urlString).toURL()
         val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
         try {
             conn.requestMethod = "GET"

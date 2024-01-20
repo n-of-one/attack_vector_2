@@ -6,7 +6,7 @@ import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import org.n1.av2.backend.config.ServerConfig
 import org.springframework.stereotype.Service
-import java.net.URL
+import java.net.URI
 import java.security.MessageDigest
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
@@ -32,14 +32,14 @@ class GoogleOauthService(
         val headerNode = parseToJson(headerString)
         val keyId = headerNode.get("kid").asText()
         val jwtParser = getParser(keyId)
-        val claims = jwtParser.parseClaimsJws(jwt).body
+        val claims = jwtParser.parseSignedClaims(jwt).payload
 
         if (!claims.containsKey("sub")) error("No sub field in JWT, cannot login")
         if (!claims.containsKey("email")) error("No email field in JWT, cannot login")
-        val aud = claims.get("aud") as String
+        val aud = (claims.get("aud") as Set<*>).firstOrNull() as String? ?: error("No aud field in JWT, cannot login")
         if (aud != serverConfig.googleClientId) error("Google oauth jwt not intended for AV. aud=$aud")
-        val sub = claims.get("sub") as String
-        val email = claims.get("email") as String
+        val sub = claims["sub"] as String
+        val email = claims["email"] as String
         return Pair(sub, email)
     }
 
@@ -55,23 +55,21 @@ class GoogleOauthService(
             return jwtParserByKeyId[kid]!!
         }
         loadGooglePublicKeys()
-        return jwtParserByKeyId[kid] ?: error("Google oath key not found: ${kid}")
+        return jwtParserByKeyId[kid] ?: error("Google oath key not found: $kid")
     }
 
     private fun loadGooglePublicKeys() {
         jwtParserByKeyId.clear()
-        val root = objectMapper.readTree(URL("https://www.googleapis.com/oauth2/v1/certs"))
+        val root = objectMapper.readTree(URI("https://www.googleapis.com/oauth2/v1/certs").toURL())
         val keyIds = root.fieldNames().asSequence().toList()
         keyIds.forEach { keyId ->
             val pem = root.get(keyId).asText()
             val certificateFactory = CertificateFactory.getInstance("X.509")
             val certificates = certificateFactory.generateCertificates(pem.byteInputStream())
-            val firstCertificate = certificates.firstOrNull() as? X509Certificate ?: error("no cert found for keyId: ${keyId}")
-            val jwtParser = Jwts.parserBuilder().setSigningKey(firstCertificate.publicKey).build()
+            val firstCertificate = certificates.firstOrNull() as? X509Certificate ?: error("no cert found for keyId: $keyId")
+            val jwtParser = Jwts.parser().verifyWith(firstCertificate.publicKey).build()
 
             jwtParserByKeyId[keyId] = jwtParser
         }
     }
-
-
 }

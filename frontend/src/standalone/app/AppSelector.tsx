@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 import {SwitchRoot} from "./switch/SwitchRoot";
 import {TopLevelError} from "../../common/component/TopLevelError";
 import {AuthRoot} from "./auth/AuthRoot";
-import {avEncodedUrl} from "../../common/util/Util";
+import {avEncodedUrl} from "../../common/util/PathEncodeUtils";
 
 
 interface ServerResponse {

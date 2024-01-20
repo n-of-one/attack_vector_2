@@ -1,7 +1,7 @@
 import React, {FormEvent, useState} from 'react'
 import {post} from "../common/server/RestClient"
 import {Banner} from "./Banner";
-import {TextSaveInput} from "../common/component/TextSaveInput";
+import {redirect} from "./DevLogin";
 
 export const AdminLogin = () => {
 
@@ -23,7 +23,7 @@ export const AdminLogin = () => {
             body: loginInput,
             ok: ({success, message}: { success: boolean, message: string }) => {
                 if (success) {
-                    document.location.href = "/"
+                    redirect()
                 } else {
                     setMessage(message)
                 }

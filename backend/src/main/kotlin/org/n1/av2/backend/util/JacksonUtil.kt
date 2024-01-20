@@ -12,7 +12,7 @@ fun JsonNode.asList(): List<JsonNode> {
 fun JsonNode.asMap(): Map<String, Any> {
     if (!this.isObject) error("Not an object")
     val map = this.fields().asSequence().map { (key, value) ->
-        key to "b"
+        key to value
     }.toMap()
     return map
 }
