@@ -262,7 +262,7 @@ const handlePressEnter = (terminal: TerminalState, action: TerminalSubmitActionD
 
     const newHistory = limitLines([...terminal.history, (action.command as string)])
 
-    return {...terminal, lines: lines, input: "", receiving: true, history: newHistory, historyIndex: newHistory.length}
+    return {...terminal, lines: lines, input: "", receiving: true, history: newHistory, historyIndex: newHistory.length, readOnly: true}
 }
 
 /* Only call on mutable array */

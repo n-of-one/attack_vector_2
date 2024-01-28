@@ -1,7 +1,7 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2024-01-28 17:26:53"
+    "exportTimeStamp" : "2024-01-28 17:45:21"
   },
   "siteProperties" : {
     "siteId" : "site-5dc5-4adb",
@@ -188,7 +188,7 @@
       "level" : 1,
       "name" : "Sanrachana",
       "note" : "",
-      "strength" : "VERY_WEAK",
+      "strength" : "AVERAGE",
       "hacked" : false,
       "ice" : true
     }, {
@@ -722,14 +722,14 @@
       "level" : 1,
       "name" : "Sanrachana",
       "note" : "",
-      "strength" : "AVERAGE",
+      "strength" : "VERY_WEAK",
       "hacked" : false,
       "ice" : true
     }, {
       "id" : "node-9f1b-4275:layer-5741",
       "type" : "TEXT",
       "level" : 2,
-      "name" : "Database",
+      "name" : "About this ICE",
       "note" : "",
       "text" : "This is the 'Netwalk' ICE, which is like a pipe laying puzzle. Click the tiles to rotate them so that all tiles connect perfectly."
     } ],

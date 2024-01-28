@@ -7,7 +7,11 @@ interface Props {
 
 export const TerminalInput = ({terminalState}: Props) => {
     if (terminalState.readOnly || (terminalState.blockedWhileRendering && terminalState.receiving)) {
-        return <div/>
+        return (
+            <div className="terminalLine terminal_input">
+                <span>&nbsp;</span>
+            </div>
+        )
     }
 
     const {input, prompt, syntaxHighlighting} = terminalState
