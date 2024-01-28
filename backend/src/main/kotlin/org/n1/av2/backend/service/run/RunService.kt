@@ -7,6 +7,7 @@ import org.n1.av2.backend.entity.run.*
 import org.n1.av2.backend.entity.run.NodeScanStatus.*
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.SiteProperties
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.HackerIcon
@@ -43,6 +44,7 @@ class RunService(
     private val timerEntityService: TimerEntityService,
     private val tripwireLayerService: TripwireLayerService,
     private val scanService: ScanService,
+    private val nodeEntityService: NodeEntityService,
 ) {
 
     class HackerPresence(
@@ -253,5 +255,26 @@ class RunService(
         )
         // FIXME: properly inform browser that they need to move to home screen
 //            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
+    }
+
+    fun updateRunLinksForResetSite(siteId: String) {
+
+        val nodes = nodeEntityService.getAll(siteId)
+        val nodeById = nodes.associateBy { it.id }
+
+        val runs = runEntityService.findAllForSiteId(siteId)
+        runs.forEach { run ->
+            var changed = false
+                run.nodeScanById.forEach { (nodeId, nodeScan) ->
+                val node = nodeById[nodeId] ?: error("Node ${nodeId} not found")
+                if (node.ice && nodeScan.status == FULLY_SCANNED_4) {
+                    run.updateScanStatus(nodeId, ICE_PROTECTED_3)
+                    changed = true
+                }
+            }
+            if (changed) {
+                runEntityService.save(run)
+            }
+        }
     }
 }

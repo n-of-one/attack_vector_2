@@ -40,6 +40,7 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
         webSocketConnection.send("/user/edit", message)
     }
 
+    const readonlyUserName = !larp.hackerEditUserName
 
     return <>
         <div className="d-flex flex-row justify-content-end">
@@ -52,7 +53,7 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
             label="Name" id="name" size={8}
             value={user.name}
             save={save} attributeSaveName="name"
-            readonly={false}
+            readonly={readonlyUserName}
         />
 
         <UserAttribute
@@ -88,7 +89,8 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
 const hackerFormPart = (user: User, save: SaveFunction) => {
 
     const authorizationToEditSkills = userAuthorizations.hasRole(ROLE_USER_MANAGER) || userAuthorizations.hasRole(ROLE_HACKER_MANAGER)
-    const readonlySkills = !(larp.userEditSkills && authorizationToEditSkills)
+    const readonlySkills = !(larp.hackerEditSkills && authorizationToEditSkills)
+    const showSkills = (larp.hackerShowSkills || authorizationToEditSkills)
 
 
     return <>
@@ -97,11 +99,11 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             label="Character Name" id="characterName" size={8}
             value={user.hacker?.characterName}
             save={save} attributeSaveName="characterName"
-            readonly={!larp.userEditCharacterName}
+            readonly={!larp.hackerEditCharacterName}
         />
 
         <div className="row form-group">
-            <label htmlFor="type" className="col-lg-4 control-label text-muted">Type</label>
+            <label htmlFor="type" className="col-lg-4 control-label text-muted">Icon</label>
             <div className="col-lg-3">
                 <DropDownSaveInput id="type" className="form-control"
                                    selectedValue={user.hacker!!.icon}
@@ -113,7 +115,8 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             </div>
         </div>
 
-        <UserAttribute
+        { showSkills ? <>
+            <UserAttribute
             label="Hacker level" id="skillHacker" size={2}
             value={user.hacker?.skill.hacker}
             save={save} attributeSaveName="skillHacker"
@@ -121,21 +124,24 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             indent={1}
         />
 
-        <UserAttribute
-            label="Elite level" id="skillElite" size={2}
-            value={user.hacker?.skill.elite}
-            save={save} attributeSaveName="skillElite"
-            readonly={readonlySkills}
-            indent={1}
-        />
+            <UserAttribute
+                label="Elite level" id="skillElite" size={2}
+                value={user.hacker?.skill.elite}
+                save={save} attributeSaveName="skillElite"
+                readonly={readonlySkills}
+                indent={1}
+            />
 
-        <UserAttribute
-            label="Architect level" id="skillArchitect" size={2}
-            value={user.hacker?.skill.architect}
-            save={save} attributeSaveName="skillArchitect"
-            readonly={readonlySkills}
-            indent={1}
-        />
+            <UserAttribute
+                label="Architect level" id="skillArchitect" size={2}
+                value={user.hacker?.skill.architect}
+                save={save} attributeSaveName="skillArchitect"
+                readonly={readonlySkills}
+                indent={1}
+            />
+        </> : <></> }
+
+
     </>
 }
 

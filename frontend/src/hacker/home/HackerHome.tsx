@@ -6,6 +6,7 @@ import {HackerState} from "../HackerRootReducer";
 import {SiteInfo} from "./ScansReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {developmentServer} from "../../common/util/DevEnvironment";
+import {larp} from "../../common/Larp";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -76,8 +77,8 @@ export const HackerHome = () => {
                                                 </td>
                                                 <td className="table-very-condensed">{scanInfo.nodes}</td>
                                                 <td className="table-very-condensed">
-                                                    <DeleteScanLink runId={scanInfo.runId}/>
-                                                    <ResetIceLink siteId={scanInfo.siteId}/>
+                                                    { larp.hackersDeleteRunLinks ? <DeleteScanLink runId={scanInfo.runId}/> : <></> }
+                                                    { larp.hackersResetSite ? <ResetIceLink siteId={scanInfo.siteId}/> : <></> }
                                                 </td>
                                             </tr>)
                                     })
@@ -112,7 +113,9 @@ const ResetIceLink = (props: { siteId: string }) => {
     }
 
     const resetIce = () => {
-        webSocketConnection.send("/scan/refreshIce", props.siteId)
+        if (window.confirm(`Confirm that you want to reset this site?. This will refresh ICE, reset all timers, ...)`)) {
+            webSocketConnection.send("/site/resetSite", props.siteId)
+        }
     }
 
     return <>

@@ -11,44 +11,57 @@ import {GoogleAuth} from "../login/GoogleAuth";
 export enum LarpType {
     LOCAL_DEV,
     FRONTIER,
+    ATTACK_VECTOR_NL,
     GENERIC
 }
 
 
 export class Larp {
 
-    // type: LarpType = this.determineLarpType()
-    type: LarpType = LarpType.GENERIC
+    type: LarpType = this.determineLarpType()
 
     name: string
-    userEditSkills : boolean
-    userEditCharacterName: boolean
+    hackerShowSkills: boolean = false
+    hackerEditSkills : boolean = false
+    hackerEditUserName: boolean = true
+    hackerEditCharacterName: boolean = true
+    hackersResetSite: boolean = false
+    hackersDeleteRunLinks: boolean = true
     loginUrl: string = "/login" // override in case there is no login page but an SSO redirect
 
 
     constructor() {
         if (this.type === LarpType.LOCAL_DEV) {
-            this.name = "frontier"
-            this.userEditSkills = true
-            this.userEditCharacterName = true
+            this.name = "development"
+            this.hackerEditSkills = true
+            this.hackersResetSite = true
+            this.hackerShowSkills = true
             return
         }
 
         if (this.type === LarpType.FRONTIER) {
             this.name = "frontier"
-            this.userEditSkills = false
-            this.userEditCharacterName = true
             this.loginUrl = "/login/frontier"
+            this.hackerShowSkills = true
             return
         }
 
+        if (this.type === LarpType.ATTACK_VECTOR_NL) {
+            this.name = "attack_vector.nl"
+            this.hackersResetSite = true
+            this.hackersDeleteRunLinks = false
+            this.hackerEditCharacterName = false
+            this.hackerEditUserName = false
+        }
+
+        // else
+
         this.name = "generic"
-        this.userEditSkills = false
-        this.userEditCharacterName = true
     }
 
     private determineLarpType(): LarpType {
         if (window.location.href.indexOf("eosfrontier.space") !== -1) return LarpType.FRONTIER
+        if (window.location.href.indexOf("attackvector.nl") !== -1) return LarpType.ATTACK_VECTOR_NL
         if (window.location.href.indexOf("localhost") !== -1) return LarpType.LOCAL_DEV
         return LarpType.GENERIC
     }

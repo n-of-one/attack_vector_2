@@ -7,17 +7,42 @@ import org.n1.av2.backend.service.layerhacking.ice.netwalk.NetwalkIceService
 import org.n1.av2.backend.service.layerhacking.ice.tangle.TangleService
 import org.n1.av2.backend.service.layerhacking.ice.tar.TarService
 import org.n1.av2.backend.service.layerhacking.ice.wordsearch.WordSearchService
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
+
+// To prevent circular bean dependencies
+@Configuration
+class InitIceService(
+    val iceService: IceService,
+    val tangleService: TangleService,
+    val authAppService: AuthAppService,
+    val wordSearchService: WordSearchService,
+    val netwalkIceService: NetwalkIceService,
+    val tarService: TarService
+) {
+
+    @PostConstruct
+    fun postConstruct() {
+        iceService.tangleService = tangleService
+        iceService.authAppService = authAppService
+        iceService.wordSearchService = wordSearchService
+        iceService.netwalkIceService = netwalkIceService
+        iceService.tarService = tarService
+    }
+}
 
 @Service
 class IceService(
     private val nodeEntityService: NodeEntityService,
-    private val tangleService: TangleService,
-    private val authAppService: AuthAppService,
-    private val wordSearchService: WordSearchService,
-    private val netwalkIceService: NetwalkIceService,
-    private val tarService: TarService,
 ) {
+
+    lateinit var tangleService: TangleService
+    lateinit var authAppService: AuthAppService
+    lateinit var wordSearchService: WordSearchService
+    lateinit var netwalkIceService: NetwalkIceService
+    lateinit var tarService: TarService
+
 
     fun findOrCreateIceForLayer(layer: IceLayer): String {
         val iceId = createIceForLayerInternal(layer)
@@ -49,8 +74,6 @@ class IceService(
         iceLayers.filterIsInstance<NetwalkIceLayer>().forEach { netwalkIceService.deleteByLayerId(it.id) }
         iceLayers.filterIsInstance<TarIceLayer>().forEach { tarService.deleteByLayerId(it.id) }
     }
-
-
 
 
 }

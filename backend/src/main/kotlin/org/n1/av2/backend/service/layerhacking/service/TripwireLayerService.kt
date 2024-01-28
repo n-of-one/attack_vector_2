@@ -16,6 +16,7 @@ import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ServerActions.SERVER_TERMINAL_RECEIVE
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.run.TERMINAL_MAIN
+import org.n1.av2.backend.service.site.SiteResetService
 import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.toDuration
 import org.n1.av2.backend.service.util.StompService
@@ -38,6 +39,7 @@ class TripwireLayerService(
     @Lazy private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val siteService: SiteService,
+    private val siteResetService: SiteResetService,
 ) {
 
 
@@ -81,7 +83,7 @@ class TripwireLayerService(
         timerEntityService.deleteById(timerId)
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
-        siteService.resetSite(siteId)
+        siteResetService.resetSite(siteId)
         stompService.toSite( siteId, SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${layer.shutdown}")))
         hackerStates
             .filter { it.activity == HackerActivity.INSIDE }
@@ -95,7 +97,7 @@ class TripwireLayerService(
         val shutdownTimer = timerEntityService.create(layer.id, null, shutdownEndTime, siteId, siteId, TimerType.SHUTDOWN_FINISH)
         stompService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(shutdownTimer, layer))
 
-        siteService.shutdownSite(siteId, shutdownEndTime)
+        siteResetService.shutdownSite(siteId, shutdownEndTime)
         val identifiers = TaskIdentifiers(null, siteId, null)
         systemTaskRunner.queueInSeconds("site shutdown end", identifiers, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
     }
@@ -103,7 +105,7 @@ class TripwireLayerService(
     @ScheduledTask
     @CalledBySystem
     fun shutdownFinished(siteId: String, shutdownTimerId: String) {
-        siteService.shutdownFinished(siteId)
+        siteResetService.shutdownFinished(siteId)
         timerEntityService.deleteById(shutdownTimerId)
         stompService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to shutdownTimerId)
         stompService.toSite(siteId, SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site connection available again.")))

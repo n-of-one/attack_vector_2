@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Run(
     @Id val runId: String,
     val initiatorId: String,
-    val siteId: String,
+    @Indexed val siteId: String,
     val nodeScanById: MutableMap<String, NodeScan>
 ) {
 
