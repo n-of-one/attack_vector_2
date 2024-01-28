@@ -108,10 +108,6 @@ const DeleteScanLink = (props: { runId: string }) => {
 }
 
 const ResetIceLink = (props: { siteId: string }) => {
-    if (!developmentServer) {
-        return <></>
-    }
-
     const resetIce = () => {
         if (window.confirm(`Confirm that you want to reset this site?. This will refresh ICE, reset all timers, ...)`)) {
             webSocketConnection.send("/site/resetSite", props.siteId)
