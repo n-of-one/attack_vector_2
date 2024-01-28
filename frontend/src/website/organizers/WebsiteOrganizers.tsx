@@ -39,7 +39,7 @@ export const WebsiteOrganizers = () => {
                         <br/>
                         Fortunately, it's quite cheap to host in the cloud, it runs on an Amazon AWS t4g.micro, costing around 1 dollar-cent/euro-cent per hour of usage.
                         There are additional costs for having an IP address and having a domain name. But it's still so cheap that I am willing to set it up and host it
-                        for the first month to allow organisations to see if Attack Vector is something for them.<br/>
+                        for the first event to allow organisations to see if Attack Vector is something for them.<br/>
                         <br/>
                         If you want to host it yourself, there are instructions in the source code. It requires Java and Mongodb.
                     </p>
@@ -81,11 +81,11 @@ export const WebsiteOrganizers = () => {
                                 would find inside.<br/>
                                 <br/>
                                 This way, even game masters who don't understand the specifics of how to create good sites, could still provide a site for the players to
-                                hack.<br/><br/>
+                                hack.<br/><br/><br/>
                             </li>
                             <li>Discord integration<br/><br/>
                                 Version 1 had a Discord bot that would send updates to a Discord channel. This way, game masters could see the outcome of a hack on their
-                                phone.<br/><br/>
+                                phone.<br/><br/><br/>
                             </li>
                             <li>Scripts<br/><br/>
                                 Version 1 had scripts: single use commands that could be used to give players an edge. This tied in with the rule-system of Frontier,
@@ -94,9 +94,9 @@ export const WebsiteOrganizers = () => {
                                 Scrips could give a player extra time on a countdown timer, or outright bypass ICE.<br/>
                                 <br/>
                                 Scripts are not necessary for Attack Vector to work, and they make site-design harder (as the game masters need to take them into
-                                account). However, scripts can be a cool reward for players or a way to show that some hackers are better than others.<br/><br/>
+                                account). However, scripts can be a cool reward for players or a way to show that some hackers are better than others.<br/><br/><br/>
                             </li>
-                            <li>Players making sites<br/><br/>
+                            <li>Players making their own sites<br/><br/>
                                 Players of Eos Frontier want to create their own sites, for other players to hack. This is a feature on the roadmap.<br/><br/>
                             </li>
                         </ul>

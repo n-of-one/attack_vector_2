@@ -30,15 +30,21 @@ export const WebsiteGms = () => {
                         Creating a simple site with some ICE to hack, and some info to find is easy.<br/>
                         <br/>
                         Creating a more complex site with passwords scattered throughout,
-                        countdown timers to beat, and meta puzzles involving other elements from your setting, well that will take some more effort.<br/>
+                        countdown timers to beat, and meta puzzles involving other elements from your setting, well that will take some more effort.
+                        But ultimately the most fun can be had by tailoring your site to your event and players.<br/>
                         <br/>
                         There is the option to export and import sites, so you can collaborate with other game masters or organizers to create sites.<br/>
-                        <br/>
-                        But ultimately the most fun can be had by tailoring your site to your event and players.
                     </p>
                     <h3 className="muted">Interaction with the real world</h3>
+                    <h4 className="muted">Password ICE</h4>
                     <p className="text">
-                        There is one layer that is designed to allow interaction with the real world: the switch and status light.<br/>
+                        The easiest way to force interaction with the real world is to use Password ICE and have the players find the password
+                        somewhere outside of the digital world.<br/>
+                        Password ICE has a 'hint' that can point players in the right direction.
+                    </p>
+                    <h4 className="muted">Switch and status light</h4>
+                    <p className="text">
+                        A more involved option is the the switch and status light layer<br/>
                         <br/>
                         <WebsiteImage path="/img/website/gm/status-light-red.png" alt="A picture of a status light"/><br/>
                         <br/>
