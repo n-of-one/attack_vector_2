@@ -1,7 +1,7 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2024-01-10 15:48:04"
+    "exportTimeStamp" : "2024-01-28 17:26:53"
   },
   "siteProperties" : {
     "siteId" : "site-5dc5-4adb",
@@ -17,7 +17,7 @@
     "x" : 302,
     "y" : 443,
     "layers" : [ {
-      "id" : "node-66c5-47f0-layer-0000",
+      "id" : "node-66c5-47f0:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -49,7 +49,7 @@
     "x" : 280,
     "y" : 320,
     "layers" : [ {
-      "id" : "node-596f-420e-layer-0000",
+      "id" : "node-596f-420e:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -68,67 +68,13 @@
     "hacked" : true,
     "unhackedIce" : false
   }, {
-    "id" : "node-ce41-4964",
-    "siteId" : "site-5dc5-4adb",
-    "type" : "TRANSIT_4",
-    "x" : 160,
-    "y" : 400,
-    "layers" : [ {
-      "id" : "node-ce41-4964-layer-0000",
-      "type" : "OS",
-      "level" : 0,
-      "name" : "OS",
-      "note" : "",
-      "nodeName" : ""
-    } ],
-    "networkId" : "02",
-    "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
-  }, {
-    "id" : "node-e5b8-447d",
-    "siteId" : "site-5dc5-4adb",
-    "type" : "TRANSIT_4",
-    "x" : 400,
-    "y" : 320,
-    "layers" : [ {
-      "id" : "node-e5b8-447d-layer-0000",
-      "type" : "OS",
-      "level" : 0,
-      "name" : "OS",
-      "note" : "",
-      "nodeName" : ""
-    } ],
-    "networkId" : "03",
-    "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
-  }, {
-    "id" : "node-36b2-4ab7",
-    "siteId" : "site-5dc5-4adb",
-    "type" : "TRANSIT_4",
-    "x" : 280,
-    "y" : 200,
-    "layers" : [ {
-      "id" : "node-36b2-4ab7-layer-0000",
-      "type" : "OS",
-      "level" : 0,
-      "name" : "OS",
-      "note" : "",
-      "nodeName" : ""
-    } ],
-    "networkId" : "04",
-    "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
-  }, {
     "id" : "node-901c-4cd7",
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_3",
     "x" : 40,
     "y" : 480,
     "layers" : [ {
-      "id" : "node-901c-4cd7-layer-0000",
+      "id" : "node-901c-4cd7:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -162,7 +108,7 @@
     "x" : 40,
     "y" : 400,
     "layers" : [ {
-      "id" : "node-b354-432d-layer-0000",
+      "id" : "node-b354-432d:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -174,7 +120,7 @@
       "level" : 1,
       "name" : "Gaanth",
       "note" : "",
-      "strength" : "AVERAGE",
+      "strength" : "STRONG",
       "hacked" : false,
       "ice" : true
     }, {
@@ -183,7 +129,7 @@
       "level" : 2,
       "name" : "Note",
       "note" : "",
-      "text" : "This is the average strength of the Untangle ICE. There is nothing behind it."
+      "text" : "This is the strong strength of the Untangle ICE. There is nothing behind it."
     } ],
     "networkId" : "06",
     "ice" : true,
@@ -193,10 +139,10 @@
     "id" : "node-7b1b-4db7",
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_3",
-    "x" : 40,
-    "y" : 320,
+    "x" : 37,
+    "y" : 322,
     "layers" : [ {
-      "id" : "node-7b1b-4db7-layer-0000",
+      "id" : "node-7b1b-4db7:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -208,16 +154,16 @@
       "level" : 1,
       "name" : "Gaanth",
       "note" : "",
-      "strength" : "VERY_WEAK",
+      "strength" : "AVERAGE",
       "hacked" : false,
       "ice" : true
     }, {
       "id" : "node-7b1b-4db7:layer-083f",
       "type" : "TEXT",
       "level" : 2,
-      "name" : "About this ICE",
+      "name" : "Note",
       "note" : "",
-      "text" : "This is the Untangle ICE. Move the connections so that no lines are crossing."
+      "text" : "This is the average strength of the Untangle ICE. Behind it is more of the site to explore"
     } ],
     "networkId" : "05",
     "ice" : true,
@@ -230,7 +176,7 @@
     "x" : 200,
     "y" : 80,
     "layers" : [ {
-      "id" : "node-7cb6-4dc3-layer-0000",
+      "id" : "node-7cb6-4dc3:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -260,14 +206,14 @@
       "level" : 3,
       "name" : "Note",
       "note" : "",
-      "text" : "The tripwire in this node cannot be reset by the core in node '01'. You will need to hack the ice to reveal the core that can be used to stop it."
+      "text" : "The tripwire in this node cannot be reset by the core in node '01'. You will need to hack the ice to reveal the core that can be used to stop it. You now have 15 minutes to hack the ice in this node, otherwise the site resets and all ICE needs to be hacked again."
     }, {
       "id" : "node-7cb6-4dc3:layer-7e4c",
       "type" : "TEXT",
       "level" : 4,
-      "name" : "About this ICE",
+      "name" : "Note",
       "note" : "",
-      "text" : "This is the 'Netwalk' ICE, which is like a pipe laying puzzle. Click the tiles to rotate them so that all tiles connect perfectly."
+      "text" : "This is the average strength of this type of ICE. Behind is is more of the site to discover."
     } ],
     "networkId" : "08",
     "ice" : true,
@@ -280,7 +226,7 @@
     "x" : 280,
     "y" : 80,
     "layers" : [ {
-      "id" : "node-59ad-430c-layer-0000",
+      "id" : "node-59ad-430c:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -292,7 +238,7 @@
       "level" : 1,
       "name" : "Sanrachana",
       "note" : "",
-      "strength" : "AVERAGE",
+      "strength" : "STRONG",
       "hacked" : false,
       "ice" : true
     }, {
@@ -301,7 +247,7 @@
       "level" : 2,
       "name" : "Note",
       "note" : "",
-      "text" : "This is the average strength of this type of ICE. There is nothing behind it."
+      "text" : "This is the strong strength of this type of ICE. There is nothing behind it."
     } ],
     "networkId" : "09",
     "ice" : true,
@@ -314,7 +260,7 @@
     "x" : 360,
     "y" : 80,
     "layers" : [ {
-      "id" : "node-30d9-4893-layer-0000",
+      "id" : "node-30d9-4893:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -348,7 +294,7 @@
     "x" : 520,
     "y" : 240,
     "layers" : [ {
-      "id" : "node-5fba-4dd9-layer-0000",
+      "id" : "node-5fba-4dd9:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -360,16 +306,16 @@
       "level" : 1,
       "name" : "Jaal",
       "note" : "",
-      "strength" : "VERY_WEAK",
+      "strength" : "AVERAGE",
       "hacked" : false,
       "ice" : true
     }, {
       "id" : "node-5fba-4dd9:layer-f523",
       "type" : "TEXT",
       "level" : 2,
-      "name" : "About this ICE",
+      "name" : "Note",
       "note" : "",
-      "text" : "This is the word-search ICE. Find the words in the letter grid. The word could be right-to-left or diagonal."
+      "text" : "This is the average level of this type of ICE. Behind is more of the site to explore."
     } ],
     "networkId" : "11",
     "ice" : true,
@@ -379,10 +325,10 @@
     "id" : "node-a145-4864",
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_2",
-    "x" : 520,
+    "x" : 521,
     "y" : 320,
     "layers" : [ {
-      "id" : "node-a145-4864-layer-0000",
+      "id" : "node-a145-4864:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -394,7 +340,7 @@
       "level" : 1,
       "name" : "Jaal",
       "note" : "",
-      "strength" : "AVERAGE",
+      "strength" : "STRONG",
       "hacked" : false,
       "ice" : true
     }, {
@@ -403,7 +349,7 @@
       "level" : 2,
       "name" : "Note",
       "note" : "",
-      "text" : "No data of value found."
+      "text" : "This is the strong level of this type of ICE. There is nothing behind it."
     } ],
     "networkId" : "12",
     "ice" : true,
@@ -416,7 +362,7 @@
     "x" : 520,
     "y" : 400,
     "layers" : [ {
-      "id" : "node-6a1d-410d-layer-0000",
+      "id" : "node-6a1d-410d:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -450,7 +396,7 @@
     "x" : 120,
     "y" : 200,
     "layers" : [ {
-      "id" : "node-a28f-43da-layer-0000",
+      "id" : "node-a28f-43da:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -465,9 +411,9 @@
       "strength" : "VERY_WEAK",
       "hacked" : false,
       "totalUnits" : 9000,
-      "time1Level1Hacker" : "13m 38s",
-      "time1Level5Hacker" : "10m 0s",
-      "time5Level10Hackers" : "1m 30s",
+      "time1Level1Hacker" : "1h 21m 49s",
+      "time1Level5Hacker" : "1h 0m 0s",
+      "time5Level10Hackers" : "9m 0s",
       "ice" : true
     }, {
       "id" : "node-a28f-43da:layer-40c4",
@@ -488,7 +434,7 @@
     "x" : 181,
     "y" : 279,
     "layers" : [ {
-      "id" : "node-46ac-4c7e-layer-0000",
+      "id" : "node-46ac-4c7e:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -503,9 +449,9 @@
       "strength" : "ONYX",
       "hacked" : false,
       "totalUnits" : 7776000,
-      "time1Level1Hacker" : "196h 21m 49s",
-      "time1Level5Hacker" : "144h 0m 0s",
-      "time5Level10Hackers" : "21h 36m 0s",
+      "time1Level1Hacker" : "1h 21m 49s",
+      "time1Level5Hacker" : "1h 0m 0s",
+      "time5Level10Hackers" : "9m 0s",
       "ice" : true
     }, {
       "id" : "node-46ac-4c7e:layer-d895",
@@ -526,7 +472,7 @@
     "x" : 120,
     "y" : 80,
     "layers" : [ {
-      "id" : "node-9943-4a56-layer-0000",
+      "id" : "node-9943-4a56:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -558,7 +504,7 @@
     "x" : 40,
     "y" : 80,
     "layers" : [ {
-      "id" : "node-a69f-486b-layer-0000",
+      "id" : "node-a69f-486b:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -583,7 +529,7 @@
     "x" : 520,
     "y" : 160,
     "layers" : [ {
-      "id" : "node-46e1-427c-layer-0000",
+      "id" : "node-46e1-427c:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -612,7 +558,7 @@
     "x" : 520,
     "y" : 80,
     "layers" : [ {
-      "id" : "node-d613-4b87-layer-0000",
+      "id" : "node-d613-4b87:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -637,7 +583,7 @@
     "x" : 40,
     "y" : 200,
     "layers" : [ {
-      "id" : "node-f359-4b9d-layer-0000",
+      "id" : "node-f359-4b9d:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -662,7 +608,7 @@
     "x" : 400,
     "y" : 240,
     "layers" : [ {
-      "id" : "node-2103-441c-layer-0000",
+      "id" : "node-2103-441c:layer-0000",
       "type" : "OS",
       "level" : 0,
       "name" : "OS",
@@ -689,46 +635,115 @@
     "ice" : false,
     "hacked" : true,
     "unhackedIce" : false
+  }, {
+    "id" : "node-9391-4e1e",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "ICE_3",
+    "x" : 169,
+    "y" : 399,
+    "layers" : [ {
+      "id" : "node-9391-4e1e:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-9391-4e1e:layer-b7df",
+      "type" : "TANGLE_ICE",
+      "level" : 1,
+      "name" : "Gaanth",
+      "note" : "",
+      "strength" : "VERY_WEAK",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-9391-4e1e:layer-ed8e",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "About this ICE",
+      "note" : "",
+      "text" : "This is the Untangle ICE. Move the connections so that no lines are crossing."
+    } ],
+    "networkId" : "02",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-fef3-4d03",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "ICE_2",
+    "x" : 401,
+    "y" : 324,
+    "layers" : [ {
+      "id" : "node-fef3-4d03:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-fef3-4d03:layer-7ce1",
+      "type" : "WORD_SEARCH_ICE",
+      "level" : 1,
+      "name" : "Jaal",
+      "note" : "",
+      "strength" : "VERY_WEAK",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-fef3-4d03:layer-7647",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "About this ICE",
+      "note" : "",
+      "text" : "This is the word-search ICE. Find the words in the letter grid. The word could be in any direction, including right-to-left or diagonal."
+    } ],
+    "networkId" : "03",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-9f1b-4275",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "ICE_1",
+    "x" : 276,
+    "y" : 183,
+    "layers" : [ {
+      "id" : "node-9f1b-4275:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-9f1b-4275:layer-9702",
+      "type" : "NETWALK_ICE",
+      "level" : 1,
+      "name" : "Sanrachana",
+      "note" : "",
+      "strength" : "AVERAGE",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-9f1b-4275:layer-5741",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Database",
+      "note" : "",
+      "text" : "This is the 'Netwalk' ICE, which is like a pipe laying puzzle. Click the tiles to rotate them so that all tiles connect perfectly."
+    } ],
+    "networkId" : "04",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
   } ],
   "connections" : [ {
     "fromId" : "node-66c5-47f0",
     "toId" : "node-596f-420e"
   }, {
-    "fromId" : "node-596f-420e",
-    "toId" : "node-36b2-4ab7"
-  }, {
-    "fromId" : "node-36b2-4ab7",
-    "toId" : "node-59ad-430c"
-  }, {
-    "fromId" : "node-36b2-4ab7",
-    "toId" : "node-7cb6-4dc3"
-  }, {
-    "fromId" : "node-36b2-4ab7",
-    "toId" : "node-30d9-4893"
-  }, {
-    "fromId" : "node-596f-420e",
-    "toId" : "node-ce41-4964"
-  }, {
-    "fromId" : "node-ce41-4964",
-    "toId" : "node-b354-432d"
-  }, {
-    "fromId" : "node-ce41-4964",
-    "toId" : "node-901c-4cd7"
-  }, {
     "fromId" : "node-a28f-43da",
     "toId" : "node-46ac-4c7e"
-  }, {
-    "fromId" : "node-596f-420e",
-    "toId" : "node-e5b8-447d"
-  }, {
-    "fromId" : "node-e5b8-447d",
-    "toId" : "node-a145-4864"
-  }, {
-    "fromId" : "node-e5b8-447d",
-    "toId" : "node-5fba-4dd9"
-  }, {
-    "fromId" : "node-e5b8-447d",
-    "toId" : "node-6a1d-410d"
   }, {
     "fromId" : "node-7cb6-4dc3",
     "toId" : "node-9943-4a56"
@@ -742,9 +757,6 @@
     "fromId" : "node-9943-4a56",
     "toId" : "node-a69f-486b"
   }, {
-    "fromId" : "node-7b1b-4db7",
-    "toId" : "node-ce41-4964"
-  }, {
     "fromId" : "node-596f-420e",
     "toId" : "node-2103-441c"
   }, {
@@ -753,5 +765,41 @@
   }, {
     "fromId" : "node-f359-4b9d",
     "toId" : "node-a28f-43da"
+  }, {
+    "fromId" : "node-596f-420e",
+    "toId" : "node-9391-4e1e"
+  }, {
+    "fromId" : "node-9391-4e1e",
+    "toId" : "node-7b1b-4db7"
+  }, {
+    "fromId" : "node-9391-4e1e",
+    "toId" : "node-b354-432d"
+  }, {
+    "fromId" : "node-9391-4e1e",
+    "toId" : "node-901c-4cd7"
+  }, {
+    "fromId" : "node-596f-420e",
+    "toId" : "node-fef3-4d03"
+  }, {
+    "fromId" : "node-fef3-4d03",
+    "toId" : "node-5fba-4dd9"
+  }, {
+    "fromId" : "node-fef3-4d03",
+    "toId" : "node-a145-4864"
+  }, {
+    "fromId" : "node-fef3-4d03",
+    "toId" : "node-6a1d-410d"
+  }, {
+    "fromId" : "node-596f-420e",
+    "toId" : "node-9f1b-4275"
+  }, {
+    "fromId" : "node-9f1b-4275",
+    "toId" : "node-7cb6-4dc3"
+  }, {
+    "fromId" : "node-9f1b-4275",
+    "toId" : "node-59ad-430c"
+  }, {
+    "fromId" : "node-9f1b-4275",
+    "toId" : "node-30d9-4893"
   } ]
 }
