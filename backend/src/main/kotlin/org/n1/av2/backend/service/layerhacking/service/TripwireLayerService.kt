@@ -52,7 +52,7 @@ class TripwireLayerService(
         stompService.replyTerminalReceive("This tripwire is managed by core in node [ok]${node.networkId}")
     }
 
-    fun connect(layer: Layer) {
+    fun open(layer: Layer) {
         stompService.replyTerminalReceive("Service has no UI.")
     }
 

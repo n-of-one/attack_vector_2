@@ -12,12 +12,14 @@ class StatusLightLayerService(
 ) {
 
     fun hack(layer: StatusLightLayer) {
-        stompService.replyTerminalReceive("Layer can be accessed with command: connect [pri]${layer.level}")
+        stompService.replyTerminalReceive("Layer can be accessed with command: open [pri]${layer.level}")
     }
 
-    fun connect(layer: StatusLightLayer) {
+    fun open(layer: StatusLightLayer) {
         data class EnterIce(val layerId: String, val type: String = "switch")
         stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_APP, EnterIce(layer.id))
+        stompService.replyTerminalReceive("Opened in new window.")
+
     }
 
 }

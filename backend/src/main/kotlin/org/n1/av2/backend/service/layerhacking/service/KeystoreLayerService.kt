@@ -20,7 +20,7 @@ class KeystoreLayerService(
         stompService.replyTerminalReceive("hacked. Password found: [primary]${password}")
     }
 
-    fun connect(layer: KeyStoreLayer) {
+    fun open(layer: KeyStoreLayer) {
         stompService.replyTerminalReceive("Access to UI denied")
     }
 }

@@ -13,7 +13,7 @@ class TextLayerService(
         stompService.replyTerminalReceive("Hacked: [pri]${layer.level}[/] ${layer.name}", "", layer.text)
     }
 
-    fun connect(layer: TextLayer, node: Node) {
+    fun open(layer: TextLayer, node: Node) {
         stompService.replyTerminalReceive("Access to UI denied")
     }
 

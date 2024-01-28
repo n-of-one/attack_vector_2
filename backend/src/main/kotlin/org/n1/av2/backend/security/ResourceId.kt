@@ -30,7 +30,7 @@ annotation class ValidNodeId(
     val payload: Array<KClass<Payload>> = []
 )
 
-@Pattern(regexp = "node-[a-f0-9]{4}-[a-f0-9]{4}:layer-[a-f0-9]{4}-[a-f0-9]{4}")
+@Pattern(regexp = "node-[a-f0-9]{4}-[a-f0-9]{4}:layer-[a-f0-9]{4}")
 @Retention(AnnotationRetention.RUNTIME)
 @Constraint(validatedBy = [ValidLayerIdValidator::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.VALUE_PARAMETER)

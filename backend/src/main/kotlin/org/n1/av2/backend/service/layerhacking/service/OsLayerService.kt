@@ -13,7 +13,7 @@ class OsLayerService(
         stompService.replyTerminalReceive("Hacking ${layer.name} reveals nothing new.")
     }
 
-    fun connect(layer: Layer) {
+    fun open(layer: Layer) {
         stompService.replyTerminalReceive("Connecting to ${layer.name} reveals nothing new.")
     }
 

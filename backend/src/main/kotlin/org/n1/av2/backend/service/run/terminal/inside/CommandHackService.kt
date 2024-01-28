@@ -46,7 +46,7 @@ class CommandHackService(
     }
 
     fun processOpenCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        process(runId, tokens, state, "open ", ::handleConnect)
+        process(runId, tokens, state, "open ", ::handleOpen)
     }
 
     private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
@@ -90,24 +90,26 @@ class CommandHackService(
 
         data class EnterIce(val iceId: String)
         stompService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce(iceId))
+        stompService.replyTerminalReceive("Hack opened in new window.")
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun handleConnect(node: Node, layer: Layer, runId: String) {
+    private fun handleOpen(node: Node, layer: Layer, runId: String) {
         when (layer) {
-            is OsLayer -> osLayerService.connect(layer)
-            is TextLayer -> textLayerService.connect(layer, node)
-            is IceLayer -> connectToIce(layer)
-            is KeyStoreLayer -> keystoreLayerService.connect(layer)
-            is StatusLightLayer -> statusLightLayerService.connect(layer)
-            is TripwireLayer -> tripwireLayerService.connect(layer)
+            is OsLayer -> osLayerService.open(layer)
+            is TextLayer -> textLayerService.open(layer, node)
+            is IceLayer -> openIce(layer)
+            is KeyStoreLayer -> keystoreLayerService.open(layer)
+            is StatusLightLayer -> statusLightLayerService.open(layer)
+            is TripwireLayer -> tripwireLayerService.open(layer)
             else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
         }
     }
 
-    fun connectToIce(layer: IceLayer) {
+    fun openIce(layer: IceLayer) {
         data class EnterIce(val layerId: String)
         stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce(layer.id))
+        stompService.replyTerminalReceive("Opened in new window.")
     }
 
     @Suppress("UNUSED_PARAMETER")
