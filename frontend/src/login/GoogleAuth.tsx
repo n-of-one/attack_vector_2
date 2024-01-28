@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {CredentialResponse, GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 import {Banner} from "./Banner";
-import {post} from "../common/server/RestClient";
+import {restGet, restPost} from "../common/server/RestClient";
 import {redirect} from "./DevLogin";
 
 enum LoginState {
@@ -18,15 +18,18 @@ export const GoogleAuth = () => {
     const [message, setMessage] = useState("")
 
     useEffect(() => {
-        const fetchClientId = async () => {
-            const response: Response = await fetch("/openapi/google/clientId")
-            const text: string = await response.text()
-            setClientId(text)
-            setState(LoginState.INACTIVE)
-        }
-        fetchClientId().catch(() => {
-            setState(LoginState.ERROR)
-        })
+        restGet({
+            url: "/openapi/google/clientId",
+            ok: ({clientId}: { clientId: string }) => {
+                setClientId(clientId)
+                setState(LoginState.INACTIVE)
+            },
+            error: () => {
+                setState(LoginState.ERROR)
+                setMessage("Google login configuration could not be loaded. Is the backend running?")
+            }
+        });
+
     }, [])
 
 
@@ -36,7 +39,7 @@ export const GoogleAuth = () => {
             return
         }
 
-        post({
+        restPost({
             url: "/openapi/login/google",
             body: {"jwt": response.credential},
             ok: ({success, message}: { success: boolean, message: string }) => {
@@ -46,10 +49,6 @@ export const GoogleAuth = () => {
                     setState(LoginState.ERROR)
                     setMessage(message)
                 }
-            },
-            notok: () => {
-                setState(LoginState.ERROR)
-                setMessage("Connection to server failed, unable to continue.")
             },
             error: () => {
                 setState(LoginState.ERROR)
@@ -116,7 +115,7 @@ export const GoogleAuth = () => {
         <Banner hiddenAdminLogin={true}/>
         <div className="row text">
             <div className="d-flex justify-content-center">
-                <h5>There was a problem logging in</h5>
+                <h5>There was a problem with Google login</h5>
             </div>
         </div>
         <div className="row text">

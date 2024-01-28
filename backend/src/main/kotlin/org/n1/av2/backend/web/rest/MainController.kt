@@ -19,16 +19,16 @@ class MainController(
 
     @RequestMapping("/purge")
     fun purgeAll(): String {
-        adminService.purgeAll()
+//        adminService.purgeAll()
 
-        return "Purged!"
+        return "Disabled!"
     }
 
     @RequestMapping("reset")
     fun reset(): String {
-        adminService.reset()
+//        adminService.reset()
 
-        return "Reset."
+        return "Disabled."
     }
 
 }

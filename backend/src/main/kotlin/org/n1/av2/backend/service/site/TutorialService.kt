@@ -2,14 +2,9 @@ package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.run.RunLinkEntityService
-import org.n1.av2.backend.entity.site.*
-import org.n1.av2.backend.entity.site.layer.Layer
-import org.n1.av2.backend.entity.site.layer.OsLayer
-import org.n1.av2.backend.entity.site.layer.ice.*
-import org.n1.av2.backend.entity.site.layer.other.*
+import org.n1.av2.backend.entity.site.SiteEditorStateEntityService
+import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.UserEntity
-import org.n1.av2.backend.model.ui.AddConnection
-import org.n1.av2.backend.model.ui.AddNode
 import org.n1.av2.backend.service.admin.ImportService
 import org.n1.av2.backend.service.run.terminal.scanning.ScanService
 import org.springframework.stereotype.Service
@@ -31,7 +26,7 @@ class TutorialService(
     fun setup() {
         val site = sitePropertiesEntityService.findByName("tutorial")
         if (site == null) {
-            val json = this::class.java.getResource("/v1-tutorial_1.json").readText()
+            val json = this::class.java.getResource("/v1-tutorial_1.json")?.readText() ?: error("tutorial json not found")
             importService.importSite(json)
         }
     }

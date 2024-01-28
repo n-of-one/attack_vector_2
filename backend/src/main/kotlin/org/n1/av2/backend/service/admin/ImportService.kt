@@ -104,6 +104,7 @@ class ImportService(
         val v1Nodes = root.get("nodes").asList()
 
         val nodes = v1Nodes.map { input ->
+
             Node(
                 id = input["id"].asText(),
                 siteId = input["siteId"].asText(),
@@ -140,7 +141,7 @@ class ImportService(
         val note = input.get("note").asText()
 
         return when (layerType) {
-            LayerType.OS -> OsLayer(type = LayerType.OS, id = id, level = level, name = name, note = note, nodeName = input.get("nodeName").asText())
+            LayerType.OS -> mapLayerOs(input, id, level, name, note)
             LayerType.TEXT -> TextLayer(type = LayerType.TEXT, id = id, level = level, name = name, note = note, text = input.get("text").asText())
             LayerType.CORE -> CoreLayer(
                 type = LayerType.CORE,
@@ -169,6 +170,20 @@ class ImportService(
             LayerType.PASSWORD_ICE -> mapIceLayer(input, layerType, id, level, name, note)
             LayerType.WORD_SEARCH_ICE -> mapIceLayer(input, layerType, id, level, name, note)
         }
+    }
+
+    private fun mapLayerOs(input: JsonNode, id: String, level: Int, name: String, note: String): OsLayer {
+        val nodeName = input.get("nodeName").asText()
+        val layerId = fixOsLayerId(id)
+        return OsLayer( type = LayerType.OS, id = layerId, level = level, name = name, note = note, nodeName = nodeName)
+    }
+
+    // Initial version has OS layerId: {nodeId}-layer-0000 . This break in format makes it incompatible with input validation.
+    private fun fixOsLayerId(idInput: String): String {
+        if (!(idInput.endsWith("-layer-0000")) ) return idInput
+
+        val nodeId = idInput.substringBefore("-layer-0000")
+        return nodeEntityService.createOsLayerId(nodeId)
     }
 
     private fun mapLayerStatusLight(input: JsonNode, id: String, level: Int, name: String, note: String): StatusLightLayer {

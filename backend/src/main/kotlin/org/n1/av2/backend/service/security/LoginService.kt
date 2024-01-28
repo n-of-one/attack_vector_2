@@ -72,7 +72,7 @@ class LoginService(
         return Cookie("userName", encodedUserName)
     }
 
-    private fun generateJwtCookie(userEntity: UserEntity): Cookie {
+    fun generateJwtCookie(userEntity: UserEntity): Cookie {
         val jwt = jwtTokenProvider.generateJwt(userEntity)
         return Cookie("jwt", jwt)
     }

@@ -30,11 +30,10 @@
 		<logback-classic>1.4.14</logback-classic>
 		<jsonwebtoken>0.12.3</jsonwebtoken>
 		<annotation-api>1.3.2</annotation-api>
+		<flapdoodle.version>4.12.2</flapdoodle.version>
 	</properties>
 
 	<dependencies>
-
-		<!-- Database -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -139,6 +138,25 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>${flapdoodle.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
+			<version>${flapdoodle.version}</version>
 			<scope>test</scope>
 		</dependency>
 

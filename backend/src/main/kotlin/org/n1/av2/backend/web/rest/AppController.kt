@@ -2,11 +2,10 @@ package org.n1.av2.backend.web.rest
 
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.ice.IceLayer
-import org.n1.av2.backend.entity.site.layer.ice.TangleIceLayer
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
+import org.n1.av2.backend.security.ValidLayerId
 import org.n1.av2.backend.service.layerhacking.ice.IceAuthorizationService
 import org.n1.av2.backend.service.layerhacking.ice.IceService
-import org.springframework.context.annotation.Lazy
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,9 +25,7 @@ class AppController(
     class AppResponse(val appId: String?, val redirectLayerId: String?, val error: String?)
 
     @GetMapping("{layerId}")
-    fun getAppOrRedirect(
-        @PathVariable layerId: String,
-    ): AppResponse {
+    fun getAppOrRedirect(@PathVariable @ValidLayerId layerId: String, ): AppResponse {
 
         val node = nodeEntityService.findByLayerId(layerId)
         val layer = node.getLayerById(layerId)

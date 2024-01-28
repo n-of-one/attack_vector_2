@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import org.n1.av2.backend.AttackVector
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions.MongoConverterConfigurationAdapter
@@ -16,6 +17,7 @@ import java.util.*
 
 @Configuration
 @EnableMongoRepositories(basePackageClasses = [(AttackVector::class)])
+@Profile("!test")
 class MongoDbConfig(
     val config: ServerConfig
 

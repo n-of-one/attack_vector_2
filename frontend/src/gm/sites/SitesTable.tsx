@@ -1,7 +1,7 @@
 import {GmSite} from "./GmSitesReducer";
 import {SilentLink} from "../../common/component/SilentLink";
 import React from "react";
-import {deleteCall} from "../../common/server/RestClient";
+import {restDelete} from "../../common/server/RestClient";
 import {notify} from "../../common/util/Notification";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {toServerUrl} from "../../common/util/DevEnvironment";
@@ -20,14 +20,11 @@ export const SiteList = (props: Props) => {
 
     const deleteSite = (siteId: string, name: string) => {
         if (window.confirm(`Confirm that you want to delete site ${name}. `)) {
-            deleteCall({
+            restDelete({
                 url: `/api/site/${siteId}`,
                 body: {},
                 ok: () => {
                     window.location.reload()
-                },
-                notok: () => {
-                    notify({type: "fatal", message: "Connection to server failed, unable to continue."})
                 },
                 error: () => {
                     notify({type: "fatal", message: "Connection to server failed, unable to continue."})

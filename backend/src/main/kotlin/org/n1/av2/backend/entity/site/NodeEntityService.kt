@@ -51,7 +51,7 @@ class NodeEntityService(
     }
 
     fun createOsLayerId(nodeId: String): String {
-        return "${nodeId}-layer-0000"
+        return "${nodeId}:layer-0000"
     }
 
     fun createLayerId(node: Node): String {

@@ -83,11 +83,16 @@ class UserEntityService(
 
 
 
-    fun createUserForTest(name: String) {
+    fun createUserForTest(name: String, type: UserType = UserType.HACKER): UserEntity {
+        val existingUser = userRepo.findByNameIgnoreCase(name)
+        if (existingUser != null) {
+            return existingUser
+        }
+
         val newUserEntity = UserEntity(
             id = testUserId(name),
             name = name,
-            type = UserType.HACKER,
+            type = type,
             hacker = Hacker(
                 icon = HackerIcon.COBRA,
                 skill = HackerSkill(5, 0, 0),
@@ -95,7 +100,7 @@ class UserEntityService(
             ),
             email = "",
         )
-        userRepo.save(newUserEntity)
+        return userRepo.save(newUserEntity)
     }
 
     fun deleteTestUserIfExists(name: String) {

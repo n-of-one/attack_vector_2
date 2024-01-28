@@ -10,7 +10,7 @@ const createNotification = (message: string, duration: number, dismiss = true) =
             return (<span onClick={dismissMethod} style={{cursor: "pointer"}}>
                 <span>
                     <span className="text" style={{color: "white", fontSize: "16px"}}>{message}</span>&nbsp;
-                    <span className="text">[close]</span>
+                    { dismiss ? <span className="text">[close]</span> : <></>}
                 </span>
             </span>)
         },

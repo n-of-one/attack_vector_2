@@ -1,14 +1,13 @@
 
 interface PostCall {
     url: string,
-    body: Object,
+    body?: Object,
     ok: (response: any) => void,
-    notok: (response: Response) => void,
-    error: (result: Error) => void,
+    error: (result: Error | Response) => void,
     method?: string
 }
 
-export const restCall = ({url, body, ok, notok, error, method}: PostCall) => {
+export const restCall = ({url, body, ok, error, method}: PostCall) => {
 
         fetch(url, {
             method: method ? method : "POST",
@@ -24,40 +23,30 @@ export const restCall = ({url, body, ok, notok, error, method}: PostCall) => {
                     }
                     else {
                         console.log("Response was empty or not a JSON object: '" + data + "'")
-                        notok(response)
+                        error(response)
                     }
                 })
             }
             else {
-                if (notok) {
-                    notok(response)
-                }
-                else {
-                    console.log("Post request failed to '" + url + "' but no not-ok handling supplied.")
-                }
+                error(response)
             }
         }
     ).catch((result: Error) => {
-        if (error) {
-            error(result)
-        }
-        // else if (notok) {
-        //     notok(result)
-        // }
-        else {
-            console.log("Post request failed to '" + url + "' but no error or not-ok handling supplied.")
-            console.log(result)
-        }
+        error(result)
     })
 }
 
-
-export const post = ({url, body, ok, notok, error, }: PostCall) => {
-    restCall({url, body, ok, notok, error, method: "POST"})
+export const restGet = ({url, ok, error}: PostCall) => {
+    restCall({url, body:undefined, ok, error, method: "GET"})
 }
 
 
-export const deleteCall = ({url, body, ok, notok, error}: PostCall) => {
-    restCall({url, body, ok, notok, error, method: "DELETE"})
+export const restPost = ({url, body, ok, error, }: PostCall) => {
+    restCall({url, body, ok, error, method: "POST"})
+}
+
+
+export const restDelete = ({url, body, ok, error}: PostCall) => {
+    restCall({url, body, ok, error, method: "DELETE"})
 }
 

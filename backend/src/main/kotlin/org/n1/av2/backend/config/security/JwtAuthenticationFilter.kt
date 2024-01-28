@@ -42,6 +42,7 @@ class JwtAuthenticationFilter(
         }
 
         if (authentication == null) {
+            // Need to set authentication to make AccessDeniedHandler work
             authentication = UserPrincipal.notLoggedIn()
             SecurityContextHolder.getContext().authentication = authentication
         }

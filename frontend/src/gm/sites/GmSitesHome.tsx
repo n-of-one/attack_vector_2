@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {useSelector} from "react-redux"
 import {TextInput} from "../../common/component/TextInput"
-import {post} from "../../common/server/RestClient"
+import {restPost} from "../../common/server/RestClient"
 import {notify} from "../../common/util/Notification"
 import {GmState} from "../GmRootReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
@@ -28,18 +28,20 @@ export const GmSitesHome = () => {
     }, [])
 
     const edit = (siteName: string) => {
-        post({
+        restPost({
             url: "/api/site/edit",
             body: {siteName: siteName},
             ok: ({id}: { id: string }) => {
                 window.open("/edit/" + id)
                 askForSitesList()
             },
-            notok: () => {
-                notify({type: "fatal", message: "Connection to server failed, unable to continue."})
-            },
-            error: () => {
-                notify({type: "fatal", message: "Connection to server failed, unable to continue."})
+            error: (result: Error | Response) => {
+                if (result instanceof Response) {
+                    notify({type: "error", message: `Failed to create site: ${result.status} ${result.statusText}`})
+                }
+                else {
+                    notify({type: "error", message: `Failed to create site: ${result.message}`});
+                }
             }
         })
     }

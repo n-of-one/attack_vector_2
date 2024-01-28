@@ -1,5 +1,5 @@
 import React, {FormEvent, useState} from 'react'
-import {post} from "../common/server/RestClient"
+import {restPost} from "../common/server/RestClient"
 import {Banner} from "./Banner";
 
 
@@ -8,7 +8,7 @@ export const redirect = () => {
     if (next === null) {
         document.location.href = "/"
     } else {
-        const allowedRedirect = /^[a-zA-Z0-9\/_\-=]{1,200}$/g // allow only a-z A-Z 0-9 / _ - =   the URL-base64 characters and /
+        const allowedRedirect = /^[a-zA-Z0-9/_\-=]{1,200}$/ // allow only a-z A-Z 0-9 / _ - =   the URL-base64 characters and /
         if (allowedRedirect.test(next)) {
             document.location.href = next
         } else {
@@ -38,7 +38,7 @@ export const DevLogin = () => {
         const loginInput = {name: name, password: "not-needed-for-dev"}
         setMessage("Logging in")
 
-        post({
+        restPost({
             url: "/openapi/login",
             body: loginInput,
             ok: ({success, message}: { success: boolean, message: string }) => {
@@ -47,9 +47,6 @@ export const DevLogin = () => {
                 } else {
                     setMessage(message)
                 }
-            },
-            notok: () => {
-                setMessage("Connection to server failed, unable to continue.")
             },
             error: () => {
                 setMessage("Connection to server failed, unable to continue.")

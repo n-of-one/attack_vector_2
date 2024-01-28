@@ -21,11 +21,13 @@ class HackerClient(
 
 
     suspend fun startAttack() {
+        val node = this.siteInfo.site.nodes.find { it.networkId == "00" } ?: error("Could not find node with networkId \"00\"")
+
+        println("\nStarting attack, waiting to arrive at 00 = ${node.id}")
+
         sendCommand("attack")
 
-        val nodeId = "node-679a-4033"
-
-        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${nodeId}\",\"userId\":\"${client.userId}\"", 10)
+        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${node.id}\",\"userId\":\"${client.userId}\"", 10)
         client.clearMessage()
     }
 
@@ -49,7 +51,7 @@ class HackerClient(
     }
 
     suspend fun startRun(siteName: String) {
-        client.send("/av/scan/scanForName", siteName)
+        client.send("/av/run/newRun", siteName)
         waitForSiteInfo(siteName)
         joinRun()
     }
@@ -61,6 +63,7 @@ class HackerClient(
         client.subscribe("/topic/run/${runId}")
         client.subscribe("/site/run/${siteId}")
         client.send("/av/run/enterRun", runId)
+
 
         val siteInfoJson = client.waitFor(ServerActions.SERVER_ENTERED_RUN, "\"runId\":\"${runId}\"")
         this.siteInfo = objectMapper.readValue(siteInfoJson)
@@ -91,6 +94,9 @@ class HackerClient(
 
     suspend fun move(networkId: String) {
         val node = this.siteInfo.site.nodes.find { it.networkId == networkId } ?: error("Could not find node with networkId ${networkId}")
+
+        println("\nMoving to node ${networkId} = ${node.id}")
+
         client.send("/av/terminal/main", "{\"command\":\"move ${networkId}\",\"runId\":\"${runId}\"}")
 
         client.waitFor(ServerActions.SERVER_HACKER_MOVE_START, "\"userId\":\"${client.userId}\"", 1)

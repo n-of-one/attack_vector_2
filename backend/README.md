@@ -32,7 +32,11 @@ experience when running the server locally when running the server locally.
 If the environment name starts with: `dev` then the `quickscan` & `qs` and `quickattack` & `qa` commands are enabled.
 
 
-`GOOGLE_CLIENT_ID`   When using Google login, set this property. Format: 012345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com  . Defaults to: none
+`GOOGLE_CLIENT_ID`   When using Google login, set this property. Format: 012345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com  . 
+Defaults to: none  . 
+
+To create this: set up a project in the Google cloud console, and create oauth client credentials for a web application . 
+(https://console.cloud.google.com/apis/credentials). Requires https URLs unless it's for localhost.
 
 `FRONTIER_ORTHANK_TOKEN`   Security token to access Orthank (Frontier Larp only). Defaults to: none 
 

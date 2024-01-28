@@ -9,7 +9,6 @@ import org.springframework.context.event.EventListener
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -28,9 +27,6 @@ import java.util.*
 @Configuration
 class WebSocketSecurityConfig: AbstractSecurityWebSocketMessageBrokerConfigurer() {
 
-    override fun configureInbound(messages: MessageSecurityMetadataSourceRegistry) {
-//        messages.simpDestMatchers("/user/*").authenticated()
-    }
 
     override fun sameOriginDisabled(): Boolean {
         return true

@@ -1,8 +1,6 @@
 package org.n1.av2.backend.integration.stomp
 
-import org.n1.av2.backend.entity.run.RunLinkEntityService
-import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.service.security.LoginService
+import org.n1.av2.backend.integration.service.WebsocketUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -11,13 +9,7 @@ import org.springframework.stereotype.Component
 class StompClientService {
 
     @Autowired
-    private lateinit var userEntityService: UserEntityService
-
-    @Autowired
-    private lateinit var runLinkEntityService: RunLinkEntityService
-
-    @Autowired
-    private lateinit var loginService: LoginService
+    private lateinit var websocketUserService: WebsocketUserService
 
     private var port = 0
 
@@ -26,17 +18,14 @@ class StompClientService {
     }
 
     suspend fun createAndConnect(name: String): HackerClient {
-        userEntityService.deleteTestUserIfExists(name)
-        runLinkEntityService.deleteAllForUser(name)
-        userEntityService.createUserForTest(name)
+        websocketUserService.delete(name)
 
         val hacker = connectFor(name)
         return hacker
     }
 
     private suspend fun connectFor(userName: String): HackerClient {
-        val user = userEntityService.getByName(userName)
-        val cookies = loginService.login(userName, "")
+        val (user, cookies) = websocketUserService.login(userName)
         val cookie = cookies[0]
         val cookieString = "${cookie.name}=${cookie.value}"
 

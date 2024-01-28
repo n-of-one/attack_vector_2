@@ -1,5 +1,5 @@
 import React, {FormEvent, useState} from 'react'
-import {post} from "../common/server/RestClient"
+import {restPost} from "../common/server/RestClient"
 import {Banner} from "./Banner";
 import {redirect} from "./DevLogin";
 
@@ -18,7 +18,7 @@ export const AdminLogin = () => {
         const loginInput = {name: name, password: password}
         setMessage("Logging in")
 
-        post({
+        restPost({
             url: "/openapi/login",
             body: loginInput,
             ok: ({success, message}: { success: boolean, message: string }) => {
@@ -27,9 +27,6 @@ export const AdminLogin = () => {
                 } else {
                     setMessage(message)
                 }
-            },
-            notok: () => {
-                setMessage("Connection to server failed, unable to continue.")
             },
             error: () => {
                 setMessage("Connection to server failed, unable to continue.")
