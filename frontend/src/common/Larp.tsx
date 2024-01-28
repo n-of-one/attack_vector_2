@@ -9,10 +9,10 @@ import {LoggedOut} from "../login/LoggedOut";
 import {GoogleAuth} from "../login/GoogleAuth";
 
 export enum LarpType {
-    LOCAL_DEV,
-    FRONTIER,
-    ATTACK_VECTOR_NL,
-    GENERIC
+    LOCAL_DEV= "local development",
+    FRONTIER = "Frontier",
+    ATTACK_VECTOR_NL = "attackvector.nl",
+    GENERIC = "generic",
 }
 
 
@@ -31,6 +31,8 @@ export class Larp {
 
 
     constructor() {
+        console.log(`Configuration: ${this.type}`)
+
         if (this.type === LarpType.LOCAL_DEV) {
             this.name = "development"
             this.hackerEditSkills = true
@@ -52,6 +54,7 @@ export class Larp {
             this.hackersDeleteRunLinks = false
             this.hackerEditCharacterName = false
             this.hackerEditUserName = false
+            return
         }
 
         // else
