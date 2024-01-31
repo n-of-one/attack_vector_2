@@ -44,7 +44,7 @@ class SyntaxHighlightingService(
         syntaxOutside["help"] = Syntax("u", "u")
         syntaxOutside["scan"] = Syntax("u")
         syntaxOutside["dc"] = Syntax("u", "error s")
-        syntaxOutside["/share"] = Syntax("u warn", "info")
+        syntaxOutside["/share"] = Syntax(listOf("u warn"), "info")
 
         syntaxOutside["attack"] = Syntax("u")
 
@@ -58,7 +58,7 @@ class SyntaxHighlightingService(
         syntaxInside["help"] = Syntax("u", "u")
         syntaxInside["scan"] = Syntax("u")
         syntaxInside["dc"] = Syntax("u")
-        syntaxInside["/share"] = Syntax("u warn", "info")
+        syntaxInside["/share"] = Syntax(listOf("u warn"), "info")
 
         syntaxInside["move"] = Syntax("u", "ok")
         syntaxInside["view"] = Syntax("u")

@@ -8,7 +8,7 @@ import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
-import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.model.ui.ServerActions.*
 import org.n1.av2.backend.service.run.TERMINAL_CHAT
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
@@ -40,26 +40,26 @@ class RunLinkService(
         val runLinks = runLinkEntityService.findAllByUserId(userId)
         val runs = runEntityService.getAll(runLinks)
         val scanItems = runs.map(::createRunInfo)
-        stompService.toUser(userId, ServerActions.SERVER_UPDATE_USER_RUNS, scanItems)
+        stompService.toUser(userId, SERVER_UPDATE_USER_RUNS, scanItems)
     }
 
     fun shareRun(runId: String, userEntity: UserEntity) {
         if (runLinkEntityService.hasUserRunLink(userEntity, runId)) {
-            stompService.replyTerminalReceive("[info]${userEntity.name}[/] already has this scan.")
+            stompService.replyTerminalReceive("[info]${userEntity.name}[/] already has this run.")
             return
         }
         runLinkEntityService.createRunLink(runId, userEntity)
-        stompService.replyTerminalReceive("Shared scan with [info]${userEntity.name}[/].")
+        stompService.replyTerminalReceive("Shared run with [info]${userEntity.name}[/].")
 
         val myUserName = currentUserService.userEntity.name
 
         val scan = runEntityService.getByRunId(runId)
         val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
-        stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
+        stompService.toUser(userEntity.id, SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
         stompService.toUser(
             userEntity.id,
-            ServerActions.SERVER_TERMINAL_RECEIVE,
+            SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
         )
 
@@ -78,7 +78,7 @@ class RunLinkService(
     fun sendUpdatedRunInfoToHackers(run: Run) {
         val runInfo = createRunInfo(run)
         runLinkEntityService.getUserIdsOfRun(run.runId).forEach {userId ->
-            stompService.toUser(userId, ServerActions.SERVER_UPDATE_RUN_INFO, runInfo)
+            stompService.toUser(userId, SERVER_UPDATE_RUN_INFO, runInfo)
         }
     }
 

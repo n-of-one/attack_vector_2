@@ -36,8 +36,8 @@ class CommandHelpService(
             "[u]attack",
             "Enter the site and start the attack..",
             "",
-            "[u]/share[/u] [info]<user name>",
-            "Share your scan with another hacker so they can join you.",
+            "[u]/share[/] [info]<user name>[/] (optionally more usernames)",
+            "Share your run with one or more hackers so they can join you.",
             "",
         )
         if (config.dev) {
@@ -80,8 +80,8 @@ class CommandHelpService(
             "[u]dc",
             "Disconnect from the site, stop your attack. You can also click on 'Home' in the menu at the bottom.",
             "",
-            "[u]/share[/] [info]<user name>",
-            "Share your run with another hacker so they can join you.",
+            "[u]/share[/] [info]<user name>[/] (optionally more usernames)",
+            "Share your run with one or more hackers so they can join you.",
             "",
             "For information on shortcuts, type: [u]help[/] [u]shortcuts[/]",
             "",

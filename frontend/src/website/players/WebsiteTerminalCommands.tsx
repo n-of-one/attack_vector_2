@@ -54,10 +54,11 @@ export const WebsiteTerminalCommands = () => {
                     These can be given either outside or inside a site.<br/>
                     <br/>
                     <ul>
-                        <li><span className="terminal_input">/share</span> - share your run with another player, allowing them to join you and cooperate. For example: <span
-                            className="terminal_input terminal_style_warn">/share <span className="terminal_style_info">paradox</span></span><br/><br/>
-                            You can also share the site name with another player. They can use this to enter the site, but they would be in their own 'run'. This means
-                            that you cannot see each other, or collaborate. They are still hacking the same site, so any ICE hacking in one run will affect all runs.<br/><br/>
+                        <li><span className="terminal_input">/share</span> - share your run with other players, allowing them to join you and cooperate. For example: <span
+                            className="terminal_input terminal_style_warn">/share</span> <span className="terminal_style_info">paradox</span> <span className="terminal_style_info">stalker</span>
+                        <br/><br/>
+                        You can also share the site name with other players. They can use this to enter the site, but they would be in their own 'run'. This means
+                            that you cannot see each other, or collaborate. All runs are hacking the same site, so any ICE that is hacked in one run will be hacked in all runs.<br/><br/>
                         </li>
                     </ul>
                 </p>
