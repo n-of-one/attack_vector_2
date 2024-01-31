@@ -41,24 +41,29 @@ class SyntaxHighlightingService(
     private val syntaxInside = HashMap<String, Syntax>()
 
     init {
-        syntaxOutside["help"] = Syntax("u")
-        syntaxOutside["autoscan"] = Syntax("u")
-        syntaxOutside["attack"] = Syntax("u")
-        syntaxOutside["scan"] = Syntax("u", "ok")
+        syntaxOutside["help"] = Syntax("u", "u")
+        syntaxOutside["scan"] = Syntax("u")
         syntaxOutside["dc"] = Syntax("u", "error s")
         syntaxOutside["/share"] = Syntax("u warn", "info")
+
+        syntaxOutside["attack"] = Syntax("u")
+
         syntaxOutside["move"] = Syntax("error s")
         syntaxOutside["view"] = Syntax("error s")
         syntaxOutside["hack"] = Syntax("error s")
+        syntaxOutside["password"] = Syntax("error s")
 
-        syntaxInside["help"] = Syntax("u")
-        syntaxInside["move"] = Syntax("u", "ok")
-        syntaxInside["view"] = Syntax("u")
-        syntaxInside["hack"] = Syntax("u", "primary")
-        syntaxInside["open"] = Syntax("u", "primary")
+
+
+        syntaxInside["help"] = Syntax("u", "u")
         syntaxInside["scan"] = Syntax("u")
         syntaxInside["dc"] = Syntax("u")
         syntaxInside["/share"] = Syntax("u warn", "info")
+
+        syntaxInside["move"] = Syntax("u", "ok")
+        syntaxInside["view"] = Syntax("u")
+        syntaxInside["hack"] = Syntax("u", "primary")
+        syntaxInside["password"] = Syntax("u", "primary")
     }
 
 

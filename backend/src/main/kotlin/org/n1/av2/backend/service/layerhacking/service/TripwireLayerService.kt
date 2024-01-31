@@ -10,7 +10,6 @@ import org.n1.av2.backend.entity.service.Timer
 import org.n1.av2.backend.entity.service.TimerEntityService
 import org.n1.av2.backend.entity.service.TimerType
 import org.n1.av2.backend.entity.site.NodeEntityService
-import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.model.ui.ServerActions.SERVER_TERMINAL_RECEIVE
@@ -50,10 +49,6 @@ class TripwireLayerService(
         }
         val node = nodeEntityService.findByLayerId(layer.coreLayerId!!)
         stompService.replyTerminalReceive("This tripwire is managed by core in node [ok]${node.networkId}")
-    }
-
-    fun open(layer: Layer) {
-        stompService.replyTerminalReceive("Service has no UI.")
     }
 
     fun hackerArrivesNode(siteId: String, layer: TripwireLayer, nodeId: String, userId: String, runId: String) {

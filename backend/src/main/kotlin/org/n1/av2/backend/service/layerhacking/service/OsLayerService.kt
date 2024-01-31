@@ -8,13 +8,7 @@ class OsLayerService(
     private val stompService: StompService
 ) {
 
-
     fun hack(layer: Layer) {
         stompService.replyTerminalReceive("Hacking ${layer.name} reveals nothing new.")
     }
-
-    fun open(layer: Layer) {
-        stompService.replyTerminalReceive("Connecting to ${layer.name} reveals nothing new.")
-    }
-
 }

@@ -45,8 +45,8 @@ class CommandHackService(
         process(runId, tokens, state, "hack", ::handleQuickHack)
     }
 
-    fun processOpenCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        process(runId, tokens, state, "open ", ::handleOpen)
+    fun processPasswordCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
+        process(runId, tokens, state, "password ", ::handlePassword)
     }
 
     private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
@@ -94,19 +94,12 @@ class CommandHackService(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun handleOpen(node: Node, layer: Layer, runId: String) {
-        when (layer) {
-            is OsLayer -> osLayerService.open(layer)
-            is TextLayer -> textLayerService.open(layer, node)
-            is IceLayer -> openIce(layer)
-            is KeyStoreLayer -> keystoreLayerService.open(layer)
-            is StatusLightLayer -> statusLightLayerService.open(layer)
-            is TripwireLayer -> tripwireLayerService.open(layer)
-            else -> stompService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
+    private fun handlePassword(node: Node, layer: Layer, runId: String) {
+        if (layer !is IceLayer) {
+            stompService.replyTerminalReceive("[info]not supported[/] - Only ICE can be given a password.")
+            return
         }
-    }
 
-    fun openIce(layer: IceLayer) {
         data class EnterIce(val layerId: String)
         stompService.reply(ServerActions.SERVER_REDIRECT_CONNECT_ICE, EnterIce(layer.id))
         stompService.replyTerminalReceive("Opened in new window.")
@@ -120,11 +113,12 @@ class CommandHackService(
     private fun reportLayerUnknown(node: Node, layerInput: String) {
         val layerCount = node.layers.size
         if (layerCount == 1) {
-            stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
-                "This node has only one service, the only valid option is: [u]hack [primary]0[/].")
+            stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not found.",
+                "This node has only one layer, the only valid option is: [u]hack [primary]0[/].")
         } else {
-            stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not understood.",
-                "This node has ${layerCount} services, so use a number between [primary]0[/] and [primary]${layerCount - 1}[/].")
+            stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not found.",
+                "This node has ${layerCount} layers, so use a number between [primary]0[/] and [primary]${layerCount - 1}[/].",
+                "Use [u]view[/] to see the layers and their numbers.")
         }
     }
 

@@ -1,9 +1,9 @@
 package org.n1.av2.backend.service.run.terminal.outside
 
-import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.entity.run.Run
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
+import org.n1.av2.backend.service.run.terminal.CommandHelpService
 import org.n1.av2.backend.service.run.terminal.CommandScanService
 import org.n1.av2.backend.service.run.terminal.SocialTerminalService
 import org.n1.av2.backend.service.util.StompService
@@ -15,18 +15,18 @@ class OutsideTerminalService(
     private val socialTerminalService: SocialTerminalService,
     private val commandStartAttackService: CommandStartAttackService,
     private val stompService: StompService,
-    private val config: ServerConfig,
     private val runEntityService: RunEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val timeService: TimeService,
     private val commandScanService: CommandScanService,
+    private val commandHelpService: CommandHelpService,
 ) {
 
 
     fun processCommand(runId: String, command: String) {
         val tokens = command.split(" ")
         when (tokens[0]) {
-            "help" -> processHelp()
+            "help" -> commandHelpService.processHelp(false, tokens)
             "/share" -> socialTerminalService.processShare(runId, tokens)
             "move", "view", "hack", "connect" -> reportHackCommand()
             "servererror" -> error("gah")
@@ -42,7 +42,7 @@ class OutsideTerminalService(
         }
 
         when (tokens[0]) {
-            "scan" ->  commandScanService.processScanFromOutside(run, tokens)
+            "scan" ->  commandScanService.processScanFromOutside(run)
             "quickscan", "qs" -> commandScanService.processQuickScan(run)
             "attack" ->  processAttack(run, false)
             "quickattack", "qa" -> processAttack(run, true)
@@ -55,22 +55,6 @@ class OutsideTerminalService(
     }
 
 
-    private fun processHelp() {
-        stompService.replyTerminalReceive(
-            "Command options:",
-            " [u]attack",
-            " [u]scan[/] [ok]<network id>[/]   -- for example: [u]scan[/] [ok]00",
-            " [u]/share[/u] [info]<user name>"
-        )
-        if (config.dev) {
-            stompService.replyTerminalReceive(
-                "",
-                "[i]Available only during development and testing:[/]",
-                " [u]quickscan[/] or [u]qs",
-                " [u]quickattack[/] or [u]qa"
-            )
-        }
-    }
 
 
     private fun processAttack(run: Run, quick: Boolean) {

@@ -5,10 +5,8 @@ import org.n1.av2.backend.engine.TaskIdentifiers
 import org.n1.av2.backend.entity.run.RunEntityService
 import org.n1.av2.backend.entity.service.Timer
 import org.n1.av2.backend.entity.service.TimerEntityService
-import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.other.CoreLayer
-import org.n1.av2.backend.entity.site.layer.other.TextLayer
 import org.n1.av2.backend.entity.site.layer.other.TripwireLayer
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.run.terminal.scanning.InitiateScanService
@@ -69,7 +67,4 @@ class CoreLayerService(
         return timers
     }
 
-    fun connect(layer: TextLayer, node: Node) {
-        stompService.replyTerminalReceive("Access to UI denied")
-    }
 }

@@ -2,6 +2,7 @@ package org.n1.av2.backend.service.run.terminal.inside
 
 import org.n1.av2.backend.entity.run.HackerStateEntityService
 import org.n1.av2.backend.service.run.RunService
+import org.n1.av2.backend.service.run.terminal.CommandHelpService
 import org.n1.av2.backend.service.run.terminal.CommandScanService
 import org.n1.av2.backend.service.run.terminal.SocialTerminalService
 import org.n1.av2.backend.service.util.StompService
@@ -17,6 +18,7 @@ class InsideTerminalService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runService: RunService,
     private val commandScanService: CommandScanService,
+    private val commandHelpService: CommandHelpService,
 ) {
 
     fun processCommand(runId: String, command: String) {
@@ -25,7 +27,7 @@ class InsideTerminalService(
 
 
         when (commandAction) {
-            "help" -> processHelp()
+            "help" -> commandHelpService.processHelp(true, tokens)
             "dc" -> processDc(runId)
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
@@ -41,7 +43,7 @@ class InsideTerminalService(
             "hack" -> commandHackService.processHackCommand(runId, tokens, state)
             "qhack" -> commandHackService.processQuickHack(runId, tokens, state)
             "view" -> commandViewService.process(runId, state)
-            "open" -> commandHackService.processOpenCommand(runId, tokens, state)
+            "password" -> commandHackService.processPasswordCommand(runId, tokens, state)
             "scan" -> commandScanService.processScanFromInside(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
@@ -49,17 +51,7 @@ class InsideTerminalService(
         }
     }
 
-    private fun processHelp() {
-        stompService.replyTerminalReceive(
-                "Command options:",
-                " [u]move[/] [ok]<network id>[/]     -- for example: [u]mv[ok] 01",
-                " [u]view",
-                " [u]open[/] [primary]<layer>[/]          -- for example: [u]open[primary] 1",
-                " [u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 1",
-                " [u]scan[/]",
-                " [u]dc",
-                " [u]/share[/] [info]<user name>")
-    }
+
 
     fun processDc(runId: String) {
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
