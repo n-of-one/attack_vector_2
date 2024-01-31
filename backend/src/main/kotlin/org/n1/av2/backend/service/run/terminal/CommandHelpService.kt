@@ -69,7 +69,7 @@ class CommandHelpService(
             "This is the primary way to interact with layers, works on almost all layers.",
             "",
             "",
-            "These commands are only used ocasionally:",
+            "These commands are only used occasionally:",
             "",
             "[u]scan[/]",
             "Scan to reveal new nodes once ICE has been hacked.",
