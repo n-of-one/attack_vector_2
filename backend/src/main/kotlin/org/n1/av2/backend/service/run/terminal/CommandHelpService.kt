@@ -61,7 +61,7 @@ class CommandHelpService(
             "[u]view",
             "Shows the current layers in the node you are in. You can also click on a node on the map.",
             "",
-            "[u]move[/] [ok]<network id>[/]     -- for example: [u]mv[ok] 01",
+            "[u]move[/] [ok]<network id>[/]     -- for example: [u]move[ok] 01",
             "Move to an adjacent node.",
             "",
             "[u]hack[/] [primary]<layer>[/]          -- for example: [u]hack[primary] 1",
