@@ -82,7 +82,7 @@ class InitiateScanService(
         runEntityService.save(run)
 
         val nodeStatusById = nodes.map { node ->
-            node.id to NodeScanStatus.FULLY_SCANNED_4
+            node.id to if (node.unhackedIce) NodeScanStatus.ICE_PROTECTED_3 else NodeScanStatus.FULLY_SCANNED_4
         }.toMap()
 
         stompService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
