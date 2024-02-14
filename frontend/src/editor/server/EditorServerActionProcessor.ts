@@ -1,6 +1,6 @@
 import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {NotificationType} from "../../common/util/Notification"
-import {editorCanvas, LoadSiteData} from "../component/middle/middle/EditorCanvas"
+import {editorCanvas, LoadSiteData} from "../component/map/canvas/EditorCanvas"
 import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
 import {Connection} from "../reducer/ConnectionsReducer"
 import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";

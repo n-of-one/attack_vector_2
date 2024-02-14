@@ -55,10 +55,15 @@ class EditorController(
         userTaskRunner.runTask(userPrincipal) { editorService.deleteNode(command.siteId, command.nodeId) }
     }
 
-    data class SnapCommand(val siteId: String = "")
+    data class SiteCommand(val siteId: String = "")
     @MessageMapping("/editor/snap")
-    fun snap(command: SnapCommand, userPrincipal: UserPrincipal) {
+    fun snap(command: SiteCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) { editorService.snap(command.siteId) }
+    }
+
+    @MessageMapping("/editor/center")
+    fun center(command: SiteCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { editorService.center(command.siteId) }
     }
 
     @MessageMapping("/editor/editNetworkId")

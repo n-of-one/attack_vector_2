@@ -33,7 +33,9 @@ interface PropsInternal {
 
 const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
     const dispatch = useDispatch()
-    const closeUserEdit = () => { dispatch({type: CLOSE_USER_EDIT}) }
+    const closeUserEdit = () => {
+        dispatch({type: CLOSE_USER_EDIT})
+    }
 
     const save = (field: string, value: string) => {
         const message = {userId: user.id, field, value}
@@ -42,32 +44,34 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
 
     const readonlyUserName = !larp.hackerEditUserName
 
+    const isGm = userAuthorizations.hasRole(ROLE_GM)
+
+    const closeButton = isGm ? <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={closeUserEdit}/></div> : <></>
+
     return <>
-        <div className="d-flex flex-row justify-content-end">
-            <CloseButton closeAction={closeUserEdit} />
-        </div>
+        {closeButton}
 
         <hr/>
 
         <UserAttribute
-            label="Name" id="name" size={8}
+            label="Name" id="name" size={4}
             value={user.name}
             save={save} attributeSaveName="name"
             readonly={readonlyUserName}
         />
 
         <UserAttribute
-            label="GM Note" id="gmNote" size={8}
+            label="GM Note" id="gmNote" size={4}
             value={user.gmNote}
             save={save} attributeSaveName="gmNote"
             readonly={false}
-            show={userAuthorizations.hasRole(ROLE_GM)}
+            show={isGm}
         />
 
 
         <div className="row form-group">
             <label htmlFor="type" className="col-lg-4 control-label text-muted">Type</label>
-            <div className="col-lg-3">
+            <div className="col-lg-4">
                 <DropDownSaveInput id="type" className="form-control"
                                    selectedValue={user.type}
                                    save={(value: string) => save("type", value)}
@@ -82,7 +86,7 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
             </div>
         </div>
         {(user.type === USER_TYPE_HACKER || user.type === USER_TYPE_HACKER_MANAGER) ? hackerFormPart(user, save) : <></>}
-        { deleteUserButton(user, closeUserEdit) }
+        {deleteUserButton(user, closeUserEdit)}
     </>
 }
 
@@ -96,7 +100,7 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
     return <>
         <hr/>
         <UserAttribute
-            label="Character Name" id="characterName" size={8}
+            label="Character Name" id="characterName" size={4}
             value={user.hacker?.characterName}
             save={save} attributeSaveName="characterName"
             readonly={!larp.hackerEditCharacterName}
@@ -104,7 +108,7 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
 
         <div className="row form-group">
             <label htmlFor="type" className="col-lg-4 control-label text-muted">Icon</label>
-            <div className="col-lg-3">
+            <div className="col-lg-4">
                 <DropDownSaveInput id="type" className="form-control"
                                    selectedValue={user.hacker!!.icon}
                                    save={(value: string) => save("hackerIcon", value)}

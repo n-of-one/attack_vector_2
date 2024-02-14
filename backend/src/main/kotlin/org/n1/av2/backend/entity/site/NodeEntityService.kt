@@ -12,11 +12,17 @@ import org.n1.av2.backend.util.createLayerId
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
-const val NODE_MIN_X = 35
-const val NODE_MAX_X = 607 - 35
+const val CANVAS_WIDTH = 1250
+const val CANVAS_HEIGHT = 865
 
-const val NODE_MIN_Y = 35
-const val NODE_MAX_Y = 815 - 48 - 100
+const val MARGIN = 10
+const val MARGIN_BOTTOM_FOR_PLAYER = 113
+
+const val NODE_MIN_X = MARGIN
+const val NODE_MAX_X = CANVAS_WIDTH - MARGIN
+
+const val NODE_MIN_Y = MARGIN
+const val NODE_MAX_Y = CANVAS_HEIGHT - MARGIN - MARGIN_BOTTOM_FOR_PLAYER
 
 
 @Service
@@ -32,12 +38,15 @@ class NodeEntityService(
         val networkId = nextFreeNetworkId(siteId, nodes)
         val layers = mutableListOf(createOsLayer(id))
 
+        val x = capX(command.x)
+        val y = capY(command.y)
+
         val node = Node(
                 id = id,
                 siteId = siteId,
                 type = command.type,
-                x = command.x,
-                y = command.y,
+                x = x,
+                y = y,
                 layers = layers,
                 networkId = networkId)
         nodeRepo.save(node)
@@ -107,8 +116,32 @@ class NodeEntityService(
 
             nodeRepo.save(copy)
         }
-
     }
+
+    fun center(siteId: String, startNodeNetworkId: String) {
+        val nodes = getAll(siteId)
+
+        val startNode = nodes.find { it.networkId == startNodeNetworkId } ?: error("Start node not found: ${startNodeNetworkId}")
+
+        val center = CANVAS_WIDTH / 2
+        val dx = center - startNode.x
+
+        nodes.forEach { node ->
+            val newX = node.x + dx
+            val cappedNewX = capX(newX)
+            if (newX != cappedNewX) {
+                error("Cannot center as that would move node: ${node.networkId} outside of the map")
+            }
+        }
+
+        nodes.forEach { node ->
+            val newX = node.x + dx
+            nodeRepo.save(node.copy(x = newX))
+        }
+
+        nodeRepo.save(startNode.copy(x = center))
+    }
+
 
     fun capX(x: Int): Int {
         return capRange(x, NODE_MIN_X, NODE_MAX_X)

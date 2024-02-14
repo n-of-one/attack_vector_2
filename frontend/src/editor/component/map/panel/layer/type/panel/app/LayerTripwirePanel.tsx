@@ -7,7 +7,7 @@ import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {EditorState} from "../../../../../../../EditorRootReducer";
 import {coreLayerOptions} from "./LayerUtil";
 import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
-import {editorCanvas} from "../../../../../middle/EditorCanvas";
+import {editorCanvas} from "../../../../../canvas/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
 
 interface Props {

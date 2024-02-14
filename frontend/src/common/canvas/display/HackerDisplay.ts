@@ -11,6 +11,7 @@ import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
 import {HackerActivity, HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
 import {notEmpty} from "../../util/Util";
 import {Timings} from "../../model/Ticks";
+import {CANVAS_HEIGHT} from "../CanvasConst";
 
 const APPEAR_TIME = 20
 const DISAPPEAR_TIME = 10
@@ -79,7 +80,7 @@ export class HackerDisplay implements Display {
         this.nodeDisplays = nodeDisplayById
 
         this.x = offset
-        this.y = 810 - 20
+        this.y = CANVAS_HEIGHT - 25
 
         this.addHackerIdentificationIcons()
 

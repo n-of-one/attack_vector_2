@@ -50,10 +50,10 @@ export const RunHome = () => {
 
     return (
         <div className="row">
-            <div className="col-lg-6">
+            <div className="col-lg-4">
                 {TerminalAndScanResultPanel(infoNodeId, terminal, submit)}
             </div>
-            <div className="col-lg-6">
+            <div className="col-lg-8">
                 <div className="row">
                     <div className="col-lg-12">
                         <span className="text">Site: {siteName}</span>

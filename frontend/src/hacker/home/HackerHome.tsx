@@ -23,7 +23,9 @@ export const HackerHome = () => {
 
     return (
         <div className="row">
-            <div className="col-lg-6">
+            <div className="col-lg-2">
+            </div>
+            <div className="col-lg-4">
                 <div className="row">
                     <div className="col-lg-12">
                         <span className="text"><strong>🜁 Verdant OS 🜃</strong></span>
@@ -77,8 +79,8 @@ export const HackerHome = () => {
                                                 </td>
                                                 <td className="table-very-condensed">{scanInfo.nodes}</td>
                                                 <td className="table-very-condensed">
-                                                    { larp.hackersDeleteRunLinks ? <DeleteScanLink runId={scanInfo.runId}/> : <></> }
-                                                    { larp.hackersResetSite ? <ResetIceLink siteId={scanInfo.siteId}/> : <></> }
+                                                    {larp.hackersDeleteRunLinks ? <DeleteScanLink runId={scanInfo.runId}/> : <></>}
+                                                    {larp.hackersResetSite ? <ResetIceLink siteId={scanInfo.siteId}/> : <></>}
                                                 </td>
                                             </tr>)
                                     })

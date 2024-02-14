@@ -108,6 +108,11 @@ class EditorService(
         sendSiteFull(siteId)
     }
 
+    fun center(siteId: String) {
+        val properties = sitePropertiesEntityService.getBySiteId(siteId)
+        nodeEntityService.center(siteId, properties.startNodeNetworkId)
+        sendSiteFull(siteId)
+    }
     data class ServerUpdateNetworkId(val nodeId: String, val networkId: String)
 
     fun editNetworkId(command: EditNetworkIdCommand) {

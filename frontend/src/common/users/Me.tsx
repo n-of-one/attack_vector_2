@@ -21,20 +21,18 @@ export const Me = () => {
                     <span className="text"><strong>🜁 Verdant OS 🜃</strong></span>
                 </div>
             </div>
-            <div className="row">
-                <div className="col-lg-12">
-                    <div className="text">
-                        <br/>
-                        <UserDetails user={user} />
-                    </div>
+        </div>
+        <div className="row">
+            <div className="col-lg-4">
+            </div>
+
+            <div className="col-lg-4">
+                <div className="text">
+                    <br/>
+                    <UserDetails user={user}/>
                 </div>
             </div>
-        </div>
-        <div className="col-lg-6">
-            <div className="row">
-                <div className="col-lg-12">
-                    <span className="text"></span>
-                </div>
+            <div className="col-lg-4">
             </div>
         </div>
     </div>

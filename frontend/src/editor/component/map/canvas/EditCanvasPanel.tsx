@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {EditorState} from "../../../EditorRootReducer"
 import {delay} from "../../../../common/util/Util"
 import {sendAddNode} from "../../../server/EditorServerClient"
+import {CANVAS_HEIGHT, CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
 
 /* eslint react-hooks/exhaustive-deps: 0*/
 
@@ -32,10 +33,10 @@ export const EditCanvasPanel = () => {
     }
 
     return (
-        <div className="col-lg-5" id="canvas-col">
+        <div className="col-lg-8" id="canvas-col" style={{marginLeft: "-7px"}}>
             <div id="canvas-container" onDragOver={(event) => allowDrop(event)}
                  onDrop={(event) => drop_image_and_create_node(event)}>
-                <canvas id="canvas" width="607" height="715" style={{"borderRadius": "3px 3px 3px 3px"}}/>
+                <canvas id="canvas" width={CANVAS_WIDTH} height={CANVAS_HEIGHT_EDITOR} style={{"borderRadius": "3px 3px 3px 3px"}}/>
             </div>
         </div>
     )

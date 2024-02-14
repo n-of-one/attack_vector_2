@@ -106,7 +106,7 @@ export const GmSitesHome = () => {
                     </div>
                 </div>
             </div>
-            <div className="col-lg-5 rightPane rightPane">
+            <div className="col-lg-5 rightPane">
                 <div className="siteMap">
                     <div className="text">Hackable sites</div>
                     <SiteList sites={hackableSites}/>

@@ -1,17 +1,16 @@
 import React from 'react'
-import {EditorMain} from "./middle/EditorMain"
-import {EditorTop} from "./top/EditorTop"
-import {SitePropertiesBottom} from "./bottom/SitePropertiesBottom"
+import {EditorMain} from "./map/EditorMain"
+import {EditorSitePropertiesAndState} from "./properties/EditorSitePropertiesAndState"
+import {SiteDescription} from "./description/SiteDescription"
+import {NodesPanel} from "./nodes/NodesPanel";
 
 export const EditorHome = () => {
     return (
         <div className="container-fluid" data-bs-theme="dark">
-            <br/>
-            <EditorTop/>
-            <br/>
+            <EditorSitePropertiesAndState/>
+            <NodesPanel/>
             <EditorMain/>
-            <br/>
-            <SitePropertiesBottom/>
+            <SiteDescription/>
         </div>
     )
 }

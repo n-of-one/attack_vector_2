@@ -4,7 +4,7 @@ import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
 import {EditorState} from "../../../../../../../EditorRootReducer";
-import {editorCanvas} from "../../../../../middle/EditorCanvas";
+import {editorCanvas} from "../../../../../canvas/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
 import {LayerKeyStore} from "../../../../../../../../common/model/layer/LayerKeystore";
 import {iceLayerOptions} from "./LayerUtil";

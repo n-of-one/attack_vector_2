@@ -2,12 +2,11 @@ import React from 'react'
 import {SitePropertiesTop} from "./SitePropertiesTop"
 import {SiteState} from "./SiteState"
 
-export const EditorTop = () => {
+export const EditorSitePropertiesAndState = () => {
     return (
-        <div className="row editorRow">
-            <div className="col-lg-12 darkWell">
-                <br/>
-                <div className="row">
+        <div className="row marginTop" style={{width: "1891px"}}>
+            <div className="col-lg-12 darkWell marginLeftRight">
+                <div className="row marginTop">
                     <div className="col-lg-6">
                         <SitePropertiesTop/>
                     </div>
@@ -19,3 +18,4 @@ export const EditorTop = () => {
         </div>
     )
 }
+

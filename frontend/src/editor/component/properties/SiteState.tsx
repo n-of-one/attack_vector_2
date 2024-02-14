@@ -1,7 +1,7 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {SilentLink} from "../../../common/component/SilentLink"
-import {editorCanvas} from "../middle/middle/EditorCanvas"
+import {editorCanvas} from "../map/canvas/EditorCanvas"
 import {EditorState} from "../../EditorRootReducer"
 import {SiteStateMessage} from "../../reducer/SiteStateReducer"
 import {SELECT_LAYER} from "../../reducer/CurrentLayerIdReducer"

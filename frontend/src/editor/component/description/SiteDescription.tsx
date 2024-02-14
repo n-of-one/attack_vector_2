@@ -4,7 +4,7 @@ import {TextSaveInput, TextSaveType} from "../../../common/component/TextSaveInp
 import {sendSitePropertyChanged} from "../../server/EditorServerClient"
 import {EditorState} from "../../EditorRootReducer"
 
-export const SitePropertiesBottom = () => {
+export const SiteDescription = () => {
 
     const siteProperties = useSelector((state: EditorState) => state.siteProperties)
 
@@ -13,8 +13,8 @@ export const SitePropertiesBottom = () => {
     }
 
     return (
-        <div className="row editorRow">
-            <div className="col-lg-12 darkWell editorBottomPanel">
+        <div className="row" style={{width: "1891px"}}>
+            <div className="col-lg-12 marginTop marginLeftRight darkWell editorBottomPanel" id="node-library">
                 <br/>
                 <div className="row form-group">
                     <label htmlFor="site_description" className="col-lg-1 control-label text-muted">Description</label>

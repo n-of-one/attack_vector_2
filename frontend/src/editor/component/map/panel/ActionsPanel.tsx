@@ -1,7 +1,7 @@
 import React from 'react'
-import {editorCanvas} from "../middle/EditorCanvas"
+import {editorCanvas} from "../canvas/EditorCanvas"
 import {OverlayTrigger, Tooltip} from "react-bootstrap"
-import {sendDeleteConnections, sendDeleteNode, sendSnap} from "../../../server/EditorServerClient"
+import {sendCenter, sendDeleteConnections, sendDeleteNode, sendSnap} from "../../../server/EditorServerClient"
 
 
 export const ActionsPanel = () => {
@@ -25,6 +25,9 @@ export const ActionsPanel = () => {
         sendSnap()
     }
 
+    const center = () => {
+        sendCenter()
+    }
     return (
         <span>
             <div className="row">
@@ -33,6 +36,7 @@ export const ActionsPanel = () => {
                     <div>
                         <div className="btn btn-info btn-spaced" onClick={() => deleteConnections()}>Delete Lines</div>
                         <div className="btn btn-info btn-spaced" onClick={() => deleteNode()}>Delete Node</div>
+                        <div className="btn btn-info btn-spaced" onClick={() => center()}>Center</div>
                         <div className="btn btn-info btn-spaced" onClick={() => snap()}>Snap</div>
                             <OverlayTrigger
                                 key="tooltip_action_connect" placement="top"

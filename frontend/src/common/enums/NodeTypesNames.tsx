@@ -2,14 +2,14 @@ import {
     DATA_STORE, ICE_1, ICE_2,ICE_3, MANUAL_1, MANUAL_2, MANUAL_3,
     PASSCODE_STORE, RESOURCE_STORE, SYSCON, UNHACKABLE,
     TRANSIT_1,TRANSIT_2, TRANSIT_3, TRANSIT_4,
-    NodeType,
+    NodeTypeName,
 } from "../../editor/reducer/NodesReducer";
 
 export class NodeFileType {
-    name: NodeType
+    name: NodeTypeName
     dir: string
 
-    constructor(name: NodeType,dir: string) {
+    constructor(name: NodeTypeName, dir: string) {
         this.name = name
         this.dir = dir
     }
@@ -36,7 +36,7 @@ const all: {[key: string] : NodeFileType}  = {
     UNHACKABLE: TYPE_UNHACKABLE, MANUAL_1: TYPE_MANUAL_1, MANUAL_2: TYPE_MANUAL_2, MANUAL_3: TYPE_MANUAL_3
 }
 
-export const toType = (name: NodeType): NodeFileType => {
+export const toType = (name: NodeTypeName): NodeFileType => {
     const match = Object.entries(all).find(
         ([key, _]) => {
             return key === name

@@ -1,5 +1,5 @@
 import {Layer} from "./Layer";
-import {editorCanvas} from "../../../editor/component/middle/middle/EditorCanvas";
+import {editorCanvas} from "../../../editor/component/map/canvas/EditorCanvas";
 import {sendEditNetworkId} from "../../../editor/server/EditorServerClient";
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";

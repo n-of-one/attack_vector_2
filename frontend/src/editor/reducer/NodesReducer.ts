@@ -28,7 +28,7 @@ export const MANUAL_1 = "manual_1"
 export const MANUAL_2 = "manual_2"
 export const MANUAL_3 = "manual_3"
 
-export type NodeType = "transit_1" | "transit_2" | "transit_3" | "transit_4" | "syscon" | "data_store" | "passcode_store" | "resource_store" | "ice_1" | "ice_2" | "ice_3" | "unhackable" | "manual_1" | "manual_2" | "manual_3"
+export type NodeTypeName = "transit_1" | "transit_2" | "transit_3" | "transit_4" | "syscon" | "data_store" | "passcode_store" | "resource_store" | "ice_1" | "ice_2" | "ice_3" | "unhackable" | "manual_1" | "manual_2" | "manual_3"
 
 
 export interface LayerDetails {
@@ -69,7 +69,7 @@ export interface LayerDetails {
 export interface NodeI {
     id: string,
     siteId: string,
-    type: NodeType,
+    type: NodeTypeName,
     x: number,
     y: number,
     ice: boolean,

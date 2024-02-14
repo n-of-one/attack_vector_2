@@ -26,7 +26,7 @@ class TutorialService(
     fun setup() {
         val site = sitePropertiesEntityService.findByName("tutorial")
         if (site == null) {
-            val json = this::class.java.getResource("/v1-tutorial_1.json")?.readText() ?: error("tutorial json not found")
+            val json = this::class.java.getResource("/v1-tutorial_2.json")?.readText() ?: error("tutorial json not found")
             importService.importSite(json)
         }
     }

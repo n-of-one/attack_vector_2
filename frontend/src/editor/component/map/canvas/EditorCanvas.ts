@@ -12,6 +12,7 @@ import {SELECT_NODE} from "../../../reducer/CurrentNodeIdReducer"
 import {DisplayCollection} from "../../../../common/canvas/display/util/DisplayCollection";
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus";
 import {saveTextInput} from "../../../../common/component/TextSaveInput";
+import {CANVAS_HEIGHT, CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
 
 export interface LoadSiteData {
     id: string,
@@ -33,8 +34,8 @@ class EditorCanvas {
         this.dispatch = dispatch
 
         this.canvas = new fabric.Canvas('canvas', {
-            width: 607,
-            height: 715,
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT_EDITOR,
             backgroundColor: "#333333",
         })
 

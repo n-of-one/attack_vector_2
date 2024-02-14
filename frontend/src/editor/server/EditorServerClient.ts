@@ -36,6 +36,11 @@ export const sendSnap = () => {
     webSocketConnection.send("/editor/snap", payload)
 }
 
+export const sendCenter = () => {
+    const payload = {siteId: editorSiteId}
+    webSocketConnection.send("/editor/center", payload)
+}
+
 export const sendEditLayerData = ({nodeId, layerId, key, value}: { nodeId: string, layerId: string, key: string, value: string }) => {
     const payload = {siteId: editorSiteId, nodeId, layerId, key, value}
     webSocketConnection.send("/editor/editLayerData", payload)

@@ -6,7 +6,7 @@ import {LayersPanel} from "./LayersPanel"
 export const DetailPanel = () => {
     return (
         <>
-            <div className="col-lg-5" id="node-library">
+            <div className="col-lg-4" id="node-library">
                 <ActionsPanel/>
                 <div className="row">&nbsp;</div>
                 <LayersPanel/>

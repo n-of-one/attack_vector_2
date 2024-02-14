@@ -57,9 +57,18 @@ input {
     border-radius: 3px 3px 3px 3px;
 }
 
-.editorRow {
-    width: 1530px;
-    margin-left: 20px
+.marginTop {
+    margin-top: 5px;
+}
+
+.marginLeftRight {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.noMarginLeftRight {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 .siteMap {
