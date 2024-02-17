@@ -12,7 +12,6 @@ export const WordSearchContainer = () => {
     const currentPage: string =  useSelector((state: WordSearchRootState) =>  state.currentPage)
     if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
 
-
     return (
         <div className="container-fluid" data-bs-theme="dark">
             <div className="row">
