@@ -164,7 +164,9 @@ class TangleCreator {
         val padding = 20
         val xSize = 680
         val ySize = 680
-        val xCenter = xSize / 2
+        val canvasXSize = 1576
+        val dx = (canvasXSize - xSize) / 2
+        val xCenter = xSize / 2  + dx
         val yCenter = ySize / 2
         val xRadius = (xSize / 2) - padding
         val yRadius = (ySize / 2) - padding

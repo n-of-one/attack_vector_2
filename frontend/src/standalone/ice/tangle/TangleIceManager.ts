@@ -5,6 +5,7 @@ import {notify} from "../../../common/util/Notification";
 import {delay} from "../../../common/util/Util";
 import {ICE_TANGLE_BEGIN, TangleLine, TanglePoint} from "./reducer/TangleIceReducer";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
+import {larp} from "../../../common/Larp";
 
 export interface TanglePuzzle {
     strength: string,
@@ -22,7 +23,6 @@ export interface TanglePointMoved {
 }
 
 class TangleIceManager extends GenericIceManager {
-    quickPlaying = false
 
     enter(puzzle: TanglePuzzle) {
         if (puzzle.hacked) {
@@ -36,7 +36,7 @@ class TangleIceManager extends GenericIceManager {
         });
         this.schedule.clear();
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
-        if (!this.quickPlaying) {
+        if (!larp.quickPlaying) {
             this.displayTerminal(20, "↼ Connecting to ice, initiating attack.");
             this.displayTerminal(40, "↼ Network inspection.");
             this.displayTerminal(10, "↼ Complete");
@@ -44,8 +44,8 @@ class TangleIceManager extends GenericIceManager {
             this.displayTerminal(20, "↼ Negotiating lowest entropy");
             this.displayTerminal(30, "");
             this.displayTerminal(20, "↼ Negotiation complete.");
+            this.displayTerminal(5, "↼ Start manual decryption");
         }
-        this.displayTerminal(5, "↼ Start manual decryption");
         this.schedule.dispatch(0, {type: ICE_TANGLE_BEGIN});
     }
 

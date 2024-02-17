@@ -3,6 +3,22 @@ import {Canvas, Circle} from "fabric/fabric-impl";
 import {TanglePoint} from "../reducer/TangleIceReducer";
 import {TangleLineDisplay} from "./TangleLineDisplay";
 
+const aCOLOR_NORMAL = "#5ec6c8"
+const aCOLOR_HIGHLIGHT_PRIMARY = "#337ab7"
+const aCOLOR_HIGHLIGHT_SECONDARY = "#337ab7"
+
+const COLOR_NORMAL = "#5ec6c8"
+const COLOR_STROKE_NORMAL = "#000"
+const STROKE_WIDTH_NORMAL = 0.7
+
+const STROKE_WIDTH_HIGHLIGHT = 2
+
+const COLOR_HIGHLIGHT_PRIMARY = "#5ec6c8"
+const COLOR_STROKE_HIGHLIGHT_PRIMARY = "#337ab7"
+
+const COLOR_HIGHLIGHT_SECONDARY = "#111"
+const COLOR_STROKE_HIGHLIGHT_SECONDARY = "#337ab7"
+
 export class TanglePointDisplay {
 
     canvas: Canvas
@@ -19,9 +35,9 @@ export class TanglePointDisplay {
             radius: 6,
             top: pointData.y,
             left: pointData.x,
-            fill: "#337ab7",
-            stroke: "#000",
-            strokeWidth: 2,
+            fill: COLOR_NORMAL,
+            stroke: COLOR_STROKE_NORMAL,
+            strokeWidth: STROKE_WIDTH_NORMAL,
             selectable: true,
             lockRotation: true,
             lockScalingX: true,
@@ -66,12 +82,16 @@ export class TanglePointDisplay {
     }
 
     highLight() {
-        this.icon.set("fill", "#eee");
+        this.icon.set("fill", COLOR_HIGHLIGHT_PRIMARY);
+        this.icon.set("stroke", COLOR_STROKE_HIGHLIGHT_PRIMARY);
+        this.icon.set("strokeWidth", STROKE_WIDTH_HIGHLIGHT);
         this.lines.forEach(line => line.highlightOtherEnd(this));
     }
 
     secondaryHighlight() {
-        this.icon.set("fill", "#f7ecb5");
+        this.icon.set("fill", COLOR_HIGHLIGHT_SECONDARY);
+        this.icon.set("strokeWidth", STROKE_WIDTH_HIGHLIGHT);
+        this.icon.set("stroke", COLOR_STROKE_HIGHLIGHT_SECONDARY);
     }
 
     unHighlight() {
@@ -80,7 +100,10 @@ export class TanglePointDisplay {
     }
 
     secondaryUnHighlight() {
-        this.icon.set("fill", "#337ab7");
+        this.icon.set("fill", COLOR_NORMAL);
+        this.icon.set("stroke", COLOR_STROKE_NORMAL);
+        this.icon.set("strokeWidth", STROKE_WIDTH_NORMAL);
+
     }
 
     moved(x: number, y: number) {

@@ -2,6 +2,13 @@ import {fabric} from "fabric";
 import {Canvas, Line} from "fabric/fabric-impl";
 import {TanglePointDisplay} from "./TanglePointDisplay";
 
+
+const LINE_COLOR_NORMAL = "#c6d6e1";
+const LINE_COLOR_HIGHLIGHT = "#337ab7";
+
+const STROKE_WIDTH_NORMAL = 1.5;
+const STROKE_WIDTH_HIGHLIGHT = 2.5;
+
 export class TangleLineDisplay {
 
     canvas: Canvas
@@ -18,12 +25,12 @@ export class TangleLineDisplay {
         this.point2 = point2;
         this.type = type;
 
-        const stroke = (type==="NORMAL" ?  "#000" : "#f00");
+        const stroke = (type==="NORMAL" ?  LINE_COLOR_NORMAL : LINE_COLOR_NORMAL);
 
         this.icon = new fabric.Line(
             [this.point1.icon.left!, this.point1.icon.top!, this.point2.icon.left!, this.point2.icon.top!], {
                 stroke: stroke,
-                strokeWidth: 2,
+                strokeWidth: STROKE_WIDTH_NORMAL,
                 selectable: false,
                 hoverCursor: 'default',
             });
@@ -49,11 +56,13 @@ export class TangleLineDisplay {
     }
 
     highLight() {
-        this.icon.set("stroke", "#337ab7");
+        this.icon.set("stroke", LINE_COLOR_HIGHLIGHT);
+        this.icon.set("strokeWidth", STROKE_WIDTH_HIGHLIGHT);
     }
 
     unHighlight() {
-        this.icon.set("stroke", "#000");
+        this.icon.set("stroke", LINE_COLOR_NORMAL);
+        this.icon.set("strokeWidth", STROKE_WIDTH_NORMAL);
     }
 
     moved() {

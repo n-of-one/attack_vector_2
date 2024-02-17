@@ -29,6 +29,7 @@ export class Larp {
     hackersDeleteRunLinks: boolean = true
     loginUrl: string = "/login" // override in case there is no login page but an SSO redirect
 
+    quickPlaying: boolean = false // set to true for quicker start of ice puzzles
 
     constructor() {
         console.log(`Configuration: ${this.type}`)
@@ -38,6 +39,7 @@ export class Larp {
             this.hackerEditSkills = true
             this.hackersResetSite = true
             this.hackerShowSkills = true
+            this.quickPlaying = true
             return
         }
 

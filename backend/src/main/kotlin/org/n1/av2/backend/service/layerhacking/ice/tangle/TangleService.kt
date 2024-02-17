@@ -29,7 +29,7 @@ class TangleService(
 ) {
 
     companion object {
-        const val X_SIZE = 1200
+        const val X_SIZE = 1576
         const val Y_SIZE = 680
         const val PADDING = 10
     }
