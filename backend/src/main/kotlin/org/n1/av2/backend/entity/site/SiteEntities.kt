@@ -15,11 +15,12 @@ data class SiteProperties(
     @Id val siteId: String,
     var name: String,
     var description: String = "",
-    var creator: String = "",
-    var hackTime: String = "15:00",
+    var purpose: String = "",
+    var ownerUserId: String,
     var startNodeNetworkId: String = "00",
-    var hackable: Boolean = true,
+    var hackable: Boolean = false,
     val shutdownEnd: ZonedDateTime? = null,
+    val siteStructureOk: Boolean = true,
 )
 
 @Document
@@ -58,7 +59,6 @@ data class Connection(
 @Document
 data class SiteEditorState(
     @Id val siteId: String,
-    val ok: Boolean = true,
     val messages: MutableList<SiteStateMessage> = Collections.emptyList()
 )
 

@@ -27,18 +27,17 @@ class UserService(
         val id: String,
         val name: String,
         val characterName: String?,
-        val note: String?
     )
 
     fun overview() {
-        val message = filteredUsers().map { UserOverview(it.id, it.name, it.hacker?.characterName, it.gmNote, ) }
+        val message = filteredUsers().map { UserOverview(it.id, it.name, it.hacker?.characterName ) }
         stompService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
     }
 
     private fun filteredUsers(): List<UserEntity> {
         val all = userEntityService.findAll()
         if (!SecurityContextHolder.getContext().authentication.authorities.contains(ROLE_USER_MANAGER)) {
-            return all.filter { it.type == UserType.HACKER || it.type == UserType.HACKER_MANAGER }
+            return all.filter { it.type == UserType.HACKER }
         }
         return all
     }
@@ -58,7 +57,6 @@ class UserService(
         val userEntityInput = UserEntity(
             id = userId,
             externalId = externalId,
-            email = "",
             name = name,
             type = type,
             hacker = hacker,
@@ -76,9 +74,7 @@ class UserService(
         val user = userEntityService.getById(userId)
         val editedUserEntity: UserEntity = when (field) {
             "name" -> changeName(user, value)
-            "email" -> user.copy(email = value)
             "type" -> changeType(user, value)
-            "gmNote" -> user.copy(gmNote = value)
             "characterName" -> user.copy(hacker = user.hacker?.copy(characterName = value))
             "hackerIcon" -> user.copy(hacker = user.hacker?.copy(icon = HackerIcon.valueOf(value)))
             "skillHacker" -> changeSkill(user, field, value)
@@ -216,5 +212,6 @@ class UserService(
 
         return create(name, externalId, UserType.HACKER, hacker)
     }
+
 
 }

@@ -6,11 +6,12 @@ export interface SiteProperties {
     siteId: string,
     name: string,
     description: string,
-    creator: string
-    hackTime: string
+    purpose: string,
+    ownerName: string,
     startNodeNetworkId: string
     hackable: boolean
     shutdownEnd: string | null
+    siteStructureOk: boolean
 }
 
 
@@ -18,24 +19,37 @@ export const sitePropertiesDefault: SiteProperties = {
     siteId: "",
     name: "",
     description: "",
-    creator: "",
-    hackTime: "-",
-    startNodeNetworkId: "00",
+    purpose: "",
+    ownerName: "",
+    startNodeNetworkId: "",
     hackable: false,
-    shutdownEnd: null // "2023-10-15T12:24:53.259+02:00"
+    shutdownEnd: null, // "2023-10-15T12:24:53.259+02:00"
+    siteStructureOk: true
 }
 
 export const SitePropertiesReducer = (state: SiteProperties = sitePropertiesDefault, action: AnyAction) => {
     switch (action.type) {
         case SERVER_SITE_FULL:
-            return action.data.siteProperties
+            return parseSiteProperties(action)
         case SERVER_ENTERED_RUN:
             return action.data.site.siteProperties
         case SERVER_UPDATE_SITE_DATA:
-            return action.data
+            return updateSiteData(state, action)
         default:
             return state
     }
+}
+
+const parseSiteProperties = (action: AnyAction): SiteProperties => {
+    const siteProperties = action.data.siteProperties
+    siteProperties.ownerName = action.data.ownerName
+    return siteProperties
+}
+
+const updateSiteData = (previousState: SiteProperties, action: AnyAction): SiteProperties => {
+    const siteProperties = action.data
+    siteProperties.ownerName = previousState.ownerName
+    return siteProperties
 }
 
 

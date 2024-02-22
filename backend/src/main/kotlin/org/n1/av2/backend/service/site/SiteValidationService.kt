@@ -1,8 +1,10 @@
 package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.*
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -12,7 +14,8 @@ class SiteValidationService(
     val stompService: StompService,
     val sitePropertiesEntityService: SitePropertiesEntityService,
     val nodeEntityService: NodeEntityService,
-    val siteEditorStateEntityService: SiteEditorStateEntityService
+    val siteEditorStateEntityService: SiteEditorStateEntityService,
+    val currentUserService: CurrentUserService,
 ) {
 
     fun validate(siteId: String): List<SiteStateMessage> {
@@ -40,8 +43,8 @@ class SiteValidationService(
     }
 
     private fun validateSiteCreator(siteProperties: SiteProperties) {
-        if (siteProperties.creator.isBlank()) {
-            throw SiteValidationException("Please fill in the site creator name.", SiteStateMessageType.INFO)
+        if (siteProperties.purpose.isBlank() && currentUserService.userEntity.type != UserType.HACKER) {
+            throw SiteValidationException("Please fill in the site purpose (plot)", SiteStateMessageType.INFO)
         }
     }
 
@@ -103,11 +106,13 @@ class SiteValidationService(
     private fun processValidationMessages(messages: ArrayList<SiteStateMessage>, id: String) {
         val ok = messages.filter { it.type == SiteStateMessageType.ERROR }.none()
         val oldState = siteEditorStateEntityService.getById(id)
-        val newState = oldState.copy(ok = ok, messages = messages)
+        val newState = oldState.copy(messages = messages)
 
         if (oldState != newState) {
             siteEditorStateEntityService.save(newState)
             stompService.toSite(id, ServerActions.SERVER_UPDATE_SITE_STATE, newState)
+            val updatedSiteProperties = sitePropertiesEntityService.updateSiteOk(id, ok)
+            stompService.toSite(id, ServerActions.SERVER_UPDATE_SITE_DATA, updatedSiteProperties)
         }
     }
 }

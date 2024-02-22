@@ -16,7 +16,9 @@ import org.n1.av2.backend.model.ui.AddConnection
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.site.SiteValidationService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.n1.av2.backend.util.asList
 import org.springframework.security.core.context.SecurityContextHolder
@@ -31,6 +33,8 @@ class ImportService(
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
     private val siteValidationService: SiteValidationService,
     private val stompService: StompService,
+    private val currentUserService: CurrentUserService,
+    private val siteService: SiteService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -42,6 +46,7 @@ class ImportService(
         try {
             val siteName = importSite(json)
             sendResponse("Imported site", siteName, NotyType.NEUTRAL)
+            siteService.sendSitesList()
         } catch (e: Exception) {
             logger.error(e.message, e)
             sendResponse("Error", e.message ?: "Import failed.", NotyType.ERROR)
@@ -57,25 +62,25 @@ class ImportService(
         val root: JsonNode = objectMapper.readTree(json)
 
         val version = detectVersion(root)
-        if (version != V1) error("Unsupported version: $version")
+        if (version != V1 && version != V2) error("Unsupported version: $version")
 
-        return importV1(root)
+        return importV1orV2(root)
     }
 
     private fun detectVersion(root: JsonNode): String {
         return root.get("exportDetails").get("version").asText()
     }
 
-    private fun importV1(root: JsonNode): String {
-        val siteProperties = importV1SiteProperties(root)
-        importV1Nodes(root)
-        importV1Connections(root)
+    private fun importV1orV2(root: JsonNode): String {
+        val siteProperties = importSiteProperties(root)
+        importNodes(root)
+        importConnections(root)
         recreateSiteState(siteProperties.siteId)
 
         return siteProperties.name
     }
 
-    private fun importV1SiteProperties(root: JsonNode): SiteProperties {
+    private fun importSiteProperties(root: JsonNode): SiteProperties {
         val input: JsonNode = root.get("siteProperties")
         val name = input["name"].asText()
 
@@ -89,10 +94,10 @@ class ImportService(
             siteId = siteId,
             name = name,
             description = input["description"].asText(),
-            creator = input["creator"].asText(),
+            purpose = input["purpose"]?.asText() ?: input["creator"].asText(),
+            ownerUserId = currentUserService.userEntity.id,
             startNodeNetworkId = input["startNodeNetworkId"].asText(),
             hackable = false,
-            hackTime = "",
             shutdownEnd = null,
         )
 
@@ -100,7 +105,7 @@ class ImportService(
         return siteProperties
     }
 
-    private fun importV1Nodes(root: JsonNode): List<Node> {
+    private fun importNodes(root: JsonNode): List<Node> {
         val v1Nodes = root.get("nodes").asList()
 
         val nodes = v1Nodes.map { input ->
@@ -227,7 +232,7 @@ class ImportService(
         return PasswordIceLayer(id, LayerType.PASSWORD_ICE, level, name, note, strength, false, password, hint)
     }
 
-    private fun importV1Connections(root: JsonNode): List<Connection> {
+    private fun importConnections(root: JsonNode): List<Connection> {
         val v1connections: List<JsonNode> = root.get("connections").asList()
         val siteId = root.get("siteProperties").get("siteId").asText()
         val connections = v1connections.map { input ->

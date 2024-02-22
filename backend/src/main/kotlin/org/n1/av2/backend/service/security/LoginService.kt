@@ -5,6 +5,7 @@ import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.config.security.JwtTokenProvider
 import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.service.larp.FrontierHackerInfo
 import org.n1.av2.backend.service.site.TutorialService
 import org.n1.av2.backend.service.user.UserService
@@ -28,6 +29,7 @@ class LoginService(
         }
 
         val user = userEntityService.getByName(userName)
+        if (user.type == UserType.SYSTEM) error("Cannot login as system user")
         return getCookies(user)
     }
 

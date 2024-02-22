@@ -3,6 +3,7 @@ package org.n1.av2.backend.web.ws
 import org.n1.av2.backend.engine.UserTaskRunner
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.model.ui.NotyMessage
+import org.n1.av2.backend.security.ValidSiteId
 import org.n1.av2.backend.service.run.RunService
 import org.n1.av2.backend.service.site.SiteResetService
 import org.n1.av2.backend.service.site.SiteService
@@ -21,7 +22,6 @@ class SiteController(
     private val stompService: StompService,
 
 ) {
-    //     --- --- --- --- For GMs
 
     @MessageMapping("/site/resetSite")
     fun resetSite(siteId: String, userPrincipal: UserPrincipal) {
@@ -46,6 +46,15 @@ class SiteController(
     fun updateHackable(command: UpdateHackable, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             siteService.updateHackable(command.siteId, command.hackable)
+        }
+    }
+
+    @MessageMapping("/site/delete")
+    fun deleteSite(@ValidSiteId siteId: String, principal: UserPrincipal) {
+        userTaskRunner.runTask(principal) {
+            siteService.checkIfAllowedToDelete(siteId, principal)
+            runService.deleteRuns(siteId)
+            siteService.removeSite(siteId)
         }
     }
 }

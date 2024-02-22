@@ -1,10 +1,10 @@
 package org.n1.av2.backend.entity.site.enums
 
 enum class NodeType {
-    TRANSIT_1,
-    TRANSIT_2,
-    TRANSIT_3,
-    TRANSIT_4,
+    TRANSIT_1, // square
+    TRANSIT_2, // circle
+    TRANSIT_3, // diamond
+    TRANSIT_4, // hexagon
     SYSCON,
     DATA_STORE,
     PASSCODE_STORE,

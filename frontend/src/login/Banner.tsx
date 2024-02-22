@@ -24,7 +24,6 @@ export const Banner = ({hiddenAdminLogin = false, image = false}: Props) => {
         if (hiddenAdminLogin) {
 
             const next = new URLSearchParams(window.location.search).get("next")
-            console.log(next)
             if (next) {
                 window.location.href = "/adminLogin?next=" + next
             } else {

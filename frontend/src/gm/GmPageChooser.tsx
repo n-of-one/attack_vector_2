@@ -1,29 +1,29 @@
 import React from "react"
 import {MenuBar} from "../common/menu/MenuBar"
 import {useSelector} from "react-redux"
-import {GmSitesHome} from "./sites/GmSitesHome";
+import {SitesPage} from "../common/sites/SitesPage";
 import {UserManagement} from "../common/users/UserManagement";
 import {GmState} from "./GmRootReducer";
-import {ADMIN, GM_SITES, LOGS, MISSIONS, TASKS, USERS} from "../common/menu/pageReducer";
+import {ADMIN, LOGS, MISSIONS, SITES, TASKS, USERS} from "../common/menu/pageReducer";
 import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
 
 
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
-        case GM_SITES:
-            return <GmSitesHome/>
+        case SITES:
+            return <SitesPage/>
         case USERS:
             return <UserManagement/>
         case LOGS:
-            return <GmSitesHome/>
+            return <SitesPage/>
         case MISSIONS:
-            return <GmSitesHome/>
+            return <SitesPage/>
         case TASKS:
             return <TaskMonitorHome/>
         case ADMIN:
-            return <GmSitesHome/>
+            return <SitesPage/>
         default:
-            return <GmSitesHome/>
+            return <SitesPage/>
     }
 }
 

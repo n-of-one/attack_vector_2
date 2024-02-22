@@ -5,8 +5,10 @@ import org.n1.av2.backend.entity.run.RunLinkEntityService
 import org.n1.av2.backend.entity.site.SiteEditorStateEntityService
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.UserEntity
+import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.admin.ImportService
 import org.n1.av2.backend.service.run.terminal.scanning.ScanService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
@@ -19,6 +21,8 @@ class TutorialService(
     private val runEntityService: RunEntityService,
     private val runLinkEntityService: RunLinkEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
+    private val currentUserService: CurrentUserService,
+    private val userEntityService: UserEntityService,
 
     ) {
 
@@ -26,7 +30,8 @@ class TutorialService(
     fun setup() {
         val site = sitePropertiesEntityService.findByName("tutorial")
         if (site == null) {
-            val json = this::class.java.getResource("/v1-tutorial_2.json")?.readText() ?: error("tutorial json not found")
+            currentUserService.set(userEntityService.getSystemUser())
+            val json = this::class.java.getResource("/v2-tutorial_2.json")?.readText() ?: error("tutorial json not found")
             importService.importSite(json)
         }
     }
@@ -38,9 +43,7 @@ class TutorialService(
             val tutorialSiteProperties = sitePropertiesEntityService.findByName("tutorial")!!
             val siteId = siteCloneService.cloneSite(tutorialSiteProperties, siteName)
 
-            val siteState = siteEditorStateEntityService.getById(siteId)
-
-            if (siteState.ok) {
+            if (tutorialSiteProperties.siteStructureOk) {
                 val nodeScanById = scanService.createInitialNodeScans(siteId)
                 val run = runEntityService.create(siteId, nodeScanById, user.id)
                 runLinkEntityService.createRunLink(run.runId, user)

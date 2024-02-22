@@ -1,18 +1,19 @@
 package org.n1.av2.backend.entity.site
 
 import org.n1.av2.backend.model.ui.ValidationException
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.util.createId
 import org.springframework.stereotype.Service
 
 @Service
 class SitePropertiesEntityService(
     private val sitePropertiesRepo: SitePropertiesRepo,
+    private val currentUserService: CurrentUserService,
 ) {
 
     fun existsById(siteId: String): Boolean {
         return sitePropertiesRepo.existsById(siteId)
     }
-
 
     fun getBySiteId(id: String): SiteProperties {
         return sitePropertiesRepo.findBySiteId(id) ?: error ("No SiteProperties found for id: ${id}")
@@ -37,7 +38,9 @@ class SitePropertiesEntityService(
     }
 
     fun create(id: String, name: String): SiteProperties {
-        val data = SiteProperties(siteId = id, name = name, hackTime = "15:00", startNodeNetworkId = "00", shutdownEnd = null)
+        val currentUser = currentUserService.userEntity
+
+        val data = SiteProperties(siteId = id, name = name, startNodeNetworkId = "00", shutdownEnd = null, ownerUserId = currentUser.id, purpose = "")
         sitePropertiesRepo.save(data)
         return data
     }
@@ -48,5 +51,16 @@ class SitePropertiesEntityService(
 
     fun delete(siteId: String) {
         sitePropertiesRepo.deleteById(siteId)
+    }
+
+    fun findByownerUserId(userId: String): List<SiteProperties> {
+        return sitePropertiesRepo.findByownerUserId(userId)
+    }
+
+    fun updateSiteOk(siteId: String, siteOk: Boolean): SiteProperties {
+        val siteProperties = getBySiteId(siteId)
+        val updatedSiteProperties = siteProperties.copy(siteStructureOk = siteOk)
+        sitePropertiesRepo.save(updatedSiteProperties)
+        return updatedSiteProperties
     }
 }

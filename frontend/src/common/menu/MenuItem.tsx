@@ -51,7 +51,6 @@ const navigateTo = (currentPage: string, targetPage: string, runId: string | nul
         webSocketConnection.send("/run/leaveSite", runId);
     }
 
-    console.log("Navigating to page: " + targetPage);
     dispatch({type: NAVIGATE_PAGE, to: targetPage, from: currentPage});
 }
 

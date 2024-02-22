@@ -166,7 +166,6 @@ class EditorCanvas {
     }
 
     canvasObjectSelected(event: IEvent<MouseEvent>) {
-        console.log("canvasObjectSelected")
         saveTextInput() // save any text input when clicking the an object
         let selectedObjects = event.selected
 

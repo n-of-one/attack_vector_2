@@ -5,7 +5,7 @@ import {EditorState} from "../../EditorRootReducer"
 import {sendSitePropertyChanged} from "../../server/EditorServerClient"
 
 
-export const SitePropertiesTop = () => {
+export const SiteProperties = () => {
 
     const siteProperties = useSelector((state: EditorState) => state.siteProperties)
 
@@ -26,10 +26,17 @@ export const SitePropertiesTop = () => {
                             </div>
                     </div>
                     <div className="row form-group">
-                            <label htmlFor="gm_name" className="col-lg-4 control-label text-muted">Creator</label>
+                            <label htmlFor="gm_name" className="col-lg-4 control-label text-muted">Purpose</label>
                             <div className="col-lg-8">
-                                <TextSaveInput id="gm_name" className="form-control" placeholder="" value={siteProperties.creator}
-                                               save={(value) => save("creator", value)}/>
+                                <TextSaveInput id="gm_name" className="form-control" placeholder="" value={siteProperties.purpose}
+                                               save={(value) => save("plot", value)}/>
+                            </div>
+                    </div>
+                    <div className="row form-group">
+                            <label htmlFor="gm_name" className="col-lg-4 control-label text-muted">Owner</label>
+                            <div className="col-lg-8">
+                                <TextSaveInput id="gm_name" className="form-control" placeholder="" value={siteProperties.ownerName} readonly={true}
+                                               save={(value) => save("plot", value)}/>
                             </div>
                     </div>
                 </div>

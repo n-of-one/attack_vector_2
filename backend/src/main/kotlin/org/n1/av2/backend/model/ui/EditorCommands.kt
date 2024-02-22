@@ -1,13 +1,17 @@
 package org.n1.av2.backend.model.ui
 
 import org.n1.av2.backend.entity.run.Run
-import org.n1.av2.backend.entity.site.*
+import org.n1.av2.backend.entity.site.Connection
+import org.n1.av2.backend.entity.site.Node
+import org.n1.av2.backend.entity.site.SiteEditorState
+import org.n1.av2.backend.entity.site.SiteProperties
 import org.n1.av2.backend.entity.site.enums.LayerType
 import org.n1.av2.backend.entity.site.enums.NodeType
 
 data class SiteFull(
     val id: String,
     val siteProperties: SiteProperties,
+    val ownerName: String,
     val nodes: MutableList<Node>,
     val connections: List<Connection>,
     val state: SiteEditorState,

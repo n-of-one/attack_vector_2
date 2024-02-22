@@ -100,7 +100,6 @@ class NodeEntityService(
         return movedNode
     }
 
-
     fun deleteNode(nodeId: String) {
         val node = getById(nodeId)
         nodeRepo.delete(node)
@@ -110,8 +109,11 @@ class NodeEntityService(
         val nodes = getAll(siteId)
         nodes.forEach { node ->
 
-            val x = capX(40 * ((node.x + 20) / 40))
-            val y = capY(40 * ((node.y + 20) / 40))
+            val xOffset = (CANVAS_WIDTH/2) % 40
+            val yOffset = (CANVAS_HEIGHT/2) % 40
+
+            val x = capX(40 * ((node.x - xOffset + 20) / 40) + xOffset)
+            val y = capY(40 * ((node.y - yOffset + 20) / 40) + yOffset)
             val copy = node.copy(x = x, y = y)
 
             nodeRepo.save(copy)

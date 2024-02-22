@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class ExportService(
     private val siteService: SiteService,
-    private val v1Exporter: V1Exporter,
+    private val v2Exporter: V2Exporter,
 ) {
 
     private val objectMapper = ObjectMapper()
@@ -19,7 +19,7 @@ class ExportService(
 
     fun export(siteId: String): SiteExportResult {
         val siteFull = siteService.getSiteFull(siteId)
-        val siteV1 = v1Exporter.toV1(siteFull)
+        val siteV1 = v2Exporter.toV2(siteFull)
 
         val json = objectMapper.writeValueAsString(siteV1)
 

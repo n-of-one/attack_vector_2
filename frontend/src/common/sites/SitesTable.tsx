@@ -1,35 +1,23 @@
-import {GmSite} from "./GmSitesReducer";
-import {SilentLink} from "../../common/component/SilentLink";
+import {SiteInfo} from "./SitesReducer";
+import {SilentLink} from "../component/SilentLink";
 import React from "react";
-import {restDelete} from "../../common/server/RestClient";
-import {notify} from "../../common/util/Notification";
-import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {toServerUrl} from "../../common/util/DevEnvironment";
+import {webSocketConnection} from "../server/WebSocketConnection";
+import {toServerUrl} from "../util/DevEnvironment";
 
 
 interface Props {
-    sites: GmSite[]
+    sites: SiteInfo[]
 }
 
 export const SiteList = (props: Props) => {
 
     const sites = [...props.sites]
         .sort((a, b) => a.name.localeCompare(b.name))
-        .sort((a, b)=> a.creator.localeCompare(b.creator))
-
+        .sort((a, b) => a.purpose.localeCompare(b.purpose))
 
     const deleteSite = (siteId: string, name: string) => {
         if (window.confirm(`Confirm that you want to delete site ${name}. `)) {
-            restDelete({
-                url: `/api/site/${siteId}`,
-                body: {},
-                ok: () => {
-                    window.location.reload()
-                },
-                error: () => {
-                    notify({type: "fatal", message: "Connection to server failed, unable to continue."})
-                }
-            })
+            webSocketConnection.send("/site/delete", siteId)
         }
     }
 
@@ -58,24 +46,28 @@ export const SiteList = (props: Props) => {
         <table className="table table-sm text-muted text" id="sitesTable">
             <thead>
             <tr>
-                <td className="strong" style={{width: "300px"}}></td>
-                <td className="strong" style={{width: "150px"}}></td>
+                <td className="strong" style={{width: "240px"}}></td>
+                <td className="strong" style={{width: "90px"}}></td>
+                <td className="strong" style={{width: "140px"}}></td>
                 <td className="strong"></td>
             </tr>
             </thead>
             <tbody>
             {
-                sites.map((site: GmSite) => {
+                sites.map((site: SiteInfo) => {
                     return (
                         <tr key={site.id}>
                             <td className="table-very-condensed">
-                                <input type="checkbox" checked={site.hackable} className="checkbox-inline" onChange={() => {updateSiteHackable(site.id, !site.hackable)}}/>&nbsp;
+                                <input type="checkbox" checked={site.hackable} className="checkbox-inline" onChange={() => {
+                                    updateSiteHackable(site.id, !site.hackable)
+                                }}/>&nbsp;
                                 <SilentLink onClick={() => {
-                                    window.open("/edit/" + site.id, site.id)
+                                    window.open(`/edit/${site.id}`, site.id)
                                 }}><>{site.name}</>
                                 </SilentLink>
                             </td>
-                            <td className="table-very-condensed">{site.creator}</td>
+                            <td className="table-very-condensed">{site.ownerName}</td>
+                            <td className="table-very-condensed">{site.purpose}</td>
                             <td>
                                 <SilentLink onClick={() => {
                                     resetSite(site.id, site.name);

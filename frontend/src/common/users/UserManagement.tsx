@@ -91,9 +91,9 @@ const CreateUser = (user: User | null) => {
 
 
 
-        <div className="col-lg-8">
+        <div className="col-lg-5">
             <TextInput placeholder="User name"
-                       buttonLabel="Create new user"
+                       buttonLabel="Create"
                        buttonClass="btn-info"
                        save={(name: string) => createUser(name)}
                        clearAfterSubmit={true}/>

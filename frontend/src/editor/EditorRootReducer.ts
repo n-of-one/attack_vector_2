@@ -16,7 +16,7 @@ export interface EditorState {
     connections: Array<Connection>,
     currentNodeId: string | null,
     currentLayerId: string | null,
-    state : SiteStateI
+    state : SiteStateI,
 }
 
 export const editorRootDefaultState: EditorState = {

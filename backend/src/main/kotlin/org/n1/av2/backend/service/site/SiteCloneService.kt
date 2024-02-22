@@ -7,6 +7,7 @@ import org.n1.av2.backend.entity.site.layer.ice.*
 import org.n1.av2.backend.entity.site.layer.other.*
 import org.n1.av2.backend.model.ui.AddConnection
 import org.n1.av2.backend.model.ui.AddNode
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,6 +17,7 @@ class SiteCloneService(
     private val connectionEntityService: ConnectionEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
     private val siteValidationService: SiteValidationService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     fun cloneSite(sourceSideProperties: SiteProperties, targetSiteName: String): String {
@@ -44,8 +46,9 @@ class SiteCloneService(
             siteId = siteId,
             name = targetSiteName,
             description = "Tutorial",
-            creator = "system",
+            purpose = "tutorial",
             startNodeNetworkId = "00",
+            ownerUserId = currentUserService.userEntity.id,
             hackable = true,
         )
         sitePropertiesEntityService.save(siteProperties)

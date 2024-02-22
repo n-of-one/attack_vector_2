@@ -1,5 +1,5 @@
 import {pageReducer} from "../common/menu/pageReducer";
-import {GmSite, gmSitesReducer} from "./sites/GmSitesReducer";
+import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {combineReducers} from "redux";
 import {editUserReducer, userOverviewReducer} from "../common/users/UsersReducer";
 import {currentUserReducer, GenericUserRootState, User} from "../common/users/UserReducer";
@@ -20,7 +20,7 @@ export interface Users {
 export interface GmState extends GenericUserRootState {
     currentPage: string,
     users: Users,
-    sites: Array<GmSite>,
+    sites: Array<SiteInfo>,
     currentUser: User | null,
     tasks: Array<Task>
 }
@@ -28,7 +28,7 @@ export interface GmState extends GenericUserRootState {
 export const gmRootReducer = combineReducers({
     currentPage: pageReducer,
     users: usersReducer,
-    sites: gmSitesReducer,
+    sites: sitesReducer,
     currentUser: currentUserReducer,
     tasks: tasksReducer,
 })

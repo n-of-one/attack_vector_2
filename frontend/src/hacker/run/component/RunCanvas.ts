@@ -425,7 +425,6 @@ class RunCanvas {
 
     disconnect(userId: string) {
         if (!this.active) return
-        console.log("disconnect")
 
         if (userId === this.userId) {
             this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {

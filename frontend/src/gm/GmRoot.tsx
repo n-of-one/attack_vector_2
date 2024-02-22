@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Provider} from 'react-redux'
 import {RequiresRole} from "../common/user/RequiresRole"
 import {configureStore} from "@reduxjs/toolkit"
-import {GM_SITES, NAVIGATE_PAGE} from "../common/menu/pageReducer"
+import {NAVIGATE_PAGE, SITES} from "../common/menu/pageReducer"
 import {Reducer, Store} from "redux"
 import {gmRootReducer, GmState} from "./GmRootReducer";
 import {GmPageChooser} from "./GmPageChooser";
@@ -17,19 +17,18 @@ export class GmRoot extends Component<Props>{
 
     constructor(props: Props) {
         super(props)
-        console.log("configure gm store")
 
         this.gmStore = configureStore({
             reducer: gmRootReducer as Reducer<GmState>
         })
 
         webSocketConnection.create(WS_UNRESTRICTED, this.gmStore, () => {
-            webSocketConnection.send("/scan/scansOfPlayer", "")
+            webSocketConnection.sendWhenReady("/gm/logon", null)
         })
         initGenericServerActions()
 
         // set up initial state:
-        this.gmStore.dispatch({type: NAVIGATE_PAGE, to: GM_SITES})
+        this.gmStore.dispatch({type: NAVIGATE_PAGE, to: SITES})
 
         document.body.style.backgroundColor = "#222222"
     }

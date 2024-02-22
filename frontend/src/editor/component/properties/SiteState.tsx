@@ -5,6 +5,35 @@ import {editorCanvas} from "../map/canvas/EditorCanvas"
 import {EditorState} from "../../EditorRootReducer"
 import {SiteStateMessage} from "../../reducer/SiteStateReducer"
 import {SELECT_LAYER} from "../../reducer/CurrentLayerIdReducer"
+import {SiteProperties} from "../../reducer/SitePropertiesReducer";
+
+
+export const SiteState = () => {
+    const siteState = useSelector((state: EditorState) => state.state)
+    const siteProperties = useSelector((state: EditorState) => state.siteProperties)
+    const dispatch = useDispatch()
+    const navigateToLayer = (nodeId: string, layerId: string) => {
+        editorCanvas.selectNode(nodeId)
+        dispatch({type: SELECT_LAYER, layerId: layerId})
+    }
+
+    let statusElement = (siteProperties.siteStructureOk) ? <span className="badge bg-success" style={{fontSize: "100%"}}>Ok</span> :
+        <span className="badge bg-warning" style={{fontSize: "100%"}}>Error</span>
+
+    return (
+        <div className="site-state">
+            <div className="row">
+                <div className="col-lg-12 site-state-text">
+                    Status:&nbsp;{statusElement}
+                </div>
+            </div>
+            <hr className="thin-hr"/>
+            {siteState.messages.map((message, index) => {
+                return renderMessage(message, index, navigateToLayer)
+            })}
+        </div>
+    )
+}
 
 const renderMessage = (
     message: SiteStateMessage,
@@ -23,32 +52,6 @@ const renderMessage = (
             <div className="col-lg-12 site-state-text">
                 {label}{link}&nbsp;{message.text}
             </div>
-        </div>
-    )
-}
-
-export const SiteState = () => {
-    const siteState = useSelector((state: EditorState) => state.state)
-    const dispatch = useDispatch()
-    const navigateToLayer = (nodeId: string, layerId: string) => {
-        editorCanvas.selectNode(nodeId)
-        dispatch({type: SELECT_LAYER, layerId: layerId})
-    }
-
-    let statusElement = (siteState.ok) ? <span className="badge bg-success" style={{fontSize: "100%"}}>Ok</span> :
-        <span className="badge bg-warning" style={{fontSize: "100%"}}>Error</span>
-
-    return (
-        <div className="site-state">
-            <div className="row">
-                <div className="col-lg-12 site-state-text">
-                    Status:&nbsp;{statusElement}
-                </div>
-            </div>
-            <hr className="thin-hr"/>
-            {siteState.messages.map((message, index) => {
-                return renderMessage(message, index, navigateToLayer)
-            })}
         </div>
     )
 }

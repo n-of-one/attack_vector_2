@@ -28,7 +28,7 @@ export class HackerRoot extends Component {
         })
 
         webSocketConnection.create(WS_HACKER_MAIN, this.store, () => {
-            webSocketConnection.send("/scan/scansOfPlayer", "")
+            webSocketConnection.send("/hacker/logon", "")
         });
 
         terminalManager.init(this.store)

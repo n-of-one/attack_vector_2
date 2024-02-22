@@ -26,16 +26,15 @@ enum class UserType(val hacker: Boolean, vararg authorizationsInput: GrantedAuth
     // regular player
     HACKER(true, ROLE_USER, ROLE_HACKER),
 
-    // player manager
-    HACKER_MANAGER(true, ROLE_USER, ROLE_HACKER_MANAGER, ROLE_HACKER),
-
     // Regular GM
     GM(false, ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS, ROLE_GM),
     // For preparing system, backups, etc.
     ADMIN(false,
         ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS,
             ROLE_ADMIN,
-    );
+    ),
+
+    SYSTEM(false);
 
 
     val authorities = authorizationsInput.toList()

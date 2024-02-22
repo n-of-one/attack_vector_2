@@ -10,11 +10,9 @@ import org.springframework.stereotype.Repository
 data class UserEntity(
     @Id val id: String,
     val externalId: String? = null,
-    val email: String,
     @field:UserName var name: String = "",
     var type: UserType = UserType.NOT_LOGGED_IN,
     val hacker: Hacker?,
-    val gmNote: String = "",
 )
 
 
@@ -40,7 +38,6 @@ data class HackerSkill(
 val SYSTEM_USER = UserEntity(
     id = "user-system",
     externalId = "user-system",
-    email = "no_email@example.com",
     name = "system",
     type = UserType.NOT_LOGGED_IN,
     hacker = null
@@ -49,7 +46,6 @@ val SYSTEM_USER = UserEntity(
 val NOT_LOGGED_IN_USER = UserEntity(
     id = "user-not-logged-in",
     externalId = "user-not-logged-in",
-    email = "no_email@example.com",
     name = "notLoggedIn",
     type = UserType.NOT_LOGGED_IN,
     hacker = null

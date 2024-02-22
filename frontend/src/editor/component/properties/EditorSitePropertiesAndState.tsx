@@ -1,5 +1,5 @@
 import React from 'react'
-import {SitePropertiesTop} from "./SitePropertiesTop"
+import {SiteProperties} from "./SiteProperties"
 import {SiteState} from "./SiteState"
 
 export const EditorSitePropertiesAndState = () => {
@@ -8,7 +8,7 @@ export const EditorSitePropertiesAndState = () => {
             <div className="col-lg-12 darkWell marginLeftRight">
                 <div className="row marginTop">
                     <div className="col-lg-6">
-                        <SitePropertiesTop/>
+                        <SiteProperties/>
                     </div>
                     <div className="col-lg-6">
                         <SiteState/>

@@ -1,54 +1,35 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {useSelector} from "react-redux"
-import {TextInput} from "../../common/component/TextInput"
-import {restPost} from "../../common/server/RestClient"
-import {notify} from "../../common/util/Notification"
-import {GmState} from "../GmRootReducer";
-import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {toServerUrl} from "../../common/util/DevEnvironment";
+import {TextInput} from "../component/TextInput"
+import {GmState} from "../../gm/GmRootReducer";
+import {webSocketConnection} from "../server/WebSocketConnection";
+import {toServerUrl} from "../util/DevEnvironment";
 import {SiteList} from "./SitesTable";
+import {SiteInfo} from "./SitesReducer";
+import userAuthorizations, {ROLE_GM} from "../user/UserAuthorizations";
 
 /* eslint react-hooks/exhaustive-deps: 0*/
 
 const askForSitesList = () => {
-    webSocketConnection.sendWhenReady("/siteList", null)
+
 }
 
-export const GmSitesHome = () => {
+export const SitesPage = () => {
 
     const sites = useSelector((state: GmState) => state.sites)
 
-    const hackableSites = sites.filter(site => site.hackable)
-    const unhackableSites = sites.filter(site => !site.hackable)
 
     const [file, setFile] = useState()
 
-    useEffect(() => {
-        askForSitesList()
-    }, [])
-
     const edit = (siteName: string) => {
-        restPost({
-            url: "/api/site/edit",
-            body: {siteName: siteName},
-            ok: ({id}: { id: string }) => {
-                window.open("/edit/" + id)
-                askForSitesList()
-            },
-            error: (result: Error | Response) => {
-                if (result instanceof Response) {
-                    notify({type: "error", message: `Failed to create site: ${result.status} ${result.statusText}`})
-                }
-                else {
-                    notify({type: "error", message: `Failed to create site: ${result.message}`});
-                }
-            }
-        })
+        webSocketConnection.send("/editor/open", siteName)
     }
-
 
     const uploadFile = (event: any) => {
         event.preventDefault()
+        if (!file) {
+            return
+        }
         const formData = new FormData()
         formData.append("file", file as unknown as string)
         fetch(toServerUrl("/api/import/site"), {
@@ -70,10 +51,9 @@ export const GmSitesHome = () => {
                 <div className="text">
                     <strong>🜁ttack 🜃ector</strong><br/>
                     <br/>
-                    Frontier Hacking GM Interface<br/>
                     <br/>
                     <br/>
-                    Create a new site<br/>
+                    Create new site<br/>
                     <br/>
                 </div>
                 <div id="actions">
@@ -82,19 +62,22 @@ export const GmSitesHome = () => {
                                    buttonLabel="New"
                                    buttonClass="btn-info"
                                    save={(siteName: string) => edit(siteName)}
-                                   clearAfterSubmit={true}/>
+                                   clearAfterSubmit={true}
+                                   size={8}
+                        />
 
                     </div>
                 </div>
                 <br/>
                 <hr/>
                 <br/>
+                <div className="text">Import site from file</div>
+                <br/>
                 <div id="Upload">
                     <div className="text">
-                        <label htmlFor="formFile" className="form-label">Import sites from file</label>
                         <form onSubmit={uploadFile}>
                             <div className="row">
-                                <div className="col-lg-10">
+                                <div className="col-lg-8">
                                     <input className="form-control" type="file" id="formFile" onChange={selectFile}/>
                                 </div>
                                 <div className="col-lg-2">
@@ -107,13 +90,35 @@ export const GmSitesHome = () => {
                 </div>
             </div>
             <div className="col-lg-5 rightPane">
-                <div className="siteMap">
-                    <div className="text">Hackable sites</div>
-                    <SiteList sites={hackableSites}/>
-                    <div className="text">Unhackable sites</div>
-                    <SiteList sites={unhackableSites}/>
-                </div>
+                <SitesPanel sites={sites}/>
             </div>
+        </div>
+    )
+}
+
+interface SitesPanelProperties {
+    sites: SiteInfo[]
+}
+
+const SitesPanel = ({sites}: SitesPanelProperties) => {
+
+    const isGm = userAuthorizations.roles.includes(ROLE_GM);
+
+    const mySites = sites.filter(site => site.mine)
+    const otherSites = sites.filter(site => !site.mine)
+
+
+    const hackableSites = mySites.filter(site => site.hackable)
+    const unhackableSites = mySites.filter(site => !site.hackable)
+
+    return (
+        <div className="siteMap">
+            <div className="text">Hackable sites</div>
+            <SiteList sites={hackableSites}/>
+            <div className="text">Unhackable sites</div>
+            <SiteList sites={unhackableSites}/>
+            {isGm && <><br/><div className="text">Other user's sites</div></>}
+            {isGm && <SiteList sites={otherSites}/>}
         </div>
     )
 }

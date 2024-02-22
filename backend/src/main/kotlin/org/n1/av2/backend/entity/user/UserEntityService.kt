@@ -22,20 +22,21 @@ class UserEntityService(
 
     @PostConstruct
     fun createMandatoryUsers() {
-        createUser("admin", "", UserType.ADMIN)
-        createUser("gm", "", UserType.GM)
-        createUser("hacker", "hacker@mailinator.com", UserType.HACKER, HackerIcon.CROCODILE)
-        createUser("Stalker", "stalker@mailinator.com", UserType.HACKER, HackerIcon.BEAR)
-        createUser("Paradox", "paradox@mailinator.com", UserType.HACKER, HackerIcon.BULL)
-        createUser("Angler", "angler@mailinator.com", UserType.HACKER, HackerIcon.SHARK)
+        createUser("system", UserType.SYSTEM)
+        createUser("admin", UserType.ADMIN)
+        createUser("gm", UserType.GM)
+        createUser("hacker", UserType.HACKER, HackerIcon.CROCODILE)
+        createUser("Stalker", UserType.HACKER, HackerIcon.BEAR)
+        createUser("Paradox", UserType.HACKER, HackerIcon.BULL)
+        createUser("Angler", UserType.HACKER, HackerIcon.SHARK)
     }
 
 
-    fun createUser(userName: String, email: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
+    private fun createUser(userName: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
         val user = findByNameIgnoreCase(userName)
         if (user != null) return
 
-        val hacker = if (type == UserType.HACKER_MANAGER || type == UserType.HACKER) Hacker(
+        val hacker = if (type == UserType.HACKER) Hacker(
             icon = icon,
             skill = HackerSkill(5, 0, 0),
             characterName = "unknown"
@@ -47,7 +48,6 @@ class UserEntityService(
             type = type,
             id = createUserId(),
             hacker = hacker,
-            email = email,
         )
         userRepo.save(newUserEntity)
     }
@@ -69,6 +69,7 @@ class UserEntityService(
     }
 
     fun save(userEntity: UserEntity): UserEntity {
+        if (userEntity.type == UserType.SYSTEM) error("Cannot change system user")
         return userRepo.save(userEntity)
     }
 
@@ -98,7 +99,6 @@ class UserEntityService(
                 skill = HackerSkill(5, 0, 0),
                 characterName = "char for ${name}"
             ),
-            email = "",
         )
         return userRepo.save(newUserEntity)
     }
@@ -113,6 +113,10 @@ class UserEntityService(
 
     private fun testUserId(name: String): String {
         return name
+    }
+
+    fun getSystemUser(): UserEntity {
+        return userRepo.findByNameIgnoreCase("system") ?: error("System user not found")
     }
 
 }

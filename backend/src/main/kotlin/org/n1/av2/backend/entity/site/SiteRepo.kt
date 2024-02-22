@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 interface SitePropertiesRepo : CrudRepository<SiteProperties, String> {
     fun findByName(name: String): SiteProperties?
     fun findBySiteId(siteId: String): SiteProperties?
+    fun findByownerUserId(ownerId: String): List<SiteProperties>
 }
 
 @Repository

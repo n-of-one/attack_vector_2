@@ -2,7 +2,6 @@ import {AnyAction} from "redux";
 import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_STATE} from "../server/EditorServerActionProcessor"
 
 export interface SiteStateI {
-    ok: boolean,
     messages: SiteStateMessage[]
 }
 
@@ -16,7 +15,6 @@ export interface SiteStateMessage {
 }
 
 export const siteStateDefault: SiteStateI = {
-    ok: true,
     messages: []
 };
 

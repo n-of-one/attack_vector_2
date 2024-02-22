@@ -46,19 +46,6 @@ class StompConfig(
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
 
-        class UnauthenticatedHandshakeHandler : DefaultHandshakeHandler() {
-            override fun determineUser(
-                request: ServerHttpRequest, wsHandler: WebSocketHandler,
-                attributes: Map<String, Any>
-            ): Principal {
-                val userEntity = UserEntity(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, "")
-                val connectionId = connectionUtil.create()
-                val name = "unauthenticated_${connectionId}"
-                return UserPrincipal(name, connectionId, userEntity, ConnectionType.WS_UNRESTRICTED)
-            }
-        }
-
-
         class AuthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
@@ -73,7 +60,7 @@ class StompConfig(
                     return UserPrincipal(
                         _name = "not-logged-in",
                         connectionId = connectionUtil.create(),
-                        userEntity = UserEntity(UUID.randomUUID().toString(), "", "","", UserType.NOT_LOGGED_IN, null, ""),
+                        userEntity = UserEntity(UUID.randomUUID().toString(), "", "", UserType.NOT_LOGGED_IN, null),
                         type = ConnectionType.NONE,
                     )
                 }
@@ -87,7 +74,7 @@ class StompConfig(
         registry
             .addEndpoint(UNRESTRICTED_ENDPOINT)
             .setAllowedOrigins("*")
-            .setHandshakeHandler(UnauthenticatedHandshakeHandler())
+            .setHandshakeHandler(AuthenticatedHandshakeHandler())
 
         registry
             .addEndpoint(HACKER_ENDPOINT)

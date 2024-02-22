@@ -12,7 +12,7 @@ class GmController(
     private val userTaskRunner: UserTaskRunner,
 ) {
 
-    @MessageMapping("/siteList")
+    @MessageMapping("/gm/logon")
     fun siteList(siteId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) { siteService.sendSitesList() }
     }

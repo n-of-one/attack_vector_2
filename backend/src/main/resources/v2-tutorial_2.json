@@ -1,13 +1,13 @@
 {
   "exportDetails" : {
-    "version" : "v1",
+    "version" : "v2",
     "exportTimeStamp" : "2024-02-14 09:59:53"
   },
   "siteProperties" : {
     "siteId" : "site-5dc5-4adb",
     "name" : "tutorial",
-    "description" : "",
-    "creator" : "Verik",
+    "description" : "Tutorial site. This will be cloned for all users, if the larp supports tutorial sites.",
+    "purpose" : "Tutorial",
     "startNodeNetworkId" : "00"
   },
   "nodes" : [ {

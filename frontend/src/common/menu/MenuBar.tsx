@@ -2,9 +2,9 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
-import {ADMIN, GM_SITES, HACKER_HOME, ME, RUN, USERS} from "./pageReducer"
+import {ADMIN, HACKER_HOME, ME, RUN, SITES, USERS} from "./pageReducer"
 import {HackerState} from "../../hacker/HackerRootReducer"
-import {ROLE_ADMIN, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -48,9 +48,10 @@ export const MenuBar = () => {
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
                                 {/*<MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />*/}
+                                <MenuItem requriesRole={ROLE_HACKER} targetPage={SITES} label="Sites"/>
                                 <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}
-                                <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={GM_SITES} label="Sites"/>
+                                <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={SITES} label="Sites"/>
                                 {/*<MenuItem requriesRole={ROLE_HACKER} targetPage={LOGS} label="Logs"/>*/}
                                 {/*<MenuItem requriesRole={ROLE_HACKER} targetPage={MAIL} label="Mail"/>*/}
                                 {/*<MenuItem requriesRole={ROLE_MISSION_MANAGER} targetPage={MISSIONS} label="Missions"/>*/}

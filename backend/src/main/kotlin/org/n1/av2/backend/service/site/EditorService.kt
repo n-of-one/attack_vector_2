@@ -2,14 +2,15 @@ package org.n1.av2.backend.service.site
 
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.NodeEntityService
+import org.n1.av2.backend.entity.site.SiteProperties
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.site.layer.Layer
 import org.n1.av2.backend.entity.site.layer.other.StatusLightField.*
 import org.n1.av2.backend.entity.site.layer.other.StatusLightLayer
-import org.n1.av2.backend.model.iam.UserPrincipal
+import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.ui.*
 import org.n1.av2.backend.service.layerhacking.app.status_light.StatusLightService
-import org.n1.av2.backend.service.run.RunService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 
 @org.springframework.stereotype.Service
@@ -19,17 +20,38 @@ class EditorService(
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
     private val siteValidationService: SiteValidationService,
-    private val runService: RunService,
     private val stompService: StompService,
     private val statusLightService: StatusLightService,
+    private val currentUserService: CurrentUserService,
 ) {
 
-    fun getByNameOrCreate(name: String): String {
-        return sitePropertiesEntityService.findByName(name)?.siteId ?: siteService.createSite(name)
+    fun open(name: String) {
+        val siteId = getOrCreateSite(name)
+        stompService.reply(ServerActions.SERVER_OPEN_EDITOR, "id" to siteId)
+    }
+
+    private fun getOrCreateSite(name: String): String {
+        val siteProperties = sitePropertiesEntityService.findByName(name)
+        if (siteProperties != null) {
+            checkOwnershipOfSite(siteProperties)
+            return siteProperties.siteId
+        }
+        val siteId = siteService.createSite(name)
+        siteService.sendSitesList()
+        return siteId
+    }
+
+    private fun checkOwnershipOfSite(siteProperties: SiteProperties) {
+        val user = currentUserService.userEntity
+        if (user.type == UserType.GM) { return } // GM can edit any site
+        if (siteProperties.ownerUserId != user.id) {
+            error("Site already exists")
+        }
     }
 
     fun addNode(command: AddNode) {
         val node = nodeEntityService.createNode(command)
+        siteValidationService.validate(command.siteId)
         stompService.toSite(command.siteId, ServerActions.SERVER_ADD_NODE, node)
     }
 
@@ -69,8 +91,7 @@ class EditorService(
             when (command.field) {
                 "name" -> sitePropertiesEntityService.updateName(properties, value)
                 "description" -> properties.description = value
-                "creator" -> properties.creator = value
-                "hackTime" -> properties.hackTime = value
+                "plot" -> properties.purpose = value
                 "startNode" -> properties.startNodeNetworkId = value
                 "hackable" -> properties.hackable = value.toBoolean()
                 else -> throw IllegalArgumentException("Site field ${command.field} unknown.")
@@ -99,7 +120,7 @@ class EditorService(
     fun deleteNode(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
         nodeEntityService.deleteNode(nodeId)
-
+        siteValidationService.validate(siteId)
         sendSiteFull(siteId)
     }
 
@@ -181,9 +202,5 @@ class EditorService(
         }
     }
 
-    fun deleteSite(siteId: String, userPrincipal: UserPrincipal) {
-        runService.deleteRuns(siteId)
-        siteService.removeSite(siteId, userPrincipal)
-    }
 
 }

@@ -4,7 +4,7 @@ import {AnyAction} from "redux";
 export const SERVER_UPDATE_USER_RUNS = "SERVER_UPDATE_USER_RUNS";
 export const SERVER_UPDATE_RUN_INFO = "SERVER_UPDATE_RUN_INFO";
 
-export interface SiteInfo {
+export interface RunInfo {
     runId: string,
     siteName: string,
     siteId: string,
@@ -12,9 +12,9 @@ export interface SiteInfo {
 }
 
 
-const defaultState: SiteInfo[] = [];
+const defaultState: RunInfo[] = [];
 
-export const scansReducer = (state: SiteInfo[] = defaultState, action: AnyAction): SiteInfo[] => {
+export const hackerRunsReducer = (state: RunInfo[] = defaultState, action: AnyAction): RunInfo[] => {
     switch(action.type) {
         case SERVER_UPDATE_USER_RUNS : return action.data
         case SERVER_UPDATE_RUN_INFO: return processScanInfoUpdate(state, action.data);
@@ -22,6 +22,6 @@ export const scansReducer = (state: SiteInfo[] = defaultState, action: AnyAction
     }
 }
 
-const processScanInfoUpdate = (state: SiteInfo[], scanInfo: SiteInfo) => {
+const processScanInfoUpdate = (state: RunInfo[], scanInfo: RunInfo) => {
     return updateArrayById(scanInfo, state, scanInfo.runId, "runId")
 }

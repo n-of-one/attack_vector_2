@@ -58,11 +58,9 @@ export class EditorRoot extends Component<Props> {
             return <h1 className="text">{ this.errorMessage } <a href="/">Continue.</a></h1>
         }
         return(
-            <RequiresRole requires="ROLE_SITE_MANAGER">
-                <Provider store={this.store}>
-                    <EditorHome />
-                </Provider>
-            </RequiresRole>
+            <Provider store={this.store}>
+                <EditorHome />
+            </Provider>
         )
     }
 }

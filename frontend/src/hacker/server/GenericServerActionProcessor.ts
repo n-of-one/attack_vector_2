@@ -9,6 +9,7 @@ export const SERVER_DISCONNECT = "SERVER_DISCONNECT"
 export const SERVER_FORCE_DISCONNECT = "SERVER_FORCE_DISCONNECT"
 export const SERVER_TIME_SYNC = "SERVER_TIME_SYNC"
 export const SERVER_USER_CONNECTION = "SERVER_USER_CONNECTION"
+export const SERVER_OPEN_EDITOR = "SERVER_OPEN_EDITOR"
 
 export const initGenericServerActions = () => {
 
@@ -31,6 +32,10 @@ export const initGenericServerActions = () => {
     webSocketConnection.addAction(SERVER_ERROR, (data: { message: string, recoverable: boolean }) => {
         const type = data.recoverable ? 'error' : 'fatal'
         notify({type: type, message: data.message})
+    })
+
+    webSocketConnection.addAction(SERVER_OPEN_EDITOR, (data: { id: string }) => {
+        window.open("/edit/" + data.id, data.id)
     })
 
 }

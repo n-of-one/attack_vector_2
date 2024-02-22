@@ -76,7 +76,6 @@ export const TextSaveInput = (props: Props) => {
         }
         const newValue = event.target.value;
         value = newValue
-        console.log("value of " + props.id + " value=" + newValue)
         currentTextInputBlurMethod = handleBlur
 
         setDummy(dummy + 1) // force re-rendering

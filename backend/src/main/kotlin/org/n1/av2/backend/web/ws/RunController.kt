@@ -28,7 +28,7 @@ class RunController(
     private val logger = mu.KotlinLogging.logger {}
 
 
-    @MessageMapping("/scan/scansOfPlayer")
+    @MessageMapping("/run/sendRunInfosToUser")
     fun scansOfPlayer(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) { runLinkService.sendRunInfosToUser() }
     }

@@ -3,9 +3,8 @@ import {useSelector} from "react-redux";
 import {TextInput} from "../../common/component/TextInput";
 import {SilentLink} from "../../common/component/SilentLink";
 import {HackerState} from "../HackerRootReducer";
-import {SiteInfo} from "./ScansReducer";
+import {RunInfo} from "./HackerRunsReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {developmentServer} from "../../common/util/DevEnvironment";
 import {larp} from "../../common/Larp";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
@@ -13,7 +12,7 @@ import {larp} from "../../common/Larp";
 
 export const HackerHome = () => {
 
-    const sites: SiteInfo[] = useSelector((state: HackerState) => state.home.scans)
+    const runs: RunInfo[] = useSelector((state: HackerState) => state.runs)
 
     const startRunByName = (siteName: string) => {
         if (siteName) {
@@ -58,29 +57,29 @@ export const HackerHome = () => {
                 <div className="row">
                     <div className="col-lg-12">
                         <div className="siteMap">
-                            <table className="table table-borderless table-sm text-muted text" id="sitesTable">
+                        <table className="table table-borderless table-sm text-muted text" id="sitesTable">
                                 <thead>
                                 <tr>
-                                    <td className="strong">Site Name</td>
+                                    <td className="strong">Site name</td>
                                     <td className="strong">Nodes</td>
                                     <td className="strong">Actions</td>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {
-                                    sites.map((scanInfo: SiteInfo) => {
+                                    runs.map((runInfo: RunInfo) => {
                                         return (
-                                            <tr key={scanInfo.runId}>
+                                            <tr key={runInfo.runId}>
                                                 <td className="table-very-condensed">
-                                                    <SilentLink title={scanInfo.runId} onClick={() => {
-                                                        prepareToEnterRun(scanInfo.runId);
-                                                    }}><>{scanInfo.siteName}</>
+                                                    <SilentLink title={runInfo.runId} onClick={() => {
+                                                        prepareToEnterRun(runInfo.runId);
+                                                    }}><>{runInfo.siteName}</>
                                                     </SilentLink>
                                                 </td>
-                                                <td className="table-very-condensed">{scanInfo.nodes}</td>
+                                                <td className="table-very-condensed">{runInfo.nodes}</td>
                                                 <td className="table-very-condensed">
-                                                    {larp.hackersDeleteRunLinks ? <DeleteScanLink runId={scanInfo.runId}/> : <></>}
-                                                    {larp.hackersResetSite ? <ResetIceLink siteId={scanInfo.siteId}/> : <></>}
+                                                    {larp.hackersDeleteRunLinks ? <DeleteScanLink runId={runInfo.runId}/> : <></>}
+                                                    {larp.hackersResetSite ? <ResetIceLink siteId={runInfo.siteId}/> : <></>}
                                                 </td>
                                             </tr>)
                                     })
