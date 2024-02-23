@@ -139,6 +139,9 @@ class UserService(
 
     fun delete(userId: String) {
         if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
+        val userEntity = userEntityService.getById(userId)
+        if (userEntity.type == UserType.SYSTEM) throw ValidationException("Cannot delete system user.")
+        if (userEntity.type == UserType.ADMIN) throw ValidationException("Cannot delete admin user.")
 
         runLinkEntityService.deleteAllForUser(userId)
         userEntityService.delete(userId)

@@ -60,15 +60,6 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
             readonly={readonlyUserName}
         />
 
-        <UserAttribute
-            label="GM Note" id="gmNote" size={4}
-            value={user.gmNote}
-            save={save} attributeSaveName="gmNote"
-            readonly={false}
-            show={isGm}
-        />
-
-
         <div className="row form-group">
             <label htmlFor="type" className="col-lg-4 control-label text-muted">Type</label>
             <div className="col-lg-4">

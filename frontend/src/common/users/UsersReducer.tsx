@@ -20,7 +20,6 @@ export const editUserReducer = (state: User | null = null, action: any) => {
 export interface UserOverview {
     id: string,
     name: string,
-    playerName?: string,
     characterName?: string,
 }
 

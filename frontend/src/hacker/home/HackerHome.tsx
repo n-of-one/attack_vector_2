@@ -51,11 +51,6 @@ export const HackerHome = () => {
             <div className="col-lg-6">
                 <div className="row">
                     <div className="col-lg-12">
-                        <span className="text">Scans</span>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-lg-12">
                         <div className="siteMap">
                         <table className="table table-borderless table-sm text-muted text" id="sitesTable">
                                 <thead>

@@ -36,7 +36,7 @@ export const UserManagementAuthorized = () => {
         <div className="row">
             <div className="col-lg-2">
             </div>
-            <div className="col-lg-5">
+            <div className="col-lg-4">
                 <div className="text">
                     <h3 className="text-info">User management</h3><br/>
                     <br/>
@@ -46,14 +46,13 @@ export const UserManagementAuthorized = () => {
                 </div>
 
             </div>
-            <div className="col-lg-5 rightPane rightPane">
+            <div className="col-lg-6 rightPane rightPane">
                 <div className="siteMap">
                     <table className="table table-sm text-muted text" id="sitesTable">
                         <thead>
                         <tr>
                             <td className="strong">Name</td>
                             <td className="strong">Character</td>
-                            <td className="text-strong">Player</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -67,7 +66,6 @@ export const UserManagementAuthorized = () => {
                                         </SilentLink>
                                         </td>
                                         <td>{user.characterName}</td>
-                                        <td>{user.playerName}</td>
                                     </tr>)
                             })
                         }

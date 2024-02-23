@@ -47,9 +47,10 @@ export const SitesPage = () => {
         <div className="row">
             <div className="col-lg-2">
             </div>
-            <div className="col-lg-5">
+            <div className="col-lg-4">
                 <div className="text">
-                    <strong>🜁ttack 🜃ector</strong><br/>
+                    <br/>
+                    <strong>🜁 Verdant OS 🜃</strong><br/>
                     <br/>
                     <br/>
                     <br/>
@@ -89,7 +90,7 @@ export const SitesPage = () => {
                     </div>
                 </div>
             </div>
-            <div className="col-lg-5 rightPane">
+            <div className="col-lg-6 rightPane">
                 <SitesPanel sites={sites}/>
             </div>
         </div>

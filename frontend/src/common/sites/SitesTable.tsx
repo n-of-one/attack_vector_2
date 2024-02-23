@@ -47,8 +47,9 @@ export const SiteList = (props: Props) => {
             <thead>
             <tr>
                 <td className="strong" style={{width: "240px"}}></td>
-                <td className="strong" style={{width: "90px"}}></td>
-                <td className="strong" style={{width: "140px"}}></td>
+                <td className="strong" style={{width: "30px"}}></td>
+                <td className="strong" style={{width: "100px"}}></td>
+                <td className="strong" style={{width: "200px"}}></td>
                 <td className="strong"></td>
             </tr>
             </thead>
@@ -66,6 +67,7 @@ export const SiteList = (props: Props) => {
                                 }}><>{site.name}</>
                                 </SilentLink>
                             </td>
+                            <td className="table-very-condensed"><SiteOk ok={site.ok}/></td>
                             <td className="table-very-condensed">{site.ownerName}</td>
                             <td className="table-very-condensed">{site.purpose}</td>
                             <td>
@@ -102,4 +104,10 @@ export const SiteList = (props: Props) => {
         </table>
     )
 
+}
+const SiteOk = ({ok}: {ok: boolean}) => {
+    if (ok) {
+        return <div className="badge text-bg-secondary">ok</div>
+    }
+    return <div className="badge text-bg-warning">nok</div>
 }
