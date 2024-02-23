@@ -44,8 +44,15 @@ class V2_PrepareForHackersManagingSites(
             Updates.unset("email"),
             Updates.unset("gmNote"),
         )
-        val updateResult = userEntities.updateMany(allDocuments, updateUserEntityFields)
+        var updateResult = userEntities.updateMany(allDocuments, updateUserEntityFields)
         logger.info("Updated ${updateResult.modifiedCount} UserEntity documents")
+
+
+        val hackerManagers = Document().append("type", "HACKER_MANAGER")
+        val updateToHacker = Updates.set("type", "HACKER")
+
+        updateResult = userEntities.updateMany(hackerManagers, updateToHacker)
+        logger.info("Replaced ${updateResult.modifiedCount} Hacker managers")
 
         userEntityService.createMandatoryUsers()
     }
