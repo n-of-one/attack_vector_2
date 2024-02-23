@@ -28,29 +28,23 @@ class DbSchemaVersioning(
 
     @PostConstruct
     fun upgrade() {
-        val latestVersion = dbSchemaVersionRepository.findAll().maxByOrNull { it.version }?.version ?: 0
+        val currentDbVersion = dbSchemaVersionRepository.findAll().maxByOrNull { it.version }?.version ?: 0
         val maxVersion = migrationSteps.maxOfOrNull { it.version() } ?: 0
 
-        if (latestVersion == maxVersion) {
+        if (currentDbVersion == maxVersion) {
             logger.info("Database schema is up to date")
             return
         }
 
-
-        val session = mongoClient.startSession()
         val db = mongoClient.getDatabase(config.mongoDbName)
 
         migrationSteps.sortedBy { it.version() }
+            .filter { it.version() > currentDbVersion }
             .forEach { step ->
                 val version = step.version()
-                if (latestVersion > version) {
-                    return@forEach
-                }
 
                 logger.info("Upgrading to version $version")
-                val description = session.withTransaction {
-                    step.migrate(db)
-                }
+                val description = step.migrate(db)
 
                 val versionRecord = DbSchemaVersion(version, description, ZonedDateTime.now())
                 logger.info(" Upgraded to version $version : $description")

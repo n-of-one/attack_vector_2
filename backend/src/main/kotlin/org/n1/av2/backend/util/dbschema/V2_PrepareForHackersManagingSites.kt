@@ -6,6 +6,7 @@ import org.bson.Document
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.site.SiteValidationService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,6 +14,7 @@ class V2_PrepareForHackersManagingSites(
     private val siteValidationService: SiteValidationService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
+    private val currentUserService: CurrentUserService,
 ) : MigrationStep {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -26,7 +28,11 @@ class V2_PrepareForHackersManagingSites(
     fun migrate(db: MongoDatabase): String {
         alterUserEntities(db)
         alterSiteProperties(db)
-        setNewSiteProperties()
+
+        val allSiteIds = sitePropertiesEntityService.findAll().map { it.siteId }
+
+        setSiteOwnerIds(allSiteIds)
+        validateSites(allSiteIds)
 
         return "Changed UserEntity (removed obsolete fields) and changed SiteProperties (prepare for hacker making sites)."
     }
@@ -58,12 +64,10 @@ class V2_PrepareForHackersManagingSites(
         logger.info("Updated ${updateResult.modifiedCount} SiteProperty documents")
     }
 
-    private fun setNewSiteProperties() {
+    private fun setSiteOwnerIds(allSiteIds: List<String>) {
         val systemUser = userEntityService.getSystemUser()
         val gmUser = userEntityService.getByName("gm")
 
-        val allSiteIds = sitePropertiesEntityService.findAll().map { it.siteId }
-        allSiteIds.forEach { siteValidationService.validate(it, true) }
         allSiteIds.forEach {
             val siteProperties = sitePropertiesEntityService.getBySiteId(it)
             if (siteProperties.name == "tutorial") {
@@ -76,6 +80,20 @@ class V2_PrepareForHackersManagingSites(
                 sitePropertiesEntityService.save(siteProperties.copy(ownerUserId = ownerUserId))
             } else {
                 sitePropertiesEntityService.save(siteProperties.copy(ownerUserId = gmUser.id))
+            }
+        }
+    }
+
+    private fun validateSites(allSiteIds: List<String>) {
+        allSiteIds.forEach {
+            val siteProperties = sitePropertiesEntityService.getBySiteId(it)
+            val user = userEntityService.getById(siteProperties.ownerUserId)
+            try {
+                currentUserService.set(user) // Site validation depends on current user, see validateSiteCreator()
+                siteValidationService.validate(it, true)
+            }
+            finally {
+                currentUserService.remove()
             }
         }
     }
