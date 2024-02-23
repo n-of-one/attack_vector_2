@@ -34,10 +34,11 @@ private val OPEN_PATHS = listOf(
 private val HACKER_PATHS = listOf(
     "/hacker/**",
     "/x/**", // for widgets and other apps that require hacker authentication
+
 )
 
-private val GM_PATHS = listOf("/gm/**", "/edit/**")
-private val USER_PATHS = listOf("/api/**")
+private val GM_PATHS = listOf("/gm/**")
+private val USER_PATHS = listOf("/api/**", "/edit/**")
 
 @Configuration
 @EnableWebSecurity
