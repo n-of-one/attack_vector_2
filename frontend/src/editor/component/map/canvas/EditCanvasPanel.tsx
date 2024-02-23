@@ -33,7 +33,7 @@ export const EditCanvasPanel = () => {
     }
 
     return (
-        <div className="col-lg-8" id="canvas-col" style={{marginLeft: "-7px"}}>
+        <div className="p-1" id="canvas-col" style={{marginLeft: "-11px"}}>
             <div id="canvas-container" onDragOver={(event) => allowDrop(event)}
                  onDrop={(event) => drop_image_and_create_node(event)}>
                 <canvas id="canvas" width={CANVAS_WIDTH} height={CANVAS_HEIGHT_EDITOR} style={{"borderRadius": "3px 3px 3px 3px"}}/>

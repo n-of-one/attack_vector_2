@@ -5,11 +5,9 @@ import {DetailPanel} from "./panel/DetailPanel"
 
 export const EditorMain = () =>{
         return (
-        <>
-            <div className="row marginTop">
-                <EditCanvasPanel />
-                <DetailPanel/>
-            </div>
-        </>
-        )
-    }
+    <div className="d-flex flex-row">
+        <EditCanvasPanel/>
+        <DetailPanel/>
+    </div>
+)
+}

@@ -209,7 +209,8 @@ a.textLink {
 }
 
 .layerLayerPanel {
-    height: 471px;
+    height: 578px;
+    margin-top: 4px;
 }
 
 .editorBottomPanel {

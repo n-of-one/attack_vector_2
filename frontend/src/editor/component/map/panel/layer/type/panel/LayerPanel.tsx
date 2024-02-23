@@ -53,8 +53,8 @@ export const LayerPanel = ({layerObject, children, typeDisplay}: Props) => {
                             placeholder="As seen by hackers" help="When a hacker 'scans' or 'views' a node they will see the layers by this name.
                             For ICE unique names help with passcodes" id="layerName"/>
                 {children}
-                <LayerField key={key("note")} size="large" label="Gm Note" value={layerObject.note} save={value => layerObject.saveNote(value)}
-                            placeholder="" help="Players will never see this. Notes can help to understand the design of a site." id={`gmNote-${layerObject.id}`}/>
+                <LayerField key={key("note")} size="large" label="Note" value={layerObject.note} save={value => layerObject.saveNote(value)}
+                            placeholder="" help="Hacker will never see this. Notes can help to understand the design of a site." id={`gmNote-${layerObject.id}`}/>
             </div>
         </div>
     )

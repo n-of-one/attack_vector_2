@@ -5,14 +5,12 @@ import {LayersPanel} from "./LayersPanel"
 
 export const DetailPanel = () => {
     return (
-        <>
-            <div className="col-lg-4" id="node-library">
-                <ActionsPanel/>
-                <div className="row">&nbsp;</div>
-                <LayersPanel/>
-                <div className="row">&nbsp;</div>
-                <NodeDetailsPanel/>
-            </div>
-        </>
+        <div className="p-1" id="node-library" style={{marginLeft: "8px", width: "621px"}}>
+            <ActionsPanel/>
+            {/*<div className="row">&nbsp;</div>*/}
+            <LayersPanel/>
+            {/*<div className="row">&nbsp;</div>*/}
+            <NodeDetailsPanel/>
+        </div>
     )
 }

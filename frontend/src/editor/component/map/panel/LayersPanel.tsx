@@ -56,7 +56,7 @@ export const LayersPanel = () => {
     }
 
     return (
-        <div className="row">
+        <div className="row" style={{marginTop: "4px"}}>
             <div className="col-lg-12 darkWell">
                 <br/>
                 <div>
@@ -65,11 +65,11 @@ export const LayersPanel = () => {
                     {regular(TRIPWIRE, "white")}
                     {regular(CORE, "white")}
                     {/*{unImplemented(TIMER_TRIGGER)}*/}
-                    {unImplemented(TRACER)}
-                    {unImplemented(TRACE_LOG)}
-                    {unImplemented(SCAN_BLOCK)}
-                    {unImplemented(MONEY)}
-                    {unImplemented(CODE)}
+                    {/*{unImplemented(TRACER)}*/}
+                    {/*{unImplemented(TRACE_LOG)}*/}
+                    {/*{unImplemented(SCAN_BLOCK)}*/}
+                    {/*{unImplemented(MONEY)}*/}
+                    {/*{unImplemented(CODE)}*/}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>
