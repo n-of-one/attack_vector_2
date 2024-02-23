@@ -19,6 +19,10 @@ class SiteValidationService(
 ) {
 
     fun validate(siteId: String): List<SiteStateMessage> {
+        return validate(siteId, false)
+    }
+
+    fun validate(siteId: String, alwaysPersistResult: Boolean): List<SiteStateMessage> {
         val messages = ArrayList<SiteStateMessage>()
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         val nodes = nodeEntityService.getAll(siteId)
@@ -26,7 +30,7 @@ class SiteValidationService(
         validateSiteProperties(siteProperties, nodes, messages)
         validateNodes(siteProperties, nodes, messages)
 
-        processValidationMessages(messages, siteId)
+        processValidationMessages(messages, siteId, alwaysPersistResult)
         return messages
     }
 
@@ -44,7 +48,7 @@ class SiteValidationService(
 
     private fun validateSiteCreator(siteProperties: SiteProperties) {
         if (siteProperties.purpose.isBlank() && currentUserService.userEntity.type != UserType.HACKER) {
-            throw SiteValidationException("Please fill in the site purpose (plot)", SiteStateMessageType.INFO)
+            throw SiteValidationException("Please fill in the site's purpose.", SiteStateMessageType.INFO)
         }
     }
 
@@ -103,12 +107,12 @@ class SiteValidationService(
         }
     }
 
-    private fun processValidationMessages(messages: ArrayList<SiteStateMessage>, id: String) {
+    private fun processValidationMessages(messages: ArrayList<SiteStateMessage>, id: String, alwaysPersistResult: Boolean) {
         val ok = messages.filter { it.type == SiteStateMessageType.ERROR }.none()
         val oldState = siteEditorStateEntityService.getById(id)
         val newState = oldState.copy(messages = messages)
 
-        if (oldState != newState) {
+        if (alwaysPersistResult || oldState != newState) {
             siteEditorStateEntityService.save(newState)
             stompService.toSite(id, ServerActions.SERVER_UPDATE_SITE_STATE, newState)
             val updatedSiteProperties = sitePropertiesEntityService.updateSiteOk(id, ok)

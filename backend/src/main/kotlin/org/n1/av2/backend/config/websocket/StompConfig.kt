@@ -60,7 +60,7 @@ class StompConfig(
                     return UserPrincipal(
                         _name = "not-logged-in",
                         connectionId = connectionUtil.create(),
-                        userEntity = UserEntity(UUID.randomUUID().toString(), "", "", UserType.NOT_LOGGED_IN, null),
+                        userEntity = UserEntity(UUID.randomUUID().toString(), "", UserType.NOT_LOGGED_IN, "", null),
                         type = ConnectionType.NONE,
                     )
                 }

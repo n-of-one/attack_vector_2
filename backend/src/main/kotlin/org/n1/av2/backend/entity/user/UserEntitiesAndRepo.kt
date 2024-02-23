@@ -9,15 +9,15 @@ import org.springframework.stereotype.Repository
 @Document
 data class UserEntity(
     @Id val id: String,
-    val externalId: String? = null,
     @field:UserName var name: String = "",
     var type: UserType = UserType.NOT_LOGGED_IN,
+    val externalId: String? = null,
     val hacker: Hacker?,
 )
 
 
 @Repository
-interface UserRepo : CrudRepository<UserEntity, String> {
+interface UserEntityRepo : CrudRepository<UserEntity, String> {
     fun findByNameIgnoreCase(userName: String): UserEntity?
     fun findByExternalId(externalId: String): UserEntity?
 }

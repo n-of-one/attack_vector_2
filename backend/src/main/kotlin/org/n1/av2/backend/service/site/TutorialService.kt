@@ -9,10 +9,13 @@ import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.admin.ImportService
 import org.n1.av2.backend.service.run.terminal.scanning.ScanService
 import org.n1.av2.backend.service.user.CurrentUserService
+import org.springframework.context.annotation.DependsOn
+import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
 
 @Service
+@DependsOn("DbSchemaVersioning")
 class TutorialService(
     private val importService: ImportService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
@@ -26,7 +29,11 @@ class TutorialService(
 
     ) {
 
-    @PostConstruct
+    @EventListener
+    fun onApplicationEvent(event: ContextRefreshedEvent) {
+        setup()
+    }
+
     fun setup() {
         val site = sitePropertiesEntityService.findByName("tutorial")
         if (site == null) {

@@ -53,7 +53,7 @@ class SitePropertiesEntityService(
         sitePropertiesRepo.deleteById(siteId)
     }
 
-    fun findByownerUserId(userId: String): List<SiteProperties> {
+    fun findByOwnerUserId(userId: String): List<SiteProperties> {
         return sitePropertiesRepo.findByownerUserId(userId)
     }
 

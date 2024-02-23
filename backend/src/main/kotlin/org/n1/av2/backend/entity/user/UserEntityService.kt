@@ -1,26 +1,33 @@
 package org.n1.av2.backend.entity.user
 
 import org.n1.av2.backend.util.createId
+import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 import java.util.*
-import javax.annotation.PostConstruct
+import kotlin.jvm.optionals.getOrNull
 
-@Component
+
+@Component("UserEntityService")
 class UserEntityService(
-    private val userRepo: UserRepo,
+    private val userEntityRepo: UserEntityRepo,
 ) {
 
 
     fun findByNameIgnoreCase(userName: String): UserEntity? {
-        return userRepo.findByNameIgnoreCase(userName)
+        return userEntityRepo.findByNameIgnoreCase(userName)
     }
 
     fun getByName(userName: String): UserEntity {
         return findByNameIgnoreCase(userName) ?: throw UsernameNotFoundException("Username not found: ${userName}")
     }
 
-    @PostConstruct
+    @EventListener
+    fun onApplicationEvent(event: ContextRefreshedEvent) {
+        createMandatoryUsers()
+    }
+
     fun createMandatoryUsers() {
         createUser("system", UserType.SYSTEM)
         createUser("admin", UserType.ADMIN)
@@ -49,43 +56,47 @@ class UserEntityService(
             id = createUserId(),
             hacker = hacker,
         )
-        userRepo.save(newUserEntity)
+        userEntityRepo.save(newUserEntity)
     }
 
     fun createUserId(): String {
         fun findExisting(candidate: String): Optional<UserEntity> {
-            return userRepo.findById(candidate)
+            return userEntityRepo.findById(candidate)
         }
 
         return createId("user", ::findExisting)
     }
 
     fun getById(userId: String): UserEntity {
-        return userRepo.findById(userId).orElseGet { error("${userId} not found") }
+        return userEntityRepo.findById(userId).orElseGet { error("${userId} not found") }
+    }
+
+    fun searchById(userId: String): UserEntity? {
+        return userEntityRepo.findById(userId).getOrNull()
     }
 
     fun findAll(): List<UserEntity> {
-        return userRepo.findAll().toList()
+        return userEntityRepo.findAll().toList()
     }
 
     fun save(userEntity: UserEntity): UserEntity {
         if (userEntity.type == UserType.SYSTEM) error("Cannot change system user")
-        return userRepo.save(userEntity)
+        return userEntityRepo.save(userEntity)
     }
 
     fun delete(userId: String) {
         val user = getById(userId)
-        userRepo.delete(user)
+        userEntityRepo.delete(user)
     }
 
     fun findByExternalId(externalId: String): UserEntity? {
-        return userRepo.findByExternalId(externalId)
+        return userEntityRepo.findByExternalId(externalId)
     }
 
 
 
     fun createUserForTest(name: String, type: UserType = UserType.HACKER): UserEntity {
-        val existingUser = userRepo.findByNameIgnoreCase(name)
+        val existingUser = userEntityRepo.findByNameIgnoreCase(name)
         if (existingUser != null) {
             return existingUser
         }
@@ -100,13 +111,13 @@ class UserEntityService(
                 characterName = "char for ${name}"
             ),
         )
-        return userRepo.save(newUserEntity)
+        return userEntityRepo.save(newUserEntity)
     }
 
     fun deleteTestUserIfExists(name: String) {
         val id = testUserId(name)
-        if (userRepo.existsById(id)) {
-            userRepo.deleteById(id)
+        if (userEntityRepo.existsById(id)) {
+            userEntityRepo.deleteById(id)
         }
     }
 
@@ -116,7 +127,7 @@ class UserEntityService(
     }
 
     fun getSystemUser(): UserEntity {
-        return userRepo.findByNameIgnoreCase("system") ?: error("System user not found")
+        return userEntityRepo.findByNameIgnoreCase("system") ?: error("System user not found")
     }
 
 }

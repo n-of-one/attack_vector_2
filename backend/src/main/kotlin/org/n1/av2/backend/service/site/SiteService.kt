@@ -33,7 +33,7 @@ class SiteService(
     fun sendSitesList() {
         val gm = currentUserService.userEntity.type == UserType.GM
 
-        val sites = if (gm) sitePropertiesEntityService.findAll() else sitePropertiesEntityService.findByownerUserId(currentUserService.userId)
+        val sites = if (gm) sitePropertiesEntityService.findAll() else sitePropertiesEntityService.findByOwnerUserId(currentUserService.userId)
         val userNamesById = HashMap<String, String>()
         val list = sites
             .map {

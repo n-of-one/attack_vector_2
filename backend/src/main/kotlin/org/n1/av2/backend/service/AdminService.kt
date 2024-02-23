@@ -10,8 +10,8 @@ import org.n1.av2.backend.entity.site.ConnectionRepo
 import org.n1.av2.backend.entity.site.NodeRepo
 import org.n1.av2.backend.entity.site.SiteEditorStateRepo
 import org.n1.av2.backend.entity.site.SitePropertiesRepo
+import org.n1.av2.backend.entity.user.UserEntityRepo
 import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.entity.user.UserRepo
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions
@@ -30,7 +30,7 @@ class AdminService(
     private val runRepo: RunRepo,
     private val runLinkRepo: RunLinkRepo,
     private val userEntityService: UserEntityService,
-    private val userRepo: UserRepo,
+    private val userEntityRepo: UserEntityRepo,
     private val tangleIceStatusRepo: TangleIceStatusRepo,
     private val icePasswordStatusRepo: IcePasswordStatusRepo,
     ) {
@@ -49,7 +49,7 @@ class AdminService(
         runLinkRepo.deleteAll()
 
         hackerStateRepo.deleteAll()
-        userRepo.deleteAll()
+        userEntityRepo.deleteAll()
 
         tangleIceStatusRepo.deleteAll()
         icePasswordStatusRepo.deleteAll()
