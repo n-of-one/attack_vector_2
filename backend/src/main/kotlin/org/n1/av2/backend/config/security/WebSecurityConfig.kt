@@ -18,7 +18,7 @@ private val OPEN_PATHS = listOf(
     "/", "/index.html",
     "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
     "/about", "/privacy", "/website/**",
-    "/loggedOut", "/login", "/adminLogin", "/logout", "/localLogout",
+    "/loggedOut", "/login", "/adminLogin", "/logout", "/localLogout", "login-frontier",
 
     "/o/**", // for widgets and other apps that don't require any authentication
     "/openapi/**", // open api calls

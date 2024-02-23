@@ -45,7 +45,7 @@ export class Larp {
 
         if (this.type === LarpType.FRONTIER) {
             this.name = "frontier"
-            this.loginUrl = "/login/frontier"
+            this.loginUrl = "/login-frontier"
             this.hackerShowSkills = true
             return
         }

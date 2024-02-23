@@ -18,7 +18,7 @@ class FrontierController(
 ) {
 
 
-    @GetMapping("/login/frontier")
+    @GetMapping("/login-frontier")
     @ResponseBody
     fun frontierSso(request: HttpServletRequest, response: HttpServletResponse, @LoginRedirectParam @RequestParam next: String?): String {
         val cookies = request.cookies ?: emptyArray()
