@@ -3,12 +3,16 @@ package org.n1.av2.backend.service.security
 import jakarta.servlet.http.Cookie
 import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.config.security.JwtTokenProvider
+import org.n1.av2.backend.config.websocket.ConnectionType
 import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserType
+import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.larp.FrontierHackerInfo
 import org.n1.av2.backend.service.site.TutorialService
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.user.UserService
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
 
@@ -20,6 +24,7 @@ class LoginService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val googleOauthService: GoogleOauthService,
     private val tutorialService: TutorialService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     fun login(userName: String, password: String?): List<Cookie> {
@@ -47,7 +52,14 @@ class LoginService(
     fun googleLogin(jwt: String): List<Cookie> {
         val externalId = googleOauthService.parse(jwt)
         val user = userService.getOrCreateUser(externalId)
+
+        // Need to set current user for use in tutorialService
+        val authentication = UserPrincipal("", "google-login", user, ConnectionType.STATELESS)
+        SecurityContextHolder.getContext().authentication = authentication
+        currentUserService.set(user)
+
         tutorialService.createIfNotExistsFor(user)
+
         return getCookies(user)
     }
 
