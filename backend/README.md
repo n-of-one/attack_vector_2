@@ -24,12 +24,12 @@ The application uses environment properties for configuration, all with defaults
 `ENVIRONMENT`     The name of the server environment. Defaults to: default 
 
 The application has an optional notion of differentiating between environments, such as local development,
-deployment on a local server during an event, or being hosted in the cloud. This will be used to tag database exports. 
- 
-If the environment name starts with: `dev` then a small network delay is simulated, to give a more realistic 
-experience when running the server locally when running the server locally.
+deployment on a local server during an event, or being hosted in the cloud. This will be used to tag database exports.
 
-If the environment name starts with: `dev` then the `quickscan` & `qs` and `quickattack` & `qa` commands are enabled.
+Also, if the environment name starts with: `dev`:
+- a small network delay is simulated, to give a more realistic experience when running the server locally when running the server locally.
+- the `quickscan` & `qs` and `quickattack` & `qa` commands are enabled.
+- no admin password is needed
 
 
 `GOOGLE_CLIENT_ID`   When using Google login, set this property. Format: 012345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com  . 
