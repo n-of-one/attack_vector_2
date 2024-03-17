@@ -7,24 +7,25 @@
 
 *A hacking simulation intended for use in Live Action RolePlaying games.*
 
+## More info
+
+The website for Attack Vector 2 is located here: https://attackvector.nl/website
+
 ## Version 2
 
-This is the successor of Attack Vector (v1). See here for more information on the previous verion: http://adventureforum.nl/ld50/attack_vector.html
+This is the successor of Attack Vector (v1). 
 
 Besides general improvements and a visual makeover, version 2 has the following new features
 
-- Realtime multiplayer (hack the same ICE with multiple hackers at the same time)
-- Rudimentary integration with offline items like doors-lights
+- Realtime multiplayer: hack the same ICE with multiple hackers at the same time
+- Rudimentary integration with offline items like door-lights
 
-## Using Attack Vector 2 at your LARP
+## Using Attack Vector 2 at your LARP event
 
-The goal is to run AV2 in the cloud, managed by me (Erik) so there will be no hassle to install software for the larp organizers.
-It looks like running AV2 on AWS will cost less than 2 euro per day, so for now I'll be offering this for free for any larp
-that wants to use it for the duration of the event.
+The goal is to make it as easy as possible to run AV at your larp event. There are scripts to install and upgrade the software on a fresh Ubuntu server,
+such as an AWS EC2 instance. It runs on a t4g.micro with a total operating cose (at the time of writing) of less than 15 euro per month.
 
-It's open source software, so you can always choose to run it yourself.
-
-The license is MIT which means you can use it for commercial purposes.
+It's open source software with the MIT license which means you can use it for commercial purposes.
 
 ## Technical stuff
 
