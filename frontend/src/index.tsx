@@ -14,12 +14,13 @@ import {Privacy} from "./Privacy";
 import {AdminLogin} from "./login/AdminLogin";
 import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
 import {WebsiteRouting} from "./website/WebsiteRouting";
+import {SiteHackIce} from "./standalone/ice/SiteHackIce";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
     "\nUsing the browser console / dev-tools is not part of this game." +
     "\nYou don't need to do any real-life hacking to play this game." +
-    "\nReal-life hacking is against the spirit of this game. Please close the developer tools if you are seeing this in a LARP." +
+    "\nReal-life hacking is against the spirit of this game. Please close the developer tools if you are seeing this at a LARP event." +
     "\n" +
     "\n_Attack Vector_ is open source: https://github.com/n-of-one/attack_vector_2" +
     "\n ")
@@ -61,20 +62,8 @@ root.render(
     <>
         <BrowserRouter>
             <Routes>
+                <Route path="/" element={<SiteHackIce iceId={"sweeper-1234-1234"} nextUrl={null}/>} />
                 <Route path="/login" element={larp.loginElement()}/>
-                <Route path="/adminLogin" element={<AdminLogin/>}/>
-                <Route path="/loggedOut" element={<LoggedOut/>}/>
-                <Route path="/about" element={<About/>}/>
-                <Route path="/privacy" element={<Privacy/>}/>
-                <Route path="/hacker" element={<HackerRoot/>}/>
-                <Route path="/gm" element={<GmRoot/>}/>
-                <Route path="/edit/:siteId" element={<Editor/>}/>
-                <Route path="/x/:encodedParam" element={<Standalone/>}/> { /*path that require login and will redirect to login if not logged in */ }
-                <Route path="/o/:encodedParam" element={<Standalone/>}/> { /* path that does not require login*/ }
-                <Route path="/website" element={<WebsiteLandingPage/>}/>
-                <Route path="/website/:path" element={<WebsiteRouting/>}/>
-                <Route path="/" element={<ReRoute/>}/>
-                <Route path="*" element={<ReRoute/>}/>
             </Routes>
         </BrowserRouter>
         <ToasterConfig/>

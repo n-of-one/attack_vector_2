@@ -12,6 +12,7 @@ export const TANGLE_ICE = "TANGLE_ICE"
 export const WORD_SEARCH_ICE = "WORD_SEARCH_ICE"
 export const NETWALK_ICE = "NETWALK_ICE"
 export const TAR_ICE = "TAR_ICE"
+export const SWEEPER_ICE = "SWEEPER_ICE"
 
 export const LOCK = "LOCK"
 export const STATUS_LIGHT = "STATUS_LIGHT"
@@ -27,6 +28,7 @@ export enum LayerType {
     WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
     NETWALK_ICE = "NETWALK_ICE",
     TAR_ICE = "TAR_ICE",
+    SWEEPER_ICE = "SWEEPER_ICE",
     LOCK = "LOCK",
     STATUS_LIGHT = "STATUS_LIGHT",
     KEYSTORE = "KEYSTORE",
@@ -42,6 +44,7 @@ export const layerTypeFromIceId = (iceId: string): LayerType | null => {
         case "wordSearch": return LayerType.WORD_SEARCH_ICE
         case "netwalk": return LayerType.NETWALK_ICE
         case "tar": return LayerType.TAR_ICE
+        case "sweeper": return LayerType.SWEEPER_ICE
         default: return null
     }
 }
