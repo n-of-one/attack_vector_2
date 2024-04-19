@@ -40,6 +40,7 @@ enum class ServerActions {
     SERVER_SITE_DISCOVERED,         // Result of scan site for name
     SERVER_ENTERING_RUN,            // Step 1 of entering a run: frontend can subscribe to topics and wait for SERVER_ENTERED_RUN
     SERVER_ENTERED_RUN,             // Step 2 of entering a run: frontend can now start processing messages for this run
+    SERVER_RUN_TIMER,               // Optional resending of timer info for a site (at request of client)
 
     SERVER_SITE_SHUTDOWN_START,     // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
     SERVER_SITE_SHUTDOWN_FINISH,    // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
@@ -96,6 +97,8 @@ enum class ServerActions {
     SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE auth UI
     SERVER_REDIRECT_CONNECT_APP,        // open a new window to connect to an app
 
-    SERVER_REDIRECT_NEXT_LAYER          // send by server to user when externally hacking ICE and moving player to next layer (ice or app).
+    SERVER_REDIRECT_NEXT_LAYER,         // send by server to user when externally hacking ICE and moving player to next layer (ice or app).
+
+    SERVER_SPEAK,                        // send to Lola to have them say something
 
 }

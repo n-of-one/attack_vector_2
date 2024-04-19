@@ -8,7 +8,7 @@ import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.iam.UserPrincipal
-import org.n1.av2.backend.service.larp.FrontierHackerInfo
+import org.n1.av2.backend.service.larp.frontier.FrontierHackerInfo
 import org.n1.av2.backend.service.site.TutorialService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.user.UserService

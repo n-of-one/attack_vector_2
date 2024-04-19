@@ -93,9 +93,9 @@ class RunService(
         stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Site '${siteProperties.name}'", "currently not hackable"))
     }
 
-    fun enterRun(runId: String) {
+    fun enterRun(userId: String, runId: String, connectionId: String) {
         val run = runEntityService.getByRunId(runId)
-        val thisHackerState = hackerStateEntityService.enterRun(run.siteId, runId)
+        val thisHackerState = hackerStateEntityService.enterRun(run.siteId, userId, runId, connectionId)
 
         syntaxHighlightingService.sendForOutside()
         stompService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SITE, toPresence(thisHackerState))
@@ -105,10 +105,10 @@ class RunService(
 
         val hackerPresences = getPresenceInRun(runId)
 
-        val timers = tripwireLayerService.findForEnterSite(run.siteId, currentUserService.userId)
+        val timers = tripwireLayerService.findForEnterSite(run.siteId, userId)
 
         val siteInfo = SiteInfo(run, siteFull, hackerPresences, timers)
-        stompService.reply(ServerActions.SERVER_ENTERED_RUN, siteInfo)
+        stompService.toUser(userId, ServerActions.SERVER_ENTERED_RUN, siteInfo)
     }
 
     private fun getPresenceInRun(runId: String): List<HackerPresence> {
@@ -276,5 +276,15 @@ class RunService(
                 runEntityService.save(run)
             }
         }
+    }
+
+    class TimersInfo(val timers: List<TimerInfo>)
+
+    fun getTimers(runId: String, userId: String) {
+        val run = runEntityService.getByRunId(runId)
+        val timers = tripwireLayerService.findForEnterSite(run.siteId, userId)
+
+        val timerInfo = TimersInfo(timers)
+        stompService.toUser(userId, ServerActions.SERVER_RUN_TIMER, timerInfo)
     }
 }

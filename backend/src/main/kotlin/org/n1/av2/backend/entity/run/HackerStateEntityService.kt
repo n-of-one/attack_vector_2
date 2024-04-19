@@ -33,12 +33,11 @@ class HackerStateEntityService(
         }
     }
 
-    fun enterRun(siteId: String, runId: String): HackerState {
-        val userId = currentUserService.userId
+    fun enterRun(siteId: String, userId: String, runId: String, connectionId: String): HackerState {
 
         val newState = HackerState(
             userId = userId,
-            connectionId = currentUserService.connectionId,
+            connectionId = connectionId,
             runId = runId,
             siteId = siteId,
             currentNodeId = null,

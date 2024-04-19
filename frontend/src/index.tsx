@@ -14,6 +14,7 @@ import {Privacy} from "./Privacy";
 import {AdminLogin} from "./login/AdminLogin";
 import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
 import {WebsiteRouting} from "./website/WebsiteRouting";
+import {Lola} from "./larp/frontier/Lola";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -73,6 +74,7 @@ root.render(
                 <Route path="/o/:encodedParam" element={<Standalone/>}/> { /* path that does not require login*/ }
                 <Route path="/website" element={<WebsiteLandingPage/>}/>
                 <Route path="/website/:path" element={<WebsiteRouting/>}/>
+                <Route path="/larp/frontier/lola" element={<Lola/>}/>
                 <Route path="/" element={<ReRoute/>}/>
                 <Route path="*" element={<ReRoute/>}/>
             </Routes>

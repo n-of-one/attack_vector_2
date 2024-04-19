@@ -16,7 +16,7 @@ class HtmlController(
 ) : ErrorController {
 
     @GetMapping("/", "/login", "/adminLogin", "/loggedOut", "/about", "/privacy", "/hacker", "/hacker/", "/gm", "/gm/",
-        "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}", "/o/{reference}", "/website", "/website/{page}")
+        "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}", "/o/{reference}", "/website", "/website/{page}", "/larp/**")
     fun default(): String {
         return INDEX
     }

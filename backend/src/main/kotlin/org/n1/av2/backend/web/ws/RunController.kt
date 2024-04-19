@@ -51,7 +51,7 @@ class RunController(
 
     @MessageMapping("/run/enterRun")
     fun enterRun(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runService.enterRun(runId) }
+        userTaskRunner.runTask(userPrincipal) { runService.enterRun(userPrincipal.userId, runId, userPrincipal.connectionId) }
     }
 
 
@@ -60,6 +60,12 @@ class RunController(
         userTaskRunner.runTask(userPrincipal) {
             val state = hackerStateEntityService.retrieveForCurrentUser()
             runService.leaveSite(state, true) }
+    }
+
+    @MessageMapping("/run/getTimers")
+    fun getTimers(runId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            runService.getTimers(runId, userPrincipal.userId) }
     }
 
 

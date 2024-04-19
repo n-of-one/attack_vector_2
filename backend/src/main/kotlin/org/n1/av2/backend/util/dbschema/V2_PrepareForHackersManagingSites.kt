@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Updates
 import org.bson.Document
 import org.n1.av2.backend.entity.site.SitePropertiesEntityService
+import org.n1.av2.backend.entity.user.DefaultUserService
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.service.site.SiteValidationService
 import org.n1.av2.backend.service.user.CurrentUserService
@@ -14,6 +15,7 @@ class V2_PrepareForHackersManagingSites(
     private val siteValidationService: SiteValidationService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
+    private val defaultUserService: DefaultUserService,
     private val currentUserService: CurrentUserService,
 ) : MigrationStep {
 
@@ -54,7 +56,7 @@ class V2_PrepareForHackersManagingSites(
         updateResult = userEntities.updateMany(hackerManagers, updateToHacker)
         logger.info("Replaced ${updateResult.modifiedCount} Hacker managers")
 
-        userEntityService.createMandatoryUsers()
+        defaultUserService.createMandatoryUsers()
     }
 
     private fun alterSiteProperties(db: MongoDatabase) {

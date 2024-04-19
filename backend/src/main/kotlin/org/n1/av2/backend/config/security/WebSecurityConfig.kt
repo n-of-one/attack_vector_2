@@ -37,8 +37,9 @@ private val HACKER_PATHS = listOf(
 
 )
 
-private val GM_PATHS = listOf("/gm/**")
+private val GM_PATHS = listOf("/gm/**", "/larp/**")
 private val USER_PATHS = listOf("/api/**", "/edit/**")
+private val ADMIN_PATHS = listOf("/api/admin/**")
 
 @Configuration
 @EnableWebSecurity
@@ -53,6 +54,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
             HACKER_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_HACKER.authority) }
             GM_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_GM.authority) }
             USER_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_USER.authority) }
+            ADMIN_PATHS.forEach { path -> requests.requestMatchers(path).hasAuthority(ROLE_ADMIN.authority) }
         }
         http.csrf { it.disable() }
         http.headers { headers -> headers.frameOptions { it.disable() } } // for IMD.html

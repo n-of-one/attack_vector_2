@@ -1,5 +1,6 @@
 export enum HackerIcon {
     BEAR = "BEAR",
+    BRAIN = "BRAIN",
     BIRD_1 = "BIRD_1",
     CAT = "CAT",
     CRAB = "CRAB",
@@ -51,9 +52,9 @@ export const hackerIconPath = (type: string, you: boolean) => {
 }
 
 const iconFilename: { [key: string]: string } = {
-
     "BEAR": "animal-bear4-sc44.png",
     "BIRD_1": "animal-bird2.png",
+    "BRAIN": "brain.png",
     "CAT": "animal-cat3.png",
     "CRAB": "animal-crab2.png",
     "DINO_1": "animal-dinosaur3.png",
