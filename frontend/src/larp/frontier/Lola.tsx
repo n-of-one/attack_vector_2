@@ -141,7 +141,7 @@ export const Lola = (): React.JSX.Element => {
                             <a href="#"
                                onClick={event => {
                                    deleteStored(event, index)
-                               }}>X</a>&nbsp;
+                               }}><span className="glyphicon glyphicon-trash"/></a>&nbsp;
 
                             <a href="#"
                                onClick={loadStored}
