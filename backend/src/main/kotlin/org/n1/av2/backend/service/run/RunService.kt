@@ -72,7 +72,11 @@ class RunService(
         val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
         runLinkEntityService.createRunLink(run.runId, currentUserService.userEntity)
 
-        stompService.reply(ServerActions.SERVER_SITE_DISCOVERED, "runId" to run.runId, "siteId" to siteProperties.siteId)
+        stompService.reply(
+            ServerActions.SERVER_SITE_DISCOVERED,
+            "runId" to run.runId,
+            "siteId" to siteProperties.siteId
+        )
         runLinkService.sendRunInfosToUser() // to update the scans in the home screen
 
         // enterRun will be called by the browser, the frontend needs to configure websocket connection for the run.
@@ -90,7 +94,13 @@ class RunService(
     }
 
     private fun replyNotHackable(siteProperties: SiteProperties) {
-        stompService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Site '${siteProperties.name}'", "currently not hackable"))
+        stompService.replyMessage(
+            NotyMessage(
+                NotyType.NEUTRAL,
+                "Site '${siteProperties.name}'",
+                "currently not hackable"
+            )
+        )
     }
 
     fun enterRun(userId: String, runId: String, connectionId: String) {
@@ -140,7 +150,12 @@ class RunService(
             ServerActions.SERVER_TERMINAL_RECEIVE,
             StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[info]${message}", ""))
         )
-        stompService.toUser(hackerState.userId, ServerActions.SERVER_TERMINAL_UPDATE_PROMPT, "prompt" to "⇀ ", "terminalId" to TERMINAL_MAIN)
+        stompService.toUser(
+            hackerState.userId,
+            ServerActions.SERVER_TERMINAL_UPDATE_PROMPT,
+            "prompt" to "⇀ ",
+            "terminalId" to TERMINAL_MAIN
+        )
 
         hackerStateEntityService.disconnect(hackerState)
     }
@@ -198,13 +213,23 @@ class RunService(
             if (!nodeScan.status.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
 
             run.updateScanStatus(node.id, FULLY_SCANNED_4)
-            stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, "nodeId" to node.id, "newStatus" to FULLY_SCANNED_4)
+            stompService.toRun(
+                run.runId,
+                ServerActions.SERVER_UPDATE_NODE_STATUS,
+                "nodeId" to node.id,
+                "newStatus" to FULLY_SCANNED_4
+            )
 
             run.nodeScanById.filterKeys { nodeId -> neighboringNodeIds.contains(nodeId) }
                 .forEach { (neighboringNodeId, nodeScan) ->
                     if (nodeScan.status == UNDISCOVERED_0 || nodeScan.status == UNCONNECTABLE_1) {
                         run.updateScanStatus(neighboringNodeId, CONNECTABLE_2)
-                        stompService.toRun(run.runId, ServerActions.SERVER_UPDATE_NODE_STATUS, "nodeId" to neighboringNodeId, "newStatus" to CONNECTABLE_2)
+                        stompService.toRun(
+                            run.runId,
+                            ServerActions.SERVER_UPDATE_NODE_STATUS,
+                            "nodeId" to neighboringNodeId,
+                            "newStatus" to CONNECTABLE_2
+                        )
                     }
                 }
             runEntityService.save(run)
@@ -265,9 +290,14 @@ class RunService(
         val runs = runEntityService.findAllForSiteId(siteId)
         runs.forEach { run ->
             var changed = false
-                run.nodeScanById.forEach { (nodeId, nodeScan) ->
-                val node = nodeById[nodeId] ?: error("Node ${nodeId} not found")
-                if (node.ice && nodeScan.status == FULLY_SCANNED_4) {
+            run.nodeScanById.forEach { (nodeId, nodeScan) ->
+
+                val node = nodeById[nodeId]
+                if (node == null) { // node has been removed by GM in the editor
+                    run.nodeScanById.remove(nodeId)
+                    changed = true
+
+                } else if (node.ice && nodeScan.status == FULLY_SCANNED_4) {
                     run.updateScanStatus(nodeId, ICE_PROTECTED_3)
                     changed = true
                 }
