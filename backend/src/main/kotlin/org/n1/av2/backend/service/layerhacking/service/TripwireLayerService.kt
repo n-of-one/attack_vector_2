@@ -131,7 +131,7 @@ class TripwireLayerService(
 
     private fun determineEffect(type: TimerType, shutdownTime: String): String {
         return when (type) {
-            TimerType.SHUTDOWN_START -> "shutdown in ${shutdownTime})"
+            TimerType.SHUTDOWN_START -> "shutdown for ${shutdownTime}"
             TimerType.SHUTDOWN_FINISH -> "site available"
         }
     }
