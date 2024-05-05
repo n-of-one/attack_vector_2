@@ -10,6 +10,7 @@ import org.n1.av2.backend.entity.site.ConnectionRepo
 import org.n1.av2.backend.entity.site.NodeRepo
 import org.n1.av2.backend.entity.site.SiteEditorStateRepo
 import org.n1.av2.backend.entity.site.SitePropertiesRepo
+import org.n1.av2.backend.entity.user.DefaultUserService
 import org.n1.av2.backend.entity.user.UserEntityRepo
 import org.n1.av2.backend.entity.user.UserEntityService
 import org.n1.av2.backend.model.ui.NotyMessage
@@ -29,7 +30,7 @@ class AdminService(
     private val stompService: StompService,
     private val runRepo: RunRepo,
     private val runLinkRepo: RunLinkRepo,
-    private val userEntityService: UserEntityService,
+    private val defaultUserService: DefaultUserService,
     private val userEntityRepo: UserEntityRepo,
     private val tangleIceStatusRepo: TangleIceStatusRepo,
     private val icePasswordStatusRepo: IcePasswordStatusRepo,
@@ -54,7 +55,7 @@ class AdminService(
         tangleIceStatusRepo.deleteAll()
         icePasswordStatusRepo.deleteAll()
 
-        userEntityService.createMandatoryUsers()
+        defaultUserService.createMandatoryUsers()
         hackerStateEntityService.init()
 
 

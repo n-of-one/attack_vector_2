@@ -43,13 +43,13 @@ class RunLinkService(
         stompService.toUser(userId, SERVER_UPDATE_USER_RUNS, scanItems)
     }
 
-    fun shareRun(runId: String, userEntity: UserEntity) {
+    fun shareRun(runId: String, userEntity: UserEntity, sendFeedback: Boolean) {
         if (runLinkEntityService.hasUserRunLink(userEntity, runId)) {
-            stompService.replyTerminalReceive("[info]${userEntity.name}[/] already has this run.")
+            if (sendFeedback) stompService.replyTerminalReceive("[info]${userEntity.name}[/] already has this run.")
             return
         }
         runLinkEntityService.createRunLink(runId, userEntity)
-        stompService.replyTerminalReceive("Shared run with [info]${userEntity.name}[/].")
+        if (sendFeedback) stompService.replyTerminalReceive("Shared run with [info]${userEntity.name}[/].")
 
         val myUserName = currentUserService.userEntity.name
 

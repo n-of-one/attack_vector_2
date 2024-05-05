@@ -1,4 +1,4 @@
-package org.n1.av2.backend.service.larp
+package org.n1.av2.backend.service.larp.frontier
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.type.TypeReference
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.Cookie
 import org.n1.av2.backend.config.ServerConfig
-import org.n1.av2.backend.entity.user.HackerSkill
+import org.n1.av2.backend.entity.user.*
 import org.n1.av2.backend.service.util.HttpClient
 import org.springframework.stereotype.Service
 
@@ -33,7 +33,8 @@ class FrontierHackerInfo(
  */
 @Service
 class FrontierService(
-    val config: ServerConfig
+    private val config: ServerConfig,
+    private val lolaService: LolaService,
 ) {
     private val httpClient = HttpClient()
     private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -112,4 +113,15 @@ class FrontierService(
         return hackerSkill
     }
 
+    fun createDefaultUsers() {
+        lolaService.createLolaUser()
+    }
+
+    fun processShare(runId: String, user: UserEntity):Boolean {
+        if (user.name.uppercase() == "LOLA") {
+            lolaService.share(user, runId)
+            return true
+        }
+        return false
+    }
 }

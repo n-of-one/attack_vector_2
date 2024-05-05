@@ -24,10 +24,12 @@ class JwtTokenProvider {
     private val jwtExpirationInMs: Int = 1000 * expirationInS
 
     fun generateJwt(userEntity: UserEntity): String {
-
         val now = Date()
         val expiryDate = Date(now.time + jwtExpirationInMs)
+        return generateJwt(userEntity, expiryDate)
+    }
 
+    fun generateJwt(userEntity: UserEntity, expiryDate: Date): String {
         return Jwts.builder()
                 .subject(userEntity.id)
                 .issuedAt(Date())
@@ -50,7 +52,7 @@ class JwtTokenProvider {
         } catch (ex: SignatureException) {
             logger.error("Invalid JWT signature")
         } catch (ex: MalformedJwtException) {
-            logger.error("Malformed JWT token")
+            logger.error("Malformed JWT token", ex)
         } catch (ex: ExpiredJwtException) {
             logger.error("Expired JWT token")
         } catch (ex: UnsupportedJwtException) {

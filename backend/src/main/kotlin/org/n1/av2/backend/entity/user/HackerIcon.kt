@@ -3,6 +3,7 @@ package org.n1.av2.backend.entity.user
 enum class HackerIcon {
     BEAR,
     BIRD_1,
+    BRAIN,
     CAT,
     CRAB,
     DINO_1,

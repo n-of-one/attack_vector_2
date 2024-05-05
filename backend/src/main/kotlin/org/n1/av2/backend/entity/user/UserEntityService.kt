@@ -23,23 +23,7 @@ class UserEntityService(
         return findByNameIgnoreCase(userName) ?: throw UsernameNotFoundException("Username not found: ${userName}")
     }
 
-    @EventListener
-    fun onApplicationEvent(event: ContextRefreshedEvent) {
-        createMandatoryUsers()
-    }
-
-    fun createMandatoryUsers() {
-        createUser("system", UserType.SYSTEM)
-        createUser("admin", UserType.ADMIN)
-        createUser("gm", UserType.GM)
-        createUser("hacker", UserType.HACKER, HackerIcon.CROCODILE)
-        createUser("Stalker", UserType.HACKER, HackerIcon.BEAR)
-        createUser("Paradox", UserType.HACKER, HackerIcon.BULL)
-        createUser("Angler", UserType.HACKER, HackerIcon.SHARK)
-    }
-
-
-    private fun createUser(userName: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
+    fun createDefaultUser(userName: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
         val user = findByNameIgnoreCase(userName)
         if (user != null) return
 

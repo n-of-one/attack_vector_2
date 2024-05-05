@@ -3,7 +3,7 @@ package org.n1.av2.backend.web.html
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.model.validation.LoginRedirectParam
-import org.n1.av2.backend.service.larp.FrontierService
+import org.n1.av2.backend.service.larp.frontier.FrontierService
 import org.n1.av2.backend.service.security.LoginService
 import org.n1.av2.backend.web.rest.addLoginCookies
 import org.springframework.stereotype.Controller
