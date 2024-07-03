@@ -2,9 +2,11 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {PADDING_LEFT, PADDING_TOP, SweeperCellDisplay} from "./SweeperCellDisplay";
-import {SweeperCellModifier, SweeperCellType, SweeperGameState, SweeperImage} from "../SweeperModel";
+import {SweeperCellModifier, SweeperCellType, SweeperGameState, SweeperImageType} from "../SweeperModel";
 import {ice} from "../../../StandaloneGlobals";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
+import {SweeperModifyData} from "../SweeperServerActionProcessor";
+import {sweeperIceManager} from "../SweeperIceManager";
 
 type CellById = { [id: string]: SweeperCellDisplay }
 
@@ -14,7 +16,7 @@ class SweeperCanvas {
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
 
-    cellByLocation: CellById = {}
+    cellDisplayByLocation: CellById = {}
 
     gridWidth = 0
     gridHeight = 0
@@ -26,8 +28,6 @@ class SweeperCanvas {
     centerCellX = 0
     centerCellY = 0
 
-    cells: SweeperCellType[][] = []
-    modifiers: SweeperCellModifier[][] = []
 
     imageLoaded(totalImages: number) {
         this.imagesLoaded++
@@ -41,9 +41,6 @@ class SweeperCanvas {
             }, 100)
             return
         }
-
-        this.cells = data.cells
-        this.modifiers = data.modifiers
 
         this.dispatch = dispatch;
         this.store = store;
@@ -72,8 +69,7 @@ class SweeperCanvas {
 
 
         data.cells.forEach((row: SweeperCellType[], y: number) => {
-            row.forEach((tileStatus: SweeperCellType, x: number) => {
-                const cellType = data.cells[y][x]
+            row.forEach((cellType: SweeperCellType, x: number) => {
                 const modifier = data.modifiers[y][x]
                 this.createCell(x, y, cellType, modifier)
             })
@@ -93,17 +89,17 @@ class SweeperCanvas {
     }
 
 
-    private addLine(x1: number, y1: number, x2: number, y2: number) {
-        const line = new fabric.Line(
-            [x1, y1, x2, y2], {
-                stroke: "#17563a",
-                strokeWidth: 1,
-                // strokeDashArray: [4, 4],
-                selectable: false,
-                // hoverCursor: 'default',
-            });
-        this.canvas.add(line)
-    }
+    // private addLine(x1: number, y1: number, x2: number, y2: number) {
+    //     const line = new fabric.Line(
+    //         [x1, y1, x2, y2], {
+    //             stroke: "#17563a",
+    //             strokeWidth: 1,
+    //             // strokeDashArray: [4, 4],
+    //             selectable: false,
+    //             // hoverCursor: 'default',
+    //         });
+    //     this.canvas.add(line)
+    // }
 
     private createCanvas(): Canvas {
         return new fabric.Canvas('netwalkCanvas', {
@@ -115,33 +111,24 @@ class SweeperCanvas {
         });
     }
 
-    download() {
-        window.open(this.canvas.toDataURL({format: 'png'}))
-    }
+
 
     mouseDown(event: fabric.IEvent<MouseEvent>) {
         if (event?.target?.data instanceof SweeperCellDisplay) {
             const cell: SweeperCellDisplay = event.target.data
-            const leftClick = event.e.button === 1
+            const leftClick = event.e.button === 0
 
-            const payload = {iceId: ice.id, x: cell.x, y: cell.y, leftClick: leftClick}
-            webSocketConnection.send("/ice/sweeper/click", JSON.stringify(payload))
+            sweeperIceManager.click(cell.x, cell.y, leftClick)
+
         }
     }
 
     private createCell(x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier) {
-        const sweeperImage = this.determineImage(cellType, modifier)
-        const cell = new SweeperCellDisplay(this.canvas, x, y, sweeperImage, this.cellSize)
+        const cellDisplay = new SweeperCellDisplay(this.canvas, x, y, cellType, modifier, this.cellSize)
         const location = `${x}:${y}`
-        this.cellByLocation[location] = cell
+        this.cellDisplayByLocation[location] = cellDisplay
     }
 
-    private determineImage(cellType: SweeperCellType, modifier: SweeperCellModifier): SweeperImage {
-        if (modifier === SweeperCellModifier.REVEALED) {
-            return SweeperImage[cellType]
-        }
-        return SweeperImage[modifier]
-    }
 
 
     // serverSentNodeRotated(data: NetwalkRotateUpdate) {
@@ -168,32 +155,39 @@ class SweeperCanvas {
         return 50
     }
 
-    private determineBackgroundImageName(data: SweeperGameState) {
-        return "/img/frontier/ice/netwalk/background/netwalk_full.jpg"
-    }
+    // private determineBackgroundImageName(data: SweeperGameState) {
+    //     return "/img/frontier/ice/netwalk/background/netwalk_full.jpg"
+    // }
 
-    finish() {
-        const x = PADDING_LEFT + (0.5) * this.cellSize + this.centerCellX * this.cellSize
-        const y = PADDING_TOP + (0.5) * this.cellSize + this.centerCellY * this.cellSize
+    // finish() {
+    //     const x = PADDING_LEFT + (0.5) * this.cellSize + this.centerCellX * this.cellSize
+    //     const y = PADDING_TOP + (0.5) * this.cellSize + this.centerCellY * this.cellSize
+    //
+    //     const circle1 = new fabric.Circle({left: x, top: y, stroke: '#444', fill: '#17563a', radius: 1, opacity: 0.4})
+    //     const circle2 = new fabric.Circle({left: x, top: y, stroke: '#444', fill: '#000', radius: 1, opacity: 0.5})
+    //     this.canvas.add(circle2)
+    //     this.canvas.sendToBack(circle2)
+    //     this.canvas.add(circle1)
+    //     this.canvas.sendToBack(circle1)
+    //
+    //     circle1.animate('radius', 10000, {
+    //         onChange: this.canvas.renderAll.bind(this.canvas),
+    //         duration: 22 * 1000,
+    //     })
+    //     setTimeout(() => {
+    //         circle2.animate('radius', 10000, {
+    //             onChange: this.canvas.renderAll.bind(this.canvas),
+    //             duration: 5000,
+    //         })
+    //     }, 5200)
+    //
+    // }
 
-        const circle1 = new fabric.Circle({left: x, top: y, stroke: '#444', fill: '#17563a', radius: 1, opacity: 0.4})
-        const circle2 = new fabric.Circle({left: x, top: y, stroke: '#444', fill: '#000', radius: 1, opacity: 0.5})
-        this.canvas.add(circle2)
-        this.canvas.sendToBack(circle2)
-        this.canvas.add(circle1)
-        this.canvas.sendToBack(circle1)
-
-        circle1.animate('radius', 10000, {
-            onChange: this.canvas.renderAll.bind(this.canvas),
-            duration: 22 * 1000,
+    serverModified(data: SweeperModifyData, newModifier: SweeperCellModifier) {
+        data.cells.forEach((location: string) => { // "$x:$y"
+            this.cellDisplayByLocation[location].updateModifier(newModifier)
         })
-        setTimeout(() => {
-            circle2.animate('radius', 10000, {
-                onChange: this.canvas.renderAll.bind(this.canvas),
-                duration: 5000,
-            })
-        }, 5200)
-
+        this.canvas.renderAll()
     }
 }
 

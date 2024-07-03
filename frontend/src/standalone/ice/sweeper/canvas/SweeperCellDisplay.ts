@@ -1,8 +1,7 @@
 import {fabric} from "fabric";
 import {Canvas} from "fabric/fabric-impl";
-import {SweeperImage} from "../SweeperModel";
-import {CellType} from "../../netwalk/NetwalkServerActionProcessor";
-import {SWEEPER_IMAGES} from "../component/SweeperHome";
+import {SweeperCellModifier, SweeperCellType, SweeperImageType} from "../SweeperModel";
+import {SweeperModifyAction, SweeperModifyData} from "../SweeperServerActionProcessor";
 
 export const PADDING_TOP = 20
 export const PADDING_LEFT = 20
@@ -15,37 +14,39 @@ export class SweeperCellDisplay {
     x: number
     y: number
 
+    imageInfo: SweeperImageInfo
+
     image: fabric.Image
 
-    sweeperImage: SweeperImage
     size: number
 
-    constructor(canvas: Canvas, x: number, y: number, sweeperImage: SweeperImage, size: number) {
+    cellType: SweeperCellType
+    modifier: SweeperCellModifier
+
+    constructor(canvas: Canvas, x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier, size: number) {
         this.canvas = canvas
 
         this.x = x
         this.y = y
-        this.sweeperImage = sweeperImage
+        this.cellType = cellType
+        this.modifier = modifier
         this.size = size
-
-        this.image = this.creatImage(this.getHtmlImage(), size)
+        this.imageInfo = this.determineImageType()
+        const imageElement = this.getHtmlImage(this.imageInfo)
+        this.image = this.creatImage(imageElement)
 
         canvas.add(this.image)
     }
 
-    private getHtmlImage(): HTMLImageElement {
-        const imageId = this.determineImageId()
-        return document.getElementById(imageId)!! as HTMLImageElement
-    }
 
-    private creatImage(image: HTMLImageElement, size: number): fabric.Image {
-        const imageInfo = SWEEPER_IMAGES[this.sweeperImage]
-        const scale = size / imageInfo.size
-        return new fabric.Image(image, {
-            left: PADDING_LEFT + (0.5) * size + this.x * size,
-            top: PADDING_TOP + (0.5) * size + this.y * size,
-            height: imageInfo.size,
-            width: imageInfo.size,
+    private creatImage(imageElement: HTMLImageElement): fabric.Image {
+
+        const scale = this.size / this.imageInfo.size
+        return new fabric.Image(imageElement, {
+            left: PADDING_LEFT + (0.5) * this.size + this.x * this.size,
+            top: PADDING_TOP + (0.5) * this.size + this.y * this.size,
+            height: this.imageInfo.size,
+            width: this.imageInfo.size,
             lockRotation: true,
             lockScalingX: true,
             lockScalingY: true,
@@ -59,24 +60,105 @@ export class SweeperCellDisplay {
         })
     }
 
+    private determineImageType(): SweeperImageInfo {
 
-    private determineImageId(): string {
-        const id = SWEEPER_IMAGES[this.sweeperImage].id
-        if (id === undefined) {
-            throw Error("Invalid sweeper cell: " + this.sweeperImage)
-        }
-        return id
+        const imageTypeKey = (this.modifier === SweeperCellModifier.REVEALED)  ? this.cellType.toString() : this.modifier.toString()
+        //     return cellType.toString() as SweeperImageType
+        // return SweeperImageType[modifier]
+        return SWEEPER_IMAGES[imageTypeKey]
     }
 
-    setImage(sweeperImage: SweeperImage) {
-        this.sweeperImage = sweeperImage
-        this.updateImage();
+    private getHtmlImage(imageInfo: SweeperImageInfo): HTMLImageElement {
+        return document.getElementById(imageInfo.id)!! as HTMLImageElement
     }
 
-    private updateImage() {
-        const image = this.getHtmlImage()
-        this.image.setElement(image)
+    updateModifier(newModifier: SweeperCellModifier) {
+        this.modifier = newModifier
+
+        this.imageInfo = this.determineImageType()
+        const imageElement = this.getHtmlImage(this.imageInfo)
+        this.image.setElement(imageElement)
         this.canvas.renderAll();
     }
 
+}
+
+
+
+export interface SweeperImageInfo {
+    size: number,
+    fileName: string,
+    id: string
+}
+
+export interface SweeperImageTypes {
+    [key: string]: SweeperImageInfo
+}
+
+export const SWEEPER_IMAGES: SweeperImageTypes = {
+    "0": {
+        size: 320,
+        fileName: "empty.png",
+        id: "empty"
+    },
+    "1": {
+        size: 420,
+        fileName: "m01-clear.png",
+        id: "n1"
+    },
+    "2": {
+        size: 420,
+        fileName: "m02-clear.png",
+        id: "n2"
+    },
+    "3": {
+        size: 420,
+        fileName: "m03-clear.png",
+        id: "n3"
+    },
+    "4": {
+        size: 420,
+        fileName: "m04-clear.png",
+        id: "n4"
+    },
+    "5": {
+        size: 420,
+        fileName: "m05-clear.png",
+        id: "n5"
+    },
+    "6": {
+        size: 420,
+        fileName: "m06-clear.png",
+        id: "n6"
+    },
+    "7": {
+        size: 420,
+        fileName: "m07-clear.png",
+        id: "n7"
+    },
+    "8": {
+        size: 420,
+        fileName: "m08-clear.png",
+        id: "n8"
+    },
+    "MINE": {
+        size: 420,
+        fileName: "gear11.png",
+        id: "mine"
+    },
+    "UNKNOWN": {
+        size: 420,
+        fileName: "z-roadsign54.png",
+        id: "unknown"
+    },
+    "FLAG": {
+        size: 420,
+        fileName: "exclamation-point1.png",
+        id: "flag"
+    },
+    "QUESTION_MARK": {
+        size: 420,
+        fileName: "place-of-interest.png",
+        id: "question_mark"
+    }
 }

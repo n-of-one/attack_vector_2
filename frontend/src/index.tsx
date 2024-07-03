@@ -1,21 +1,11 @@
 import React from 'react'
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Route, Routes, useParams} from 'react-router-dom'
-import {GmRoot} from "./gm/GmRoot"
 import {EditorRoot} from "./editor/EditorRoot"
-import {HackerRoot} from "./hacker/HackerRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/util/Notification";
 import {larp} from "./common/Larp";
-import {Standalone} from "./standalone/Standalone";
-import {LoggedOut} from "./login/LoggedOut";
-import {About} from "./About";
-import {Privacy} from "./Privacy";
-import {AdminLogin} from "./login/AdminLogin";
-import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
-import {WebsiteRouting} from "./website/WebsiteRouting";
 import {SiteHackIce} from "./standalone/ice/SiteHackIce";
-import {Lola} from "./larp/frontier/Lola";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -72,9 +62,14 @@ root.render(
                 {/*<Route path="/hacker" element={<HackerRoot/>}/>*/}
                 {/*<Route path="/gm" element={<GmRoot/>}/>*/}
                 {/*<Route path="/edit/:siteId" element={<Editor/>}/>*/}
-                {/*<Route path="/x/:encodedParam" element={<Standalone/>}/> { /*path that require login and will redirect to login if not logged in */ }*/}
-                {/*<Route path="/o/:encodedParam" element={<Standalone/>}/> { /* path that does not require login*/ }*/}
+
+                { /*path that require login and will redirect to login if not logged in */}
+                {/*<Route path="/x/:encodedParam" element={<Standalone/>}/>
+                {/*<Route path="/o/:encodedParam" element={<Standalone/>}/>
+
+                { /* path that does not require login*/}
                 {/*<Route path="/website" element={<WebsiteLandingPage/>}/>*/}
+
                 {/*<Route path="/website/:path" element={<WebsiteRouting/>}/>*/}
                 {/*<Route path="/larp/frontier/lola" element={<Lola/>}/>*/}
                 {/*<Route path="/" element={<ReRoute/>}/>*/}

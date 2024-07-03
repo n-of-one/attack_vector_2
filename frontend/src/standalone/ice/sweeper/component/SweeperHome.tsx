@@ -6,6 +6,7 @@ import {SweeperRootState} from "../reducer/SweeperRootReducer";
 import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {sweeperCanvas} from "../canvas/SweeperCanvas";
+import {SWEEPER_IMAGES} from "../canvas/SweeperCellDisplay";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -89,72 +90,4 @@ const SweeperImages = () => {
             return <SweeperImage id={image.id} fileName={image.fileName} key={image.id}/>
         })
         }</>
-}
-
-export const SWEEPER_IMAGES = {
-    "W1": {
-        size: 420,
-        fileName: "m01-clear.png",
-        id: "n1"
-    },
-    "W2": {
-        size: 420,
-        fileName: "m02-clear.png",
-        id: "n2"
-    },
-    "W3": {
-        size: 420,
-        fileName: "m03-clear.png",
-        id: "n3"
-    },
-    "W4": {
-        size: 420,
-        fileName: "m04-clear.png",
-        id: "n4"
-    },
-    "W5": {
-        size: 420,
-        fileName: "m05-clear.png",
-        id: "n5"
-    },
-    "W6": {
-        size: 420,
-        fileName: "m06-clear.png",
-        id: "n6"
-    },
-    "W7": {
-        size: 420,
-        fileName: "m07-clear.png",
-        id: "n7"
-    },
-    "W8": {
-        size: 420,
-        fileName: "m08-clear.png",
-        id: "n8"
-    },
-    "EMPTY": {
-        size: 320,
-        fileName: "empty.png",
-        id: "empty"
-    },
-    "MINE": {
-        size: 420,
-        fileName: "gear11.png",
-        id: "mine"
-    },
-    "UNKNOWN": {
-        size: 420,
-        fileName: "z-roadsign54.png",
-        id: "unknown"
-    },
-    "FLAG": {
-        size: 420,
-        fileName: "exclamation-point1.png",
-        id: "flag"
-    },
-    "QUESTION_MARK": {
-        size: 420,
-        fileName: "place-of-interest.png",
-        id: "question_mark"
-    }
 }

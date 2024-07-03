@@ -5,15 +5,17 @@ import {delay} from "../../../common/util/Util";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {larp} from "../../../common/Larp";
 import {SWEEPER_BEGIN} from "./reducer/SweeperUiStateReducer";
-import {SweeperEnterData} from "./SweeperServerActionProcessor";
-import {
-    serverGridToGameStateGrid,
-    serverGridToModifiers,
-} from "./SweeperLogic";
-import {SweeperCellModifier} from "./SweeperModel";
+import {SweeperEnterData, SweeperModifyAction, SweeperModifyData} from "./SweeperServerActionProcessor";
+import {serverCellsToGameCells, serverModifiersToGameModifiers,} from "./SweeperLogic";
+import {SweeperCellModifier, SweeperCellType} from "./SweeperModel";
+import {ice} from "../../StandaloneGlobals";
+import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 
 
 class SweeperIceManager extends GenericIceManager {
+
+    cells: SweeperCellType[][] = []
+    modifiers: SweeperCellModifier[][] = []
 
     enter(sweeperEnterData: SweeperEnterData) {
         if (sweeperEnterData.hacked) {
@@ -21,10 +23,10 @@ class SweeperIceManager extends GenericIceManager {
             return
         }
 
-        const cells = serverGridToGameStateGrid(sweeperEnterData.grid)
-        const modifiers: SweeperCellModifier[][] = serverGridToModifiers(sweeperEnterData.grid)
+        this.cells = serverCellsToGameCells(sweeperEnterData.cells)
+        this.modifiers = serverModifiersToGameModifiers(sweeperEnterData.modifiers)
 
-        const gameState = {cells, modifiers, strength: sweeperEnterData.strength, hacked: false}
+        const gameState = {cells: this.cells, modifiers: this.modifiers, strength: sweeperEnterData.strength, hacked: false}
 
         delay(() => {
             sweeperCanvas.init(gameState, this.dispatch, this.store)
@@ -59,6 +61,44 @@ class SweeperIceManager extends GenericIceManager {
     //     this.processHacked()
     // }
 
+    serverModified(data: SweeperModifyData) {
+        const newModifier = this.newModifier(data.action)
+        data.cells.forEach((location: string) => { // "$x:$y"
+            const x = parseInt(location.split(":")[0])
+            const y = parseInt(location.split(":")[1])
+            this.modifiers[y][x] = newModifier
+        })
+        sweeperCanvas.serverModified(data, newModifier)
+    }
+
+    private newModifier(action: SweeperModifyAction): SweeperCellModifier {
+        switch (action) {
+            case SweeperModifyAction.CLEAR: return SweeperCellModifier.UNKNOWN
+            case SweeperModifyAction.FLAG: return SweeperCellModifier.FLAG
+            case SweeperModifyAction.QUESTION_MARK: return SweeperCellModifier.QUESTION_MARK
+            case SweeperModifyAction.REVEAL:return SweeperCellModifier.REVEALED
+            case SweeperModifyAction.EXPLODE: return SweeperCellModifier.REVEALED
+        }
+    }
+
+    click(x: number, y: number, leftClick: boolean) {
+        const modifier = this.modifiers[y][x]
+        if (modifier === SweeperCellModifier.REVEALED) {
+            return
+        }
+        const action = this.determineAction(leftClick, modifier)
+        const payload = {iceId: ice.id, x, y, action}
+        webSocketConnection.send("/ice/sweeper/interact", JSON.stringify(payload))
+    }
+
+    private determineAction(leftClick: boolean, modifier: SweeperCellModifier): SweeperModifyAction {
+        if (leftClick) return SweeperModifyAction.REVEAL
+        if (modifier === SweeperCellModifier.UNKNOWN) return SweeperModifyAction.FLAG
+        if (modifier === SweeperCellModifier.FLAG) return SweeperModifyAction.QUESTION_MARK
+        if (modifier === SweeperCellModifier.QUESTION_MARK) return SweeperModifyAction.CLEAR
+        throw new Error("unexpected state: " + modifier + " leftClick: " + leftClick)
+
+    }
 }
 
 export const sweeperIceManager = new SweeperIceManager();

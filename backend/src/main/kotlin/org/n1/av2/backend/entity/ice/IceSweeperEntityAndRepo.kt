@@ -11,13 +11,14 @@ import org.springframework.stereotype.Repository
 /*
 Cells is a string representation of the board, regardless of visibility or modifiers like flags.
 mine: *
-empty: .
+empty: 0
+adjacent to mine: 1-8
 
 For example:
-.....**
-.......
-..*....
-.......
+*1001**
+1211122
+01*1000
+0111000
 
 Modifiers is a string representation of the modifiers:
 . hidden
@@ -31,6 +32,8 @@ For example:
 --.----
 -------
 
+note that the top left mine has exploded, as it has been revealed
+
  */
 
 @Document
@@ -38,7 +41,7 @@ data class SweeperIceStatus(
     @Id val id: String,
     @Indexed val layerId: String,
     val strength: IceStrength,
-    val cells: MutableList<String>,
+    val cells: List<String>,
     val modifiers: MutableList<String>,
     val hacked: Boolean,
 )

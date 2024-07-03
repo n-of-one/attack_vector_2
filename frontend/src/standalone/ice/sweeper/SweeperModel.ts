@@ -1,16 +1,16 @@
 import {IceStrength} from "../../../common/model/IceStrength";
 
 export enum SweeperCellType {
-    EMPTY = "EMPTY",
     MINE = "MINE",
-    W1 = "W1",
-    W2 = "W2",
-    W3 = "W3",
-    W4 = "W4",
-    W5 = "W5",
-    W6 = "W6",
-    W7 = "W7",
-    W8 = "W8",
+    EMPTY = "0",
+    M1 = "1",
+    M2 = "2",
+    M3 = "3",
+    M4 = "4",
+    M5 = "5",
+    M6 = "6",
+    M7 = "7",
+    M8 = "8",
 }
 
 export enum SweeperCellModifier {
@@ -27,17 +27,17 @@ export interface SweeperGameState {
     hacked: boolean
 }
 
-export enum SweeperImage {
-    EMPTY = "EMPTY",
+export enum SweeperImageType {
     MINE = "MINE",
-    W1 = "W1",
-    W2 = "W2",
-    W3 = "W3",
-    W4 = "W4",
-    W5 = "W5",
-    W6 = "W6",
-    W7 = "W7",
-    W8 = "W8",
+    EMPTY = "0",
+    M1 = "1",
+    M2 = "2",
+    M3 = "3",
+    M4 = "4",
+    M5 = "5",
+    M6 = "6",
+    M7 = "7",
+    M8 = "8",
     FLAG = "FLAG",
     UNKNOWN = "UNKNOWN",
     QUESTION_MARK = "QUESTION_MARK",

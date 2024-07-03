@@ -94,6 +94,7 @@ enum class ServerActions {
     SERVER_TAR_UPDATE,                  // sent to run when a tar ice has change (units hacked)
 
     SERVER_SWEEPER_ENTER,               // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_SWEEPER_MODIFY,              // sent to everyone when a cell has been modified (revealed, flagged,... )
 
     SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE auth UI
     SERVER_REDIRECT_CONNECT_APP,        // open a new window to connect to an app

@@ -9,6 +9,9 @@ import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
+enum class SweeperModifyAction { REVEAL, FLAG, QUESTION_MARK, CLEAR, EXPLODE }
+
+
 @Service
 class SweeperService(
     private val stompService: StompService,
@@ -26,41 +29,101 @@ class SweeperService(
     )
 
     fun enter(iceId: String, layerId: String) {
+//        val iceStatus = sweeperIceStatusRepo.findByLayerId(layerId) ?: sweeperCreator.createSweeper(iceId, layerId, IceStrength.VERY_WEAK)
         val iceStatus = sweeperCreator.createSweeper(iceId, layerId, IceStrength.VERY_WEAK)
+        sweeperIceStatusRepo.save(iceStatus)
+
         val sweeperEnter = SweeperEnter(iceStatus.cells, iceStatus.modifiers, IceStrength.WEAK, false)
         stompService.reply(ServerActions.SERVER_SWEEPER_ENTER, sweeperEnter)
 //        runService.enterNetworkedApp(iceId)
     }
 
-    fun interact(iceId: String, x: Int, y: Int, reveal: Boolean) {
+    fun interact(iceId: String, x: Int, y: Int, action: SweeperModifyAction) {
         val sweeper: SweeperIceStatus = sweeperIceStatusRepo.findById(iceId).getOrElse { error("Sweeper not found for: ${iceId}") }
         if (sweeper.hacked) return
-
         if (x < 0 || x >= sweeper.cells[0].length || y < 0 || y >= sweeper.cells.size) error("click out of bounds: $x, $y for iceId: $iceId")
+        if (sweeper.modifiers[y][x] == '-') return // cell already revealed by another player, cannot modify.
 
-        val modifier = sweeper.modifiers[y][x]
-
-        if (modifier == '-' ) return // cell already revealed
-        if (reveal) {
+        if (action == SweeperModifyAction.REVEAL) {
             reveal(sweeper, x, y)
         }
         else {
-            modify(sweeper, x, y, )
+            modify(sweeper, x, y, action)
         }
     }
 
-    private fun modify(sweeper: SweeperIceStatus, x: Int, y: Int) {
-        val newModifier = when (val modifier = sweeper.modifiers[y][x]) {
-            '.' -> "f"
-            'f' -> "?"
-            '?' -> "."
-            else -> error("Invalid modifier: $modifier")
+    private class SweeperModifyMessage(val cells: List<String>, val action: SweeperModifyAction)
+
+    private fun modify(sweeper: SweeperIceStatus, x: Int, y: Int, action: SweeperModifyAction) {
+        val newModifier: String = when (action) {
+            SweeperModifyAction.FLAG -> "f"
+            SweeperModifyAction.QUESTION_MARK -> "?"
+            SweeperModifyAction.CLEAR -> "."
+            else -> error("Invalid action: $action")
         }
 
+        saveModification(sweeper, x, y, newModifier)
+
+        stompService.reply(ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), action))
+    }
+
+    private fun saveModification(sweeper: SweeperIceStatus, x: Int, y: Int, newModifier: String) {
         sweeper.modifiers[y] = sweeper.modifiers[y].replaceRange(x, x+1, newModifier)
-
         sweeperIceStatusRepo.save(sweeper)
-        stompService.reply(ServerActions.SERVER_SWEEPER_MODIFY, Pair(x, y))
-
     }
+
+    private fun reveal(sweeper: SweeperIceStatus, x: Int, y: Int) {
+        when (sweeper.cells[y][x]) {
+            '0' -> revealArea(sweeper, x, y)
+            '*' -> explode(sweeper, x, y)
+            else -> revealSingle(sweeper, x, y)
+        }
+    }
+
+    private fun explode(sweeper: SweeperIceStatus, x: Int, y: Int) {
+        saveModification(sweeper, x, y, "-")
+        stompService.reply(ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE))
+    }
+
+    private fun revealSingle(sweeper: SweeperIceStatus, x: Int, y: Int) {
+        saveModification(sweeper, x, y, "-")
+        stompService.reply(ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.REVEAL))
+    }
+
+    private fun revealArea(sweeper: SweeperIceStatus, x: Int, y: Int) {
+        val here = Pair(x, y)
+        val explored = setOf(here).toMutableSet()
+        val revealedAround: List<Pair<Int, Int>> = exploreAround(sweeper, x, y, explored)
+        val revealed = listOf(here) + revealedAround
+
+        revealed.forEach { (x, y) ->
+            sweeper.modifiers[y] = sweeper.modifiers[y].replaceRange(x, x + 1, "-")
+        }
+        sweeperIceStatusRepo.save(sweeper)
+
+        stompService.reply(ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(revealed.map { (x, y) -> "$x:$y"}, SweeperModifyAction.REVEAL))
+    }
+
+    private fun exploreAround(sweeper: SweeperIceStatus, x: Int, y: Int, explored: MutableSet<Pair<Int, Int>>): List<Pair<Int, Int>> {
+        val revealedCells = (-1..1).flatMap { dx ->
+            (-1..1).flatMap { dy ->
+                exploreDirection(sweeper, x+dx, y+dy, explored)
+            }
+        }
+        return revealedCells
+    }
+
+    private fun exploreDirection(sweeper: SweeperIceStatus, x: Int, y: Int, explored: MutableSet<Pair<Int, Int>>): List<Pair<Int, Int>>{
+        if (x < 0 || x >= sweeper.cells[0].length || y < 0 || y >= sweeper.cells.size) return emptyList() // out of bounds
+        if (explored.contains(Pair(x, y))) return emptyList() // already explored
+        explored.add(Pair(x, y))
+
+        val cell = sweeper.cells[y][x]
+        if (cell != '0') return listOf(Pair(x, y)) // not an empty cell, reveal it and stop exploring
+
+        val additionalRevealed = exploreAround(sweeper, x, y, explored)
+        return listOf(Pair(x, y)) + additionalRevealed
+    }
+
+
 }
