@@ -5,6 +5,7 @@ import {MenuItem} from "./MenuItem"
 import {ADMIN, HACKER_HOME, ME, RUN, SITES, USERS} from "./pageReducer"
 import {HackerState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import {larp} from "../Larp";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -34,6 +35,8 @@ export const MenuBar = () => {
     const siteName = useSelector( (state: HackerState ) =>  (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "" )
     const currentPage =  useSelector( (state: HackerState) => state.currentPage )
 
+    const createSites = larp.hackersCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={SITES} label="Sites"/> : <></>
+
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{
             borderStyle: "solid",
@@ -48,7 +51,8 @@ export const MenuBar = () => {
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
                                 {/*<MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />*/}
-                                <MenuItem requriesRole={ROLE_HACKER} targetPage={SITES} label="Sites"/>
+
+                                {createSites}
                                 <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={SITES} label="Sites"/>

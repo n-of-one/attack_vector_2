@@ -1,10 +1,10 @@
 rm -rf build
 npm run build
 
-cd build\static\js
+cd build/static/js
 rm *.map
 
-cd ..\..
+cd ../..
 
 rm service-worker.js
 rm manifest.json
@@ -12,9 +12,9 @@ rm asset-manifest.json
 rm favicon.ico
 
 
-rm -rf ..\..\backend\src\main\resources\static
-mkdir ..\..\backend\src\main\resources\static
-cp -r * ..\..\backend\src\main\resources\static
+rm -rf ../../backend/src/main/resources/static
+mkdir ../../backend/src/main/resources/static
+cp -r * ../../backend/src/main/resources/static
 
 
 cd ..
