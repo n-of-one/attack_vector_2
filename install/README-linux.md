@@ -1,4 +1,7 @@
-# Installing Attack Vector
+# Installing Attack Vector on Linux
+
+These instructions assume you have a fresh Ubuntu server available and are logged in as a user with sudo rights. This is the default setup for an EC2 Ubuntu instance.
+
 
 Log into the server (not as root) and do the following:
 
