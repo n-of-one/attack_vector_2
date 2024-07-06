@@ -84,9 +84,7 @@ problems.
 - Uncheck the box to "Install MongoDB as a Service" 
 - Installing MongoDB Compass is optional, it allows you to view the database if you want that. It's not necessary.
 
-4.2 Create the directories: `C:\data` and `C:\data\db`. This is where the database will be stored.
-
-4.3 Edit the file `C:\av\_attack_vector\mongod.bat` . Check that the path in this file is correct.
+4.2 Edit the file `C:\av\_attack_vector\mongod.bat` . Check that the path in this file is correct.
 
 4.3 Open a second new(!) command prompt and run:
 
@@ -103,6 +101,8 @@ If there is a lot of text, but you cannot type anything, then MongoDB is running
 running attack vector.
 
 4.4 Downlaod MongoDB shell from https://www.mongodb.com/try/download/shell
+- Choose the .msi version (not the .zip version)
+- Run the installer once downloaded
 - As the installation path, choose: `C:\av\mongosh\`
 
 4.5 In the first command prompt (not running the database) run:
