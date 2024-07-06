@@ -44,6 +44,8 @@ Edit the file `C:\av\setenv.bat` . Fix line 2 so that it points to your Java loc
 
 2.3 Check that everything works by running in the command prompt:
 
+`cd \av`
+
 `setenv`
 
 `"%JAVA_HOME%\bin\java" -version`
@@ -62,6 +64,10 @@ Check the `C:\av` folder for the exact maven path, which should be something lik
 Edit the file `C:\av\setenv.bat` . Fix line 3 so that it points to your maven location
 
 In the command prompt run:
+
+`cd \av`
+
+`setenv`
 
 `%MVN_HOME%\bin\mvn -version`
 
@@ -84,7 +90,7 @@ problems.
 
 4.3 Open a second new(!) command prompt and run:
 
-`cd \av\`
+`cd \av`
 
 `mkdir db`
 
