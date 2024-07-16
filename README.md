@@ -36,43 +36,23 @@ The repo consists of two separate projects:
 
 As well as stuff like the installation files.
 
-## Installation instructions
-These instructions assume you have a fresh Ubuntu server available for AV2, and are logged in as a user with sudo rights. This is the default setup for an EC2 Ubuntu instance.
+## Installation
+
+### Linux
+See [install/README-linux.md](install/README-linux.md)
 
 
-First clone the github repo:
+### Windows
+See [install/README-windows.md](install/README-windows.md)
 
-`git clone https://github.com/n-of-one/attack_vector_2.git`
-
-
-Then run this script:
-
-```
-cd attack_vector_2
-chmod 770 install.sh
-./install.sh
-```
-
-This will:
-- Download and install MongoDB
-- Download and install Java 21
-- Download and install Certbot (for a https certificate)
-- Create a MongoDB user with a default password. This is only ok if you don't have any other users on this server.
-- Set up the scripts to start and upgrade AV2 in the root folder.
-- Set up Ubuntu to allow AV2 to run on ports 80 and 443
-- Give instructions on how to set up a letsencrypt https certificate.
+Note: the instructions for Windows will start it up in development mode, allowing login as any user without password.
+This is not recommended for use in a Larp.
 
 
-The commands to manage the server are in the folder that you started in. You can start the server with: `./run.sh`
+## Running Attack Vector
+The commands to manage the server are in the folder that you started in. You can start the server with: `./run.sh` or `./run.bat`
 
-You can edit the setenv.sh file to customize the installation to your needs: `vi setenv.sh`  See [README.md](/backend/README.md) file for details.
-
-
-You can upgrade to the latest version from Github with `./upgrade.sh`
-
-
-If you want run AV2 on port 443 with https, then edit this file: [application.properties]( backend/src/main/resources/application.properties) and uncomment
-the last part of the file. It's located on your server in the folder: `attack_vector_2/backend/src/main/resources/application.properties`.
+You can upgrade to the latest version from Github with `./upgrade.sh` or `./upgrade.bat`
 
 
 ## Development instructions
@@ -80,7 +60,7 @@ the last part of the file. It's located on your server in the folder: `attack_ve
 Clone this repo and then create two separate Intellij projects. Once for frontend and one for backend. Each contains a separate README.md with more instructions for that
 part.
 
-Requires separate Mongodb (for instance in a docker).
+Requires separate Mongodb.
 
 ## Creating a release
 AV2 uses trunk based development. The main branch is the latest stable version.
