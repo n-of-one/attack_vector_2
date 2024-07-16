@@ -47,7 +47,7 @@ class InsideTerminalService(
             "scan" -> commandScanService.processScanFromInside(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
-            else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
+            else -> stompService.replyTerminalReceive("Unknown command, try [b]help[/].")
         }
     }
 

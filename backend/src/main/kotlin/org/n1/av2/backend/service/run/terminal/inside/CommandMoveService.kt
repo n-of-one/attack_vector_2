@@ -40,7 +40,7 @@ class CommandMoveService(
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (tokens.size == 1) {
-            stompService.replyTerminalReceive("Missing [ok]<network id>[/], for example: [u]mv[ok] 01[/].")
+            stompService.replyTerminalReceive("Missing [ok]<network id>[/], for example: [b]mv[ok] 01[/].")
             return
         }
         val networkId = tokens[1]

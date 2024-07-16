@@ -1,4 +1,3 @@
-import {MailHome} from "./mail/MailHome"
 import {HackerHome} from "./home/HackerHome"
 import React from "react"
 import {MenuBar} from "../common/menu/MenuBar"
@@ -30,8 +29,6 @@ const dismissScanInfo = (infoNodeId: string | null, event: any) => {
 
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
-        case MAIL:
-            return <MailHome/>
         case RUN:
             return <RunHome/>
         case SITES:

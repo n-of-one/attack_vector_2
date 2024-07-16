@@ -51,7 +51,7 @@ class CommandHackService(
 
     private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
         if (tokens.size == 1) {
-            return stompService.replyTerminalReceive("Missing [primary]<layer>[/]        -- for example: [u]${commandName}[primary] 1")
+            return stompService.replyTerminalReceive("Missing [primary]<layer>[/]        -- for example: [b]${commandName}[primary] 1")
         }
 
         val node = nodeEntityService.getById(state.currentNodeId)
@@ -114,15 +114,15 @@ class CommandHackService(
         val layerCount = node.layers.size
         if (layerCount == 1) {
             stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not found.",
-                "This node has only one layer, the only valid option is: [u]hack [primary]0[/].")
+                "This node has only one layer, the only valid option is: [b]hack [primary]0[/].")
         } else {
             stompService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not found.",
                 "This node has ${layerCount} layers, so use a number between [primary]0[/] and [primary]${layerCount - 1}[/].",
-                "Use [u]view[/] to see the layers and their numbers.")
+                "Use [b]view[/] to see the layers and their numbers.")
         }
     }
 
     private fun reportBlockingIce(blockingIceLayer: Layer) {
-        stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [u]hack[/] [primary]${blockingIceLayer.level}")
+        stompService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [b]hack[/] [primary]${blockingIceLayer.level}")
     }
 }

@@ -1,11 +1,17 @@
 package org.n1.av2.backend.web.html
 
 import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.backend.service.security.LoginService
 import org.springframework.boot.web.servlet.error.ErrorController
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import java.io.File
+import java.net.URLDecoder
 
 
 private const val INDEX = "../static/index.html"
@@ -19,6 +25,41 @@ class HtmlController(
         "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}", "/o/{reference}", "/website", "/website/{page}", "/larp/**")
     fun default(): String {
         return INDEX
+    }
+
+    @GetMapping("/local/**")
+    fun local(request: HttpServletRequest): ResponseEntity<ByteArray> {
+        val path = URLDecoder.decode(request.requestURI, "UTF-8")
+        val file = File("../..$path")
+        if (!file.exists()) {
+            return ResponseEntity("file not found: ${file.canonicalPath}".toByteArray(), HttpStatus.NOT_FOUND)
+        }
+
+        val headers = HttpHeaders()
+        headers.add("Content-Type", guessMimeType(file.extension))
+
+        return ResponseEntity(file.readBytes(), headers, HttpStatus.OK)
+    }
+
+    fun guessMimeType(extension: String): String {
+        val extensionNormalized = extension.lowercase()
+
+        when(extensionNormalized) {
+            "png", "jpeg", "gif", "webp" -> return "image/$extensionNormalized"
+            "jpg" -> return "image/jpeg"
+            "svg" -> return "image/svg+xml"
+            "txt", "text" -> return "text/plain"
+            "pdf" -> return "application/pdf"
+            "html" -> return "text/html"
+            "css" -> return "text/css"
+            "js" -> return "text/javascript"
+            "woff" -> return "font/woff"
+            "woff2" -> return "font/woff2"
+            "ttf" -> return "font/ttf"
+            "otf" -> return "font/otf"
+            "eot" -> return "font/eot"
+            else -> return "application/octet-stream"
+        }
     }
 
     @GetMapping("/localLogout")

@@ -9,7 +9,7 @@ import org.n1.av2.backend.entity.user.UserEntity
 import org.n1.av2.backend.model.ui.NotyMessage
 import org.n1.av2.backend.model.ui.NotyType
 import org.n1.av2.backend.model.ui.ServerActions.*
-import org.n1.av2.backend.service.run.TERMINAL_CHAT
+import org.n1.av2.backend.service.run.TERMINAL_MAIN
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
@@ -60,7 +60,7 @@ class RunLinkService(
         stompService.toUser(
             userEntity.id,
             SERVER_TERMINAL_RECEIVE,
-            StompService.TerminalReceive(TERMINAL_CHAT, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
+            StompService.TerminalReceive(TERMINAL_MAIN, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
         )
 
         sendRunInfosToUser(userEntity.id)

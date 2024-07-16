@@ -20,6 +20,8 @@ private val OPEN_PATHS = listOf(
     "/about", "/privacy", "/website/**",
     "/loggedOut", "/login", "/adminLogin", "/logout", "/localLogout", "login-frontier",
 
+    "/local/**", // for locally hosted files
+
     "/o/**", // for widgets and other apps that don't require any authentication
     "/openapi/**", // open api calls
 
