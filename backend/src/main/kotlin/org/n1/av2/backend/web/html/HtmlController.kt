@@ -29,7 +29,7 @@ class HtmlController(
 
     @GetMapping("/local/**")
     fun local(request: HttpServletRequest): ResponseEntity<ByteArray> {
-        val path = URLDecoder.decode(request.requestURI, "UTF-8")
+        val path = URLDecoder.decode(request.requestURI.substringAfter("/local/"), "UTF-8")
         val file = File("../..$path")
         if (!file.exists()) {
             return ResponseEntity("file not found: ${file.canonicalPath}".toByteArray(), HttpStatus.NOT_FOUND)
