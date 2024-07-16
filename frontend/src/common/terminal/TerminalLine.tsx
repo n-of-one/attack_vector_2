@@ -1,6 +1,8 @@
 import React from "react"
 import {TerminalBlockType, TerminalLineData, TerminalLineBlock} from "./TerminalReducer"
 
+/* eslint jsx-a11y/alt-text: 0*/
+
 
 interface Props {
     line: TerminalLineData,
@@ -41,6 +43,8 @@ interface BlockProps {
     block: TerminalLineBlock
 }
 
+
+
 const Block = ({block}: BlockProps) => {
     switch (block.type) {
         case TerminalBlockType.TEXT:
@@ -51,8 +55,14 @@ const Block = ({block}: BlockProps) => {
             return <a href={block.link} className={block.className} target={`${block.key}`}   key={block.key}>{block.text}</a>
         case TerminalBlockType.EMPTY_LINE:
             return <span  key={block.key}></span>
+        case TerminalBlockType.IMAGE:
+            if (block.link) {
+                return <a href={block.link} target={`${block.key}`}><img src={block.imageSource}/></a>
+            }
+            else {
+                return <img src={block.imageSource}/>
+            }
         default:
             return <span className={block.className}  key={block.key}>(unknown block type: {block.type}: {block.text}</span>
-
     }
 }

@@ -30,6 +30,7 @@ export enum TerminalBlockType {
     SPACE,
     LINK,
     EMPTY_LINE,
+    IMAGE
 }
 
 export interface TerminalLineBlock {
@@ -39,6 +40,7 @@ export interface TerminalLineBlock {
     key: number,
     className: string
     link?: string
+    imageSource?: string
 }
 
 
@@ -133,7 +135,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
             case SERVER_ERROR:
                 return handleServerError(state, action)
             case TERMINAL_CLEAR:
-                return handleTerminalClear(state, action, defaultState)
+                return handleTerminalClear(state, action)
             case TERMINAL_LOCK:
                 return terminalSetReadonly(state, true)
             case TERMINAL_UNLOCK:
@@ -300,8 +302,13 @@ const handleServerError = (terminal: TerminalState, action: AnyAction): Terminal
     }
 }
 
-const handleTerminalClear = (terminal: TerminalState, action: AnyAction, defaultState: TerminalState) => {
-    return defaultState
+const handleTerminalClear = (terminal: TerminalState, action: AnyAction) => {
+    return {
+        ...terminal,
+        renderedLines: [],
+        unrenderedLines: [],
+        input: "",
+    }
 }
 
 const terminalSetReadonly = (terminal: TerminalState, readOnly: boolean) => {

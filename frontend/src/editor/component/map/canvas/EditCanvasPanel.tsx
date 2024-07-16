@@ -5,6 +5,7 @@ import {EditorState} from "../../../EditorRootReducer"
 import {delay} from "../../../../common/util/Util"
 import {sendAddNode} from "../../../server/EditorServerClient"
 import {CANVAS_HEIGHT, CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
+import {SiteDescription} from "../../description/SiteDescription";
 
 /* eslint react-hooks/exhaustive-deps: 0*/
 
@@ -14,8 +15,8 @@ export const EditCanvasPanel = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        delay( () => editorCanvas.init(dispatch))
-    },[])
+        delay(() => editorCanvas.init(dispatch))
+    }, [])
 
     const allowDrop = (event: any) => {
         event.preventDefault()
@@ -33,11 +34,16 @@ export const EditCanvasPanel = () => {
     }
 
     return (
-        <div className="p-1" id="canvas-col" style={{marginLeft: "-11px"}}>
-            <div id="canvas-container" onDragOver={(event) => allowDrop(event)}
-                 onDrop={(event) => drop_image_and_create_node(event)}>
-                <canvas id="canvas" width={CANVAS_WIDTH} height={CANVAS_HEIGHT_EDITOR} style={{"borderRadius": "3px 3px 3px 3px"}}/>
+        <div>
+            <div className="p-1" id="canvas-col" style={{marginLeft: "-11px"}}>
+                <div id="canvas-container" onDragOver={(event) => allowDrop(event)}
+                     onDrop={(event) => drop_image_and_create_node(event)}>
+                    <canvas id="canvas" width={CANVAS_WIDTH} height={CANVAS_HEIGHT_EDITOR}
+                            style={{"borderRadius": "3px 3px 3px 3px"}}/>
+                </div>
             </div>
+            <SiteDescription/>
         </div>
+
     )
 }

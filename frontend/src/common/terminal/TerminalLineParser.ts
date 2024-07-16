@@ -25,12 +25,14 @@ enum TokenType {
     SPACE,
     STYLE,
     LINK,
+    IMAGE,
     CLEAR,
 }
 
 interface Token {
     text: string,
     type: TokenType
+    imageSource?: string
 }
 
 let terminalBlockKey = 0
@@ -42,6 +44,7 @@ const nextTerminalBlockKey = () => {
 enum Mode {
     TEXT,
     FORMATTING,
+    IMAGE,
 }
 
 /**
@@ -65,13 +68,16 @@ const parseLineToTokens = (line: string): Token[] => {
         currentChar = line.charAt(i)
 
         // Text blocks are terminated by spaces, because HTML does not render multiple spaces, which we do want in a terminal
-        if (currentChar === " " && mode === Mode.TEXT) {
-            if (currentText) {
-                tokens.push({text: currentText, type: TokenType.TEXT})
-                currentText = ""
+        if (currentChar === " ") {
+
+            if (mode === Mode.TEXT) {
+                if (currentText) {
+                    tokens.push({text: currentText, type: TokenType.TEXT})
+                    currentText = ""
+                }
+                tokens.push({text: " ", type: TokenType.SPACE})
+                continue
             }
-            tokens.push({text: " ", type: TokenType.SPACE})
-            continue
         }
 
         // [ characters starts a style or link block. [ characters are escaped by another [ character.
@@ -83,10 +89,31 @@ const parseLineToTokens = (line: string): Token[] => {
                     currentText = ""
                 }
                 continue
-            } else {
+            }
+            if (mode === Mode.FORMATTING) {
                 // escaped '[' character
                 mode = Mode.TEXT
                 currentText += currentChar
+                continue
+            }
+            // Mode.IMAGE: do nothing special just add the character, at the end of this loop.
+        }
+
+
+        // !h starts an image block. If the image is not of the form !http(s):// then it's just text.
+        if (currentChar === "!") {
+            if (mode === Mode.TEXT) {
+                mode = Mode.IMAGE
+                if (currentText) {
+                    tokens.push({text: currentText, type: TokenType.TEXT})
+                    currentText = ""
+                }
+                continue
+            }
+            if (mode === Mode.IMAGE && currentText.startsWith("http")) {
+                tokens.push({text: "-", imageSource: currentText, type: TokenType.IMAGE})
+                currentText = ""
+                mode = Mode.TEXT
                 continue
             }
         }
@@ -96,7 +123,7 @@ const parseLineToTokens = (line: string): Token[] => {
             if (currentText.startsWith("h")) {
                 tokens.push({text: currentText, type: TokenType.LINK})
             } else if (currentText === "/") {
-                tokens.push({text: currentText, type: TokenType.CLEAR})
+                tokens.push({text: "-", type: TokenType.CLEAR})
             } else {
                 tokens.push({text: currentText, type: TokenType.STYLE})
             }
@@ -113,9 +140,13 @@ const parseLineToTokens = (line: string): Token[] => {
 
         currentText += currentChar
     }
-    // process the last text, in case it's text
+
+    // process the last text
     if (mode === Mode.TEXT && currentText) {
         tokens.push({text: currentText, type: TokenType.TEXT})
+    }
+    if (mode === Mode.IMAGE && currentText && currentText.startsWith("http")) {
+        tokens.push({text: "-", imageSource: currentText, type: TokenType.IMAGE})
     }
 
     return tokens
@@ -135,14 +166,15 @@ const parseLineToTokens = (line: string): Token[] => {
  * [text: "the time: "] [space] [text: "12:00"] *
  */
 const normalizeSpaces = (tokensInput: Token[]): Token[] => {
+    const nonEmptyTokens = tokensInput.filter(it => (it.type !== TokenType.TEXT || it.text.length > 0))
 
     let currentText = ""
     const tokens: Token[] = []
 
-    for (let i = 0; i < tokensInput.length; i++) {
-        const token = tokensInput[i]
+    for (let i = 0; i < nonEmptyTokens.length; i++) {
+        const token = nonEmptyTokens[i]
 
-        if (token.type === TokenType.STYLE || token.type === TokenType.LINK || token.type === TokenType.CLEAR) {
+        if (token.type === TokenType.STYLE || token.type === TokenType.LINK || token.type === TokenType.CLEAR || token.type === TokenType.IMAGE) {
             if (currentText) {
                 tokens.push({text: currentText, type: TokenType.TEXT})
                 currentText = ""
@@ -204,10 +236,6 @@ const toBlocks = (tokens: Token[]): TerminalLineBlock[] => {
     }
 
     function addLinkBlock(link: string) {
-        if (!currentText) {
-            // empty link, fill in the word "link"
-            currentText = "link"
-        }
         blocks.push({
             type: TerminalBlockType.LINK, link: link,
             text: currentText, size: currentText.length,
@@ -217,6 +245,17 @@ const toBlocks = (tokens: Token[]): TerminalLineBlock[] => {
 
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
+
+        if (token.type === TokenType.IMAGE) {
+            addTextBlockForPreviousText()
+            const link = currentLink? currentLink : undefined
+            blocks.push({
+                type: TerminalBlockType.IMAGE, link: link, imageSource: token.imageSource,
+                text: " ", size: 1,
+                className: createClassName(), key: nextTerminalBlockKey(),
+            })
+            continue
+        }
 
         if (token.type === TokenType.LINK) {
             addTextBlockForPreviousText()

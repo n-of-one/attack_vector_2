@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ENTER_KEY} from "../util/KeyCodes";
 import {parseTextToTerminalLine} from "../terminal/TerminalLineParser";
-import {TerminalLineData} from "../terminal/TerminalReducer";
+import {TerminalBlockType, TerminalLineData} from "../terminal/TerminalReducer";
 import {TerminalLine} from "../terminal/TerminalLine";
 
 /*
@@ -167,16 +167,10 @@ const TerminalPreview = ({text}: { text: string }) => {
     const lines = text.split("\n")
     const terminalLines = lines.map((line: string) => parseTextToTerminalLine(line))
 
-    const lineLengths = lines.map((line: string) => line.length)
-    const extraLinesForLongLines = lineLengths.map((length: number) => Math.floor(length / 56)).reduce((a, b) => a + b, 0)
-    const terminalLineHeight = 14
-    const topPadding = 2
-    const height = topPadding + terminalLineHeight * (lines.length + extraLinesForLongLines)
-
     return <div>
         <div className="layerLabel" style={{textAlign: "left", paddingTop: 0}}>Preview</div>
         <div className="terminalPreview">
-            <div className="terminalPanel" style={{height: height}}>
+            <div className="terminalPanel" >
                 {terminalLines.map((line: TerminalLineData) => <TerminalLine line={line} key={line.key}/>)}
             </div>
         </div>
