@@ -3,6 +3,7 @@ package org.n1.av2.backend.web.html
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.n1.av2.backend.config.ServerConfig
 import org.n1.av2.backend.service.security.LoginService
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.http.HttpHeaders
@@ -18,19 +19,52 @@ private const val INDEX = "../static/index.html"
 
 @Controller
 class HtmlController(
-    private val loginService: LoginService
+    private val loginService: LoginService,
+    private val serverConfig: ServerConfig,
 ) : ErrorController {
 
-    @GetMapping("/", "/login", "/adminLogin", "/loggedOut", "/about", "/privacy", "/hacker", "/hacker/", "/gm", "/gm/",
-        "/edit", "/edit/", "/edit/{siteId}", "/x/{reference}", "/o/{reference}", "/website", "/website/{page}", "/larp/**")
+    private val localRoot = File(serverConfig.localContentFolder)
+
+    @GetMapping(
+        "/",
+        "/login",
+        "/adminLogin",
+        "/loggedOut",
+        "/about",
+        "/privacy",
+        "/hacker",
+        "/hacker/",
+        "/gm",
+        "/gm/",
+        "/edit",
+        "/edit/",
+        "/edit/{siteId}",
+        "/x/{reference}",
+        "/o/{reference}",
+        "/website",
+        "/website/{page}",
+        "/larp/**"
+    )
     fun default(): String {
         return INDEX
     }
 
     @GetMapping("/local/**")
     fun local(request: HttpServletRequest): ResponseEntity<ByteArray> {
+        if (!localRoot.exists() || !localRoot.isDirectory) {
+            return ResponseEntity(
+                "local content folder does not exist. Please configure LOCAL_CONTENT_FOLDER in setenv script or create folder: ${serverConfig.localContentFolder}".toByteArray(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+
         val path = URLDecoder.decode(request.requestURI.substringAfter("/local/"), "UTF-8")
-        val file = File(path)
+        val file = File(localRoot.canonicalPath + File.separator + path)
+
+        if (!fileInLocalRoot(file)) {
+            return ResponseEntity("invalid path".toByteArray(), HttpStatus.BAD_REQUEST)
+        }
+
         if (!file.exists()) {
             return ResponseEntity("file not found: ${file.canonicalPath}".toByteArray(), HttpStatus.NOT_FOUND)
         }
@@ -41,10 +75,20 @@ class HtmlController(
         return ResponseEntity(file.readBytes(), headers, HttpStatus.OK)
     }
 
+    private fun fileInLocalRoot(candidate: File): Boolean {
+        if (candidate.parentFile.canonicalPath == localRoot.canonicalPath) {
+            return true
+        }
+        if (candidate.parentFile == null) {
+            return false
+        }
+        return fileInLocalRoot(candidate.parentFile)
+    }
+
     fun guessMimeType(extension: String): String {
         val extensionNormalized = extension.lowercase()
 
-        when(extensionNormalized) {
+        when (extensionNormalized) {
             "png", "jpeg", "gif", "webp" -> return "image/$extensionNormalized"
             "jpg" -> return "image/jpeg"
             "svg" -> return "image/svg+xml"

@@ -3,6 +3,7 @@ package org.n1.av2.backend.config
 import org.n1.av2.backend.service.larp.Larp
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.io.File
 import java.time.ZoneId
 
 @Component
@@ -35,6 +36,8 @@ class ServerConfig(
     @Value("\${ADMIN_PASSWORD:disabled}")
     val adminPassword: String,
 
+    @Value("\${LOCAL_CONTENT_FOLDER:local}")
+    val localContentFolder: String,
 
 
     ) {
@@ -46,5 +49,9 @@ class ServerConfig(
 
     init {
         logger.info("Larp: ${larp}")
+        val file = File(localContentFolder)
+        if (!file.exists() || !file.isDirectory) {
+            logger.error("Local content folder does not exist: '${localContentFolder}' -> '${file.canonicalPath}' . Downloading local files is disabled")
+        }
     }
 }

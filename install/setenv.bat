@@ -10,3 +10,4 @@ rem Variables specific to your event
 set ENVIRONMENT=dev-local
 set ADMIN_PASSWORD=disabled
 set GOOGLE_CLIENT_ID=none
+set LOCAL_CONTENT_FOLDER=local
