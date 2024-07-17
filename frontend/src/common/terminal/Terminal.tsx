@@ -1,6 +1,6 @@
 import React, {createRef} from 'react';
 import {TerminalInput} from "./TerminalInput";
-import {TerminalTextLine} from "./TerminalTextLine";
+import {TerminalLine} from "./TerminalLine";
 import {terminalManager} from "./TerminalManager";
 import {TerminalState} from "./TerminalReducer";
 
@@ -9,7 +9,7 @@ const renderRenderingLine = (terminalState: TerminalState) => {
     if (!terminalState.renderingLine) {
         return <div/>
     }
-    return <TerminalTextLine line={terminalState.renderingLine}/>
+    return <TerminalLine line={terminalState.renderingLine} lastBlockIndex={terminalState.renderingLineBlockIndex} characterIndex={terminalState.renderingBlockInsideIndex}/>
 }
 
 
@@ -35,7 +35,7 @@ export const Terminal = ({terminalState, height, submit}: Props) => {
 
     if (terminalState.renderOutput) {
         return <div className="terminalPanel terminal_scrollbar" style={{height: height}}>
-            {terminalState.lines.map((line, index) => <TerminalTextLine line={line} key={index}/>)}
+            {terminalState.renderedLines.map((line, index) => <TerminalLine line={line} key={line.key}/>)}
             {renderRenderingLine(terminalState)}
             <TerminalInput terminalState={terminalState} />
             <div ref={bottomRef}/>

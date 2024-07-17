@@ -1,6 +1,5 @@
 import {combineReducers} from 'redux'
 import {pageReducer} from "../common/menu/pageReducer";
-import {mailRootReducer, MailRootState} from "./mail/MailRootReducer";
 import {runRootReducer, RunState} from "./run/RunRootReducer";
 import {createTerminalReducer, TerminalState} from "../common/terminal/TerminalReducer";
 import {themeReducer} from "../common/reducer/ThemeReducer";
@@ -16,7 +15,6 @@ export interface HackerState extends GenericUserRootState {
     run: RunState,
     runs: RunInfo[],
     sites: SiteInfo[],
-    mail: MailRootState,
     hackers: HackerPresence[]
     terminal: TerminalState,
     activeTerminalId:ActiveTerminalId,
@@ -32,7 +30,6 @@ export const hackerRootReducer = combineReducers({
     run: runRootReducer,
     runs: hackerRunsReducer,
     sites: sitesReducer,
-    mail: mailRootReducer,
     hackers: hackersReducer,
     terminal: mainTerminalReducer,
     activeTerminalId: activeTerminalIdReducer,

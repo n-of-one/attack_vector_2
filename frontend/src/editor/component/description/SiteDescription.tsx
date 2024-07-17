@@ -13,7 +13,7 @@ export const SiteDescription = () => {
     }
 
     return (
-        <div className="row" style={{width: "1891px", marginTop: "-5px"}}>
+        <div className="row" style={{marginTop: "-5px", marginLeft: "-11px", width: 1250}}>
             <div className="col-lg-12 marginTop marginLeftRight darkWell editorBottomPanel" id="node-library">
                 <br/>
                 <div className="row form-group">

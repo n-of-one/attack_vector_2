@@ -94,7 +94,9 @@ export const DevLogin = () => {
             <br/>
             {["hacker", "Stalker", "Paradox"].map(renderName)}
             <br/>
-            {["gm", "admin"].map(renderName)}
+            {["gm"].map(renderName)}
+            <br/>
+            {["admin"].map(renderName)}
             <br />
             <div className="row text">
                 <div className="d-flex justify-content-center">

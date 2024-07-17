@@ -112,6 +112,10 @@ class StompService(
         reply(ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines, locked))
     }
 
+    fun replyTerminalReceive(lines: List<String>) {
+        reply(ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines.toTypedArray()))
+    }
+
     fun replyTerminalReceive(vararg lines: String) {
         reply(ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines))
     }

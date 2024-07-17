@@ -17,7 +17,7 @@ export interface WordSearchRootState {
     displayTerminal: TerminalState,
 }
 
-const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, receiveBuffer: [], autoScroll: true});
+const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, autoScroll: true});
 
 export const wordSearchRootReducer = combineReducers<WordSearchRootState>(
     {

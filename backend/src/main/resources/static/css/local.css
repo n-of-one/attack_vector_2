@@ -67,8 +67,8 @@ input {
 }
 
 .noMarginLeftRight {
-    margin-left: 0px;
-    margin-right: 0px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .siteMap {
@@ -143,7 +143,7 @@ input {
 
 .layer_text_label {
     margin-top: 0.5em;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .text_gold {
@@ -209,7 +209,7 @@ a.textLink {
 }
 
 .layerLayerPanel {
-    height: 578px;
+    min-height: 578px;
     margin-top: 4px;
 }
 
@@ -241,7 +241,7 @@ a.textLink {
     height: 95px;
     overflow-y: auto;
     overflow-x: hidden;
-    scrollbar-width: 12px;
+    scrollbar-width: thin;
     scrollbar-color: #666 #444;
 }
 

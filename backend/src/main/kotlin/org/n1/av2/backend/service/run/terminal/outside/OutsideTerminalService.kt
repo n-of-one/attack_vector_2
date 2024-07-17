@@ -46,12 +46,12 @@ class OutsideTerminalService(
             "quickscan", "qs" -> commandScanService.processQuickScan(run)
             "attack" ->  processAttack(run, false)
             "quickattack", "qa" -> processAttack(run, true)
-        else -> stompService.replyTerminalReceive("Unknown command, try [u]help[/].")
+        else -> stompService.replyTerminalReceive("Unknown command, try [b]help[/].")
         }
     }
 
     private fun reportHackCommand() {
-        stompService.replyTerminalReceive("[warn]still scanning[/] - First initiate the attack with: [u]attack[/]")
+        stompService.replyTerminalReceive("[warn]still scanning[/] - First initiate the attack with: [b]attack[/]")
     }
 
 

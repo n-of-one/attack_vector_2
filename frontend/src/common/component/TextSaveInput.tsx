@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import {ENTER_KEY} from "../util/KeyCodes";
+import {parseTextToTerminalLine} from "../terminal/TerminalLineParser";
+import {TerminalBlockType, TerminalLineData} from "../terminal/TerminalReducer";
+import {TerminalLine} from "../terminal/TerminalLine";
 
 /*
 When the focus is lost, enter is hit, or this component is no longer rendered, the component fires its "save" method as provided by the props.
@@ -8,7 +11,7 @@ During the saving, a floppy disk 'save' icon is shown.
 This component does something that is not supported by React. See the longer text at the bottom for an explanation.
 */
 
-export enum TextSaveType { TEXT, TEXTAREA }
+export enum TextSaveType { TEXT, TEXTAREA, TERMINAL_TEXTAREA }
 
 interface Props {
     id?: string,
@@ -19,7 +22,7 @@ interface Props {
     className: string,
     rows?: number,
     readonly?: boolean,
-
+    terminalPrefix?: string,
 }
 
 enum State {
@@ -116,11 +119,15 @@ export const TextSaveInput = (props: Props) => {
         text = ''
     }
 
-    let icon = (saveIcon) ? (<span className="form-control-feedback d-flex justify-content-end saveIcon"><span className="glyphicon glyphicon-floppy-save"
-                                                                                                               aria-hidden="true"/></span>) : '';
+    let icon = (saveIcon) ? (<span className="form-control-feedback d-flex justify-content-end saveIcon"><span
+        className="glyphicon glyphicon-floppy-save"
+        aria-hidden="true"/></span>) : '';
 
-    if (props.type === TextSaveType.TEXTAREA) {
+    if (props.type === TextSaveType.TEXTAREA || props.type === TextSaveType.TERMINAL_TEXTAREA) {
         const rows = (props.rows) ? props.rows : 5
+        const terminalText = props.terminalPrefix + text
+        const terminalPreview = props.type === TextSaveType.TERMINAL_TEXTAREA ?
+            <TerminalPreview text={terminalText}/> : <></>
         return (
             <span>
                 <textarea id={props.id}
@@ -134,6 +141,7 @@ export const TextSaveInput = (props: Props) => {
                           disabled={readonly}
                 />
                 {icon}
+                {terminalPreview}
             </span>
         );
     } else {
@@ -152,6 +160,21 @@ export const TextSaveInput = (props: Props) => {
                 </span>
         );
     }
+}
+
+
+const TerminalPreview = ({text}: { text: string }) => {
+    const lines = text.split("\n")
+    const terminalLines = lines.map((line: string) => parseTextToTerminalLine(line))
+
+    return <div>
+        <div className="layerLabel" style={{textAlign: "left", paddingTop: 0}}>Preview</div>
+        <div className="terminalPreview">
+            <div className="terminalPanel" >
+                {terminalLines.map((line: TerminalLineData) => <TerminalLine line={line} key={line.key}/>)}
+            </div>
+        </div>
+    </div>
 }
 
 /*

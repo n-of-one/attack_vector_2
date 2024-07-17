@@ -6,7 +6,7 @@ interface Props {
 }
 
 export const TerminalInput = ({terminalState}: Props) => {
-    if (terminalState.readOnly || (terminalState.blockedWhileRendering && terminalState.receiving)) {
+    if (terminalState.readOnly || (terminalState.blockedWhileRendering && (terminalState.renderingLine || terminalState.unrenderedLines.length > 0))) {
         return (
             <div className="terminalLine terminal_input">
                 <span>&nbsp;</span>

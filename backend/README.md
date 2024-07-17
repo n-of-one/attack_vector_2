@@ -45,6 +45,17 @@ To create this: set up a project in the Google cloud console, and create oauth c
 The application allows admins to log in with username and password. There is only one password for the entire site. Please use a strong password for this,
 for example a 32 character random string.
 
+`LOCAL_CONTENT_FOLDER`  The folder where the content is stored. Defaults to: local 
+
+If you want to locally host content that will be available for hackers to discover, you can create this folder in the folder where your attack vector
+startup script resided. Then you can access the files of that folder via the path: /local/{filename} . For example: for the site attackvector.nl if
+you create a folder local with a file info.txt then you can access it via the URL: https://attackvector.nl/local/info.txt . You can also create subdirectories if you want.
+The purpose of local files is that you can link to them from text-layers. This way the hackers can discover the files when hacking these layers.
+
+Note that there is no protection on these files, so anyone who can guess the file name can access these files. Do not put off-game sensitive information here!
+For example: do not make your attack_vector installation directory the local folder, because then anyone can acces the setenv.sh script that contains your ADMIN_PASSWORD.
+
+
 ## Running:
 
 The application is a Spring boot standalone java app, the main method class is: org.n1.av2.backend

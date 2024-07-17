@@ -10,6 +10,7 @@ class TextLayerService(
 ) {
 
     fun hack(layer: TextLayer, node: Node) {
-        stompService.replyTerminalReceive("Hacked: [pri]${layer.level}[/] ${layer.name}", "", layer.text)
+        stompService.replyTerminalReceive("Hacked: [pri]${layer.level}[/] ${layer.name}", "")
+        stompService.replyTerminalReceive(layer.text.lines())
     }
 }
