@@ -11,7 +11,7 @@ export const parseTextToTerminalLine = (line: string): TerminalLineData => {
 
     const normalizedTokens = normalizeSpaces(rawTokens)
 
-    const blocks =  toBlocks(normalizedTokens)
+    const blocks = toBlocks(normalizedTokens)
 
     return {
         blocks: blocks,
@@ -82,7 +82,7 @@ const parseLineToTokens = (line: string): Token[] => {
 
         // [ characters starts a style or link block. [ characters are escaped by another [ character.
         if (currentChar === "[") {
-            if (mode === Mode.TEXT) {
+            if (mode === Mode.TEXT || mode === Mode.IMAGE) {
                 mode = Mode.FORMATTING
                 if (currentText) {
                     tokens.push({text: currentText, type: TokenType.TEXT})
@@ -110,17 +110,26 @@ const parseLineToTokens = (line: string): Token[] => {
                 }
                 continue
             }
-            if (mode === Mode.IMAGE && currentText.startsWith("http")) {
-                tokens.push({text: "-", imageSource: currentText, type: TokenType.IMAGE})
-                currentText = ""
-                mode = Mode.TEXT
-                continue
+            if (mode === Mode.IMAGE) {
+                if (currentText.startsWith("http")) {
+                    tokens.push({text: "-", imageSource: currentText, type: TokenType.IMAGE})
+                    currentText = ""
+                    mode = Mode.TEXT
+                    continue
+                } else {
+                    // it was just a normal ! instead
+                    currentText += currentChar
+                    tokens.push({text: "!" + currentText, type: TokenType.TEXT})
+                    currentText = ""
+                    mode = Mode.TEXT
+                    continue
+                }
             }
         }
 
         // links and style is terminated by a ] character
         if (currentChar === "]" && mode === Mode.FORMATTING) {
-            if (currentText.startsWith("h")) {
+            if (currentText.startsWith("http")) {
                 tokens.push({text: currentText, type: TokenType.LINK})
             } else if (currentText === "/") {
                 tokens.push({text: "-", type: TokenType.CLEAR})
@@ -145,8 +154,13 @@ const parseLineToTokens = (line: string): Token[] => {
     if (mode === Mode.TEXT && currentText) {
         tokens.push({text: currentText, type: TokenType.TEXT})
     }
-    if (mode === Mode.IMAGE && currentText && currentText.startsWith("http")) {
-        tokens.push({text: "-", imageSource: currentText, type: TokenType.IMAGE})
+    if (mode === Mode.IMAGE) {
+        if (currentText && currentText.startsWith("http")) {
+            tokens.push({text: "-", imageSource: currentText, type: TokenType.IMAGE})
+        } else {
+            // it was just a normal ! instead
+            tokens.push({text: "!" + currentText, type: TokenType.TEXT})
+        }
     }
 
     return tokens
@@ -248,7 +262,7 @@ const toBlocks = (tokens: Token[]): TerminalLineBlock[] => {
 
         if (token.type === TokenType.IMAGE) {
             addTextBlockForPreviousText()
-            const link = currentLink? currentLink : undefined
+            const link = currentLink ? currentLink : undefined
             blocks.push({
                 type: TerminalBlockType.IMAGE, link: link, imageSource: token.imageSource,
                 text: " ", size: 1,
@@ -311,13 +325,12 @@ const toBlocks = (tokens: Token[]): TerminalLineBlock[] => {
         if (currentLink) {
             // last link was not terminated. Add it anyway.
             addLinkBlock(currentLink)
-        }
-        else {
+        } else {
             addTextBlockForPreviousText()
         }
     }
 
-    if (blocks.length > 0 ) {
+    if (blocks.length > 0) {
         return blocks
     }
 
