@@ -1,7 +1,8 @@
 import {fabric} from "fabric";
 import {Canvas} from "fabric/fabric-impl";
-import {SweeperCellModifier, SweeperCellType, SweeperImageType} from "../SweeperModel";
-import {SweeperModifyAction, SweeperModifyData} from "../SweeperServerActionProcessor";
+import {SweeperCellModifier, SweeperCellType} from "../SweeperModel";
+import {Graphics} from "../../../../common/canvas/display/Display";
+import {animate} from "../../../../common/canvas/CanvasUtils";
 
 export const PADDING_TOP = 20
 export const PADDING_LEFT = 20
@@ -22,9 +23,11 @@ export class SweeperCellDisplay {
 
     cellType: SweeperCellType
     modifier: SweeperCellModifier
+    userBlocked: boolean
 
-    constructor(canvas: Canvas, x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier, size: number) {
+    constructor(canvas: Canvas, x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier, size: number, userBlocked: boolean) {
         this.canvas = canvas
+        this.userBlocked = userBlocked
 
         this.x = x
         this.y = y
@@ -78,9 +81,25 @@ export class SweeperCellDisplay {
         this.imageInfo = this.determineImageType()
         const imageElement = this.getHtmlImage(this.imageInfo)
         this.image.setElement(imageElement)
-        this.canvas.renderAll();
+
+        const scale = this.size / this.imageInfo.size
+        this.image.scaleX = scale
+        this.image.scaleY = scale
+        this.canvas.renderAll()
     }
 
+    fade() {
+        if (this.cellType !== SweeperCellType.MINE) {
+            new Graphics(this.canvas).fadeOut(60, this.image)
+        }
+        else {
+            new Graphics(this.canvas).fadeOut(40, this.image)
+            // @ts-ignore
+            animate(this.canvas, this.image, "scaleX", this.image.scaleX * 1.6, 40)
+            // @ts-ignore
+            animate(this.canvas, this.image, "scaleY", this.image.scaleY * 1.6, 40)
+        }
+    }
 }
 
 
@@ -108,12 +127,14 @@ export const SWEEPER_IMAGES: SweeperImageTypes = {
     },
     "2": {
         size: 420,
-        fileName: "m02-clear.png",
+        // fileName: "m02-clear.png",
+        fileName: "level-2.png",
         id: "n2"
     },
     "3": {
         size: 420,
-        fileName: "m03-clear.png",
+        // fileName: "m03-clear.png",
+        fileName: "level-3.png",
         id: "n3"
     },
     "4": {
@@ -141,19 +162,24 @@ export const SWEEPER_IMAGES: SweeperImageTypes = {
         fileName: "m08-clear.png",
         id: "n8"
     },
+    // "MINE": {
+    //     size: 420,
+    //     fileName: "gear11.png",
+    //     id: "mine"
+    // },
     "MINE": {
-        size: 420,
-        fileName: "gear11.png",
+        size: 550,
+        fileName: "gear11-blue-600.png",
         id: "mine"
     },
-    "UNKNOWN": {
+    "UNREVEALED": {
         size: 420,
         fileName: "z-roadsign54.png",
-        id: "unknown"
+        id: "unrevealed"
     },
     "FLAG": {
-        size: 420,
-        fileName: "exclamation-point1.png",
+        size: 256,
+        fileName: "exclamation-orange.png",
         id: "flag"
     },
     "QUESTION_MARK": {

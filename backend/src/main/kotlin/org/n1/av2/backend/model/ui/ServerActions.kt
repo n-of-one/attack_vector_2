@@ -95,6 +95,8 @@ enum class ServerActions {
 
     SERVER_SWEEPER_ENTER,               // sent to hacker that hacks this ice, first message of Ice window
     SERVER_SWEEPER_MODIFY,              // sent to everyone when a cell has been modified (revealed, flagged,... )
+    SERVER_SWEEPER_BLOCK_USER,          // sent to everyone when a user is blocked because of exploding a cell
+    SERVER_SWEEPER_SOLVED,              // sent to everyone when the sweeper is solved
 
     SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE auth UI
     SERVER_REDIRECT_CONNECT_APP,        // open a new window to connect to an app

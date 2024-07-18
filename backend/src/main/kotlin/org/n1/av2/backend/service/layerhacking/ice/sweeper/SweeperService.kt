@@ -1,10 +1,12 @@
 package org.n1.av2.backend.service.layerhacking.ice.sweeper
 
+import org.n1.av2.backend.engine.SECONDS_IN_TICKS
 import org.n1.av2.backend.entity.ice.SweeperIceStatus
 import org.n1.av2.backend.entity.ice.SweeperIceStatusRepo
 import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.run.RunService
+import org.n1.av2.backend.service.layerhacking.HackedUtil
+import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
@@ -15,8 +17,9 @@ enum class SweeperModifyAction { REVEAL, FLAG, QUESTION_MARK, CLEAR, EXPLODE }
 @Service
 class SweeperService(
     private val stompService: StompService,
-    private val runService: RunService,
+    private val hackedUtil: HackedUtil,
     private val sweeperIceStatusRepo: SweeperIceStatusRepo,
+    private val currentUser: CurrentUserService,
 ) {
 
     private val sweeperCreator = SweeperCreator()
@@ -26,20 +29,22 @@ class SweeperService(
         val modifiers: List<String>,
         val strength: IceStrength,
         val hacked: Boolean,
+        val blockedUserIds: List<String>,
     )
 
-    fun enter(iceId: String, layerId: String) {
+    fun enter(iceId: String, layerId: String, strength: IceStrength) {
 //        val iceStatus = sweeperIceStatusRepo.findByLayerId(layerId) ?: sweeperCreator.createSweeper(iceId, layerId, IceStrength.VERY_WEAK)
-        val iceStatus = sweeperCreator.createSweeper(iceId, layerId, IceStrength.VERY_WEAK)
+        val iceStatus = sweeperCreator.createSweeper(iceId, layerId, strength)
         sweeperIceStatusRepo.save(iceStatus)
 
-        val sweeperEnter = SweeperEnter(iceStatus.cells, iceStatus.modifiers, IceStrength.WEAK, false)
+        val sweeperEnter = SweeperEnter(iceStatus.cells, iceStatus.modifiers, strength, false, iceStatus.blockedUserIds)
         stompService.reply(ServerActions.SERVER_SWEEPER_ENTER, sweeperEnter)
 //        runService.enterNetworkedApp(iceId)
     }
 
     fun interact(iceId: String, x: Int, y: Int, action: SweeperModifyAction) {
         val sweeper: SweeperIceStatus = sweeperIceStatusRepo.findById(iceId).getOrElse { error("Sweeper not found for: ${iceId}") }
+        if (sweeper.blockedUserIds.contains(currentUser.userId)) return
         if (sweeper.hacked) return
         if (x < 0 || x >= sweeper.cells[0].length || y < 0 || y >= sweeper.cells.size) error("click out of bounds: $x, $y for iceId: $iceId")
         if (sweeper.modifiers[y][x] == '-') return // cell already revealed by another player, cannot modify.
@@ -78,10 +83,17 @@ class SweeperService(
             '*' -> explode(sweeper, x, y)
             else -> revealSingle(sweeper, x, y)
         }
+
+        if (solved(sweeper)) handleSolved(sweeper)
     }
 
+    class SweeperBlockUserMessage(val userId: String)
     private fun explode(sweeper: SweeperIceStatus, x: Int, y: Int) {
-        saveModification(sweeper, x, y, "-")
+        sweeper.modifiers[y] = sweeper.modifiers[y].replaceRange(x, x+1, "-")
+        val sweeperWithUserBlocked = sweeper.copy(blockedUserIds = sweeper.blockedUserIds + currentUser.userId)
+        sweeperIceStatusRepo.save(sweeperWithUserBlocked)
+
+        stompService.reply(ServerActions.SERVER_SWEEPER_BLOCK_USER, SweeperBlockUserMessage(currentUser.userId))
         stompService.reply(ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE))
     }
 
@@ -126,4 +138,23 @@ class SweeperService(
     }
 
 
+    class SweeperSolvedMessage(val sweeperId: String)
+    private fun handleSolved(sweeper: SweeperIceStatus) {
+        val solvedSweeper = sweeper.copy(hacked = true)
+        sweeperIceStatusRepo.save(solvedSweeper)
+        stompService.reply(ServerActions.SERVER_SWEEPER_SOLVED, SweeperSolvedMessage(sweeper.id))
+        hackedUtil.iceHacked(sweeper.layerId, 4 * SECONDS_IN_TICKS)
+    }
+
+    private fun solved(sweeper: SweeperIceStatus): Boolean {
+        return sweeper.cells
+            .zip(sweeper.modifiers) // [([c, m], [c, m], [etc]), ([c, m], [c, m], [etc]), (etc)]
+            .flatMap { it.first.zip(it.second) } // [(c, m), (c, m), (c, m), (c, m), (c, m), (etc)]
+            .none { unsolvedCell(it) }
+    }
+
+    private fun unsolvedCell(input: Pair<Char, Char>): Boolean {
+        val (cell, modifier) = input
+        return modifier == '.' && cell != '*'
+    }
 }

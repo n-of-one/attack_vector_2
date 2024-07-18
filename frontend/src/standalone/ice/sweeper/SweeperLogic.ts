@@ -29,7 +29,7 @@ export const serverModifiersToGameModifiers = (serverModifiers: string[]) => {
 
 const serverCellToModifier = (value: string): SweeperCellModifier => {
     switch(value) {
-        case ".": return SweeperCellModifier.UNKNOWN
+        case ".": return SweeperCellModifier.UNREVEALED
         case "-": return SweeperCellModifier.REVEALED
         case "f": return SweeperCellModifier.FLAG
         case "?": return SweeperCellModifier.QUESTION_MARK

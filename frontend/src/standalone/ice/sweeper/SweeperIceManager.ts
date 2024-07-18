@@ -10,12 +10,17 @@ import {serverCellsToGameCells, serverModifiersToGameModifiers,} from "./Sweeper
 import {SweeperCellModifier, SweeperCellType} from "./SweeperModel";
 import {ice} from "../../StandaloneGlobals";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
+import {currentUser} from "../../../common/user/CurrentUser";
+import {notify} from "../../../common/util/Notification";
 
 
 class SweeperIceManager extends GenericIceManager {
 
+
     cells: SweeperCellType[][] = []
     modifiers: SweeperCellModifier[][] = []
+    solved: boolean = false
+    userBlocked: boolean = false
 
     enter(sweeperEnterData: SweeperEnterData) {
         if (sweeperEnterData.hacked) {
@@ -26,7 +31,8 @@ class SweeperIceManager extends GenericIceManager {
         this.cells = serverCellsToGameCells(sweeperEnterData.cells)
         this.modifiers = serverModifiersToGameModifiers(sweeperEnterData.modifiers)
 
-        const gameState = {cells: this.cells, modifiers: this.modifiers, strength: sweeperEnterData.strength, hacked: false}
+        this.userBlocked = sweeperEnterData.blockedUserIds.includes(currentUser.id)
+        const gameState = {cells: this.cells, modifiers: this.modifiers, strength: sweeperEnterData.strength, hacked: false, userBlocked: this.userBlocked}
 
         delay(() => {
             sweeperCanvas.init(gameState, this.dispatch, this.store)
@@ -73,7 +79,7 @@ class SweeperIceManager extends GenericIceManager {
 
     private newModifier(action: SweeperModifyAction): SweeperCellModifier {
         switch (action) {
-            case SweeperModifyAction.CLEAR: return SweeperCellModifier.UNKNOWN
+            case SweeperModifyAction.CLEAR: return SweeperCellModifier.UNREVEALED
             case SweeperModifyAction.FLAG: return SweeperCellModifier.FLAG
             case SweeperModifyAction.QUESTION_MARK: return SweeperCellModifier.QUESTION_MARK
             case SweeperModifyAction.REVEAL:return SweeperCellModifier.REVEALED
@@ -82,6 +88,7 @@ class SweeperIceManager extends GenericIceManager {
     }
 
     click(x: number, y: number, leftClick: boolean) {
+        if (this.solved || this.userBlocked) return
         const modifier = this.modifiers[y][x]
         if (modifier === SweeperCellModifier.REVEALED) {
             return
@@ -93,11 +100,22 @@ class SweeperIceManager extends GenericIceManager {
 
     private determineAction(leftClick: boolean, modifier: SweeperCellModifier): SweeperModifyAction {
         if (leftClick) return SweeperModifyAction.REVEAL
-        if (modifier === SweeperCellModifier.UNKNOWN) return SweeperModifyAction.FLAG
+        if (modifier === SweeperCellModifier.UNREVEALED) return SweeperModifyAction.FLAG
         if (modifier === SweeperCellModifier.FLAG) return SweeperModifyAction.QUESTION_MARK
         if (modifier === SweeperCellModifier.QUESTION_MARK) return SweeperModifyAction.CLEAR
         throw new Error("unexpected state: " + modifier + " leftClick: " + leftClick)
+    }
 
+    serverSolved() {
+        this.solved = true
+        sweeperCanvas.serverSolved()
+    }
+
+    blockUser(userId: string) {
+        if (currentUser.id === userId) {
+            this.userBlocked = true
+            notify({message: 'You have been blocked from interacting with the ice', type: 'ok'})
+        }
     }
 }
 

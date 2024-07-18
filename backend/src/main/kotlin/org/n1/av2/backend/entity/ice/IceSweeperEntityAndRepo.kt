@@ -44,6 +44,7 @@ data class SweeperIceStatus(
     val cells: List<String>,
     val modifiers: MutableList<String>,
     val hacked: Boolean,
+    val blockedUserIds: List<String> = emptyList()
 )
 
 @Repository

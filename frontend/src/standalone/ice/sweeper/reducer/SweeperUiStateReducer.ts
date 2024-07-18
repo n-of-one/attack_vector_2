@@ -37,6 +37,7 @@ interface NetwalkEnterFromServer {
 }
 
 const enter =  (action: NetwalkEnterFromServer): SweeperUiState => {
+
     return {
         strength: action.data.strength,
         hacked: action.data.hacked,

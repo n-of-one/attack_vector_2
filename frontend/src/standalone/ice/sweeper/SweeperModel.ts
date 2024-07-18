@@ -14,7 +14,7 @@ export enum SweeperCellType {
 }
 
 export enum SweeperCellModifier {
-    UNKNOWN = "UNKNOWN",
+    UNREVEALED = "UNREVEALED",
     REVEALED = "REVEALED",
     FLAG = "FLAG",
     QUESTION_MARK = "QUESTION_MARK",
@@ -25,6 +25,7 @@ export interface SweeperGameState {
     modifiers: SweeperCellModifier[][]
     strength: IceStrength
     hacked: boolean
+    userBlocked: boolean
 }
 
 export enum SweeperImageType {

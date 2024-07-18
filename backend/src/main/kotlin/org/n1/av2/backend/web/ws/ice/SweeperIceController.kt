@@ -1,6 +1,7 @@
 package org.n1.av2.backend.web.ws.ice
 
 import org.n1.av2.backend.engine.UserTaskRunner
+import org.n1.av2.backend.entity.site.enums.IceStrength
 import org.n1.av2.backend.model.iam.UserPrincipal
 import org.n1.av2.backend.service.layerhacking.ice.sweeper.SweeperModifyAction
 import org.n1.av2.backend.service.layerhacking.ice.sweeper.SweeperService
@@ -13,11 +14,11 @@ class SweeperIceController(
     val userTaskRunner: UserTaskRunner
 ) {
 
-    data class SweeperEnterInput(val iceId: String)
+    data class SweeperEnterInput(val iceId: String, val strength: IceStrength)
     @MessageMapping("/ice/sweeper/enter")
     fun enter(command: SweeperEnterInput, userPrincipal: UserPrincipal) {
         // FIXME networkId
-        userTaskRunner.runTask(userPrincipal) { sweeperService.enter(command.iceId, "FIXME") }
+        userTaskRunner.runTask(userPrincipal) { sweeperService.enter(command.iceId, "FIXME",command.strength) }
     }
 
     data class SweeperInteract(val iceId: String, val x: Int, val y: Int, val action: SweeperModifyAction)

@@ -2,11 +2,12 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {PADDING_LEFT, PADDING_TOP, SweeperCellDisplay} from "./SweeperCellDisplay";
-import {SweeperCellModifier, SweeperCellType, SweeperGameState, SweeperImageType} from "../SweeperModel";
-import {ice} from "../../../StandaloneGlobals";
-import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
+import {SweeperCellModifier, SweeperCellType, SweeperGameState} from "../SweeperModel";
 import {SweeperModifyData} from "../SweeperServerActionProcessor";
 import {sweeperIceManager} from "../SweeperIceManager";
+import {Schedule} from "../../../../common/util/Schedule";
+import {shuffleArray} from "../../../../common/util/Util";
+import {IceStrength} from "../../../../common/model/IceStrength";
 
 type CellById = { [id: string]: SweeperCellDisplay }
 
@@ -25,9 +26,7 @@ class SweeperCanvas {
     imagesLoaded = 0
     allImagesLoaded = false
 
-    centerCellX = 0
-    centerCellY = 0
-
+    userBlocked = false;
 
     imageLoaded(totalImages: number) {
         this.imagesLoaded++
@@ -42,10 +41,11 @@ class SweeperCanvas {
             return
         }
 
+        this.userBlocked = data.userBlocked;
         this.dispatch = dispatch;
         this.store = store;
 
-        this.cellSize = this.determineCellSize(data.cells[0].length)
+        this.cellSize = this.determineCellSize(data.cells.length)
 
         this.gridWidth = this.cellSize * data.cells[0].length
         this.gridHeight = this.cellSize * data.cells.length
@@ -75,7 +75,6 @@ class SweeperCanvas {
             })
         })
 
-
         // const backgroundImageUrl = this.determineBackgroundImageName(data)
         //
         // setTimeout(() => {
@@ -87,7 +86,6 @@ class SweeperCanvas {
         // }, 100);
         this.canvas.renderAll()
     }
-
 
     // private addLine(x1: number, y1: number, x2: number, y2: number) {
     //     const line = new fabric.Line(
@@ -101,7 +99,8 @@ class SweeperCanvas {
     //     this.canvas.add(line)
     // }
 
-    private createCanvas(): Canvas {
+
+    createCanvas():Canvas {
         return new fabric.Canvas('netwalkCanvas', {
             width: this.gridWidth + PADDING_LEFT * 2,
             height: this.gridHeight + PADDING_TOP * 2,
@@ -111,24 +110,20 @@ class SweeperCanvas {
         });
     }
 
-
-
-    mouseDown(event: fabric.IEvent<MouseEvent>) {
+    mouseDown(event:fabric.IEvent<MouseEvent>) {
         if (event?.target?.data instanceof SweeperCellDisplay) {
             const cell: SweeperCellDisplay = event.target.data
             const leftClick = event.e.button === 0
 
             sweeperIceManager.click(cell.x, cell.y, leftClick)
-
         }
     }
 
-    private createCell(x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier) {
-        const cellDisplay = new SweeperCellDisplay(this.canvas, x, y, cellType, modifier, this.cellSize)
+    createCell(x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier) {
+        const cellDisplay = new SweeperCellDisplay(this.canvas, x, y, cellType, modifier, this.cellSize, this.userBlocked)
         const location = `${x}:${y}`
         this.cellDisplayByLocation[location] = cellDisplay
     }
-
 
 
     // serverSentNodeRotated(data: NetwalkRotateUpdate) {
@@ -148,11 +143,20 @@ class SweeperCanvas {
     //
     // }
 
-    private determineCellSize(cellsInRow: number) {
-        if (cellsInRow <= 9) return 80
-        if (cellsInRow <= 11) return 70
-        if (cellsInRow <= 13) return 60
-        return 50
+
+    determineCellSize(cellsInColumn:number) {
+        switch (cellsInColumn) {
+            case 9:
+                return 86
+            case 12:
+                return 66
+            case 16:
+                return 50
+            case 18:
+                return 44
+            default:
+                return 40
+        }
     }
 
     // private determineBackgroundImageName(data: SweeperGameState) {
@@ -183,12 +187,43 @@ class SweeperCanvas {
     //
     // }
 
-    serverModified(data: SweeperModifyData, newModifier: SweeperCellModifier) {
+    serverModified(data:SweeperModifyData, newModifier:SweeperCellModifier) {
         data.cells.forEach((location: string) => { // "$x:$y"
             this.cellDisplayByLocation[location].updateModifier(newModifier)
         })
         this.canvas.renderAll()
     }
+
+    serverSolved() {
+        const iceStrength = this.store.getState().ui.strength
+        const delay = this.determineDelay(iceStrength)
+
+        const schedule = new Schedule(null)
+        const mines = Object.values(this.cellDisplayByLocation)
+            .filter((cellDisplay: SweeperCellDisplay) => cellDisplay.cellType === SweeperCellType.MINE)
+        shuffleArray(mines)
+
+        mines.forEach((cellDisplay: SweeperCellDisplay) => {
+            schedule.run(delay, () => {
+                cellDisplay.fade()
+            })
+        })
+    }
+
+
+    determineDelay(iceStrength:IceStrength): number {
+        switch (iceStrength) {
+            case IceStrength.VERY_WEAK:
+                return 6
+            case IceStrength.WEAK:
+                return 3
+            case IceStrength.AVERAGE:
+                return 2
+            default:
+                return 1
+        }
+    }
 }
 
-export const sweeperCanvas = new SweeperCanvas()
+export const
+    sweeperCanvas = new SweeperCanvas()
