@@ -69,6 +69,7 @@ export class Larp {
     private determineLarpType(): LarpType {
         if (window.location.href.indexOf("eosfrontier.space") !== -1) return LarpType.FRONTIER
         if (window.location.href.indexOf("attackvector.nl") !== -1) return LarpType.ATTACK_VECTOR_NL
+        if (window.location.href.indexOf("masm") !== -1) return LarpType.LOCAL_DEV // for ArkNoe02
         if (window.location.href.indexOf("localhost") !== -1) return LarpType.LOCAL_DEV
         return LarpType.GENERIC
     }
