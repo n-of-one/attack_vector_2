@@ -332,6 +332,7 @@ a.textLink {
     top: 10px;
     height: 25px;
     width: 25px;
+    display: block;
 }
 
 .closeButtonLargeIcon {
@@ -348,4 +349,17 @@ a.textLink {
 
 li.lvl2 {
     margin-left: 16px;
+}
+
+.noTransition {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}
+
+.hacker-blocked {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: #ffc107;
 }
