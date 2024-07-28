@@ -1,5 +1,5 @@
 import React from 'react'
-import {useSelector} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {Terminal} from "../../../../common/terminal/Terminal"
 import {IceTitle} from "../../common/IceTitle";
 import {SweeperRootState} from "../reducer/SweeperRootReducer";
@@ -7,37 +7,23 @@ import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {sweeperCanvas} from "../canvas/SweeperCanvas";
 import {SWEEPER_IMAGES} from "../canvas/SweeperCellDisplay";
+import {
+    RESET_MILLIS,
+    SWEEPER_RESET_START,
+    SWEEPER_RESET_STOP,
+    SweeperResetState
+} from "../reducer/SweeperUiStateReducer";
+import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
+import {ice} from "../../../StandaloneGlobals";
+import {CloseTabButton} from "../../common/CloseTabButton";
 
 /* eslint jsx-a11y/alt-text: 0*/
-
-interface ImageLoadedProps {
-    id: string,
-    fileName: string
-}
-
-const imageLoaded = () => {
-    sweeperCanvas.imageLoaded(Object.keys(SWEEPER_IMAGES).length)
-}
-
-const SweeperImage = ({id, fileName}: ImageLoadedProps) => {
-
-    // https://codesandbox.io/s/red-flower-27i85?file=/src/gifToSprite.js
-
-    const path = `/img/frontier/ice/sweeper/${fileName}`
-
-    return <span><img id={id} src={path} style={{display: "none"}} onLoad={imageLoaded}/></span>
-}
-
-const DisplayTerminal = () => {
-    const displayTerminal = useSelector((rootState: SweeperRootState) => rootState.displayTerminal)
-
-    return <Terminal terminalState={displayTerminal} height={84}/>
-}
 
 export const SweeperHome = () => {
 
     const uiMode = useSelector((rootState: SweeperRootState) => rootState.ui.mode)
     const strength: IceStrength = useSelector((rootState: SweeperRootState) => rootState.ui.strength)
+    const minesLeft = useSelector((rootState: SweeperRootState) => rootState.ui.minesLeft)
 
     const classShowCanvas = (uiMode === HIDDEN) ? " hidden_alpha" : ""
 
@@ -61,10 +47,22 @@ export const SweeperHome = () => {
                     <div className="col-lg-3">
                         <IceTitle name="SWEEPER" strength={strength}/>
                     </div>
-                    <div className="col-lg-9" style={{paddingTop: "4px"}}>
-                        <DisplayTerminal/>
-                        {/*<span id={"downloadSpan"}/>*/}
+                    <div className="col-lg-1">
+                        <h4 className="text-success text-center" style={{marginBottom: 0}}>Reset</h4>
+                        <div><ResetIce/></div>
                     </div>
+                    <div className="col-lg-1">
+                        <h4 className="text-center text-success">Left:<br/><span className="text-info">{minesLeft}</span></h4>
+                    </div>
+                    <div className="col-lg-6" style={{paddingTop: "4px"}}>
+                        <DisplayTerminal/>
+                    </div>
+                    <div className="col-lg-1">
+                        <div className="float-end">
+                            <CloseTabButton/>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div className={"row transition_alpha_fast" + classShowCanvas}>
@@ -91,3 +89,79 @@ const SweeperImages = () => {
         })
         }</>
 }
+
+
+interface ImageLoadedProps {
+    id: string,
+    fileName: string
+}
+
+const imageLoaded = () => {
+    sweeperCanvas.imageLoaded(Object.keys(SWEEPER_IMAGES).length)
+}
+
+const SweeperImage = ({id, fileName}: ImageLoadedProps) => {
+    const path = `/img/frontier/ice/sweeper/${fileName}`
+    return <span><img id={id} src={path} style={{display: "none"}} onLoad={imageLoaded}/></span>
+}
+
+const DisplayTerminal = () => {
+    const displayTerminal = useSelector((rootState: SweeperRootState) => rootState.displayTerminal)
+    return <Terminal terminalState={displayTerminal} height={84}/>
+}
+
+let resetTimeoutId: ReturnType<typeof setTimeout> | null = null
+
+const ResetIce = () => {
+    const dispatch = useDispatch()
+    const resetState = useSelector((rootState: SweeperRootState) => rootState.ui.resetState)
+    const resetVisualProgress = useSelector((rootState: SweeperRootState) => rootState.ui.resetProgress)
+    const userBlocked = useSelector((rootState: SweeperRootState) => rootState.ui.blockedUserIds.includes(ice.id))
+
+    const startReset = () => {
+        if (resetState !== SweeperResetState.IDLE) {
+            return
+        }
+        dispatch({type: SWEEPER_RESET_START})
+        webSocketConnection.send("/ice/sweeper/startReset", {iceId: ice.id})
+        resetTimeoutId = setTimeout(() => {
+            webSocketConnection.send("/ice/sweeper/completeReset", {iceId: ice.id})
+            resetTimeoutId = null
+        }, RESET_MILLIS)
+
+    }
+    const stopReset = () => {
+        if (resetState !== SweeperResetState.IN_PROGRESS || resetVisualProgress >= 100) {
+            return
+        }
+        dispatch({type: SWEEPER_RESET_STOP})
+        webSocketConnection.send("/ice/sweeper/stopReset", {iceId: ice.id})
+        if (resetTimeoutId !== null) {
+            clearTimeout(resetTimeoutId)
+            resetTimeoutId = null
+        }
+    }
+    const animated = (resetVisualProgress < 40) ? "" : "progress-bar-animated"
+
+    const text = (resetState === SweeperResetState.IDLE) ? "Press" : ""
+    const progressBackgroundColor = (userBlocked && resetState === SweeperResetState.IDLE) ? "#0dcaf0" : ""
+
+    return (<div style={{}}>
+
+            <div className="progress" style={{height: 25, cursor: "pointer", position: "relative", top: "-15", backgroundColor: progressBackgroundColor}} onMouseDown={startReset}
+                 onMouseLeave={stopReset} onMouseUp={stopReset}>
+                <div className={`progress-bar bg-danger progress-bar-striped ${animated} noTransition`}
+                     role="progressbar"
+                     aria-valuenow={75} aria-valuemin={0}
+                     aria-valuemax={100} style={{width: `${resetVisualProgress}%`}}>
+                </div>
+            </div>
+            <div className="text" style={{
+                position: "relative", top: -20, paddingLeft: 16,
+                fontSize: 20, color: "black", cursor: "pointer", userSelect: "none", pointerEvents: "none",
+            }}><strong>{text}</strong>
+            </div>
+        </div>
+    )
+}
+

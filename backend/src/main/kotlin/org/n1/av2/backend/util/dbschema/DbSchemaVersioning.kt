@@ -32,7 +32,7 @@ class DbSchemaVersioning(
         val maxVersion = migrationSteps.maxOfOrNull { it.version() } ?: 0
 
         if (currentDbVersion == maxVersion) {
-            logger.info("Database schema is up to date")
+            logger.info("Database schema is up to date (v${currentDbVersion})")
             return
         }
 

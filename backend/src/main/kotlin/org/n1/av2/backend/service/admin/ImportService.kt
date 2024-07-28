@@ -169,11 +169,12 @@ class ImportService(
             LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
-            LayerType.NETWALK_ICE -> mapIceLayer(input, layerType, id, level, name, note)
-            LayerType.TANGLE_ICE -> mapIceLayer(input, layerType, id, level, name, note)
-            LayerType.TAR_ICE -> mapIceLayer(input, layerType, id, level, name, note)
-            LayerType.PASSWORD_ICE -> mapIceLayer(input, layerType, id, level, name, note)
-            LayerType.WORD_SEARCH_ICE -> mapIceLayer(input, layerType, id, level, name, note)
+            LayerType.NETWALK_ICE,
+            LayerType.TANGLE_ICE,
+            LayerType.TAR_ICE,
+            LayerType.PASSWORD_ICE,
+            LayerType.WORD_SEARCH_ICE,
+            LayerType.SWEEPER_ICE ->  mapIceLayer(input, layerType, id, level, name, note)
         }
     }
 

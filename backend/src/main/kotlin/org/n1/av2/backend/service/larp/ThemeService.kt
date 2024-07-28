@@ -22,6 +22,7 @@ class ThemeService {
             LayerType.WORD_SEARCH_ICE -> "Jaal" // grid in Hindi
             LayerType.NETWALK_ICE -> "Sanrachana" // structure in Hindi
             LayerType.TAR_ICE -> "Tar" // In Hindi this would be "taar" but in this case it's nice that it's clear in English
+            LayerType.SWEEPER_ICE -> "Safai" // cleaning in Hindi
         }
     }
 }

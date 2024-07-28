@@ -5,7 +5,16 @@ import {EditorRoot} from "./editor/EditorRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/util/Notification";
 import {larp} from "./common/Larp";
-import {SiteHackIce} from "./standalone/ice/SiteHackIce";
+import {AdminLogin} from "./login/AdminLogin";
+import {LoggedOut} from "./login/LoggedOut";
+import {About} from "./About";
+import {Privacy} from "./Privacy";
+import {HackerRoot} from "./hacker/HackerRoot";
+import {GmRoot} from "./gm/GmRoot";
+import {Standalone} from "./standalone/Standalone";
+import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
+import {WebsiteRouting} from "./website/WebsiteRouting";
+import {Lola} from "./larp/frontier/Lola";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -53,27 +62,27 @@ root.render(
     <>
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<SiteHackIce iceId={"sweeper-1234-1234"} nextUrl={null}/>} />
+                {/*<Route path="/" element={<SiteHackIce iceId={"sweeper-1234-1234"} nextUrl={null}/>} />*/}
                 <Route path="/login" element={larp.loginElement()}/>
-                {/*<Route path="/adminLogin" element={<AdminLogin/>}/>*/}
-                {/*<Route path="/loggedOut" element={<LoggedOut/>}/>*/}
-                {/*<Route path="/about" element={<About/>}/>*/}
-                {/*<Route path="/privacy" element={<Privacy/>}/>*/}
-                {/*<Route path="/hacker" element={<HackerRoot/>}/>*/}
-                {/*<Route path="/gm" element={<GmRoot/>}/>*/}
-                {/*<Route path="/edit/:siteId" element={<Editor/>}/>*/}
+                <Route path="/adminLogin" element={<AdminLogin/>}/>
+                <Route path="/loggedOut" element={<LoggedOut/>}/>
+                <Route path="/about" element={<About/>}/>
+                <Route path="/privacy" element={<Privacy/>}/>
+                <Route path="/hacker" element={<HackerRoot/>}/>
+                <Route path="/gm" element={<GmRoot/>}/>
+                <Route path="/edit/:siteId" element={<Editor/>}/>
 
                 { /*path that require login and will redirect to login if not logged in */}
-                {/*<Route path="/x/:encodedParam" element={<Standalone/>}/>
-                {/*<Route path="/o/:encodedParam" element={<Standalone/>}/>
+                <Route path="/x/:encodedParam" element={<Standalone/>}/>
+                <Route path="/o/:encodedParam" element={<Standalone/>}/>
 
                 { /* path that does not require login*/}
-                {/*<Route path="/website" element={<WebsiteLandingPage/>}/>*/}
+                <Route path="/website" element={<WebsiteLandingPage/>}/>
 
-                {/*<Route path="/website/:path" element={<WebsiteRouting/>}/>*/}
-                {/*<Route path="/larp/frontier/lola" element={<Lola/>}/>*/}
-                {/*<Route path="/" element={<ReRoute/>}/>*/}
-                {/*<Route path="*" element={<ReRoute/>}/>*/}
+                <Route path="/website/:path" element={<WebsiteRouting/>}/>
+                <Route path="/larp/frontier/lola" element={<Lola/>}/>
+                <Route path="/" element={<ReRoute/>}/>
+                <Route path="*" element={<ReRoute/>}/>
             </Routes>
         </BrowserRouter>
         <ToasterConfig/>

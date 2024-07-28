@@ -5,6 +5,7 @@ import {IceTitle} from "../../common/IceTitle";
 import {HIDDEN} from "../../common/IceModel";
 import {TarRootState} from "../reducer/TarRootReducer";
 import {IceStrength} from "../../../../common/model/IceStrength";
+import {CloseTabButton} from "../../common/CloseTabButton";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -28,10 +29,15 @@ export const TarHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Tar" strength={strength} />
+                        <IceTitle name="Tar" strength={strength}/>
                     </div>
-                    <div className="col-lg-9" style={{paddingTop: "4px"}}>
-                        <DisplayTerminal />
+                    <div className="col-lg-8" style={{paddingTop: "4px"}}>
+                        <DisplayTerminal/>
+                    </div>
+                    <div className="col-lg-1">
+                        <div className="float-end">
+                            <CloseTabButton/>
+                        </div>
                     </div>
                 </div>
 

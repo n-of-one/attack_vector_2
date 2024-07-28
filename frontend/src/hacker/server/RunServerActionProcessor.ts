@@ -9,7 +9,7 @@ import {Timings} from "../../common/model/Ticks"
 import {delayTicks} from "../../common/util/Util"
 import {SERVER_FLASH_PATROLLER,} from "../run/coundown/TimersReducer"
 import {prepareToEnterRun} from "../home/HackerHome"
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR} from "../../common/terminal/TerminalReducer"
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR, TERMINAL_RECEIVE} from "../../common/terminal/TerminalReducer"
 import {Schedule} from "../../common/util/Schedule"
 import {NodeScanStatus} from "../../common/enums/NodeStatus";
 import {MAIN_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
@@ -166,6 +166,8 @@ export const initRunServerActions = (store: Store) => {
         webSocketConnection.subscribeForRun(data.runId, data.siteId)
         dispatch({type: HIDE_NODE_INFO})
         dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
+        dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: "[b]🜁 Verdant OS 🜃"})
+        dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: ""})
         const currentPage = store.getState().currentPage
         dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
         terminalManager.start()

@@ -5,6 +5,7 @@ import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {WordSearchPuzzle} from "./WordSearchPuzzle";
 import {IceTitle} from "../../common/IceTitle";
 import {HIDDEN} from "../../common/IceModel";
+import {CloseTabButton} from "../../common/CloseTabButton";
 
 export const WordSearchHome = () => {
 
@@ -31,10 +32,15 @@ export const WordSearchHome = () => {
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Jaal" strength={puzzle.strength} />
+                        <IceTitle name="Jaal" strength={puzzle.strength}/>
                     </div>
-                    <div className="col-lg-9" style={{paddingTop: "4px"}}>
-                        <Terminal terminalState={displayTerminal} height={84} />
+                    <div className="col-lg-8" style={{paddingTop: "4px"}}>
+                        <Terminal terminalState={displayTerminal} height={84}/>
+                    </div>
+                    <div className="col-lg-1">
+                        <div className="float-end">
+                            <CloseTabButton/>
+                        </div>
                     </div>
                 </div>
 

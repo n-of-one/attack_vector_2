@@ -14,11 +14,10 @@ class SweeperIceController(
     val userTaskRunner: UserTaskRunner
 ) {
 
-    data class SweeperEnterInput(val iceId: String, val strength: IceStrength)
+    data class SweeperEnterInput(val iceId: String)
     @MessageMapping("/ice/sweeper/enter")
     fun enter(command: SweeperEnterInput, userPrincipal: UserPrincipal) {
-        // FIXME networkId
-        userTaskRunner.runTask(userPrincipal) { sweeperService.enter(command.iceId, "FIXME",command.strength) }
+        userTaskRunner.runTask(userPrincipal) { sweeperService.enter(command.iceId) }
     }
 
     data class SweeperInteract(val iceId: String, val x: Int, val y: Int, val action: SweeperModifyAction)
@@ -27,11 +26,20 @@ class SweeperIceController(
         userTaskRunner.runTask(userPrincipal) { sweeperService.interact(command.iceId, command.x, command.y, command.action) }
     }
 
+    data class SweeperResetAction(val iceId: String)
+    @MessageMapping("/ice/sweeper/startReset")
+    fun startReset(command: SweeperResetAction, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { sweeperService.startReset(command.iceId) }
+    }
 
-//    data class RotateInput(val iceId: String, val x: Int, val y: Int)
-//    @MessageMapping("/ice/netwalk/rotate")
-//    fun rotate(command: RotateInput, userPrincipal: UserPrincipal) {
-//        userTaskRunner.runTask(userPrincipal) { netwalkService.rotate(command.iceId, command.x, command.y) }
-//    }
+    @MessageMapping("/ice/sweeper/stopReset")
+    fun stopReset(command: SweeperResetAction, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { sweeperService.stopReset(command.iceId) }
+    }
+
+    @MessageMapping("/ice/sweeper/completeReset")
+    fun completeReset(command: SweeperResetAction, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { sweeperService.completeReset(command.iceId) }
+    }
 
 }

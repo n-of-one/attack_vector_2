@@ -1,6 +1,5 @@
 import React from "react";
 import {IceStrength} from "../../../common/model/IceStrength";
-import {CloseTabButton} from "./CloseTabButton";
 
 
 interface Props {
@@ -34,6 +33,5 @@ export const IceTitle = ({name, strength}: Props) => {
             Ice: <span className="text-info">{name}</span>&nbsp;<br/>
             Strength: <span className="text-info">{strengthDescription(strength)}</span><br/>
         </strong>
-        <CloseTabButton/>
     </h4>
 }

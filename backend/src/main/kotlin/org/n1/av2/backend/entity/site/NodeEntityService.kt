@@ -204,6 +204,7 @@ class NodeEntityService(
             LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(layerId, level, defaultName)
             LayerType.NETWALK_ICE -> NetwalkIceLayer(layerId, level, defaultName)
             LayerType.TAR_ICE -> TarIceLayer(layerId, level, defaultName)
+            LayerType.SWEEPER_ICE -> SweeperIceLayer(layerId, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
             LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
             LayerType.LOCK -> createStatusLightLayer(layerId,LayerType.LOCK, level, defaultName,  "locked", "unlocked")

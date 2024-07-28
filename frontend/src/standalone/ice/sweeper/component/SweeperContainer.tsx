@@ -8,8 +8,11 @@ import {SweeperHome} from "./SweeperHome";
 
 export const SweeperContainer = () => {
 
+    const blockedUserIds = useSelector((state: SweeperRootState) => state.ui.blockedUserIds)
     const currentPage: string = useSelector((state: SweeperRootState) =>  state.currentPage)
     if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+
+
 
     return (
         <div className="container-fluid" data-bs-theme="dark">
@@ -17,7 +20,7 @@ export const SweeperContainer = () => {
                 <div className="col-lg-2">
                     <div className="row">
                         <div className="col-lg-12">
-                            <IceHackerPresence />
+                            <IceHackerPresence blocked={blockedUserIds}/>
                         </div>
                     </div>
                     <div className="row">

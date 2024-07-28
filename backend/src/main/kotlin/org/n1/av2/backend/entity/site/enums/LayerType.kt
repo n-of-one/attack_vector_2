@@ -17,6 +17,7 @@ enum class LayerType(
     TANGLE_ICE(true),
     NETWALK_ICE(true),
     TAR_ICE(true),
+    SWEEPER_ICE(true)
 
 
 

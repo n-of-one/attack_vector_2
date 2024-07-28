@@ -34,12 +34,9 @@ export class SweeperRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        const strength = new URLSearchParams(window.location.search).get("strength")
-
-
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/ice/sweeper/enter", {iceId: ice.id, strength: strength})
+            webSocketConnection.sendObject("/ice/sweeper/enter", {iceId: ice.id})
         });
 
         sweeperIceManager.init(this.store, props.externalHack);

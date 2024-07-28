@@ -19,7 +19,7 @@ export const TerminalLine = ({line, lastBlockIndex, characterIndex}: Props) => {
     return (
         <div className="terminalLine">
             {
-                blocksToRender.map((block: TerminalLineBlock) => <Block block={block}/>)
+                blocksToRender.map((block: TerminalLineBlock) => <Block block={block} key={block.key}/>)
             }
             &nbsp;
         </div>)

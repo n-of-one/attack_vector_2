@@ -49,16 +49,17 @@ class AuthAppService(
         return icePasswordStatusRepo.findByLayerId(layer.id) ?: findOrCreateIceForPasswordIce(layer)
     }
 
+    fun findOrCreateIceStatus(iceId: String, layer: Layer): IcePasswordStatus {
+        return icePasswordStatusRepo.findById(iceId).getOrElse { createStatus(iceId, layer) }
+    }
+
     private fun findOrCreateIceForPasswordIce(layer: PasswordIceLayer): IcePasswordStatus {
         val id = createId("password", icePasswordStatusRepo::findById)
         return createStatus(id, layer)
     }
 
-    fun findOrCreateIceStatus(iceId: String, layer: Layer): IcePasswordStatus {
-        return icePasswordStatusRepo.findById(iceId).getOrElse { createStatus(iceId, layer) }
-    }
 
-    fun createStatus(iceId: String, layer: Layer): IcePasswordStatus {
+    private fun createStatus(iceId: String, layer: Layer): IcePasswordStatus {
         val icePasswordStatus = IcePasswordStatus(iceId, layer.id, LinkedList(), 0, time.longAgo())
         icePasswordStatusRepo.save(icePasswordStatus)
         return icePasswordStatus

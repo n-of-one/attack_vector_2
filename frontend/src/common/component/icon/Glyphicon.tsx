@@ -8,7 +8,7 @@ import {
     TANGLE_ICE,
     TEXT,
     TRACE_LOG,
-    TRACER, WORD_SEARCH_ICE, KEYSTORE
+    TRACER, WORD_SEARCH_ICE, KEYSTORE, SWEEPER_ICE
 } from "../../enums/LayerTypes"
 
 
@@ -51,6 +51,7 @@ export const glyphiconFromType = (type: string) => {
         case TAR_ICE : return "glyphicon-hourglass"
         case NETWALK_ICE : return "glyphicon-qrcode"
         case WORD_SEARCH_ICE : return "glyphicon-th"
+        case SWEEPER_ICE: return "glyphicon-flag"
         default:
             console.log("unknown type:" + type)
             return "glyphicon-thumbs-down"

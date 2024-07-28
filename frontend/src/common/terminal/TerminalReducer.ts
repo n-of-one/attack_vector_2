@@ -88,7 +88,7 @@ export const terminalStateDefault: TerminalState = {
     renderingLine: null,    // String - part of the current rendering line that is being shown
     renderingLineBlockIndex: 0,
     renderingBlockInsideIndex: 0,
-    unrenderedLines: [ parseTextToTerminalLine("[b]🜁 Verdant OS 🜃"), parseTextToTerminalLine("")],
+    unrenderedLines: [],
     syntaxHighlighting: {},
     history: [],            // [ "move 00", "view", "hack 2" ]
     historyIndex: 0         // which history item was last selected. When historyIndex == history then no history item is selected
@@ -96,7 +96,6 @@ export const terminalStateDefault: TerminalState = {
 
 interface CreatTerminalConfig {
     readOnly?: boolean,
-    // receiveBuffer?: TerminalLine[],
     autoScroll?: boolean,
     blockedWhileRendering?: boolean
     renderOutput?: boolean,

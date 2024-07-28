@@ -6,12 +6,10 @@ import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, WORD_SEARCH_
 import {LayerTextPanel} from "./type/panel/app/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {LayerIcePasswordPanel} from "./type/panel/ice/LayerIcePasswordPanel"
-import {LayerIceTanglePanel} from "./type/panel/ice/LayerIceTanglePanel"
 import {EditorState} from "../../../../EditorRootReducer"
 import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
-import {LayerIceWordSearchPanel} from "./type/panel/ice/LayerIceWordSearchPanel";
-import {LayerIceNetWalkPanel} from "./type/panel/ice/LayerIceNetwalkPanel";
+import {LayerSimpleIcePanel} from "./type/panel/ice/LayerSimpleIcePanel";
 import {LayerIceTarPanel} from "./type/panel/ice/LayerIceTarPanel";
 import {LayerStatusLightPanel} from "./type/panel/app/LayerStatusLightPanel";
 import {Icon} from "../../../../../common/component/icon/Icon";
@@ -35,13 +33,15 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
         case PASSWORD_ICE:
             return <LayerIcePasswordPanel node={node} layer={layer}/>
         case TANGLE_ICE:
-            return <LayerIceTanglePanel node={node} layer={layer}/>
+            return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE (Un)tangle"/>
         case WORD_SEARCH_ICE:
-            return <LayerIceWordSearchPanel node={node} layer={layer} />
+            return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE Word Search"/>
         case NETWALK_ICE:
-            return <LayerIceNetWalkPanel node={node} layer={layer} />
+            return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE Netwalk"/>
         case LayerType.TAR_ICE:
             return <LayerIceTarPanel node={node} layer={layer}/>
+        case LayerType.SWEEPER_ICE:
+            return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE Minesweeper"/>
         case LayerType.STATUS_LIGHT:
             return <LayerStatusLightPanel node={node} layer={layer}/>
         case LayerType.LOCK:

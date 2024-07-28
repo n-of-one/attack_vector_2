@@ -1,7 +1,7 @@
-import toast, {Toast, Toaster} from 'react-hot-toast';
+import toast, {Toast, Toaster, ToastPosition} from 'react-hot-toast';
 import React from "react";
 
-const createNotification = (title: string | undefined, message: string, duration: number, dismiss = true) => {
+const createNotification = (title: string | undefined, message: string, duration: number, location: ToastPosition="top-right", dismiss = true) => {
 
     const text = title ? title + ": " + message : message
 
@@ -19,11 +19,14 @@ const createNotification = (title: string | undefined, message: string, duration
         },
         {
             duration: duration,
+            position: location,
             style: {
                 borderRadius: '5px',
                 background: '#333',
                 color: '#fff',
-                border: '1px solid #0008'
+                border: '1px solid #0008',
+                // top: '200px',
+                // position: 'relative',
             },
         })
 }
@@ -38,7 +41,7 @@ export const notify = ({type, message, title}: { type: NotificationType, title?:
     } else if (type === "neutral") {
         createNotification(title, message, 5000)
     } else if (type === "fatal") {
-        createNotification(undefined, message, Infinity, false)
+        createNotification("Fatal", message, Infinity, "top-center", false)
     } else { // error and catch-all for server notifications with the wrong type
         createNotification(undefined, message, Infinity)
     }

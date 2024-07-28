@@ -14,7 +14,7 @@ import {
     TEXT,
     TRACE_LOG,
     TRACER,
-    WORD_SEARCH_ICE, KEYSTORE, TRIPWIRE
+    WORD_SEARCH_ICE, KEYSTORE, TRIPWIRE, SWEEPER_ICE
 } from "../../enums/LayerTypes";
 
 interface Props {
@@ -54,6 +54,7 @@ const iconFamily = (type: string) => {
         case NETWALK_ICE:
         case WORD_SEARCH_ICE:
         case KEYSTORE:
+        case SWEEPER_ICE:
             return "glyphicon"
         case LOCK:
         case TRIPWIRE:

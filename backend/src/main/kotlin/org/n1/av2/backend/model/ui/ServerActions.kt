@@ -97,6 +97,9 @@ enum class ServerActions {
     SERVER_SWEEPER_MODIFY,              // sent to everyone when a cell has been modified (revealed, flagged,... )
     SERVER_SWEEPER_BLOCK_USER,          // sent to everyone when a user is blocked because of exploding a cell
     SERVER_SWEEPER_SOLVED,              // sent to everyone when the sweeper is solved
+    SERVER_SWEEPER_RESET_START,         // sent to everyone when someone initiates reset
+    SERVER_SWEEPER_RESET_STOP,          // sent to everyone when someone stops reset
+    SERVER_SWEEPER_RESET_COMPLETE,      // sent to everyone when someone completes reset
 
     SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE auth UI
     SERVER_REDIRECT_CONNECT_APP,        // open a new window to connect to an app

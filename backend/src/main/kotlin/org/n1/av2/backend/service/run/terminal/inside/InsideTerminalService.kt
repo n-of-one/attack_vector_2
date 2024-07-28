@@ -19,6 +19,7 @@ class InsideTerminalService(
     private val runService: RunService,
     private val commandScanService: CommandScanService,
     private val commandHelpService: CommandHelpService,
+    private val commandDebugService: CommandDebugService,
 ) {
 
     fun processCommand(runId: String, command: String) {
@@ -46,6 +47,9 @@ class InsideTerminalService(
             "password" -> commandHackService.processPasswordCommand(runId, tokens, state)
             "scan" -> commandScanService.processScanFromInside(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
+
+            "sweeperunblock" -> commandDebugService.processSweepUnblock(runId, tokens, state)
+
 
             else -> stompService.replyTerminalReceive("Unknown command, try [b]help[/].")
         }

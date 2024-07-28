@@ -74,7 +74,7 @@ export const HackerHome = () => {
                                                 <td className="table-very-condensed">{runInfo.nodes}</td>
                                                 <td className="table-very-condensed">
                                                     {larp.hackersDeleteRunLinks ? <DeleteScanLink runId={runInfo.runId}/> : <></>}
-                                                    {larp.hackersResetSite ? <ResetIceLink siteId={runInfo.siteId}/> : <></>}
+                                                    {larp.hackersResetSite ? <ResetIceLink siteId={runInfo.siteId} siteName={runInfo.siteName}/> : <></>}
                                                 </td>
                                             </tr>)
                                     })
@@ -103,9 +103,9 @@ const DeleteScanLink = (props: { runId: string }) => {
     </SilentLink>
 }
 
-const ResetIceLink = (props: { siteId: string }) => {
+const ResetIceLink = (props: { siteId: string, siteName: string }) => {
     const resetIce = () => {
-        if (window.confirm(`Confirm that you want to reset this site?. This will refresh ICE, reset all timers, ...)`)) {
+        if (window.confirm(`Confirm that you want to reset "${props.siteName}". This will refresh ICE, reset all timers, ...)`)) {
             webSocketConnection.send("/site/resetSite", props.siteId)
         }
     }

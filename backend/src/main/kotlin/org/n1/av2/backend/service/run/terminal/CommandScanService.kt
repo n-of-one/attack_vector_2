@@ -54,5 +54,6 @@ class CommandScanService(
 
     fun processQuickScan(run: Run) {
         initiateScanService.quickScan(run)
+        stompService.replyTerminalReceive("Quickscanned.")
     }
 }

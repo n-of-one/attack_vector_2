@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 
-/*
+/**
 Cells is a string representation of the board, regardless of visibility or modifiers like flags.
 mine: *
 empty: 0
@@ -21,20 +21,25 @@ For example:
 0111000
 
 Modifiers is a string representation of the modifiers:
-. hidden
-- revealed
+h hidden
+r revealed
 f flag
-? question mark
 
 For example:
------?f
--------
---.----
--------
+rrrrrrf
+rrrrrrr
+rrhrrrr
+rrrrrrr
 
-note that the top left mine has exploded, as it has been revealed
+Note that in this example, the top left mine has exploded, as it has been revealed
 
- */
+*/
+
+const val MINE = '*'
+const val HIDDEN = 'h'
+const val REVEALED = 'r'
+const val FLAG = 'f'
+const val NEIGHBOUR_MINES_0 = '0'
 
 @Document
 data class SweeperIceStatus(

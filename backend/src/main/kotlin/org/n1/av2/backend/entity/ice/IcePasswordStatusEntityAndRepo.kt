@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 @Document
 data class IcePasswordStatus(
     @Id val id: String, // iceId
-    @Indexed val layerId: String,
+    @Indexed(unique = true) val layerId: String,
     val hackerAttempts: List<String>,  // only attempts by hackers are tracked
     val attemptCount: Int = 0,         // but all attempts count for the purpose of locking
     val lockedUntil: ZonedDateTime,

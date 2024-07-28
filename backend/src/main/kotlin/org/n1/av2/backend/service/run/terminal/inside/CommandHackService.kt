@@ -108,6 +108,7 @@ class CommandHackService(
     @Suppress("UNUSED_PARAMETER")
     private fun handleQuickHack(node: Node, layer: Layer, runId: String) {
         hackedUtil.iceHacked(layer.id, node, 0)
+        stompService.replyTerminalReceive("Quick hacked ${layer.level}.")
     }
 
     private fun reportLayerUnknown(node: Node, layerInput: String) {

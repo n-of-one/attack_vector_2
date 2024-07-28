@@ -9,7 +9,7 @@ import {
     NETWALK_ICE,
     PASSWORD_ICE,
     SCAN_BLOCK,
-    STATUS_LIGHT,
+    STATUS_LIGHT, SWEEPER_ICE,
     TANGLE_ICE,
     TAR_ICE,
     TEXT,
@@ -46,15 +46,6 @@ export const LayersPanel = () => {
     }
 
 
-
-    const unImplemented = (type: string) => {
-        return (
-            <span className="btn btn-grey btn-spaced">
-                <Icon type={type} />
-            </span>
-        )
-    }
-
     return (
         <div className="row" style={{marginTop: "4px"}}>
             <div className="col-lg-12 darkWell">
@@ -64,12 +55,6 @@ export const LayersPanel = () => {
                     {regular(KEYSTORE, "white")}
                     {regular(TRIPWIRE, "white")}
                     {regular(CORE, "white")}
-                    {/*{unImplemented(TIMER_TRIGGER)}*/}
-                    {/*{unImplemented(TRACER)}*/}
-                    {/*{unImplemented(TRACE_LOG)}*/}
-                    {/*{unImplemented(SCAN_BLOCK)}*/}
-                    {/*{unImplemented(MONEY)}*/}
-                    {/*{unImplemented(CODE)}*/}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>
@@ -78,6 +63,7 @@ export const LayersPanel = () => {
                     {regular(NETWALK_ICE, "NavajoWhite")}
                     {regular(WORD_SEARCH_ICE, "NavajoWhite")}
                     {regular(TAR_ICE, "NavajoWhite")}
+                    {regular(SWEEPER_ICE, "NavajoWhite")}
                     {regular(LOCK, "royalblue")}
                     {regular(STATUS_LIGHT, "royalblue")}
                 </div>

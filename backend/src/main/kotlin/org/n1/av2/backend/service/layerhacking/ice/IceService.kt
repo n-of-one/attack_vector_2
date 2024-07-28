@@ -4,6 +4,7 @@ import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.entity.site.layer.ice.*
 import org.n1.av2.backend.service.layerhacking.app.auth.AuthAppService
 import org.n1.av2.backend.service.layerhacking.ice.netwalk.NetwalkIceService
+import org.n1.av2.backend.service.layerhacking.ice.sweeper.SweeperService
 import org.n1.av2.backend.service.layerhacking.ice.tangle.TangleService
 import org.n1.av2.backend.service.layerhacking.ice.tar.TarService
 import org.n1.av2.backend.service.layerhacking.ice.wordsearch.WordSearchService
@@ -19,6 +20,7 @@ class InitIceService(
     val authAppService: AuthAppService,
     val wordSearchService: WordSearchService,
     val netwalkIceService: NetwalkIceService,
+    val sweeperService: SweeperService,
     val tarService: TarService
 ) {
 
@@ -29,6 +31,7 @@ class InitIceService(
         iceService.wordSearchService = wordSearchService
         iceService.netwalkIceService = netwalkIceService
         iceService.tarService = tarService
+        iceService. sweeperService = sweeperService
     }
 }
 
@@ -42,6 +45,7 @@ class IceService(
     lateinit var wordSearchService: WordSearchService
     lateinit var netwalkIceService: NetwalkIceService
     lateinit var tarService: TarService
+    lateinit var sweeperService: SweeperService
 
 
     fun findOrCreateIceForLayer(layer: IceLayer): String {
@@ -57,6 +61,8 @@ class IceService(
             is NetwalkIceLayer -> netwalkIceService.findOrCreateIceByLayerId(layer).id
             is TarIceLayer -> tarService.findOrCreateIceByLayerId(layer).id
             is PasswordIceLayer -> return authAppService.findOrCreateIceStatus(layer).id
+            is SweeperIceLayer -> return sweeperService.findOrCreateIceStatus(layer).id
+            else -> error("Unsupported ice layer: $layer")
         }
     }
 
@@ -73,6 +79,7 @@ class IceService(
         iceLayers.filterIsInstance<WordSearchIceLayer>().forEach { wordSearchService.deleteByLayerId(it.id) }
         iceLayers.filterIsInstance<NetwalkIceLayer>().forEach { netwalkIceService.deleteByLayerId(it.id) }
         iceLayers.filterIsInstance<TarIceLayer>().forEach { tarService.deleteByLayerId(it.id) }
+        iceLayers.filterIsInstance<SweeperIceLayer>().forEach { sweeperService.deleteByLayerId(it.id) }
     }
 
 

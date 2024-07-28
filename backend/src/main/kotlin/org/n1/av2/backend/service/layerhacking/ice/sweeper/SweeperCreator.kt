@@ -1,12 +1,44 @@
 package org.n1.av2.backend.service.layerhacking.ice.sweeper
 
-import org.n1.av2.backend.entity.ice.SweeperIceStatus
+import org.n1.av2.backend.entity.ice.*
 import org.n1.av2.backend.entity.site.enums.IceStrength
 
-
+/**
+ * @see SweeperIceStatus for the data model
+ */
 class SweeperCreator {
 
     fun createSweeper(iceId: String, layerId: String, iceStrength: IceStrength): SweeperIceStatus {
+        (0..20).forEach { _ ->
+            val sweeper = createSweeperRaw(iceId, layerId, iceStrength)
+
+            val firstRow = sweeper.cells[0]
+            val lastRow = sweeper.cells[sweeper.cells.size - 1]
+
+            // Ensure the top left has a 0, to give players a good place to start.
+            if (firstRow.startsWith("0")) return sweeper
+
+            // If top left does not have a 0, check other corners and flip the board accordingly
+            if (firstRow.endsWith("0")) return flipX(sweeper)
+            if (lastRow.startsWith("0")) return flipY(sweeper)
+            if (lastRow.endsWith("0")) return flipY(flipX(sweeper))
+        }
+
+        // Give up, just take the next one
+        return createSweeperRaw(iceId, layerId, iceStrength)
+    }
+
+    private fun flipX(sweeper: SweeperIceStatus): SweeperIceStatus {
+        val cells = sweeper.cells.map { it.reversed() }
+        return sweeper.copy(cells = cells)
+    }
+
+    private fun flipY(sweeper: SweeperIceStatus): SweeperIceStatus {
+        val cells = sweeper.cells.reversed()
+        return sweeper.copy(cells = cells)
+    }
+
+    private fun createSweeperRaw(iceId: String, layerId: String, iceStrength: IceStrength): SweeperIceStatus {
         val map = createMap(iceStrength)
         val cells = map.cells()
         val modifiers = map.modifiers()
@@ -15,8 +47,8 @@ class SweeperCreator {
 
     private fun createMap(iceStrength: IceStrength): SweeperMap {
         return when (iceStrength) {
-            IceStrength.VERY_WEAK -> SweeperMap(9, 9, 10) // Beginner
-            IceStrength.WEAK -> SweeperMap(12, 12, 20)
+            IceStrength.VERY_WEAK -> SweeperMap(9, 9, 1)
+            IceStrength.WEAK -> SweeperMap(9, 9, 10) // Beginner
             IceStrength.AVERAGE -> SweeperMap(16, 16, 40) // Intermediate
             IceStrength.STRONG -> SweeperMap(22, 16, 60)
             IceStrength.VERY_STRONG -> SweeperMap(30, 16, 100) // Expert
@@ -36,11 +68,24 @@ class SweeperMap(
     private fun generateMinePositions(mineCount: Int): Set<Pair<Int, Int>> {
         val minePositions = mutableSetOf<Pair<Int, Int>>()
         while (minePositions.size < mineCount) {
-            val x = (0 until xSize).random()
-            val y = (0 until ySize).random()
-            minePositions.add(x to y)
+            minePositions.add(newMinePosition())
         }
         return minePositions
+    }
+
+    private fun newMinePosition(): Pair<Int, Int> {
+        while(true) {
+            val x = (0 until xSize).random()
+            val y = (0 until ySize).random()
+
+            val xAtEdge = (x % (xSize-1) == 0)
+            val yAtEdge = (y % (ySize-1) == 0)
+
+            // No mines in the corners
+            if (!(xAtEdge && yAtEdge)) {
+                return x to y
+            }
+        }
     }
 
     fun cells(): MutableList<String> {
@@ -56,11 +101,11 @@ class SweeperMap(
         return grid
     }
 
-    private fun valueAt(x: Int, y: Int): String {
-        if (minePositions.contains(x to y)) return "*"
+    private fun valueAt(x: Int, y: Int): Char {
+        if (minePositions.contains(x to y)) return MINE
 
         val adjacentMineCount = minePositions.filter { adjacent(it, x, y) }.size
-        return adjacentMineCount.toString()
+        return adjacentMineCount.toString()[0]
     }
 
     private fun adjacent(location: Pair<Int, Int>, x: Int, y: Int): Boolean {
@@ -69,11 +114,28 @@ class SweeperMap(
     }
 
     fun modifiers(): MutableList<String> {
-        val row = ".".repeat(xSize)
+        val row = HIDDEN.toString().repeat(xSize)
         val rows = (0 until ySize).map { row }.toMutableList()
-        // FIXME
-        rows[0] = "." + rows[0].substring(1)
         return rows
+
+// Create revealed version, used to determine the graphics to use.
+
+//        val rows = mutableListOf<String>()
+//        (0 until ySize).forEach { y ->
+//            val row = StringBuilder()
+//            (0 until xSize).forEach { x ->
+//                if (minePositions.contains(x to y)) {
+//                    row.append(FLAG)
+//                }
+//                else {
+//                    row.append(REVEALED)
+//                }
+//            }
+//            rows.add(row.toString())
+//        }
+//        return rows
+
+
     }
 
 }

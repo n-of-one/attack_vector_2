@@ -10,6 +10,7 @@ import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED
 import {ice} from "../../../StandaloneGlobals";
 import {IceTitle} from "../../common/IceTitle";
 import {IceStrength} from "../../../../common/model/IceStrength";
+import {CloseTabButton} from "../../common/CloseTabButton";
 
 
 export const PasswordIceHome = () => {
@@ -22,14 +23,19 @@ export const PasswordIceHome = () => {
         <div className="row passwordIcePanelRow">
             <div className="col-lg-12">
                 <div className="row">
-                    <div className="col-lg-12">
-                        <IceTitle name="Rahasy" strength={IceStrength.UNKNOWN} />
+                    <div className="col-lg-11">
+                        <IceTitle name="Rahasy" strength={IceStrength.UNKNOWN}/>
+                    </div>
+                    <div className="col-lg-1">
+                        <div className="float-end">
+                            <CloseTabButton/>
+                        </div>
                     </div>
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
                 <div className="row">
                     <div className="col-lg-3">
-                        <div className="text-left">
+                    <div className="text-left">
                             <div className="text">
                             </div>
                         </div>

@@ -6,6 +6,7 @@ import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
 import {netwalkCanvas} from "../canvas/NetwalkCanvas";
 import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
+import {CloseTabButton} from "../../common/CloseTabButton";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -41,31 +42,21 @@ export const NetwalkHome = () => {
 
     const classShowCanvas = (uiState === HIDDEN) ? " hidden_alpha" : ""
 
-
-    // Code used to download the canvas in order to create the background image
-    // setTimeout(() => {
-    //     const a = document.getElementById("downloadSpan")!!
-    //     let link = document.createElement("a")
-    //     link.download = "netwalk.png"
-    //     link.href = netwalkCanvas.canvas.toDataURL({
-    //         format: 'jpg',
-    //     });
-    //     link.text = "Download to png"
-    //     a.appendChild(link)
-    // }, 1000)
-
-
-
     return (
         <div className="row icePanelRow">
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="Sanrachana" strength={strength} />
+                        <IceTitle name="Sanrachana" strength={strength}/>
                     </div>
-                    <div className="col-lg-9" style={{paddingTop: "4px"}}>
-                        <DisplayTerminal />
+                    <div className="col-lg-8" style={{paddingTop: "4px"}}>
+                        <DisplayTerminal/>
                         {/*<span id={"downloadSpan"}/>*/}
+                    </div>
+                    <div className="col-lg-1">
+                        <div className="float-end">
+                            <CloseTabButton/>
+                        </div>
                     </div>
                 </div>
 

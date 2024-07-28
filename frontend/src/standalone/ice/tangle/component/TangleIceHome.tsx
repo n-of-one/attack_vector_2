@@ -4,6 +4,7 @@ import {Terminal} from "../../../../common/terminal/Terminal"
 import {TangleRootState} from "../reducer/TangleRootReducer";
 import {HIDDEN} from "../../common/IceModel";
 import {IceTitle} from "../../common/IceTitle";
+import {CloseTabButton} from "../../common/CloseTabButton";
 
 export const TangleIceHome = () => {
 
@@ -17,14 +18,19 @@ export const TangleIceHome = () => {
         <div className="row untangleIcePanelRow">
             <div className="col-lg-12">
                 <div className="row">
-                    <div className="col-lg-12">
-                        <IceTitle name="Gaanth" strength={ice.strength} />
+                    <div className="col-lg-11">
+                        <IceTitle name="Gaanth" strength={ice.strength}/>
+                    </div>
+                    <div className="col-lg-1">
+                        <div className="float-end">
+                            <CloseTabButton/>
+                        </div>
                     </div>
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
                 <div className="row">
                     <div className="col-lg-3">
-                        <div className="text-left">
+                    <div className="text-left">
                             <div className="text">
                             </div>
                         </div>

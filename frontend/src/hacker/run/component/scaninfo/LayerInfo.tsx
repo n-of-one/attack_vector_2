@@ -28,6 +28,8 @@ const renderLayer = (layer: LayerDetails) => {
             return <ScanInfoIce layer={layer} iceDescription="netwalk"/>
         case LayerType.TAR_ICE:
             return <ScanInfoIce layer={layer} iceDescription="tar"/>
+        case LayerType.SWEEPER_ICE:
+            return <ScanInfoIce layer={layer} iceDescription="minesweeper"/>
         default:
             return <><span className="text-danger"> Unknown layer": {layer.type}</span></>
     }
