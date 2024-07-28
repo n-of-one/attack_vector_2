@@ -44,14 +44,14 @@ class SweeperIceManager extends GenericIceManager {
         this.schedule.clear();
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
         if (!larp.quickPlaying) {
-            this.displayTerminal(20, "↼ Connecting to ice, initiating attack.");
+            this.displayTerminal(15, "[primary]↼ Connecting to ice, initiating attack.");
             this.displayTerminal(40, "↼ Probing for weaknesses.");
             this.displayTerminal(20, "↼ Memory corruption vulnerability detected.");
-            this.displayTerminal(5, "↼ Success (error message: 00387 block unstable) ");
+            this.displayTerminal(10, "↼ Exploit [ok]success[/] (error message: [warn]00387[/] block unstable) ");
             this.displayTerminal(20, "↼ Memory meta access requested.");
-            this.displayTerminal(10, "↼ Meta access granted");
+            this.displayTerminal(10, "...granted");
         }
-        this.displayTerminal(5, "↼ Start manual repair");
+        this.displayTerminal(5, "↼ Repair interface [info]online");
         this.schedule.dispatch(0, {type: SWEEPER_BEGIN});
     }
 

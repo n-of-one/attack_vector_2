@@ -1,6 +1,8 @@
 package org.n1.av2.backend.service.layerhacking.ice.sweeper
 
-import org.n1.av2.backend.entity.ice.*
+import org.n1.av2.backend.entity.ice.HIDDEN
+import org.n1.av2.backend.entity.ice.MINE
+import org.n1.av2.backend.entity.ice.SweeperIceStatus
 import org.n1.av2.backend.entity.site.enums.IceStrength
 
 /**
@@ -47,7 +49,7 @@ class SweeperCreator {
 
     private fun createMap(iceStrength: IceStrength): SweeperMap {
         return when (iceStrength) {
-            IceStrength.VERY_WEAK -> SweeperMap(9, 9, 1)
+            IceStrength.VERY_WEAK -> SweeperMap(9, 9, 8)
             IceStrength.WEAK -> SweeperMap(9, 9, 10) // Beginner
             IceStrength.AVERAGE -> SweeperMap(16, 16, 40) // Intermediate
             IceStrength.STRONG -> SweeperMap(22, 16, 60)
