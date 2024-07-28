@@ -139,7 +139,6 @@ class SweeperCanvas {
 
 
         mines.forEach((cellDisplay: SweeperCellDisplay) => {
-            cellDisplay.revealIfHidden()
             schedule.run(delay, () => {
                 cellDisplay.fade()
             })

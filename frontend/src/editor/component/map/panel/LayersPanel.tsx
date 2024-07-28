@@ -1,20 +1,15 @@
 import React from 'react'
 import {useSelector} from "react-redux"
 import {
-    CODE,
     CORE,
     KEYSTORE,
     LOCK,
-    MONEY,
     NETWALK_ICE,
     PASSWORD_ICE,
-    SCAN_BLOCK,
     STATUS_LIGHT, SWEEPER_ICE,
     TANGLE_ICE,
     TAR_ICE,
     TEXT,
-    TRACE_LOG,
-    TRACER,
     TRIPWIRE,
     WORD_SEARCH_ICE
 } from "../../../../common/enums/LayerTypes"
@@ -22,6 +17,7 @@ import {EditorState} from "../../../EditorRootReducer"
 import {editorSiteId} from "../../../EditorRoot";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {Icon} from "../../../../common/component/icon/Icon";
+import {larp} from "../../../../common/Larp";
 
 
 export const LayersPanel = () => {
@@ -45,6 +41,20 @@ export const LayersPanel = () => {
         )
     }
 
+    const sweeper = (type: string, color: string) => {
+        if (larp.iceSweeper) {
+            return (
+                <span className="btn btn-info btn-spaced" onClick={() => {
+                    add(type, true)
+                }}>
+                <Icon type={type} color={color}/>
+            </span>
+            )
+        }
+        else {
+            return <></>
+        }
+    }
 
     return (
         <div className="row" style={{marginTop: "4px"}}>
@@ -63,7 +73,7 @@ export const LayersPanel = () => {
                     {regular(NETWALK_ICE, "NavajoWhite")}
                     {regular(WORD_SEARCH_ICE, "NavajoWhite")}
                     {regular(TAR_ICE, "NavajoWhite")}
-                    {regular(SWEEPER_ICE, "NavajoWhite")}
+                    {sweeper(SWEEPER_ICE, "NavajoWhite")}
                     {regular(LOCK, "royalblue")}
                     {regular(STATUS_LIGHT, "royalblue")}
                 </div>
