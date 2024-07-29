@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerCore} from "../../../../../../../../common/model/layer/LayerCore";
-import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
+import {AttributeDropdown} from "../../../element/AttributeDropdown";
 
 
 interface Props {
@@ -21,12 +21,12 @@ export const LayerCorePanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="Core" layerObject={core}>
-            <LayerFieldDropdown key={key("status")} label="Network"
-                                value={"" + core.revealNetwork}
-                                options={[{value: "false", text: "Don't reveal network"},
+            <AttributeDropdown key={key("status")} label="Network"
+                               value={"" + core.revealNetwork}
+                               options={[{value: "false", text: "Don't reveal network"},
                                     {value: "true", text: "Reveal network"}]}
-                                save={value => core.saveRevealNetwork(value)}
-                                tooltipId="reveal_network" tooltipText="If a hacker hacks the core, do they instantly reveal the entire network?"/>
+                               save={value => core.saveRevealNetwork(value)}
+                               tooltipId="reveal_network" tooltipText="If a hacker hacks the core, do they instantly reveal the entire network?"/>
         </LayerPanel>
     )
 }

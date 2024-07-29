@@ -28,24 +28,12 @@ export const SweeperHome = () => {
     const classShowCanvas = (uiMode === HIDDEN) ? " hidden_alpha" : ""
 
 
-    // Code used to download the canvas in order to create the background image
-    // setTimeout(() => {
-    //     const a = document.getElementById("downloadSpan")!!
-    //     let link = document.createElement("a")
-    //     link.download = "netwalk.png"
-    //     link.href = netwalkCanvas.canvas.toDataURL({
-    //         format: 'jpg',
-    //     });
-    //     link.text = "Download to png"
-    //     a.appendChild(link)
-    // }, 1000)
-
     return (
         <div className="row icePanelRow">
             <div className="col-lg-12">
                 <div className="row">
                     <div className="col-lg-3">
-                        <IceTitle name="SWEEPER" strength={strength}/>
+                        <IceTitle name="Visphotak" strength={strength}/>
                     </div>
                     <div className="col-lg-1">
                         <h4 className="text-success text-center" style={{marginBottom: 0}}>Reset</h4>

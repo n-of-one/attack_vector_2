@@ -3,7 +3,7 @@ import {Canvas, Line} from "fabric/fabric-impl";
 import {TanglePointDisplay} from "./TanglePointDisplay";
 
 
-const LINE_COLOR_NORMAL = "#c6d6e1";
+const LINE_COLOR_NORMAL = "#e0e6ef";
 const LINE_COLOR_HIGHLIGHT = "#337ab7";
 
 const STROKE_WIDTH_NORMAL = 1.5;

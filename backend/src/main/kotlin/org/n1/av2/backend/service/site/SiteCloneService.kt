@@ -65,6 +65,7 @@ class SiteCloneService(
                 type = sourceNode.type,
                 x = sourceNode.x,
                 y = sourceNode.y,
+                networkId = sourceNode.networkId,
             )
             val targetNode = nodeEntityService.createNode(nodeData)
             targetNode.layers.clear() // remove auto created OS layer

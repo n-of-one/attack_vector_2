@@ -64,6 +64,8 @@ export interface LayerDetails {
 
     revealNetwork?: boolean       // Core layer
 
+    clusters?: number             // Tangle Ice layer
+
 }
 
 export interface NodeI {

@@ -219,7 +219,7 @@ class ImportService(
 
         return when (layerType) {
             LayerType.NETWALK_ICE -> NetwalkIceLayer(id, LayerType.NETWALK_ICE, level, name, note, strength, false)
-            LayerType.TANGLE_ICE -> TangleIceLayer(id, LayerType.TANGLE_ICE, level, name, note, strength, false)
+            LayerType.TANGLE_ICE -> mapTangleIce(input, id, level, name, note, strength)
             LayerType.TAR_ICE -> TarIceLayer(id, LayerType.TAR_ICE, level, name, note, strength, false)
             LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, LayerType.WORD_SEARCH_ICE, level, name, note, strength, false)
             LayerType.PASSWORD_ICE -> mapPasswordIce(input, id, level, name, note, strength)
@@ -231,6 +231,11 @@ class ImportService(
         val password = input.get("password").asText()
         val hint = input.get("hint").asText()
         return PasswordIceLayer(id, LayerType.PASSWORD_ICE, level, name, note, strength, false, password, hint)
+    }
+
+    private fun mapTangleIce(input: JsonNode, id: String, level: Int, name: String, note: String, strength: IceStrength): TangleIceLayer {
+        val clusters = if (input.has("clusters") ) input.get("clusters").asInt() else 1
+        return TangleIceLayer(id, LayerType.TANGLE_ICE, level, name, note, strength, false, clusters)
     }
 
     private fun importConnections(root: JsonNode): List<Connection> {

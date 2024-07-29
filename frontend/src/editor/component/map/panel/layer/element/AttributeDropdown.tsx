@@ -17,7 +17,7 @@ interface Props {
     navigate?: () => void
 }
 
-export const LayerFieldDropdown = ({label, value, save, options, tooltipId, tooltipText, navigate}: Props) => {
+export const AttributeDropdown = ({label, value, save, options, tooltipId, tooltipText, navigate}: Props) => {
     return (
         <div className="row form-group layerFieldRow">
             <div className="col-lg-3 layerLabel">{label}</div>

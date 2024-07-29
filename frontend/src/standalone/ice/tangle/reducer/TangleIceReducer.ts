@@ -12,6 +12,7 @@ export interface TangleIceState {
     points: TanglePoint[],
     lines: TangleLine[],
     uiState: string,
+    clusters: number,
 }
 
 export interface TanglePoint {
@@ -32,14 +33,15 @@ export const defaultState: TangleIceState = {
     strength: IceStrength.UNKNOWN,
     uiState: HIDDEN,
     points: [],
-    lines: []
+    lines: [],
+    clusters: 0
 };
 
 export const tangleIceReducer = (state: TangleIceState = defaultState, action: AnyAction): TangleIceState => {
 
     switch (action.type) {
         case SERVER_TANGLE_ENTER:
-            return {...action.data, uiState: HIDDEN};
+            return {...action.data, uiState: HIDDEN, clusters: action.data.clusters};
         case ICE_TANGLE_BEGIN:
             return {...state, uiState: VISIBLE};
         default:

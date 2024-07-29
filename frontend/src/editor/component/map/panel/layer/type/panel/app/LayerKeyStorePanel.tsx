@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
-import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
+import {AttributeDropdown} from "../../../element/AttributeDropdown";
 import {EditorState} from "../../../../../../../EditorRootReducer";
 import {editorCanvas} from "../../../../../canvas/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
@@ -34,12 +34,12 @@ export const LayerKeyStorePanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="Keystore" layerObject={keystore}>
-            <LayerFieldDropdown key={key("status")} label="For ICE"
-                                value={keystore.iceLayerId }
-                                options={options}
-                                save={value => keystore.saveIceId(value)}
-                                tooltipId="forIce" tooltipText="The ICE for which this keystore contains the password/key"
-                                navigate={navigateIfIceId}
+            <AttributeDropdown key={key("status")} label="For ICE"
+                               value={keystore.iceLayerId }
+                               options={options}
+                               save={value => keystore.saveIceId(value)}
+                               tooltipId="forIce" tooltipText="The ICE for which this keystore contains the password/key"
+                               navigate={navigateIfIceId}
             />
         </LayerPanel>
     )

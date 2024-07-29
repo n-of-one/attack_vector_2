@@ -69,7 +69,33 @@ class TangleCreation(val points: MutableList<TanglePoint>, val lines: List<Tangl
 
 class TangleCreator {
 
-    fun create(strength: IceStrength): TangleCreation {
+    fun create(strength: IceStrength, layerClusters: Int?): TangleCreation {
+        val clusters = layerClusters ?: 1
+
+        val points = LinkedList<IdTPoint>()
+        val tangleLines = LinkedList<TangleLine>()
+        (1..clusters).forEach {
+            val (clusterPoints, clusterLines) = createSingleTangle("p$it", strength)
+            points.addAll(clusterPoints)
+            tangleLines.addAll(clusterLines)
+        }
+
+        // For debug: add the original line segments as points.
+//        idPoints.addAll( createLinePoints(lines))
+//        lines.forEachIndexed { index, line ->
+//            tangleLines.add(TangleLine(500+index, 100+index, 200+index, TangleLineType.SETUP))
+//        }
+
+//      For debugging: layout the original points
+//        val tanglePoints = layout(idPoints)
+
+        points.shuffle()
+        val tanglePoints = layoutAsCircle(points)
+
+        return TangleCreation(tanglePoints.toMutableList(), tangleLines)
+    }
+
+    private fun createSingleTangle(prefix: String, strength: IceStrength): Pair<MutableList<IdTPoint>, MutableList<TangleLine>> {
         val lineCount = determineLineCount(strength)
 
         val lines = (1..lineCount).map { createLine() }
@@ -89,26 +115,12 @@ class TangleCreator {
         // so we create a unique TPoint for each x-y location
         val points = HashSet<TPoint>()
         lines.forEach { points.addAll(it.intersections) }
-        val idPoints = points.mapIndexed { index, point -> IdTPoint(point.x, point.y, "p-${index}") }.toMutableList()
+        val idPoints = points.mapIndexed { index, point -> IdTPoint(point.x, point.y, "${prefix}-${index}") }.toMutableList()
 
         val tangleLines = connections.mapIndexed { index, connection ->
             toIdConnection(connection, idPoints, index)
         }.toMutableList()
-
-
-        // For debug: add the original line segments as points.
-//        idPoints.addAll( createLinePoints(lines))
-//        lines.forEachIndexed { index, line ->
-//            tangleLines.add(TangleLine(500+index, 100+index, 200+index, TangleLineType.SETUP))
-//        }
-
-//      For debugging: layout the original points
-//        val tanglePoints = layout(idPoints)
-
-        val tanglePoints = layoutAsCircle(idPoints)
-
-
-        return TangleCreation(tanglePoints.toMutableList(), tangleLines)
+        return Pair(idPoints, tangleLines)
     }
 
     private fun determineLineCount(strength: IceStrength): Int {
@@ -162,8 +174,8 @@ class TangleCreator {
         val tanglePoints = LinkedList<TanglePoint>()
 
         val padding = 20
-        val xSize = 680
-        val ySize = 680
+        val xSize = 828
+        val ySize = 828
         val canvasXSize = 1576
         val dx = (canvasXSize - xSize) / 2
         val xCenter = xSize / 2  + dx

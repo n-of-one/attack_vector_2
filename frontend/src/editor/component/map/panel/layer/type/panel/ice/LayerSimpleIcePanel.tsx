@@ -1,9 +1,9 @@
 import React from 'react'
 import { useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
-import {LayerStrength} from "../../../element/LayerStrength"
+import {AttributeIceStrength} from "../../../element/AttributeIceStrength"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
-import {IceUrlFieldWithQr} from "../../../element/IceUrlFieldWithQr";
+import {AttributeIceUrlWithQr} from "../../../element/AttributeIceUrlWithQr";
 import {LayerIce} from "../../../../../../../../common/model/layer/LayerIce";
 
 interface Props {
@@ -21,8 +21,8 @@ export const LayerSimpleIcePanel = ({node, layer, typeDisplay}: Props) => {
 
     return (
         <LayerPanel typeDisplay={typeDisplay} layerObject={ice}>
-            <LayerStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
-            <IceUrlFieldWithQr layerId={layer.id}/>
+            <AttributeIceStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
+            <AttributeIceUrlWithQr layerId={layer.id}/>
         </LayerPanel>
     )
 }

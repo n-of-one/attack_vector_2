@@ -30,7 +30,7 @@ class TangleService(
 
     companion object {
         const val X_SIZE = 1576
-        const val Y_SIZE = 680
+        const val Y_SIZE = 828
         const val PADDING = 10
     }
 
@@ -40,6 +40,7 @@ class TangleService(
         val points: MutableList<TanglePoint>,
         val lines: List<TangleLine>,
         val hacked: Boolean,
+        val clusters: Int,
     )
 
     private val logger = mu.KotlinLogging.logger {}
@@ -50,7 +51,7 @@ class TangleService(
     }
 
     fun createTangleIce(layer: TangleIceLayer): TangleIceStatus {
-        val creation = TangleCreator().create(layer.strength)
+        val creation = TangleCreator().create(layer.strength, layer.clusters)
 
         val id = createId("tangle", tangleIceStatusRepo::findById)
         val iceTangleStatus = TangleIceStatus(
@@ -69,7 +70,7 @@ class TangleService(
     fun enter(iceId: String) {
         val tangleStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
         val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
-        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.hacked)
+        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.hacked, layer.clusters ?: 1)
         stompService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         runService.enterNetworkedApp(iceId)
     }

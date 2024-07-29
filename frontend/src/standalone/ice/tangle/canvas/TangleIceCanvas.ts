@@ -22,7 +22,7 @@ class TangleIceCanvas {
 
         const canvas = new fabric.Canvas('untangleCanvas', {
             width: 1576,
-            height: 680,
+            height: 828,
             backgroundColor: "#aaa",
         });
         this.canvas = canvas
@@ -31,7 +31,7 @@ class TangleIceCanvas {
         fabric.Object.prototype.originY = 'center';
 
         setTimeout(function() {
-            fabric.Image.fromURL("/img/frontier/ice/tangle/untangle-network-1576x680.png", (img) => {
+            fabric.Image.fromURL("/img/frontier/ice/tangle/untangle-1576x828.jpg", (img) => {
                 img.set({width: canvas.width, height: canvas.height, originX: 'left', originY: 'top'});
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
             });

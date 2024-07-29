@@ -2,7 +2,7 @@
 
 ## Creating a new layer type
 
-1. Add the type constant to `LayerType.ts`
+1. Add the type constant to `AttributeLayerType.ts`
 2. Add the type icon to `LayersPanel.tsx`
 3. Add an icon for the type in `Icon.tsx`
 

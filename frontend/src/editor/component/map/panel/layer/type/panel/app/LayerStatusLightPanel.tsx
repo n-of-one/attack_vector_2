@@ -1,11 +1,11 @@
 import React from 'react'
 import {useDispatch} from "react-redux"
-import {LayerField} from "../../../element/LayerField"
+import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerStatusLight} from "../../../../../../../../common/model/layer/LayerStatusLight";
-import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
-import {UrlFieldWithQr} from "../../../element/UrlFieldWithQr";
+import {AttributeDropdown} from "../../../element/AttributeDropdown";
+import {AttributeUrlWithQr} from "../../../element/AttributeUrlWithQr";
 
 
 interface Props {
@@ -23,24 +23,24 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="StatusLight" layerObject={statusLight}>
-            <LayerFieldDropdown key={key("status")} label="Status"
-                                value={"" + statusLight.status}
-                                options={[{value: "false", text: `red:${statusLight.textForRed}`},
+            <AttributeDropdown key={key("status")} label="Status"
+                               value={"" + statusLight.status}
+                               options={[{value: "false", text: `red:${statusLight.textForRed}`},
                                     {value: "true", text: `green: ${statusLight.textForGreen}`}]}
-                                save={value => statusLight.saveStatus(value)}
-                                tooltipId="status_options" tooltipText="Current status"/>
+                               save={value => statusLight.saveStatus(value)}
+                               tooltipId="status_options" tooltipText="Current status"/>
 
-            <LayerField key={key("textForRed")} size="large" label="Text for red" value={statusLight.textForRed}
-                        save={value => statusLight.saveTextForRed(value)}
-                        help="Shown in the switch to indicate what this position means"/>
+            <TextAttribute key={key("textForRed")} size="large" label="Text for red" value={statusLight.textForRed}
+                           save={value => statusLight.saveTextForRed(value)}
+                           help="Shown in the switch to indicate what this position means"/>
 
-            <LayerField key={key("textForGreen")} size="large" label="Text for green" value={statusLight.textForGreen}
-                        save={value => statusLight.saveTextForGreen(value)}
-                        help="Shown in the switch to indicate what this position means"/>
+            <TextAttribute key={key("textForGreen")} size="large" label="Text for green" value={statusLight.textForGreen}
+                           save={value => statusLight.saveTextForGreen(value)}
+                           help="Shown in the switch to indicate what this position means"/>
 
-            <UrlFieldWithQr name="Switch" type="app" subType="switch" layerId={statusLight.id} description="App for changing status"/>
+            <AttributeUrlWithQr name="Switch" type="app" subType="switch" layerId={statusLight.id} description="App for changing status"/>
 
-            <UrlFieldWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status" requireLogin={false}/>
+            <AttributeUrlWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status" requireLogin={false}/>
 
         </LayerPanel>
     )

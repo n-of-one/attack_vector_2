@@ -6,7 +6,7 @@ interface Props {
     value: string,
     save:(newValue: string) => void
 }
-export const LayerStrength = ({value, save}: Props) => {
+export const AttributeIceStrength = ({value, save}: Props) => {
 
     return (
         <div className="row form-group layerFieldRow">

@@ -10,7 +10,7 @@ interface Props {
     layer: LayerDetails
 }
 
-export const LayerLevel = ({node, layer}: Props) => {
+export const AttributeLayerLevel = ({node, layer}: Props) => {
 
     const swap = (node: NodeI, layer: LayerDetails, level: number) => {
         sendSwapLayers({nodeId: node.id, fromId: layer.id, toId: node.layers[level].id})

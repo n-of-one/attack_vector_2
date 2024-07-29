@@ -1,12 +1,12 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
-import {LayerField} from "../../../element/LayerField"
+import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerTripwire} from "../../../../../../../../common/model/layer/LayerTripwire"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {EditorState} from "../../../../../../../EditorRootReducer";
 import {coreLayerOptions} from "./LayerUtil";
-import {LayerFieldDropdown} from "../../../element/LayerFieldDropdown";
+import {AttributeDropdown} from "../../../element/AttributeDropdown";
 import {editorCanvas} from "../../../../../canvas/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
 
@@ -38,19 +38,19 @@ export const LayerTripwirePanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="Tripwire" layerObject={layerTripwire}>
-            <LayerFieldDropdown key={key("status")} label="Reset by"
-                                value={layerTripwire.coreLayerId }
-                                options={options}
-                                save={value => layerTripwire.saveCoreLayerId(value)}
-                                tooltipId="forIce" tooltipText="The core that can reset this timer"
-                                navigate={navigateIfCoreId}
-            />            <LayerField key={key("countdown")} size="large" label="Countdown" value={layerTripwire.countdown}
-                        save={value => layerTripwire.saveCountdown(value)}
-                        placeholder="(Minutes until alarm)" help="Minutes part of time until alarm."/>
+            <AttributeDropdown key={key("status")} label="Reset by"
+                               value={layerTripwire.coreLayerId }
+                               options={options}
+                               save={value => layerTripwire.saveCoreLayerId(value)}
+                               tooltipId="forIce" tooltipText="The core that can reset this timer"
+                               navigate={navigateIfCoreId}
+            />            <TextAttribute key={key("countdown")} size="large" label="Countdown" value={layerTripwire.countdown}
+                                         save={value => layerTripwire.saveCountdown(value)}
+                                         placeholder="(Minutes until alarm)" help="Minutes part of time until alarm."/>
 
-            <LayerField key={key("shutdown")} size="large" label="Shutdown" value={layerTripwire.shutdown}
-                        save={value => layerTripwire.saveShutdown(value)}
-                        placeholder="(Minutes of shutdown)" help="Duration of shutdown."/>
+            <TextAttribute key={key("shutdown")} size="large" label="Shutdown" value={layerTripwire.shutdown}
+                           save={value => layerTripwire.saveShutdown(value)}
+                           placeholder="(Minutes of shutdown)" help="Duration of shutdown."/>
 
         </LayerPanel>
     )

@@ -27,7 +27,8 @@ data class AddNode(
     val siteId: String = "",
     val x: Int = 0,
     val y: Int = 0,
-    val type: NodeType = NodeType.DATA_STORE
+    val type: NodeType = NodeType.DATA_STORE,
+    val networkId: String? = null,
 )
 
 data class AddConnection(

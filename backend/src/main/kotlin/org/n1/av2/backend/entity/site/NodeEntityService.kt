@@ -35,7 +35,7 @@ class NodeEntityService(
         val id = createId("node", nodeRepo::findById)
         val siteId = command.siteId
         val nodes = getAll(siteId)
-        val networkId = nextFreeNetworkId(siteId, nodes)
+        val networkId = command.networkId ?: nextFreeNetworkId(siteId, nodes)
         val layers = mutableListOf(createOsLayer(id))
 
         val x = capX(command.x)

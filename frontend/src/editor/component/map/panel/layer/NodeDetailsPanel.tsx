@@ -17,6 +17,7 @@ import {createSelector} from "@reduxjs/toolkit";
 import {LayerKeyStorePanel} from "./type/panel/app/LayerKeyStorePanel";
 import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
 import {LayerCorePanel} from "./type/panel/app/LayerCorePanel";
+import {TangleIcePanel} from "./type/panel/ice/TangleIcePanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -33,7 +34,7 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
         case PASSWORD_ICE:
             return <LayerIcePasswordPanel node={node} layer={layer}/>
         case TANGLE_ICE:
-            return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE (Un)tangle"/>
+            return <TangleIcePanel node={node} layer={layer} typeDisplay="ICE (Un)tangle"/>
         case WORD_SEARCH_ICE:
             return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE Word Search"/>
         case NETWALK_ICE:

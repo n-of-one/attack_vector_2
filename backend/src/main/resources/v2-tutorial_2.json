@@ -516,7 +516,7 @@
       "level" : 1,
       "name" : "Password database",
       "note" : "",
-      "text" : "The pasword for the ICE in node '18' is: Swordfish"
+      "text" : "The password for the password ICE is: Swordfish"
     } ],
     "networkId" : "17",
     "ice" : false,

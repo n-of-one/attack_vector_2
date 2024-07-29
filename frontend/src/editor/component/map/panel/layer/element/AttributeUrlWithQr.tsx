@@ -14,7 +14,7 @@ interface Props {
     requireLogin?: boolean
 }
 
-export const UrlFieldWithQr = ({name, layerId, type, subType, description, requireLogin = true}: Props) => {
+export const AttributeUrlWithQr = ({name, layerId, type, subType, description, requireLogin = true}: Props) => {
 
     const path = createPath(layerId, type, subType)
     const url = avEncodedUrl(path, requireLogin)

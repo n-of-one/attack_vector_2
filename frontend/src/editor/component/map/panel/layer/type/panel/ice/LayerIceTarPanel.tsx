@@ -1,11 +1,11 @@
 import React from 'react'
 import { useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
-import {LayerStrength} from "../../../element/LayerStrength"
+import {AttributeIceStrength} from "../../../element/AttributeIceStrength"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
-import {LayerField} from "../../../element/LayerField";
+import {TextAttribute} from "../../../element/TextAttribute";
 import {LayerIceTar} from "../../../../../../../../common/model/layer/LayerIceTar";
-import {IceUrlFieldWithQr} from "../../../element/IceUrlFieldWithQr";
+import {AttributeIceUrlWithQr} from "../../../element/AttributeIceUrlWithQr";
 
 interface Props {
     node: NodeI,
@@ -21,11 +21,11 @@ export const LayerIceTarPanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="ICE Tar" layerObject={ice}>
-            <LayerStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
-            <IceUrlFieldWithQr layerId={layer.id}/>
-            <LayerField label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = (10 + level) per second per hacker" readOnly={true}/>
-            <LayerField label="Total time" size="large" value="See question mark to the right"
-                        help={`It will take 1 lvl 1 hacker: ${ice.time1Level1Hacker} to hack.
+            <AttributeIceStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
+            <AttributeIceUrlWithQr layerId={layer.id}/>
+            <TextAttribute label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = (10 + level) per second per hacker" readOnly={true}/>
+            <TextAttribute label="Total time" size="large" value="See question mark to the right"
+                           help={`It will take 1 lvl 1 hacker: ${ice.time1Level1Hacker} to hack.
                         It will take 1 lvl 5 hacker: ${ice.time1Level5Hacker} to hack.
                         It will take 5 lvl 10 hackers: ${ice.time5Level10Hackers} to hack.
                         `} readOnly={true}/>

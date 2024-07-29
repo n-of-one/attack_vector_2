@@ -1,10 +1,10 @@
 import React from 'react'
 import {useDispatch} from "react-redux"
-import {LayerField} from "../../../element/LayerField"
+import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerIcePassword} from "../../../../../../../../common/model/layer/LayerIcePassword"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
-import {IceUrlFieldWithQr} from "../../../element/IceUrlFieldWithQr";
+import {AttributeIceUrlWithQr} from "../../../element/AttributeIceUrlWithQr";
 
 
 interface Props {
@@ -23,12 +23,12 @@ export const LayerIcePasswordPanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="ICE Password" layerObject={ice}>
-            <LayerField key={key("pa")} size="large" label="Password" value={ice.password} save={value => ice.savePassword(value)}
-                        placeholder="* Password / passphrase" help="The password or passphrase the hacker needs to enter to bypass this ice."/>
-            <LayerField key={key("hi")} size="large" label="Hint" value={ice.hint} save={value => ice.saveHint(value)}
-                        placeholder="Optional hint" help="This hint is shown when the password is entered incorrectly.
+            <TextAttribute key={key("pa")} size="large" label="Password" value={ice.password} save={value => ice.savePassword(value)}
+                           placeholder="* Password / passphrase" help="The password or passphrase the hacker needs to enter to bypass this ice."/>
+            <TextAttribute key={key("hi")} size="large" label="Hint" value={ice.hint} save={value => ice.saveHint(value)}
+                           placeholder="Optional hint" help="This hint is shown when the password is entered incorrectly.
                               Can be used to help hackers."/>
-            <IceUrlFieldWithQr layerId={layer.id}/>
+            <AttributeIceUrlWithQr layerId={layer.id}/>
         </LayerPanel>
     )
 }

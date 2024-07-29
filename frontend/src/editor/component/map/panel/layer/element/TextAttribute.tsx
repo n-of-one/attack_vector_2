@@ -28,7 +28,7 @@ interface Props {
     terminalPrefix?: string
 }
 
-export const LayerField = ({label, size, readOnly, value, type, save, placeholder, help, id, terminalPrefix}: Props) => {
+export const TextAttribute = ({label, size, readOnly, value, type, save, placeholder, help, id, terminalPrefix}: Props) => {
     if (!readOnly) {
         readOnly = false
     }

@@ -24,7 +24,7 @@ interface Props {
     typeDisplay: string
 }
 
-export const LayerType = ({node, layer, typeDisplay}: Props) => {
+export const AttributeLayerType = ({node, layer, typeDisplay}: Props) => {
 
     const remove = () => {
         sendRemoveLayer({nodeId: node.id, layerId: layer.id})
