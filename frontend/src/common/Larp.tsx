@@ -41,11 +41,9 @@ export class Larp {
             this.hackerEditSkills = true
             this.hackersResetSite = true
             this.hackerShowSkills = true
-
-            // FIXME
-            this.quickPlaying = false
-
             this.iceSweeper = true
+
+            this.quickPlaying = true
             return
         }
 

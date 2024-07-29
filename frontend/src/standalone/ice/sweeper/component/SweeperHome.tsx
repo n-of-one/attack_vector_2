@@ -16,6 +16,7 @@ import {
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {ice} from "../../../StandaloneGlobals";
 import {CloseTabButton} from "../../common/CloseTabButton";
+import {currentUser} from "../../../../common/user/CurrentUser";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -36,8 +37,7 @@ export const SweeperHome = () => {
                         <IceTitle name="Visphotak" strength={strength}/>
                     </div>
                     <div className="col-lg-1">
-                        <h4 className="text-success text-center" style={{marginBottom: 0}}>Reset</h4>
-                        <div><ResetIce/></div>
+                        <ResetIce/>
                     </div>
                     <div className="col-lg-1">
                         <h4 className="text-center text-success">Left:<br/><span className="text-info">{minesLeft}</span></h4>
@@ -104,7 +104,7 @@ const ResetIce = () => {
     const dispatch = useDispatch()
     const resetState = useSelector((rootState: SweeperRootState) => rootState.ui.resetState)
     const resetVisualProgress = useSelector((rootState: SweeperRootState) => rootState.ui.resetProgress)
-    const userBlocked = useSelector((rootState: SweeperRootState) => rootState.ui.blockedUserIds.includes(ice.id))
+    const userBlocked = useSelector((rootState: SweeperRootState) => rootState.ui.blockedUserIds.includes(currentUser.idOrEmptyString()))
 
     const startReset = () => {
         if (resetState !== SweeperResetState.IDLE) {
@@ -131,10 +131,10 @@ const ResetIce = () => {
     }
     const animated = (resetVisualProgress < 40) ? "" : "progress-bar-animated"
 
-    const text = (resetState === SweeperResetState.IDLE) ? "Press" : ""
+    const text = (resetState === SweeperResetState.IDLE) ? "Reset" : ""
     const progressBackgroundColor = (userBlocked && resetState === SweeperResetState.IDLE) ? "#0dcaf0" : ""
 
-    return (<div style={{}}>
+    return (<div style={{marginTop: "7px"}}>
 
             <div className="progress" style={{height: 25, cursor: "pointer", position: "relative", top: "-15", backgroundColor: progressBackgroundColor}} onMouseDown={startReset}
                  onMouseLeave={stopReset} onMouseUp={stopReset}>

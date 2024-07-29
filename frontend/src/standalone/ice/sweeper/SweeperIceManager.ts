@@ -35,8 +35,15 @@ class SweeperIceManager extends GenericIceManager {
         this.cells = serverCellsToGameCells(sweeperEnterData.cells)
         this.modifiers = serverModifiersToGameModifiers(sweeperEnterData.modifiers)
 
-        this.userBlocked = sweeperEnterData.blockedUserIds.includes(currentUser.id)
-        const gameState = {cells: this.cells, modifiers: this.modifiers, strength: sweeperEnterData.strength, hacked: false, blockedUserIds: sweeperEnterData.blockedUserIds, minesLeft: sweeperEnterData.minesLeft}
+        this.userBlocked = sweeperEnterData.blockedUserIds.includes(currentUser.idOrEmptyString())
+        const gameState = {
+            cells: this.cells,
+            modifiers: this.modifiers,
+            strength: sweeperEnterData.strength,
+            hacked: false,
+            blockedUserIds: sweeperEnterData.blockedUserIds,
+            minesLeft: sweeperEnterData.minesLeft
+        }
 
         delay(() => {
             sweeperCanvas.init(gameState, this.dispatch, this.store)
@@ -53,6 +60,17 @@ class SweeperIceManager extends GenericIceManager {
         }
         this.displayTerminal(5, "↼ Repair interface [info]online");
         this.schedule.dispatch(0, {type: SWEEPER_BEGIN});
+        if (this.modifiers[0][0] !== SweeperCellModifier.REVEALED) {
+            this.displayTerminal(10, "");
+            this.displayTerminal(10, "↼ Geometric analysis: [info]corner blocks[/] are [ok]safe");
+        }
+
+        if (this.userBlocked) {
+            this.displayTerminal(10, "");
+            this.displayTerminal(5, "↼ [warn]Warning[/] connection blocked due to previous access of corrupted memory.")
+            this.displayTerminal(5, "Press (and hold) [b info]reset[/] to restart this hack.");
+            this.displayTerminal(5, "");
+        }
     }
 
     serverModified(data: SweeperModifyData) {
@@ -107,12 +125,15 @@ class SweeperIceManager extends GenericIceManager {
     }
 
     blockUser(userId: string, userName: string) {
+        this.displayTerminal(5, "");
+        this.displayTerminal(5, `↼ [warn]Warning[/] corrupted memory accessed, [info]${userName}[/] blocked.`);
         if (currentUser.id === userId) {
             this.userBlocked = true
             notify({message: 'You have been blocked from interacting with the ice', type: 'ok'})
             sweeperCanvas.changeUserBlocked(true)
+            this.displayTerminal(5, "Press (and hold) [b info]reset[/] to restart this hack.");
+            this.displayTerminal(5, "");
         }
-        this.displayTerminal(5, `↼ [warn]Warning[/] corrupted memory accessed, [info]${userName}[/] blocked.`);
     }
 
     startReset(userName: string) {
@@ -122,12 +143,11 @@ class SweeperIceManager extends GenericIceManager {
 
     stopReset(userName: string) {
         this.dispatch({type: SWEEPER_RESET_STOP})
-        this.displayTerminal(5, `↼ Reset [ok]aborted`);
+        this.displayTerminal(5, `↼ Reset [ok]aborted[/]. Keep holding reset to complete the reset.`);
     }
 
     completeReset(userName: string) {
-        this.displayTerminal(5, `↼ Reset completed by [info]${userName}[/]`);
-        this.schedule.wait(50)
+        this.displayTerminal(30, `↼ Reset completed by [info]${userName}[/]`);
         this.schedule.run(0, () => {
             window.close()
         })

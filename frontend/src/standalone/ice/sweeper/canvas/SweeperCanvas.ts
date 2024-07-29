@@ -20,8 +20,8 @@ class SweeperCanvas {
 
     cellDisplayByLocation: CellById = {}
 
-    gridWidth = 0
-    gridHeight = 0
+    sizeX = 0
+    sizeY = 0
 
     cellSize = 0
     imagesLoaded = 0
@@ -48,8 +48,8 @@ class SweeperCanvas {
 
         this.cellSize = this.determineCellSize(data.cells.length)
 
-        this.gridWidth = this.cellSize * data.cells[0].length
-        this.gridHeight = this.cellSize * data.cells.length
+        this.sizeX = data.cells[0].length
+        this.sizeY = data.cells.length
 
         this.canvas = this.createCanvas()
 
@@ -83,8 +83,8 @@ class SweeperCanvas {
 
     createCanvas():Canvas {
         return new fabric.Canvas('netwalkCanvas', {
-            width: this.gridWidth + PADDING_LEFT * 2,
-            height: this.gridHeight + PADDING_TOP * 2,
+            width: this.cellSize * this.sizeX + PADDING_LEFT * 2,
+            height: this.cellSize * this.sizeY + PADDING_TOP * 2,
             backgroundColor: "#222",
             fireRightClick: true,  // <-- enable firing of right click events
             stopContextMenu: true, // <--  prevent context menu from showing
@@ -101,7 +101,8 @@ class SweeperCanvas {
     }
 
     createCell(x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier) {
-        const cellDisplay = new SweeperCellDisplay(this.canvas, x, y, cellType, modifier, this.cellSize, this.userBlocked)
+        const corner = (x % (this.sizeX - 1) === 0 && y % (this.sizeY - 1) === 0)
+        const cellDisplay = new SweeperCellDisplay(this.canvas, x, y, cellType, modifier, this.cellSize, this.userBlocked, corner)
         const location = `${x}:${y}`
         this.cellDisplayByLocation[location] = cellDisplay
     }

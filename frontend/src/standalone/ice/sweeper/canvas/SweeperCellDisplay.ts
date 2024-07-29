@@ -16,6 +16,7 @@ export class SweeperCellDisplay {
     x: number
     y: number
     size: number
+    corner: boolean
 
     cellType: SweeperCellType
     modifier: SweeperCellModifier
@@ -24,12 +25,13 @@ export class SweeperCellDisplay {
     image: fabric.Image
     crossFadeImage: fabric.Image | null = null
 
-    constructor(canvas: Canvas, x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier, size: number, userBlocked: boolean) {
+    constructor(canvas: Canvas, x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier, size: number, userBlocked: boolean, corner: boolean) {
         this.canvas = canvas
         this.gfx = new Graphics(canvas)
 
         this.x = x
         this.y = y
+        this.corner = corner
         this.cellType = cellType
         this.modifier = modifier
         this.size = size
@@ -69,8 +71,11 @@ export class SweeperCellDisplay {
     private determineImageType(): SweeperImageInfo {
 
         const imageTypeKey = (this.modifier === SweeperCellModifier.REVEALED)  ? this.cellType.toString() : this.modifier.toString()
-        const image = SWEEPER_IMAGES[imageTypeKey]
+        let image = SWEEPER_IMAGES[imageTypeKey]
         if (image !== undefined) {
+            if (imageTypeKey === "HIDDEN" && this.corner) {
+                image = SWEEPER_IMAGES["HIDDEN_CORNER"]
+            }
             return image
         }
         throw new Error(`No image found for "${imageTypeKey}"`)
@@ -200,8 +205,14 @@ export const SWEEPER_IMAGES: SweeperImageTypes = {
     },
     "HIDDEN": {
         size: 420,
-        fileName: "z-roadsign54.png",
+        fileName: "hidden.png",
         id: "unrevealed",
+        cursor: "pointer"
+    },
+    "HIDDEN_CORNER": {
+        size: 420,
+        fileName: "hidden-corner.png",
+        id: "unrevealed_corner",
         cursor: "pointer"
     },
     "FLAG": {

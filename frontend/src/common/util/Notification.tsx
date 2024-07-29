@@ -37,9 +37,9 @@ export type NotificationType = "ok" | "neutral" | "error" | "fatal"
 export const notify = ({type, message, title}: { type: NotificationType, title?: string, message: string }) => {
 
     if (type === "ok") {
-        createNotification(title, message, 5000)
+        createNotification(title, message, 8000)
     } else if (type === "neutral") {
-        createNotification(title, message, 5000)
+        createNotification(title, message, 8000)
     } else if (type === "fatal") {
         createNotification("Fatal", message, Infinity, "top-center", false)
     } else { // error and catch-all for server notifications with the wrong type

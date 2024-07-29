@@ -21,4 +21,8 @@ export class Id {
     isSet(): boolean {
         return this._id !== null
     }
+
+    idOrEmptyString(): string {
+        return this._id !== null ? this._id : ""
+    }
 }
