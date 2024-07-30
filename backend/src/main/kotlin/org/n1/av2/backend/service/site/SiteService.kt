@@ -84,6 +84,14 @@ class SiteService(
         return SiteFull(siteId, siteProperties, ownerName, nodes, connections, state, startNodeId)
     }
 
+    fun findStartNode(nodes: List<Node>): Node? {
+        if (nodes.isEmpty()) {
+            return null
+        }
+        val startNodeNetworkId = sitePropertiesEntityService.getBySiteId(nodes[0].siteId).startNodeNetworkId
+        return findStartNode(startNodeNetworkId, nodes)
+    }
+
     fun findStartNode(startNodeNetworkId: String, nodes: List<Node>): Node? {
         return nodes.find { node -> node.networkId == startNodeNetworkId }
     }
@@ -120,11 +128,14 @@ class SiteService(
         }
     }
 
-    fun updateHackable(siteId: String, hackable: Boolean) {
+    fun updateHackable(siteId: String, newHackableValue: Boolean) {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        val newSiteProperties = siteProperties.copy(hackable = hackable)
+        if (!siteProperties.siteStructureOk && newHackableValue) {
+            stompService.replyNeutral("The site \"${siteProperties.name}\" has errors. Fix these before making it hackable.")
+            return
+        }
+        val newSiteProperties = siteProperties.copy(hackable = newHackableValue)
         sitePropertiesEntityService.save(newSiteProperties)
         sendSitesList()
     }
-
 }

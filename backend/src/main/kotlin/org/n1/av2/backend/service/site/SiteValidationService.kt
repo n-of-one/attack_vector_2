@@ -4,6 +4,8 @@ import org.n1.av2.backend.entity.site.*
 import org.n1.av2.backend.entity.user.UserType
 import org.n1.av2.backend.model.SiteRep
 import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.backend.service.run.terminal.scanning.TraverseNode
+import org.n1.av2.backend.service.run.terminal.scanning.TraverseNodeService
 import org.n1.av2.backend.service.user.CurrentUserService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
@@ -16,6 +18,7 @@ class SiteValidationService(
     val nodeEntityService: NodeEntityService,
     val siteEditorStateEntityService: SiteEditorStateEntityService,
     val currentUserService: CurrentUserService,
+    val traverseNodeService: TraverseNodeService,
 ) {
 
     fun validate(siteId: String): List<SiteStateMessage> {
@@ -26,13 +29,16 @@ class SiteValidationService(
         val messages = ArrayList<SiteStateMessage>()
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         val nodes = nodeEntityService.getAll(siteId)
+        val traverseNodesById = traverseNodeService.createTraverseNodes(siteId, nodes)
 
         validateSiteProperties(siteProperties, nodes, messages)
         validateNodes(siteProperties, nodes, messages)
+        validateConnections(siteProperties, nodes, traverseNodesById, messages)
 
         processValidationMessages(messages, siteId, alwaysPersistResult)
         return messages
     }
+
 
     private fun validateSiteProperties(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         validate(messages) { validateSiteName(siteProperties)}
@@ -107,8 +113,23 @@ class SiteValidationService(
         }
     }
 
+    private fun validateConnections(siteProperties: SiteProperties, nodes: List<Node>, traverseNodesById: Map<String, TraverseNode>, messages: MutableList<SiteStateMessage> ) {
+        val startNode = nodes.find { it.networkId == siteProperties.startNodeNetworkId }!!
+        val startTraverseNode = traverseNodesById[startNode.id]!!
+
+        startTraverseNode.fillDistanceFromHere(0)
+        val unreachableNodes = traverseNodesById.values.filter { it.distance == null }
+        unreachableNodes.forEach { node ->
+            val osLayer = nodes.find {it.id == node.nodeId}!!.layers[0]
+            val message = SiteStateMessage(SiteStateMessageType.ERROR, "Unreachable node", node.nodeId, osLayer.id )
+            messages.add(message)
+        }
+    }
+
+
+
     private fun processValidationMessages(messages: ArrayList<SiteStateMessage>, id: String, alwaysPersistResult: Boolean) {
-        val ok = messages.filter { it.type == SiteStateMessageType.ERROR }.none()
+        val ok = messages.none { it.type == SiteStateMessageType.ERROR }
         val oldState = siteEditorStateEntityService.getById(id)
         val newState = oldState.copy(messages = messages)
 

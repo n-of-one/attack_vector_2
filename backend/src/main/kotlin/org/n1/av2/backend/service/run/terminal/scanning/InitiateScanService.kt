@@ -28,10 +28,10 @@ class InitiateScanService(
     private val scanService: ScanService,
 ) {
 
-    fun scanFromOutside(run: Run, targetNode: Node) {
+    fun scanFromOutside(run: Run, startNode: Node) {
         val nodes = nodeEntityService.getAll(run.siteId)
-        val (start, traverseNodesById) = traverseNodeService.createTraverseNodesWithDistance(run.siteId, nodes, targetNode.id)
-        val target: TraverseNode = traverseNodesById[targetNode.id]!!
+        val (start, traverseNodesById) = traverseNodeService.createTraverseNodesWithDistance(run.siteId, startNode.id, nodes, startNode.id)
+        val target: TraverseNode = traverseNodesById[startNode.id]!!
 
         try {
             val path = TraverseNode.createPath(start, target)
@@ -46,8 +46,8 @@ class InitiateScanService(
             )
 
             val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-            userTaskRunner.queueInTicksForSite("scan-arrive", targetNode.siteId, totalTicks - 20) {
-                scanService.areaScan(run, targetNode, nodes)
+            userTaskRunner.queueInTicksForSite("scan-arrive", startNode.siteId, totalTicks - 20) {
+                scanService.areaScan(run, startNode, nodes)
             }
 
         }

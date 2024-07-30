@@ -2,8 +2,6 @@ package org.n1.av2.backend.service.run.terminal.scanning
 
 import org.n1.av2.backend.entity.site.ConnectionEntityService
 import org.n1.av2.backend.entity.site.Node
-import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.service.site.SiteService
 import org.springframework.stereotype.Service
 
 /**
@@ -11,8 +9,6 @@ import org.springframework.stereotype.Service
  */
 @Service
 class TraverseNodeService(
-    val sitePropertiesEntityService: SitePropertiesEntityService,
-    val siteService: SiteService,
     val connectionEntityService: ConnectionEntityService
 ) {
 
@@ -30,11 +26,10 @@ class TraverseNodeService(
         return traverseNodesById
     }
 
-    fun createTraverseNodesWithDistance(siteId: String, nodes: List<Node>, targetNodeId: String): Pair<TraverseNode, Map<String, TraverseNode>> {
-        val startNode = startNode(siteId, nodes)
+    fun createTraverseNodesWithDistance(siteId: String, startNodeId: String, nodes: List<Node>, targetNodeId: String): Pair<TraverseNode, Map<String, TraverseNode>> {
         val traverseNodesById = createTraverseNodes(siteId, nodes)
 
-        val start: TraverseNode = traverseNodesById[startNode.id]!!
+        val start: TraverseNode = traverseNodesById[startNodeId]!!
         val target: TraverseNode = traverseNodesById[targetNodeId]!!
 
         TraverseNode.removeIceBlockedNodes(target, traverseNodesById.values)
@@ -43,22 +38,13 @@ class TraverseNodeService(
         return Pair(start, traverseNodesById)
     }
 
-
-
-    fun createTraverseNodesWithDistance(siteId: String, nodes: List<Node>): Map<String, TraverseNode> {
-        val startNode = startNode(siteId, nodes)
+    fun createTraverseNodesWithDistance(siteId: String, startNodeId: String, nodes: List<Node>): Map<String, TraverseNode> {
         val traverseNodesById = createTraverseNodes(siteId, nodes)
-
-        val start: TraverseNode = traverseNodesById[startNode.id]!!
+        val start: TraverseNode = traverseNodesById[startNodeId]!!
 
         start.fillDistanceFromHere(1)
 
         return traverseNodesById
     }
 
-    private fun startNode(siteId: String, nodes: List<Node>): Node {
-        val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        val startNode = siteService.findStartNode(siteProperties.startNodeNetworkId, nodes) ?: throw IllegalStateException("Invalid start node network ID")
-        return startNode
-    }
 }

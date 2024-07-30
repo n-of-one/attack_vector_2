@@ -62,13 +62,13 @@ class EditorService(
         }
 
         val connection = connectionEntityService.createConnection(command)
-
+        siteValidationService.validate(command.siteId)
         stompService.toSite(command.siteId, ServerActions.SERVER_ADD_CONNECTION, connection)
     }
 
     fun deleteConnections(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
-
+        siteValidationService.validate(siteId)
         sendSiteFull(siteId)
     }
 

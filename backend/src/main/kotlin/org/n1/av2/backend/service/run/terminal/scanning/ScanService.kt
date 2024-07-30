@@ -10,6 +10,7 @@ import org.n1.av2.backend.entity.site.Node
 import org.n1.av2.backend.entity.site.NodeEntityService
 import org.n1.av2.backend.model.ui.ServerActions
 import org.n1.av2.backend.service.site.RunLinkService
+import org.n1.av2.backend.service.site.SiteService
 import org.n1.av2.backend.service.util.StompService
 import org.springframework.stereotype.Service
 
@@ -20,6 +21,7 @@ class ScanService(
     private val nodeEntityService: NodeEntityService,
     private val runLinkService: RunLinkService,
     private val traverseNodeService: TraverseNodeService,
+    private val siteService: SiteService,
 ) {
 
     @ScheduledTask
@@ -89,7 +91,8 @@ class ScanService(
 
     fun createInitialNodeScans(siteId: String): MutableMap<String, NodeScan> {
         val nodes = nodeEntityService.getAll(siteId)
-        val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId, nodes)
+        val startNode = siteService.findStartNode(nodes) ?: throw IllegalStateException("Start node of site does not exist")
+        val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId, startNode.id, nodes)
 
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
@@ -99,6 +102,5 @@ class ScanService(
             it.key to NodeScan(status = nodeStatus, distance = it.value.distance!!)
         }.toMap().toMutableMap()
     }
-
 
 }
