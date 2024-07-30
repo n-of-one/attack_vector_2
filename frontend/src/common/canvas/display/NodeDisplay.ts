@@ -299,15 +299,19 @@ export class NodeDisplay implements Display {
     }
 
     registerHacker(hackerDisplay: HackerDisplay) {
+        if (hackerDisplay.you) return // don't register yourself
         this.otherHackerDisplays.push(hackerDisplay)
     }
 
     getYOffset(hackerDisplay: HackerDisplay) {
+        if (hackerDisplay.you) throw Error("Should not be called with yourself")
         const index = this.otherHackerDisplays.indexOf(hackerDisplay)
         return 10 + index * -20
     }
 
     unregisterHacker(hackerDisplay: HackerDisplay) {
+        if (hackerDisplay.you) return // don't try to unregister yourself
+
         const index = this.otherHackerDisplays.indexOf(hackerDisplay)
         if (index >= 0) {
             this.otherHackerDisplays.splice(index, 1)

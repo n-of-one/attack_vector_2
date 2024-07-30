@@ -84,22 +84,22 @@ export class HackerDisplay implements Display {
 
         this.addHackerIdentificationIcons()
 
-        let identifierOppacity, lineOpacity
+        let identifierOpacity, lineOpacity
 
         if (hackerData.activity === HackerActivity.OUTSIDE) {
             this.currentNodeDisplay = null
 
-            identifierOppacity = IDENTIFIER_OPACITY_SCANNING
+            identifierOpacity = IDENTIFIER_OPACITY_SCANNING
             lineOpacity = LINE_OPACITY_SCANNING
 
         } else {
             this.addHackingHacker(hackerData)
 
-            identifierOppacity = IDENTIFIER_OPACITY_HACKING
+            identifierOpacity = IDENTIFIER_OPACITY_HACKING
             lineOpacity = LINE_OPACITY_HACKING
         }
 
-        this.gfx.fade(APPEAR_TIME, identifierOppacity, this.hackerIdentifierIcon)
+        this.gfx.fade(APPEAR_TIME, identifierOpacity, this.hackerIdentifierIcon)
         this.gfx.fade(APPEAR_TIME, lineOpacity, this.labelIcon)
         this.gfx.fade(40, lineOpacity, this.startLineIcon)
 
@@ -121,7 +121,8 @@ export class HackerDisplay implements Display {
 
         this.currentNodeDisplay = this.nodeDisplays.get(hackerData.nodeId)
 
-        const {xOffset, yOffset} = this.processOffset(this.currentNodeDisplay)
+        this.currentNodeDisplay.registerHacker(this)
+        const {xOffset, yOffset} = this.calculateOffset(this.currentNodeDisplay)
         this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.currentNodeDisplay, xOffset, yOffset)
         this.canvas.add(this.hackerIcon)
     }
@@ -255,7 +256,6 @@ export class HackerDisplay implements Display {
         this.hackerIcon.opacity = 0
         this.targetNodeDisplay = this.siteStartNodeDisplay
 
-
         this.schedule.run(timings.main, () => {
             if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
             this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, timings.main - 50, this.you, easeOutSine)
@@ -263,15 +263,7 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 100)
-        // animate(this.canvas, this.hackerIcon!, 'opacity', 1, 5)
-
     }
-
-
-    // moveStep(node: NodeDisplay, offsetX: number, offsetY: number, time: number, easing: IUtilAminEaseFunction | null = null) {
-    //     animate(this.canvas, this.hackerIcon!, "left", node.x + offsetX, time, easing)
-    //     animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
-    // }
 
     moveStart(nodeDisplay: NodeDisplay, timings: Timings) {
         this.targetNodeDisplay = nodeDisplay
@@ -288,32 +280,28 @@ export class HackerDisplay implements Display {
             this.moveLineElement?.disappear(10)
         })
 
-        const oldNodeDisplay = this.currentNodeDisplay!
-        const oldOffset = this.processOffset(nodeDisplay)
-
+        const oldNodeDisplay = this.currentNodeDisplay
         this.currentNodeDisplay = nodeDisplay
+        this.currentNodeDisplay.registerHacker(this)
+
         this.targetNodeDisplay = null
 
-        const newOffset = this.processOffset(nodeDisplay)
-
-        nodeDisplay.unregisterHacker(this)
-
+        const newOffset = this.calculateOffset(nodeDisplay)
 
         this.hackerIcon!.left = nodeDisplay.x + newOffset.xOffset
         this.hackerIcon!.top = nodeDisplay.y + newOffset.yOffset
         this.hackerIcon!.opacity = 0
         this.canvas.bringToFront(this.hackerIcon!)
-
-
         animate(this.canvas, this.hackerIcon!, 'opacity', 1, timings.main)
 
-        if (!oldNodeDisplay) return
-
+        if (oldNodeDisplay == null) {
+            // This is the first move from outside
+            return
+        }
+        const oldOffset = this.calculateOffset(oldNodeDisplay)
+        oldNodeDisplay.unregisterHacker(this)
         const afterImage = this.createHackerIcon(SCALE_NORMAL, 1, oldNodeDisplay, oldOffset.xOffset, oldOffset.yOffset)
-
         this.canvas.add(afterImage).renderAll()
-
-
         animate(this.canvas, afterImage, 'opacity', 0, timings.main)
         this.schedule.wait(timings.main)
         this.schedule.run(0, () => {
@@ -322,12 +310,10 @@ export class HackerDisplay implements Display {
 
     }
 
-    processOffset(nodeDisplay: NodeDisplay): { xOffset: number, yOffset: number } {
-
+    calculateOffset(nodeDisplay: NodeDisplay): { xOffset: number, yOffset: number } {
         if (this.you) {
             return {xOffset: OFFSET, yOffset: OFFSET}
         } else {
-            nodeDisplay.registerHacker(this)
             const yOffset = nodeDisplay.getYOffset(this)
             return {xOffset: -OFFSET, yOffset: yOffset}
         }
