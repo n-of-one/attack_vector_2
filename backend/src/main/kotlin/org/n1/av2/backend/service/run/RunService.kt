@@ -290,19 +290,29 @@ class RunService(
         val runs = runEntityService.findAllForSiteId(siteId)
         runs.forEach { run ->
             var changed = false
-            run.nodeScanById.forEach { (nodeId, nodeScan) ->
+            val newNodeScansById: Map<String, NodeScanStatus?> = run.nodeScanById.mapValues { (nodeId, nodeScan) ->
 
                 val node = nodeById[nodeId]
-                if (node == null) { // node has been removed by GM in the editor
-                    run.nodeScanById.remove(nodeId)
+                if (node == null) {
+                    // node has been removed by GM in the editor
                     changed = true
-
-                } else if (node.ice && nodeScan.status == FULLY_SCANNED_4) {
-                    run.updateScanStatus(nodeId, ICE_PROTECTED_3)
-                    changed = true
+                    return@mapValues null
                 }
+                if (node.ice && nodeScan.status == FULLY_SCANNED_4) {
+                    changed = true
+                    return@mapValues ICE_PROTECTED_3
+                }
+                nodeScan.status
             }
             if (changed) {
+                newNodeScansById.forEach { (nodeId: String, newStatus: NodeScanStatus?) ->
+                    if (newStatus == null) {
+                        run.nodeScanById.remove(nodeId)
+                    }
+                    else {
+                        run.updateScanStatus(nodeId, newStatus)
+                    }
+                }
                 runEntityService.save(run)
             }
         }
