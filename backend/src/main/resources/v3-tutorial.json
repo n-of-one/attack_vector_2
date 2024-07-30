@@ -1,7 +1,7 @@
 {
   "exportDetails" : {
-    "version" : "v2",
-    "exportTimeStamp" : "2024-02-14 09:59:53"
+    "version" : "v1",
+    "exportTimeStamp" : "2024-07-30 12:31:32"
   },
   "siteProperties" : {
     "siteId" : "site-5dc5-4adb",
@@ -15,7 +15,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "TRANSIT_4",
     "x" : 625,
-    "y" : 520,
+    "y" : 632,
     "layers" : [ {
       "id" : "node-66c5-47f0:layer-0000",
       "type" : "OS",
@@ -47,7 +47,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "SYSCON",
     "x" : 625,
-    "y" : 320,
+    "y" : 312,
     "layers" : [ {
       "id" : "node-596f-420e:layer-0000",
       "type" : "OS",
@@ -72,7 +72,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_3",
     "x" : 385,
-    "y" : 480,
+    "y" : 472,
     "layers" : [ {
       "id" : "node-901c-4cd7:layer-0000",
       "type" : "OS",
@@ -88,6 +88,7 @@
       "note" : "",
       "strength" : "ONYX",
       "hacked" : false,
+      "clusters" : 1,
       "ice" : true
     }, {
       "id" : "node-901c-4cd7:layer-c6e9",
@@ -106,7 +107,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_3",
     "x" : 385,
-    "y" : 400,
+    "y" : 392,
     "layers" : [ {
       "id" : "node-b354-432d:layer-0000",
       "type" : "OS",
@@ -122,6 +123,7 @@
       "note" : "",
       "strength" : "STRONG",
       "hacked" : false,
+      "clusters" : 1,
       "ice" : true
     }, {
       "id" : "node-b354-432d:layer-4edb",
@@ -129,7 +131,7 @@
       "level" : 2,
       "name" : "Note",
       "note" : "",
-      "text" : "This is the strong strength of the Untangle ICE. There is nothing behind it."
+      "text" : "This is the strong strength of the Tangle ICE. There is nothing behind it."
     } ],
     "networkId" : "06",
     "ice" : true,
@@ -140,7 +142,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_3",
     "x" : 385,
-    "y" : 320,
+    "y" : 312,
     "layers" : [ {
       "id" : "node-7b1b-4db7:layer-0000",
       "type" : "OS",
@@ -156,6 +158,7 @@
       "note" : "",
       "strength" : "AVERAGE",
       "hacked" : false,
+      "clusters" : 1,
       "ice" : true
     }, {
       "id" : "node-7b1b-4db7:layer-083f",
@@ -163,7 +166,7 @@
       "level" : 2,
       "name" : "Note",
       "note" : "",
-      "text" : "This is the average strength of the Untangle ICE. Behind it is more of the site to explore"
+      "text" : "This is the average strength of the Tangle ICE. Behind it is more of the site to explore"
     } ],
     "networkId" : "05",
     "ice" : true,
@@ -174,7 +177,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_1",
     "x" : 545,
-    "y" : 80,
+    "y" : 72,
     "layers" : [ {
       "id" : "node-7cb6-4dc3:layer-0000",
       "type" : "OS",
@@ -224,7 +227,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_1",
     "x" : 625,
-    "y" : 80,
+    "y" : 72,
     "layers" : [ {
       "id" : "node-59ad-430c:layer-0000",
       "type" : "OS",
@@ -258,7 +261,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_1",
     "x" : 705,
-    "y" : 80,
+    "y" : 72,
     "layers" : [ {
       "id" : "node-30d9-4893:layer-0000",
       "type" : "OS",
@@ -292,7 +295,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_2",
     "x" : 865,
-    "y" : 240,
+    "y" : 232,
     "layers" : [ {
       "id" : "node-5fba-4dd9:layer-0000",
       "type" : "OS",
@@ -326,7 +329,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_2",
     "x" : 865,
-    "y" : 320,
+    "y" : 312,
     "layers" : [ {
       "id" : "node-a145-4864:layer-0000",
       "type" : "OS",
@@ -360,7 +363,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_2",
     "x" : 865,
-    "y" : 400,
+    "y" : 392,
     "layers" : [ {
       "id" : "node-6a1d-410d:layer-0000",
       "type" : "OS",
@@ -394,7 +397,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "UNHACKABLE",
     "x" : 465,
-    "y" : 200,
+    "y" : 192,
     "layers" : [ {
       "id" : "node-a28f-43da:layer-0000",
       "type" : "OS",
@@ -432,7 +435,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "UNHACKABLE",
     "x" : 505,
-    "y" : 280,
+    "y" : 272,
     "layers" : [ {
       "id" : "node-46ac-4c7e:layer-0000",
       "type" : "OS",
@@ -470,7 +473,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "SYSCON",
     "x" : 465,
-    "y" : 80,
+    "y" : 72,
     "layers" : [ {
       "id" : "node-9943-4a56:layer-0000",
       "type" : "OS",
@@ -502,7 +505,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "PASSCODE_STORE",
     "x" : 385,
-    "y" : 80,
+    "y" : 72,
     "layers" : [ {
       "id" : "node-a69f-486b:layer-0000",
       "type" : "OS",
@@ -527,7 +530,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "MANUAL_3",
     "x" : 865,
-    "y" : 160,
+    "y" : 152,
     "layers" : [ {
       "id" : "node-46e1-427c:layer-0000",
       "type" : "OS",
@@ -556,7 +559,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "RESOURCE_STORE",
     "x" : 865,
-    "y" : 80,
+    "y" : 72,
     "layers" : [ {
       "id" : "node-d613-4b87:layer-0000",
       "type" : "OS",
@@ -581,7 +584,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "TRANSIT_3",
     "x" : 385,
-    "y" : 200,
+    "y" : 192,
     "layers" : [ {
       "id" : "node-f359-4b9d:layer-0000",
       "type" : "OS",
@@ -606,7 +609,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "TRANSIT_2",
     "x" : 745,
-    "y" : 240,
+    "y" : 232,
     "layers" : [ {
       "id" : "node-2103-441c:layer-0000",
       "type" : "OS",
@@ -640,7 +643,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_3",
     "x" : 505,
-    "y" : 400,
+    "y" : 392,
     "layers" : [ {
       "id" : "node-9391-4e1e:layer-0000",
       "type" : "OS",
@@ -655,7 +658,8 @@
       "name" : "Gaanth",
       "note" : "",
       "strength" : "VERY_WEAK",
-      "hacked" : false,
+      "hacked" : true,
+      "clusters" : 1,
       "ice" : true
     }, {
       "id" : "node-9391-4e1e:layer-ed8e",
@@ -663,18 +667,18 @@
       "level" : 2,
       "name" : "About this ICE",
       "note" : "",
-      "text" : "This is the Untangle ICE. Move the connections so that no lines are crossing."
+      "text" : "This is the Tangle ICE. Move the connections so that no lines are crossing."
     } ],
     "networkId" : "02",
     "ice" : true,
     "hacked" : true,
-    "unhackedIce" : true
+    "unhackedIce" : false
   }, {
     "id" : "node-fef3-4d03",
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_2",
     "x" : 745,
-    "y" : 320,
+    "y" : 312,
     "layers" : [ {
       "id" : "node-fef3-4d03:layer-0000",
       "type" : "OS",
@@ -708,7 +712,7 @@
     "siteId" : "site-5dc5-4adb",
     "type" : "ICE_1",
     "x" : 625,
-    "y" : 200,
+    "y" : 192,
     "layers" : [ {
       "id" : "node-9f1b-4275:layer-0000",
       "type" : "OS",
@@ -734,6 +738,211 @@
       "text" : "This is the 'Netwalk' ICE, which is like a pipe laying puzzle. Click the tiles to rotate them so that all tiles connect perfectly."
     } ],
     "networkId" : "04",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-bb55-41c0",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "MANUAL_1",
+    "x" : 825,
+    "y" : 472,
+    "layers" : [ {
+      "id" : "node-bb55-41c0:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-bb55-41c0:layer-0fd2",
+      "type" : "SWEEPER_ICE",
+      "level" : 1,
+      "name" : "Visphotak",
+      "note" : "",
+      "strength" : "VERY_WEAK",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-bb55-41c0:layer-5388",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "About this ICE",
+      "note" : "",
+      "text" : "This is the Minsweeper ICE.\n\nIf you become blocked, you can reset the puzzle by clicking on the reset button. You will need to keep pressing the button for 7 seconds."
+    } ],
+    "networkId" : "22",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-a949-4258",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "MANUAL_1",
+    "x" : 745,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-a949-4258:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-a949-4258:layer-d32d",
+      "type" : "SWEEPER_ICE",
+      "level" : 1,
+      "name" : "Visphotak",
+      "note" : "",
+      "strength" : "WEAK",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-a949-4258:layer-f89f",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Note",
+      "note" : "",
+      "text" : "This is the weak strength of the Minesweeper ICE. It corresponds to beginner difficulty in classic minesweeper games.\n\nThere is nothing behind this ICE."
+    } ],
+    "networkId" : "23",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-0b39-49e3",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "MANUAL_1",
+    "x" : 825,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-0b39-49e3:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-0b39-49e3:layer-04a4",
+      "type" : "SWEEPER_ICE",
+      "level" : 1,
+      "name" : "Visphotak",
+      "note" : "",
+      "strength" : "AVERAGE",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-0b39-49e3:layer-c254",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Note",
+      "note" : "",
+      "text" : "This is the average strength of the Minesweeper ICE. It corresponds to intermediate difficulty in classic minesweeper games.\n\nThere is nothing behind this ICE."
+    } ],
+    "networkId" : "24",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-bb95-497f",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "MANUAL_1",
+    "x" : 905,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-bb95-497f:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-bb95-497f:layer-51ce",
+      "type" : "SWEEPER_ICE",
+      "level" : 1,
+      "name" : "Visphotak",
+      "note" : "",
+      "strength" : "VERY_STRONG",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-bb95-497f:layer-0344",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Note",
+      "note" : "",
+      "text" : "This is the very strong strength of the Minesweeper ICE. It corresponds to expert difficulty in classic minesweeper games.\n\nThere is nothing behind this ICE."
+    } ],
+    "networkId" : "25",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-56d0-40e9",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "MANUAL_1",
+    "x" : 905,
+    "y" : 472,
+    "layers" : [ {
+      "id" : "node-56d0-40e9:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-56d0-40e9:layer-746d",
+      "type" : "SWEEPER_ICE",
+      "level" : 1,
+      "name" : "Visphotak",
+      "note" : "",
+      "strength" : "ONYX",
+      "hacked" : false,
+      "ice" : true
+    }, {
+      "id" : "node-56d0-40e9:layer-95a4",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Note",
+      "note" : "",
+      "text" : "This is the strongest/hardest of this type of ICE. There is nothing behind it. This is to showcase how hard this type of ICE can get."
+    } ],
+    "networkId" : "26",
+    "ice" : true,
+    "hacked" : true,
+    "unhackedIce" : true
+  }, {
+    "id" : "node-df84-4769",
+    "siteId" : "site-5dc5-4adb",
+    "type" : "ICE_3",
+    "x" : 505,
+    "y" : 472,
+    "layers" : [ {
+      "id" : "node-df84-4769:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-df84-4769:layer-0352",
+      "type" : "TANGLE_ICE",
+      "level" : 1,
+      "name" : "Gaanth",
+      "note" : "",
+      "strength" : "WEAK",
+      "hacked" : false,
+      "clusters" : 2,
+      "ice" : true
+    }, {
+      "id" : "node-df84-4769:layer-ed49",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Note",
+      "note" : "",
+      "text" : "This is an example of the tangle ICE with two clusters. Having 2 or more clusters means there are more lines to untangle, but also makes it easier for multiple hackers to cooperate when solving this puzzle."
+    } ],
+    "networkId" : "27",
     "ice" : true,
     "hacked" : true,
     "unhackedIce" : true
@@ -801,5 +1010,23 @@
   }, {
     "fromId" : "node-66c5-47f0",
     "toId" : "node-596f-420e"
+  }, {
+    "fromId" : "node-596f-420e",
+    "toId" : "node-bb55-41c0"
+  }, {
+    "fromId" : "node-bb55-41c0",
+    "toId" : "node-a949-4258"
+  }, {
+    "fromId" : "node-bb55-41c0",
+    "toId" : "node-0b39-49e3"
+  }, {
+    "fromId" : "node-bb55-41c0",
+    "toId" : "node-bb95-497f"
+  }, {
+    "fromId" : "node-bb55-41c0",
+    "toId" : "node-56d0-40e9"
+  }, {
+    "fromId" : "node-9391-4e1e",
+    "toId" : "node-df84-4769"
   } ]
 }

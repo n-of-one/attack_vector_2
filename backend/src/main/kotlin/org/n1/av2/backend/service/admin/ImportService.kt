@@ -223,6 +223,7 @@ class ImportService(
             LayerType.TAR_ICE -> TarIceLayer(id, LayerType.TAR_ICE, level, name, note, strength, false)
             LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, LayerType.WORD_SEARCH_ICE, level, name, note, strength, false)
             LayerType.PASSWORD_ICE -> mapPasswordIce(input, id, level, name, note, strength)
+            LayerType.SWEEPER_ICE -> SweeperIceLayer(id, LayerType.SWEEPER_ICE, level, name, note, strength, false)
             else -> error("Unsupported ice layer type: $layerType")
         }
     }

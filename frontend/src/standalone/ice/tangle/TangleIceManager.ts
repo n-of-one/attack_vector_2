@@ -37,7 +37,7 @@ class TangleIceManager extends GenericIceManager {
         })
         this.schedule.clear()
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
-        if (true) {
+        if (!larp.quickPlaying) {
             this.displayTerminal(20, "[primary]↼ Connecting to ice, initiating attack")
             this.displayTerminal(40, "↼ Network inspection")
             this.displayTerminal(10, "↼ Complete")
@@ -49,8 +49,8 @@ class TangleIceManager extends GenericIceManager {
             this.displayTerminal(20, "↼ Negotiating lowest entropy")
             this.displayTerminal(30, "...")
             this.displayTerminal(20, "↼ Negotiation complete")
-            this.displayTerminal(5, "[primary]↼ Start manual decryption")
         }
+        this.displayTerminal(5, "[primary]↼ Start manual decryption")
         this.schedule.dispatch(0, {type: ICE_TANGLE_BEGIN})
     }
 

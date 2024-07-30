@@ -118,6 +118,7 @@ class SiteCloneService(
             is TangleIceLayer -> TangleIceLayer(id, sourceLayer)
             is TarIceLayer -> TarIceLayer(id, sourceLayer)
             is WordSearchIceLayer -> WordSearchIceLayer(id, sourceLayer)
+            is SweeperIceLayer -> SweeperIceLayer(id, sourceLayer)
             else -> error("Unknown layer type: ${sourceLayer.type}")
         }
     }

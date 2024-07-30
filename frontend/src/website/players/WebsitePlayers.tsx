@@ -44,7 +44,8 @@ export const WebsitePlayers = () => {
 
                 <h3 className="muted">Terminal</h3>
                 <p className="text">
-                    Hacking a site is done by entering the commands in the terminal. There are only a few commands to learn like "move" or "hack". You can always use the
+                    Hacking a site is done by entering the commands in the terminal. There are only a few commands to learn like "move" or "hack". You can
+                    always use the
                     command 'help' to see the available commands.<br/>
                     <br/>
                     <a href="/website/players-commands">Terminal commands</a>
@@ -59,8 +60,9 @@ export const WebsitePlayers = () => {
                     <li className="text"><a href="/website/players-ice-word-search">Word search</a><br/><br/></li>
                     <li className="text"><a href="/website/players-ice-tangle">Tangle</a><br/><br/></li>
                     <li className="text"><a href="/website/players-ice-netwalk">Netwalk</a><br/><br/></li>
+                    <li className="text"><a href="/website/players-ice-minesweeper">Minesweeper</a><br/><br/></li>
                     <li className="text"><a href="/website/players-ice-password">Password</a><br/><br/></li>
-                    <li className="text"><a href="/website/players-ice-tar">Tar</a></li>
+                    <li className="text"><a href="/website/players-ice-tar">Tar</a><br/><br/></li>
                 </ul>
             </div>
         </div>

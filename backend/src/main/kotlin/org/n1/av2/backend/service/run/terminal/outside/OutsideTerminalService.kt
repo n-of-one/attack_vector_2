@@ -51,7 +51,7 @@ class OutsideTerminalService(
     }
 
     private fun reportHackCommand() {
-        stompService.replyTerminalReceive("[warn]still scanning[/] - First initiate the attack with: [b]attack[/]")
+        stompService.replyTerminalReceive("[warn]You are outside[/] - First, start the attack with: [b]attack[/]")
     }
 
 

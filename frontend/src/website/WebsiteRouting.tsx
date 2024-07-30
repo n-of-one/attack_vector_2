@@ -11,6 +11,7 @@ import {WebsiteLayers} from "./players/WebsiteLayers";
 import {WebsiteGms} from "./gms/WebsiteGms";
 import {WebsiteOrganizers} from "./organizers/WebsiteOrganizers";
 import {WebsiteLandingPage} from "./WebsiteLandingPage";
+import {WebsiteIceMineSweeper} from "./players/WebsiteIceMineSweeper";
 
 export const WebsiteRouting = () => {
 
@@ -33,6 +34,8 @@ export const WebsiteRouting = () => {
             return <WebsiteIcePassword/>
         case "players-ice-tar":
             return <WebsiteIceTar/>
+        case "players-ice-minesweeper":
+            return <WebsiteIceMineSweeper/>
         case "gms":
             return <WebsiteGms/>
         case "organizers":
