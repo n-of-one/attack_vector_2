@@ -20,7 +20,9 @@ sudo apt-get install -y mongodb-org
 # reduce memory usage of MongoDB
 sudo cp install/mongod.conf /etc/mongod.confls
 
+sudo systemctl enable mongod
 sudo systemctl start mongod
+
 sleep 2
 # sudo systemctl status mongod
 
