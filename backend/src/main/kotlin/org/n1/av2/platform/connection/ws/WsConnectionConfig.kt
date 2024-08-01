@@ -45,28 +45,31 @@ class WebSocketConfig(
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
 
+        fun determineUser(notLoggedInUserName: String ): Principal {
+            // If the user is logged in, the UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
+            val authentication = SecurityContextHolder.getContext().authentication
+
+            if (authentication !is UserPrincipal || !authentication.userEntity.type.authorities.contains(ROLE_USER)) {
+                // signal to the client that they need to log in first.
+                return UserPrincipal(
+                    _name = notLoggedInUserName,
+                    connectionId = connectionIdService.create(),
+                    userEntity = NOT_LOGGED_IN_USER,
+                    type = ConnectionType.NONE,
+                )
+            }
+
+            /// Replace the name with username + connectionId, so that the Client will know its unique connectionId.
+            val userPrincipal: UserPrincipal = authentication
+            return userPrincipal.copy(_name = "${userPrincipal.userId}_${userPrincipal.connectionId}")
+        }
+
         class AuthenticatedHandshakeHandler : DefaultHandshakeHandler() {
             override fun determineUser(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
                 attributes: Map<String, Any>
             ): Principal {
-
-                // If the user is logged in, the UserPrincipal has already been set when the http-request passed through the JwtAuthentication filter. The JWT was taken from the cookie.
-                val authentication = SecurityContextHolder.getContext().authentication
-
-                if (authentication !is UserPrincipal || !authentication.userEntity.type.authorities.contains(ROLE_USER)) {
-                    // signal to the client that they need to log in first.
-                    return UserPrincipal(
-                        _name = "login-needed", // this username will trigger the frontend to redirect to the login page.
-                        connectionId = connectionIdService.create(),
-                        userEntity = NOT_LOGGED_IN_USER,
-                        type = ConnectionType.NONE,
-                    )
-                }
-
-                /// Replace the name with username + connectionId, so that the Client will know its unique connectionId.
-                val userPrincipal: UserPrincipal = authentication
-                return userPrincipal.copy(_name = "${userPrincipal.userId}_${userPrincipal.connectionId}")
+                return determineUser("login-needed") // this username will trigger the frontend to redirect to the login page.
             }
         }
 
@@ -75,15 +78,9 @@ class WebSocketConfig(
                 request: ServerHttpRequest, wsHandler: WebSocketHandler,
                 attributes: Map<String, Any>
             ): Principal {
-                return UserPrincipal(
-                    _name = "none",
-                    connectionId = connectionIdService.create(),
-                    userEntity = NOT_LOGGED_IN_USER,
-                    type = ConnectionType.WS_UNRESTRICTED,
-                )
+                return determineUser("none") // this username will not trigger a redirect to login.
             }
         }
-
 
         registry
             .addEndpoint(UNRESTRICTED_ENDPOINT)
