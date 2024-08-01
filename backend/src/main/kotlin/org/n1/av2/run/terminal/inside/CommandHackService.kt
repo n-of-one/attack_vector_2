@@ -85,7 +85,7 @@ class CommandHackService(
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
             is CoreLayer -> coreLayerService.hack(layer, runId)
             is TripwireLayer -> tripwireLayerService.hack(layer)
-            else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type}")
+            else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}")
         }
     }
 
