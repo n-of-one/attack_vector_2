@@ -1,15 +1,16 @@
-package org.n1.av2.backend.integration
+package org.n1.av2.integration
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.n1.av2.backend.integration.service.WebsocketSiteService
-import org.n1.av2.backend.integration.stomp.HackerClient
-import org.n1.av2.backend.integration.stomp.StompClientService
+import org.n1.av2.integration.service.WebsocketSiteService
+import org.n1.av2.integration.stomp.HackerClient
+import org.n1.av2.integration.stomp.StompClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -29,6 +30,8 @@ import kotlin.random.Random
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+
+@Disabled // don't run this test by default, it's very slow. Also, currently AutoConfigureDataMongo is not working, so you need to manually start a MongoDB instance
 class WebsocketTest {
 
     @Autowired
@@ -70,7 +73,9 @@ class WebsocketTest {
             follower.startAttack()
         }
 
-        (1..1).forEach {
+        val moves = 1
+
+        (1..moves).forEach {
             moveBackAndForth(followers)
         }
     }

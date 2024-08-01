@@ -1,4 +1,4 @@
-package org.n1.av2.backend.integration.stomp
+package org.n1.av2.integration.stomp
 
 import kotlinx.coroutines.delay
 import org.n1.av2.platform.connection.ServerActions
@@ -90,8 +90,8 @@ class AvClient(
 
 
 class MyStompSessionHandler(
-    private val receivedMessages: MessageQueue,
-    val name: String
+    receivedMessages: MessageQueue,
+    name: String
 ) : StompSessionHandlerAdapter() {
 
     val frameHandler = MyStompFrameHander(receivedMessages, name)

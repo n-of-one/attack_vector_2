@@ -96,8 +96,8 @@ class ScanService(
 
         return traverseNodes.map {
             val nodeStatus = when (it.value.distance) {
-                1 -> NodeScanStatus.CONNECTABLE_2
-                else -> NodeScanStatus.UNDISCOVERED_0
+                1 -> CONNECTABLE_2
+                else -> UNDISCOVERED_0
             }
             it.key to NodeScan(status = nodeStatus, distance = it.value.distance!!)
         }.toMap().toMutableMap()

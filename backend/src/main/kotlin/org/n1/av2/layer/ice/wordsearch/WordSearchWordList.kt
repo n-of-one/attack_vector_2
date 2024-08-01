@@ -13,10 +13,11 @@ class WordSearchWordList {
     private val wordsBySize: Map<Int, List<String>>
 
     init {
-        val words = WordSearchWordList::class.java.getResourceAsStream("/ice/word_search/wordlist.txt")
-            .bufferedReader()
-            .readLines()
-            .map { it.uppercase() }
+        val path  = "/ice/word_search/wordlist.txt"
+        val words = WordSearchWordList::class.java.getResourceAsStream(path)
+            ?.bufferedReader()
+            ?.readLines()
+            ?.map { it.uppercase() } ?: error("Failed to load word list from: $path")
 
         wordsBySize = words
             .filter { it.length in 3..12 }

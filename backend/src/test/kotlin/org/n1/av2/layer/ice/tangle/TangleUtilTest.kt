@@ -1,11 +1,7 @@
-package org.n1.av2.backend.service.layerhacking.ice.password
+package org.n1.av2.layer.ice.tangle
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.n1.av2.layer.ice.tangle.TLine
-import org.n1.av2.layer.ice.tangle.intersect
-import org.n1.av2.layer.ice.tangle.segmentsIntersect
-import org.n1.av2.layer.ice.tangle.toLine
 
 class TangleUtilTest {
 

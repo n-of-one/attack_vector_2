@@ -1,6 +1,6 @@
-package org.n1.av2.backend.integration.stomp
+package org.n1.av2.integration.stomp
 
-import org.n1.av2.backend.integration.service.WebsocketUserService
+import org.n1.av2.integration.service.WebsocketUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

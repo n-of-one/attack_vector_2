@@ -15,7 +15,6 @@ import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.site.SiteResetService
-import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.context.annotation.Lazy
 import java.time.Duration
@@ -33,7 +32,6 @@ class TripwireLayerService(
     private val nodeEntityService: NodeEntityService,
     @Lazy private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
-    private val siteService: SiteService,
     private val siteResetService: SiteResetService,
 ) {
 

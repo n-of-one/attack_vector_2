@@ -9,8 +9,6 @@ class ConnectionEntityService(
     private val connectionRepo: ConnectionRepo
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
-
     fun findConnection(startId: String, endId: String): Connection? {
         val startConnections = findByNodeId(startId)
         return startConnections.find { it.fromId == endId || it.toId == endId }

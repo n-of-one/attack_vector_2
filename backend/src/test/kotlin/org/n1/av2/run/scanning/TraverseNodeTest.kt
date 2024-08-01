@@ -1,10 +1,8 @@
-package org.n1.av2.backend.service.run.terminal.scanning
+package org.n1.av2.run.scanning
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.n1.av2.run.scanning.BlockedPathException
-import org.n1.av2.run.scanning.TraverseNode
 
 class TraverseNodeTest {
 

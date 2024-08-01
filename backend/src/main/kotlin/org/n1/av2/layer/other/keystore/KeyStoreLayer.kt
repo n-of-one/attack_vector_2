@@ -23,7 +23,7 @@ class KeyStoreLayer(
             this(id, LayerType.KEYSTORE, toClone.level, toClone.name, toClone.note, toClone.iceLayerId)
 
     private fun validateText(siteRep: SiteRep) {
-        if (this.iceLayerId == null) throw SiteValidationException("Choose ICE that keystore provides password for.");
+        if (this.iceLayerId == null) throw SiteValidationException("Choose ICE that keystore provides password for.")
          findLayerById(this.iceLayerId!!, siteRep.nodes) ?: throw SiteValidationException("Choose ICE that keystore provides password for.")
     }
 

@@ -23,8 +23,6 @@ class HackerStateEntityService(
     private val runEntityService: RunEntityService
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
-
     @EventListener(ApplicationReadyEvent::class)
     fun init() {
         // If the server starts, all hackers are logged out by definition.

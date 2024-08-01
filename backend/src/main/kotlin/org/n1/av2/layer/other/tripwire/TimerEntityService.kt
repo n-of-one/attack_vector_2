@@ -1,6 +1,5 @@
 package org.n1.av2.layer.other.tripwire
 
-import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.util.createId
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
@@ -8,7 +7,6 @@ import java.time.ZonedDateTime
 @Service
 class TimerEntityService(
     private val repository: TimerRepository,
-    private val connectionService: ConnectionService,
 ) {
 
     fun findByLayer(layerId: String): Timer? {

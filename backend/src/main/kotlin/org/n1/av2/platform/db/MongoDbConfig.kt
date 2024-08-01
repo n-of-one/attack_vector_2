@@ -51,7 +51,7 @@ class MongoDbConfig(
 
 
     override fun getMappingBasePackages(): Collection<String> {
-        return listOf("org.n1.av2.backend.model", "org.n1.av2.backend.model.scan")
+        return listOf("org.n1.av2")
     }
 
     override fun configureConverters(converterConfigurationAdapter: MongoConverterConfigurationAdapter) {

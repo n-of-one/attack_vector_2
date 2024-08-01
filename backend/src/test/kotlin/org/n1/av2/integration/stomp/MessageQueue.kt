@@ -1,4 +1,4 @@
-package org.n1.av2.backend.integration.stomp
+package org.n1.av2.integration.stomp
 
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

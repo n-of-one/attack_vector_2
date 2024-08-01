@@ -26,8 +26,6 @@ class CommandStartAttackService(
     private val connectionService: ConnectionService,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
-
     fun startAttack(run: Run, quick: Boolean) {
 
         val userId = currentUserService.userId

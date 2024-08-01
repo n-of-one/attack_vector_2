@@ -30,8 +30,6 @@ class HackerConnectionService(
 
     lateinit var runService: RunService
 
-    private val logger = mu.KotlinLogging.logger {}
-
     fun browserConnect(userPrincipal: UserPrincipal) {
         if (userPrincipal.type == WS_HACKER_MAIN) {
 

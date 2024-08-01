@@ -196,7 +196,7 @@ class NetwalkCreator(iceStrength: IceStrength) {
         val sHasWall = walls.contains(sWall) || finalWalls.contains(sWall)
         val wHasWall = walls.contains(wWall) || finalWalls.contains(wWall)
 
-        return NetwalkCellType.values().find { type ->
+        return NetwalkCellType.entries.find { type ->
             type.n != nHasWall &&
                     type.e != eHasWall &&
                     type.s != sHasWall &&

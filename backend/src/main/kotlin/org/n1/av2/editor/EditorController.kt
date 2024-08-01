@@ -11,8 +11,6 @@ class EditorController(
     private val editorService: EditorService,
     private val userTaskRunner: UserTaskRunner
 ) {
-    private val logger = mu.KotlinLogging.logger {}
-
     @MessageMapping("/editor/open")
     fun open(siteName: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) { editorService.open(siteName) }

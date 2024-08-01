@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class IceAuthorizationService(
     @Lazy private val authAppService: AuthAppService,
-    @Lazy private val iceService: org.n1.av2.layer.ice.common.IceService,
+    @Lazy private val iceService: IceService,
     private val currentUserService: CurrentUserService,
     ) {
 

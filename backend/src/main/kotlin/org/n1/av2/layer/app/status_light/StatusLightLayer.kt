@@ -24,7 +24,7 @@ class StatusLightLayer(
     ) : Layer(id, type, level, name, note) {
 
     constructor(id: String, type: LayerType, level: Int, defaultName: String, appId: String?, textForRed: String, textForGreen: String) :
-            this(id, type, level, defaultName, "", null, false, textForRed, textForGreen)
+            this(id, type, level, defaultName, "", appId, false, textForRed, textForGreen)
 
     constructor(id: String, toClone: StatusLightLayer) :
             this(id, LayerType.STATUS_LIGHT, toClone.level, toClone.name, toClone.note, toClone.appId, toClone.status, toClone.textForRed, toClone.textForGreen)

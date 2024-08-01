@@ -1,14 +1,13 @@
-package org.n1.av2.backend.web.rest
+package org.n1.av2.platform.iam.login
 
 import jakarta.servlet.http.Cookie
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.notNullValue
+import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
-import org.n1.av2.platform.iam.login.LoginService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -16,14 +15,18 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @AutoConfigureDataMongo
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+
+@Disabled // AutoConfigureDataMongo is not working, so you need to manually start a MongoDB instance
 class ApiSiteWsControllerTest(
 ) {
 
@@ -46,41 +49,27 @@ class ApiSiteWsControllerTest(
     }
 
     @Test
-    fun `editSite happy flow`() {
+    fun `test simple get`() {
         mvc.perform(
-            post("/api/site/edit")
+            get("/openapi/google/clientId")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"siteName": "Hello"}""")
-                .cookie(authCookie)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", `is`(notNullValue())))
+            .andExpect(content().string("""{"clientId":"none"}"""))
     }
 
     @Test
     fun `editSite input validation`() {
-        val invalidSiteName = "hackattempt \\u0000" // invalid 0 character, escaped for json
+        val invalidJwt ="hack attempt \\u0000" // invalid 0 character, escaped for json
         mvc.perform(
-            post("/api/site/edit")
+            post("/openapi/login/google")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"siteName": "$invalidSiteName"}""")
+                .content("""{"jwt": "$invalidJwt"}""")
                 .cookie(authCookie)
         )
             .andExpect(status().isBadRequest())
+            .andExpect(content().string(containsString("must match \"[\\p")))
     }
 
-
-    @Test
-    fun `deleteSite happy flow`() {
-        mvc.perform(
-            post("/api/site/edit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"siteName": "Hello"}""")
-                .cookie(authCookie)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", `is`(notNullValue())))
-    }
 }

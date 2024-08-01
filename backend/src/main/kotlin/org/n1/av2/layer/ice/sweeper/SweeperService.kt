@@ -202,18 +202,6 @@ class SweeperService(
         hackedUtil.iceHacked(sweeper.layerId, 4 * SECONDS_IN_TICKS)
     }
 
-    private fun areAllNonMinesRevealed(sweeper: SweeperIceStatus): Boolean {
-        return sweeper.cells
-            .zip(sweeper.modifiers) // [([c, m], [c, m], [etc]), ([c, m], [c, m], [etc]), (etc)]
-            .flatMap { it.first.zip(it.second) } // [(c, m), (c, m), (c, m), (c, m), (c, m), (etc)]
-            .none { unsolvedCell(it) }
-    }
-
-    private fun unsolvedCell(input: Pair<Char, Char>): Boolean {
-        val (cell, modifier) = input
-        return modifier == HIDDEN && cell != MINE // cell is hidden and is not a mine
-    }
-
     class SweeperResetMessage(val userName: String)
     fun startReset(iceId: String) {
         val sweeper = sweeperIceStatusRepo.findById(iceId).getOrElse {

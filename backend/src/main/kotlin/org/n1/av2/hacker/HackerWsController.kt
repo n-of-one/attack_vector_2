@@ -15,9 +15,6 @@ class HackerWsController(
 
     ) {
 
-    private val logger = mu.KotlinLogging.logger {}
-
-
     @MessageMapping("/hacker/logon")
     fun logon(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {

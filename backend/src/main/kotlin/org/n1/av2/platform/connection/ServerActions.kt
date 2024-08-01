@@ -32,8 +32,6 @@ enum class ServerActions {
     SERVER_RECEIVE_USERS_OVERVIEW,  // List of users for user-overview
     SERVER_USER_DETAILS,            // User details for editing
 
-    SERVER_UPDATE_USER_SITES,       // Send at logon to hacker to update the sites shown on sites page of that user
-
     SERVER_UPDATE_USER_RUNS,        // Sent at logon to hacker to update the runs shown on home page of that user
     SERVER_UPDATE_RUN_INFO,         // Scan info has changed (as displayed on home screen)
     SERVER_SITE_DISCOVERED,         // Result of scan site for name

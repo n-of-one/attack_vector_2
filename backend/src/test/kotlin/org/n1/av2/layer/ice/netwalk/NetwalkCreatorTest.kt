@@ -1,8 +1,7 @@
-package org.n1.av2.backend.service.layerhacking.netwalk
+package org.n1.av2.layer.ice.netwalk
 
 import org.junit.jupiter.api.Test
 import org.n1.av2.site.entity.enums.IceStrength
-import org.n1.av2.layer.ice.netwalk.NetwalkCreator
 
 class NetwalkCreatorTest {
 

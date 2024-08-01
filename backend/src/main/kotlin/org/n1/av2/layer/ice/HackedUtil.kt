@@ -3,7 +3,6 @@ package org.n1.av2.layer.ice
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
@@ -12,7 +11,6 @@ import org.springframework.context.annotation.Lazy
 
 @org.springframework.stereotype.Service
 class HackedUtil(
-    private val currentUser: CurrentUserService,
     private val nodeEntityService: NodeEntityService,
     private val connectionService: ConnectionService,
     @Lazy private val runService: RunService,

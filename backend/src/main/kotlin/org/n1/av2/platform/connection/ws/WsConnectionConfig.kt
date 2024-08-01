@@ -87,7 +87,7 @@ class WebSocketConfig(
             .setAllowedOrigins("*")
             .setHandshakeHandler(AuthenticatedHandshakeHandler())
 
-        registry.setPreserveReceiveOrder(true);
+        registry.setPreserveReceiveOrder(true)
 
     }
 

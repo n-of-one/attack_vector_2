@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service
 class CurrentUserService {
     private val userEntityStore = ThreadLocal<UserEntity>()
 
-    private val logger = mu.KotlinLogging.logger {}
-
     fun set(userEntity: UserEntity) {
         userEntityStore.set(userEntity)
     }
@@ -32,13 +30,6 @@ class CurrentUserService {
             val user = userEntityStore.get() ?: return true
             return user.id == SYSTEM_USER.id
         }
-
-    val isAdmin: Boolean
-        get() {
-            val user = userEntityStore.get() ?: return false
-            return user.type == ADMIN
-        }
-
     fun remove() {
         userEntityStore.remove()
     }

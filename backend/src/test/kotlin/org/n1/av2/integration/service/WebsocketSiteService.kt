@@ -1,22 +1,27 @@
-package org.n1.av2.backend.integration.service
+package org.n1.av2.integration.service
 
 import jakarta.servlet.http.Cookie
-import org.n1.av2.run.runlink.RunLinkEntityService
-import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.platform.iam.login.LoginService
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.n1.av2.site.export.ImportService
-import org.n1.av2.platform.iam.login.LoginService
 import org.springframework.stereotype.Service
 
 @Service
 class WebsocketSiteService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val importService: ImportService,
+    private val currentUserService: CurrentUserService,
+    private val userEntityService: UserEntityService,
 ) {
 
     fun importTestSite(name: String) {
         val siteJson = ClassLoader.getSystemResource(name).readText()
+        val system = userEntityService.getByName("system")
+        currentUserService.set(system)
         importService.importSite(siteJson)
     }
 
@@ -29,7 +34,6 @@ class WebsocketSiteService(
 
 @Service
 class WebsocketUserService(
-    private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
     private val runLinkEntityService: RunLinkEntityService,
     private val loginService: LoginService,

@@ -39,7 +39,7 @@ val map = hashMapOf(
 fun process(file: File) {
     if (file.isFile) allNames.add(file.name)
     if (map.containsKey(file.name)) {
-        val newFile = File(file.parentFile, map[file.name])
+        val newFile = File(file.parentFile, map[file.name] ?: error("no mapping for ${file.name}"))
         println("renaming ${file} to ${newFile}")
         file.renameTo(newFile)
     }
