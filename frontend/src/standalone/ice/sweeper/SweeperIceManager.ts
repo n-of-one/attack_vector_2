@@ -16,6 +16,7 @@ import {ice} from "../../StandaloneGlobals";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";
 import {notify} from "../../../common/util/Notification";
+import {avEncodedUrl} from "../../../common/util/PathEncodeUtils";
 
 
 class SweeperIceManager extends GenericIceManager {
@@ -146,10 +147,11 @@ class SweeperIceManager extends GenericIceManager {
         this.displayTerminal(5, `↼ Reset [ok]aborted[/]. Keep holding reset to complete the reset.`);
     }
 
-    completeReset(userName: string) {
+    completeReset(userName: string, newIceId: string) {
         this.displayTerminal(30, `↼ Reset completed by [info]${userName}[/]`);
         this.schedule.run(0, () => {
-            window.close()
+            const url = avEncodedUrl(`ice/siteHack/${newIceId}`)
+            window.open(url, "_self")
         })
     }
 }

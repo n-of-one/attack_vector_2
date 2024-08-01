@@ -1,7 +1,7 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_FORCE_DISCONNECT, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {FORCE_DISCONNECT, NAVIGATE_PAGE} from "../menu/pageReducer";
@@ -156,9 +156,6 @@ export class WebSocketConnection {
     handleEvent(wsMessage: Message) {
         const action = JSON.parse(wsMessage.body)
 
-        if (action.type === SERVER_FORCE_DISCONNECT) {
-            this.abort("Server forced disconnection.")
-        }
         if (action.type === SERVER_USER_CONNECTION &&
             this.connectionType === action.data.type &&
             this.connectionId !== action.data.connectionId) {

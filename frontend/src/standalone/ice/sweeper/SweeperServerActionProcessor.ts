@@ -45,6 +45,11 @@ interface SweeperResetData {
     userName: string,
 }
 
+interface SweeperResetCompleteData {
+    userName: string,
+    newIceId: string,
+}
+
 export const initSweeperServerActions = (store: Store) => {
     webSocketConnection.addAction(SERVER_SWEEPER_ENTER, (data: SweeperEnterData) => {
         sweeperIceManager.enter(data)
@@ -66,8 +71,8 @@ export const initSweeperServerActions = (store: Store) => {
     webSocketConnection.addAction(SERVER_SWEEPER_RESET_STOP, (data: SweeperResetData) => {
         sweeperIceManager.stopReset(data.userName)
     })
-    webSocketConnection.addAction(SERVER_SWEEPER_RESET_COMPLETE, (data: SweeperResetData) => {
-        sweeperIceManager.completeReset(data.userName)
+    webSocketConnection.addAction(SERVER_SWEEPER_RESET_COMPLETE, (data: SweeperResetCompleteData) => {
+        sweeperIceManager.completeReset(data.userName, data.newIceId)
     })
 
 

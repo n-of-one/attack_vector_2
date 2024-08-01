@@ -32,7 +32,7 @@
     </root>
 
     <logger name="org.n1" level="DEBUG" />
-    <logger name="org.n1.av2.backend.service.user.CurrentUserService" level="TRACE" />
+    <logger name="org.n1.av2.platform.iam.user.CurrentUserService" level="TRACE" />
     <logger name="org.springframework" level="INFO" />
     <logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="WARN" />
     <logger name="org.apache.catalina.core" level="WARN" />

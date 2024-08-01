@@ -3,6 +3,7 @@ package org.n1.av2.backend.util
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.n1.av2.platform.util.FileNameUtil
 
 class FileNameUtilTest() {
     private val util = FileNameUtil()

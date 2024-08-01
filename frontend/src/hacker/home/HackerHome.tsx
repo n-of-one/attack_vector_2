@@ -73,7 +73,7 @@ export const HackerHome = () => {
                                                 </td>
                                                 <td className="table-very-condensed">{runInfo.nodes}</td>
                                                 <td className="table-very-condensed">
-                                                    {larp.hackersDeleteRunLinks ? <DeleteScanLink runId={runInfo.runId}/> : <></>}
+                                                    {larp.hackersDeleteRunLinks ? <DeleteRunLink runId={runInfo.runId}/> : <></>}
                                                     {larp.hackersResetSite ? <ResetIceLink siteId={runInfo.siteId} siteName={runInfo.siteName}/> : <></>}
                                                 </td>
                                             </tr>)
@@ -93,9 +93,9 @@ export const prepareToEnterRun = (runId: string) => {
     webSocketConnection.send("/run/prepareToEnterRun", runId)
 }
 
-const DeleteScanLink = (props: { runId: string }) => {
+const DeleteRunLink = (props: { runId: string }) => {
     const deleteScan = () => {
-        webSocketConnection.send("/scan/deleteScan", props.runId)
+        webSocketConnection.send("/run/deleteRunLink", props.runId)
     }
 
     return <SilentLink onClick={deleteScan} title="Remove run">

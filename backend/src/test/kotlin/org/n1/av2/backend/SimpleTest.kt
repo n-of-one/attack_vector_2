@@ -3,6 +3,7 @@ package org.n1.av2.backend
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.n1.av2.AttackVector
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate

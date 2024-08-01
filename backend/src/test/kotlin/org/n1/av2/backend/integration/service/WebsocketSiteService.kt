@@ -1,12 +1,12 @@
 package org.n1.av2.backend.integration.service
 
 import jakarta.servlet.http.Cookie
-import org.n1.av2.backend.entity.run.RunLinkEntityService
-import org.n1.av2.backend.entity.site.SitePropertiesEntityService
-import org.n1.av2.backend.entity.user.UserEntity
-import org.n1.av2.backend.entity.user.UserEntityService
-import org.n1.av2.backend.service.admin.ImportService
-import org.n1.av2.backend.service.security.LoginService
+import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.platform.iam.user.UserEntity
+import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.site.export.ImportService
+import org.n1.av2.platform.iam.login.LoginService
 import org.springframework.stereotype.Service
 
 @Service

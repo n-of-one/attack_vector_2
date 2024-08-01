@@ -6,7 +6,6 @@ import {ServerNotification} from "../../editor/server/EditorServerActionProcesso
 export const SERVER_NOTIFICATION = "SERVER_NOTIFICATION"
 export const SERVER_ERROR = "SERVER_ERROR"
 export const SERVER_DISCONNECT = "SERVER_DISCONNECT"
-export const SERVER_FORCE_DISCONNECT = "SERVER_FORCE_DISCONNECT"
 export const SERVER_TIME_SYNC = "SERVER_TIME_SYNC"
 export const SERVER_USER_CONNECTION = "SERVER_USER_CONNECTION"
 export const SERVER_OPEN_EDITOR = "SERVER_OPEN_EDITOR"
@@ -18,10 +17,6 @@ export const initGenericServerActions = () => {
     })
 
     webSocketConnection.addAction(SERVER_NOTIFICATION, (data: ServerNotification) => {
-        notify(data)
-    })
-
-    webSocketConnection.addAction(SERVER_FORCE_DISCONNECT, (data: ServerNotification) => {
         notify(data)
     })
 

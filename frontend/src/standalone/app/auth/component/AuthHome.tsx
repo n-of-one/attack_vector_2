@@ -110,7 +110,7 @@ const PasswordInput = () => {
     const [password, setPassword] = React.useState("")
     const [showPassword, setShowPassword] = React.useState(false)
     const type = useSelector((root: AuthAppRootState) => root.info.type)
-    const placeHolder = type === PASSWORD_ICE ? "password" : "passcode-xxxx-xxxx"
+    const placeHolder = type === PASSWORD_ICE ? "password" : "type/xx-xx-xx-xx/xx-xx-xx-xx/"
     const dispatch = useDispatch()
 
     const submit = () => {

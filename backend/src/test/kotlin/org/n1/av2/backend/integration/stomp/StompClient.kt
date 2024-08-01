@@ -1,7 +1,7 @@
 package org.n1.av2.backend.integration.stomp
 
 import kotlinx.coroutines.delay
-import org.n1.av2.backend.model.ui.ServerActions
+import org.n1.av2.platform.connection.ServerActions
 import org.springframework.http.HttpHeaders
 import org.springframework.lang.Nullable
 import org.springframework.messaging.Message

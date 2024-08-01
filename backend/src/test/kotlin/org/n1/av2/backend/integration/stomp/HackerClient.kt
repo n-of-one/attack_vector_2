@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.n1.av2.backend.model.ui.ServerActions
-import org.n1.av2.backend.service.run.RunService
-import org.n1.av2.backend.service.site.RunLinkService
+import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.run.RunService
+import org.n1.av2.run.runlink.RunLinkService
 
 class HackerClient(
     private val client: AvClient,

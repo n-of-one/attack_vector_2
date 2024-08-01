@@ -260,12 +260,12 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_REDIRECT_HACK_ICE, (data: RedirectHackIce) => {
         const url = avEncodedUrl(`ice/siteHack/${data.iceId}`)
-        window.open(url)
+        window.open(url, "app")
     })
 
     webSocketConnection.addAction(SERVER_REDIRECT_CONNECT_ICE, (data: RedirectConnectIce) => {
         const url = avEncodedUrl(`app/auth/${data.layerId}`)
-        window.open(url)
+        window.open(url, "app")
     })
 
     webSocketConnection.addAction(SERVER_NODE_HACKED, (data: NodeHacked) => {
@@ -280,6 +280,6 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_REDIRECT_CONNECT_APP, (data: RedirectConnectApp) => {
         const url = avEncodedUrl(`app/${data.type}/${data.layerId}`)
-        window.open(url)
+        window.open(url, "app")
     })
 }
