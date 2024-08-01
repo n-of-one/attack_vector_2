@@ -7,28 +7,27 @@ import org.springframework.stereotype.Service
 /**
  * A Syntax has this form:
  *
- * "hack" -> Syntax("u", "primary", "error s")
+ * "hack" -> Syntax("t_b", "t_primary", "t_error t_s")
  *
  * This translates to
  *
  * Syntax {
- * main: ["u", "primary"],
- * rest: "error s"
+ *   main: ["t_b", "t_primary"],
+ *   rest: "t_error t_s"
  * }
  *
  * This means:
- * - the first word will be underlined (in this case the command "hack"
- * - the second word will be marked with style primary, the name of the site to hack
- * - any additional parameters will be marked with styles error (red), s (strikethrough) to mark them as not useful
+ * - the first word will be style t_b=bold (the command "hack")
+ * - the second word will be marked with style t_primary=primary (the name of the site to hack)
+ * - any additional parameters will be marked with styles ts_error=red and t_s=strikethrough to mark them as not useful
  *
- * In the frontend this is implemented through css styles, and the syntax is prefixed with "terminal_style_", so
- * "u" becomes "terminal_style_u", which is defined in terminal.css .
+ * The css for this is located in terminal.css
  */
 
 data class Syntax(val main: List<String>, val rest: String) {
 
-    constructor(first: String): this(listOf<String>(first), "error s")
-    constructor(first: String, second: String ): this(listOf<String>(first, second), "error s")
+    constructor(first: String): this(listOf<String>(first), "t_error t_s")
+    constructor(first: String, second: String ): this(listOf<String>(first, second), "t_error t_s")
 
 }
 
@@ -41,29 +40,29 @@ class SyntaxHighlightingService(
     private val syntaxInside = HashMap<String, Syntax>()
 
     init {
-        syntaxOutside["help"] = Syntax("u", "u")
-        syntaxOutside["scan"] = Syntax("u")
-        syntaxOutside["dc"] = Syntax("u", "error s")
-        syntaxOutside["/share"] = Syntax(listOf("u warn"), "info")
+        syntaxOutside["help"] = Syntax("t_b", "t_b")
+        syntaxOutside["scan"] = Syntax("t_b")
+        syntaxOutside["dc"] = Syntax("t_b", "t_error t_s")
+        syntaxOutside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
 
-        syntaxOutside["attack"] = Syntax("u")
+        syntaxOutside["attack"] = Syntax("t_b")
 
-        syntaxOutside["move"] = Syntax("error s")
-        syntaxOutside["view"] = Syntax("error s")
-        syntaxOutside["hack"] = Syntax("error s")
-        syntaxOutside["password"] = Syntax("error s")
+        syntaxOutside["move"] = Syntax("t_error t_s")
+        syntaxOutside["view"] = Syntax("t_error t_s")
+        syntaxOutside["hack"] = Syntax("t_error t_s")
+        syntaxOutside["password"] = Syntax("t_error t_s")
 
 
 
-        syntaxInside["help"] = Syntax("u", "u")
-        syntaxInside["scan"] = Syntax("u")
-        syntaxInside["dc"] = Syntax("u")
-        syntaxInside["/share"] = Syntax(listOf("u warn"), "info")
+        syntaxInside["help"] = Syntax("t_b", "t_b")
+        syntaxInside["scan"] = Syntax("t_b")
+        syntaxInside["dc"] = Syntax("t_b")
+        syntaxInside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
 
-        syntaxInside["move"] = Syntax("u", "ok")
-        syntaxInside["view"] = Syntax("u")
-        syntaxInside["hack"] = Syntax("u", "primary")
-        syntaxInside["password"] = Syntax("u", "primary")
+        syntaxInside["move"] = Syntax("t_b", "t_ok")
+        syntaxInside["view"] = Syntax("t_b")
+        syntaxInside["hack"] = Syntax("t_b", "t_primary")
+        syntaxInside["password"] = Syntax("t_b", "t_primary")
     }
 
 

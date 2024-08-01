@@ -59,16 +59,10 @@ const renderLine = (input: string, syntaxHighlighting: SyntaxMap) => {
 const renderPart = (part: string, i: number, mapping: Syntax) => {
     let style
     if (i >= mapping["main"].length) {
-        style = gatherStyles(mapping["rest"])
+        style = mapping["rest"]
     }
     else {
-        style = gatherStyles(mapping["main"][i])
+        style = mapping["main"][i]
     }
     return <span className={style} key={i}>{part}</span>
-}
-
-
-const gatherStyles = (styleInput: string) => {
-    let styleParts = styleInput.split(" ")
-    return styleParts.map(it => "terminal_style_" + it).join(" ")
 }
