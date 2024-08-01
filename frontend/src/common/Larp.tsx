@@ -18,8 +18,8 @@ export enum LarpType {
 
 export class Larp {
 
-    // type: LarpType = this.determineLarpType()
-    type: LarpType = LarpType.ATTACK_VECTOR_NL
+    type: LarpType = this.determineLarpType()
+    // type: LarpType = LarpType.ATTACK_VECTOR_NL
 
     name: string
     hackerShowSkills: boolean = false

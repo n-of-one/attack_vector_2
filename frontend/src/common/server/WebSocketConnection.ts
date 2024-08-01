@@ -64,7 +64,7 @@ export class WebSocketConnection {
     onWsOpen(event: Frame, additionalOnWsOpen: () => void) {
         const userIdAndConnection = event.headers["user-name"]!!
 
-        if (userIdAndConnection === "not-logged-in") {
+        if (userIdAndConnection === "login-needed") {
             this.redirectToLogin()
             return
         }

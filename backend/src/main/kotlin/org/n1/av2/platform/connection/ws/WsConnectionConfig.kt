@@ -2,9 +2,8 @@ package org.n1.av2.platform.connection.ws
 
 import org.n1.av2.platform.connection.*
 import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.platform.iam.user.NOT_LOGGED_IN_USER
 import org.n1.av2.platform.iam.user.ROLE_USER
-import org.n1.av2.platform.iam.user.UserEntity
-import org.n1.av2.platform.iam.user.UserType
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.http.server.ServerHttpRequest
@@ -22,7 +21,6 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.security.Principal
-import java.util.*
 
 
 @Configuration
@@ -59,9 +57,9 @@ class WebSocketConfig(
                 if (authentication !is UserPrincipal || !authentication.userEntity.type.authorities.contains(ROLE_USER)) {
                     // signal to the client that they need to log in first.
                     return UserPrincipal(
-                        _name = "not-logged-in",
+                        _name = "login-needed", // this username will trigger the frontend to redirect to the login page.
                         connectionId = connectionIdService.create(),
-                        userEntity = UserEntity(UUID.randomUUID().toString(), "", UserType.NOT_LOGGED_IN, "", null),
+                        userEntity = NOT_LOGGED_IN_USER,
                         type = ConnectionType.NONE,
                     )
                 }
@@ -72,10 +70,25 @@ class WebSocketConfig(
             }
         }
 
+        class UnrestrictedHandshakeHandler : DefaultHandshakeHandler() {
+            override fun determineUser(
+                request: ServerHttpRequest, wsHandler: WebSocketHandler,
+                attributes: Map<String, Any>
+            ): Principal {
+                return UserPrincipal(
+                    _name = "none",
+                    connectionId = connectionIdService.create(),
+                    userEntity = NOT_LOGGED_IN_USER,
+                    type = ConnectionType.WS_UNRESTRICTED,
+                )
+            }
+        }
+
+
         registry
             .addEndpoint(UNRESTRICTED_ENDPOINT)
             .setAllowedOrigins("*")
-            .setHandshakeHandler(AuthenticatedHandshakeHandler())
+            .setHandshakeHandler(UnrestrictedHandshakeHandler())
 
         registry
             .addEndpoint(HACKER_ENDPOINT)

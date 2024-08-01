@@ -62,7 +62,6 @@ root.render(
     <>
         <BrowserRouter>
             <Routes>
-                {/*<Route path="/" element={<SiteHackIce iceId={"sweeper-1234-1234"} nextUrl={null}/>} />*/}
                 <Route path="/login" element={larp.loginElement()}/>
                 <Route path="/adminLogin" element={<AdminLogin/>}/>
                 <Route path="/loggedOut" element={<LoggedOut/>}/>
