@@ -324,7 +324,7 @@ const replaceLastLine = (terminal: TerminalState, line: string) => {
         lines.pop()
     }
     lines.push(parseTextToTerminalLine(line))
-    return {...terminal, lines: lines}
+    return {...terminal, renderedLines: lines}
 }
 
 interface TerminalUpdatePrompt {

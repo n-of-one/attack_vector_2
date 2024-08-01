@@ -70,7 +70,7 @@ class TarManager extends GenericIceManager {
                 })
             }, DELAY_BETWEEN_HACK_TICKS_S * 1000)
         })
-        this.schedule.run(10, () => {
+        this.schedule.run(0, () => {
             this.reportingIntervalId = setInterval(() => {
                 const progress = this.unitsHacked - this.lastUnitsHacked
                 const unitsLeft = this.totalUnits - this.unitsHacked
