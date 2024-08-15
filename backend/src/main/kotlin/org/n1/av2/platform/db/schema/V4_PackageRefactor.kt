@@ -41,6 +41,8 @@ class V4_PackageRefactor : MigrationStep {
     override
     fun version() = 4
 
+    private val logger = mu.KotlinLogging.logger {}
+
     override
     fun migrate(db: MongoDatabase): String {
 
@@ -52,8 +54,7 @@ class V4_PackageRefactor : MigrationStep {
             if (collectionName == "hackerState" // hackerState will be recreated
                 || collectionName == "userIceHackingState" // userIceHackingState is obsolete
                 ) {
-
-                collection.deleteMany(Document())
+                collection.drop()
                 return@forEach
             }
 
@@ -68,25 +69,24 @@ class V4_PackageRefactor : MigrationStep {
     }
 
     private fun upgradeWithObjectIds(collection: MongoCollection<Document>) {
-        val objectIds = collection.find().map { it.getObjectId("_id") }
-        objectIds.filterNotNull().forEach { id ->
-            val byId = Document("_id", id)
-            val document:Document = collection.find(byId).first() ?: error("Document not found for id $id")
-            val replacementJson = replacePackageNames(document.toJson())
-            collection.replaceOne(byId, Document.parse(replacementJson))
-        }
+        val objectIdFilters = collection.find().map { it.getObjectId("_id") }.map { Document("_id", it) }.toList()
+        upgradeWithObjectIds(collection, objectIdFilters)
     }
 
     private fun upgradeWithStringIds(collection: MongoCollection<Document>) {
-        val stringIds = collection.find().map { it.getString("_id") }
-        stringIds.filterNotNull().forEach { id ->
-            val byId = Document("_id", id)
+        val objectIdFilters = collection.find().map { it.getString("_id") }.map { Document("_id", it)}.toList()
+        upgradeWithObjectIds(collection, objectIdFilters)
+    }
 
-            val document:Document = collection.find(byId).first() ?: error("Document not found for id $id")
+    private fun upgradeWithObjectIds(collection: MongoCollection<Document>, idFilters: List<Document>) {
+        idFilters.forEach { byId: Document ->
+            val document:Document = collection.find(byId).first() ?: error("Document not found for id ${byId.toJson()}")
             val replacementJson = replacePackageNames(document.toJson())
             collection.replaceOne(byId, Document.parse(replacementJson))
         }
+        logger.info("Updated ${idFilters.size} documents in ${collection.namespace.collectionName}")
     }
+
 
     private fun replacePackageNames(v3Json: String): String {
 

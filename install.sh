@@ -50,6 +50,11 @@ sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 
 
+echo
+echo
+echo
+echo
+echo
 echo "Installation complete. To run the application, execute the following command:"
 echo
 echo "./upgrade.sh"
@@ -58,5 +63,6 @@ echo "or create the certificate using:"
 echo "sudo certbot certonly --standalone -d attackvector.nl --register-unsafely-without-email"
 echo
 echo "sudo openssl pkcs12 -export -in /etc/letsencrypt/live/attackvector.nl/fullchain.pem -inkey /etc/letsencrypt/live/attackvector.nl/privkey.pem -out ~ubuntu/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/attackvector.nl/chain.pem -caname root"
-
+echo
+echo "sudo chown ubuntu:ubuntu ~ubuntu/keystore.p12"
 
