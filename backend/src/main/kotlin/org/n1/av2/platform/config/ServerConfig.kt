@@ -18,7 +18,7 @@ class ServerConfig(
     @Value("\${MONGODB_URI:mongodb://attackvector2:attackvector2@localhost/admin?authMechanism=SCRAM-SHA-1}")
     val mongoDbUrl: String,
 
-    @Value("\${MONGODB_NAME:av2}")
+    @Value("\${MONGODB_NAME:attackvector2}")
     val mongoDbName: String,
 
     @Value("\${environment.TIME_ZONE:default}")
