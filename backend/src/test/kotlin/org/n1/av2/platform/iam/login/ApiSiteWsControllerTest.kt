@@ -3,7 +3,6 @@ package org.n1.av2.platform.iam.login
 import jakarta.servlet.http.Cookie
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.n1.av2.platform.iam.user.UserEntityService
@@ -25,8 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-
-@Disabled // AutoConfigureDataMongo is not working, so you need to manually start a MongoDB instance
 class ApiSiteWsControllerTest(
 ) {
 

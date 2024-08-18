@@ -1,7 +1,6 @@
 package org.n1.av2.platform.iam.user
 
 import org.n1.av2.platform.iam.UserPrincipal
-import org.n1.av2.platform.iam.user.UserType.ADMIN
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 

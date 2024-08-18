@@ -1,4 +1,4 @@
-package org.n1.av2.run.model
+package org.n1.av2.run.timings
 
 /**
  * This class is used to convey to the UI how many ticks an action will take.

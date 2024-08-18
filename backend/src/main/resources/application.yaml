@@ -1,0 +1,9 @@
+server.port: 80
+
+spring.servlet.multipart:
+    file-size-threshold: 2KB
+    max-file-size: 10MB
+    max-request-size: 15MB
+
+spring.data.mongodb.auto-index-creation: true
+

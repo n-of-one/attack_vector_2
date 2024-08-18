@@ -10,11 +10,17 @@ import org.n1.av2.run.entity.NodeScanStatus
 import org.n1.av2.run.entity.Run
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.runlink.RunLinkService
-import org.n1.av2.run.scanning.NodeScanType.SCAN_CONNECTIONS
-import org.n1.av2.run.terminal.inside.HACKER_SCANS_NODE_Timings
+import org.n1.av2.run.scanning.NodeScanType.OUTSIDE_SCAN
+import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
+
+enum class NodeScanType() {
+    SCAN_NODE_INITIAL, // to be used when implementing additional scanning by architects
+    OUTSIDE_SCAN,
+    SCAN_NODE_DEEP,  // to be used when implementing additional scanning by architects
+}
 
 @Service
 class InitiateScanService(
@@ -26,6 +32,7 @@ class InitiateScanService(
     private val userTaskRunner: UserTaskRunner,
     private val runLinkService: RunLinkService,
     private val scanService: ScanService,
+    private val timingsService: TimingsService,
 ) {
 
     fun scanFromOutside(run: Run, startNode: Node) {
@@ -36,12 +43,12 @@ class InitiateScanService(
         try {
             val path = TraverseNode.createPath(start, target)
 
-            val timings = SCAN_CONNECTIONS.timings
+            val timings = timingsService.OUTSIDE_SCAN
             connectionService.toRun(
                 run.runId, SERVER_PROBE_LAUNCH,
                 "probeUserId" to currentUserService.userId,
                 "path" to path,
-                "scanType" to SCAN_CONNECTIONS,
+                "scanType" to OUTSIDE_SCAN,
                 "timings" to timings
             )
 
@@ -65,9 +72,9 @@ class InitiateScanService(
             ServerActions.SERVER_HACKER_SCANS_NODE,
             "userId" to currentUserService.userId,
             "nodeId" to targetNode.id,
-            "timings" to HACKER_SCANS_NODE_Timings
+            "timings" to timingsService.INSIDE_SCAN
         )
-        userTaskRunner.queueInTicksForSite("internalscan-complete", run.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
+        userTaskRunner.queueInTicksForSite("internalscan-complete", run.siteId, timingsService.INSIDE_SCAN.totalTicks) {
             scanService.areaScan(run, targetNode, nodes)
         }
     }

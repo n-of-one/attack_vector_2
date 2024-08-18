@@ -7,6 +7,7 @@ import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.terminal.CommandHelpService
 import org.n1.av2.run.terminal.CommandScanService
 import org.n1.av2.run.terminal.SocialTerminalService
+import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
@@ -20,6 +21,7 @@ class OutsideTerminalService(
     private val timeService: TimeService,
     private val commandScanService: CommandScanService,
     private val commandHelpService: CommandHelpService,
+    private val timingsService: TimingsService,
 ) {
 
 
@@ -30,6 +32,10 @@ class OutsideTerminalService(
             "/share" -> socialTerminalService.processShare(runId, tokens)
             "move", "view", "hack", "connect" -> reportHackCommand()
             "servererror" -> error("gah")
+            "quick"-> {
+                timingsService.minimize()
+                connectionService.replyTerminalReceive("timings set to quick)")
+            }
             else -> processActiveSiteCommand(runId, tokens)
         }
     }

@@ -7,14 +7,13 @@ import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.run.entity.Run
-import org.n1.av2.run.model.Timings
 import org.n1.av2.run.terminal.SyntaxHighlightingService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.run.terminal.inside.CommandMoveService
+import org.n1.av2.run.timings.Timings
+import org.n1.av2.run.timings.TimingsService
 import org.springframework.stereotype.Service
 
-private val START_ATTACK_FAST = Timings("main" to 0)
-private val START_ATTACK_SLOW = Timings("main" to 190)
 
 @Service
 class CommandStartAttackService(
@@ -24,6 +23,7 @@ class CommandStartAttackService(
     private val commandMoveService: CommandMoveService,
     private val syntaxHighlightingService: SyntaxHighlightingService,
     private val connectionService: ConnectionService,
+    private val timingsService: TimingsService,
 ) {
 
     fun startAttack(run: Run, quick: Boolean) {
@@ -33,7 +33,7 @@ class CommandStartAttackService(
         hackerStateEntityService.startAttack(userId, run)
 
         data class StartRun(val userId: String, val quick: Boolean, val timings: Timings)
-        val timings = if (quick) START_ATTACK_FAST else START_ATTACK_SLOW
+        val timings = if (quick) timingsService.START_ATTACK_FAST else timingsService.START_ATTACK_SLOW
         val data = StartRun(userId, quick, timings)
         connectionService.replyTerminalSetLocked(true)
         connectionService.toRun(run.runId, ServerActions.SERVER_HACKER_START_ATTACK, data)

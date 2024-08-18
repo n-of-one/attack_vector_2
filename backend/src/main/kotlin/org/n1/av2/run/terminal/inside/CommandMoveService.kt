@@ -12,18 +12,13 @@ import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.util.isOneOf
 import org.n1.av2.run.entity.NodeScanStatus.*
 import org.n1.av2.run.entity.RunEntityService
-import org.n1.av2.run.model.Timings
 import org.n1.av2.run.scanning.ScanService
+import org.n1.av2.run.timings.Timings
+import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.ConnectionEntityService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
-
-
-private val MOVE_START_Timings = Timings("main" to 30)
-private val MOVE_ARRIVE_Timings = Timings("main" to 8)
-
-val HACKER_SCANS_NODE_Timings = Timings("in" to 50, "out" to 25)
 
 
 @Service
@@ -35,7 +30,8 @@ class CommandMoveService(
     private val tripwireLayerService: TripwireLayerService,
     private val scanService: ScanService,
     private val userTaskRunner: UserTaskRunner,
-    private val connectionService: ConnectionService
+    private val connectionService: ConnectionService,
+    private val timingsService: TimingsService,
 ) {
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -96,9 +92,9 @@ class CommandMoveService(
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
         connectionService.replyTerminalSetLocked(true)
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
-        connectionService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, MOVE_START_Timings))
+        connectionService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, timingsService.MOVE_START))
 
-        userTaskRunner.queueInTicksForSite("move-arrive", state.siteId, MOVE_START_Timings.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
+        userTaskRunner.queueInTicksForSite("move-arrive", state.siteId, timingsService.MOVE_START.totalTicks) { moveArrive(toNode.id, state.userId, runId) }
     }
 
     @ScheduledTask
@@ -111,9 +107,9 @@ class CommandMoveService(
         if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
             arriveComplete(nodeId, userId, runId)
         } else {
-            connectionService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to HACKER_SCANS_NODE_Timings)
+            connectionService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to timingsService.INSIDE_SCAN)
 
-            userTaskRunner.queueInTicksForSite("internal-scan", state.siteId, HACKER_SCANS_NODE_Timings.totalTicks) {
+            userTaskRunner.queueInTicksForSite("internal-scan", state.siteId, timingsService.INSIDE_SCAN.totalTicks) {
                 scanService.hackerArrivedNodeScan(nodeId, userId, runId)
                 arriveComplete(nodeId, userId, runId)
             }
@@ -127,7 +123,7 @@ class CommandMoveService(
 
         connectionService.toRun(
             runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE,
-            "nodeId" to nodeId, "userId" to userId, "timings" to MOVE_ARRIVE_Timings
+            "nodeId" to nodeId, "userId" to userId, "timings" to timingsService.MOVE_ARRIVE
         )
         connectionService.replyTerminalSetLocked(false)
     }

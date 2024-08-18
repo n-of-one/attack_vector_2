@@ -1,7 +1,7 @@
 import {AnyAction, Store} from "redux"
 import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {initGenericServerActions} from "./GenericServerActionProcessor"
-import {NodeScanType, runCanvas} from "../run/component/RunCanvas"
+import {runCanvas} from "../run/component/RunCanvas"
 import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
 import {Site} from "../run/reducer/SiteReducer"
 import {HackerPresence} from "../run/reducer/HackersReducer"
@@ -18,6 +18,7 @@ import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
 import {terminalManager} from "../../common/terminal/TerminalManager";
 import {HIDE_NODE_INFO} from "../run/reducer/InfoNodeIdReducer";
 import {avEncodedUrl} from "../../common/util/PathEncodeUtils";
+import {NodeScanType} from "../run/model/NodeScanTypes";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"

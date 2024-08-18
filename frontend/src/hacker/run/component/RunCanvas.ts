@@ -20,8 +20,6 @@ import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPat
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../reducer/InfoNodeIdReducer";
 
 
-export type NodeScanType = "SCAN_NODE_INITIAL" | "SCAN_CONNECTIONS" | "SCAN_NODE_DEEP"
-
 /// Probe displays need a unique ID, but this ID only exists in the browser.
 let probeDisplayIdSequence = 0
 

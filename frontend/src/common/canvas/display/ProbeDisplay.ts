@@ -1,11 +1,10 @@
 import {fabric} from "fabric"
 import {calcLine, LinePositions} from "../CanvasUtils"
-import {SCAN_CONNECTIONS, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes"
+import {NodeScanType, OUTSIDE_SCAN, SCAN_NODE_DEEP, SCAN_NODE_INITIAL} from "../../../hacker/run/model/NodeScanTypes"
 import {Schedule} from "../../util/Schedule"
 import {ConnectionVisual} from "../visuals/ConnectionVisual"
 import {COLOR_PROBE_LINE} from "./util/DisplayConstants"
 import {Canvas} from "fabric/fabric-impl"
-import {NodeScanType} from "../../../hacker/run/component/RunCanvas"
 import {DisplayCollection} from "./util/DisplayCollection"
 import {NodeDisplay} from "./NodeDisplay"
 import {Display} from "./Display"
@@ -79,7 +78,7 @@ export class ProbeDisplay implements Display {
         switch (scanType) {
             case SCAN_NODE_INITIAL:
                 return this.scanInside(nodeId, SCAN_NODE_INITIAL, timings)
-            case SCAN_CONNECTIONS:
+            case OUTSIDE_SCAN:
                 return this.scanOutside(nodeId, timings)
             case SCAN_NODE_DEEP:
                 return this.scanInside(nodeId, SCAN_NODE_DEEP, timings)

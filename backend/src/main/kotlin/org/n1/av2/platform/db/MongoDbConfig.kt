@@ -7,7 +7,6 @@ import com.mongodb.client.MongoClients
 import org.n1.av2.platform.config.ServerConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions.MongoConverterConfigurationAdapter
@@ -34,7 +33,6 @@ class MongoClientFactory(
 
 @Configuration
 @EnableMongoRepositories(basePackages = ["org.n1.av2"])
-@Profile("!test")
 class MongoDbConfig(
     private val config: ServerConfig,
     private val mongoClient: MongoClient,
