@@ -1,7 +1,7 @@
 import {serverTime} from "../../../common/server/ServerTime";
 import {AnyAction} from "redux";
 import {TICK} from "../../../common/terminal/TerminalReducer";
-import {SERVER_ENTERED_RUN} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN} from "../../RunServerActionProcessor";
 import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
 export const SERVER_START_TIMER = "SERVER_START_TIMER"

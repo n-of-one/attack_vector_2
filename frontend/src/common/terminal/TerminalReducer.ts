@@ -1,6 +1,6 @@
 import {AnyAction} from "redux"
 import {BACKSPACE, DOWN, TAB, UP} from "../util/KeyCodes"
-import {SERVER_ERROR} from "../../hacker/server/GenericServerActionProcessor"
+import {SERVER_ERROR} from "../server/GenericServerActionProcessor"
 import {parseTextToTerminalLine} from "./TerminalLineParser";
 
 const LINE_LIMIT = 100

@@ -1,7 +1,7 @@
 import webstomp, {Client, Frame, Message, Subscription} from 'webstomp-client'
 import {Store} from "redux"
 import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
-import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "../../hacker/server/GenericServerActionProcessor"
+import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "./GenericServerActionProcessor"
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {FORCE_DISCONNECT, NAVIGATE_PAGE} from "../menu/pageReducer";
@@ -84,7 +84,8 @@ export class WebSocketConnection {
         this.subscribe('/user/reply') /// This will receive messages for this specific connection
         this.subscribe(`/topic/user/${userId}`) /// messages for this user on all connections
         this.subscribe(`/topic/user/${userIdAndConnection}`) /// messages for this user connection specifically (/reply does not work)
-        additionalOnWsOpen()
+
+        setTimeout(additionalOnWsOpen, 100) // give the server some time to process the subscriptions before sending additional messages.
     }
 
     redirectToLogin() {

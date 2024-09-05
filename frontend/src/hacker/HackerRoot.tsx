@@ -7,8 +7,9 @@ import {hackerRootReducer, HackerState} from "./HackerRootReducer";
 import {webSocketConnection, WS_HACKER_MAIN} from "../common/server/WebSocketConnection";
 import {configureStore} from "@reduxjs/toolkit";
 import {HACKER_HOME} from "../common/menu/pageReducer";
-import {initRunServerActions} from "./server/RunServerActionProcessor";
+import {initRunServerActions} from "./RunServerActionProcessor";
 import {terminalManager} from "../common/terminal/TerminalManager";
+import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
 
 export class HackerRoot extends Component {
 
@@ -27,13 +28,15 @@ export class HackerRoot extends Component {
             devTools: isDevelopmentServer
         })
 
+        initGenericServerActions()
+        initRunServerActions(this.store)
+
         webSocketConnection.create(WS_HACKER_MAIN, this.store, () => {
-            webSocketConnection.send("/hacker/logon", "")
+            webSocketConnection.send("/hacker/logon", null)
         });
 
         terminalManager.init(this.store)
 
-        initRunServerActions(this.store)
     }
 
     render() {

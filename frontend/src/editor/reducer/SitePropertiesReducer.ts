@@ -1,6 +1,6 @@
 import {AnyAction} from "redux"
 import {SERVER_SITE_FULL, SERVER_UPDATE_SITE_DATA} from "../server/EditorServerActionProcessor"
-import {SERVER_ENTERED_RUN} from "../../hacker/server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN} from "../../hacker/RunServerActionProcessor";
 
 export interface SiteProperties {
     siteId: string,

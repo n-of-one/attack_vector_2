@@ -3,7 +3,7 @@ import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {AuthAppRootState, authRootReducer} from "./reducer/AuthRootReducer";
 import {initAuthServerActions} from "./AuthServerActionProcessor";

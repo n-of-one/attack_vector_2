@@ -4,7 +4,7 @@ import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {siteStateDefault, SiteStateI} from "../../../editor/reducer/SiteStateReducer";
 import {NodeI} from "../../../editor/reducer/NodesReducer";
 import {AnyAction} from "redux";
-import {SERVER_ENTERED_RUN, SERVER_LAYER_HACKED} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN, SERVER_LAYER_HACKED} from "../../RunServerActionProcessor";
 
 
 export interface Site {

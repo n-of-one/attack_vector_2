@@ -1,24 +1,24 @@
 import {AnyAction, Store} from "redux"
-import {webSocketConnection} from "../../common/server/WebSocketConnection"
-import {initGenericServerActions} from "./GenericServerActionProcessor"
-import {runCanvas} from "../run/component/RunCanvas"
-import {Scan, UpdateNodeStatusAction} from "../run/reducer/ScanReducer"
-import {Site} from "../run/reducer/SiteReducer"
-import {HackerPresence} from "../run/reducer/HackersReducer"
-import {Timings} from "../../common/model/Ticks"
-import {delayTicks} from "../../common/util/Util"
-import {SERVER_FLASH_PATROLLER,} from "../run/coundown/TimersReducer"
-import {prepareToEnterRun} from "../home/HackerHome"
-import {SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR, TERMINAL_RECEIVE} from "../../common/terminal/TerminalReducer"
-import {Schedule} from "../../common/util/Schedule"
-import {NodeScanStatus} from "../../common/enums/NodeStatus";
-import {MAIN_TERMINAL_ID} from "../../common/terminal/ActiveTerminalIdReducer";
-import {currentUser} from "../../common/user/CurrentUser";
-import {NAVIGATE_PAGE, RUN} from "../../common/menu/pageReducer";
-import {terminalManager} from "../../common/terminal/TerminalManager";
-import {HIDE_NODE_INFO} from "../run/reducer/InfoNodeIdReducer";
-import {avEncodedUrl} from "../../common/util/PathEncodeUtils";
-import {NodeScanType} from "../run/model/NodeScanTypes";
+import {webSocketConnection} from "../common/server/WebSocketConnection"
+import {SERVER_OPEN_EDITOR} from "../common/server/GenericServerActionProcessor"
+import {runCanvas} from "./run/component/RunCanvas"
+import {Scan, UpdateNodeStatusAction} from "./run/reducer/ScanReducer"
+import {Site} from "./run/reducer/SiteReducer"
+import {HackerPresence} from "./run/reducer/HackersReducer"
+import {Timings} from "../common/model/Ticks"
+import {delayTicks} from "../common/util/Util"
+import {SERVER_FLASH_PATROLLER,} from "./run/coundown/TimersReducer"
+import {prepareToEnterRun} from "./home/HackerHome"
+import {SERVER_TERMINAL_RECEIVE, TERMINAL_CLEAR, TERMINAL_RECEIVE} from "../common/terminal/TerminalReducer"
+import {Schedule} from "../common/util/Schedule"
+import {NodeScanStatus} from "../common/enums/NodeStatus";
+import {MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
+import {currentUser} from "../common/user/CurrentUser";
+import {NAVIGATE_PAGE, RUN} from "../common/menu/pageReducer";
+import {terminalManager} from "../common/terminal/TerminalManager";
+import {HIDE_NODE_INFO} from "./run/reducer/InfoNodeIdReducer";
+import {avEncodedUrl} from "../common/util/PathEncodeUtils";
+import {NodeScanType} from "./run/model/NodeScanTypes";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
@@ -149,13 +149,15 @@ export const initRunServerActions = (store: Store) => {
     const dispatch = store.dispatch
     let hackerSchedule: Schedule | null = null
 
-    initGenericServerActions()
-
     const echo = (time: number, message: string) => {
         hackerSchedule!.run(time, () => {
             dispatch({type: SERVER_TERMINAL_RECEIVE, data: {terminalId: MAIN_TERMINAL_ID, lines: [message]}})
         })
     }
+
+    webSocketConnection.addAction(SERVER_OPEN_EDITOR, (data: { id: string }) => {
+        window.open("/edit/" + data.id, data.id)
+    })
 
     webSocketConnection.addAction(SERVER_SITE_DISCOVERED, ({runId, siteId}: { runId: string, siteId: string }) => {
         prepareToEnterRun(runId)

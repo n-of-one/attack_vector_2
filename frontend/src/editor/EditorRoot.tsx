@@ -3,10 +3,10 @@ import {Provider} from "react-redux"
 import {EditorHome} from "./component/EditorHome"
 import {editorRootDefaultState, editorRootReducer, EditorState} from "./EditorRootReducer"
 import {Reducer, Store} from "redux"
-import {RequiresRole} from "../common/user/RequiresRole"
-import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketConnection"
+import {webSocketConnection, WS_NETWORK_APP, WS_UNRESTRICTED} from "../common/server/WebSocketConnection"
 import {configureStore} from "@reduxjs/toolkit"
 import {initEditorServerActions, SERVER_SITE_FULL} from "./server/EditorServerActionProcessor"
+import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
 
 interface Props {
     siteId: string,
@@ -45,12 +45,14 @@ export class EditorRoot extends Component<Props> {
             devTools: developmentServer
         })
 
-        webSocketConnection.create(WS_UNRESTRICTED, this.store, () => {
+        initEditorServerActions()
+        initGenericServerActions()
+
+        webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + props.siteId)
             webSocketConnection.send("/editor/siteFull", props.siteId)
         }, SERVER_SITE_FULL)
 
-        initEditorServerActions()
     }
 
     render() {

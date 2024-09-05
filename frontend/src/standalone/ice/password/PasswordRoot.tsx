@@ -8,7 +8,7 @@ import {passwordRootReducer, PasswordRootState} from "./reducer/PasswordRootRedu
 import {passwordIceManager} from "./PasswordIceManager";
 import {ICE_INPUT_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_UPDATE} from "../../app/auth/AuthServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
 

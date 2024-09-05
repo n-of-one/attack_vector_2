@@ -7,7 +7,7 @@ import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {tarRootReducer, TarRootState} from "./reducer/TarRootReducer";
 import {TarContainer} from "./component/TarContainer";
 import {tarManager} from "./component/TarManager";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {initTarServerActions} from "./TarServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
 

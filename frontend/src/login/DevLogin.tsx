@@ -55,7 +55,7 @@ export const DevLogin = () => {
     }
 
     const renderName = (name: string) => {
-        return (<div className="row text">
+        return (<div className="row text" key={name}>
                 <div className="d-flex justify-content-center">
 
                     <a href="src#" onClick={

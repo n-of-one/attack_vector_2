@@ -5,7 +5,7 @@ import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSoc
 import {Provider} from "react-redux";
 import {NetwalkContainer} from "./component/NetwalkContainer";
 import {netwalkRootReducer, NetwalkRootState} from "./reducer/NetwalkRootReducer";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {initNetwalkServerActions} from "./NetwalkServerActionProcessor";
 import {netwalkManager} from "./NetwalkManager";

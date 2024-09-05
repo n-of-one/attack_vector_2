@@ -3,7 +3,7 @@ import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {SwitchRootState, swithRootReducer} from "./SwitchReducers";
 import {Switch} from "./Switch";
 import {layer} from "../../StandaloneGlobals";

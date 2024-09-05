@@ -6,7 +6,7 @@ import {tangleIceManager, TanglePointMoved, TanglePuzzle} from "./TangleIceManag
 import {Provider} from "react-redux";
 import {TangleContainer} from "./component/TangleContainer";
 import {tangleRootReducer, TangleRootState} from "./reducer/TangleRootReducer";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {SERVER_TANGLE_ENTER, SERVER_TANGLE_POINT_MOVED} from "./reducer/TangleIceReducer";
 import {ice} from "../../StandaloneGlobals";

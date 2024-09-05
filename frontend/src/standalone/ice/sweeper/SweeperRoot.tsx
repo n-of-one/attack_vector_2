@@ -4,7 +4,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
 import {sweeperRootReducer, SweeperRootState} from "./reducer/SweeperRootReducer";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {ice} from "../../StandaloneGlobals";
 import {SweeperContainer} from "./component/SweeperContainer";

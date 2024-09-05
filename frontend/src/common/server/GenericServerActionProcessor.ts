@@ -1,6 +1,6 @@
-import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {serverTime} from "../../common/server/ServerTime";
-import {notify} from "../../common/util/Notification";
+import {webSocketConnection} from "./WebSocketConnection";
+import {serverTime} from "./ServerTime";
+import {notify} from "../util/Notification";
 import {ServerNotification} from "../../editor/server/EditorServerActionProcessor";
 
 export const SERVER_NOTIFICATION = "SERVER_NOTIFICATION"
@@ -29,8 +29,5 @@ export const initGenericServerActions = () => {
         notify({type: type, message: data.message})
     })
 
-    webSocketConnection.addAction(SERVER_OPEN_EDITOR, (data: { id: string }) => {
-        window.open("/edit/" + data.id, data.id)
-    })
 
 }

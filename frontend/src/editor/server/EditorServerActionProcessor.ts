@@ -3,7 +3,6 @@ import {NotificationType} from "../../common/util/Notification"
 import {editorCanvas, LoadSiteData} from "../component/map/canvas/EditorCanvas"
 import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
 import {Connection} from "../reducer/ConnectionsReducer"
-import {initGenericServerActions} from "../../hacker/server/GenericServerActionProcessor";
 
 export const SERVER_SITE_FULL  = "SERVER_SITE_FULL"
 export const SERVER_UPDATE_SITE_DATA = "SERVER_UPDATE_SITE_DATA"
@@ -17,8 +16,6 @@ export const SERVER_ADD_LAYER = "SERVER_ADD_LAYER"
 export const SERVER_NODE_UPDATED = "SERVER_NODE_UPDATED"
 
 export const initEditorServerActions = () => {
-
-    initGenericServerActions()
 
     webSocketConnection.addAction(SERVER_SITE_FULL, (data: LoadSiteData) => {
         editorCanvas.loadSite(data)

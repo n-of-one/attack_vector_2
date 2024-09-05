@@ -3,7 +3,7 @@ import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_UNRESTRICTED} from "../../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {StatusLight} from "./StatusLight";
 import {defaultState, statusLightReducer, StatusLightState} from "./StatusLightReducers";
 import {layer} from "../../StandaloneGlobals";

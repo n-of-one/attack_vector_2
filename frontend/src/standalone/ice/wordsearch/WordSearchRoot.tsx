@@ -5,7 +5,7 @@ import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSoc
 import {Provider} from "react-redux";
 import {WordSearchContainer} from "./component/WordSearchContainer";
 import {wordSearchRootReducer, WordSearchRootState} from "./reducer/WordSearchRootReducer";
-import {initGenericServerActions} from "../../../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {wordSearchManager} from "./WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";

@@ -8,7 +8,7 @@ import {Dispatch} from "redux";
 import {DisplayCollection} from "./util/DisplayCollection";
 import {NodeDisplay} from "./NodeDisplay";
 import {HackerDisplay} from "./HackerDisplay";
-import {PatrollerData} from "../../../hacker/server/RunServerActionProcessor";
+import {PatrollerData} from "../../../hacker/RunServerActionProcessor";
 
 
 export class TracingPatrollerDisplay implements Display {

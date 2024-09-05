@@ -12,7 +12,7 @@ import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
-import {HackerScansNodeAction, MoveArriveAction, MoveStartAction, NodeStatusById, ProbeAction, SiteAndScan} from "../../server/RunServerActionProcessor";
+import {HackerScansNodeAction, MoveArriveAction, MoveStartAction, NodeStatusById, ProbeAction, SiteAndScan} from "../../RunServerActionProcessor";
 import {ProbeVisual} from "../../../common/canvas/visuals/ProbeVisual";
 import {Timings} from "../../../common/model/Ticks";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";

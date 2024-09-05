@@ -1,5 +1,5 @@
 import {AnyAction} from "redux";
-import {SERVER_ENTERED_RUN} from "../../server/RunServerActionProcessor";
+import {SERVER_ENTERED_RUN} from "../../RunServerActionProcessor";
 
 
 export enum HackerActivity {

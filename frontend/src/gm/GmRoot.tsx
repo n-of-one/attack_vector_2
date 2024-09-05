@@ -7,7 +7,8 @@ import {Reducer, Store} from "redux"
 import {gmRootReducer, GmState} from "./GmRootReducer";
 import {GmPageChooser} from "./GmPageChooser";
 import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketConnection";
-import {initGenericServerActions} from "../hacker/server/GenericServerActionProcessor";
+import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
+import {initGmServerActions} from "./GmServerActionProcessor";
 
 
 interface Props { }
@@ -18,6 +19,9 @@ export class GmRoot extends Component<Props>{
     constructor(props: Props) {
         super(props)
 
+        initGenericServerActions()
+        initGmServerActions()
+
         this.gmStore = configureStore({
             reducer: gmRootReducer as Reducer<GmState>
         })
@@ -25,7 +29,6 @@ export class GmRoot extends Component<Props>{
         webSocketConnection.create(WS_UNRESTRICTED, this.gmStore, () => {
             webSocketConnection.sendWhenReady("/gm/logon", null)
         })
-        initGenericServerActions()
 
         // set up initial state:
         this.gmStore.dispatch({type: NAVIGATE_PAGE, to: SITES})
