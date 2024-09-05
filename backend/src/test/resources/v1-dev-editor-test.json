@@ -1,0 +1,33 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2024-09-05 21:29:58"
+  },
+  "siteProperties" : {
+    "siteId" : "site-4b3c-41b5",
+    "name" : "editor-test",
+    "description" : "",
+    "purpose" : "",
+    "startNodeNetworkId" : "00"
+  },
+  "nodes" : [ {
+    "id" : "node-11f4-4c6d",
+    "siteId" : "site-4b3c-41b5",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-11f4-4c6d:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    } ],
+    "networkId" : "00",
+    "ice" : false,
+    "hacked" : true,
+    "unhackedIce" : false
+  } ],
+  "connections" : [ ]
+}

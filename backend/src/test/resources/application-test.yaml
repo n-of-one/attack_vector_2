@@ -1,4 +1,4 @@
-de.flapdoodle.mongodb.embedded.version: 7.0.4
+de.flapdoodle.mongodb.embedded.version: 4.4.0
 spring.data.mongodb:
     username: attackvector2
     password: attackvector2

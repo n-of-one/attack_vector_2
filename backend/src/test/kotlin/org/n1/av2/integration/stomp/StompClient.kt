@@ -1,6 +1,7 @@
 package org.n1.av2.integration.stomp
 
 import kotlinx.coroutines.delay
+import org.n1.av2.platform.connection.HACKER_ENDPOINT
 import org.n1.av2.platform.connection.ServerActions
 import org.springframework.http.HttpHeaders
 import org.springframework.lang.Nullable
@@ -30,11 +31,14 @@ class AvClient(
     private val port: Int,
     private val cookieString: String,
     val userId: String,
+    private val endpoint: String = HACKER_ENDPOINT,
 ) {
     private val receivedMessages = MessageQueue()
     private val sessionHandler = MyStompSessionHandler(receivedMessages, name)
     private var stompSessionFuture: CompletableFuture<StompSession>? = null
     private lateinit var stompSession: StompSession
+
+    private val logger = mu.KotlinLogging.logger {}
 
     suspend fun connect() {
         val webSocketClient: WebSocketClient = StandardWebSocketClient()
@@ -42,7 +46,7 @@ class AvClient(
         stompClient.defaultHeartbeat = longArrayOf(0, 0)
         stompClient.setMessageConverter(MyMessageConvertor())
 
-        val url = "ws://localhost:${port}/ws_hacker"
+        val url = "ws://localhost:${port}${endpoint}"
         val headers = WebSocketHttpHeaders()
         headers.set(HttpHeaders.COOKIE, cookieString)
 
@@ -65,21 +69,34 @@ class AvClient(
         this.sessionHandler.subscribe(topic)
     }
 
-    suspend fun waitFor(action: ServerActions, contents: String, timeoutSeconds: Int = 1): String {
-        var totalDelay = 0
+    suspend fun waitFor(action: ServerActions, contents: String, timeoutMillis: Int = 100): String {
+        var waitMillis = 0
+        logger.debug("start waiting for ${action.name} '${contents}'")
         do {
             val received = receivedMessages.deleteIfContains(ReceivedMessage(action.name, contents))
             if (received != null) {
                 return received
             }
             delay(10)
-            totalDelay += 10
+            waitMillis += 10
 
-        } while (totalDelay < 1000 * timeoutSeconds)
+        } while (waitMillis < timeoutMillis)
+        logger.debug("end waiting for ${action.name} '${contents}'")
 
         receivedMessages.logMessage()
         error("'${name}' times out waiting for ${action.name} '${contents}'")
     }
+
+    suspend fun expectToNotReceive(action: ServerActions, contents: String, timeoutSeconds: Int = 100) {
+        try {
+            waitFor(action, contents, timeoutSeconds)
+            throw AssertionError("Unexpected response from server ${action.name} '${contents}'")
+        }
+        catch (expected: IllegalStateException) {
+            return
+        }
+    }
+
 
     fun clearMessage() {
         receivedMessages.clear()
@@ -140,7 +157,7 @@ class MyStompFrameHander(
         val text = payload as String
         val type = determineType(text)
         receivedMessages.add(ReceivedMessage(type, text))
-        println("Received in frame Handler [${name}: ${headers.destination!!} : ${text.substring(0, Math.min(250, text.length))}")
+        println("Client received: [${name}: ${headers.destination!!} : ${text.substring(0, Math.min(250, text.length))}")
     }
 }
 

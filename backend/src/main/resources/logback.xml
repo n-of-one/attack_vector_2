@@ -40,6 +40,7 @@
     <logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN" />
     <logger name="org.hibernate.validator.internal.util.Version" level="WARN" />
     <logger name="de.flapdoodle.embed.mongo.spring.autoconfigure" level="WARN" />
+    <logger name="de.flapdoodle.embed.mongo.client.ClientActions" level="WARN" />
     <logger name="org.mongodb.driver.cluster" level="WARN" />
 
 

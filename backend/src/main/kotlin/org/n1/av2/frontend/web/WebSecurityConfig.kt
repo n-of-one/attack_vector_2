@@ -10,6 +10,7 @@ import org.n1.av2.platform.iam.user.ROLE_USER
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.SecurityFilterChain
@@ -33,7 +34,7 @@ private val OPEN_PATHS = listOf(
 
     // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
     // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
-    // the handshake handler. See: WsConnectionConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
+    // the handshake handler. See: WebSocketConnectionConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
     "/ws_hacker", "/ws_networked_app"
 )
 
@@ -49,6 +50,7 @@ private val ADMIN_PATHS = listOf("/api/admin/**")
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 
     @Bean

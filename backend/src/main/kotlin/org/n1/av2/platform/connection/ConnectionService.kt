@@ -4,7 +4,10 @@ import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.frontend.model.ReduxEvent
 import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.SYSTEM_USER
+import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.security.core.context.SecurityContextHolder
@@ -14,9 +17,7 @@ import javax.annotation.PostConstruct
 @Service
 class ConnectionService(
     val stompTemplate: SimpMessageSendingOperations,
-    val currentUserService: CurrentUserService,
     val config: ServerConfig
-
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -85,9 +86,12 @@ class ConnectionService(
     }
 
     fun reply(actionType: ServerActions, vararg data: Any) {
-        if (currentUserService.isSystemUser) error("Cannot reply to system user")
-        val name = SecurityContextHolder.getContext().authentication.name
-        sendToDestination("/topic/user/${name}", actionType, data)
+        val user = (SecurityContextHolder.getContext().authentication.principal as UserEntity)
+        if (user.id == SYSTEM_USER.id) error("Cannot reply to system user")
+
+        val connection = SecurityContextHolder.getContext().authentication.name
+
+        sendToDestination("/topic/user/${connection}", actionType, data)
     }
 
     //**********************************************************************************************************************//

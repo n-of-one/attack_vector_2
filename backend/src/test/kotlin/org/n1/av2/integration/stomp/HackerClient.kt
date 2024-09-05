@@ -27,7 +27,7 @@ class HackerClient(
 
         sendCommand("attack")
 
-        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${node.id}\",\"userId\":\"${client.userId}\"", 10)
+        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${node.id}\",\"userId\":\"${client.userId}\"", 10 * 1000)
         client.clearMessage()
     }
 
@@ -82,7 +82,7 @@ class HackerClient(
     suspend fun scan() {
         sendCommand("scan 00")
 
-        client.waitFor(ServerActions.SERVER_DISCOVER_NODES, "", 10)
+        client.waitFor(ServerActions.SERVER_DISCOVER_NODES, "", 10*1000)
         client.clearMessage()
     }
 
@@ -99,8 +99,8 @@ class HackerClient(
 
         client.send("/av/terminal/main", "{\"command\":\"move ${networkId}\",\"runId\":\"${runId}\"}")
 
-        client.waitFor(ServerActions.SERVER_HACKER_MOVE_START, "\"userId\":\"${client.userId}\"", 1)
-        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${node.id}\",\"userId\":\"${client.userId}\"", 3)
+        client.waitFor(ServerActions.SERVER_HACKER_MOVE_START, "\"userId\":\"${client.userId}\"", 1 * 1000)
+        client.waitFor(ServerActions.SERVER_HACKER_MOVE_ARRIVE, "\"nodeId\":\"${node.id}\",\"userId\":\"${client.userId}\"", 3 * 1000)
         client.clearMessage()
     }
 

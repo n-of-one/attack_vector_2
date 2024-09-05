@@ -6,6 +6,7 @@ import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
@@ -24,32 +25,38 @@ class EditorService(
     private val siteValidationService: SiteValidationService,
     private val connectionService: ConnectionService,
     private val statusLightService: StatusLightService,
-    private val currentUserService: CurrentUserService,
 ) {
 
-    fun open(name: String) {
-        val siteId = getOrCreateSite(name)
-        connectionService.reply(ServerActions.SERVER_OPEN_EDITOR, "id" to siteId)
-    }
-
-    private fun getOrCreateSite(name: String): String {
-        val siteProperties = sitePropertiesEntityService.findByName(name)
-        if (siteProperties != null) {
-            checkOwnershipOfSite(siteProperties)
-            return siteProperties.siteId
-        }
-        val siteId = siteService.createSite(name)
-        siteService.sendSitesList()
-        return siteId
-    }
-
-    private fun checkOwnershipOfSite(siteProperties: SiteProperties) {
-        val user = currentUserService.userEntity
-        if (user.type == UserType.GM) { return } // GM can edit any site
-        if (siteProperties.ownerUserId != user.id) {
+    fun validateAccessToSiteByName(siteName: String, userPrincipal: UserPrincipal) {
+        if (userPrincipal.userEntity.type == UserType.GM) { return } // GM can edit any site
+        val siteProperties = sitePropertiesEntityService.findByName(siteName) ?: return // new site
+        if (siteProperties.ownerUserId != userPrincipal.userEntity.id) {
+            connectionService.replyError("Site already exists")
             error("Site already exists")
         }
     }
+
+    fun validateAccessToSiteById(siteId: String, userPrincipal: UserPrincipal) {
+        if (userPrincipal.userEntity.type == UserType.GM) { return } // GM can edit any site
+
+        val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
+        if (siteProperties.ownerUserId != userPrincipal.userEntity.id) {
+            connectionService.replyError("You don't have access to this site")
+            error("User ${userPrincipal.userId} tried to edit site: ${siteProperties.name} (${siteId}).")
+        }
+    }
+
+    fun open(name: String) {
+        val siteProperties = sitePropertiesEntityService.findByName(name)
+        if (siteProperties != null) {
+            connectionService.reply(ServerActions.SERVER_OPEN_EDITOR, "id" to siteProperties.siteId)
+            return
+        }
+        val siteId = siteService.createSite(name)
+        siteService.sendSitesList()
+        connectionService.reply(ServerActions.SERVER_OPEN_EDITOR, "id" to siteId)
+    }
+
 
     fun addNode(command: AddNode) {
         val node = nodeEntityService.createNode(command)
@@ -112,7 +119,6 @@ class EditorService(
         val response = command.copy(x = node.x, y = node.y)
         connectionService.toSite(command.siteId, ServerActions.SERVER_MOVE_NODE, response)
     }
-
 
     fun sendSiteFull(siteId: String) {
         val toSend = siteService.getSiteFull(siteId)

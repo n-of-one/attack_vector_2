@@ -123,7 +123,6 @@ class WebSocketConfig(
             logger.debug { "<= connect ${userPrincipal.name}" }
             SecurityContextHolder.getContext().authentication = userPrincipal
             connectDisconnectService.connect(userPrincipal)
-            connectDisconnectService.sendTime(userPrincipal)
         } finally {
             SecurityContextHolder.clearContext()
         }
