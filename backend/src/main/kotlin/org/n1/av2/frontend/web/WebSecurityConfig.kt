@@ -24,6 +24,7 @@ private val OPEN_PATHS = listOf(
     "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
     "/about", "/privacy", "/website/**",
     "/loggedOut", "/login", "/adminLogin", "/logout", "/localLogout", "login-frontier",
+    "/.well-known/acme-challenge/**", // for letsencrypt
 
     "/local/**", // for locally hosted files
 

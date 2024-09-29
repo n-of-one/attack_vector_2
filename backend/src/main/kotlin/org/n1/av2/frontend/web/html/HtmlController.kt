@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import java.io.File
 import java.net.URLDecoder
 
@@ -46,6 +47,17 @@ class HtmlController(
     )
     fun default(): String {
         return INDEX
+    }
+
+    @GetMapping(
+        "/.well-known/acme-challenge/**",
+    )
+    @ResponseBody
+    fun acmeChallenge(request: HttpServletRequest): String {
+        val uri = request.requestURI
+        val challengeFileName = uri.substringAfterLast("/")
+        val path = File("letsencrypt/.well-known/acme-challenge/$challengeFileName").canonicalPath
+        return File(path).readText()
     }
 
     @GetMapping("/local/**")
