@@ -20,16 +20,15 @@ export interface User {
     gmNote: string,
 }
 
+export enum HackerSkill {
+    SEARCH_SITE = "SEARCH_SITE",
+    SCAN = "SCAN",
+}
+
 export interface Hacker {
     characterName: string,
     icon: HackerIcon,
-    skill: HackerSkill,
-}
-
-export interface HackerSkill {
-    hacker: number,
-    elite: number,
-    architect: number
+    skills: HackerSkill[] | null,
 }
 
 export interface GenericUserRootState {

@@ -7,7 +7,6 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.login.frontier.FrontierHackerInfo
 import org.n1.av2.platform.inputvalidation.ValidationException
-import org.n1.av2.platform.util.isInt
 import org.n1.av2.run.runlink.RunLinkEntityService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -42,7 +41,7 @@ class UserService(
     }
 
     fun createFromScreen(name: String, externalId: String? = null) {
-        val hacker = Hacker(HackerIcon.KOALA, HackerSkill(1,0,0), "anonymous")
+        val hacker = Hacker(HackerIcon.KOALA, "anonymous", defaultSkills)
         val user = create(name, externalId, UserType.HACKER, hacker)
         overview()
         select(user.id)
@@ -69,6 +68,22 @@ class UserService(
         connectionService.reply(ServerActions.SERVER_USER_DETAILS, user)
     }
 
+    fun editSkill(userId: String, skill: HackerSkill, add: Boolean) {
+        val user = userEntityService.getById(userId)
+        if (user.hacker == null) throw ValidationException("Only hackers can have skills")
+
+        val newSkills = if (add) {
+            (user.hacker.skills ?: defaultSkills) + skill
+        } else {
+            (user.hacker.skills ?: defaultSkills) - skill
+        }
+
+        val editedUserEntity = user.copy(hacker = user.hacker.copy(skills = newSkills))
+        userEntityService.save(editedUserEntity)
+
+        connectionService.reply(ServerActions.SERVER_USER_DETAILS, editedUserEntity)
+    }
+
     fun edit(userId: String, field: String, value: String) {
         val user = userEntityService.getById(userId)
         val editedUserEntity: UserEntity = when (field) {
@@ -76,9 +91,6 @@ class UserService(
             "type" -> changeType(user, value)
             "characterName" -> user.copy(hacker = user.hacker?.copy(characterName = value))
             "hackerIcon" -> user.copy(hacker = user.hacker?.copy(icon = HackerIcon.valueOf(value)))
-            "skillHacker" -> changeSkill(user, field, value)
-            "skillElite" -> changeSkill(user, field, value)
-            "skillArchitect" -> changeSkill(user, field, value)
             else -> error("Unknown user property: $field")
         }
         validate(editedUserEntity, user)
@@ -116,25 +128,11 @@ class UserService(
         if (userEntity.hacker != null) {
             return userEntity.copy(type = UserType.valueOf(newType))
         }
-        val newHacker = Hacker(HackerIcon.BEAR, HackerSkill(1, 0, 0), "anonymous")
+        val newHacker = Hacker(HackerIcon.BEAR, "anonymous", defaultSkills)
         return userEntity.copy(type = UserType.valueOf(newType), hacker = newHacker)
     }
 
-    private fun changeSkill(userEntity: UserEntity, field: String, value: String): UserEntity {
-        val skill = userEntity.hacker?.skill ?: error("User is not a hacker")
-        if (!value.isInt()) throw ValidationException("Please enter a whole number for skill value: $field")
-        val newSkillValue = value.toInt()
-        if (newSkillValue < 0 || newSkillValue > 5) throw ValidationException("Skill value must be between 0 and 5: $field")
 
-        val newSkill = when (field) {
-            "skillHacker" -> skill.copy(hacker = newSkillValue)
-            "skillElite" -> skill.copy(elite = newSkillValue)
-            "skillArchitect" -> skill.copy(architect = newSkillValue)
-            else -> error("Unknown skill property: $field")
-        }
-        val newHacker = userEntity.hacker.copy(skill = newSkill)
-        return userEntity.copy(hacker = newHacker)
-    }
 
     fun delete(userId: String) {
         if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
@@ -166,8 +164,8 @@ class UserService(
 
         val hacker = Hacker(
             icon = HackerIcon.FROG,
-            skill = HackerSkill(0,0,0),
-            characterName = "not yet set"
+            characterName = "not yet set",
+            defaultSkills
         )
 
         return create(name, hackerInfo.id, UserType.HACKER, hacker)
@@ -177,11 +175,9 @@ class UserService(
         if (hackerInfo.isGm) return userEntity
 
         val hacker = userEntity.hacker!!
-        val skills = hackerInfo.skills!!
 
         val updatedHacker = hacker.copy(
             characterName = hackerInfo.characterName!!,
-            skill = HackerSkill(hacker = skills.hacker, elite = skills.elite, architect = skills.architect),
         )
         val updatedUser = userEntity.copy(hacker = updatedHacker)
         return update(updatedUser)
@@ -208,12 +204,10 @@ class UserService(
 
         val hacker = Hacker(
             icon = HackerIcon.FROG,
-            skill = HackerSkill(0,0,0),
-            characterName = "not yet set"
+            characterName = "not yet set",
+            defaultSkills
         )
 
         return create(name, externalId, UserType.HACKER, hacker)
     }
-
-
 }

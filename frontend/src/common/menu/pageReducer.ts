@@ -6,15 +6,11 @@ export const HACKER_HOME = "HACKER_HOME";
 export const SITES = "SITES";
 export const RUN = "RUN";
 export const MAIL = "MAIL";
-export const SCRIPTS = "SCRIPTS";
-export const HACKER_COMMUNITY = "HACKER_COMMUNITY";
 export const ME = "ME";
 
 // Gm & admin pages
-export const LOGS = "LOGS"
-export const MISSIONS = "MISSIONS"
 export const USERS = "USERS"
-export const ADMIN = "ADMIN"
+export const CONFIG = "CONFIG"
 export const TASKS = "TASKS"
 
 // Display this page when another tab was opened for the same hacker / app connection.

@@ -2,9 +2,9 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
-import {ADMIN, HACKER_HOME, ME, RUN, SITES, USERS} from "./pageReducer"
+import {HACKER_HOME, ME, RUN, SITES, USERS} from "./pageReducer"
 import {HackerState} from "../../hacker/HackerRootReducer"
-import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import {ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {larp} from "../Larp";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -61,7 +61,6 @@ export const MenuBar = () => {
                                 {/*<MenuItem requriesRole={ROLE_MISSION_MANAGER} targetPage={MISSIONS} label="Missions"/>*/}
                                 <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={USERS} label="Users"/>
                                 <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={USERS} label="Users"/>
-                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={ADMIN} label="Admin"/>
                                 {/*<MenuItem requriesRole={ROLE_ADMIN} targetPage={TASKS} label="Tasks"/>*/}
                                 {/*<MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={HACKER_COMMUNITY} label="Hacker Community"/>*/}
                             </ul>

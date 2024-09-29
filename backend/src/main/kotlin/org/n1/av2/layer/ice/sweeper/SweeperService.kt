@@ -2,7 +2,8 @@ package org.n1.av2.layer.ice.sweeper
 
 import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.layer.ice.password.AuthAppService
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.SECONDS_IN_TICKS
@@ -25,7 +26,7 @@ class SweeperService(
     private val sweeperIceStatusRepo: SweeperIceStatusRepo,
     private val currentUser: CurrentUserService,
     private val authAppService: AuthAppService,
-    private val serverConfig: ServerConfig,
+    private val configService: ConfigService,
     private val runService: RunService,
 ) {
 
@@ -240,7 +241,7 @@ class SweeperService(
 
     // DEV debug: unblock player
     fun debugUnblock(layer: SweeperIceLayer, userId: String) {
-        if (!serverConfig.dev) return connectionService.replyTerminalReceive("Debug unblock only available in dev mode.")
+        if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) return connectionService.replyTerminalReceive("Debug unblock only available in dev mode.")
         val iceStatus = sweeperIceStatusRepo.findByLayerId(layer.id) ?: return connectionService.replyTerminalReceive("Ice not found for ${layer.id}.")
         val updatedBlockedUserIds = iceStatus.blockedUserIds - userId
         val updatedIceStatus = iceStatus.copy(blockedUserIds = updatedBlockedUserIds)

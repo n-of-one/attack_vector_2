@@ -1,6 +1,6 @@
 import React from 'react'
 import {CLOSE_USER_EDIT} from "./UsersReducer";
-import {User, USER_TYPE_ADMIN, USER_TYPE_GM, USER_TYPE_HACKER, USER_TYPE_HACKER_MANAGER} from "./UserReducer";
+import {HackerSkill, User, USER_TYPE_ADMIN, USER_TYPE_GM, USER_TYPE_HACKER, USER_TYPE_HACKER_MANAGER} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
 import userAuthorizations, {ROLE_GM, ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
@@ -12,6 +12,7 @@ import {larp} from "../Larp";
 import {HackerIcon} from "./HackerIcon";
 
 type SaveFunction = (field: string, value: string) => void
+type SaveSkillFunction = (field: string, value: boolean) => void
 
 interface Props {
     user: User | null,
@@ -87,6 +88,10 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
     const readonlySkills = !(larp.hackerEditSkills && authorizationToEditSkills)
     const showSkills = (larp.hackerShowSkills || authorizationToEditSkills)
 
+    const saveSkill = (skill: string, value: boolean) => {
+        const message = {userId: user.id, skill, value}
+        webSocketConnection.send("/user/editSkill", message)
+    }
 
     return <>
         <hr/>
@@ -110,31 +115,15 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             </div>
         </div>
 
-        { showSkills ? <>
-            <UserAttribute
-            label="Hacker level" id="skillHacker" size={2}
-            value={user.hacker?.skill.hacker}
-            save={save} attributeSaveName="skillHacker"
-            readonly={readonlySkills}
-            indent={1}
-        />
 
-            <UserAttribute
-                label="Elite level" id="skillElite" size={2}
-                value={user.hacker?.skill.elite}
-                save={save} attributeSaveName="skillElite"
-                readonly={readonlySkills}
-                indent={1}
-            />
+        {showSkills ? <>
+            <hr/>
+            <div className="text">Skills</div>
+            <br/>
 
-            <UserAttribute
-                label="Architect level" id="skillArchitect" size={2}
-                value={user.hacker?.skill.architect}
-                save={save} attributeSaveName="skillArchitect"
-                readonly={readonlySkills}
-                indent={1}
-            />
-        </> : <></> }
+            <UserSkill user={user} skill={HackerSkill.SEARCH_SITE} skillName="Search Site" save={saveSkill} field="SEARCH_SITE" readonly={readonlySkills}/>
+            <UserSkill user={user} skill={HackerSkill.SCAN} skillName="Scan" save={saveSkill} field="SCAN" readonly={readonlySkills}/>
+        </> : <></>}
 
 
     </>
@@ -156,7 +145,7 @@ const UserAttribute = ({label, id, size, value, readonly, save, attributeSaveNam
     if (show === false) return <></>
 
     const labelIndentElement = indent ? <div className={`col-lg-${indent}`}/> : <></>
-    const labelSize = indent? 4 - indent : 4
+    const labelSize = indent ? 4 - indent : 4
     const labelClass = `col-lg-${labelSize} control-label text-muted`
 
     return <div className="row form-group">
@@ -169,8 +158,6 @@ const UserAttribute = ({label, id, size, value, readonly, save, attributeSaveNam
                            readonly={readonly}/>
         </div>
     </div>
-
-
 }
 
 const deleteUserButton = (user: User, closeUserEdit: () => void) => {
@@ -193,8 +180,43 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
 
 const hackerIconOptions = () => {
     const options = Object.keys(HackerIcon)
-        .map( (icon) => {
+        .map((icon) => {
             return <option key={icon} value={icon}>{icon}</option>
         })
     return options
+}
+
+
+interface UserSkillProps {
+    user: User,
+    skill: HackerSkill,
+    skillName: string,
+    field: string
+    save: SaveSkillFunction,
+    readonly: boolean,
+}
+
+const UserSkill = ({user, skill, skillName, field, readonly, save}: UserSkillProps) => {
+
+    const checked = user.hacker?.skills?.includes(skill)
+
+    if (readonly) {
+        if (!checked) { return <></> }
+        return <ul><li className="text-muted">{skillName}</li></ul>
+    }
+
+
+    return <div className="row form-group">
+        <div className={`col-lg-1`}/>
+        <label htmlFor={skillName} className="col-lg-3 control-label text-muted">{skillName}</label>
+        <div className={`col-lg-2`}>
+            <input id={skillName} type="checkbox" checked={checked} className="checkbox-inline" onClick={(event: any) => {
+                save(field, !checked)
+                event.preventDefault()
+                return false;
+            }} disabled={readonly}/>
+        </div>
+        <br/>
+        <br/>
+    </div>
 }

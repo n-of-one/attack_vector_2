@@ -15,6 +15,7 @@ import {Standalone} from "./standalone/Standalone";
 import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
 import {WebsiteRouting} from "./website/WebsiteRouting";
 import {Lola} from "./larp/frontier/Lola";
+import {AdminRoot} from "./admin/AdminRoot";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -30,7 +31,7 @@ const ReRoute = (): React.JSX.Element => {
 
     let type = Cookies.get("type")
     if (type === "ADMIN") {
-        window.document.location.href = "/gm/"
+        window.document.location.href = "/admin/"
         return (<></>)
     }
     if (type === "GM") {
@@ -69,6 +70,8 @@ root.render(
                 <Route path="/privacy" element={<Privacy/>}/>
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
+                <Route path="/admin" element={<AdminRoot/>}/>
+
                 <Route path="/edit/:siteId" element={<Editor/>}/>
 
                 { /*path that require login and will redirect to login if not logged in */}

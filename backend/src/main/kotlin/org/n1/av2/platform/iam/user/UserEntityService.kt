@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
+val defaultSkills = setOf(HackerSkill.SEARCH_SITE, HackerSkill.SCAN)
 
 @Component("UserEntityService")
 class UserEntityService(
@@ -27,8 +28,8 @@ class UserEntityService(
 
         val hacker = if (type == UserType.HACKER) Hacker(
             icon = icon,
-            skill = HackerSkill(5, 0, 0),
-            characterName = "unknown"
+            characterName = "unknown",
+            skills = defaultSkills
         )
         else null
 
@@ -89,8 +90,8 @@ class UserEntityService(
             type = type,
             hacker = Hacker(
                 icon = HackerIcon.COBRA,
-                skill = HackerSkill(5, 0, 0),
-                characterName = "char for ${name}"
+                characterName = "char for ${name}",
+                skills = defaultSkills
             ),
         )
         return userEntityRepo.save(newUserEntity)

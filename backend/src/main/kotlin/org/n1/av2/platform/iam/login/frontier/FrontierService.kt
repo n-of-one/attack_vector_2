@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.Cookie
 import org.n1.av2.larp.frontier.LolaService
-import org.n1.av2.platform.config.ServerConfig
-import org.n1.av2.platform.iam.user.HackerSkill
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.util.HttpClient
 import org.springframework.stereotype.Service
@@ -18,7 +18,6 @@ class FrontierHackerInfo(
     val id: String,
     val isGm: Boolean,
     val characterName: String? = null,
-    val skills: HackerSkill? = null,
 )
 
 /**
@@ -35,7 +34,7 @@ class FrontierHackerInfo(
  */
 @Service
 class FrontierService(
-    private val config: ServerConfig,
+    private val configService: ConfigService,
     private val lolaService: LolaService,
 ) {
     private val httpClient = HttpClient()
@@ -65,13 +64,11 @@ class FrontierService(
             )
         }
         val playerInfo = getPlayerInfo(userInfo.id)
-        val playerSkills = getPlayerSkills(playerInfo.characterId)
 
         return FrontierHackerInfo(
             id = "frontier-player:${playerInfo.characterId}",
             isGm = false,
             characterName = playerInfo.characterName,
-            skills = playerSkills,
         )
     }
 
@@ -87,8 +84,11 @@ class FrontierService(
         return FrontierUserInfo(idAndGroups.id, gm)
     }
 
+    private fun orthankToken(): String {
+        return configService.get(ConfigItem.FRONTIER_ORTHANK_TOKEN)
+    }
     private fun getPlayerInfo(accountId: String): CharacterInfo {
-        val headers = mapOf("accountID" to accountId, "token" to config.orthankToken)
+        val headers = mapOf("accountID" to accountId, "token" to orthankToken())
         val responseText = httpClient.get("https://api.eosfrontier.space/orthanc/v2/chars_player/", headers)
         println(responseText)
         val playerInfo = objectMapper.readValue(responseText, CharacterInfo::class.java)
@@ -96,18 +96,24 @@ class FrontierService(
         return playerInfo
     }
 
+    class FrontierV3HackingSkills(
+        val hacker: Int = 0,
+        val architect: Int = 0,
+        val elite: Int = 0
+        )
+
     // Using: https://github.com/eosfrontier/orthanc/tree/master/v2/chars_all
-    private fun getPlayerSkills(characterId: String): HackerSkill {
+    private fun getPlayerSkills(characterId: String): FrontierV3HackingSkills {
         class SkillInfo(var name: String, var level: Int) {
             constructor() : this("", 0)
         }
 
-        val headers = mapOf("id" to characterId, "token" to config.orthankToken)
+        val headers = mapOf("id" to characterId, "token" to orthankToken())
         val responseText = httpClient.get("https://api.eosfrontier.space/orthanc/v2/chars_player/skills/", headers)
         println(responseText)
         val skillsInfo: List<SkillInfo> = objectMapper.readValue(responseText, object : TypeReference<List<SkillInfo>>() {})
 
-        val hackerSkill = HackerSkill(
+        val hackerSkill = FrontierV3HackingSkills(
             hacker = skillsInfo.find { it.name == "it" }?.level ?: 0,
             architect = skillsInfo.find { it.name == "itarchi" }?.level ?: 0,
             elite = skillsInfo.find { it.name == "itelite" }?.level ?: 0
@@ -115,7 +121,7 @@ class FrontierService(
         return hackerSkill
     }
 
-    fun createDefaultUsers() {
+    fun createLolaUser() {
         lolaService.createLolaUser()
     }
 

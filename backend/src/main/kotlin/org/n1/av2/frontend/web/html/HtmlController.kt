@@ -3,7 +3,8 @@ package org.n1.av2.frontend.web.html
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.login.LoginService
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.http.HttpHeaders
@@ -19,10 +20,10 @@ private const val INDEX = "../static/index.html"
 @Controller
 class HtmlController(
     private val loginService: LoginService,
-    private val serverConfig: ServerConfig,
+    private val configService: ConfigService,
 ) : ErrorController {
 
-    private val localRoot = File(serverConfig.localContentFolder)
+    private val localRoot = File("local")
 
     @GetMapping(
         "/",
@@ -52,7 +53,7 @@ class HtmlController(
     fun local(request: HttpServletRequest): ResponseEntity<ByteArray> {
         if (!localRoot.exists() || !localRoot.isDirectory) {
             return ResponseEntity(
-                "local content folder does not exist. Please configure LOCAL_CONTENT_FOLDER in setenv script or create folder: ${serverConfig.localContentFolder}".toByteArray(),
+                "local content folder does not exist. create folder: ${localRoot.canonicalPath}".toByteArray(),
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
         }

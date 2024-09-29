@@ -24,15 +24,15 @@ interface UserEntityRepo : CrudRepository<UserEntity, String> {
 
 data class Hacker(
     val icon: HackerIcon,
-    val skill: HackerSkill,
     val characterName: String,
+    val skills: Set<HackerSkill>?
 )
 
-data class HackerSkill(
-    val hacker: Int,
-    val elite: Int,
-    val architect: Int,
-)
+enum class HackerSkill {
+    SEARCH_SITE,
+    SCAN,
+}
+
 
 // Used for internal activity
 val SYSTEM_USER = UserEntity(

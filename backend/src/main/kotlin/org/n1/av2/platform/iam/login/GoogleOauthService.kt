@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.security.MessageDigest
@@ -14,14 +15,14 @@ import java.util.*
 
 @Service
 class GoogleOauthService(
-    private val serverConfig: ServerConfig,
+    private val configService: ConfigService,
 ) {
     private val objectMapper = ObjectMapper()
     private val jwtParserByKeyId: MutableMap<String, JwtParser> = HashMap()
 
     fun parse(jwt: String): String {
         val (sub, email) = validateJwt(jwt)
-        val googleId = "google-id:$sub:$email:${serverConfig.googleClientId}"
+        val googleId = "google-id:$sub:$email:${configService.get(ConfigItem.LOGIN_GOOGLE_CLIENT_ID)}"
         val hashBytes = MessageDigest.getInstance("SHA-512").digest(googleId.toByteArray())
         val externalId = Base64.getEncoder().encodeToString(hashBytes)
         return externalId
@@ -37,7 +38,7 @@ class GoogleOauthService(
         if (!claims.containsKey("sub")) error("No sub field in JWT, cannot login")
         if (!claims.containsKey("email")) error("No email field in JWT, cannot login")
         val aud = (claims.get("aud") as Set<*>).firstOrNull() as String? ?: error("No aud field in JWT, cannot login")
-        if (aud != serverConfig.googleClientId) error("Google oauth jwt not intended for AV. aud=$aud")
+        if (aud != configService.get(ConfigItem.LOGIN_GOOGLE_CLIENT_ID)) error("Google oauth jwt not intended for AV. aud=$aud")
         val sub = claims["sub"] as String
         val email = claims["email"] as String
         return Pair(sub, email)

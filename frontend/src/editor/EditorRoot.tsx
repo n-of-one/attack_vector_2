@@ -3,7 +3,7 @@ import {Provider} from "react-redux"
 import {EditorHome} from "./component/EditorHome"
 import {editorRootDefaultState, editorRootReducer, EditorState} from "./EditorRootReducer"
 import {Reducer, Store} from "redux"
-import {webSocketConnection, WS_NETWORK_APP, WS_UNRESTRICTED} from "../common/server/WebSocketConnection"
+import {webSocketConnection, WS_NETWORK_APP} from "../common/server/WebSocketConnection"
 import {configureStore} from "@reduxjs/toolkit"
 import {initEditorServerActions, SERVER_SITE_FULL} from "./server/EditorServerActionProcessor"
 import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";

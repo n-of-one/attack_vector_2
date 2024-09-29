@@ -1,27 +1,25 @@
-import React from "react"
-import {MenuBar} from "../common/menu/MenuBar"
-import {useSelector} from "react-redux"
+import {CONFIG, SITES, TASKS, USERS} from "../common/menu/pageReducer";
 import {SitesPage} from "../common/sites/SitesPage";
 import {UserManagement} from "../common/users/UserManagement";
-import {GmState} from "./GmRootReducer";
-import { SITES, TASKS, USERS} from "../common/menu/pageReducer";
-import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
-
+import {TaskMonitorHome} from "../gm/taskmonitor/TaskMonitorHome";
+import {useSelector} from "react-redux";
+import {GmState} from "../gm/GmRootReducer";
+import {MenuBar} from "../common/menu/MenuBar";
+import React from "react";
+import {ConfigHome} from "./config/ConfigHome";
 
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
-        case SITES:
-            return <SitesPage/>
-        case USERS:
-            return <UserManagement/>
         case TASKS:
             return <TaskMonitorHome/>
+        case CONFIG:
+            return <ConfigHome/>
         default:
-            return <SitesPage/>
+            return <ConfigHome/>
     }
 }
 
-export const GmPageChooser = () => {
+export const AdminPageChooser = () => {
 
     const currentPage: string =  useSelector((state: GmState) =>  state.currentPage)
 
@@ -43,4 +41,3 @@ export const GmPageChooser = () => {
         </div>
     )
 }
-

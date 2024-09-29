@@ -17,7 +17,8 @@ import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.text.TextLayerService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.site.entity.Node
@@ -35,7 +36,7 @@ class CommandHackService(
     private val commandServiceUtil: CommandServiceUtil,
     private val iceService: IceService,
     private val keystoreLayerService: KeystoreLayerService,
-    private val config: ServerConfig,
+    private val configService: ConfigService,
     private val hackedUtil: HackedUtil,
     private val coreLayerService: CoreLayerService,
 ) {
@@ -46,7 +47,7 @@ class CommandHackService(
 
 
     fun processQuickHack(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        if (!config.dev) {
+        if (configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
             connectionService.replyTerminalReceive("Unknown command, try [u]help[/].")
             return
         }

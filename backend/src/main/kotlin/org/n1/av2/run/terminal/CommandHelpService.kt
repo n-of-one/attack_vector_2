@@ -1,13 +1,14 @@
 package org.n1.av2.run.terminal
 
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.springframework.stereotype.Service
 
 @Service
 class CommandHelpService(
     private val connectionService: ConnectionService,
-    private val config: ServerConfig,
+    private val configService: ConfigService,
     ) {
 
     fun processHelp(inside: Boolean, tokens: List<String>) {
@@ -40,7 +41,7 @@ class CommandHelpService(
             "Share your run with one or more hackers so they can join you.",
             "",
         )
-        if (config.dev) {
+        if (configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
             connectionService.replyTerminalReceive(
                 "",
                 "[i]Available only during development and testing:[/]",

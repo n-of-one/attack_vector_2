@@ -31,6 +31,10 @@ enum class ServerActions {
 
     SERVER_RECEIVE_USERS_OVERVIEW,  // List of users for user-overview
     SERVER_USER_DETAILS,            // User details for editing
+    SERVER_USER_SKILLS,             // Change of the skills for user
+
+    SERVER_RECEIVE_CONFIG,          // Send the config to the client
+
 
     SERVER_UPDATE_USER_RUNS,        // Sent at logon to hacker to update the runs shown on home page of that user
     SERVER_UPDATE_RUN_INFO,         // Scan info has changed (as displayed on home screen)

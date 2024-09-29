@@ -4,7 +4,8 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.util.TimeService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -17,12 +18,15 @@ import java.util.*
 
 @Configuration
 class MongoClientFactory(
-    private val config: ServerConfig
-) {
+
+    @Value("\${MONGODB_URI:mongodb://attackvector2:attackvector2@localhost/admin?authMechanism=SCRAM-SHA-1}")
+    private val mongoDbUrl: String,
+
+    ) {
 
     @Bean
     fun createMongoClient(): MongoClient {
-        val connectionString = ConnectionString(config.mongoDbUrl)
+        val connectionString = ConnectionString(mongoDbUrl)
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()
@@ -34,8 +38,11 @@ class MongoClientFactory(
 @Configuration
 @EnableMongoRepositories(basePackages = ["org.n1.av2"])
 class MongoDbConfig(
-    private val config: ServerConfig,
     private val mongoClient: MongoClient,
+    private val timeService: TimeService,
+
+    @Value("\${MONGODB_NAME:attackvector2}")
+    private val mongoDbName: String,
 
     ) : AbstractMongoClientConfiguration() {
 
@@ -44,7 +51,7 @@ class MongoDbConfig(
     }
 
     override fun getDatabaseName(): String {
-        return config.mongoDbName
+        return mongoDbName
     }
 
 
@@ -60,7 +67,7 @@ class MongoDbConfig(
     inner class DateToZonedDateTimeConverter : Converter<Date, ZonedDateTime> {
 
         override fun convert(source: Date): ZonedDateTime? {
-            return ZonedDateTime.ofInstant(source.toInstant(), config.timeZoneId)
+            return ZonedDateTime.ofInstant(source.toInstant(), timeService.timeZoneId)
         }
     }
 

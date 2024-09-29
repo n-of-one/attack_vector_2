@@ -35,7 +35,7 @@ export const DevLogin = () => {
 
 
     const login = (name: string) => {
-        const loginInput = {name: name, password: "not-needed-for-dev"}
+        const loginInput = {name: name, password: ""}
         setMessage("Logging in")
 
         restPost({

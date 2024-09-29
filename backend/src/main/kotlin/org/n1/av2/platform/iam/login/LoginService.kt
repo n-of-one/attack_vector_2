@@ -1,7 +1,8 @@
 package org.n1.av2.platform.iam.login
 
 import jakarta.servlet.http.Cookie
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionType
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.authentication.JwtTokenProvider
@@ -16,7 +17,7 @@ import java.net.URLEncoder
 class LoginService(
     private val userEntityService: UserEntityService,
     private val userService: UserService,
-    private val serverConfig: ServerConfig,
+    private val configService: ConfigService,
     private val jwtTokenProvider: JwtTokenProvider,
     private val googleOauthService: GoogleOauthService,
     private val tutorialService: TutorialService,
@@ -24,10 +25,7 @@ class LoginService(
 ) {
 
     fun login(userName: String, password: String?): List<Cookie> {
-        if (!serverConfig.dev) {
-            if (serverConfig.adminPassword == "disabled" ) error("Cannot login, no admin password set. Please ask the system administrators to set an admin password.")
-            if (password == null || serverConfig.adminPassword != password)error("Wrong password")
-        }
+        if (configService.get(ConfigItem.LOGIN_PASSWORD) != password) error("Wrong password")
 
         val user = userEntityService.getByName(userName)
         if (user.type == UserType.SYSTEM) error("Cannot login as system user")

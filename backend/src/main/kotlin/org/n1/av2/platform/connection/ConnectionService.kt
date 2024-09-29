@@ -3,36 +3,38 @@ package org.n1.av2.platform.connection
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.frontend.model.ReduxEvent
-import org.n1.av2.platform.config.ServerConfig
-import org.n1.av2.platform.iam.UserPrincipal
-import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.user.SYSTEM_USER
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.run.terminal.TERMINAL_MAIN
+import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
+
+@Configuration
+class InitConnectionService(
+    private val connectionService: ConnectionService,
+    private val configService: ConfigService,
+) {
+    init {
+        connectionService.configService = configService
+    }
+}
 
 @Service
 class ConnectionService(
     val stompTemplate: SimpMessageSendingOperations,
-    val config: ServerConfig
 ) {
+    lateinit var configService: ConfigService
 
     private val logger = mu.KotlinLogging.logger {}
 
-    @PostConstruct
-    fun logEnvironment() {
-        logger.info("ENVIRONMENT: ${config.environment}")
-        if (config.dev) {
-            logger.info("Simulating non-localhost")
-        }
-    }
-
     val simulateNonLocalhost = {
-        if (config.dev) {
-            Thread.sleep(70)
+        val delay = configService.getAsLong(ConfigItem.DEV_SIMULATE_NON_LOCALHOST_DELAY_MS)
+        if (delay > 0) {
+            Thread.sleep(delay)
         }
     }
 
