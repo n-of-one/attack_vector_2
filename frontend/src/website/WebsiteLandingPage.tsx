@@ -10,6 +10,19 @@ export const WebsiteLandingPage = () => {
             <Banner image={true}/>
             <div className="row">
                 <div className="col-12">
+                    <h3 className="muted">
+                        <div className="btn btn-primary" onClick={() => window.location.href = "/website/players"}>Info for player</div>
+                        &nbsp;
+                        <div className="btn btn-primary" onClick={() => window.location.href = "/website/gms"}>Info for GM</div>
+                        &nbsp;
+                        <div className="btn btn-primary" onClick={() => window.location.href = "/website/organizers"}>Info for organizer</div>
+                        &nbsp;
+
+                    </h3>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-12">
                     <h3 className="muted">Overview</h3>
                     <p className="text">
                         Attack Vector is an online system designed to make players feel like hackers in a sci-fi world.<br/>
@@ -30,7 +43,8 @@ export const WebsiteLandingPage = () => {
                     <p className="text">Take on the role of a hacker, no real-world hacking experience or programming experience needed.
                         Learn how to play <a href="/website/players">here</a>.<br/>
                         <br/>
-                        If you want to experience Attack Vector, go to demo site: <a href="https://attackvector.nl" target="_blank">attackvector.nl</a>. You can log in with a Google
+                        If you want to experience Attack Vector, go to demo site: <a href="https://attackvector.nl" target="_blank">attackvector.nl</a>. You
+                        can log in with a Google
                         account.<br/>
                     </p>
                     <h5 className="muted">Game master</h5>

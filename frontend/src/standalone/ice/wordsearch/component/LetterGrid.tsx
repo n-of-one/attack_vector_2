@@ -4,7 +4,6 @@ import {useSelector} from "react-redux";
 import {LetterState, WordSearchState} from "../reducer/WordSearchStateReducer";
 
 
-
 const calculateSize = (letterGrid: string[][]) => {
     const rows = letterGrid.length
 

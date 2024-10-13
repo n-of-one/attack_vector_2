@@ -1,7 +1,20 @@
 import React from 'react'
 import {
-    TYPE_DATA_STORE, TYPE_MANUAL_1, TYPE_MANUAL_2, TYPE_MANUAL_3, TYPE_PASSCODE_STORE, TYPE_RESOURCE_STORE, TYPE_SYSCON,
-    TYPE_ICE_1, TYPE_ICE_2, TYPE_ICE_3, TYPE_TRANSIT_1, TYPE_TRANSIT_2, TYPE_TRANSIT_3, TYPE_TRANSIT_4, TYPE_UNHACKABLE
+    TYPE_DATA_STORE,
+    TYPE_ICE_1,
+    TYPE_ICE_2,
+    TYPE_ICE_3,
+    TYPE_MANUAL_1,
+    TYPE_MANUAL_2,
+    TYPE_MANUAL_3,
+    TYPE_PASSCODE_STORE,
+    TYPE_RESOURCE_STORE,
+    TYPE_SYSCON,
+    TYPE_TRANSIT_1,
+    TYPE_TRANSIT_2,
+    TYPE_TRANSIT_3,
+    TYPE_TRANSIT_4,
+    TYPE_UNHACKABLE
 } from "../../../common/enums/NodeTypesNames"
 import {EditorNodeImage} from "./EditorNodeImage"
 import {editorCanvas} from "../map/canvas/EditorCanvas"

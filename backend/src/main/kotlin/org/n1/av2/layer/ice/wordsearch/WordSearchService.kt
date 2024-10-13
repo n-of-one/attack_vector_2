@@ -1,6 +1,8 @@
 package org.n1.av2.layer.ice.wordsearch
 
 import org.n1.av2.layer.ice.HackedUtil
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.util.createId
@@ -17,6 +19,7 @@ class WordSearchService(
     private val connectionService: ConnectionService,
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
+    private val configService: ConfigService,
     ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -65,9 +68,32 @@ class WordSearchService(
         return creation
     }
 
+    class EnterWordSearch(
+        val layerId: String,
+        val strength: IceStrength,
+        val letterGrid: List<List<Char>>,
+        val words: List<String>,
+        val correctPositions: List<String>,
+        val solutions: List<List<String>>,
+        val wordIndex: Int,
+        val hacked: Boolean,
+        val quickPlaying: Boolean,
+    )
+
     fun enter(iceId: String) {
         val iceStatus = wordSearchIceStatusRepo.findById(iceId).getOrElse { error("No Word search ice for ID: ${iceId}") }
-        connectionService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, iceStatus)
+        val enterWordSearch = EnterWordSearch(
+            iceStatus.layerId,
+            iceStatus.strength,
+            iceStatus.letterGrid,
+            iceStatus.words,
+            iceStatus.correctPositions,
+            iceStatus.solutions,
+            iceStatus.wordIndex,
+            iceStatus.hacked,
+            configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+        )
+        connectionService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, enterWordSearch)
         runService.enterNetworkedApp(iceId)
     }
 

@@ -3,12 +3,8 @@ package org.n1.av2.platform.db.schema
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Updates
 import org.bson.Document
-import org.n1.av2.editor.SiteValidationService
 import org.n1.av2.platform.db.MigrationStep
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.DefaultUserService
-import org.n1.av2.platform.iam.user.UserEntityService
-import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Component
 
 @Component
@@ -27,7 +23,7 @@ class V5_RemoveHackerSkills(
     fun migrate(db: MongoDatabase): String {
         alterUserEntities(db)
 
-        return "Changed UserEntity (removed obsolete fields) and changed SiteProperties (prepare for hacker making sites)."
+        return "Changed UserEntity: removed obsolete skill fields."
     }
 
     private fun alterUserEntities(db: MongoDatabase) {

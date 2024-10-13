@@ -1,4 +1,5 @@
 import React from "react";
+
 /**
  *
  * Render a number of non-breaking spaces.

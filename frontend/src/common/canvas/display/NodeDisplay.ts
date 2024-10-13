@@ -1,6 +1,6 @@
 import {fabric} from "fabric"
 import {toType} from "../../enums/NodeTypesNames"
-import {FREE, HACKED, PROTECTED, NodeScanStatus, DISCOVERED} from "../../enums/NodeStatus"
+import {DISCOVERED, FREE, HACKED, NodeScanStatus, PROTECTED} from "../../enums/NodeStatus"
 import {getHtmlImage} from "../CanvasUtils"
 import {IMAGE_SIZE} from "./util/DisplayConstants"
 import {Display, Graphics} from "./Display"

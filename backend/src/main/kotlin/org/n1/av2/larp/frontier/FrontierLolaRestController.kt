@@ -14,21 +14,22 @@ class FrontierLolaRestController(
     private val lolaService: LolaService,
 ) {
 
+    @GetMapping("/api/frontier/lola/speak")
+    fun lolaSay(@RequestParam text: String): LolaService.SpeakResponse {
+        val response = lolaService.speak(text)
+        return response
+    }
+
+    // Use to manually get a token for Lola. This token can be used by external application (Lola) to send requests as Lola AV user.
     @GetMapping("/api/admin/frontier/lola/token")
     fun getLolaToken(): String {
         val lolaUser = userEntityService.getByName("Lola")
 
         val now = Date()
-        val yearInMs = 1000L * 60 * 60 * 24 * 365
-        val expiry = Date(now.time + yearInMs)
+        val tenYearsInMs = 1000L * 60 * 60 * 24 * 365 * 10
+        val expiry = Date(now.time + tenYearsInMs)
 
         return jwtTokenProvider.generateJwt(lolaUser, expiry)
-    }
-
-    @GetMapping("/api/admin/frontier/lola/speak")
-    fun lolaSay(@RequestParam text: String): LolaService.SpeakResponse {
-        val response = lolaService.speak(text)
-        return response
     }
 
 }

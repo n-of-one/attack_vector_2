@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {AuthAppRootState} from "../reducer/AuthRootReducer";
 import {Glyphicon} from "../../../../common/component/icon/Glyphicon";
-import {larp} from "../../../../common/Larp";
 import {PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
 import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_PASSWORD_CORRECT, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/AuthUiReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
@@ -49,7 +48,7 @@ export const AuthHome = () => {
                         <PasswordSection/>
                     </div>
                     <div className="d-flex justify-content-center text-primary" style={{height: "42px"}}>
-                        <HintSection />
+                        <HintSection/>
                     </div>
                     <br/>
                     <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
@@ -61,7 +60,7 @@ export const AuthHome = () => {
                     <br/>
                     <div className="d-flex justify-content-center">
                         <h4 className="text-secondary">
-                            <IceBanner />
+                            <IceBanner/>
                         </h4>
                     </div>
                 </div>
@@ -70,13 +69,21 @@ export const AuthHome = () => {
     )
 }
 
+const iceNames = {
+    PASSWORD_ICE: "Rahasy",
+    TANGLE_ICE: "Gaanth",
+    NETWALK_ICE: "Sanrachana",
+    WORD_SEARCH_ICE: "Jaal",
+    TAR_ICE: "Tar",
+}
+
 const IceBanner = () => {
     const type = useSelector((root: AuthAppRootState) => root.info.type)
     const [clickCount, setClickCount] = useState(0)
 
     if (!type) return <></>
 
-    const iceName = larp.iceName(type)
+    const iceName = iceNames[type]
     const clickIceName = () => {
         const newClickCount = clickCount + 1
         setClickCount(newClickCount)
@@ -102,7 +109,7 @@ const PasswordSection = () => {
         case UI_STATE_LOCKED:
             return <PasswordLocked/>
         case UI_STATE_PASSWORD_CORRECT:
-            return <PasswordCorrect />
+            return <PasswordCorrect/>
     }
 }
 
@@ -186,7 +193,7 @@ const PasswordLocked = () => {
 
 const PasswordCorrect = () => {
     return (
-        <div ><h3 className="text-success">Authentication success</h3></div>
+        <div><h3 className="text-success">Authentication success</h3></div>
     )
 }
 

@@ -2,12 +2,7 @@ import {AnyAction} from "redux";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {HIDDEN, UiMode, VISIBLE} from "../../common/IceModel";
 import {TICK} from "../../../../common/terminal/TerminalReducer";
-import {
-    SERVER_SWEEPER_BLOCK_USER,
-    SERVER_SWEEPER_MODIFY,
-    SweeperModifyAction,
-    SweeperModifyData
-} from "../SweeperServerActionProcessor";
+import {SERVER_SWEEPER_BLOCK_USER, SERVER_SWEEPER_MODIFY, SweeperModifyAction, SweeperModifyData} from "../SweeperServerActionProcessor";
 import {SweeperGameState} from "../logic/SweeperLogic";
 
 export const SERVER_SWEEPER_ENTER = "SERVER_SWEEPER_ENTER"

@@ -3,12 +3,15 @@ package org.n1.av2.run.terminal
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.HackerSkill
 import org.springframework.stereotype.Service
 
 @Service
 class CommandHelpService(
     private val connectionService: ConnectionService,
     private val configService: ConfigService,
+    private val currentUser: CurrentUserService,
     ) {
 
     fun processHelp(inside: Boolean, tokens: List<String>) {
@@ -24,16 +27,24 @@ class CommandHelpService(
     }
 
     private fun processHelpOutside() {
+        val hasScanSkill = currentUser.userEntity.hasSKill(HackerSkill.SCAN)
+
         connectionService.replyTerminalReceive(
             "You are outside of the site.",
             "Here you can examine the site before entering to plan your attack. Click on a node in the map to see what layers it contains.",
             "",
             "There are only a few commands you can use when outside:",
-            "",
-            "[b]scan[/]",
-            "Scan the site to reveal nodes. Does not scan beyond ICE nodes.",
-            "This is usually the first thing you do when you arrive at a new site, to gain information about it.",
-            "",
+            "")
+        if (hasScanSkill) {
+            connectionService.replyTerminalReceive(
+                "[b]scan[/]",
+                "Scan the site to reveal nodes. Does not scan beyond ICE nodes.",
+                "This is usually the first thing you do when you arrive at a new site, to gain information about it.",
+                ""
+            )
+        }
+
+        connectionService.replyTerminalReceive(
             "[b]attack",
             "Enter the site and start the attack..",
             "",
@@ -52,8 +63,9 @@ class CommandHelpService(
         }
     }
 
-
     private fun processHelpInside() {
+        val hasScanSkill = currentUser.userEntity.hasSKill(HackerSkill.SCAN)
+
         connectionService.replyTerminalReceive(
             "You are inside the site.",
             "",
@@ -71,10 +83,16 @@ class CommandHelpService(
             "",
             "",
             "These commands are only used occasionally:",
-            "",
-            "[b]scan[/]",
-            "Scan to reveal new nodes once ICE has been hacked.",
-            "",
+            "")
+
+        if (hasScanSkill) {
+            connectionService.replyTerminalReceive(
+                "[b]scan[/]",
+                "Scan to reveal new nodes once ICE has been hacked.",
+                "",
+            )
+        }
+        connectionService.replyTerminalReceive(
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
             "",

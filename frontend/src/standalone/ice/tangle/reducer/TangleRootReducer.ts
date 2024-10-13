@@ -3,7 +3,7 @@ import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTermina
 import {combineReducers} from "redux";
 import {tangleIceReducer, TangleIceState} from "./TangleIceReducer";
 import {pageReducer} from "../../../../common/menu/pageReducer";
-import {iceHackersReducer, IceHackers} from "../../common/IceHackersReducer";
+import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 
 
 export interface TangleRootState {

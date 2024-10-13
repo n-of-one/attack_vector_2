@@ -7,12 +7,7 @@ import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {sweeperCanvas} from "../canvas/SweeperCanvas";
 import {SWEEPER_IMAGES} from "../canvas/SweeperCellDisplay";
-import {
-    RESET_MILLIS,
-    SWEEPER_RESET_START,
-    SWEEPER_RESET_STOP,
-    SweeperResetState
-} from "../reducer/SweeperUiStateReducer";
+import {RESET_MILLIS, SWEEPER_RESET_START, SWEEPER_RESET_STOP, SweeperResetState} from "../reducer/SweeperUiStateReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {ice} from "../../../StandaloneGlobals";
 import {CloseTabButton} from "../../common/CloseTabButton";

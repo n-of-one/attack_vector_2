@@ -5,14 +5,14 @@ import {notify} from "../../../common/util/Notification";
 import {delay} from "../../../common/util/Util";
 import {ICE_TANGLE_BEGIN, TangleLine, TanglePoint} from "./reducer/TangleIceReducer";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
-import {larp} from "../../../common/Larp";
 
-export interface TanglePuzzle {
+export interface EnterTanglePuzzle {
     strength: string,
     points: TanglePoint[],
     lines: TangleLine[],
-    hacked: boolean,
     clusters: Number,
+    hacked: boolean,
+    quickPlaying: boolean,
 }
 
 export interface TanglePointMoved {
@@ -25,7 +25,7 @@ export interface TanglePointMoved {
 
 class TangleIceManager extends GenericIceManager {
 
-    enter(puzzle: TanglePuzzle) {
+    enter(puzzle: EnterTanglePuzzle) {
         if (puzzle.hacked) {
             this.enterHacked()
             return
@@ -37,7 +37,7 @@ class TangleIceManager extends GenericIceManager {
         })
         this.schedule.clear()
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
-        if (!larp.quickPlaying) {
+        if (!puzzle.quickPlaying) {
             this.displayTerminal(20, "[primary]↼ Connecting to ice, initiating attack")
             this.displayTerminal(40, "↼ Network inspection")
             this.displayTerminal(10, "↼ Complete")

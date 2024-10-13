@@ -5,7 +5,7 @@ import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.integration.service.TestUserService
 import org.n1.av2.platform.iam.user.UserType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
@@ -31,7 +31,7 @@ class ApiSiteWsControllerTest(
     lateinit var loginService: LoginService
 
     @Autowired
-    lateinit var userEntityService: UserEntityService
+    lateinit var testUserService: TestUserService
 
     @Autowired
     lateinit var mvc: MockMvc
@@ -41,7 +41,7 @@ class ApiSiteWsControllerTest(
 
     @BeforeAll
     fun setup() {
-        val user = userEntityService.createUserForTest("testGm", UserType.GM)
+        val user = testUserService.createUserForTest("testGm", UserType.GM)
         authCookie = loginService.generateJwtCookie(user)
     }
 
@@ -53,7 +53,7 @@ class ApiSiteWsControllerTest(
         )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(content().string("""{"clientId":"none"}"""))
+            .andExpect(content().string("""{"clientId":""}"""))
     }
 
     @Test

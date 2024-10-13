@@ -1,4 +1,4 @@
-import {TerminalBlockType, TerminalLineData, TerminalLineBlock} from "./TerminalReducer";
+import {TerminalBlockType, TerminalLineBlock, TerminalLineData} from "./TerminalReducer";
 
 
 let terminalLineKey = 0

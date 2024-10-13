@@ -12,6 +12,8 @@ import org.n1.av2.run.RunService
 import org.n1.av2.run.runlink.RunLinkService
 import org.springframework.stereotype.Service
 
+const val lolaUserName = "LOLA"
+
 @Service
 class LolaService(
     private val connectionService: ConnectionService,
@@ -39,19 +41,17 @@ class LolaService(
     }
 
     fun createLolaUser() {
-        userEntityService.createDefaultUser("LOLA", UserType.HACKER, HackerIcon.BRAIN)
+        userEntityService.createDefaultUser(lolaUserName, UserType.HACKER, setOf(), HackerIcon.BRAIN)
     }
 
     class SpeakResponse(val success: Boolean, val message: String)
-
     fun speak(text: String): SpeakResponse {
-        val lolaUser = userEntityService.getByName("LOLA")
+        val lolaUser = userEntityService.getByName(lolaUserName)
 
         val lolaHackerState = hackerStateEntityService.retrieve(lolaUser.id)
         if (lolaHackerState.activity == HackerActivity.OFFLINE) {
             return SpeakResponse(false, "${lolaUser.name} is not connected to the network.")
         }
-
 
         connectionService.toUser(lolaUser.id, ServerActions.SERVER_SPEAK, text)
         return SpeakResponse(true, "Speaking: ${text}")

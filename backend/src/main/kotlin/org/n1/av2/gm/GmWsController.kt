@@ -6,7 +6,6 @@ import org.n1.av2.site.SiteService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
-import javax.annotation.security.RolesAllowed
 
 @Controller
 class GmWsController(

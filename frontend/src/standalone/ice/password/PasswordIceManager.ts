@@ -4,7 +4,6 @@ import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer"
 import {terminalManager} from "../../../common/terminal/TerminalManager"
 import {ICE_PASSWORD_BEGIN} from "./reducer/PasswordReducer";
 import {AuthEnter, AuthStateUpdate} from "../../app/auth/AuthServerActionProcessor";
-import {larp} from "../../../common/Larp";
 
 
 class PasswordIceManager extends GenericIceManager {
@@ -19,7 +18,7 @@ class PasswordIceManager extends GenericIceManager {
         }
 
         this.displayTerminal(20, "↼ Connecting to ice, initiating attack.")
-        if (!larp.quickPlaying) {
+        if (!data.quickPlaying) {
             this.displayTerminal(20, "↼ Scanning for weaknesses.")
             this.displayTerminal(20, "↼ .......................................................................................................................")
             this.displayTerminal(30, "↼ Found weak interface: static (non-rotating) password.")

@@ -2,10 +2,10 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
-import {HACKER_HOME, ME, RUN, SITES, USERS} from "./pageReducer"
-import {HackerState} from "../../hacker/HackerRootReducer"
-import {ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
-import {larp} from "../Larp";
+import {CONFIG, HACKER_HOME, ME, RUN, SITES, TASKS, USERS} from "./pageReducer"
+import {HackerRootState} from "../../hacker/HackerRootReducer"
+import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import {HackerSkill} from "../users/UserReducer";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -15,7 +15,7 @@ const logout = (event: any) => {
     Cookies.remove("type")
     Cookies.remove("roles")
     Cookies.remove("userName")
-    document.location.href = "/localLogout"
+    document.location.href = "/loggedOut"
 }
 
 const scanItem = (currentPage: string, runName: string | null) => {
@@ -32,10 +32,14 @@ export const MenuBar = () => {
 
     const userName = Cookies.get("userName")
 
-    const siteName = useSelector( (state: HackerState ) =>  (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "" )
-    const currentPage =  useSelector( (state: HackerState) => state.currentPage )
+    const siteName = useSelector((state: HackerRootState) => (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "")
+    const currentPage = useSelector((state: HackerRootState) => state.currentPage)
 
-    const createSites = larp.hackersCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={SITES} label="Sites"/> : <></>
+    const skills = useSelector((state: HackerRootState) => state.skills)
+    const hackersCanCreateSites = (skills) ? skills.includes(HackerSkill.CREATE_SITE) : false
+
+
+    const createSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={SITES} label="Sites"/> : <></>
 
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{
@@ -50,25 +54,17 @@ export const MenuBar = () => {
                         <div className="d-flex justify-content-between">
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
-                                {/*<MenuItem requriesRole="ROLE_HACKER" targetPage={SCRIPTS} label="Scripts" />*/}
-
                                 {createSites}
                                 <MenuItem requriesRole="ROLE_HACKER" targetPage={HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={SITES} label="Sites"/>
-                                {/*<MenuItem requriesRole={ROLE_HACKER} targetPage={LOGS} label="Logs"/>*/}
-                                {/*<MenuItem requriesRole={ROLE_HACKER} targetPage={MAIL} label="Mail"/>*/}
-                                {/*<MenuItem requriesRole={ROLE_MISSION_MANAGER} targetPage={MISSIONS} label="Missions"/>*/}
                                 <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={USERS} label="Users"/>
                                 <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={USERS} label="Users"/>
-                                {/*<MenuItem requriesRole={ROLE_ADMIN} targetPage={TASKS} label="Tasks"/>*/}
-                                {/*<MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={HACKER_COMMUNITY} label="Hacker Community"/>*/}
+                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={CONFIG} label="Config"/>
+                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={TASKS} label="Tasks"/>
                             </ul>
                             <ul className="navbar-nav">
                                 <MenuItem requriesRole="ROLE_USER" targetPage={ME} label={"{" + userName + "}"}/>
-                                {/*<li>*/}
-                                {/*<a href="/manual" target="_blank">Manual</a>*/}
-                                {/*</li>*/}
                                 <li className="nav-item">
                                     <a className="nav-link" href="/login" onClick={(event) => logout(event)}>ꕻ
                                         Logout</a>

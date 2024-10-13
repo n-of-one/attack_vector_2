@@ -4,7 +4,6 @@ import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
-import javax.annotation.security.RolesAllowed
 
 @Controller
 class EditorController(

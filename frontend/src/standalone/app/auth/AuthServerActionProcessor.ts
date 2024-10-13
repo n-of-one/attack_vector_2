@@ -14,9 +14,10 @@ export interface AuthEnter {
     hint?: string,
 
     lockedUntil: string  // "2019-08-26T15:38:40.9179757+02:00"
-    hacked: boolean,
     attempts: string[],
     showHint: boolean,
+    hacked: boolean,
+    quickPlaying: boolean,
 }
 
 export interface AuthStateUpdate {

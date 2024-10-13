@@ -27,6 +27,13 @@ class UserService(
         val characterName: String?,
     )
 
+
+    fun defaultSkills(): Set<HackerSkill> {
+        val template = userEntityService.getByName(TEMPLATE_USER_NAME)
+        return template.hacker?.skills ?: error("Template user is not a hacker, cannot get default skills")
+    }
+
+
     fun overview() {
         val message = filteredUsers().map { UserOverview(it.id, it.name, it.hacker?.characterName ) }
         connectionService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
@@ -41,7 +48,7 @@ class UserService(
     }
 
     fun createFromScreen(name: String, externalId: String? = null) {
-        val hacker = Hacker(HackerIcon.KOALA, "anonymous", defaultSkills)
+        val hacker = Hacker(HackerIcon.KOALA, "anonymous", defaultSkills())
         val user = create(name, externalId, UserType.HACKER, hacker)
         overview()
         select(user.id)
@@ -73,15 +80,19 @@ class UserService(
         if (user.hacker == null) throw ValidationException("Only hackers can have skills")
 
         val newSkills = if (add) {
-            (user.hacker.skills ?: defaultSkills) + skill
+            (user.hacker.skills ?: defaultSkills()) + skill
         } else {
-            (user.hacker.skills ?: defaultSkills) - skill
+            (user.hacker.skills ?: defaultSkills()) - skill
         }
 
         val editedUserEntity = user.copy(hacker = user.hacker.copy(skills = newSkills))
         userEntityService.save(editedUserEntity)
 
         connectionService.reply(ServerActions.SERVER_USER_DETAILS, editedUserEntity)
+    }
+
+    fun replySkills(user: UserEntity) {
+        connectionService.reply(ServerActions.SERVER_RECEIVE_HACKER_SKILLS, user.hacker?.skills ?: emptyList<HackerSkill>())
     }
 
     fun edit(userId: String, field: String, value: String) {
@@ -100,7 +111,7 @@ class UserService(
         overview()
     }
 
-    protected fun validate(editedUserEntity: UserEntity, user: UserEntity) {
+    private fun validate(editedUserEntity: UserEntity, user: UserEntity) {
         val violations = validator.validate(editedUserEntity)
         if (violations.isEmpty()) return
 
@@ -128,17 +139,16 @@ class UserService(
         if (userEntity.hacker != null) {
             return userEntity.copy(type = UserType.valueOf(newType))
         }
-        val newHacker = Hacker(HackerIcon.BEAR, "anonymous", defaultSkills)
+        val newHacker = Hacker(HackerIcon.BEAR, "anonymous", defaultSkills())
         return userEntity.copy(type = UserType.valueOf(newType), hacker = newHacker)
     }
 
 
-
+    val undeletableUserTypes = setOf(UserType.SYSTEM, UserType.ADMIN, UserType.SKILL_TEMPLATE)
     fun delete(userId: String) {
         if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
         val userEntity = userEntityService.getById(userId)
-        if (userEntity.type == UserType.SYSTEM) throw ValidationException("Cannot delete system user.")
-        if (userEntity.type == UserType.ADMIN) throw ValidationException("Cannot delete admin user.")
+        if (undeletableUserTypes.contains(userEntity.type)) throw ValidationException("Cannot delete user of type: ${userEntity.type}.")
 
         runLinkEntityService.deleteAllForUser(userId)
         userEntityService.delete(userId)
@@ -148,6 +158,24 @@ class UserService(
 
     fun update(updatedUserEntity: UserEntity): UserEntity {
         return userEntityService.save(updatedUserEntity)
+    }
+
+
+    fun getOrCreateUser(externalId: String): UserEntity {
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(externalId)
+        if (existingUserEntity != null) {
+            return existingUserEntity
+        }
+
+        val name = findFreeUserName("user")
+
+        val hacker = Hacker(
+            icon = HackerIcon.FROG,
+            characterName = "not yet set",
+            defaultSkills()
+        )
+
+        return create(name, externalId, UserType.HACKER, hacker)
     }
 
     fun getOrCreateUser(hackerInfo: FrontierHackerInfo): UserEntity {
@@ -165,7 +193,7 @@ class UserService(
         val hacker = Hacker(
             icon = HackerIcon.FROG,
             characterName = "not yet set",
-            defaultSkills
+            defaultSkills()
         )
 
         return create(name, hackerInfo.id, UserType.HACKER, hacker)
@@ -194,20 +222,4 @@ class UserService(
         error("Failed to logon, failed to create user account. No free user name found")
     }
 
-    fun getOrCreateUser(externalId: String): UserEntity {
-        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(externalId)
-        if (existingUserEntity != null) {
-            return existingUserEntity
-        }
-
-        val name = findFreeUserName("user")
-
-        val hacker = Hacker(
-            icon = HackerIcon.FROG,
-            characterName = "not yet set",
-            defaultSkills
-        )
-
-        return create(name, externalId, UserType.HACKER, hacker)
-    }
 }

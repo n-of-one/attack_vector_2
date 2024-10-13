@@ -1,6 +1,6 @@
 import React from 'react';
 import {useSelector} from "react-redux";
-import {HackerState} from "../../hacker/HackerRootReducer";
+import {HackerRootState} from "../../hacker/HackerRootReducer";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
@@ -12,7 +12,7 @@ interface Props {
 
 export const PatrollerImage = ({fileName, type, onLoad}: Props) => {
 
-    const theme = useSelector((state: HackerState)=> state.theme)
+    const theme = useSelector((state: HackerRootState) => state.theme)
 
     const root = "/img/" + theme + "/actors/patrollers/";
     const dirAndName = root + fileName;

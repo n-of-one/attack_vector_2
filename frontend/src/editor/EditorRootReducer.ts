@@ -1,11 +1,11 @@
-import {dragAndDropReducer, defaultDragAndDropState, DragAndDropState} from "./reducer/DragAndDropReducer"
+import {defaultDragAndDropState, dragAndDropReducer, DragAndDropState} from "./reducer/DragAndDropReducer"
 import {themeReducer} from "../common/reducer/ThemeReducer"
-import {connectionsReducer, Connection} from "./reducer/ConnectionsReducer"
+import {Connection, connectionsReducer} from "./reducer/ConnectionsReducer"
 import {SiteProperties, sitePropertiesDefault, SitePropertiesReducer} from "./reducer/SitePropertiesReducer"
 import {NodeI, nodesReducer} from "./reducer/NodesReducer"
 import {currentNodeIdReducer} from "./reducer/CurrentNodeIdReducer"
 import {currentLayerIdReducer} from "./reducer/CurrentLayerIdReducer"
-import {siteStateReducer, siteStateDefault, SiteStateI} from "./reducer/SiteStateReducer"
+import {siteStateDefault, SiteStateI, siteStateReducer} from "./reducer/SiteStateReducer"
 import {AnyAction} from "redux"
 
 export interface EditorState {

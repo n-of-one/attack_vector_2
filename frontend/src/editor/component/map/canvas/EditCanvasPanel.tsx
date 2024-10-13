@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {EditorState} from "../../../EditorRootReducer"
 import {delay} from "../../../../common/util/Util"
 import {sendAddNode} from "../../../server/EditorServerClient"
-import {CANVAS_HEIGHT, CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
+import {CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
 import {SiteDescription} from "../../description/SiteDescription";
 
 /* eslint react-hooks/exhaustive-deps: 0*/

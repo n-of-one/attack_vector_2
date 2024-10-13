@@ -5,6 +5,8 @@ import org.n1.av2.layer.app.AppService
 import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.keystore.KeystoreService
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -39,6 +41,7 @@ class AuthAppService(
     private val keystoreService: KeystoreService,
     private val appService: AppService,
     private val runService: RunService,
+    private val configService: ConfigService,
     ) {
 
     fun findOrCreateIceStatus(layer: PasswordIceLayer): IcePasswordStatus {
@@ -70,6 +73,7 @@ class AuthAppService(
         val attempts: List<String>,
         val showHint: Boolean,
         val hacked: Boolean,
+        val quickPlaying: Boolean,
     )
 
 
@@ -80,7 +84,8 @@ class AuthAppService(
         val type = iceId.determineIceType()
         val showHint = showHint(iceStatus, layer)
         val hint = if (layer is PasswordIceLayer) layer.hint else null
-        val iceEnter = IceAppEnter(type, layer.strength, hint, iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, layer.hacked)
+        val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+        val iceEnter = IceAppEnter(type, layer.strength, hint, iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, layer.hacked, quickPlaying)
 
         connectionService.reply(ServerActions.SERVER_AUTH_ENTER, iceEnter)
 

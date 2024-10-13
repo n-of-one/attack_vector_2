@@ -10,8 +10,9 @@ export interface TarEnter {
     totalUnits: number,
     unitsHacked: number,
     strength: IceStrength,
-    hacked: boolean,
     unitsPerSecond: number,
+    hacked: boolean,
+    quickPlaying: boolean,
 }
 
 export interface TarStatusUpdate {

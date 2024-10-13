@@ -1,7 +1,15 @@
 import {fabric} from "fabric"
 import {animate, calcLine, easeInOutSine, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
 import {Schedule} from "../../util/Schedule"
-import {COLOR_HACKER_LINE, IDENTIFICATION_SCALE_LARGE, IDENTIFICATION_SCALE_NORMAL, IMAGE_SIZE, OFFSET, SCALE_NORMAL, SCALE_SMALL} from "./util/DisplayConstants"
+import {
+    COLOR_HACKER_LINE,
+    IDENTIFICATION_SCALE_LARGE,
+    IDENTIFICATION_SCALE_NORMAL,
+    IMAGE_SIZE,
+    OFFSET,
+    SCALE_NORMAL,
+    SCALE_SMALL
+} from "./util/DisplayConstants"
 import {ConnectionVisual} from "../visuals/ConnectionVisual"
 import {Display, Graphics} from "./Display"
 import {Dispatch} from "redux"

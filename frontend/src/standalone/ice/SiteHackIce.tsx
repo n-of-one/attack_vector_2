@@ -3,15 +3,7 @@ import {TangleRoot} from "./tangle/TangleRoot";
 import {PasswordRoot} from "./password/PasswordRoot";
 import {WordSearchRoot} from "./wordsearch/WordSearchRoot";
 import {NetwalkRoot} from "./netwalk/NetwalkRoot";
-import {
-    layerTypeFromIceId,
-    NETWALK_ICE,
-    PASSWORD_ICE,
-    TANGLE_ICE,
-    TAR_ICE,
-    WORD_SEARCH_ICE,
-    SWEEPER_ICE
-} from "../../common/enums/LayerTypes";
+import {layerTypeFromIceId, NETWALK_ICE, PASSWORD_ICE, SWEEPER_ICE, TANGLE_ICE, TAR_ICE, WORD_SEARCH_ICE} from "../../common/enums/LayerTypes";
 import {TarRoot} from "./tar/TarRoot";
 import {TopLevelError} from "../../common/component/TopLevelError";
 import {SweeperRoot} from "./sweeper/SweeperRoot";

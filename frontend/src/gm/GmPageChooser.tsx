@@ -3,8 +3,8 @@ import {MenuBar} from "../common/menu/MenuBar"
 import {useSelector} from "react-redux"
 import {SitesPage} from "../common/sites/SitesPage";
 import {UserManagement} from "../common/users/UserManagement";
-import {GmState} from "./GmRootReducer";
-import { SITES, TASKS, USERS} from "../common/menu/pageReducer";
+import {GmRootState} from "./GmRootReducer";
+import {SITES, TASKS, USERS} from "../common/menu/pageReducer";
 import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
 
 
@@ -23,7 +23,7 @@ const renderCurrentPage = (currentPage: string) => {
 
 export const GmPageChooser = () => {
 
-    const currentPage: string =  useSelector((state: GmState) =>  state.currentPage)
+    const currentPage: string = useSelector((state: GmRootState) => state.currentPage)
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

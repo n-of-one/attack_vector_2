@@ -12,6 +12,7 @@ import {WebsiteGms} from "./gms/WebsiteGms";
 import {WebsiteOrganizers} from "./organizers/WebsiteOrganizers";
 import {WebsiteLandingPage} from "./WebsiteLandingPage";
 import {WebsiteIceMineSweeper} from "./players/WebsiteIceMineSweeper";
+import {WebsiteSkills} from "./players/skill/WebsiteSkills";
 
 export const WebsiteRouting = () => {
 
@@ -36,6 +37,8 @@ export const WebsiteRouting = () => {
             return <WebsiteIceTar/>
         case "players-ice-minesweeper":
             return <WebsiteIceMineSweeper/>
+        case "players-skills":
+            return <WebsiteSkills/>
         case "gms":
             return <WebsiteGms/>
         case "organizers":

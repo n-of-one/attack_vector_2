@@ -3,7 +3,6 @@ import {useDispatch, useSelector} from "react-redux"
 import {Terminal} from "../../../common/terminal/Terminal"
 import {RunCanvasPanel} from "./RunCanvasPanel"
 import {NodeScanInfo} from "./scaninfo/NodeScanInfo"
-import {HackerState} from "../../HackerRootReducer"
 import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
 import {Timers} from "../coundown/Timers";
@@ -14,7 +13,7 @@ import {currentUser} from "../../../common/user/CurrentUser";
 
 const TerminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
 
-    const timerCount = useSelector((state: HackerState) => state.run.timers.length)
+    const timerCount = useSelector((state: HackerRootState) => state.run.timers.length)
     const adjustedTimerCount = timerCount > 0 ? timerCount : 1
 
     if (infoNodeId) {
@@ -36,17 +35,17 @@ export const RunHome = () => {
 
     const dispatch: Dispatch = useDispatch()
 
-    const siteName = useSelector((state: HackerState) => {
+    const siteName = useSelector((state: HackerRootState) => {
         return (state.run.site.siteProperties) ? state.run.site.siteProperties.name : ""
     })
-    const terminal = useSelector((state: HackerState) => state.terminal)
+    const terminal = useSelector((state: HackerRootState) => state.terminal)
     const submit = () => {
         const payload = {command: terminal.input};
         webSocketConnection.sendObjectWithRunId("/terminal/main", payload);
 
         dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: terminal.input, terminalId: terminal.id});
     }
-    const infoNodeId = useSelector((state: HackerState) => state.run.infoNodeId)
+    const infoNodeId = useSelector((state: HackerRootState) => state.run.infoNodeId)
 
     return (
         <div className="row">

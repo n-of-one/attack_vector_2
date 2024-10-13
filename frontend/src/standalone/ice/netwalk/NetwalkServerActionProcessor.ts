@@ -1,4 +1,3 @@
-import {Store} from "redux";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {IceStrength} from "../../../common/model/IceStrength";
 import {SERVER_NETWALK_ENTER, SERVER_NETWALK_NODE_ROTATED} from "./reducer/NetwalkStateReducer";
@@ -12,9 +11,10 @@ export interface NetwalkCell {
 export interface ServerEnterIceNetwalk {
     strength: IceStrength,
     uiState: string,
-    hacked: boolean,
     cellGrid: NetwalkCell[][],
     wrapping: boolean,
+    hacked: boolean,
+    quickPlaying: boolean,
 }
 
 export enum CellType {
@@ -50,7 +50,7 @@ export interface NetwalkRotateUpdate {
 }
 
 
-export const initNetwalkServerActions = (store: Store) => {
+export const initNetwalkServerActions = () => {
     webSocketConnection.addAction(SERVER_NETWALK_ENTER, (data: ServerEnterIceNetwalk) => {
         netwalkManager.enter(data)
     })

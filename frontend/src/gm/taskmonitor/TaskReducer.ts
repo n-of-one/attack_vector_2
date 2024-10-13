@@ -14,7 +14,7 @@ export interface Task {
 const defaultState: Array<Task> = []
 
 
-export const tasksReducer = (state: Array<Task> = defaultState, action: any) => {
+export const tasksReducer = (state: Task[] = defaultState, action: any): Task[] => {
     switch (action.type) {
         case SERVER_TASKS:
             return action.data

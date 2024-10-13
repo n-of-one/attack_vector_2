@@ -1,15 +1,16 @@
-import {CONFIG, SITES, TASKS, USERS} from "../common/menu/pageReducer";
-import {SitesPage} from "../common/sites/SitesPage";
+import {CONFIG, TASKS, USERS} from "../common/menu/pageReducer";
 import {UserManagement} from "../common/users/UserManagement";
 import {TaskMonitorHome} from "../gm/taskmonitor/TaskMonitorHome";
 import {useSelector} from "react-redux";
-import {GmState} from "../gm/GmRootReducer";
+import {GmRootState} from "../gm/GmRootReducer";
 import {MenuBar} from "../common/menu/MenuBar";
 import React from "react";
 import {ConfigHome} from "./config/ConfigHome";
 
 const renderCurrentPage = (currentPage: string) => {
     switch (currentPage) {
+        case USERS:
+            return <UserManagement/>
         case TASKS:
             return <TaskMonitorHome/>
         case CONFIG:
@@ -21,7 +22,7 @@ const renderCurrentPage = (currentPage: string) => {
 
 export const AdminPageChooser = () => {
 
-    const currentPage: string =  useSelector((state: GmState) =>  state.currentPage)
+    const currentPage: string = useSelector((state: GmRootState) => state.currentPage)
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

@@ -3,8 +3,8 @@ import React from "react"
 import {MenuBar} from "../common/menu/MenuBar"
 import {runCanvas} from "./run/component/RunCanvas"
 import {useSelector} from "react-redux"
-import {HackerState} from "./HackerRootReducer"
-import {FORCE_DISCONNECT, MAIL, ME, RUN, SITES, USERS} from "../common/menu/pageReducer"
+import {HackerRootState} from "./HackerRootReducer"
+import {FORCE_DISCONNECT, ME, RUN, SITES, USERS} from "../common/menu/pageReducer"
 import {RunHome} from "./run/component/RunHome";
 import {UserManagement} from "../common/users/UserManagement";
 import {ForceDisconnected} from "../common/component/ForceDisconnected";
@@ -45,9 +45,9 @@ const renderCurrentPage = (currentPage: string) => {
 
 export const HackerPageChooser = () => {
 
-    const infoNodeId: string | null = useSelector((state: HackerState) => state.run?.infoNodeId)
+    const infoNodeId: string | null = useSelector((state: HackerRootState) => state.run?.infoNodeId)
 
-    const currentPage: string =  useSelector((state: HackerState) =>  state.currentPage)
+    const currentPage: string = useSelector((state: HackerRootState) => state.currentPage)
     if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (

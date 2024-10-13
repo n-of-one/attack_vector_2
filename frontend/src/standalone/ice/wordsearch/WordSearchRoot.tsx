@@ -41,7 +41,7 @@ export class WordSearchRoot extends Component<Props> {
         wordSearchManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions()
-        initWordSearchServerActions(this.store)
+        initWordSearchServerActions()
     }
 
     render() {

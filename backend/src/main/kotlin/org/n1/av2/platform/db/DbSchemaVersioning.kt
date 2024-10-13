@@ -2,7 +2,7 @@ package org.n1.av2.platform.db
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
-import org.springframework.beans.factory.annotation.Value
+import org.n1.av2.platform.config.StaticConfig
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
@@ -19,11 +19,8 @@ class DbSchemaVersioning(
     private val dbSchemaVersionRepository: DbSchemaVersionRepository,
     private val mongoClient: MongoClient,
     private val migrationSteps: List<MigrationStep>,
-
-    @Value("\${MONGODB_NAME:attackvector2}")
-    private val mongoDbName: String,
-
-    ) {
+    private val staticConfig: StaticConfig,
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -38,7 +35,7 @@ class DbSchemaVersioning(
             return
         }
 
-        val db = mongoClient.getDatabase(mongoDbName)
+        val db = mongoClient.getDatabase(staticConfig.mongoDbName)
 
         migrationSteps.sortedBy { it.version() }
             .filter { it.version() > currentDbVersion }

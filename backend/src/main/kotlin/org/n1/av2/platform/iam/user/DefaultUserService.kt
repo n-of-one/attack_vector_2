@@ -17,15 +17,28 @@ class DefaultUserService(
         larpService.createMandatoryUsers()
     }
 
+    val defaultSkills = setOf(HackerSkill.SEARCH_SITE, HackerSkill.SCAN)
 
     fun createMandatoryUsers() {
-        userEntityService.createDefaultUser("system", UserType.SYSTEM)
-        userEntityService.createDefaultUser("admin", UserType.ADMIN)
-        userEntityService.createDefaultUser("gm", UserType.GM)
-        userEntityService.createDefaultUser("hacker", UserType.HACKER, HackerIcon.CROCODILE)
-        userEntityService.createDefaultUser("Stalker", UserType.HACKER, HackerIcon.BEAR)
-        userEntityService.createDefaultUser("Paradox", UserType.HACKER, HackerIcon.BULL)
-        userEntityService.createDefaultUser("Angler", UserType.HACKER, HackerIcon.SHARK)
+        createSKillTemplate()
+        userEntityService.createDefaultUser("system", UserType.SYSTEM, defaultSkills)
+        userEntityService.createDefaultUser("admin", UserType.ADMIN, defaultSkills)
+        userEntityService.createDefaultUser("gm", UserType.GM, defaultSkills)
+        userEntityService.createDefaultUser("hacker", UserType.HACKER, defaultSkills, HackerIcon.CROCODILE)
+        userEntityService.createDefaultUser("Stalker", UserType.HACKER, defaultSkills, HackerIcon.BEAR)
+        userEntityService.createDefaultUser("Paradox", UserType.HACKER, defaultSkills, HackerIcon.BULL)
+        userEntityService.createDefaultUser("Angler", UserType.HACKER, defaultSkills, HackerIcon.SHARK)
+    }
+
+    fun createSKillTemplate() {
+        val user = userEntityService.findByNameIgnoreCase(TEMPLATE_USER_NAME)
+        if (user != null) return
+
+        userEntityService.createDefaultUser(TEMPLATE_USER_NAME, UserType.HACKER, defaultSkills, HackerIcon.NOT)
+        userEntityService.getByName(TEMPLATE_USER_NAME).let {
+            val editedUserEntity = it.copy(type = UserType.SKILL_TEMPLATE)
+            userEntityService.save(editedUserEntity)
+        }
     }
 
 }

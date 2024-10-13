@@ -24,12 +24,17 @@ class LoginService(
     private val currentUserService: CurrentUserService,
 ) {
 
-    fun login(userName: String, password: String?): List<Cookie> {
-        if (configService.get(ConfigItem.LOGIN_PASSWORD) != password) error("Wrong password")
+    fun login(userName: String, password: String): List<Cookie> {
+        checkPassword(password)
 
         val user = userEntityService.getByName(userName)
         if (user.type == UserType.SYSTEM) error("Cannot login as system user")
         return getCookies(user)
+    }
+
+    private fun checkPassword(password: String) {
+        if (password == "" && configService.get(ConfigItem.LOGIN_PATH) == "/devLogin") return
+        if (configService.get(ConfigItem.LOGIN_PASSWORD) != password) error("Wrong password")
     }
 
 

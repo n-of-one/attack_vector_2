@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Reducer, Store} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSocketConnection";
-import {tangleIceManager, TanglePointMoved, TanglePuzzle} from "./TangleIceManager";
+import {EnterTanglePuzzle, tangleIceManager, TanglePointMoved} from "./TangleIceManager";
 import {Provider} from "react-redux";
 import {TangleContainer} from "./component/TangleContainer";
 import {tangleRootReducer, TangleRootState} from "./reducer/TangleRootReducer";
@@ -53,7 +53,7 @@ export class TangleRoot extends Component<Props> {
     }
 
     initTangleIceServerActions() {
-        webSocketConnection.addAction(SERVER_TANGLE_ENTER, (data: TanglePuzzle) => {
+        webSocketConnection.addAction(SERVER_TANGLE_ENTER, (data: EnterTanglePuzzle) => {
             tangleIceManager.enter(data)
         })
         webSocketConnection.addAction(SERVER_TANGLE_POINT_MOVED, (data: TanglePointMoved) => {

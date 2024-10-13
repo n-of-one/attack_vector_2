@@ -29,13 +29,14 @@ export const WebsiteIceTar = () => {
                     </p>
                     <h3 className="muted">ICE strength and multiplayer</h3>
                     <p className="text">
-                        The purpose of this ICE depends on it's stength.<br/>
+                        The purpose of this ICE depends on it's strength.<br/>
                         <br/>
                         Weaker Tar ICE can be overcome in relative short time if multiple hackers join effort. If there is a countdown-timer that requires
                         the tar ICE to be hacked within a certain time, you need to have multiple hackers to make it in time.<br/>
                         <br/>
                         Stronger Tar ICE is meant to deter hackers from trying to hack it. A good site has ways around a Tar ICE. One such option is to find the password
-                        to this ICE elswhere in the site, and use the <a href="/website/players-commands">open</a> command to enter the password to disable this ICE.
+                        to this ICE elsewhere in the site, and use the <a href="/website/players-commands">open</a> command to enter the password to disable
+                        this ICE.
                     </p>
                 </div>
             </div>

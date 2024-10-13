@@ -12,7 +12,7 @@ export const ConfigItemHackerShowSKills = (props: { value: string }) => {
                 General advice: set to true if your Larp is using skills, and different hackers have different skills.<br/><br/>
                 If set to false, only GM can see their skills. This does not affect having or using skills. So if you give a hacker (or all hackers) a skill,
                 they can still use it, just not see it.<br/><br/>
-                More about skills:<SilentLink href="#"><>here</>
+                More about skills:<SilentLink href="/website/players-skills"><>here</>
                 </SilentLink>.</small><br/>
         </>
     )
@@ -57,15 +57,3 @@ export const ConfigItemHackerDeleteRunLinks = (props: { value: string }) => {
     )
 }
 
-export const ConfigItemHackerCreateSites = (props: { value: string }) => {
-    return (
-        <>
-            <ConfigItemText name="Hacker: create sites" value={props.value} item={ConfigItem.HACKER_CREATE_SITES}/>
-            <small className="form-text text-muted">Allow the hacker to create their own sites.<br/><br/>
-                Default: false<br/><br/>
-                If set to true, hackers will have a menu item "sites" that will allow them to create and edit their own
-                sites. this will allow them to create sites as if they were a GM. Other hackers can then hack these sites as normal. These can be in-game sites
-                or in-game tutorials to help teach new hackers.</small><br/>
-        </>
-    )
-}

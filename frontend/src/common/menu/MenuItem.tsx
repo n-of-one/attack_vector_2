@@ -2,10 +2,10 @@ import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Cookies from "js-cookie";
 import {NAVIGATE_PAGE, RUN} from "./pageReducer";
-import {HackerState} from "../../hacker/HackerRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {Dispatch} from "redux";
 import {terminalManager} from "../terminal/TerminalManager";
+import {HackerRootState} from "../../hacker/HackerRootReducer";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -21,8 +21,8 @@ export const MenuItem = (props: Props) => {
     let rolesValue = Cookies.get("roles")
     let roles = (rolesValue) ? rolesValue.split("|") : []
 
-    const currentPage =  useSelector( (state: HackerState) => state.currentPage )
-    const runId: string | null =  useSelector( (state: HackerState) => state.run?.run?.runId )
+    const currentPage = useSelector((state: HackerRootState) => state.currentPage)
+    const runId: string | null = useSelector((state: HackerRootState) => state.run?.run?.runId)
 
     const handleClick = (event:any) => {
         event.preventDefault();

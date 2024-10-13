@@ -29,7 +29,7 @@ class InsideTerminalService(
 
         when (commandAction) {
             "help" -> commandHelpService.processHelp(true, tokens)
-            "dc" -> processDc(runId)
+            "dc" -> processDc()
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
             else -> processPrivilegedCommand(runId, tokens, commandAction)
@@ -48,7 +48,7 @@ class InsideTerminalService(
             "scan" -> commandScanService.processScanFromInside(runId, tokens, state)
             "/share" -> socialTerminalService.processShare(runId, tokens)
 
-            "sweeperunblock" -> commandDebugService.processSweepUnblock(runId, tokens, state)
+            "sweeperunblock" -> commandDebugService.processSweepUnblock(tokens, state)
 
 
             else -> connectionService.replyTerminalReceive("Unknown command, try [b]help[/].")
@@ -57,7 +57,7 @@ class InsideTerminalService(
 
 
 
-    fun processDc(runId: String) {
+    fun processDc() {
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
         runService.hackerDisconnect(hackerState, "Disconnected")
     }

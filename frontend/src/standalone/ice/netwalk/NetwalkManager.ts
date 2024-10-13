@@ -4,7 +4,6 @@ import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {netwalkCanvas} from "./canvas/NetwalkCanvas";
 import {NetwalkRotateUpdate, ServerEnterIceNetwalk} from "./NetwalkServerActionProcessor";
 import {NETWALK_BEGIN} from "./reducer/NetwalkStateReducer";
-import {larp} from "../../../common/Larp";
 
 
 class NetwalkManager extends GenericIceManager {
@@ -21,7 +20,7 @@ class NetwalkManager extends GenericIceManager {
             return
         }
 
-        if (!larp.quickPlaying) {
+        if (!data.quickPlaying) {
             this.displayTerminal(20, "[warn]↼ Connecting to ice, initiating attack.");
             this.displayTerminal(42, "↼ Detected [info]Sanrachana[/] network obfuscation.");
             this.displayTerminal(6, "↼ Attempting automatic reconfiguration.");

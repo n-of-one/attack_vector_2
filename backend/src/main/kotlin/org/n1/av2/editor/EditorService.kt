@@ -7,13 +7,11 @@ import org.n1.av2.layer.app.status_light.StatusLightService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.ConnectionEntityService
 import org.n1.av2.site.entity.NodeEntityService
-import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.SitePropertiesEntityService
 
 @org.springframework.stereotype.Service

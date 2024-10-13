@@ -1,5 +1,7 @@
 package org.n1.av2.run.terminal.outside
 
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.entity.Run
@@ -22,6 +24,7 @@ class OutsideTerminalService(
     private val commandScanService: CommandScanService,
     private val commandHelpService: CommandHelpService,
     private val timingsService: TimingsService,
+    private val configService: ConfigService,
 ) {
 
 
@@ -64,6 +67,12 @@ class OutsideTerminalService(
 
 
     private fun processAttack(run: Run, quick: Boolean) {
+        if (quick && !configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
+            connectionService.replyTerminalReceive("QuickAttack is disabled.")
+            return
+        }
+
+
         commandStartAttackService.startAttack(run, quick)
     }
 

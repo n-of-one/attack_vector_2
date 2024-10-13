@@ -1,6 +1,5 @@
 package org.n1.av2.editor
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -37,7 +36,6 @@ internal class EditorControllerIT {
     @Autowired
     private lateinit var websocketSiteService: WebsocketSiteService
 
-
     @LocalServerPort
     private val port = 0
 
@@ -50,7 +48,6 @@ internal class EditorControllerIT {
 
         websocketSiteService.importTestSite("v1-dev-editor-test.json", "Stalker")
         websocketSiteService.makeHackable("editor-test")
-
 
         tutorialSiteId = sitePropertiesRepo.findByName("editor-test")?.siteId ?: error("No site found with name 'editor-test'")
     }

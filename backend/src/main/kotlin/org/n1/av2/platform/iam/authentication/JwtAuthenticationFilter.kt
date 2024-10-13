@@ -84,7 +84,6 @@ class JwtAuthenticationFilter(
         }
     }
 
-
     private fun getJwtFromRequest(request: HttpServletRequest): String? {
         val cookie = request.cookies?.find { it.name == "jwt" } ?: return null
         return cookie.value

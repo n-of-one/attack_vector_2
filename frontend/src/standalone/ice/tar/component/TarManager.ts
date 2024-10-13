@@ -18,8 +18,6 @@ class TarManager extends GenericIceManager {
     dispatch: Dispatch = null as unknown as Dispatch
     schedule: Schedule = null as unknown as Schedule
 
-    quickPlaying = false
-
     hackingIntervalId: ReturnType<typeof setInterval> | null = null
     reportingIntervalId: ReturnType<typeof setInterval> | null = null
 
@@ -43,7 +41,7 @@ class TarManager extends GenericIceManager {
         this.schedule.clear()
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
 
-        if (!this.quickPlaying) {
+        if (!data.quickPlaying) {
             this.displayTerminal(20, "[warn]↼ Connecting to ice, initiating attack.")
             this.displayTerminal(42, "↼ Analysing [info]Tar[/] elliptic curve encryption.")
             this.displayTerminal(6, `↼ ECC strength: [warn]${data.totalUnits}[/] units.`)

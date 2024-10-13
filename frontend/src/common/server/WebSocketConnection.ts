@@ -5,7 +5,6 @@ import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "./Generic
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {FORCE_DISCONNECT, NAVIGATE_PAGE} from "../menu/pageReducer";
-import {larp} from "../Larp";
 
 
 export const WS_UNRESTRICTED = "WS_UNRESTRICTED"
@@ -89,7 +88,7 @@ export class WebSocketConnection {
     }
 
     redirectToLogin() {
-        window.location.href = `${larp.loginUrl}?next=${document.location.pathname}`
+        window.location.href = `/redirectToLogin?next=${document.location.pathname}`
     }
 
     onWsConnectError(event: CloseEvent | Frame) {
@@ -115,7 +114,7 @@ export class WebSocketConnection {
         // and heartbeat messages wil clutter other messages.
         if (!this.developmentServer) {
             // Our Server does not support server side heartbeats
-            // because we are using Simple Broker, not full blown RabitMQ or the like.
+            // because we are using Simple Broker, not full-blown RabitMQ or the like.
             // so we use this home brew alternative
             setInterval(() => {
                 this.client.send("/hb", "")

@@ -5,7 +5,6 @@ import {editorCanvas} from "../map/canvas/EditorCanvas"
 import {EditorState} from "../../EditorRootReducer"
 import {SiteStateMessage} from "../../reducer/SiteStateReducer"
 import {SELECT_LAYER} from "../../reducer/CurrentLayerIdReducer"
-import {SiteProperties} from "../../reducer/SitePropertiesReducer";
 
 
 export const SiteState = () => {

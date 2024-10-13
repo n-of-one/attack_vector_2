@@ -1,52 +1,38 @@
 import React from 'react'
 import {CLOSE_USER_EDIT} from "./UsersReducer";
-import {HackerSkill, User, USER_TYPE_ADMIN, USER_TYPE_GM, USER_TYPE_HACKER, USER_TYPE_HACKER_MANAGER} from "./UserReducer";
+import {HackerSkill, User, UserType} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
 import userAuthorizations, {ROLE_GM, ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {CloseButton} from "../component/CloseButton";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {currentUser} from "../user/CurrentUser";
-import {larp} from "../Larp";
 import {HackerIcon} from "./HackerIcon";
+import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
 
-type SaveFunction = (field: string, value: string) => void
-type SaveSkillFunction = (field: string, value: boolean) => void
+const save = (userId: string, field: string, value: string) => {
+    const message = {userId: userId, field, value}
+    webSocketConnection.send("/user/edit", message)
+}
 
 interface Props {
-    user: User | null,
+    user: User,
 }
 
 export const UserDetails = ({user}: Props) => {
-    if (!user) {
-        return <></>
-    }
-    const readOnlyType: boolean = !userAuthorizations.hasRole(ROLE_USER_MANAGER)
+    const allowChangeRole: boolean = userAuthorizations.hasRole(ROLE_USER_MANAGER) && user.type !== UserType.SKILL_TEMPLATE
 
-    return <UserDetailsInternal user={user} readOnlyType={readOnlyType}/>
-}
+    const config = useSelector((rootState: ConfigRootState) => rootState.config)
+    const readonlyUserName = !(getConfigAsBoolean(ConfigItem.HACKER_EDIT_USER_NAME, config))
 
-interface PropsInternal {
-    user: User,
-    readOnlyType: boolean
-}
-
-const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
     const dispatch = useDispatch()
     const closeUserEdit = () => {
         dispatch({type: CLOSE_USER_EDIT})
     }
 
-    const save = (field: string, value: string) => {
-        const message = {userId: user.id, field, value}
-        webSocketConnection.send("/user/edit", message)
-    }
-
-    const readonlyUserName = !larp.hackerEditUserName
-
     const isGm = userAuthorizations.hasRole(ROLE_GM)
-
+    const showHackerDetails = (user.type === UserType.HACKER || user.type === UserType.SKILL_TEMPLATE)
     const closeButton = isGm ? <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={closeUserEdit}/></div> : <></>
 
     return <>
@@ -55,9 +41,10 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
         <hr/>
 
         <UserAttribute
+            user={user}
             label="Name" id="name" size={4}
             value={user.name}
-            save={save} attributeSaveName="name"
+            attributeSaveName="name"
             readonly={readonlyUserName}
         />
 
@@ -66,40 +53,40 @@ const UserDetailsInternal = ({user, readOnlyType}: PropsInternal) => {
             <div className="col-lg-4">
                 <DropDownSaveInput id="type" className="form-control"
                                    selectedValue={user.type}
-                                   save={(value: string) => save("type", value)}
-                                   readonly={readOnlyType}>
+                                   save={(value: string) => save(user.id, "type", value)}
+                                   readonly={!allowChangeRole}>
                     <>
-                        <option value={USER_TYPE_HACKER}>Hacker</option>
-                        <option value={USER_TYPE_HACKER_MANAGER}>Hacker manager</option>
-                        <option value={USER_TYPE_GM}>Game master</option>
-                        <option value={USER_TYPE_ADMIN}>Admin</option>
+                        <option value={UserType.HACKER}>Hacker</option>
+                        <option value={UserType.GM}>Game master</option>
+                        <option value={UserType.ADMIN}>Admin</option>
+                        <option value={UserType.SKILL_TEMPLATE}>Skill template</option>
                     </>
                 </DropDownSaveInput>
             </div>
         </div>
-        {(user.type === USER_TYPE_HACKER || user.type === USER_TYPE_HACKER_MANAGER) ? hackerFormPart(user, save) : <></>}
+        {showHackerDetails ? <HackerDetails user={user}/> : <></>}
         {deleteUserButton(user, closeUserEdit)}
     </>
 }
 
-const hackerFormPart = (user: User, save: SaveFunction) => {
+const HackerDetails = ({user}: { user: User }) => {
+    const config = useSelector((rootState: ConfigRootState) => rootState.config)
+    const hackerShowSkills = getConfigAsBoolean(ConfigItem.HACKER_SHOW_SKILLS, config)
+    const hackerEditCharacterName = getConfigAsBoolean(ConfigItem.HACKER_EDIT_CHARACTER_NAME, config)
 
     const authorizationToEditSkills = userAuthorizations.hasRole(ROLE_USER_MANAGER) || userAuthorizations.hasRole(ROLE_HACKER_MANAGER)
-    const readonlySkills = !(larp.hackerEditSkills && authorizationToEditSkills)
-    const showSkills = (larp.hackerShowSkills || authorizationToEditSkills)
+    const readonlySkills = !(authorizationToEditSkills)
+    const showSkills = (hackerShowSkills || authorizationToEditSkills)
 
-    const saveSkill = (skill: string, value: boolean) => {
-        const message = {userId: user.id, skill, value}
-        webSocketConnection.send("/user/editSkill", message)
-    }
 
     return <>
         <hr/>
         <UserAttribute
+            user={user}
             label="Character Name" id="characterName" size={4}
             value={user.hacker?.characterName}
-            save={save} attributeSaveName="characterName"
-            readonly={!larp.hackerEditCharacterName}
+            attributeSaveName="characterName"
+            readonly={!hackerEditCharacterName}
         />
 
         <div className="row form-group">
@@ -107,7 +94,7 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             <div className="col-lg-4">
                 <DropDownSaveInput id="type" className="form-control"
                                    selectedValue={user.hacker!!.icon}
-                                   save={(value: string) => save("hackerIcon", value)}
+                                   save={(value: string) => save(user.id, "hackerIcon", value)}
                                    readonly={false}>
                     <>{hackerIconOptions()}
                     </>
@@ -115,33 +102,31 @@ const hackerFormPart = (user: User, save: SaveFunction) => {
             </div>
         </div>
 
-
         {showSkills ? <>
             <hr/>
             <div className="text">Skills</div>
             <br/>
 
-            <UserSkill user={user} skill={HackerSkill.SEARCH_SITE} skillName="Search Site" save={saveSkill} field="SEARCH_SITE" readonly={readonlySkills}/>
-            <UserSkill user={user} skill={HackerSkill.SCAN} skillName="Scan" save={saveSkill} field="SCAN" readonly={readonlySkills}/>
+            <UserSkill user={user} skill={HackerSkill.SCAN} skillName="Scan" field="SCAN" readonly={readonlySkills}/>
+            <UserSkill user={user} skill={HackerSkill.SEARCH_SITE} skillName="Search Site" field="SEARCH_SITE" readonly={readonlySkills}/>
+            <UserSkill user={user} skill={HackerSkill.CREATE_SITE} skillName="Create Site" field="CREATE_SITE" readonly={readonlySkills}/>
         </> : <></>}
-
-
     </>
 }
 
 interface UserAttributeProps {
+    user: User,
     label: string,
     id: string,
     size: number,
     value?: string | number,
-    save: SaveFunction,
     attributeSaveName: string
     readonly: boolean,
     indent?: number,
     show?: boolean
 }
 
-const UserAttribute = ({label, id, size, value, readonly, save, attributeSaveName, indent, show}: UserAttributeProps) => {
+const UserAttribute = ({user, label, id, size, value, readonly, attributeSaveName, indent, show}: UserAttributeProps) => {
     if (show === false) return <></>
 
     const labelIndentElement = indent ? <div className={`col-lg-${indent}`}/> : <></>
@@ -154,7 +139,7 @@ const UserAttribute = ({label, id, size, value, readonly, save, attributeSaveNam
         <div className={`col-lg-${size}`}>
             <TextSaveInput id={id} className="form-control"
                            placeholder="" value={value}
-                           save={(value: string) => save(attributeSaveName, value)}
+                           save={(value: string) => save(user.id, attributeSaveName, value)}
                            readonly={readonly}/>
         </div>
     </div>
@@ -163,7 +148,7 @@ const UserAttribute = ({label, id, size, value, readonly, save, attributeSaveNam
 const deleteUserButton = (user: User, closeUserEdit: () => void) => {
     if (user.id === currentUser.id) return null
 
-    const deleteFun = () => {
+    const deleteFunction = () => {
         const confirmResult = window.confirm("Are you sure you want to delete user " + user.name + "?")
         if (!confirmResult) return
         webSocketConnection.send("/user/delete", user.id)
@@ -173,38 +158,43 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
     return <>
         <hr/>
         <div className="d-flex flex-row">
-            <button className="btn btn-info btn-sm pull-right" onClick={deleteFun}>Delete</button>
+            <button className="btn btn-info btn-sm pull-right" onClick={deleteFunction}>Delete</button>
         </div>
     </>
 }
 
 const hackerIconOptions = () => {
-    const options = Object.keys(HackerIcon)
+    return Object.keys(HackerIcon)
         .map((icon) => {
             return <option key={icon} value={icon}>{icon}</option>
         })
-    return options
 }
-
 
 interface UserSkillProps {
     user: User,
     skill: HackerSkill,
     skillName: string,
     field: string
-    save: SaveSkillFunction,
     readonly: boolean,
 }
 
-const UserSkill = ({user, skill, skillName, field, readonly, save}: UserSkillProps) => {
+const UserSkill = ({user, skill, skillName, field, readonly}: UserSkillProps) => {
 
     const checked = user.hacker?.skills?.includes(skill)
 
     if (readonly) {
-        if (!checked) { return <></> }
-        return <ul><li className="text-muted">{skillName}</li></ul>
+        if (!checked) {
+            return <></>
+        }
+        return <ul>
+            <li className="text-muted">{skillName}</li>
+        </ul>
     }
 
+    const save = (skill: string, value: boolean) => {
+        const message = {userId: user.id, skill, value}
+        webSocketConnection.send("/user/editSkill", message)
+    }
 
     return <div className="row form-group">
         <div className={`col-lg-1`}/>

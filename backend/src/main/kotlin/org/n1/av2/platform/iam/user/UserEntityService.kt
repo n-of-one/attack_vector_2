@@ -6,13 +6,10 @@ import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
-val defaultSkills = setOf(HackerSkill.SEARCH_SITE, HackerSkill.SCAN)
-
 @Component("UserEntityService")
 class UserEntityService(
     private val userEntityRepo: UserEntityRepo,
 ) {
-
 
     fun findByNameIgnoreCase(userName: String): UserEntity? {
         return userEntityRepo.findByNameIgnoreCase(userName)
@@ -22,7 +19,49 @@ class UserEntityService(
         return findByNameIgnoreCase(userName) ?: throw UsernameNotFoundException("Username not found: ${userName}")
     }
 
-    fun createDefaultUser(userName: String, type: UserType, icon: HackerIcon = HackerIcon.NOT) {
+    fun createUserId(): String {
+        fun findExisting(candidate: String): Optional<UserEntity> {
+            return userEntityRepo.findById(candidate)
+        }
+
+        return createId("user", ::findExisting)
+    }
+
+    fun getById(userId: String): UserEntity {
+        return userEntityRepo.findById(userId).orElseGet { error("${userId} not found") }
+    }
+
+    fun getByIdOrNull(userId: String): UserEntity? {
+        return userEntityRepo.findById(userId).getOrNull()
+    }
+
+    fun searchById(userId: String): UserEntity? {
+        return userEntityRepo.findById(userId).getOrNull()
+    }
+
+    fun findAll(): List<UserEntity> {
+        return userEntityRepo.findAll().toList()
+    }
+
+    fun save(userEntity: UserEntity): UserEntity {
+        return userEntityRepo.save(userEntity)
+    }
+
+    fun delete(userId: String) {
+        val user = getById(userId)
+        userEntityRepo.delete(user)
+    }
+
+    fun findByExternalId(externalId: String): UserEntity? {
+        return userEntityRepo.findByExternalId(externalId)
+    }
+
+
+    fun getSystemUser(): UserEntity {
+        return userEntityRepo.findByNameIgnoreCase("system") ?: error("System user not found")
+    }
+
+    fun createDefaultUser(userName: String, type: UserType, defaultSkills: Set<HackerSkill>, icon: HackerIcon = HackerIcon.NOT) {
         val user = findByNameIgnoreCase(userName)
         if (user != null) return
 
@@ -39,78 +78,12 @@ class UserEntityService(
             id = createUserId(),
             hacker = hacker,
         )
-        userEntityRepo.save(newUserEntity)
+        save(newUserEntity)
     }
 
-    fun createUserId(): String {
-        fun findExisting(candidate: String): Optional<UserEntity> {
-            return userEntityRepo.findById(candidate)
-        }
-
-        return createId("user", ::findExisting)
-    }
-
-    fun getById(userId: String): UserEntity {
-        return userEntityRepo.findById(userId).orElseGet { error("${userId} not found") }
-    }
-
-    fun searchById(userId: String): UserEntity? {
-        return userEntityRepo.findById(userId).getOrNull()
-    }
-
-    fun findAll(): List<UserEntity> {
-        return userEntityRepo.findAll().toList()
-    }
-
-    fun save(userEntity: UserEntity): UserEntity {
-        if (userEntity.type == UserType.SYSTEM) error("Cannot change system user")
-        return userEntityRepo.save(userEntity)
-    }
-
-    fun delete(userId: String) {
-        val user = getById(userId)
-        userEntityRepo.delete(user)
-    }
-
-    fun findByExternalId(externalId: String): UserEntity? {
-        return userEntityRepo.findByExternalId(externalId)
-    }
-
-
-
-    fun createUserForTest(name: String, type: UserType = UserType.HACKER): UserEntity {
-        val existingUser = userEntityRepo.findByNameIgnoreCase(name)
-        if (existingUser != null) {
-            return existingUser
-        }
-
-        val newUserEntity = UserEntity(
-            id = testUserId(name),
-            name = name,
-            type = type,
-            hacker = Hacker(
-                icon = HackerIcon.COBRA,
-                characterName = "char for ${name}",
-                skills = defaultSkills
-            ),
-        )
-        return userEntityRepo.save(newUserEntity)
-    }
-
-    fun deleteTestUserIfExists(name: String) {
-        val id = testUserId(name)
-        if (userEntityRepo.existsById(id)) {
-            userEntityRepo.deleteById(id)
-        }
-    }
-
-
-    private fun testUserId(name: String): String {
-        return name
-    }
-
-    fun getSystemUser(): UserEntity {
-        return userEntityRepo.findByNameIgnoreCase("system") ?: error("System user not found")
+    fun getUserName(userId: String): String {
+        val user = getByIdOrNull(userId)
+        return user?.name ?: "<Deleted>" // if the user is deleted, then we sometimes still need a name.
     }
 
 }

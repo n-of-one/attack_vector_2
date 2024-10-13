@@ -1,4 +1,3 @@
-import {Store} from "redux";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {SERVER_WORD_SEARCH_ENTER} from "./reducer/WordSearchPuzzleReducer";
 import {wordSearchManager} from "./WordSearchManager";
@@ -12,11 +11,11 @@ export interface ServerEnterIceWordSearch {
     strength: IceStrength,
     letterGrid: string[][],
     words: string[],
-    uiState: string,
     correctPositions: [],
     solutions: string[][]
     wordIndex: 0,
     hacked: false,
+    quickPlaying: boolean
 }
 
 
@@ -27,10 +26,9 @@ export interface UpdateAction {
     hacked: boolean
 }
 
-export const initWordSearchServerActions = (store: Store) => {
+export const initWordSearchServerActions = () => {
     webSocketConnection.addAction(SERVER_WORD_SEARCH_ENTER, (data: ServerEnterIceWordSearch) => {
-        const iceId = store.getState().iceId
-        wordSearchManager.enter(iceId, data)
+        wordSearchManager.enter(data)
     })
     webSocketConnection.addAction(SERVER_WORD_SEARCH_UPDATED, (data: UpdateAction) => {
         delay(() => {

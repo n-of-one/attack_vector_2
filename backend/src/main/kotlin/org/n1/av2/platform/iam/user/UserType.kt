@@ -15,7 +15,8 @@ val ROLE_ADMIN = AvAuthority ( "ROLE_ADMIN" )                   // can do admin 
 val ROLE_USER_MANAGER = AvAuthority ( "ROLE_USER_MANAGER" )      // can create and edit user
 val ROLE_MISSION_MANAGER = AvAuthority ( "ROLE_MISSION_MANAGER" )  // can create missions
 val ROLE_GM = AvAuthority ( "ROLE_GM" )  // can see GM only data
-val ROLE_LOGS = AvAuthority ( "ROLE_LOGS" )        // can view logs
+
+const val TEMPLATE_USER_NAME = "template"
 
 enum class UserType(val hacker: Boolean, vararg authorizationsInput: GrantedAuthority) {
 
@@ -26,14 +27,16 @@ enum class UserType(val hacker: Boolean, vararg authorizationsInput: GrantedAuth
     HACKER(true, ROLE_USER, ROLE_HACKER),
 
     // Regular GM
-    GM(false, ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS, ROLE_GM),
+    GM(false, ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_GM),
+
     // For preparing system, backups, etc.
     ADMIN(false,
-        ROLE_USER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_LOGS,
-            ROLE_ADMIN,
+        ROLE_USER, ROLE_USER_MANAGER, ROLE_MISSION_MANAGER, ROLE_ADMIN
     ),
 
-    SYSTEM(false);
+    SYSTEM(false),
+
+    SKILL_TEMPLATE(false); // Used for hacker skills
 
 
     val authorities = authorizationsInput.toList()

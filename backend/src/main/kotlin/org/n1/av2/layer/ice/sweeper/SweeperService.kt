@@ -36,9 +36,10 @@ class SweeperService(
         val cells: List<String>,
         val modifiers: List<String>,
         val strength: IceStrength,
-        val hacked: Boolean,
         val blockedUserIds: List<String>,
-        val minesLeft: Int
+        val minesLeft: Int,
+        val hacked: Boolean,
+        val quickPlaying: Boolean,
     )
 
 
@@ -58,8 +59,9 @@ class SweeperService(
         val sweeper = sweeperIceStatusRepo.findById(iceId).getOrElse { error("Sweeper not found for: ${iceId}") }
 
         val minesLeft = minesLeft(sweeper)
+        val quickPlaying =  configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
 
-        val sweeperEnter = SweeperEnter(sweeper.cells, sweeper.modifiers, sweeper.strength, false, sweeper.blockedUserIds, minesLeft)
+        val sweeperEnter = SweeperEnter(sweeper.cells, sweeper.modifiers, sweeper.strength, sweeper.blockedUserIds, minesLeft, false, quickPlaying)
         connectionService.reply(ServerActions.SERVER_SWEEPER_ENTER, sweeperEnter)
         runService.enterNetworkedApp(iceId)
     }

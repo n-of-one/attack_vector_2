@@ -64,10 +64,15 @@ export const WebsitePlayers = () => {
                     <li className="text"><a href="/website/players-ice-password">Password</a><br/><br/></li>
                     <li className="text"><a href="/website/players-ice-tar">Tar</a><br/><br/></li>
                 </ul>
+
+                <h3 className="muted">Skills</h3>
+                <p className="text">
+                    Skills allow some hackers to be better at hacking than others. How skills are used really depends on the larp you are playing.<br/>
+                    <br/>
+                    More details can be found <a href="/website/players-skills">here</a>.
+                </p>
             </div>
         </div>
-
-
     </div>)
 }
 

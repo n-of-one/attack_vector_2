@@ -1,7 +1,11 @@
 package org.n1.av2.run.terminal
 
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.HackerSkill
 import org.n1.av2.run.entity.Run
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
@@ -16,10 +20,17 @@ class CommandScanService(
     private val nodeEntityService: NodeEntityService,
     private val initiateScanService: InitiateScanService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val currentUser: CurrentUserService,
+    private val configService: ConfigService,
 ) {
 
 
     fun processScanFromOutside(run: Run) {
+        if (! currentUser.userEntity.hasSKill(HackerSkill.SCAN)) {
+            connectionService.replyTerminalReceive("Scan command not installed (missing skill)")
+            return
+        }
+
         val networkId = sitePropertiesEntityService.getBySiteId(run.siteId).startNodeNetworkId
 
         val node = nodeEntityService.findByNetworkId(run.siteId, networkId)
@@ -31,8 +42,13 @@ class CommandScanService(
 
 
     fun processScanFromInside(runId: String, tokens: List<String>, state: HackerStateRunning) {
+        if (! currentUser.userEntity.hasSKill(HackerSkill.SCAN)) {
+            connectionService.replyTerminalReceive("Scan command not installed (missing skill)")
+            return
+        }
+
         if (tokens.size > 1) {
-            connectionService.replyTerminalReceive("ignoring arguments, scanning current node")
+            connectionService.replyTerminalReceive("Ignoring arguments, scanning current node")
         }
         connectionService.replyTerminalSetLocked(true)
         val run = runEntityService.getByRunId(runId)
@@ -53,7 +69,12 @@ class CommandScanService(
 //    }
 
     fun processQuickScan(run: Run) {
+        if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
+            connectionService.replyTerminalReceive("QuickScan is disabled.")
+            return
+        }
+
         initiateScanService.quickScan(run)
-        connectionService.replyTerminalReceive("Quickscanned.")
+        connectionService.replyTerminalReceive("QuickScanned.")
     }
 }

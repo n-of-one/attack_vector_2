@@ -1,6 +1,8 @@
 package org.n1.av2.layer.ice.netwalk
 
 import org.n1.av2.layer.ice.HackedUtil
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.SECONDS_IN_TICKS
@@ -16,6 +18,7 @@ class NetwalkIceService(
     private val netwalkIceStatusRepo: NetwalkIceStatusRepo,
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
+    private val configService: ConfigService,
     ) {
 
     companion object {
@@ -51,10 +54,11 @@ class NetwalkIceService(
     }
 
 
-    class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, val hacked: Boolean, val wrapping: Boolean)
+    class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, val wrapping: Boolean, val hacked: Boolean, val quickPlaying: Boolean)
     fun enter(iceId: String) {
         val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
-        connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.hacked, netwalk.wrapping))
+        val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+        connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.hacked, netwalk.wrapping, quickPlaying))
         runService.enterNetworkedApp(iceId)
     }
 

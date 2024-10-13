@@ -8,11 +8,13 @@ import {initGenericServerActions} from "../common/server/GenericServerActionProc
 import {adminRootReducer, AdminRootState} from "./AdminRootReducer";
 import {AdminPageChooser} from "./AdminPageChooser";
 import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketConnection";
+import {ROLE_ADMIN} from "../common/user/UserAuthorizations";
 
 
-interface Props { }
+interface Props {
+}
 
-export class AdminRoot extends Component<Props>{
+export class AdminRoot extends Component<Props> {
     adminStore: Store
 
     constructor(props: Props) {
@@ -36,7 +38,7 @@ export class AdminRoot extends Component<Props>{
 
     render() {
         return (
-            <RequiresRole requires="ROLE_SITE_MANAGER">
+            <RequiresRole requires={ROLE_ADMIN}>
                 <Provider store={this.adminStore}>
                     <AdminPageChooser/>
                 </Provider>

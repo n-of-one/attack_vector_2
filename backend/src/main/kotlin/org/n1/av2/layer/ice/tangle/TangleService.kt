@@ -1,6 +1,8 @@
 package org.n1.av2.layer.ice.tangle
 
 import org.n1.av2.layer.ice.HackedUtil
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.util.createId
@@ -20,6 +22,7 @@ class TangleService(
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
     private val nodeEntityService: NodeEntityService,
+    private val configService: ConfigService,
 ) {
 
     companion object {
@@ -33,8 +36,9 @@ class TangleService(
         val strength: IceStrength,
         val points: MutableList<TanglePoint>,
         val lines: List<TangleLine>,
-        val hacked: Boolean,
         val clusters: Int,
+        val hacked: Boolean,
+        val quickPlaying: Boolean,
     )
 
     private val logger = mu.KotlinLogging.logger {}
@@ -64,7 +68,8 @@ class TangleService(
     fun enter(iceId: String) {
         val tangleStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
         val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
-        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.hacked, layer.clusters ?: 1)
+        val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, layer.hacked, quickPlaying)
         connectionService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         runService.enterNetworkedApp(iceId)
     }

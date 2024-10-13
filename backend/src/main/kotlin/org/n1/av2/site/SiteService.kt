@@ -58,11 +58,10 @@ class SiteService(
         if (userNamesById.containsKey(ownerUserId)) {
             return userNamesById[ownerUserId]!!
         }
-        val user = userEntityService.getById(ownerUserId)
-        userNamesById[ownerUserId] = user.name
-        return user.name
+        val userName = userEntityService.getUserName(ownerUserId)
+        userNamesById[ownerUserId] = userName
+        return userName
     }
-
 
     fun createSite(name: String): String {
         val id = sitePropertiesEntityService.createId()
@@ -80,8 +79,7 @@ class SiteService(
         val startNodeId = findStartNode(siteProperties.startNodeNetworkId, nodes)?.id
         val connections = connectionEntityService.getAll(siteId)
         val state = siteEditorStateEntityService.getById(siteId)
-
-        val ownerName = userEntityService.getById(siteProperties.ownerUserId).name
+        val ownerName = userEntityService.getUserName(siteProperties.ownerUserId)
 
         return SiteFull(siteId, siteProperties, ownerName, nodes, connections, state, startNodeId)
     }

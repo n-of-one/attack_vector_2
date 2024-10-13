@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import {SilentLink} from "../component/SilentLink";
 import {UserOverview} from "./UsersReducer";
 import {useSelector} from "react-redux";
-import {GmState} from "../../gm/GmRootReducer";
+import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {UserDetails} from "./UserDetails";
 import {RequiresRole} from "../user/RequiresRole";
@@ -24,13 +24,15 @@ export const UserManagementAuthorized = () => {
         webSocketConnection.send("/user/overview", "")
     }, [])
 
-    const users: UserOverview[] = useSelector((state: GmState) => state.users.overview)
+    const users: UserOverview[] = useSelector((state: GmRootState) => state.users.overview)
+    const sortedUsers = sortUsers(users)
+
 
     const selectUser = (userId: string) => {
         webSocketConnection.send("/user/select", userId)
     }
 
-    const user = useSelector((state: GmState) => state.users.edit)
+    const user = useSelector((state: GmRootState) => state.users.edit)
 
     return (
         <div className="row">
@@ -42,7 +44,7 @@ export const UserManagementAuthorized = () => {
                     <br/>
                     <br/>
                     {CreateUser(user)}
-                    <UserDetails user={user} />
+                    {user !== null ? <UserDetails user={user}/> : <></>}
                 </div>
 
             </div>
@@ -57,7 +59,7 @@ export const UserManagementAuthorized = () => {
                         </thead>
                         <tbody>
                         {
-                            users.map((user: UserOverview) => {
+                            sortedUsers.map((user: UserOverview) => {
                                 return (
                                     <tr key={user.id}>
                                         <td className="table-very-condensed"><SilentLink onClick={() => {
@@ -88,7 +90,6 @@ const CreateUser = (user: User | null) => {
         {/*<label htmlFor="newUser" className="col-lg-1 control-label text-muted">Email</label>*/}
 
 
-
         <div className="col-lg-5">
             <TextInput placeholder="User name"
                        buttonLabel="Create"
@@ -101,3 +102,18 @@ const CreateUser = (user: User | null) => {
 
 }
 
+const sortUsers = (users: UserOverview[]) => {
+    const alphabeticalUsers = [...users].sort((a, b) => {
+        if (a.name < b.name) return -1
+        if (a.name > b.name) return 1
+        return 0
+    })
+
+    const template = alphabeticalUsers.find(user => user.name === "template")
+    if (!template) return alphabeticalUsers
+    // delete template from the list
+    alphabeticalUsers.splice(alphabeticalUsers.indexOf(template), 1)
+    // add template to the front of the list
+    alphabeticalUsers.unshift(template)
+    return alphabeticalUsers
+}

@@ -3,15 +3,9 @@ import {GenericIceManager} from "../common/GenericIceManager";
 import {sweeperCanvas} from "./canvas/SweeperCanvas";
 import {delay} from "../../../common/util/Util";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
-import {larp} from "../../../common/Larp";
 import {SWEEPER_BEGIN, SWEEPER_RESET_START, SWEEPER_RESET_STOP} from "./reducer/SweeperUiStateReducer";
 import {SweeperEnterData, SweeperModifyAction, SweeperModifyData} from "./SweeperServerActionProcessor";
-import {
-    serverCellsToGameCells,
-    serverModifiersToGameModifiers,
-    SweeperCellModifier,
-    SweeperCellType,
-} from "./logic/SweeperLogic";
+import {serverCellsToGameCells, serverModifiersToGameModifiers, SweeperCellModifier, SweeperCellType,} from "./logic/SweeperLogic";
 import {ice} from "../../StandaloneGlobals";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";
@@ -51,7 +45,7 @@ class SweeperIceManager extends GenericIceManager {
         })
         this.schedule.clear();
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID});
-        if (!larp.quickPlaying) {
+        if (!sweeperEnterData.quickPlaying) {
             this.displayTerminal(15, "[primary]↼ Connecting to ice, initiating attack.");
             this.displayTerminal(40, "↼ Probing for weaknesses.");
             this.displayTerminal(20, "↼ Memory corruption vulnerability detected.");

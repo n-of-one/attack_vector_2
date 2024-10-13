@@ -42,7 +42,7 @@ export class SweeperRoot extends Component<Props> {
         sweeperIceManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions()
-        initSweeperServerActions(this.store)
+        initSweeperServerActions()
     }
 
     render() {

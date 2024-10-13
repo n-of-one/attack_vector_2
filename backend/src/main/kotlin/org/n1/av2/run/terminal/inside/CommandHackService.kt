@@ -47,8 +47,8 @@ class CommandHackService(
 
 
     fun processQuickHack(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        if (configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
-            connectionService.replyTerminalReceive("Unknown command, try [u]help[/].")
+        if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
+            connectionService.replyTerminalReceive("QuickHack is disabled.")
             return
         }
         process(runId, tokens, state, "hack", ::handleQuickHack)

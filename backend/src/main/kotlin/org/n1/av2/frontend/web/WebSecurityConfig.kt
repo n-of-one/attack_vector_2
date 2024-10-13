@@ -2,6 +2,8 @@ package org.n1.av2.frontend.web
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.authentication.JwtAuthenticationFilter
 import org.n1.av2.platform.iam.user.ROLE_ADMIN
 import org.n1.av2.platform.iam.user.ROLE_GM
@@ -23,7 +25,7 @@ private val OPEN_PATHS = listOf(
     "/", "/index.html",
     "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
     "/about", "/privacy", "/website/**",
-    "/loggedOut", "/login", "/adminLogin", "/logout", "/localLogout", "login-frontier",
+    "/loggedOut", "/redirectToLogin", "/login", "/adminLogin", "devLogin", "/logout", "/localLogout", "login-frontier",
 
     "/local/**", // for locally hosted files
 
@@ -44,14 +46,17 @@ private val HACKER_PATHS = listOf(
 
 )
 
-private val GM_PATHS = listOf("/gm/**", "/larp/**")
 private val USER_PATHS = listOf("/api/**", "/edit/**")
-private val ADMIN_PATHS = listOf("/api/admin/**")
+private val GM_PATHS = listOf("/gm/**", "/larp/**")
+private val ADMIN_PATHS = listOf("/admin/**", "/api/admin/**")
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
+class WebSecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val configService: ConfigService
+) {
 
     @Bean
     @Throws(Exception::class)
@@ -77,7 +82,7 @@ class WebSecurityConfig(val jwtAuthenticationFilter: JwtAuthenticationFilter) {
     fun customAccessDeniedHandler(): AccessDeniedHandler {
         return AccessDeniedHandler { request: HttpServletRequest, response: HttpServletResponse, _: AccessDeniedException? ->
             val path = request.requestURI
-            val redirectUrl = request.contextPath + "/login?next=$path"
+            val redirectUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH) + "?next=$path"
             response.sendRedirect(redirectUrl)
         }
     }

@@ -7,10 +7,15 @@ export const ConfigItemLoginPath = (props: { value: string }) => {
         <>
             <ConfigItemText name="Login: path" value={props.value} item={ConfigItem.LOGIN_PATH}/>
             <small className="form-text text-muted">The path used for login.<br/><br/>
-                Default: /login<br/><br/>
+                Default: /login &nbsp; (this is for using Google login)<br/><br/>
+                Alternatives:<br/>
+                <ul>
+                    <li>/devLogin &nbsp; (use during development, one click login without passwords)</li>
+                    <li>/login-frontier &nbsp; (used for Frontier Larp SSO)</li>
+                </ul>
                 General advice: do not change this.<br/><br/>
                 This is used to direct login to a page specific to your larp (instead of google login). This must be custom
-                built for each larp</small><br/><br/>
+                built for each larp.</small><br/><br/>
         </>
     )
 }

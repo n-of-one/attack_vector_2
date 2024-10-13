@@ -96,9 +96,6 @@ export const WebsiteOrganizers = () => {
                                 Scripts are not necessary for Attack Vector to work, and they make site-design harder (as the game masters need to take them into
                                 account). However, scripts can be a cool reward for players or a way to show that some hackers are better than others.<br/><br/><br/>
                             </li>
-                            <li>Players making their own sites<br/><br/>
-                                Players of Eos Frontier want to create their own sites, for other players to hack. This is a feature on the roadmap.<br/><br/>
-                            </li>
                         </ul>
                     </p>
                 </div>

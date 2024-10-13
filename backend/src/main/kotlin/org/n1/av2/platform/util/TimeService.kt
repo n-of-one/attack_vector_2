@@ -1,6 +1,6 @@
 package org.n1.av2.platform.util
 
-import org.springframework.beans.factory.annotation.Value
+import org.n1.av2.platform.config.StaticConfig
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.ZoneId
@@ -9,12 +9,9 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class TimeService(
-
-    @Value("\${environment.TIME_ZONE:default}")
-    private val timeZoneInput: String,
-
+    staticConfig: StaticConfig,
     ) {
-    val timeZoneId: ZoneId = if (timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(timeZoneInput)
+    val timeZoneId: ZoneId = if (staticConfig.timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(staticConfig.timeZoneInput)
 
     private val dateTimeFOrmat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 

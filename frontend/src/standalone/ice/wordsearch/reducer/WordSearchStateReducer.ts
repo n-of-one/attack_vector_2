@@ -8,15 +8,10 @@ export const LETTER_CORRECT_HIGHLIGHT = "LETTER_CORRECT_HIGHLIGHT"
 export const LETTER_CORRECT = "LETTER_CORRECT"
 
 export enum LetterState {
-    HINT,
+    HINT, // this is part of a solution. It can be during DEV to get a hint of what the solutions are.
     SELECTED,
     CORRECT_HIGHLIGHT,
     CORRECT
-}
-
-export interface Letter {
-    position: string, // format: "{x}:{y}"
-    state: LetterState,
 }
 
 export type LetterTypeMap = { [key: string]: LetterState }
@@ -67,8 +62,7 @@ function stateFromServer(state: WordSearchState, action: WordSearchStateFromServ
         letters[position] = LetterState.CORRECT
     })
 
-    const newState =  {letters, selected: state.selected}
-    return newState
+    return {letters, selected: state.selected}
 }
 
 

@@ -2,7 +2,7 @@ import {createTerminalReducer, TerminalState} from "../../../../common/terminal/
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import {combineReducers} from "redux";
 import {pageReducer} from "../../../../common/menu/pageReducer";
-import {iceHackersReducer, IceHackers} from "../../common/IceHackersReducer";
+import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 import {TarState, tarStateReducer} from "./TarReducer";
 
 

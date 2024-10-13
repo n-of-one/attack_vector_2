@@ -13,7 +13,13 @@ data class UserEntity(
     var type: UserType = UserType.NOT_LOGGED_IN,
     val externalId: String? = null,
     val hacker: Hacker?,
-)
+
+    ) {
+    fun hasSKill(skill: HackerSkill): Boolean {
+        return hacker?.skills?.contains(skill) ?: false
+    }
+
+}
 
 
 @Repository
@@ -29,8 +35,9 @@ data class Hacker(
 )
 
 enum class HackerSkill {
-    SEARCH_SITE,
+    CREATE_SITE,
     SCAN,
+    SEARCH_SITE,
 }
 
 

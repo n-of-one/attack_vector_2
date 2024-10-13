@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.servlet.view.RedirectView
 import java.io.File
 import java.net.URLDecoder
 
@@ -24,29 +25,61 @@ class HtmlController(
 ) : ErrorController {
 
     private val localRoot = File("local")
+    private val allowedLoginQuery = Regex("^[a-zA-Z0-9/_\\-=]{1,200}$")
+
 
     @GetMapping(
         "/",
+
         "/login",
         "/adminLogin",
+        "/devLogin",
         "/loggedOut",
-        "/about",
-        "/privacy",
-        "/hacker",
-        "/hacker/",
-        "/gm",
-        "/gm/",
-        "/edit",
-        "/edit/",
+
+        "/hacker", "/hacker/",
+
+        "/gm", "/gm/",
+
+        "/admin", "/admin/",
+
+        "/edit", "/edit/",
         "/edit/{siteId}",
+
         "/x/{reference}",
         "/o/{reference}",
+
+        "/about",
+        "/privacy",
         "/website",
         "/website/{page}",
         "/larp/**"
     )
     fun default(): String {
         return INDEX
+    }
+
+    @GetMapping("/redirectToLogin")
+    fun redirectToLogin(request: HttpServletRequest): RedirectView {
+        val loginPath = configService.get(ConfigItem.LOGIN_PATH)
+
+        val nextPart = validateQueryString(request.queryString)
+
+        return RedirectView(loginPath + nextPart)
+    }
+
+    private fun validateQueryString(queryString: String?): String {
+        if (queryString == null) return ""
+        val queryMap: Map<String, String> = queryString
+            .split("&")
+            .map { keyAndValue: String ->
+                val keyAndValueParts = keyAndValue.split("=")
+                keyAndValueParts[0] to keyAndValueParts[1]
+            }
+            .toMap()
+        val next = queryMap["next"] ?: return ""
+        if (allowedLoginQuery.matches(next)) return "?next=$next"
+
+        error("Invalid redirect: $next")
     }
 
     @GetMapping("/local/**")

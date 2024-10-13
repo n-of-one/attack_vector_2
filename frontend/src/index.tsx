@@ -1,10 +1,9 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Route, Routes, useParams} from 'react-router-dom'
 import {EditorRoot} from "./editor/EditorRoot"
 import Cookies from "js-cookie"
 import {ToasterConfig} from "./common/util/Notification";
-import {larp} from "./common/Larp";
 import {AdminLogin} from "./login/AdminLogin";
 import {LoggedOut} from "./login/LoggedOut";
 import {About} from "./About";
@@ -16,6 +15,8 @@ import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
 import {WebsiteRouting} from "./website/WebsiteRouting";
 import {Lola} from "./larp/frontier/Lola";
 import {AdminRoot} from "./admin/AdminRoot";
+import {GoogleAuth} from "./login/GoogleAuth";
+import {DevLogin} from "./login/DevLogin";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -29,24 +30,21 @@ console.log("\nWelcome to _Attack Vector_" +
 
 const ReRoute = (): React.JSX.Element => {
 
-    let type = Cookies.get("type")
-    if (type === "ADMIN") {
-        window.document.location.href = "/admin/"
-        return (<></>)
-    }
-    if (type === "GM") {
-        window.document.location.href = "/gm/"
-        return (<></>)
-    }
-    if (type === "HACKER" || type === "HACKER_MANAGER") {
-        window.document.location.href = "/hacker/"
-        return (<></>)
-    }
-    console.log("Unknown user type: " + type)
-    Cookies.remove("jwt")
-    Cookies.remove("type")
-    Cookies.remove("roles")
-    window.document.location.href = larp.loginUrl
+    useEffect(() => {
+        const type = Cookies.get("type")
+        if (type === "ADMIN") {
+            window.document.location.href = "/admin/"
+        } else if (type === "GM") {
+            window.document.location.href = "/gm/"
+        } else if (type === "HACKER" || type === "HACKER_MANAGER") {
+            window.document.location.href = "/hacker/"
+        } else {
+            Cookies.remove("jwt")
+            Cookies.remove("type")
+            Cookies.remove("roles")
+            window.document.location.href = "/redirectToLogin"
+        }
+    }, []);
     return (<></>)
 }
 
@@ -63,26 +61,36 @@ root.render(
     <>
         <BrowserRouter>
             <Routes>
-                <Route path="/login" element={larp.loginElement()}/>
-                <Route path="/adminLogin" element={<AdminLogin/>}/>
-                <Route path="/loggedOut" element={<LoggedOut/>}/>
+                {/* Website and public pages */}
+                <Route path="/website" element={<WebsiteLandingPage/>}/>
+                <Route path="/website/:path" element={<WebsiteRouting/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/privacy" element={<Privacy/>}/>
+
+                {/* In game pages */}
                 <Route path="/hacker" element={<HackerRoot/>}/>
                 <Route path="/gm" element={<GmRoot/>}/>
                 <Route path="/admin" element={<AdminRoot/>}/>
 
                 <Route path="/edit/:siteId" element={<Editor/>}/>
 
-                { /*path that require login and will redirect to login if not logged in */}
                 <Route path="/x/:encodedParam" element={<Standalone/>}/>
                 <Route path="/o/:encodedParam" element={<Standalone/>}/>
 
-                { /* path that does not require login*/}
-                <Route path="/website" element={<WebsiteLandingPage/>}/>
+                {/* Login and logout */}
+                <Route path="/login" element={<GoogleAuth/>}/>
+                <Route path="/adminLogin" element={<AdminLogin/>}/>
+                <Route path="/devLogin" element={<DevLogin/>}/>
 
-                <Route path="/website/:path" element={<WebsiteRouting/>}/>
+                <Route path="/loggedOut" element={<LoggedOut/>}/>
+                {/*This happens when running in development on port 3000, there is no backend that redirects to the correct login*/}
+                <Route path="/redirectToLogin" element={<DevLogin/>}/>
+
+
+                {/* Larp specific */}
                 <Route path="/larp/frontier/lola" element={<Lola/>}/>
+
+                {/* Not specified, reroute to meaningful path */}
                 <Route path="/" element={<ReRoute/>}/>
                 <Route path="*" element={<ReRoute/>}/>
             </Routes>

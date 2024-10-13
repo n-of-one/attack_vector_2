@@ -1,13 +1,13 @@
 import React from "react";
 import {Task} from "./TaskReducer";
 import {useSelector} from "react-redux";
-import {GmState} from "../GmRootReducer";
+import {AdminRootState} from "../../admin/AdminRootReducer";
 
 
 export const TaskMonitorHome = () => {
 
 
-    const taskInformation = useSelector((state: GmState) => state.tasks);
+    const taskInformation = useSelector((state: AdminRootState) => state.tasks);
     return (
         <div className="row">
             <div className="col-lg-2">

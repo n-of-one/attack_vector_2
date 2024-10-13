@@ -2,6 +2,8 @@ package org.n1.av2.layer.ice.tar
 
 import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.layer.ice.tar.TarCreator.Companion.unitsPerSecond
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.SECONDS_IN_TICKS
@@ -17,6 +19,7 @@ class TarService(
     private val connectionService: ConnectionService,
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
+    private val configService: ConfigService,
 ) {
 
     fun findOrCreateIceByLayerId(layer: TarIceLayer): TarIceStatus {
@@ -39,16 +42,18 @@ class TarService(
         return tarIceStatusRepo.save(tarIceStatus)
     }
 
-    class TarEnter(val iceId: String, val totalUnits: Int, val unitsHacked: Int, val strength: IceStrength, val hacked: Boolean, val unitsPerSecond: Int)
+    class TarEnter(val iceId: String, val totalUnits: Int, val unitsHacked: Int, val strength: IceStrength, val unitsPerSecond: Int, val hacked: Boolean, val quickPlaying: Boolean)
     fun enter(iceId: String) {
         val tarIceStatus = tarIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
 
         val playerLevel = 5 // TODO: get actual player level
         val unitsPerSecond = unitsPerSecond(playerLevel)
 
+        val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+
         connectionService.reply(
             ServerActions.SERVER_TAR_ENTER,
-            TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, tarIceStatus.hacked, unitsPerSecond)
+            TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, unitsPerSecond, tarIceStatus.hacked, quickPlaying)
         )
         runService.enterNetworkedApp(iceId)
     }

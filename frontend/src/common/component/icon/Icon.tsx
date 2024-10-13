@@ -3,18 +3,23 @@ import {Glyphicon} from "./Glyphicon";
 import {SvgIcon} from "./SvgIcon";
 import {
     CODE,
-    CORE, LOCK,
+    CORE,
+    KEYSTORE,
+    LOCK,
     MONEY,
     NETWALK_ICE,
     OS,
     PASSWORD_ICE,
     SCAN_BLOCK,
-    TAR_ICE, STATUS_LIGHT,
+    STATUS_LIGHT,
+    SWEEPER_ICE,
     TANGLE_ICE,
+    TAR_ICE,
     TEXT,
     TRACE_LOG,
     TRACER,
-    WORD_SEARCH_ICE, KEYSTORE, TRIPWIRE, SWEEPER_ICE
+    TRIPWIRE,
+    WORD_SEARCH_ICE
 } from "../../enums/LayerTypes";
 
 interface Props {

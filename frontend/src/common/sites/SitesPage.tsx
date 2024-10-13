@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {useSelector} from "react-redux"
 import {TextInput} from "../component/TextInput"
-import {GmState} from "../../gm/GmRootReducer";
+import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {toServerUrl} from "../util/DevEnvironment";
 import {SiteList} from "./SitesTable";
@@ -16,7 +16,7 @@ const askForSitesList = () => {
 
 export const SitesPage = () => {
 
-    const sites = useSelector((state: GmState) => state.sites)
+    const sites = useSelector((state: GmRootState) => state.sites)
 
 
     const [file, setFile] = useState()

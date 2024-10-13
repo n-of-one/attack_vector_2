@@ -1,5 +1,4 @@
 import React from 'react'
-import {NodesPanel} from "../nodes/NodesPanel"
 import {EditCanvasPanel} from "./canvas/EditCanvasPanel"
 import {DetailPanel} from "./panel/DetailPanel"
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import {useSelector} from "react-redux";
-import {HackerState} from "../../HackerRootReducer";
+import {HackerRootState} from "../../HackerRootReducer";
 import {formatTimeInterval} from "../../../common/util/Util";
 import {TimerState, TimerType} from "./TimersReducer";
 
 export const Timers = () => {
 
-    const timers: TimerState[] = useSelector((state: HackerState) => state.run.timers)
+    const timers: TimerState[] = useSelector((state: HackerRootState) => state.run.timers)
 
     if (timers.length === 0) {
         return <div>

@@ -1,7 +1,9 @@
 package org.n1.av2.hacker
 
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.platform.iam.user.UserService
 import org.n1.av2.run.runlink.RunLinkService
 import org.n1.av2.site.SiteService
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -13,6 +15,8 @@ class HackerWsController(
     private val userTaskRunner: UserTaskRunner,
     private val runLinkService: RunLinkService,
     private val siteService: SiteService,
+    private val configService: ConfigService,
+    private val userService: UserService,
 
     ) {
 
@@ -21,7 +25,9 @@ class HackerWsController(
     fun logon(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             runLinkService.sendRunInfosToUser()
-            siteService.sendSitesList();
+            siteService.sendSitesList()
+            configService.replyConfigValues()
+            userService.replySkills(userPrincipal.userEntity)
         }
     }
 

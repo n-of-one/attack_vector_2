@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {ENTER_KEY} from "../util/KeyCodes";
 import {parseTextToTerminalLine} from "../terminal/TerminalLineParser";
-import {TerminalBlockType, TerminalLineData} from "../terminal/TerminalReducer";
+import {TerminalLineData} from "../terminal/TerminalReducer";
 import {TerminalLine} from "../terminal/TerminalLine";
 
 /*

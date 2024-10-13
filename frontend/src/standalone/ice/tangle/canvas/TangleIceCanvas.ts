@@ -2,7 +2,7 @@ import {fabric} from "fabric";
 import {TanglePointDisplay} from "./TanglePointDisplay";
 import {TangleLineDisplay} from "./TangleLineDisplay";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
-import {TanglePointMoved, TanglePuzzle} from "../TangleIceManager";
+import {EnterTanglePuzzle, TanglePointMoved} from "../TangleIceManager";
 import {Dispatch, Store} from "redux";
 import {Canvas} from "fabric/fabric-impl";
 import {TangleLine, TanglePoint} from "../reducer/TangleIceReducer";
@@ -16,7 +16,7 @@ class TangleIceCanvas {
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
 
-    init(puzzleData: TanglePuzzle, dispatch: Dispatch, store: Store) {
+    init(puzzleData: EnterTanglePuzzle, dispatch: Dispatch, store: Store) {
         this.dispatch = dispatch;
         this.store = store;
 

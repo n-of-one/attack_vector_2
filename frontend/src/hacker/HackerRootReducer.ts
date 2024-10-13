@@ -6,11 +6,13 @@ import {themeReducer} from "../common/reducer/ThemeReducer";
 import {HackerPresence, hackersReducer} from "./run/reducer/HackersReducer";
 import {ActiveTerminalId, activeTerminalIdReducer, MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
 import {Users, usersReducer} from "../gm/GmRootReducer";
-import {currentUserReducer, GenericUserRootState, User} from "../common/users/UserReducer";
+import {currentUserReducer, GenericUserRootState, HackerSkill} from "../common/users/UserReducer";
 import {hackerRunsReducer, RunInfo} from "./home/HackerRunsReducer";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
+import {configReducer} from "../admin/config/ConfigReducer";
+import {skillsReducer} from "./SkillsReducer";
 
-export interface HackerState extends GenericUserRootState {
+export interface HackerRootState extends GenericUserRootState {
     currentPage: string,
     run: RunState,
     runs: RunInfo[],
@@ -20,12 +22,17 @@ export interface HackerState extends GenericUserRootState {
     activeTerminalId:ActiveTerminalId,
     theme: string,
     users: Users,
-    currentUser: User | null,
+    skills: HackerSkill[] | null
 }
 
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true})
 
 export const hackerRootReducer = combineReducers({
+    // from GenericUserRootState
+    currentUser: currentUserReducer,
+    config: configReducer,
+
+    // from HackerRootState
     currentPage: pageReducer,
     run: runRootReducer,
     runs: hackerRunsReducer,
@@ -35,5 +42,5 @@ export const hackerRootReducer = combineReducers({
     activeTerminalId: activeTerminalIdReducer,
     theme: themeReducer,
     users: usersReducer,
-    currentUser: currentUserReducer,
+    skills: skillsReducer,
 })

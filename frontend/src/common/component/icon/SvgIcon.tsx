@@ -1,7 +1,5 @@
 import React from "react"
-import { CORE, LOCK, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
-
-/* eslint jsx-a11y/alt-text: 0*/
+import {CORE, LOCK, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
 
 interface Props {
     type?: string,

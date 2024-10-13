@@ -5,8 +5,8 @@ import {findElementById} from "../../../../common/util/Immutable"
 import {NodeScanInfoByStatus} from "./NodeScanInfoByStatus"
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus"
 import {Pad} from "../../../../common/component/Pad"
-import {HackerState} from "../../../HackerRootReducer"
 import {NodeI} from "../../../../editor/reducer/NodesReducer";
+import {HackerRootState} from "../../../HackerRootReducer";
 
 const statusText = (status: NodeScanStatus) => {
     switch (status) {
@@ -23,7 +23,7 @@ const statusText = (status: NodeScanStatus) => {
     }
 }
 
-const stateSelector = (state: HackerState) => {
+const stateSelector = (state: HackerRootState) => {
     if (state.run.infoNodeId === null) {
         return {node: null, status: null}
     }

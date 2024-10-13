@@ -5,7 +5,7 @@ import {WordSearchState, wordSearchStateReducer} from "./WordSearchStateReducer"
 import {WordSearchPuzzle, wordSearchPuzzleReducer} from "./WordSearchPuzzleReducer";
 import {UIState, wordSearchUiStateReducer} from "./WordSearchUiStateReducer";
 import {pageReducer} from "../../../../common/menu/pageReducer";
-import {iceHackersReducer, IceHackers} from "../../common/IceHackersReducer";
+import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 
 
 export interface WordSearchRootState {

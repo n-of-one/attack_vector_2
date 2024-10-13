@@ -35,7 +35,7 @@ export const Lola = (): React.JSX.Element => {
     }
 
     const speak = async (text: string) => {
-        const response = await fetch(`/api/admin/frontier/lola/speak?text=${text}`)
+        const response = await fetch(`/api/frontier/lola/speak?text=${text}`)
         if (response.ok) {
             const result = await response.json() as LolaSpeakResult
             setServerMessage(result.message)

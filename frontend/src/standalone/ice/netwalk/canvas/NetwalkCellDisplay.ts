@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 import {Canvas} from "fabric/fabric-impl";
-import {NetwalkCell, CellType} from "../NetwalkServerActionProcessor";
+import {CellType, NetwalkCell} from "../NetwalkServerActionProcessor";
 
 export const PADDING_TOP = 20
 export const PADDING_LEFT = 20

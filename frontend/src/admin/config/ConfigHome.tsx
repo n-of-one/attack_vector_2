@@ -3,7 +3,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {AdminRootState} from "../AdminRootReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {
-    ConfigItemHackerCreateSites,
     ConfigItemHackerDeleteRunLinks,
     ConfigItemHackerEditCharacterName,
     ConfigItemHackerEditUserName,
@@ -37,6 +36,7 @@ export const ConfigHome = () => {
             <div className="col-lg-5">
                 <div>
                     <h3 className="text-info">Configuration</h3><br/>
+                    {configState.currentItem === null ? <div className="text">Select an item on the right, to edit it</div> : <></>}
                 </div>
                 <div>
                     <ConfigItemElement item={configState.currentItem} value={configState.currentValue}/>
@@ -49,8 +49,8 @@ export const ConfigHome = () => {
                         <thead>
                         <tr>
                             <td className="strong">Group</td>
-                            <td className="strong">Value</td>
                             <td className="strong">Name</td>
+                            <td className="strong">Value</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -60,10 +60,10 @@ export const ConfigHome = () => {
                                 const name = ConfigItemNames[configEntry.item]
                                 return (
                                     <tr key={configEntry.item}>
-                                        <td className="table-very-condensed">{category}
-                                        </td>
+                                        <td className="table-very-condensed">{category}</td>
+                                        <td><SilentLink onClick={() => selectItem(configEntry)}><>{name}</>
+                                        </SilentLink></td>
                                         <td className={highlightSelected(configEntry.item, configState.currentItem)}>{configEntry.value}</td>
-                                        <td><SilentLink onClick={ () => selectItem(configEntry) }><>{name}</></SilentLink></td>
                                     </tr>)
                             })
                         }
@@ -80,7 +80,7 @@ const highlightSelected = (item: ConfigItem, currentItem: ConfigItem | null) => 
 }
 
 
-const ConfigItemElement = (props: {item: ConfigItem | null, value: string}) => {
+const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) => {
     if (props.item === null) {
         return <></>
     }
@@ -94,8 +94,6 @@ const ConfigItemElement = (props: {item: ConfigItem | null, value: string}) => {
             return <ConfigItemHackerEditCharacterName value={props.value}/>
         case ConfigItem.HACKER_DELETE_RUN_LINKS:
             return <ConfigItemHackerDeleteRunLinks value={props.value}/>
-        case ConfigItem.HACKER_CREATE_SITES:
-            return <ConfigItemHackerCreateSites value={props.value}/>
 
         case ConfigItem.LOGIN_PATH:
             return <ConfigItemLoginPath value={props.value}/>
@@ -118,16 +116,16 @@ const ConfigItemElement = (props: {item: ConfigItem | null, value: string}) => {
         case ConfigItem.FRONTIER_ORTHANK_TOKEN:
             return <ConfigItemLarpFrontierOrthankToken value={props.value}/>
         default:
-            return <h3 className="text-danger">Unkown config item: {props.item}</h3>
+            return <h3 className="text-danger">Unknown config item: {props.item}</h3>
     }
 }
 
 
-export const ConfigItemText = (props: {name: string, value: string, item: string}) => {
+export const ConfigItemText = (props: { name: string, value: string, item: string }) => {
 
     const [currentValue, setCurrentValue] = useState(props.value)
 
-    const save=() => {
+    const save = () => {
         webSocketConnection.send("/admin/config/set", {item: props.item, value: currentValue})
     }
 

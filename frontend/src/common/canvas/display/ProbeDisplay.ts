@@ -12,7 +12,6 @@ import {ProbeVisual} from "../visuals/ProbeVisual"
 import {Timings} from "../../model/Ticks";
 
 
-
 export class ProbeDisplay implements Display {
 
     canvas: Canvas

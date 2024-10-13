@@ -1,5 +1,3 @@
-import {IDENTIFICATION_SCALE_LARGE, IMAGE_SIZE} from "./display/util/DisplayConstants";
-
 export const CANVAS_WIDTH = 1250
 export const CANVAS_HEIGHT = 865
 

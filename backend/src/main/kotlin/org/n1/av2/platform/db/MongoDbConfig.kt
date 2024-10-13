@@ -4,8 +4,8 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
+import org.n1.av2.platform.config.StaticConfig
 import org.n1.av2.platform.util.TimeService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -18,15 +18,12 @@ import java.util.*
 
 @Configuration
 class MongoClientFactory(
-
-    @Value("\${MONGODB_URI:mongodb://attackvector2:attackvector2@localhost/admin?authMechanism=SCRAM-SHA-1}")
-    private val mongoDbUrl: String,
-
-    ) {
+    private val staticConfig: StaticConfig,
+) {
 
     @Bean
     fun createMongoClient(): MongoClient {
-        val connectionString = ConnectionString(mongoDbUrl)
+        val connectionString = ConnectionString(staticConfig.mongoDbUrl)
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()
@@ -40,10 +37,7 @@ class MongoClientFactory(
 class MongoDbConfig(
     private val mongoClient: MongoClient,
     private val timeService: TimeService,
-
-    @Value("\${MONGODB_NAME:attackvector2}")
-    private val mongoDbName: String,
-
+    private val staticConfig: StaticConfig,
     ) : AbstractMongoClientConfiguration() {
 
     override fun mongoClient(): MongoClient {
@@ -51,9 +45,8 @@ class MongoDbConfig(
     }
 
     override fun getDatabaseName(): String {
-        return mongoDbName
+        return staticConfig.mongoDbName
     }
-
 
     override fun getMappingBasePackages(): Collection<String> {
         return listOf("org.n1.av2")

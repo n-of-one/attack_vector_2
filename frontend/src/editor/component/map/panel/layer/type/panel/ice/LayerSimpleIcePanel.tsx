@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDispatch} from "react-redux"
+import {useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
 import {AttributeIceStrength} from "../../../element/AttributeIceStrength"
 import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"

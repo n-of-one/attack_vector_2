@@ -1,6 +1,5 @@
 import React, {ReactElement} from 'react'
 import userAuthorizations from "./UserAuthorizations";
-import {larp} from "../Larp";
 
 
 interface Props {
@@ -12,7 +11,7 @@ interface Props {
 export const RequiresRole = (props: Props) => {
 
     if (!userAuthorizations.authenticated) {
-        window.location.href = `${larp.loginUrl}?next=${document.location.pathname}`
+        window.location.href = `/redirectToLogin?next=${document.location.pathname}`
         return <></>
     }
 
@@ -23,7 +22,8 @@ export const RequiresRole = (props: Props) => {
     } else {
         return (
             <div className="text">
-                You are logged in with an account that does not have access to this page. Please <a href={`/login?next=${document.location.pathname}`}>Login</a> with another account.<br/>
+                You are logged in with an account that does not have access to this page. Please <a
+                href={`/redirectToLogin?next=${document.location.pathname}`}>Login</a> with another account.<br/>
                 <br/>
             </div>
         )

@@ -1,5 +1,5 @@
 import React from "react"
-import {TerminalBlockType, TerminalLineData, TerminalLineBlock} from "./TerminalReducer"
+import {TerminalBlockType, TerminalLineBlock, TerminalLineData} from "./TerminalReducer"
 
 /* eslint jsx-a11y/alt-text: 0*/
 

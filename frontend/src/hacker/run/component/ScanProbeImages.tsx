@@ -1,12 +1,12 @@
 import React from 'react';
 import {useSelector} from "react-redux";
-import {HackerState} from "../../HackerRootReducer";
+import {HackerRootState} from "../../HackerRootReducer";
 
 /* eslint jsx-a11y/alt-text: 0*/
 
 export const ScanProbeImages = () => {
 
-    const theme = useSelector((state: HackerState) => state.theme)
+    const theme = useSelector((state: HackerRootState) => state.theme)
     const root = "/img/" + theme + "/actors/scan_probes/"
     const pathStart = root + "probe-"
 

@@ -31,7 +31,6 @@ enum class ServerActions {
 
     SERVER_RECEIVE_USERS_OVERVIEW,  // List of users for user-overview
     SERVER_USER_DETAILS,            // User details for editing
-    SERVER_USER_SKILLS,             // Change of the skills for user
 
     SERVER_RECEIVE_CONFIG,          // Send the config to the client
 
@@ -54,6 +53,7 @@ enum class ServerActions {
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
 
+    SERVER_RECEIVE_HACKER_SKILLS,       // Send the skills of the current hacker to the client
 
     SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
     SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.

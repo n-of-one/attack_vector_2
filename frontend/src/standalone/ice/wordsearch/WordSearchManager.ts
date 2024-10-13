@@ -5,14 +5,13 @@ import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {wordSearchCanvas} from "./canvas/WordSearchCanvas";
 import {ServerEnterIceWordSearch, UpdateAction} from "./WordSearchServerActionProcessor";
 import {WordSearchRootState} from "./reducer/WordSearchRootReducer";
-import {larp} from "../../../common/Larp";
 import {notify} from "../../../common/util/Notification";
 
 
 class WordSearchManager extends GenericIceManager {
 
 
-    enter(iceId: string, data: ServerEnterIceWordSearch) {
+    enter(data: ServerEnterIceWordSearch) {
 
         window.onkeydown = (event: KeyboardEvent) => {
             if (event.ctrlKey && event.key === "f") {
@@ -35,7 +34,7 @@ class WordSearchManager extends GenericIceManager {
         this.dispatch({type: TERMINAL_CLEAR, terminalId: ICE_DISPLAY_TERMINAL_ID})
 
         this.displayTerminal(10, "[warn]↼ Connecting to ice, initiating attack.");
-        if (!larp.quickPlaying) {
+        if (!data.quickPlaying) {
             this.displayTerminal(10, "⇁ Connection established - authorization handshake started");
             this.displayTerminal(8, "⇁ G*G Security token not found in request, fallback to rp/inner/program authorization scheme.");
             this.displayTerminal(45, '⇁ Accessing rp/i/p client header: [primary]client_id=386422_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _' +

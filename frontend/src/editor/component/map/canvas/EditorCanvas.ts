@@ -12,7 +12,7 @@ import {SELECT_NODE} from "../../../reducer/CurrentNodeIdReducer"
 import {DisplayCollection} from "../../../../common/canvas/display/util/DisplayCollection";
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus";
 import {saveTextInput} from "../../../../common/component/TextSaveInput";
-import {CANVAS_HEIGHT, CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
+import {CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
 
 export interface LoadSiteData {
     id: string,
@@ -166,7 +166,7 @@ class EditorCanvas {
     }
 
     canvasObjectSelected(event: IEvent<MouseEvent>) {
-        saveTextInput() // save any text input when clicking the an object
+        saveTextInput() // save any text input when clicking an object
         let selectedObjects = event.selected
 
         if (!selectedObjects || selectedObjects.length === 0) {

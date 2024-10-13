@@ -1,14 +1,19 @@
 import React from "react"
 import {
     CODE,
-    MONEY, NETWALK_ICE,
+    KEYSTORE,
+    MONEY,
+    NETWALK_ICE,
     OS,
     PASSWORD_ICE,
-    SCAN_BLOCK, TAR_ICE,
+    SCAN_BLOCK,
+    SWEEPER_ICE,
     TANGLE_ICE,
+    TAR_ICE,
     TEXT,
     TRACE_LOG,
-    TRACER, WORD_SEARCH_ICE, KEYSTORE, SWEEPER_ICE
+    TRACER,
+    WORD_SEARCH_ICE
 } from "../../enums/LayerTypes"
 
 

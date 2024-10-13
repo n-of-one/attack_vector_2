@@ -1,8 +1,6 @@
 package org.n1.av2.integration.stomp
 
 import org.n1.av2.integration.service.WebsocketUserService
-import org.n1.av2.platform.connection.HACKER_ENDPOINT
-import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.connection.UNRESTRICTED_ENDPOINT
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -21,7 +19,7 @@ class StompClientService {
     }
 
     suspend fun createAndConnect(name: String): HackerClient {
-        websocketUserService.delete(name)
+        websocketUserService.createTestUser(name)
 
         val hacker = connectHacker(name)
         return hacker
