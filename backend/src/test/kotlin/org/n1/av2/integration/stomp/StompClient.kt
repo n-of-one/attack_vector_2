@@ -66,7 +66,7 @@ class AvClient(
         this.sessionHandler.subscribe(topic)
     }
 
-    suspend fun waitFor(action: ServerActions, contents: String, timeoutMillis: Int = 100): String {
+    suspend fun waitFor(action: ServerActions, contents: String, timeoutMillis: Int = 500): String {
         var waitMillis = 0
         logger.debug("start waiting for ${action.name} '${contents}'")
         do {
