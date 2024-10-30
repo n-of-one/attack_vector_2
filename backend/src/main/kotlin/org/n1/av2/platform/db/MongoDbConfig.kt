@@ -28,7 +28,6 @@ class MongoClientFactory(
             .build()
         return MongoClients.create(mongoClientSettings)
     }
-
 }
 
 @Configuration
@@ -46,7 +45,6 @@ class MongoDbConfig(
     override fun getDatabaseName(): String {
         return config.mongoDbName
     }
-
 
     override fun getMappingBasePackages(): Collection<String> {
         return listOf("org.n1.av2")

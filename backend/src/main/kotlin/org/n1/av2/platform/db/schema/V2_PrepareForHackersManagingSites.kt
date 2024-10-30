@@ -8,60 +8,105 @@ import org.n1.av2.platform.db.MigrationStep
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.DefaultUserService
 import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.platform.iam.user.UserType
+import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.site.tutorial.TUTORIAL_INSTANCE_PREFIX
+import org.n1.av2.site.tutorial.TUTORIAL_TEMPLATE_NAME
 import org.springframework.stereotype.Component
 
+private val matchAllDocuments = Document() // Match all documents in a mongoDB query
+
+/**
+ * V2
+ *
+ * Changes are made to prepare for hackers creating their own sites. In addition, some obsolete fields are removed.
+ *
+ * - Remove obsolete fields from UserEntity (email, gmNote)
+ * - Remove HACKER_MANAGER user type (they are now HACKER)
+ * - Remove obsolete fields from SiteProperties (hackTime)
+ * - Rename field in SiteProperties (creator -> purpose)
+ * - Add fields to SiteProperties (siteStructureOk, ownerUserId) so that we can display these to the user in the UI.
+ * - Set the ownerUserId for all sites.
+ *    - Tutorial template is owned by System
+ *    - Tutorial instances are owned by the user
+ *    - All other sites are owned by GM
+ */
 @Component
 class V2_PrepareForHackersManagingSites(
+    private val defaultUserService: DefaultUserService,
     private val siteValidationService: SiteValidationService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
-    private val defaultUserService: DefaultUserService,
     private val currentUserService: CurrentUserService,
 ) : MigrationStep {
 
-    private val logger = mu.KotlinLogging.logger {}
-
-    private val allDocuments = Document()
-
-    override
-    fun version() = 2
+    override val version = 2
 
     override
     fun migrate(db: MongoDatabase): String {
-        alterUserEntities(db)
-        alterSiteProperties(db)
+        V2UserEntityUpdater(db, defaultUserService).updateUserEntities()
 
-        val allSiteIds = sitePropertiesEntityService.findAll().map { it.siteId }
+        val sitePropertiesUpdater = V2SitePropertiesUpdater(
+            db,
+            siteValidationService,
+            sitePropertiesEntityService,
+            userEntityService,
+            currentUserService
+        )
 
-        setSiteOwnerIds(allSiteIds)
-        validateSites(allSiteIds)
+        sitePropertiesUpdater.alterSiteProperties()
+        sitePropertiesUpdater.setSiteOwnerIds()
+        sitePropertiesUpdater.updateSiteValidations()
 
         return "Changed UserEntity (removed obsolete fields) and changed SiteProperties (prepare for hacker making sites)."
     }
+}
 
-    private fun alterUserEntities(db: MongoDatabase) {
-        val userEntities = db.getCollection("userEntity")
+class V2UserEntityUpdater(
+    db: MongoDatabase,
+    private val defaultUserService: DefaultUserService,
+) {
+    private val userEntityCollection = db.getCollection("userEntity")
+    private val logger = mu.KotlinLogging.logger {}
 
+    fun updateUserEntities() {
+        removeObsoleteUserEntityFields()
+        changeHackerManagersToHackers()
+        defaultUserService.createMandatoryUsers()
+    }
+
+    private fun removeObsoleteUserEntityFields() {
         val updateUserEntityFields = Updates.combine(
             Updates.unset("email"),
             Updates.unset("gmNote"),
         )
-        var updateResult = userEntities.updateMany(allDocuments, updateUserEntityFields)
+        var updateResult = userEntityCollection.updateMany(matchAllDocuments, updateUserEntityFields)
         logger.info("Updated ${updateResult.modifiedCount} UserEntity documents")
-
-
-        val hackerManagers = Document().append("type", "HACKER_MANAGER")
-        val updateToHacker = Updates.set("type", "HACKER")
-
-        updateResult = userEntities.updateMany(hackerManagers, updateToHacker)
-        logger.info("Replaced ${updateResult.modifiedCount} Hacker managers")
-
-        defaultUserService.createMandatoryUsers()
     }
 
-    private fun alterSiteProperties(db: MongoDatabase) {
-        val siteProperties = db.getCollection("siteProperties")
+    private fun changeHackerManagersToHackers() {
+        val hackerManagers = Document().append("type", "HACKER_MANAGER")
+        val updateToHacker = Updates.set("type", UserType.HACKER.name)
+
+        val updateResult = userEntityCollection.updateMany(hackerManagers, updateToHacker)
+        logger.info("Replaced ${updateResult.modifiedCount} Hacker managers")
+    }
+}
+
+
+class V2SitePropertiesUpdater(
+    db: MongoDatabase,
+    private val siteValidationService: SiteValidationService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val userEntityService: UserEntityService,
+    private val currentUserService: CurrentUserService,
+) {
+    private val sitePropertiesCollection = db.getCollection("siteProperties")
+    private val allSiteIds = sitePropertiesEntityService.findAll().map { it.siteId }
+    private val logger = mu.KotlinLogging.logger {}
+
+    fun alterSiteProperties() {
 
         val updateSitePropertiesFields = Updates.combine(
             Updates.unset("hackTime"),
@@ -70,39 +115,53 @@ class V2_PrepareForHackersManagingSites(
             Updates.set("ownerUserId", "")
         )
 
-        val updateResult = siteProperties.updateMany(allDocuments, updateSitePropertiesFields)
+        val updateResult = sitePropertiesCollection.updateMany(matchAllDocuments, updateSitePropertiesFields)
         logger.info("Updated ${updateResult.modifiedCount} SiteProperty documents")
     }
 
-    private fun setSiteOwnerIds(allSiteIds: List<String>) {
+    fun setSiteOwnerIds() {
         val systemUser = userEntityService.getSystemUser()
         val gmUser = userEntityService.getByName("gm")
 
         allSiteIds.forEach {
             val siteProperties = sitePropertiesEntityService.getBySiteId(it)
-            if (siteProperties.name == "tutorial") {
-                sitePropertiesEntityService.save(siteProperties.copy(ownerUserId = systemUser.id))
-            } else if (siteProperties.name.startsWith("tutorial-")) {
 
-                val siteUserId = siteProperties.name.substringAfter("tutorial-")
-                val ownerUserEntity = userEntityService.searchById(siteUserId)
-                val ownerUserId = ownerUserEntity?.id ?: systemUser.id
-                sitePropertiesEntityService.save(siteProperties.copy(ownerUserId = ownerUserId))
+            if (siteProperties.name == TUTORIAL_TEMPLATE_NAME) {
+                // This is the tutorial template, to be owned by System.
+                updateSiteOwner(siteProperties, systemUser.id)
+
+            } else if (siteProperties.name.startsWith(TUTORIAL_INSTANCE_PREFIX)) {
+                // This is a tutorial instance for a specific user.
+                updateSiteOwnerForTutorialInstance(siteProperties)
+
             } else {
-                sitePropertiesEntityService.save(siteProperties.copy(ownerUserId = gmUser.id))
+                // These are regular sites, to be owned by GM.
+                updateSiteOwner(siteProperties, gmUser.id)
             }
         }
     }
 
-    private fun validateSites(allSiteIds: List<String>) {
+    private fun updateSiteOwner(siteProperties: SiteProperties, ownerUserId: String) {
+        sitePropertiesEntityService.save(siteProperties.copy(ownerUserId = ownerUserId))
+    }
+
+    private fun updateSiteOwnerForTutorialInstance(siteProperties: SiteProperties) {
+        val siteUserId = siteProperties.name.substringAfter(TUTORIAL_INSTANCE_PREFIX)
+        val ownerUserEntity = userEntityService.searchById(siteUserId)
+        val ownerUserId = ownerUserEntity?.id ?: userEntityService.getSystemUser().id
+        updateSiteOwner(siteProperties, ownerUserId)
+    }
+
+    fun updateSiteValidations() {
         allSiteIds.forEach {
             val siteProperties = sitePropertiesEntityService.getBySiteId(it)
-            val user = userEntityService.getById(siteProperties.ownerUserId)
+
+            /** Site validation depends on current user, see [SiteValidationService.validateSiteCreator] */
             try {
-                currentUserService.set(user) // Site validation depends on current user, see validateSiteCreator()
+                val user = userEntityService.getById(siteProperties.ownerUserId)
+                currentUserService.set(user)
                 siteValidationService.validate(it, true)
-            }
-            finally {
+            } finally {
                 currentUserService.remove()
             }
         }

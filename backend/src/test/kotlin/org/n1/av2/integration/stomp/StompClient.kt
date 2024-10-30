@@ -18,7 +18,6 @@ import org.springframework.web.socket.client.WebSocketClient
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
 
 data class ReceivedMessage(
@@ -35,7 +34,6 @@ class AvClient(
 ) {
     private val receivedMessages = MessageQueue()
     private val sessionHandler = MyStompSessionHandler(receivedMessages, name)
-    private var stompSessionFuture: CompletableFuture<StompSession>? = null
     private lateinit var stompSession: StompSession
 
     private val logger = mu.KotlinLogging.logger {}
@@ -44,15 +42,15 @@ class AvClient(
         val webSocketClient: WebSocketClient = StandardWebSocketClient()
         val stompClient = WebSocketStompClient(webSocketClient)
         stompClient.defaultHeartbeat = longArrayOf(0, 0)
-        stompClient.setMessageConverter(MyMessageConvertor())
+        stompClient.messageConverter = MyMessageConvertor()
 
         val url = "ws://localhost:${port}${endpoint}"
         val headers = WebSocketHttpHeaders()
         headers.set(HttpHeaders.COOKIE, cookieString)
 
-        this.stompSessionFuture = stompClient.connectAsync(url, headers, sessionHandler)
+        val stompSessionFuture = stompClient.connectAsync(url, headers, sessionHandler)
 
-        this.stompSession = this.stompSessionFuture!!.await()
+        this.stompSession = stompSessionFuture.await()
 
         subscribe("/user/reply")
         subscribe("/topic/user/${sessionHandler.userAndConnectionName}")
@@ -63,7 +61,6 @@ class AvClient(
     fun send(destination: String, payload: Any) {
         sessionHandler.send(destination, payload)
     }
-
 
     fun subscribe(topic: String) {
         this.sessionHandler.subscribe(topic)
@@ -101,8 +98,6 @@ class AvClient(
     fun clearMessage() {
         receivedMessages.clear()
     }
-
-
 }
 
 
@@ -186,7 +181,6 @@ class MyMessageConvertor : MessageConverter {
 fun determineType(json: String): String {
     val type = json.substringAfter("\"type\":\"").substringBefore("\",")
     if (type == json) error("type not found in json: ${json}")
-
 
     return type
 }

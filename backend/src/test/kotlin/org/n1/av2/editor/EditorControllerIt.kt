@@ -1,6 +1,5 @@
 package org.n1.av2.editor
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -46,7 +45,7 @@ internal class EditorControllerIT {
     @BeforeAll
     fun setup() {
         logger.info("Setting up")
-        stompClientService.setPort(port)
+        stompClientService.port = port
 
         websocketSiteService.importTestSite("v1-dev-editor-test.json", "Stalker")
         websocketSiteService.makeHackable("editor-test")

@@ -3,13 +3,14 @@ package org.n1.av2.platform.db
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import org.n1.av2.platform.config.ServerConfig
+import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
 
 
 interface MigrationStep {
-    fun version(): Int
+    val version: Int
     fun migrate(db: MongoDatabase): String
 }
 
@@ -24,30 +25,37 @@ class DbSchemaVersioning(
 
     private val logger = mu.KotlinLogging.logger {}
 
-    @PostConstruct
+    @EventListener(ContextRefreshedEvent::class)
     fun upgrade() {
         val existingVersions = dbSchemaVersionRepository.findAll()
         val currentDbVersion = existingVersions.maxByOrNull { it.version }?.version ?: 0
-        val maxVersion = migrationSteps.maxOfOrNull { it.version() } ?: 0
 
-        if (currentDbVersion == maxVersion) {
+        val stepsToRun = filterStepsToRun(currentDbVersion)
+
+        if (stepsToRun.isEmpty()) {
             logger.info("Database schema is up to date (v${currentDbVersion})")
-            return
         }
+        else {
+            val db = mongoClient.getDatabase(config.mongoDbName)
+            stepsToRun.forEach { runUpgradeStep(it, db) }
+        }
+    }
 
-        val db = mongoClient.getDatabase(config.mongoDbName)
+    fun filterStepsToRun(currentDbVersion: Int): List<MigrationStep> {
+        return migrationSteps
+            .filter { it.version > currentDbVersion }
+            .sortedBy { it.version }
+    }
 
-        migrationSteps.sortedBy { it.version() }
-            .filter { it.version() > currentDbVersion }
-            .forEach { step ->
-                val version = step.version()
+    private fun runUpgradeStep(step: MigrationStep, db: MongoDatabase) {
+        val version = step.version
 
-                logger.info("Upgrading to version $version")
-                val description = step.migrate(db)
+        logger.info("Upgrading to version $version")
 
-                val versionRecord = DbSchemaVersion(version, description, ZonedDateTime.now())
-                logger.info(" Upgraded to version $version : $description")
-                dbSchemaVersionRepository.save(versionRecord)
-            }
+        val description = step.migrate(db)
+
+        val versionRecord = DbSchemaVersion(version, description, ZonedDateTime.now())
+        dbSchemaVersionRepository.save(versionRecord)
+        logger.info(" Upgraded to version $version : $description")
     }
 }

@@ -29,7 +29,7 @@ class HackerWsControllerIT {
 
     @BeforeAll
     fun setup() {
-        stompClientService.setPort(port)
+        stompClientService.port = port
     }
 
     @Test

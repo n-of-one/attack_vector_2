@@ -13,5 +13,4 @@ data class DbSchemaVersion(
 )
 
 @Repository
-interface DbSchemaVersionRepository : MongoRepository<DbSchemaVersion, Int> {
-}
+interface DbSchemaVersionRepository : MongoRepository<DbSchemaVersion, Int>

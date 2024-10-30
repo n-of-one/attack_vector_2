@@ -42,14 +42,14 @@ class AttackAndMoveIT {
 
     @BeforeAll
     fun setup() {
-        stompClientService.setPort(port)
+        stompClientService.port = port
         timingsService.minimize()
     }
 
     @Test
-    fun testWebSocketCommunication(): Unit = runBlocking {
+    fun `test multiple hackers move back and forth between nodes`(): Unit = runBlocking {
 
-        val followerCount = 1
+        val followerCount = 2
         websocketSiteService.importTestSite("v1-dev-websocket-test.json")
         websocketSiteService.makeHackable("dev-websocket-test-1")
 
@@ -85,21 +85,17 @@ class AttackAndMoveIT {
         }
     }
 
-
     suspend fun List<HackerClient>.all(action: suspend (HackerClient) -> Unit) {
         val followers = this
 
         runBlocking {
             val jobs = followers.map { follower ->
                 launch {
-                    delay(random.nextLong(1000))
+                    delay(random.nextLong(500))
                     action(follower)
                 }
             }
             jobs.joinAll()
         }
     }
-
-
 }
-
