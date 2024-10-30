@@ -91,7 +91,7 @@ class V4_PackageRefactor : MigrationStep {
             val replacementJson = replacePackageNames(document.toJson())
             collection.replaceOne(byId, Document.parse(replacementJson))
         }
-        logger.info("Updated ${idFilters.size} documents in ${collection.namespace.collectionName}")
+        logger.info { "Updated ${idFilters.size} documents in ${collection.namespace.collectionName}" }
     }
 
 

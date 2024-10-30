@@ -38,7 +38,7 @@ class UniqueConstraintAdder(
     fun addUniqueConstraint() {
         try {
             createUniqueIndex()
-            logger.info("Added unique index to $uniqueFieldName in $collectionName collection")
+            logger.info { "Added unique index to $uniqueFieldName in $collectionName collection" }
         } catch (_: DuplicateKeyException) {
             fixCollidingLayerIds()
             createUniqueIndex()
@@ -60,7 +60,7 @@ class UniqueConstraintAdder(
                 .drop(1) // keep the first (arbitrary)
                 .forEach { collidingDocument: Document ->
                     collection.deleteOne(collidingDocument)
-                    logger.info("Removed entry from $collectionName collection with $key to resolve duplications")
+                    logger.info { "Removed entry from $collectionName collection with $key to resolve duplications" }
                 }
         }
     }

@@ -33,9 +33,8 @@ class DbSchemaVersioning(
         val stepsToRun = filterStepsToRun(currentDbVersion)
 
         if (stepsToRun.isEmpty()) {
-            logger.info("Database schema is up to date (v${currentDbVersion})")
-        }
-        else {
+            logger.info { "Database schema is up to date (v${currentDbVersion})" }
+        } else {
             val db = mongoClient.getDatabase(config.mongoDbName)
             stepsToRun.forEach { runUpgradeStep(it, db) }
         }
@@ -50,12 +49,12 @@ class DbSchemaVersioning(
     private fun runUpgradeStep(step: MigrationStep, db: MongoDatabase) {
         val version = step.version
 
-        logger.info("Upgrading to version $version")
+        logger.info { "Upgrading to version $version" }
 
         val description = step.migrate(db)
 
         val versionRecord = DbSchemaVersion(version, description, ZonedDateTime.now())
         dbSchemaVersionRepository.save(versionRecord)
-        logger.info(" Upgraded to version $version : $description")
+        logger.info { " Upgraded to version $version : $description" }
     }
 }

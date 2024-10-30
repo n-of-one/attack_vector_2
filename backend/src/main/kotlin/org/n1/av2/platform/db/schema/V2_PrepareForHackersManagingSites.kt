@@ -81,8 +81,8 @@ class V2UserEntityUpdater(
             Updates.unset("email"),
             Updates.unset("gmNote"),
         )
-        var updateResult = userEntityCollection.updateMany(matchAllDocuments, updateUserEntityFields)
-        logger.info("Updated ${updateResult.modifiedCount} UserEntity documents")
+        val updateResult = userEntityCollection.updateMany(matchAllDocuments, updateUserEntityFields)
+        logger.info { "Updated ${updateResult.modifiedCount} UserEntity documents" }
     }
 
     private fun changeHackerManagersToHackers() {
@@ -90,7 +90,7 @@ class V2UserEntityUpdater(
         val updateToHacker = Updates.set("type", UserType.HACKER.name)
 
         val updateResult = userEntityCollection.updateMany(hackerManagers, updateToHacker)
-        logger.info("Replaced ${updateResult.modifiedCount} Hacker managers")
+        logger.info { "Replaced ${updateResult.modifiedCount} Hacker managers" }
     }
 }
 
@@ -116,7 +116,7 @@ class V2SitePropertiesUpdater(
         )
 
         val updateResult = sitePropertiesCollection.updateMany(matchAllDocuments, updateSitePropertiesFields)
-        logger.info("Updated ${updateResult.modifiedCount} SiteProperty documents")
+        logger.info { "Updated ${updateResult.modifiedCount} SiteProperty documents" }
     }
 
     fun setSiteOwnerIds() {
