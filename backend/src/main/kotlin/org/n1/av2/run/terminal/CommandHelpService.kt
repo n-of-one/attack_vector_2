@@ -1,10 +1,11 @@
 package org.n1.av2.run.terminal
 
+import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.CurrentUserService
-import org.n1.av2.platform.iam.user.HackerSkill
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,6 +13,7 @@ class CommandHelpService(
     private val connectionService: ConnectionService,
     private val configService: ConfigService,
     private val currentUser: CurrentUserService,
+    private val hackerEntityService: HackerEntityService,
     ) {
 
     fun processHelp(inside: Boolean, tokens: List<String>) {
@@ -27,7 +29,8 @@ class CommandHelpService(
     }
 
     private fun processHelpOutside() {
-        val hasScanSkill = currentUser.userEntity.hasSKill(HackerSkill.SCAN)
+        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
+        val hasScanSkill = hacker.hasSKill(HackerSkillType.SCAN)
 
         connectionService.replyTerminalReceive(
             "You are outside of the site.",
@@ -64,7 +67,8 @@ class CommandHelpService(
     }
 
     private fun processHelpInside() {
-        val hasScanSkill = currentUser.userEntity.hasSKill(HackerSkill.SCAN)
+        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
+        val hasScanSkill = hacker.hasSKill(HackerSkillType.SCAN)
 
         connectionService.replyTerminalReceive(
             "You are inside the site.",

@@ -48,7 +48,6 @@ class UserTaskRunner(
         taskEngine.queueInMillis(description, identifiers, due, userPrincipal, action)
     }
 
-
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
     @Deprecated(
         message = ">> Do not use run, Use runTask() instead",

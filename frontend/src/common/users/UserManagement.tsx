@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import {SilentLink} from "../component/SilentLink";
-import {UserOverview} from "./UsersReducer";
+import {UserOverview} from "./EditUserReducer";
 import {useSelector} from "react-redux";
 import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";

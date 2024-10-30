@@ -3,6 +3,7 @@ package org.n1.av2.run
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
+import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
@@ -17,7 +18,6 @@ import org.n1.av2.platform.engine.TaskIdentifiers
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntityService
-import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.util.isOneOf
 import org.n1.av2.run.entity.NodeScanStatus
 import org.n1.av2.run.entity.NodeScanStatus.*
@@ -52,6 +52,7 @@ class RunService(
     private val tripwireLayerService: TripwireLayerService,
     private val scanService: ScanService,
     private val nodeEntityService: NodeEntityService,
+    private val hackerEntityService: HackerEntityService,
 ) {
 
     class HackerPresence(
@@ -136,12 +137,12 @@ class RunService(
 
     private fun toPresence(state: HackerState): HackerPresence {
         val user = userEntityService.getById(state.userId)
-        if (user.type != UserType.HACKER || user.hacker == null) error("${user.name} is not a hacker")
+        val hacker = hackerEntityService.findForUser(user)
 
         return HackerPresence(
             userId = user.id,
             userName = user.name,
-            icon = user.hacker.icon,
+            icon = hacker.icon,
             nodeId = state.currentNodeId,
             activity = state.activity
         )
@@ -196,7 +197,8 @@ class RunService(
 
         val iceHackers = usersInIce.map { userIceHackingState ->
             val user = userEntityService.getById(userIceHackingState.userId)
-            IceHacker(user.id, user.name, user.hacker!!.icon)
+            val hacker = hackerEntityService.findForUser(user)
+            IceHacker(user.id, user.name, hacker.icon)
         }
 
         connectionService.toIce(

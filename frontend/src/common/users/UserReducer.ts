@@ -15,10 +15,8 @@ export enum UserType {
 export interface User {
     id: string,
     name: string,
-    email: string,
     type: UserType,
     hacker?: Hacker,
-    gmNote: string,
 }
 
 export enum HackerSkill {

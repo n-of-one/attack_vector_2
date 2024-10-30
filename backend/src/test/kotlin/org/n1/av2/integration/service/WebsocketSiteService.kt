@@ -47,7 +47,7 @@ class WebsocketUserService(
     suspend fun createTestUser(name: String) {
         testUserService.deleteTestUserIfExists(name)
         runLinkEntityService.deleteAllForUser(name)
-        testUserService.createUserForTest(name)
+        testUserService.createHackerForTest(name)
     }
 
     suspend fun login(userName: String): Pair<UserEntity, List<Cookie>> {

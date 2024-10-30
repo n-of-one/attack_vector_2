@@ -12,12 +12,8 @@ data class UserEntity(
     @field:UserName var name: String = "",
     var type: UserType = UserType.NOT_LOGGED_IN,
     val externalId: String? = null,
-    val hacker: Hacker?,
 
     ) {
-    fun hasSKill(skill: HackerSkill): Boolean {
-        return hacker?.skills?.contains(skill) ?: false
-    }
 
 }
 
@@ -28,18 +24,6 @@ interface UserEntityRepo : CrudRepository<UserEntity, String> {
     fun findByExternalId(externalId: String): UserEntity?
 }
 
-data class Hacker(
-    val icon: HackerIcon,
-    val characterName: String,
-    val skills: Set<HackerSkill>?
-)
-
-enum class HackerSkill {
-    CREATE_SITE,
-    SCAN,
-    SEARCH_SITE,
-}
-
 
 // Used for internal activity
 val SYSTEM_USER = UserEntity(
@@ -47,7 +31,6 @@ val SYSTEM_USER = UserEntity(
     externalId = "user-system",
     name = "system",
     type = UserType.NOT_LOGGED_IN,
-    hacker = null
 )
 
 val NOT_LOGGED_IN_USER = UserEntity(
@@ -55,5 +38,4 @@ val NOT_LOGGED_IN_USER = UserEntity(
     externalId = "user-not-logged-in",
     name = "notLoggedIn",
     type = UserType.NOT_LOGGED_IN,
-    hacker = null
 )

@@ -1,5 +1,5 @@
 import React from 'react'
-import {CLOSE_USER_EDIT} from "./UsersReducer";
+import {CLOSE_USER_EDIT} from "./EditUserReducer";
 import {HackerSkill, User, UserType} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 class FrontierHtmlController(
     private val frontierService: FrontierService,
     private val loginService: LoginService,
+    private val orthankService: OrthankService,
 ) {
 
 
@@ -21,12 +22,13 @@ class FrontierHtmlController(
     @ResponseBody
     fun frontierSso(request: HttpServletRequest, response: HttpServletResponse, @LoginRedirectParam @RequestParam next: String?): String {
         val cookies = request.cookies ?: emptyArray()
-        val frontierHackerInfo = frontierService.getFrontierHackerInfo(cookies)
-        if (frontierHackerInfo == null) {
+        val frontierInfo = orthankService.getFrontierHackerInfo(cookies)
+        if (frontierInfo == null) {
             response.sendRedirect("https://www.eosfrontier.space/return-to-attack-vector")
             return ""
         }
-        val loginCookies = loginService.frontierLogin(frontierHackerInfo)
+        val user = frontierService.frontierLogin(frontierInfo)
+        val loginCookies = loginService.getCookies(user)
         response.addLoginCookies(loginCookies)
 
         val redirectPath = next ?: "/"

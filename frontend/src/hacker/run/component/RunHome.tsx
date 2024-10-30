@@ -9,6 +9,7 @@ import {Timers} from "../coundown/Timers";
 import {ENTER_KEY} from "../../../common/util/KeyCodes";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";
+import {HackerRootState} from "../../HackerRootReducer";
 
 
 const TerminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {

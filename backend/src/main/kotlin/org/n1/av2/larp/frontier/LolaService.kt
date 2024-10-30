@@ -1,5 +1,6 @@
 package org.n1.av2.larp.frontier
 
+import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.connection.ConnectionService
@@ -12,13 +13,14 @@ import org.n1.av2.run.RunService
 import org.n1.av2.run.runlink.RunLinkService
 import org.springframework.stereotype.Service
 
-const val lolaUserName = "LOLA"
+const val LOLA_USER_NAME = "LOLA"
 
 @Service
 class LolaService(
     private val connectionService: ConnectionService,
     private val runLinkService: RunLinkService,
     private val runService: RunService,
+    private val hackerEntityService: HackerEntityService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val userEntityService: UserEntityService,
     ) {
@@ -41,12 +43,14 @@ class LolaService(
     }
 
     fun createLolaUser() {
-        userEntityService.createDefaultUser(lolaUserName, UserType.HACKER, setOf(), HackerIcon.BRAIN)
+        if (userEntityService.findByNameIgnoreCase(LOLA_USER_NAME) != null) return
+        val lolaUser = userEntityService.createUser(LOLA_USER_NAME, UserType.HACKER)
+        hackerEntityService.createHacker(lolaUser.id, HackerIcon.BRAIN, LOLA_USER_NAME, emptyList())
     }
 
     class SpeakResponse(val success: Boolean, val message: String)
     fun speak(text: String): SpeakResponse {
-        val lolaUser = userEntityService.getByName(lolaUserName)
+        val lolaUser = userEntityService.getByName(LOLA_USER_NAME)
 
         val lolaHackerState = hackerStateEntityService.retrieve(lolaUser.id)
         if (lolaHackerState.activity == HackerActivity.OFFLINE) {

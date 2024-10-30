@@ -1,7 +1,7 @@
 import {pageReducer} from "../common/menu/pageReducer";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {combineReducers} from "redux";
-import {editUserReducer, userOverviewReducer} from "../common/users/UsersReducer";
+import {editUserReducer, userOverviewReducer} from "../common/users/EditUserReducer";
 import {currentUserReducer, GenericUserRootState, User} from "../common/users/UserReducer";
 import {configReducer} from "../admin/config/ConfigReducer";
 

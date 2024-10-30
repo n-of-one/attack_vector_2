@@ -1,23 +1,29 @@
 package org.n1.av2.platform.iam.login.frontier
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.servlet.http.Cookie
+import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.hacker.HackerSkill
+import org.n1.av2.hacker.hacker.HackerSkillType.CREATE_SITE
+import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
+import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
+import org.n1.av2.larp.frontier.LOLA_USER_NAME
 import org.n1.av2.larp.frontier.LolaService
-import org.n1.av2.platform.config.ConfigItem
-import org.n1.av2.platform.config.ConfigService
+import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
-import org.n1.av2.platform.util.HttpClient
+import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.platform.iam.user.UserType
 import org.springframework.stereotype.Service
 
 const val FRONTIER_GM_GROUP = "30"
 
-class FrontierHackerInfo(
+class FrontierUserAndCharacterInfo(
     val id: String,
     val isGm: Boolean,
     val characterName: String? = null,
+)
+
+class OrthankUserInfo(
+    val id: String,
+    val gm: Boolean
 )
 
 /**
@@ -34,102 +40,78 @@ class FrontierHackerInfo(
  */
 @Service
 class FrontierService(
-    private val configService: ConfigService,
+    private val orthankService: OrthankService,
     private val lolaService: LolaService,
+    private val userEntityService: UserEntityService,
+    private val hackerEntityService: HackerEntityService,
 ) {
-    private val httpClient = HttpClient()
-    private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    class FrontierUserInfo(
-        val id: String,
-        val gm: Boolean
-    )
 
-    class CharacterInfo(
-        @JsonProperty("character_name") var characterName: String,
-        @JsonProperty("characterID") var characterId: String,
-    ) {
-        constructor() : this("", "")
-    }
+    private val LEVEL_1_SKILLS = listOf(HackerSkill(SCAN), HackerSkill(SEARCH_SITE) )
+    private val LEVEL_3_SKILLS = LEVEL_1_SKILLS + HackerSkill(CREATE_SITE)
 
-    fun getFrontierHackerInfo(cookies: Array<Cookie>): FrontierHackerInfo? {
-        val userInfo = getUserInfo(cookies)
-        if (userInfo.id == "0") {
-            return null
-        }
-        if (userInfo.gm) {
-            return FrontierHackerInfo(
-                id = "frontier-gm:${userInfo.id}",
-                isGm = true
-            )
-        }
-        val playerInfo = getPlayerInfo(userInfo.id)
-
-        return FrontierHackerInfo(
-            id = "frontier-player:${playerInfo.characterId}",
-            isGm = false,
-            characterName = playerInfo.characterName,
-        )
-    }
-
-    private fun getUserInfo(cookies: Array<Cookie>): FrontierUserInfo {
-        class IdAndGroupResponse(var id: String, var groups: List<String>?) {
-            constructor() : this("", emptyList())
-        }
-
-        val idAndGroupsText = httpClient.get("https://ic.eosfrontier.space/assets/idandgroups.php", emptyMap(), cookies)
-        val idAndGroups = objectMapper.readValue(idAndGroupsText, IdAndGroupResponse::class.java)
-        val gm = idAndGroups.groups?.contains(FRONTIER_GM_GROUP) ?: false
-
-        return FrontierUserInfo(idAndGroups.id, gm)
-    }
-
-    private fun orthankToken(): String {
-        return configService.get(ConfigItem.FRONTIER_ORTHANK_TOKEN)
-    }
-    private fun getPlayerInfo(accountId: String): CharacterInfo {
-        val headers = mapOf("accountID" to accountId, "token" to orthankToken())
-        val responseText = httpClient.get("https://api.eosfrontier.space/orthanc/v2/chars_player/", headers)
-        println(responseText)
-        val playerInfo = objectMapper.readValue(responseText, CharacterInfo::class.java)
-
-        return playerInfo
-    }
-
-    class FrontierV3HackingSkills(
-        val hacker: Int = 0,
-        val architect: Int = 0,
-        val elite: Int = 0
-        )
-
-    // Using: https://github.com/eosfrontier/orthanc/tree/master/v2/chars_all
-    private fun getPlayerSkills(characterId: String): FrontierV3HackingSkills {
-        class SkillInfo(var name: String, var level: Int) {
-            constructor() : this("", 0)
-        }
-
-        val headers = mapOf("id" to characterId, "token" to orthankToken())
-        val responseText = httpClient.get("https://api.eosfrontier.space/orthanc/v2/chars_player/skills/", headers)
-        println(responseText)
-        val skillsInfo: List<SkillInfo> = objectMapper.readValue(responseText, object : TypeReference<List<SkillInfo>>() {})
-
-        val hackerSkill = FrontierV3HackingSkills(
-            hacker = skillsInfo.find { it.name == "it" }?.level ?: 0,
-            architect = skillsInfo.find { it.name == "itarchi" }?.level ?: 0,
-            elite = skillsInfo.find { it.name == "itelite" }?.level ?: 0
-        )
-        return hackerSkill
-    }
 
     fun createLolaUser() {
         lolaService.createLolaUser()
     }
 
     fun processShare(runId: String, user: UserEntity):Boolean {
-        if (user.name.uppercase() == "LOLA") {
+        if (user.name.uppercase() == LOLA_USER_NAME) {
             lolaService.share(user, runId)
             return true
         }
         return false
     }
+
+    fun frontierLogin(frontierInfo: FrontierUserAndCharacterInfo): UserEntity {
+        val user = getOrCreateHackerUser(frontierInfo)
+
+        updateHackerWithCharacterInfo(user, frontierInfo)
+        return user
+    }
+
+
+    fun getOrCreateHackerUser(hackerInfo: FrontierUserAndCharacterInfo): UserEntity {
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(hackerInfo.id)
+        if (existingUserEntity != null) {
+            return existingUserEntity
+        }
+
+        if (hackerInfo.isGm) {
+            return userEntityService.createUser(hackerInfo.id, UserType.GM, hackerInfo.id)
+        }
+
+        val name = userEntityService.findFreeUserName(hackerInfo.characterName!!)
+        val user = userEntityService.createUser(name, UserType.HACKER, hackerInfo.id)
+        hackerEntityService.createHacker(user.id, HackerIcon.FROG, hackerInfo.characterName, emptyList<HackerSkill>())
+
+        return user
+    }
+
+    fun updateHackerWithCharacterInfo(user: UserEntity, frontierInfo: FrontierUserAndCharacterInfo) {
+        if (frontierInfo.isGm) return
+
+        val hacker = hackerEntityService.findForUser(user)
+        val skills = determineFrontierCharacterSkills(frontierInfo)
+
+        val updatedHacker = hacker.copy(
+            characterName = frontierInfo.characterName!!,
+            skills = skills,
+        )
+        hackerEntityService.save(updatedHacker)
+    }
+
+    private fun determineFrontierCharacterSkills(frontierInfo: FrontierUserAndCharacterInfo): List<HackerSkill> {
+        val v3Skills = orthankService.getPlayerSkills(frontierInfo.id)
+        val hackerLevel = v3Skills.hacker
+
+        if ( hackerLevel == 0) {
+            return emptyList() // not a hacker, does not get skills
+        }
+        if (hackerLevel == 1 || hackerLevel == 2) {
+            return LEVEL_1_SKILLS
+        }
+        return LEVEL_3_SKILLS;
+    }
+
 }

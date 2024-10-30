@@ -6,7 +6,6 @@ import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionType
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.authentication.JwtTokenProvider
-import org.n1.av2.platform.iam.login.frontier.FrontierHackerInfo
 import org.n1.av2.platform.iam.user.*
 import org.n1.av2.site.tutorial.TutorialService
 import org.springframework.security.core.context.SecurityContextHolder
@@ -16,7 +15,7 @@ import java.net.URLEncoder
 @Service
 class LoginService(
     private val userEntityService: UserEntityService,
-    private val userService: UserService,
+    private val userAndHackerService: UserAndHackerService,
     private val configService: ConfigService,
     private val jwtTokenProvider: JwtTokenProvider,
     private val googleOauthService: GoogleOauthService,
@@ -50,7 +49,7 @@ class LoginService(
 
     fun googleLogin(jwt: String): List<Cookie> {
         val externalId = googleOauthService.parse(jwt)
-        val user = userService.getOrCreateUser(externalId)
+        val user = userAndHackerService.getOrCreateHackerUser(externalId)
 
         // Need to set current user for use in tutorialService
         val authentication = UserPrincipal("", "google-login", user, ConnectionType.STATELESS)
@@ -62,14 +61,9 @@ class LoginService(
         return getCookies(user)
     }
 
-    fun frontierLogin(frontierHackerInfo: FrontierHackerInfo): List<Cookie> {
-        val user = userService.getOrCreateUser(frontierHackerInfo)
-        val updatedUser = userService.updateUserInfo(user, frontierHackerInfo)
-        return getCookies(updatedUser)
-    }
 
 
-    private fun getCookies(userEntity: UserEntity): List<Cookie> {
+    fun getCookies(userEntity: UserEntity): List<Cookie> {
         val cookies = mutableListOf<Cookie>()
         cookies.add(generateJwtCookie(userEntity))
         cookies.add(generateUserNameCookie(userEntity))

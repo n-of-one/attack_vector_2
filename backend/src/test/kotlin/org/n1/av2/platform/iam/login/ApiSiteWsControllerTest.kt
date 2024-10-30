@@ -41,7 +41,7 @@ class ApiSiteWsControllerTest(
 
     @BeforeAll
     fun setup() {
-        val user = testUserService.createUserForTest("testGm", UserType.GM)
+        val user = testUserService.createHackerForTest("testGm", UserType.GM)
         authCookie = loginService.generateJwtCookie(user)
     }
 

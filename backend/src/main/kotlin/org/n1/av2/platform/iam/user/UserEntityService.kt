@@ -1,5 +1,6 @@
 package org.n1.av2.platform.iam.user
 
+import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.createId
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
@@ -61,24 +62,29 @@ class UserEntityService(
         return userEntityRepo.findByNameIgnoreCase("system") ?: error("System user not found")
     }
 
-    fun createDefaultUser(userName: String, type: UserType, defaultSkills: Set<HackerSkill>, icon: HackerIcon = HackerIcon.NOT) {
-        val user = findByNameIgnoreCase(userName)
-        if (user != null) return
-
-        val hacker = if (type == UserType.HACKER) Hacker(
-            icon = icon,
-            characterName = "unknown",
-            skills = defaultSkills
-        )
-        else null
-
-        val newUserEntity = UserEntity(
+    fun createUser(userName: String, type: UserType, externalId: String? = null): UserEntity {
+        if (findByNameIgnoreCase(userName) != null) {
+            throw ValidationException("User with name $userName already exists.")
+        }
+        val user = UserEntity(
+            id = createUserId(),
             name = userName,
             type = type,
-            id = createUserId(),
-            hacker = hacker,
+            externalId = externalId,
         )
-        save(newUserEntity)
+        save(user)
+        return user
+    }
+
+    fun findFreeUserName(input: String): String {
+        if (findByNameIgnoreCase(input) == null) return input
+
+        for (i in 1..100) {
+            val name = "$input$i"
+            if (findByNameIgnoreCase(name) == null) return name
+
+        }
+        error("Failed to logon, failed to create user account. No free user name found")
     }
 
     fun getUserName(userId: String): String {
