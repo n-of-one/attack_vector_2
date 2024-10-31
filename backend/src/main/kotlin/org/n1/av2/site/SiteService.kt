@@ -68,7 +68,7 @@ class SiteService(
         val id = sitePropertiesEntityService.createId()
         sitePropertiesEntityService.create(id, name)
         siteEditorStateEntityService.create(id)
-        nodeEntityService.createNode(AddNode(id, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, NodeType.TRANSIT_2))
+        nodeEntityService.createNode(AddNode(id, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, NodeType.TRANSIT_2, null))
         siteValidationService.validate(id)
 
         return id
