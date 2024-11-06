@@ -35,37 +35,44 @@ import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.SiteProperties
 import org.springframework.stereotype.Component
 
+/**
+ * V4
+ *
+ * The package structure for the entities has been refactored. In the mongoDB the class names are stored as strings, using the previous package structure.
+ * This migration step updates the class names in the database to correspond to the new package structure.
+ */
 @Component
 class V4_PackageRefactor : MigrationStep {
 
-    override
-    fun version() = 4
+    override val version = 4
 
     private val logger = mu.KotlinLogging.logger {}
 
     override
     fun migrate(db: MongoDatabase): String {
-
         val collectionNames = db.listCollectionNames()
 
         collectionNames.forEach { collectionName ->
-            val collection = db.getCollection(collectionName)
-
-            if (collectionName == "hackerState" // hackerState will be recreated
-                || collectionName == "userIceHackingState" // userIceHackingState is obsolete
-                ) {
-                collection.drop()
-                return@forEach
-            }
-
-            if (collectionName == "dbSchemaVersion" || collectionName == "runLink") {
-                upgradeWithObjectIds(collection)
-            } else {
-                upgradeWithStringIds(collection)
-            }
+            updateCollection(collectionName, db)
         }
 
         return "Updated class to correspond to the new package structure"
+    }
+
+    private fun updateCollection(collectionName: String, db: MongoDatabase) {
+        val collection = db.getCollection(collectionName)
+
+        if (collectionName == "hackerState" || collectionName == "userIceHackingState") {
+            // userIceHackingState is obsolete, and hackerState will be recreated when hackers log in. So we can just drop these collections.
+            collection.drop()
+            return
+        }
+
+        if (collectionName == "dbSchemaVersion" || collectionName == "runLink") {
+            upgradeWithObjectIds(collection)
+        } else {
+            upgradeWithStringIds(collection)
+        }
     }
 
     private fun upgradeWithObjectIds(collection: MongoCollection<Document>) {
@@ -74,17 +81,17 @@ class V4_PackageRefactor : MigrationStep {
     }
 
     private fun upgradeWithStringIds(collection: MongoCollection<Document>) {
-        val objectIdFilters = collection.find().map { it.getString("_id") }.map { Document("_id", it)}.toList()
+        val objectIdFilters = collection.find().map { it.getString("_id") }.map { Document("_id", it) }.toList()
         upgradeWithObjectIds(collection, objectIdFilters)
     }
 
     private fun upgradeWithObjectIds(collection: MongoCollection<Document>, idFilters: List<Document>) {
         idFilters.forEach { byId: Document ->
-            val document:Document = collection.find(byId).first() ?: error("Document not found for id ${byId.toJson()}")
+            val document: Document = collection.find(byId).first() ?: error("Document not found for id ${byId.toJson()}")
             val replacementJson = replacePackageNames(document.toJson())
             collection.replaceOne(byId, Document.parse(replacementJson))
         }
-        logger.info("Updated ${idFilters.size} documents in ${collection.namespace.collectionName}")
+        logger.info { "Updated ${idFilters.size} documents in ${collection.namespace.collectionName}" }
     }
 
 
@@ -127,7 +134,7 @@ class V4_PackageRefactor : MigrationStep {
             .replace("org.n1.av2.backend.entity.service.IcePassword", IcePassword::class.qualifiedName!!)
             .replace("org.n1.av2.backend.entity.service.Timer", Timer::class.qualifiedName!!)
 
-        if (migrated.contains("org.n1.av2.backend")) error("Migration failed: ${migrated} still contains a reference to the previous package structure: \"org.n1.av2.backend\"" )
+        if (migrated.contains("org.n1.av2.backend")) error("Migration failed: ${migrated} still contains a reference to the previous package structure: \"org.n1.av2.backend\"")
 
         return migrated
     }

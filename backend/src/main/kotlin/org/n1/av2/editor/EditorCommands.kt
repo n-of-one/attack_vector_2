@@ -23,45 +23,45 @@ data class SiteFull(
 }
 
 data class AddNode(
-    val siteId: String = "",
-    val x: Int = 0,
-    val y: Int = 0,
-    val type: NodeType = NodeType.DATA_STORE,
-    val networkId: String? = null,
+    val siteId: String,
+    val x: Int,
+    val y: Int,
+    val type: NodeType,
+    val networkId: String?,
 )
 
 data class AddConnection(
-    val siteId: String = "",
-    val fromId: String = "",
-    val toId: String = ""
+    val siteId: String,
+    val fromId: String,
+    val toId: String,
 )
 
 data class MoveNode(
-    val siteId: String = "",
-    val nodeId: String = "",
-    val x: Int = 0,
-    val y: Int = 0
+    val siteId: String,
+    val nodeId: String,
+    val x: Int,
+    val y: Int,
 )
 
 data class EditSiteProperty(
-    val siteId: String = "",
-    val field: String = "",
-    val value: String = ""
+    val siteId: String,
+    val field: String,
+    val value: String,
 )
 
 data class EditNetworkIdCommand(
-    val siteId: String = "",
-    val nodeId: String = "",
-    val value: String = ""
+    val siteId: String,
+    val nodeId: String,
+    val value: String,
 )
 
 
 data class EditLayerDataCommand(
-    val siteId: String = "",
-    val nodeId: String = "",
-    val layerId: String = "",
-    val key: String = "",
-    val value: String = ""
+    val siteId: String,
+    val nodeId: String,
+    val layerId: String,
+    val key: String,
+    val value: String,
 )
 
 data class AddLayerCommand(

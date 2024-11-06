@@ -29,7 +29,7 @@ class GmWsControllerIT {
 
     @BeforeAll
     fun setup() {
-        stompClientService.setPort(port)
+        stompClientService.port = port
     }
 
     @Test

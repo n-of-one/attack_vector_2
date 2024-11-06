@@ -5,7 +5,7 @@ import org.n1.av2.hacker.hacker.HackerSkill
 import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
 import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
 import org.n1.av2.larp.LarpService
-import org.springframework.context.event.ContextRefreshedEvent
+import org.n1.av2.platform.db.DbSchemaVersioning
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
@@ -15,7 +15,8 @@ class DefaultUserService(
     private val hackerEntityService: HackerEntityService,
     private val larpService: LarpService,
 ) {
-    @EventListener
+    /** Important to be after the ContextRefreshedEvent to give [DbSchemaVersioning] a chance to run first */
+    @EventListener()
     fun onApplicationEvent() {
         createMandatoryUsers()
 

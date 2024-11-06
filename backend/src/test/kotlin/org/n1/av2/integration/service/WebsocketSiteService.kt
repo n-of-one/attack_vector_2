@@ -18,15 +18,11 @@ class WebsocketSiteService(
     private val userEntityService: UserEntityService,
 ) {
 
-    private var importedSites = ArrayList<String>()
-
     fun importTestSite(name: String, owner: String = "hacker") {
-        if (importedSites.contains(name)) return
         val siteJson = ClassLoader.getSystemResource(name).readText()
         val system = userEntityService.getByName(owner)
         currentUserService.set(system)
         importService.importSite(siteJson)
-        importedSites.add(name)
     }
 
     fun makeHackable(name: String) {

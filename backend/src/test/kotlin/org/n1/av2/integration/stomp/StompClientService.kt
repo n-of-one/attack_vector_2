@@ -12,11 +12,7 @@ class StompClientService {
     @Autowired
     private lateinit var websocketUserService: WebsocketUserService
 
-    private var port = 0
-
-    fun setPort(port: Int) {
-        this.port = port
-    }
+    var port = 0
 
     suspend fun createAndConnect(name: String): HackerClient {
         websocketUserService.createTestUser(name)
@@ -40,11 +36,9 @@ class StompClientService {
         return client
     }
 
-
     suspend fun connectAnonymous(): AvClient {
         val client = AvClient("", port, "", "", UNRESTRICTED_ENDPOINT)
         client.connect()
         return client
     }
-
 }

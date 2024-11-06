@@ -44,7 +44,7 @@ internal class EditorControllerIT {
     @BeforeAll
     fun setup() {
         logger.info("Setting up")
-        stompClientService.setPort(port)
+        stompClientService.port = port
 
         websocketSiteService.importTestSite("v1-dev-editor-test.json", "Stalker")
         websocketSiteService.makeHackable("editor-test")

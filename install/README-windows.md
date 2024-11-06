@@ -170,3 +170,58 @@ If new features or a bug fix is released, you can update your version by doing t
 - Close the command prompt running Attack Vector
 - Open a new command prompt and run: `cd \av` and then `upgrade` . This will download the latest version from github, 
 build it and start it. 
+
+
+
+## 8. Installing a letsencrypt certificate on windows (optional)
+This is a bit tricky and not foolproof just yet.
+
+We will use the domain `<your domain>` as an example. Replace this with your own domain (for example: attackvector.nl)
+
+- have the dns of the domain point to your windows machine. Check that you can reach your website using the domain name
+on port 80. The Attack Vector application must be running on port 80 during these steps.
+  
+- In the folder `C:\av` create sub-folders until you have:  `C:\av\letsencrypt\.well-known\acme-challenge`
+- Create a test file in this folder: `C:\av\letsencrypt\.well-known\acme-challenge\test.txt` with any (text) content.
+- Check that you can view this file in your browser by going to: `http://<your domain>/.well-known/acme-challenge/test.txt`
+
+- Download the https://www.win-acme.com/ client
+- Run the client`wacs.exe`. This should show a text menu
+- Choose option "M" Create certificate (full options)
+- Choose option "2" Manual input
+- Enter your domain name (for example: attackvector.nl)
+- Press enter to accept the friendly name.
+- Choose option "4" Single certificate
+- Choose option "1" [http] Save verification files on the (network) path
+- Enter the path of the folder: `C:\av\letsencrypt`
+- Choose No for the question about the web.config file
+- Choose option "2" RSA Key 
+- Choose option "2" PEM encoded files (Apache, nginx, etc.)
+- Enter the path of the folder: `C:\av\letsencrypt`
+- Chooose option "2" Type/paste password in the console. For the password choose: password
+- Answer n to store for future use
+- Choose "5" No (additional) store steps
+- Choose "3" No (additional) installation steps
+
+(next option should be to proceed to create the certificat)
+
+This should create a number of files in the folder `C:\av\letsencrypt`:
+- <your domain>-chain-only.pem
+- <your domain>-chain.pem
+- <your domain>-crt.pem
+- <your domain>-key.pem
+
+Now we can create the .p12 file we need for Attack Vector.
+
+- Open a command prompt and navigate to the folder `C:\av\letsencrypt`
+- Run the following command: `"C:\Program Files\Git\usr\bin\openssl" pkcs12 -export -in <your domain>-chain.pem -inkey <your domain>-key.pem -out keystore.p12 -name tomcat -CAfile <your domain>.pem -caname root`
+When asked for a password: enter `password` (asked 3 times)
+
+This should create a keystore.p12 file in.
+
+Now we can run the Attack Vector application with the certificate. Change the run.bat file. Comment out the existing java command 
+by prefixing it with `rem`.
+Add a new line to start the java application:
+
+`"%JAVA_HOME%\bin\java" -jar attack_vector_2/backend/target/app.jar --server.port=443 --server.ssl.key-store=file:letsencrypt/keystore.p12 --server.ssl.key-store-password=password --server.ssl.key-store-type=pkcs12 --server.ssl.key-alias=tomcat --server.ssl.key-password=password`
+

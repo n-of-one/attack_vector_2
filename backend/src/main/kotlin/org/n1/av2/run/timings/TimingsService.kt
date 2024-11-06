@@ -18,13 +18,13 @@ class TimingsService {
 
     // used for unit tests and local development
     fun minimize() {
-        MOVE_START = Timings("main" to 0)
-        MOVE_ARRIVE = Timings("main" to 0)
+        MOVE_START = Timings("main" to 10)
+        MOVE_ARRIVE = Timings("main" to 10)
 
-        INSIDE_SCAN = Timings("in" to 0, "out" to 0)
-        OUTSIDE_SCAN = Timings("out" to 0, "in" to 0, "connection" to 0)
+        INSIDE_SCAN = Timings("in" to 0, "out" to 1)
+        OUTSIDE_SCAN = Timings("out" to 0, "in" to 1, "connection" to 1)
 
-        START_ATTACK_FAST = Timings("main" to 0)
-        START_ATTACK_SLOW = Timings("main" to 0)
+        START_ATTACK_FAST = Timings("main" to 1)
+        START_ATTACK_SLOW = Timings("main" to 1)
     }
 }

@@ -29,7 +29,6 @@ class MongoClientFactory(
             .build()
         return MongoClients.create(mongoClientSettings)
     }
-
 }
 
 @Configuration
