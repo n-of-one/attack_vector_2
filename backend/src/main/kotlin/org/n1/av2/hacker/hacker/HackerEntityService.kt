@@ -28,13 +28,16 @@ class HackerEntityService(
     }
 
     fun findForUser(user: UserEntity): Hacker {
-        if (user.type != UserType.HACKER) error("User ${user.name} / ${user.id} is not a hacker")
+        verifyUserIsHacker(user)
         return hackerRepo.findByHackerUserId(user.id) ?: error("No hacker entity exists for userId: ${user.name} / ${user.id}")
     }
 
     fun findForUserOrNull(user: UserEntity): Hacker? {
-        if (user.type != UserType.HACKER) error("User ${user.name} / ${user.id} is not a hacker")
         return hackerRepo.findByHackerUserId(user.id)
+    }
+
+    private fun verifyUserIsHacker(user: UserEntity) {
+        if (user.type != UserType.HACKER) error("User ${user.name} / ${user.id} is not a hacker")
     }
 
     fun findAll(): List<Hacker> {

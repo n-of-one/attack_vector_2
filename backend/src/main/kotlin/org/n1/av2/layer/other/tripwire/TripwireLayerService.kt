@@ -1,6 +1,7 @@
 package org.n1.av2.layer.other.tripwire
 
 import org.n1.av2.editor.toDuration
+import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.connection.ConnectionService
@@ -11,6 +12,7 @@ import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.SystemTaskRunner
 import org.n1.av2.platform.engine.TaskIdentifiers
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
@@ -33,6 +35,8 @@ class TripwireLayerService(
     @Lazy private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val siteResetService: SiteResetService,
+    private val hackerEntityService: HackerEntityService,
+    private val currentUserService: CurrentUserService,
 ) {
 
 
@@ -45,24 +49,47 @@ class TripwireLayerService(
         connectionService.replyTerminalReceive("This tripwire is managed by core in node [ok]${node.networkId}")
     }
 
-    fun hackerArrivesNode(siteId: String, layer: TripwireLayer, nodeId: String, userId: String, runId: String) {
+    fun hackerArrivesNode(siteId: String, layer: TripwireLayer, nodeId: String, runId: String) {
         val existingDetection = timerEntityService.findByLayer(layer.id)
         if (existingDetection != null) {
             return
         }
 
-        val duration = layer.countdown.toDuration("tripwire ${layer.id}")
-        val shutdownTime = time.now().plus(duration)
+        val (tripwireDuration, stealthAdjustmentDuration) = determineTripwireCountdownDuration(layer)
+        val countdown = tripwireDuration + stealthAdjustmentDuration
+        val shutdownTime = time.now().plus(countdown)
 
         val timer = timerEntityService.create(layer.id, null, shutdownTime, siteId, siteId, TimerType.SHUTDOWN_START)
 
         connectionService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(timer, layer))
-        connectionService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [warn]site reset[/] in ${toDurationString(duration)}[/].")
+        connectionService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [warn]site reset[/] in ${toDurationString(countdown)}[/].")
+        if (stealthAdjustmentDuration != null) {
+            val message = if (stealthAdjustmentDuration.isPositive)
+                "Stealth skill increased the duration by ${toDurationString(stealthAdjustmentDuration)}."
+            else
+                "Low stealth skill decreased the duration by ${toDurationString(stealthAdjustmentDuration.multipliedBy(-1))}}"
+            connectionService.replyTerminalReceive(message)
+        }
 
         connectionService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, "nodeId" to nodeId)
 
         val identifiers = TaskIdentifiers(null, siteId, layer.id)
-        systemTaskRunner.queueInSeconds("tripwire effect", identifiers, duration.seconds) { timerActivates(siteId, timer.id, layer) }
+        systemTaskRunner.queueInSeconds("tripwire effect", identifiers, countdown.seconds) { timerActivates(siteId, timer.id, layer) }
+    }
+
+    fun determineTripwireCountdownDuration(layer: TripwireLayer): Pair<Duration, Duration?> {
+        val tripwireDuration = layer.countdown.toDuration("tripwire ${layer.id}")
+//        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
+//        val stealthSkill = hacker.skillAsIntOrNull(HackerSkillType.STEALTH) ?: 0
+//        if (stealthSkill == 0) {
+        return Pair(tripwireDuration, null)
+//        }
+//        val stealthFactor = (stealthSkill.toDouble() / 100.0)
+//        val tripwireMillis = tripwireDuration.toMillis()
+//        val stealthMillis = (tripwireMillis * stealthFactor).toLong()
+//        val stealthAdjustmentDuration = Duration.ofMillis(stealthMillis)
+//
+//        return Pair(tripwireDuration, stealthAdjustmentDuration)
     }
 
     @ScheduledTask
@@ -73,7 +100,11 @@ class TripwireLayerService(
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
         siteResetService.resetSite(siteId)
-        connectionService.toSite( siteId, SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${layer.shutdown}")))
+        connectionService.toSite(
+            siteId,
+            SERVER_TERMINAL_RECEIVE,
+            TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${layer.shutdown}"))
+        )
         hackerStates
             .filter { it.activity == HackerActivity.INSIDE }
             .forEach { hackerState ->

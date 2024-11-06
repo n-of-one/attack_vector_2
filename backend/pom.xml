@@ -23,7 +23,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<kotlin.version>1.9.22</kotlin.version>
 		<kotlinx-coroutines-core.version>1.7.3</kotlinx-coroutines-core.version>
 		<kotlin-logging>3.0.3</kotlin-logging>
@@ -179,7 +179,7 @@
 					<compilerPlugins>
 						<plugin>spring</plugin>
 					</compilerPlugins>
-					<jvmTarget>17</jvmTarget>
+					<jvmTarget>${java.version}</jvmTarget>
 				</configuration>
 				<executions>
 					<execution>
@@ -209,8 +209,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>17</source>
-					<target>17</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 		</plugins>

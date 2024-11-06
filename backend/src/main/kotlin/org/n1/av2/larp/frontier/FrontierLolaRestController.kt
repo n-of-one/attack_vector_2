@@ -23,7 +23,7 @@ class FrontierLolaRestController(
     // Use to manually get a token for Lola. This token can be used by external application (Lola) to send requests as Lola AV user.
     @GetMapping("/api/admin/frontier/lola/token")
     fun getLolaToken(): String {
-        val lolaUser = userEntityService.getByName("Lola")
+        val lolaUser = userEntityService.getByName(LOLA_USER_NAME)
 
         val now = Date()
         val tenYearsInMs = 1000L * 60 * 60 * 24 * 365 * 10

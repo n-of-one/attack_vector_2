@@ -16,7 +16,7 @@ class DefaultUserService(
     private val larpService: LarpService,
 ) {
     @EventListener
-    fun onApplicationEvent(event: ContextRefreshedEvent) {
+    fun onApplicationEvent() {
         createMandatoryUsers()
 
         larpService.createMandatoryUsers()
@@ -25,11 +25,11 @@ class DefaultUserService(
     val defaultSkills = listOf(HackerSkill(SEARCH_SITE), HackerSkill(SCAN))
 
     fun createMandatoryUsers() {
-        createDefaultUser("system", UserType.SYSTEM)
-        createDefaultUser("admin", UserType.ADMIN)
-        createDefaultUser("gm", UserType.GM)
+        createDefaultUser("system", UserType.SYSTEM, UserTag.MANDATORY)
+        createDefaultUser("admin", UserType.ADMIN, UserTag.MANDATORY)
+        createDefaultUser("gm", UserType.GM, UserTag.MANDATORY)
 
-        createSKillTemplate()
+        createSkillTemplate()
 
         createDefaultHacker("hacker", HackerIcon.CROCODILE)
         createDefaultHacker("Stalker",HackerIcon.BEAR)
@@ -37,23 +37,19 @@ class DefaultUserService(
         createDefaultHacker("Angler", HackerIcon.SHARK)
     }
 
-    fun createSKillTemplate() {
-        val createdUser = createDefaultHacker(TEMPLATE_USER_NAME, HackerIcon.NOT)
-        if ( createdUser == null) return
-
-        val editedUserEntity = createdUser.copy(type = UserType.SKILL_TEMPLATE)
-        userEntityService.save(editedUserEntity)
+    fun createSkillTemplate() {
+        createDefaultHacker(TEMPLATE_USER_NAME, HackerIcon.NOT, UserTag.SKILL_TEMPLATE)
     }
 
-    fun createDefaultUser(name: String, type: UserType): UserEntity? {
+    fun createDefaultUser(name: String, type: UserType, role: UserTag = UserTag.REGUlAR): UserEntity? {
         val existingUser = userEntityService.findByNameIgnoreCase(name)
         if (existingUser != null) return null // no user created
 
-        return userEntityService.createUser(name, type)
+        return userEntityService.createUser(name, type, null, role)
     }
 
-    fun createDefaultHacker(name: String, icon: HackerIcon): UserEntity? {
-        val createdUser = createDefaultUser(name, UserType.HACKER)
+    fun createDefaultHacker(name: String, icon: HackerIcon, role: UserTag = UserTag.REGUlAR): UserEntity? {
+        val createdUser = createDefaultUser(name, UserType.HACKER, role)
         if (createdUser == null) return null // no
 
         val user = userEntityService.findByNameIgnoreCase(name) ?: error("Failed to find user that was just created: $name")

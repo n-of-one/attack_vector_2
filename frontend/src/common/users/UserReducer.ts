@@ -9,7 +9,7 @@ export enum UserType {
     HACKER = "HACKER",
     GM = "GM",
     ADMIN = "ADMIN",
-    SKILL_TEMPLATE = "SKILL_TEMPLATE",
+    SYSTEM = "SYSTEM",
 }
 
 export interface User {
@@ -19,16 +19,22 @@ export interface User {
     hacker?: Hacker,
 }
 
-export enum HackerSkill {
+export enum HackerSkillType {
     SEARCH_SITE = "SEARCH_SITE",
     SCAN = "SCAN",
     CREATE_SITE = "CREATE_SITE",
+    // STEALTH = "STEALTH", // Await confirmation from the organisers who use the game that this is a skill they want.
+}
+
+export interface HackerSkill {
+    type: HackerSkillType,
+    value?: string,
 }
 
 export interface Hacker {
     characterName: string,
     icon: HackerIcon,
-    skills: HackerSkill[] | null,
+    skills: HackerSkill[],
 }
 
 export interface GenericUserRootState {

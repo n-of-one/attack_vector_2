@@ -4,6 +4,7 @@ import org.n1.av2.layer.Layer
 import org.n1.av2.layer.ice.password.AuthAppService
 import org.n1.av2.layer.ice.password.IcePasswordStatus
 import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.site.entity.Node
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -36,7 +37,7 @@ class IceAuthorizationService(
     fun isAuthorized(layer: IceLayer): Boolean {
         val iceId = iceService.findOrCreateIceForLayer(layer)
         val iceStatus = authAppService.findOrCreateIceStatus(iceId, layer)
-        val isHacker = currentUserService.userEntity.type.hacker
+        val isHacker = currentUserService.userEntity.type == UserType.HACKER
         if (isHacker && layer.hacked) {
             return true
         }

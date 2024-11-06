@@ -1,4 +1,4 @@
-import {HackerSkill} from "../common/users/UserReducer";
+import {HackerSkill, HackerSkillType} from "../common/users/UserReducer";
 import {AnyAction} from "redux";
 
 const SERVER_RECEIVE_HACKER_SKILLS = "SERVER_RECEIVE_HACKER_SKILLS"
@@ -11,4 +11,8 @@ export const skillsReducer = (state: HackerSkill[] | null = null, action: AnyAct
         default:
             return state
     }
+}
+
+export const hasSkill = ( hackerSkills: HackerSkill[], requested: HackerSkillType): boolean => {
+    return hackerSkills.some((hackerSKill) => hackerSKill.type === requested)
 }

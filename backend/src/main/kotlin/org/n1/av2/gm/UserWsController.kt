@@ -40,12 +40,18 @@ class UserWsController(
         userTaskRunner.runTask(userPrincipal) { userAndHackerService.edit(input.userId, input.field, input.value) }
     }
 
-    class UserEditSkill(val userId: String, val skill: HackerSkillType, val value: Boolean)
-
-    @MessageMapping("/user/editSkill")
-    fun editSkill(input: UserEditSkill, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.editSkill(input.userId, input.skill, input.value) }
+    class UserEditSkillEnabled(val userId: String, val type: HackerSkillType, val enabled: Boolean)
+    @MessageMapping("/user/editSkillEnabled")
+    fun editSkillEnabled(input: UserEditSkillEnabled, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { userAndHackerService.editSkillEnabled(input.userId, input.type, input.enabled) }
     }
+
+    class UserEditSkillValue(val userId: String, val type: HackerSkillType, val value: String)
+    @MessageMapping("/user/editSkillValue")
+    fun editSkillValue(input: UserEditSkillValue, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) { userAndHackerService.editSkillValue(input.userId, input.type, input.value) }
+    }
+
 
     @MessageMapping("/user/delete")
     fun delete(userId: String, userPrincipal: UserPrincipal) {

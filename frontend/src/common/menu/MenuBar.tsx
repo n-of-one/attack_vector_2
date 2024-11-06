@@ -5,7 +5,8 @@ import {MenuItem} from "./MenuItem"
 import {CONFIG, HACKER_HOME, ME, RUN, SITES, TASKS, USERS} from "./pageReducer"
 import {HackerRootState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
-import {HackerSkill} from "../users/UserReducer";
+import {HackerSkillType} from "../users/UserReducer";
+import {hasSkill} from "../../hacker/SkillsReducer";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -36,8 +37,8 @@ export const MenuBar = () => {
     const currentPage = useSelector((state: HackerRootState) => state.currentPage)
 
     const skills = useSelector((state: HackerRootState) => state.skills)
-    const hackersCanCreateSites = (skills) ? skills.includes(HackerSkill.CREATE_SITE) : false
 
+    const hackersCanCreateSites = (skills) ? hasSkill(skills, HackerSkillType.CREATE_SITE) : false
 
     const createSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={SITES} label="Sites"/> : <></>
 

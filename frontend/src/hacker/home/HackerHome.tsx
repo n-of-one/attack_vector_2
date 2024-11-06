@@ -6,7 +6,8 @@ import {HackerRootState} from "../HackerRootReducer";
 import {RunInfo} from "./HackerRunsReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
-import {HackerSkill} from "../../common/users/UserReducer";
+import {HackerSkillType} from "../../common/users/UserReducer";
+import {hasSkill} from "../SkillsReducer";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -79,7 +80,7 @@ const SearchSite = () => {
     const skills = useSelector((state: HackerRootState) => state.skills)
     if (skills === null) return <></> // waiting for skills to be received
 
-    const canSearchSite = skills.includes(HackerSkill.SEARCH_SITE)
+    const canSearchSite = hasSkill(skills, HackerSkillType.SEARCH_SITE)
 
     if (!canSearchSite) {
         return (

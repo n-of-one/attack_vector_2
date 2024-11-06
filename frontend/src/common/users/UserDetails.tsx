@@ -1,6 +1,6 @@
 import React from 'react'
 import {CLOSE_USER_EDIT} from "./EditUserReducer";
-import {HackerSkill, User, UserType} from "./UserReducer";
+import {User, UserType} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
 import userAuthorizations, {ROLE_GM, ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
@@ -10,6 +10,7 @@ import {webSocketConnection} from "../server/WebSocketConnection";
 import {currentUser} from "../user/CurrentUser";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
+import {UserSkills} from "./UserSkills";
 
 const save = (userId: string, field: string, value: string) => {
     const message = {userId: userId, field, value}
@@ -21,10 +22,13 @@ interface Props {
 }
 
 export const UserDetails = ({user}: Props) => {
-    const allowChangeRole: boolean = userAuthorizations.hasRole(ROLE_USER_MANAGER) && user.type !== UserType.SKILL_TEMPLATE
+
+    const isUserManager = userAuthorizations.hasRole(ROLE_USER_MANAGER)
+    const allowChangeRole = isUserManager
 
     const config = useSelector((rootState: ConfigRootState) => rootState.config)
-    const readonlyUserName = !(getConfigAsBoolean(ConfigItem.HACKER_EDIT_USER_NAME, config))
+
+    const readonlyUserName = !(getConfigAsBoolean(ConfigItem.HACKER_EDIT_USER_NAME, config)) && !isUserManager
 
     const dispatch = useDispatch()
     const closeUserEdit = () => {
@@ -32,7 +36,7 @@ export const UserDetails = ({user}: Props) => {
     }
 
     const isGm = userAuthorizations.hasRole(ROLE_GM)
-    const showHackerDetails = (user.type === UserType.HACKER || user.type === UserType.SKILL_TEMPLATE)
+    const showHackerDetails = (user.type === UserType.HACKER)
     const closeButton = isGm ? <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={closeUserEdit}/></div> : <></>
 
     return <>
@@ -55,12 +59,7 @@ export const UserDetails = ({user}: Props) => {
                                    selectedValue={user.type}
                                    save={(value: string) => save(user.id, "type", value)}
                                    readonly={!allowChangeRole}>
-                    <>
-                        <option value={UserType.HACKER}>Hacker</option>
-                        <option value={UserType.GM}>Game master</option>
-                        <option value={UserType.ADMIN}>Admin</option>
-                        <option value={UserType.SKILL_TEMPLATE}>Skill template</option>
-                    </>
+                    <RoleOptions userType={user.type}/>
                 </DropDownSaveInput>
             </div>
         </div>
@@ -68,6 +67,16 @@ export const UserDetails = ({user}: Props) => {
         {deleteUserButton(user, closeUserEdit)}
     </>
 }
+
+const RoleOptions = ({userType}: { userType: UserType }) => {
+    if (userType === UserType.SYSTEM) return <option value={UserType.SYSTEM}>System</option>
+    return <>
+        <option value={UserType.HACKER}>Hacker</option>
+        <option value={UserType.GM}>Game master</option>
+        <option value={UserType.ADMIN}>Admin</option>
+    </>
+}
+
 
 const HackerDetails = ({user}: { user: User }) => {
     const config = useSelector((rootState: ConfigRootState) => rootState.config)
@@ -107,9 +116,7 @@ const HackerDetails = ({user}: { user: User }) => {
             <div className="text">Skills</div>
             <br/>
 
-            <UserSkill user={user} skill={HackerSkill.SCAN} skillName="Scan" field="SCAN" readonly={readonlySkills}/>
-            <UserSkill user={user} skill={HackerSkill.SEARCH_SITE} skillName="Search Site" field="SEARCH_SITE" readonly={readonlySkills}/>
-            <UserSkill user={user} skill={HackerSkill.CREATE_SITE} skillName="Create Site" field="CREATE_SITE" readonly={readonlySkills}/>
+            <UserSkills user={user} readonlySkills={readonlySkills}/>
         </> : <></>}
     </>
 }
@@ -170,43 +177,3 @@ const hackerIconOptions = () => {
         })
 }
 
-interface UserSkillProps {
-    user: User,
-    skill: HackerSkill,
-    skillName: string,
-    field: string
-    readonly: boolean,
-}
-
-const UserSkill = ({user, skill, skillName, field, readonly}: UserSkillProps) => {
-
-    const checked = user.hacker?.skills?.includes(skill)
-
-    if (readonly) {
-        if (!checked) {
-            return <></>
-        }
-        return <ul>
-            <li className="text-muted">{skillName}</li>
-        </ul>
-    }
-
-    const save = (skill: string, value: boolean) => {
-        const message = {userId: user.id, skill, value}
-        webSocketConnection.send("/user/editSkill", message)
-    }
-
-    return <div className="row form-group">
-        <div className={`col-lg-1`}/>
-        <label htmlFor={skillName} className="col-lg-3 control-label text-muted">{skillName}</label>
-        <div className={`col-lg-2`}>
-            <input id={skillName} type="checkbox" checked={checked} className="checkbox-inline" onClick={(event: any) => {
-                save(field, !checked)
-                event.preventDefault()
-                return false;
-            }} disabled={readonly}/>
-        </div>
-        <br/>
-        <br/>
-    </div>
-}

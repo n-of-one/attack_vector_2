@@ -119,7 +119,7 @@ class CommandMoveService(
     private fun arriveComplete(nodeId: String, userId: String, runId: String) {
         val state = hackerStateEntityService.retrieve(userId).toRunState()
         hackerStateEntityService.arriveAt(state, nodeId)
-        triggerLayersAtArrive(state.siteId, nodeId, userId, runId)
+        triggerLayersAtArrive(state.siteId, nodeId, runId)
 
         connectionService.toRun(
             runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE,
@@ -128,11 +128,11 @@ class CommandMoveService(
         connectionService.replyTerminalSetLocked(false)
     }
 
-    private fun triggerLayersAtArrive(siteId: String, nodeId: String, userId: String, runId: String) {
+    private fun triggerLayersAtArrive(siteId: String, nodeId: String, runId: String) {
         val node = nodeEntityService.getById(nodeId)
         node.layers.forEach { layer ->
             when (layer) {
-                is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, userId, runId)
+                is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, runId)
                 else -> {} // do nothing
             }
         }

@@ -47,10 +47,8 @@ export const WebsiteSkills = () => {
                     <p className="text">
                         Default hacker skill: <strong>yes</strong><br/>
                         This skill allows the hacker to initially access a site. Without this skill, there is no search box on the home page of a hacker,
-                        and the player cannot start a new hack. Instead, they must be invited to a hack by a hacker that does have this skill.
-                    </p>
-                    <p className="text">
-                        Default hacker skill: <strong>yes</strong><br/>This is a core ability that all hackers should have.<br/><br/>
+                        and the player cannot start a new hack. Instead, they must be invited to a hack by a hacker that does have this skill.<br/><br/>
+                        This is a core ability that all hackers should have.<br/>
                         The purpose of this skill is to allow the creation of non-professional hacker characters. These characters lack skills, but
                         can still play the game. By having this skill, the professional hackers are actually needed to be able to do hacks.
                     </p>
@@ -62,7 +60,15 @@ export const WebsiteSkills = () => {
                         sites or in-game tutorials to help teach new hackers.<br/><br/>
                         When a hacker has this skill, they will see a menu item "sites" that allows them to manage their sites.
                     </p>
-                    <br/>
+
+                    {/*<h5 className="muted">Stealth</h5>*/}
+                    {/*<p className="text">*/}
+                    {/*    Default hacker skill: <strong>no</strong><br/>*/}
+                    {/*    This skill increases the time for a site to shutdown when the hacker triggers a tripwire. A stealth value of +30% means that the*/}
+                    {/*    total time to shutdown is increased by 30%. For example from 10 minutes to 13 minutes, giving the hackers more time.<br/><br/>*/}
+                    {/*    This skill can also be applied negatively, to decrease the time to shutdown. A stealth value of -30% would decrease the time from 10 minutes to 7 minutes.*/}
+                    {/*</p>*/}
+                    {/*<br/>*/}
                 </div>
             </div>
         </div>

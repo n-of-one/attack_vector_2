@@ -58,20 +58,26 @@ class UserAndHackerService(
 
     fun sendDetailsOfSpecificUser(userId: String) {
         val user = userEntityService.getById(userId)
-        val uiUser = if (user.type == UserType.HACKER) {
-            val hacker = hackerEntityService.findForUser(user)
-            UiUserDetails(user.id, user.name, user.type, hacker)
-        } else {
-            UiUserDetails(user.id, user.name, user.type, null)
-        }
+        val hacker = createHackerForSkillDisplay(user)
+
+        val uiUser = UiUserDetails(user.id, user.name, user.type, hacker)
         connectionService.reply(ServerActions.SERVER_USER_DETAILS, uiUser)
     }
 
-    fun editSkill(userId: String, type: HackerSkillType, add: Boolean) {
-        val user = userEntityService.getById(userId)
-        if (user.type != UserType.HACKER) throw ValidationException("Only hackers can have skills")
+    fun createHackerForSkillDisplay(user: UserEntity): Hacker? {
+        val hacker = if (user.type == UserType.HACKER) hackerEntityService.findForUser(user) else return null
+        val skillsWithDisplayValues = hacker.skills.map { skill ->
+            if (skill.value != null)
+                skill.copy(value = skill.type.toDisplayValue(skill.value))
+            else
+                skill
+        }
+        return hacker.copy(skills = skillsWithDisplayValues)
+    }
 
-        val hacker = hackerEntityService.findForUser(user)
+
+    fun editSkillEnabled(userId: String, type: HackerSkillType, add: Boolean) {
+        val (user, hacker) = retrieveUserAndHacker(userId)
 
         val newSkills: List<HackerSkill> = if (add) {
             hacker.skills + HackerSkill(type)
@@ -79,11 +85,42 @@ class UserAndHackerService(
             hacker.skills.filterNot { it.type == type }
         }
 
+        updateSkillsAndNotifyFrontend(hacker, newSkills, user)
+    }
+
+    fun editSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
+        val errorMessage = type.validate(valueInput)
+        if (errorMessage != null) {
+            sendDetailsOfSpecificUser(userId)
+            throw ValidationException(errorMessage)
+        }
+        val value = type.toFunctionalValue(valueInput)
+        val (user, hacker) = retrieveUserAndHacker(userId)
+        val skill = hacker.skills.find { it.type == type } ?: error("Skill not found: $type")
+        val updatedSkill = skill.copy(value = value)
+        val newSkills = hacker.skills.map { if (it.type == type) updatedSkill else it }
+
+        updateSkillsAndNotifyFrontend(hacker, newSkills, user)
+    }
+
+    private fun retrieveUserAndHacker(userId: String): Pair<UserEntity, Hacker> {
+        val user = userEntityService.getById(userId)
+        if (user.type != UserType.HACKER) throw ValidationException("Only hackers can have skills")
+        val hacker = hackerEntityService.findForUser(user)
+        return Pair(user, hacker)
+    }
+
+    private fun updateSkillsAndNotifyFrontend(
+        hacker: Hacker,
+        newSkills: List<HackerSkill>,
+        user: UserEntity
+    ) {
         val updatedHacker = hacker.copy(skills = newSkills)
         hackerEntityService.save(updatedHacker)
 
         sendDetailsOfSpecificUser(user.id)
     }
+
 
     fun edit(userId: String, field: String, value: String) {
         val user = userEntityService.getById(userId)
@@ -100,6 +137,11 @@ class UserAndHackerService(
     }
 
     private fun editUserAttribute(user: UserEntity, field: String, value: String) {
+        if (!user.tag.changeable) {
+            sendDetailsOfSpecificUser(user.id) // restore correct value in UI
+            throw ValidationException("Cannot change ${user.name} because it is ${user.tag.description}.")
+        }
+
         val editedUser: UserEntity = when (field) {
             "name" -> changeName(user, value)
             "type" -> changeType(user, value)
@@ -133,6 +175,7 @@ class UserAndHackerService(
 
     private fun changeName(userEntity: UserEntity, newName: String): UserEntity {
         if (userEntity.name == newName) return userEntity
+
         if (userEntityService.findByNameIgnoreCase(newName) != null) {
             connectionService.reply(ServerActions.SERVER_USER_DETAILS, userEntity) // Restore olds values in frontend
             throw ValidationException("User with name $newName already exists.")
@@ -149,17 +192,15 @@ class UserAndHackerService(
         return user.copy(type = newType)
     }
 
-
-    val undeletableUserTypes = setOf(UserType.SYSTEM, UserType.ADMIN, UserType.SKILL_TEMPLATE)
     fun delete(userId: String) {
         if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
-        val userEntity = userEntityService.getById(userId)
-        if (undeletableUserTypes.contains(userEntity.type)) throw ValidationException("Cannot delete user of type: ${userEntity.type}.")
+        val user = userEntityService.getById(userId)
+        if (!user.tag.changeable) throw ValidationException("Cannot delete ${user.name} because it is ${user.tag.description}.")
 
         runLinkEntityService.deleteAllForUser(userId)
         userEntityService.delete(userId)
         overview()
-        connectionService.replyNeutral("User deleted")
+        connectionService.replyNeutral("${user.name} deleted")
     }
 
     fun getOrCreateHackerUser(externalId: String): UserEntity {

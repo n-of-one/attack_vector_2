@@ -12,22 +12,60 @@ data class Hacker(
     val icon: HackerIcon,
     val characterName: String,
     val skills: List<HackerSkill>
-)
-{
+) {
     fun hasSKill(requestType: HackerSkillType): Boolean {
-        return skills.filter { it.type == requestType }.any()
+        return skills.any { it.type == requestType }
+    }
+
+    fun skillAsIntOrNull(requestType: HackerSkillType): Int? {
+        val skill = skills.find { it.type == requestType }
+        val value = skill?.value?.toIntOrNull()
+        return value
     }
 
 }
 
-class HackerSkill(
+data class HackerSkill(
     val type: HackerSkillType,
-)
+    val value: String?
+) {
+    constructor(type: HackerSkillType) : this(type, type.defaultValue)
+}
 
-enum class HackerSkillType {
-    CREATE_SITE,
-    SCAN,
-    SEARCH_SITE,
+val noOpValidation = { _: String -> null }
+val noOpNormalization = { toNormalize: String -> toNormalize }
+//
+//val stealthValidation = { toValidate: String ->
+//    val value = stealthToFunctional(toValidate)
+//    val percentage = value.toIntOrNull()
+//    when (percentage) {
+//        null -> "Stealth skill requires a percentage value"
+//        0 -> "Stealth skill of 0% has no effect, this means the time-out is increased by 0%, meaning it stays the same."
+//        !in -100..1000 -> "Stealth value must be between -100 and 1000 (%)."
+//        else -> null
+//    }
+//}
+//val stealthToDisplay = { toNormalize: String ->
+//    val percentage = toNormalize.toInt()
+//    val prefix = if (percentage >= 0) "+" else ""
+//
+//    "${prefix}${percentage}%"
+//}
+//
+//val stealthToFunctional = { input: String ->
+//    input.removeSuffix("%").removePrefix("+")
+//}
+
+enum class HackerSkillType(
+    val defaultValue: String? = null,
+    val validate: (String) -> String? = noOpValidation,
+    val toFunctionalValue: (String) -> String = noOpNormalization,
+    val toDisplayValue: (String) -> String = noOpNormalization
+) {
+    CREATE_SITE(),
+    SCAN(),
+    SEARCH_SITE(),
+//    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay, ) // Await confirmation from the organisers who use AV that this is a skill they want
 }
 
 
