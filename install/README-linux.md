@@ -6,6 +6,9 @@ These instructions assume you have a fresh Ubuntu server available and are logge
 Log into the server (not as root) and do the following:
 
 ```bash
+# Optionally set the time zone if needed
+sudo timedatectl set-timezone Europe/Amsterdam
+
 git clone https://github.com/n-of-one/attack_vector_2.git
 
 cd attack_vector_2

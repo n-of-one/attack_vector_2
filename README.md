@@ -23,7 +23,7 @@ Besides general improvements and a visual makeover, version 2 has the following 
 ## Using Attack Vector 2 at your LARP event
 
 The goal is to make it as easy as possible to run AV at your larp event. There are scripts to install and upgrade the software on a fresh Ubuntu server,
-such as an AWS EC2 instance. It runs on a t4g.micro with a total operating cose (at the time of writing) of less than 15 euro per month.
+such as an AWS EC2 instance. It runs on a t4g.micro with a total operating cost (at the time of writing) of less than 15 euro per month.
 
 It's open source software with the MIT license which means you can use it for commercial purposes.
 
