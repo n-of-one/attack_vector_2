@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Updates
 import org.bson.Document
+import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.larp.frontier.LOLA_USER_NAME
 import org.n1.av2.platform.db.MigrationStep
 import org.n1.av2.platform.iam.user.UserTag
@@ -56,12 +57,17 @@ class V5_HackerSkills() : MigrationStep {
                 val characterName = hackerInfo.getString("characterName")
                 val icon = hackerInfo.getString("icon")
 
+                val defaultSkills = listOf(
+                    Document("type", HackerSkillType.SCAN.name),
+                    Document("type", HackerSkillType.SEARCH_SITE.name),
+                )
+
                 val hackerId = userId.replaceBefore("-", "hacker")
                 Document("_id", hackerId)
                     .append("hackerUserId", userId)
                     .append("icon", icon)
                     .append("characterName", characterName)
-                    .append("skills", listOf<String>())
+                    .append("skills", defaultSkills)
             }
         }.filterNotNull().toList()
     }
