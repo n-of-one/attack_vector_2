@@ -10,7 +10,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.n1.av2.platform.config.ServerConfig
+import org.n1.av2.platform.config.StaticConfig
 import java.time.ZonedDateTime
 
 @ExtendWith(MockKExtension::class)
@@ -20,13 +20,13 @@ class DbSchemaVersioningTest {
     lateinit var dbSchemaVersionRepository: DbSchemaVersionRepository
 
     @MockK
-    lateinit var config: ServerConfig
-
-    @MockK
     lateinit var mongoClient: MongoClient
 
     @MockK
     lateinit var migrationSteps: List<MigrationStep>
+
+    @MockK
+    lateinit var staticConfig: StaticConfig
 
 
     @InjectMockKs
@@ -61,7 +61,7 @@ class DbSchemaVersioningTest {
 
         every { dbSchemaVersionRepository.findAll() } returns listOf(DbSchemaVersion(1, "v1 description", ZonedDateTime.now()))
         every { migrationSteps.iterator() } returns listOf(v1Step, v2Step, v3Step).iterator()
-        every { config.mongoDbName } returns "db-name"
+        every { staticConfig.mongoDbName } returns "db-name"
         every { mongoClient.getDatabase("db-name") } returns mockk()
 
         val savedRecords = mutableListOf<DbSchemaVersion>()

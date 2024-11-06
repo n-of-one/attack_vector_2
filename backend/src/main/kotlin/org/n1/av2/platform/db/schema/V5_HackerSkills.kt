@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component
 @Component
 class V5_HackerSkills() : MigrationStep {
 
-    private val logger = mu.KotlinLogging.logger {}
+    override val version = 5
 
-    override
-    fun version() = 5
+    private val logger = mu.KotlinLogging.logger {}
 
     override
     fun migrate(db: MongoDatabase): String {
@@ -30,12 +29,13 @@ class V5_HackerSkills() : MigrationStep {
         val hackerUserEntities = findHackerUserEntities(db)
         val hackerDocuments = createHackerDocuments(hackerUserEntities)
 
+
         if (hackerDocuments.isNotEmpty()) {
             val hackers = db.getCollection("hacker")
             hackers.insertMany(hackerDocuments)
         }
 
-        logger.info("Created  ${hackerDocuments.size} hacker entities")
+        logger.info("Created ${hackerDocuments.size} hacker entities")
     }
 
     private fun findHackerUserEntities(db: MongoDatabase): FindIterable<Document> {
@@ -50,7 +50,7 @@ class V5_HackerSkills() : MigrationStep {
             val userId = document.getString("_id")
             val hackerInfo = document.get("hacker") as Document?
 
-            if (hackerInfo == null) { // this is the case when there was no DB to upgrade from.
+            if (hackerInfo == null) { // in case the database was created after V5. In that case no migration is needed.
                 null
             } else {
                 val characterName = hackerInfo.getString("characterName")
@@ -71,7 +71,7 @@ class V5_HackerSkills() : MigrationStep {
         val matchTypeHacker = Document().append("type", "HACKER")
         val update = Updates.unset("hacker")
 
-        var updatedCount =  userEntitiesCollection.updateMany(matchTypeHacker, update).matchedCount
+        var updatedCount = userEntitiesCollection.updateMany(matchTypeHacker, update).matchedCount
 
         logger.info("Removed hacker part from ${updatedCount} user entities")
     }
@@ -92,7 +92,10 @@ class V5_HackerSkills() : MigrationStep {
                 else -> UserTag.REGUlAR
             }
 
-            userCount += userEntities.updateOne(Document("_id", userId), Document("\$set", Document("tag", tag))).matchedCount
+            userCount += userEntities.updateOne(
+                Document("_id", userId),
+                Document("\$set", Document("tag", tag))
+            ).matchedCount
         }
 
         logger.info("Added tags to ${userCount} user entities")

@@ -63,7 +63,7 @@ class TripwireLayerService(
 
         connectionService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(timer, layer))
         connectionService.replyTerminalReceive("[pri]${layer.level}[/] Tripwire triggered [warn]site reset[/] in ${toDurationString(countdown)}[/].")
-        if (stealthAdjustmentDuration != null) {
+        if (!stealthAdjustmentDuration.isZero) {
             val message = if (stealthAdjustmentDuration.isPositive)
                 "Stealth skill increased the duration by ${toDurationString(stealthAdjustmentDuration)}."
             else
@@ -77,12 +77,12 @@ class TripwireLayerService(
         systemTaskRunner.queueInSeconds("tripwire effect", identifiers, countdown.seconds) { timerActivates(siteId, timer.id, layer) }
     }
 
-    fun determineTripwireCountdownDuration(layer: TripwireLayer): Pair<Duration, Duration?> {
+    fun determineTripwireCountdownDuration(layer: TripwireLayer): Pair<Duration, Duration> {
         val tripwireDuration = layer.countdown.toDuration("tripwire ${layer.id}")
 //        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
 //        val stealthSkill = hacker.skillAsIntOrNull(HackerSkillType.STEALTH) ?: 0
 //        if (stealthSkill == 0) {
-        return Pair(tripwireDuration, null)
+        return Pair(tripwireDuration, Duration.ZERO)
 //        }
 //        val stealthFactor = (stealthSkill.toDouble() / 100.0)
 //        val tripwireMillis = tripwireDuration.toMillis()
