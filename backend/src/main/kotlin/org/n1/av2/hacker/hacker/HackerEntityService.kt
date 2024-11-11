@@ -3,28 +3,28 @@ package org.n1.av2.hacker.hacker
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserType
-import org.n1.av2.platform.util.createId
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
-import java.util.Optional
+
+class HackerCreatedEvent(val hacker: Hacker, val user: UserEntity)
 
 @Service
 class HackerEntityService(
     private val hackerRepo: HackerRepo,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-    // FIXME: change hackerUserId to user object
-    fun createHacker(hackerUserId: String, icon: HackerIcon, characterName: String, skills: List<HackerSkill>) {
-        val hacker = Hacker(createHackerId(), hackerUserId, icon, characterName, skills)
+    fun createHacker(user: UserEntity, icon: HackerIcon, characterName: String, skills: List<HackerSkill>) {
+        val hackerId = deriveFromUserId(user)
+        val hacker = Hacker(hackerId, user.id, icon, characterName, skills)
         hackerRepo.save(hacker)
 
+        val event = HackerCreatedEvent(hacker, user)
+        applicationEventPublisher.publishEvent(event)
     }
 
-    private fun createHackerId(): String {
-        fun findExisting(candidate: String): Optional<Hacker> {
-            return hackerRepo.findById(candidate)
-        }
-
-        return createId("hacker", ::findExisting)
+    private fun deriveFromUserId(user: UserEntity): String {
+        return user.id.replace("user", "hacker")
     }
 
     fun findForUser(user: UserEntity): Hacker {

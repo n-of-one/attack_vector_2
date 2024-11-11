@@ -1,6 +1,9 @@
 package org.n1.av2.run.terminal
 
-import org.n1.av2.larp.LarpService
+import org.n1.av2.larp.frontier.LOLA_USER_NAME
+import org.n1.av2.larp.frontier.LolaService
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.run.runlink.RunLinkService
@@ -11,8 +14,9 @@ class SocialTerminalService(
     private val connectionService: ConnectionService,
     private val userEntityService: UserEntityService,
     private val runLinkService: RunLinkService,
-    private val larpService: LarpService,
-        ) {
+    private val configService: ConfigService,
+    private val lolaService: LolaService,
+) {
 
     fun processShare(runId: String, tokens: List<String>) {
         if (tokens.size == 1) {
@@ -22,7 +26,7 @@ class SocialTerminalService(
 
         val userNames = tokens.drop(1).map { it.replace(",", "") }
 
-        userNames.forEach {userName ->
+        userNames.forEach { userName ->
             shareWithUser(userName, runId)
         }
 
@@ -32,12 +36,15 @@ class SocialTerminalService(
         val user = userEntityService.findByNameIgnoreCase(userName)
         if (user == null) {
             connectionService.replyTerminalReceive("[warn]not found[/] - user [info]${userName}[/] not found.")
+            return
+        }
+
+        if (user.name.uppercase() == LOLA_USER_NAME && configService.getAsBoolean(ConfigItem.LARP_SPECIFIC_FRONTIER_LOLA_ENABLED)) {
+            lolaService.share(user, runId)
         } else {
-            if (larpService.processShare(runId, user)) {
-                return
-            }
             runLinkService.shareRun(runId, user, true)
         }
+
     }
 
 }

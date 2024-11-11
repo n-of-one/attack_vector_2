@@ -4,7 +4,6 @@ import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hacker.HackerSkill
 import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
 import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
-import org.n1.av2.larp.LarpService
 import org.n1.av2.platform.db.DbSchemaVersioning
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
@@ -14,14 +13,11 @@ import org.springframework.stereotype.Service
 class DefaultUserService(
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
-    private val larpService: LarpService,
 ) {
     /** Important to be after the ContextRefreshedEvent to give [DbSchemaVersioning] a chance to run first */
     @EventListener(ApplicationStartedEvent::class)
     fun onApplicationEvent() {
         createMandatoryUsers()
-
-        larpService.createMandatoryUsers()
     }
 
     val defaultSkills = listOf(HackerSkill(SEARCH_SITE), HackerSkill(SCAN))
@@ -32,11 +28,6 @@ class DefaultUserService(
         createDefaultUser("gm", UserType.GM, UserTag.MANDATORY)
 
         createSkillTemplate()
-
-        createDefaultHacker("hacker", HackerIcon.CROCODILE)
-        createDefaultHacker("Stalker",HackerIcon.BEAR)
-        createDefaultHacker("Paradox",HackerIcon.BULL)
-        createDefaultHacker("Angler", HackerIcon.SHARK)
     }
 
     fun createSkillTemplate() {
@@ -52,11 +43,11 @@ class DefaultUserService(
 
     fun createDefaultHacker(name: String, icon: HackerIcon, role: UserTag = UserTag.REGUlAR): UserEntity? {
         val createdUser = createDefaultUser(name, UserType.HACKER, role)
-        if (createdUser == null) return null // no
+        if (createdUser == null) return null // no user created, hacker already exists
 
         val user = userEntityService.findByNameIgnoreCase(name) ?: error("Failed to find user that was just created: $name")
 
-        hackerEntityService.createHacker(user.id, icon, name, defaultSkills)
+        hackerEntityService.createHacker(user, icon, name, defaultSkills)
         return user
     }
 

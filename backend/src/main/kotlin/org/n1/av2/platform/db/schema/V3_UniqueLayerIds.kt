@@ -21,7 +21,7 @@ class V3_UniqueLayerIds : MigrationStep {
     override
     fun migrate(db: MongoDatabase): String {
         UniqueConstraintAdder(db, "icePasswordStatus", "layerId").addUniqueConstraint()
-        return "Added unique index to layerId in iceStatus collections"
+        return "Added unique index to layerId in iceStatus collections."
     }
 }
 

@@ -25,7 +25,7 @@ export const ConfigItemLoginPassword = (props: { value: string }) => {
         <>
             <ConfigItemText name="Login: password" value={props.value} item={ConfigItem.LOGIN_PASSWORD}/>
             <small className="form-text text-muted">The single password used for GMs and Admins.<br/><br/>
-                Default: (empty)<br/><br/>
+                Default: (empty)<br/>
                 General advice: set this to a strong password that is not used anywhere else.<br/><br/>
                 Attack Vector uses a single password in order to discourage using personal passwords on this site.
                 This password can be used for Admin or GM to log in, if they don't have a personal account. </small><br/><br/>

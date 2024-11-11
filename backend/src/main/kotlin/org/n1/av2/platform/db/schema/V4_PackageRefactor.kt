@@ -56,7 +56,7 @@ class V4_PackageRefactor : MigrationStep {
             updateCollection(collectionName, db)
         }
 
-        return "Updated class to correspond to the new package structure"
+        return "Updated classes to correspond to the new package structure."
     }
 
     private fun updateCollection(collectionName: String, db: MongoDatabase) {

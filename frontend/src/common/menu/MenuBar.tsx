@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {CONFIG, HACKER_HOME, ME, RUN, SITES, TASKS, USERS} from "./pageReducer"
 import {HackerRootState} from "../../hacker/HackerRootReducer"
-import {ROLE_ADMIN, ROLE_HACKER, ROLE_HACKER_MANAGER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import {ROLE_ADMIN, ROLE_HACKER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {HackerSkillType} from "../users/UserReducer";
 import {hasSkill} from "../../hacker/SkillsReducer";
 
@@ -60,7 +60,6 @@ export const MenuBar = () => {
                                 {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={SITES} label="Sites"/>
                                 <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={USERS} label="Users"/>
-                                <MenuItem requriesRole={ROLE_HACKER_MANAGER} targetPage={USERS} label="Users"/>
                                 <MenuItem requriesRole={ROLE_ADMIN} targetPage={CONFIG} label="Config"/>
                                 <MenuItem requriesRole={ROLE_ADMIN} targetPage={TASKS} label="Tasks"/>
                             </ul>

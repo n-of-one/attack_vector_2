@@ -5,17 +5,24 @@ import {ConfigItem} from "../ConfigReducer";
 export const ConfigItemLarpName = (props: { value: string }) => {
     return (
         <>
-            <ConfigItemText name="LARP: name" value={props.value} item={ConfigItem.LARP_NAME}/>
+            <ConfigItemText name="Generic: Larp name" value={props.value} item={ConfigItem.LARP_NAME}/>
             <small className="form-text text-muted">The name of the larp<br/><br/>
-                Default: unknown<br/><br/>
-                General advice: enter your larp name<br/>
-                This is used in two areas:<br/>
-                <ul><br/>
-                    <li>The file name of exports of the sites. Having a distinct name might be useful if you manage multiple larps.<br/><br/></li>
-                    <li>Some LARP specific features are triggered by the larp name. This is currently only triggered for "frontier", so don't use that name
-                        unless you are running this larp.
-                    </li>
-                </ul>
+                Default: unknown<br/>
+                General advice: enter your larp name<br/><br/>
+                This is used in the file name of exports of sites.<br/>
+            </small>
+        </>
+    )
+}
+
+export const ConfigItemLarpFrontierLolaEnabled = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Frontier: LOLA enabled" value={props.value} item={ConfigItem.LARP_SPECIFIC_FRONTIER_LOLA_ENABLED}/>
+            <small className="form-text text-muted">LOLA enabled<br/><br/>
+                Default: false<br/>
+                General advice: leave false<br/><br/>
+                LOLA is an external system used at Frontier Larp. It connects to AttackVector as a hacker.<br/><br/>
             </small>
         </>
     )
@@ -24,9 +31,9 @@ export const ConfigItemLarpName = (props: { value: string }) => {
 export const ConfigItemLarpFrontierOrthankToken = (props: { value: string }) => {
     return (
         <>
-            <ConfigItemText name="Frontier: Orthank token" value={props.value} item={ConfigItem.FRONTIER_ORTHANK_TOKEN}/>
-            <small className="form-text text-muted">Frontier specific configuration<br/><br/>
-                Default: (empty)<br/><br/>
+            <ConfigItemText name="Frontier: Orthank token" value={props.value} item={ConfigItem.LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN}/>
+            <small className="form-text text-muted">Orthank token<br/><br/>
+                Default: (empty)<br/>
                 General advice: leave empty<br/><br/>
                 Orthank is a system used at Frontier Larp. It stores character information. If you are not running Frontier, you can ignore this
                 field.<br/><br/>

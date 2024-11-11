@@ -7,7 +7,6 @@ import org.n1.av2.platform.connection.ConnectionType
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.authentication.JwtTokenProvider
 import org.n1.av2.platform.iam.user.*
-import org.n1.av2.site.tutorial.TutorialService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
@@ -19,7 +18,6 @@ class LoginService(
     private val configService: ConfigService,
     private val jwtTokenProvider: JwtTokenProvider,
     private val googleOauthService: GoogleOauthService,
-    private val tutorialService: TutorialService,
     private val currentUserService: CurrentUserService,
 ) {
 
@@ -35,7 +33,6 @@ class LoginService(
         if (password == "" && configService.get(ConfigItem.LOGIN_PATH) == "/devLogin") return
         if (configService.get(ConfigItem.LOGIN_PASSWORD) != password) error("Wrong password")
     }
-
 
     fun logout(): List<Cookie> {
         val cookies = mutableListOf<Cookie>()
@@ -55,8 +52,6 @@ class LoginService(
         val authentication = UserPrincipal("", "google-login", user, ConnectionType.STATELESS)
         SecurityContextHolder.getContext().authentication = authentication
         currentUserService.set(user)
-
-        tutorialService.createIfNotExistsFor(user)
 
         return getCookies(user)
     }

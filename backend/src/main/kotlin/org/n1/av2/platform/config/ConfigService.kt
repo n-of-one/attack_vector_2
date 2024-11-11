@@ -2,6 +2,7 @@ package org.n1.av2.platform.config
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.inputvalidation.ValidationException
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
@@ -66,42 +67,18 @@ class ConfigService(
     }
 
     private fun replySpecificConfigValue(item: ConfigItem, value: String) {
-        when (item) {
-            ConfigItem.LOGIN_PATH ->
-                if (value != "/login" && value != "/devLogin") {
-                    connectionService.replyError("Non standard login path. Do not close this window. Use an incognito browser window to check that login works correctly.")
-                }
-            ConfigItem.LOGIN_PASSWORD ->
-                connectionService.replyError("Please check that you can login using the new password. Do not close this window, but open an incognito browser window to do this.")
-            else -> return
-        }
+        val messageFunction = item.message ?: return // no message function
+        val message = messageFunction(value) ?: return // no message
+
+        connectionService.replyError(message)
     }
 
     private fun checkValue(item: ConfigItem, value: String) {
-        when (item) {
-            ConfigItem.HACKER_SHOW_SKILLS,
-                ConfigItem.HACKER_EDIT_USER_NAME,
-                ConfigItem.HACKER_EDIT_CHARACTER_NAME,
-                ConfigItem.HACKER_DELETE_RUN_LINKS,
-                ConfigItem.DEV_HACKER_RESET_SITE,
-                ConfigItem.DEV_QUICK_PLAYING,
-                ConfigItem.DEV_HACKER_USE_DEV_COMMANDS -> {
-                if (!"true".equals(value, ignoreCase = true) && !"false".equals(value, ignoreCase = true)) {
-                    error("Value must be 'true' or 'false'")
-                }
-            }
-            ConfigItem.DEV_SIMULATE_NON_LOCALHOST_DELAY_MS -> {
-                try {
-                    value.toLong()
-                    return
-                } catch (_: Exception) {
-                    error("Value must be a number.")
-                }
-            }
-            else -> {
-                return
-            }
-        }
+        val validationFunction = item.validate ?: return // no validation function
+        val errorMessage = validationFunction(value, cache) ?: return // no error
+
+        replyConfigValues()
+        throw ValidationException(errorMessage)
     }
 
     fun getAsBoolean(devHackerAdminCommands: ConfigItem): Boolean {

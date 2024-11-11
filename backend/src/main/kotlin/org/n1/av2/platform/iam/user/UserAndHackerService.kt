@@ -44,7 +44,7 @@ class UserAndHackerService(
 
     fun createFromUserManagementScreen(name: String, externalId: String? = null) {
         val user = userEntityService.createUser(name, UserType.HACKER, externalId)
-        hackerEntityService.createHacker(user.id, HackerIcon.KOALA, "anonymous", defaultSkills())
+        hackerEntityService.createHacker(user, HackerIcon.KOALA, "anonymous", defaultSkills())
         overview()
         sendDetailsOfSpecificUser(user.id)
     }
@@ -89,11 +89,8 @@ class UserAndHackerService(
     }
 
     fun editSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
-        val errorMessage = type.validate(valueInput)
-        if (errorMessage != null) {
-            sendDetailsOfSpecificUser(userId)
-            throw ValidationException(errorMessage)
-        }
+        validateSKillValue(userId, type, valueInput)
+
         val value = type.toFunctionalValue(valueInput)
         val (user, hacker) = retrieveUserAndHacker(userId)
         val skill = hacker.skills.find { it.type == type } ?: error("Skill not found: $type")
@@ -101,6 +98,13 @@ class UserAndHackerService(
         val newSkills = hacker.skills.map { if (it.type == type) updatedSkill else it }
 
         updateSkillsAndNotifyFrontend(hacker, newSkills, user)
+    }
+    private fun validateSKillValue(userId: String, type: HackerSkillType, valueInput: String) {
+        val validationFunction = type.validate ?: return // no validation function
+        val errorMessage = validationFunction(valueInput) ?: return // no error
+
+        sendDetailsOfSpecificUser(userId)
+        throw ValidationException(errorMessage)
     }
 
     private fun retrieveUserAndHacker(userId: String): Pair<UserEntity, Hacker> {
@@ -187,7 +191,7 @@ class UserAndHackerService(
         val newType = UserType.valueOf(newTypeName)
 
         if (newType == UserType.HACKER) {
-            hackerEntityService.findForUserOrNull(user) ?: hackerEntityService.createHacker(user.id, HackerIcon.BEAR, "unknown", defaultSkills())
+            hackerEntityService.findForUserOrNull(user) ?: hackerEntityService.createHacker(user, HackerIcon.BEAR, "unknown", defaultSkills())
         }
         return user.copy(type = newType)
     }
@@ -212,7 +216,7 @@ class UserAndHackerService(
         val name = userEntityService.findFreeUserName("user")
         val user = userEntityService.createUser(name, UserType.HACKER, externalId)
         hackerEntityService.createHacker(
-            user.id,
+            user,
             HackerIcon.FROG,
             "not set",
             defaultSkills()

@@ -15,6 +15,7 @@ import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.site.entity.*
 import org.springframework.stereotype.Service
 
@@ -28,10 +29,10 @@ class SiteCloneService(
     private val currentUserService: CurrentUserService,
 ) {
 
-    fun cloneSite(sourceSideProperties: SiteProperties, targetSiteName: String): String {
+    fun cloneSite(sourceSideProperties: SiteProperties, targetSiteName: String, owner: UserEntity): String {
         val sourceSiteId = sourceSideProperties.siteId
 
-        val siteId = cloneSiteProperties(targetSiteName)
+        val siteId = cloneSiteProperties(targetSiteName, owner)
 
         val sourceNodes = nodeEntityService.getAll(sourceSiteId)
         val nodesBySourceId = cloneNodes(sourceNodes, siteId)
@@ -48,7 +49,7 @@ class SiteCloneService(
         return siteValidationService.validate(siteId)
     }
 
-    private fun cloneSiteProperties(targetSiteName: String): String {
+    private fun cloneSiteProperties(targetSiteName: String, owner: UserEntity): String {
         val siteId = sitePropertiesEntityService.createId()
         val siteProperties = SiteProperties(
             siteId = siteId,
@@ -56,7 +57,7 @@ class SiteCloneService(
             description = "Tutorial",
             purpose = "tutorial",
             startNodeNetworkId = "00",
-            ownerUserId = currentUserService.userEntity.id,
+            ownerUserId = owner.id,
             hackable = true,
         )
         sitePropertiesEntityService.save(siteProperties)

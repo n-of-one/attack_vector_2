@@ -6,13 +6,13 @@ import {
     ConfigItemHackerDeleteRunLinks,
     ConfigItemHackerEditCharacterName,
     ConfigItemHackerEditUserName,
-    ConfigItemHackerShowSKills
+    ConfigItemHackerShowSKills, ConfigItemHackerTutorialSiteName
 } from "./items/ConfigItemsHacker";
 import {ConfigEntry, ConfigItem, ConfigItemCategories, ConfigItemNames, SELECT_CONFIG} from "./ConfigReducer";
 import {SilentLink} from "../../common/component/SilentLink";
 import {ConfigItemLoginGoogleClientId, ConfigItemLoginPassword, ConfigItemLoginPath} from "./items/ConfigItemsLogin";
 import {ConfigItemDevSimulateNonLocalHost, ConfigItemHackerResetSite, ConfigItemHackerUseDevCommands, ConfigItemQuickPlaying} from "./items/ConfigItemsDev";
-import {ConfigItemLarpFrontierOrthankToken, ConfigItemLarpName} from "./items/ConfigItemsLarp";
+import {ConfigItemLarpFrontierLolaEnabled, ConfigItemLarpFrontierOrthankToken, ConfigItemLarpName} from "./items/ConfigItemsLarp";
 
 
 export const ConfigHome = () => {
@@ -60,7 +60,7 @@ export const ConfigHome = () => {
                                 const name = ConfigItemNames[configEntry.item]
                                 return (
                                     <tr key={configEntry.item}>
-                                        <td className="table-very-condensed">{category}</td>
+                                        <td className="table-very-condensed">{category.substring(3)}</td>
                                         <td><SilentLink onClick={() => selectItem(configEntry)}><>{name}</>
                                         </SilentLink></td>
                                         <td className={highlightSelected(configEntry.item, configState.currentItem)}>{configEntry.value}</td>
@@ -86,6 +86,10 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
     }
 
     switch (props.item) {
+        case ConfigItem.LARP_NAME:
+            return <ConfigItemLarpName value={props.value}/>
+
+
         case ConfigItem.HACKER_SHOW_SKILLS:
             return <ConfigItemHackerShowSKills value={props.value}/>
         case ConfigItem.HACKER_EDIT_USER_NAME:
@@ -94,6 +98,8 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemHackerEditCharacterName value={props.value}/>
         case ConfigItem.HACKER_DELETE_RUN_LINKS:
             return <ConfigItemHackerDeleteRunLinks value={props.value}/>
+        case ConfigItem.HACKER_TUTORIAL_SITE_NAME:
+            return <ConfigItemHackerTutorialSiteName value={props.value}/>
 
         case ConfigItem.LOGIN_PATH:
             return <ConfigItemLoginPath value={props.value}/>
@@ -111,10 +117,11 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
         case ConfigItem.DEV_HACKER_USE_DEV_COMMANDS:
             return <ConfigItemHackerUseDevCommands value={props.value}/>
 
-        case ConfigItem.LARP_NAME:
-            return <ConfigItemLarpName value={props.value}/>
-        case ConfigItem.FRONTIER_ORTHANK_TOKEN:
+        case ConfigItem.LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN:
             return <ConfigItemLarpFrontierOrthankToken value={props.value}/>
+        case ConfigItem.LARP_SPECIFIC_FRONTIER_LOLA_ENABLED:
+            return <ConfigItemLarpFrontierLolaEnabled value={props.value}/>
+
         default:
             return <h3 className="text-danger">Unknown config item: {props.item}</h3>
     }
@@ -141,4 +148,3 @@ export const ConfigItemText = (props: { name: string, value: string, item: strin
         </>
     )
 }
-

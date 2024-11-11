@@ -3,7 +3,7 @@ import {CLOSE_USER_EDIT} from "./EditUserReducer";
 import {User, UserType} from "./UserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
-import userAuthorizations, {ROLE_GM, ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import userAuthorizations, {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {CloseButton} from "../component/CloseButton";
 import {useDispatch, useSelector} from "react-redux";
 import {webSocketConnection} from "../server/WebSocketConnection";
@@ -35,9 +35,8 @@ export const UserDetails = ({user}: Props) => {
         dispatch({type: CLOSE_USER_EDIT})
     }
 
-    const isGm = userAuthorizations.hasRole(ROLE_GM)
     const showHackerDetails = (user.type === UserType.HACKER)
-    const closeButton = isGm ? <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={closeUserEdit}/></div> : <></>
+    const closeButton = isUserManager ? <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={closeUserEdit}/></div> : <></>
 
     return <>
         {closeButton}
@@ -83,7 +82,7 @@ const HackerDetails = ({user}: { user: User }) => {
     const hackerShowSkills = getConfigAsBoolean(ConfigItem.HACKER_SHOW_SKILLS, config)
     const hackerEditCharacterName = getConfigAsBoolean(ConfigItem.HACKER_EDIT_CHARACTER_NAME, config)
 
-    const authorizationToEditSkills = userAuthorizations.hasRole(ROLE_USER_MANAGER) || userAuthorizations.hasRole(ROLE_HACKER_MANAGER)
+    const authorizationToEditSkills = userAuthorizations.hasRole(ROLE_USER_MANAGER)
     const readonlySkills = !(authorizationToEditSkills)
     const showSkills = (hackerShowSkills || authorizationToEditSkills)
 

@@ -18,6 +18,6 @@ class V1_Initial: MigrationStep {
 
     override
     fun migrate(db: MongoDatabase): String {
-        return "No operation. Schema will be created by adding objects through the program"
+        return "No operation. Schema will be created by adding objects through the program."
     }
 }

@@ -32,7 +32,6 @@ data class HackerSkill(
     constructor(type: HackerSkillType) : this(type, type.defaultValue)
 }
 
-val noOpValidation = { _: String -> null }
 val noOpNormalization = { toNormalize: String -> toNormalize }
 //
 //val stealthValidation = { toValidate: String ->
@@ -58,7 +57,7 @@ val noOpNormalization = { toNormalize: String -> toNormalize }
 
 enum class HackerSkillType(
     val defaultValue: String? = null,
-    val validate: (String) -> String? = noOpValidation,
+    val validate: ((String) -> String?)? = null,
     val toFunctionalValue: (String) -> String = noOpNormalization,
     val toDisplayValue: (String) -> String = noOpNormalization
 ) {

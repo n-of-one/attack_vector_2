@@ -59,7 +59,7 @@ class OrthankService(
     }
 
     private fun orthankToken(): String {
-        return configService.get(ConfigItem.FRONTIER_ORTHANK_TOKEN)
+        return configService.get(ConfigItem.LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN)
     }
     private fun getCharacterInfo(accountId: String): CharacterInfo {
         val headers = mapOf("accountID" to accountId, "token" to orthankToken())

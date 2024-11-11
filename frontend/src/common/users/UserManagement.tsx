@@ -6,13 +6,13 @@ import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {UserDetails} from "./UserDetails";
 import {RequiresRole} from "../user/RequiresRole";
-import {ROLE_HACKER_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
+import {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {TextInput} from "../component/TextInput";
 import {User} from "./UserReducer";
 
 
 export const UserManagement = () => {
-    return <RequiresRole anyOf={[ROLE_USER_MANAGER, ROLE_HACKER_MANAGER]}>
+    return <RequiresRole anyOf={[ROLE_USER_MANAGER]}>
         <UserManagementAuthorized/>
     </RequiresRole>
 

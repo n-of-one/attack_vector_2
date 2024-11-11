@@ -24,7 +24,7 @@ class TestUserService(
             return existingUser
         }
         val user = userEntityService.createUser(name, UserType.HACKER)
-        hackerEntityService.createHacker(user.id, HackerIcon.CAT, name, defaultSkills)
+        hackerEntityService.createHacker(user, HackerIcon.CAT, name, defaultSkills)
 
         return user
     }

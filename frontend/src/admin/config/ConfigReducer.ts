@@ -4,51 +4,69 @@ export const SERVER_RECEIVE_CONFIG = "SERVER_RECEIVE_CONFIG"
 export const SELECT_CONFIG = "SELECT_CONFIG"
 
 export enum ConfigItem {
-    HACKER_SHOW_SKILLS = "HACKER_SHOW_SKILLS",
-    HACKER_EDIT_USER_NAME = "HACKER_EDIT_USER_NAME",
-    HACKER_EDIT_CHARACTER_NAME = "HACKER_EDIT_CHARACTER_NAME",
-    HACKER_DELETE_RUN_LINKS = "HACKER_DELETE_RUN_LINKS",
-    LOGIN_PATH = "LOGIN_PATH",
-    LOGIN_PASSWORD = "LOGIN_PASSWORD",
-    LOGIN_GOOGLE_CLIENT_ID = "LOGIN_GOOGLE_CLIENT_ID",
-    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS = "DEV_SIMULATE_NON_LOCALHOST_DELAY_MS",
-    DEV_HACKER_RESET_SITE = "DEV_HACKER_RESET_SITE",
-    DEV_QUICK_PLAYING = "DEV_QUICK_PLAYING",
-    DEV_HACKER_USE_DEV_COMMANDS = "DEV_HACKER_USE_DEV_COMMANDS",
     LARP_NAME = "LARP_NAME",
-    FRONTIER_ORTHANK_TOKEN = "FRONTIER_ORTHANK_TOKEN",
+
+    HACKER_DELETE_RUN_LINKS = "HACKER_DELETE_RUN_LINKS",
+    HACKER_EDIT_CHARACTER_NAME = "HACKER_EDIT_CHARACTER_NAME",
+    HACKER_EDIT_USER_NAME = "HACKER_EDIT_USER_NAME",
+    HACKER_SHOW_SKILLS = "HACKER_SHOW_SKILLS",
+    HACKER_TUTORIAL_SITE_NAME = "HACKER_TUTORIAL_SITE_NAME",
+
+    LOGIN_GOOGLE_CLIENT_ID = "LOGIN_GOOGLE_CLIENT_ID",
+    LOGIN_PASSWORD = "LOGIN_PASSWORD",
+    LOGIN_PATH = "LOGIN_PATH",
+
+    DEV_HACKER_RESET_SITE = "DEV_HACKER_RESET_SITE",
+    DEV_HACKER_USE_DEV_COMMANDS = "DEV_HACKER_USE_DEV_COMMANDS",
+    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS = "DEV_SIMULATE_NON_LOCALHOST_DELAY_MS",
+    DEV_QUICK_PLAYING = "DEV_QUICK_PLAYING",
+
+    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN = "LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN",
+    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED = "LARP_SPECIFIC_FRONTIER_LOLA_ENABLED",
 }
 
 export const ConfigItemCategories = {
-    HACKER_SHOW_SKILLS: "Hacker",
-    HACKER_EDIT_USER_NAME: "Hacker",
-    HACKER_EDIT_CHARACTER_NAME: "Hacker",
-    HACKER_DELETE_RUN_LINKS: "Hacker",
-    LOGIN_PATH: "Login",
-    LOGIN_PASSWORD: "Login",
-    LOGIN_GOOGLE_CLIENT_ID: "Login",
-    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "Development",
-    DEV_HACKER_RESET_SITE: "Development",
-    DEV_QUICK_PLAYING: "Development",
-    DEV_HACKER_USE_DEV_COMMANDS: "Development",
-    LARP_NAME: "Larp",
-    FRONTIER_ORTHANK_TOKEN: "Frontier",
+    LARP_NAME: "1. Generic",
+
+    HACKER_DELETE_RUN_LINKS: "2. Hacker",
+    HACKER_EDIT_CHARACTER_NAME: "2. Hacker",
+    HACKER_EDIT_USER_NAME: "2. Hacker",
+    HACKER_SHOW_SKILLS: "2. Hacker",
+    HACKER_TUTORIAL_SITE_NAME: "2. Hacker",
+
+    LOGIN_GOOGLE_CLIENT_ID: "3. Login",
+    LOGIN_PASSWORD: "3. Login",
+    LOGIN_PATH: "3. Login",
+
+    DEV_HACKER_RESET_SITE: "4. Development",
+    DEV_HACKER_USE_DEV_COMMANDS: "4. Development",
+    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "4. Development",
+    DEV_QUICK_PLAYING: "4. Development",
+
+    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "5. Larp specific - Frontier",
+    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN: "5. Larp specific - Frontier",
 }
 
 export const ConfigItemNames = {
-    HACKER_SHOW_SKILLS: "Show skills",
-    HACKER_EDIT_USER_NAME: "Edit user name",
-    HACKER_EDIT_CHARACTER_NAME: "Edit character name",
+    LARP_NAME: "Larp name",
+
     HACKER_DELETE_RUN_LINKS: "Delete run links",
-    LOGIN_PATH: "Path",
-    LOGIN_PASSWORD: "Password",
+    HACKER_EDIT_CHARACTER_NAME: "Edit character name",
+    HACKER_EDIT_USER_NAME: "Edit user name",
+    HACKER_SHOW_SKILLS: "Show skills",
+    HACKER_TUTORIAL_SITE_NAME: "Tutorial site name",
+
     LOGIN_GOOGLE_CLIENT_ID: "Google client id",
-    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "Simulate non-localhost",
-    DEV_HACKER_RESET_SITE: "Hackers can reset sites",
-    DEV_QUICK_PLAYING: "ICE quick playing",
+    LOGIN_PASSWORD: "Password",
+    LOGIN_PATH: "Path",
+
     DEV_HACKER_USE_DEV_COMMANDS: "Hackers can use dev commands",
-    LARP_NAME: "Name",
-    FRONTIER_ORTHANK_TOKEN: "Orthank token",
+    DEV_HACKER_RESET_SITE: "Hackers can reset sites",
+    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "Simulate non-localhost",
+    DEV_QUICK_PLAYING: "ICE quick playing",
+
+    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "LOLA enabled",
+    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN: "Orthank token",
 }
 
 
@@ -98,10 +116,6 @@ const processServerReceiveConfig = (state: ConfigState, action: ActionReceiveCon
 
 const sortEntries = (entries: ConfigEntry[]) => {
     entries.sort((a, b) => {
-
-            if (a.item === ConfigItem.LARP_NAME && b.item !== ConfigItem.LARP_NAME) return -1
-            if (b.item === ConfigItem.LARP_NAME && a.item !== ConfigItem.LARP_NAME) return 1
-
             const categoryA = ConfigItemCategories[a.item]
             const categoryB = ConfigItemCategories[b.item]
             const categoryComparison = categoryA.localeCompare(categoryB)

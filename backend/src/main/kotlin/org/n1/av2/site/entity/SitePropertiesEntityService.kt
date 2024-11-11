@@ -28,8 +28,14 @@ class SitePropertiesEntityService(
     }
 
     fun updateName(data: SiteProperties, input: String) {
+        if (input == data.name) return
+
         if (input.isEmpty()) throw ValidationException("Name cannot be empty")
         if (input.contains(" ")) throw ValidationException("Site name cannot contain a space")
+
+        val existingSiteWithThisName = sitePropertiesRepo.findByName(input)
+        if (existingSiteWithThisName != null) throw ValidationException("Site with this name already exists")
+
         data.name = input
     }
 

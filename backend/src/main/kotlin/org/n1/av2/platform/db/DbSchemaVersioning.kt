@@ -2,9 +2,9 @@ package org.n1.av2.platform.db
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import org.n1.av2.platform.config.StaticConfig
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
-import org.n1.av2.platform.config.StaticConfig
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 
@@ -15,7 +15,7 @@ interface MigrationStep {
 }
 
 
-@Service("DbSchemaVersioning")
+@Service()
 class DbSchemaVersioning(
     private val dbSchemaVersionRepository: DbSchemaVersionRepository,
     private val mongoClient: MongoClient,

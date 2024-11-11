@@ -5,8 +5,6 @@ import org.n1.av2.hacker.hacker.HackerSkill
 import org.n1.av2.hacker.hacker.HackerSkillType.CREATE_SITE
 import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
 import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
-import org.n1.av2.larp.frontier.LOLA_USER_NAME
-import org.n1.av2.larp.frontier.LolaService
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
@@ -41,7 +39,6 @@ class OrthankUserInfo(
 @Service
 class FrontierService(
     private val orthankService: OrthankService,
-    private val lolaService: LolaService,
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
 ) {
@@ -49,19 +46,6 @@ class FrontierService(
 
     private val LEVEL_1_SKILLS = listOf(HackerSkill(SCAN), HackerSkill(SEARCH_SITE) )
     private val LEVEL_3_SKILLS = LEVEL_1_SKILLS + HackerSkill(CREATE_SITE)
-
-
-    fun createLolaUser() {
-        lolaService.createLolaUser()
-    }
-
-    fun processShare(runId: String, user: UserEntity):Boolean {
-        if (user.name.uppercase() == LOLA_USER_NAME) {
-            lolaService.share(user, runId)
-            return true
-        }
-        return false
-    }
 
     fun frontierLogin(frontierInfo: FrontierUserAndCharacterInfo): UserEntity {
         val user = getOrCreateHackerUser(frontierInfo)
@@ -83,7 +67,7 @@ class FrontierService(
 
         val name = userEntityService.findFreeUserName(hackerInfo.characterName!!)
         val user = userEntityService.createUser(name, UserType.HACKER, hackerInfo.id)
-        hackerEntityService.createHacker(user.id, HackerIcon.FROG, hackerInfo.characterName, emptyList<HackerSkill>())
+        hackerEntityService.createHacker(user, HackerIcon.FROG, hackerInfo.characterName, emptyList<HackerSkill>())
 
         return user
     }
@@ -111,7 +95,7 @@ class FrontierService(
         if (hackerLevel == 1 || hackerLevel == 2) {
             return LEVEL_1_SKILLS
         }
-        return LEVEL_3_SKILLS;
+        return LEVEL_3_SKILLS
     }
 
 }

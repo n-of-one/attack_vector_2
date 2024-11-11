@@ -1,4 +1,5 @@
 import React from "react";
+import {SilentLink} from "../common/component/SilentLink";
 
 interface Props {
     hiddenAdminLogin?: boolean
@@ -45,6 +46,7 @@ export const Banner = ({hiddenAdminLogin = false, image = false}: Props) => {
                         &nbsp;#|    #|    #|      #|      #|    #|  #|        #|  #|          #|  #|    #|        #|          #|      #|    #|  #|            <i onClick={adminLogin}>  #|</i><br/>
                         &nbsp;#|    #|      #|#|    #|#|    #|#|#|    #|#|#|  #|    #|          #|        #|#|#|    #|#|#|      #|#|    #|#|    #|            <i onClick={adminLogin}>#|#|#|#|</i><br/>
                         <br/>
+                        <span className="text dark ">&nbsp;Version: <SilentLink href="https://github.com/n-of-one/attack_vector_2/blob/main/RELEASE_NOTES.md"><>2.5.0</></SilentLink></span>
                     </pre>
                     <br/>
                 </div>
