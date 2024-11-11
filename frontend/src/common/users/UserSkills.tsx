@@ -40,7 +40,7 @@ const UserSkill = ({user, skillType, skillName, readonly, hasValue}: UserSkillPr
         }
         const valueDisplay = hasValue ? ` : ${skill.value}` : ""
         return <ul>
-            <li className="text-muted">{skillName}{valueDisplay}"</li>
+            <li className="text-muted">{skillName}{valueDisplay}</li>
         </ul>
     }
 

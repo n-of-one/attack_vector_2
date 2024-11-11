@@ -1,4 +1,4 @@
-# Release notes AV 2.5.0 (x Nov 2024)
+# Release notes AV 2.5.0 (11 Nov 2024)
 
 ### Important: this version relies on Java 21. 
 The installation instructions already instruct to install Java 21, but if you have an older version, you need to update to Java 21 before updating to the latest version.
