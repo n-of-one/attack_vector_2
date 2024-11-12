@@ -64,7 +64,7 @@ class V4_PackageRefactor : MigrationStep {
 
         val collectionsToDrop = listOf(
             "hackerState", // will be recreated when users log in.
-            "userIceHackingState", "statusLightApp", "userRunLink" // no longer used
+            "userIceHackingState", "statusLightApp", "userRunLink", "layout" // no longer used
         )
         if (collectionsToDrop.contains(collectionName)) {
             collection.drop()
