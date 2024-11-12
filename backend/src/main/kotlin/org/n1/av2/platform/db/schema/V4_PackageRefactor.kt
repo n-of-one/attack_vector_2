@@ -62,8 +62,11 @@ class V4_PackageRefactor : MigrationStep {
     private fun updateCollection(collectionName: String, db: MongoDatabase) {
         val collection = db.getCollection(collectionName)
 
-        if (collectionName == "hackerState" || collectionName == "userIceHackingState" || collectionName == "statusLightApp" ) {
-            // userIceHackingState is obsolete, and hackerState will be recreated when hackers log in. So we can just drop these collections.
+        val collectionsToDrop = listOf(
+            "hackerState", // will be recreated when users log in.
+            "userIceHackingState", "statusLightApp", "userRunLink" // no longer used
+        )
+        if (collectionsToDrop.contains(collectionName)) {
             collection.drop()
             logger.info { "Dropped collection $collectionName" }
             return
