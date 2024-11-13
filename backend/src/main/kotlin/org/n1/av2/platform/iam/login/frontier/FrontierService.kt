@@ -14,13 +14,14 @@ import org.springframework.stereotype.Service
 const val FRONTIER_GM_GROUP = "30"
 
 class FrontierUserAndCharacterInfo(
-    val id: String,
+    val frontierExternalReference: String,
     val isGm: Boolean,
+    val characterId: String? = null,
     val characterName: String? = null,
 )
 
-class OrthankUserInfo(
-    val id: String,
+class FrontierUserAndGroupInfo(
+    val accountId: String,
     val gm: Boolean
 )
 
@@ -56,17 +57,17 @@ class FrontierService(
 
 
     fun getOrCreateHackerUser(hackerInfo: FrontierUserAndCharacterInfo): UserEntity {
-        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(hackerInfo.id)
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(hackerInfo.frontierExternalReference)
         if (existingUserEntity != null) {
             return existingUserEntity
         }
 
         if (hackerInfo.isGm) {
-            return userEntityService.createUser(hackerInfo.id, UserType.GM, hackerInfo.id)
+            return userEntityService.createUser(hackerInfo.frontierExternalReference, UserType.GM, hackerInfo.frontierExternalReference)
         }
 
         val name = userEntityService.findFreeUserName(hackerInfo.characterName!!)
-        val user = userEntityService.createUser(name, UserType.HACKER, hackerInfo.id)
+        val user = userEntityService.createUser(name, UserType.HACKER, hackerInfo.frontierExternalReference)
         hackerEntityService.createHacker(user, HackerIcon.FROG, hackerInfo.characterName, emptyList<HackerSkill>())
 
         return user
@@ -86,7 +87,7 @@ class FrontierService(
     }
 
     private fun determineFrontierCharacterSkills(frontierInfo: FrontierUserAndCharacterInfo): List<HackerSkill> {
-        val v3Skills = orthankService.getPlayerSkills(frontierInfo.id)
+        val v3Skills = orthankService.getPlayerSkills(frontierInfo.characterId!!)
         val hackerLevel = v3Skills.hacker
 
         if ( hackerLevel == 0) {

@@ -28,25 +28,26 @@ class OrthankService(
 
     fun getFrontierHackerInfo(cookies: Array<Cookie>): FrontierUserAndCharacterInfo? {
         val userInfo = getUserInfo(cookies)
-        if (userInfo.id == "0") {
+        if (userInfo.accountId == "0") {
             return null
         }
         if (userInfo.gm) {
             return FrontierUserAndCharacterInfo(
-                id = "frontier-gm:${userInfo.id}",
-                isGm = true
+                frontierExternalReference = "frontier-gm:${userInfo.accountId}",
+                isGm = true,
             )
         }
-        val characterInfo = getCharacterInfo(userInfo.id)
+        val characterInfo = getCharacterInfo(userInfo.accountId)
 
         return FrontierUserAndCharacterInfo(
-            id = "frontier-player:${characterInfo.characterId}",
+            frontierExternalReference = "frontier-player:${characterInfo.characterId}",
             isGm = false,
+            characterId = characterInfo.characterId,
             characterName = characterInfo.characterName,
         )
     }
 
-    private fun getUserInfo(cookies: Array<Cookie>): OrthankUserInfo {
+    private fun getUserInfo(cookies: Array<Cookie>): FrontierUserAndGroupInfo {
         class IdAndGroupResponse(var id: String, var groups: List<String>?) {
             constructor() : this("", emptyList())
         }
@@ -55,7 +56,7 @@ class OrthankService(
         val idAndGroups = objectMapper.readValue(idAndGroupsText, IdAndGroupResponse::class.java)
         val gm = idAndGroups.groups?.contains(FRONTIER_GM_GROUP) ?: false
 
-        return OrthankUserInfo(idAndGroups.id, gm)
+        return FrontierUserAndGroupInfo(idAndGroups.id, gm)
     }
 
     private fun orthankToken(): String {
