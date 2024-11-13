@@ -1,3 +1,9 @@
+# Release notes AV 2.5.1 (13 Nov 2024)
+
+## Features
+- Detect screen size mismatch. Adjust zoom (Chrome) or prompt user (once per month).
+
+
 # Release notes AV 2.5.0 (11 Nov 2024)
 
 ### Important: this version relies on Java 21. 

@@ -33,6 +33,8 @@ export const Banner = ({hiddenAdminLogin = false, image = false}: Props) => {
         }
     }
 
+    const version = <>2.5.1</>
+
     return (<>
             <div className="row">
                 <div className="d-flex justify-content-center">
@@ -46,7 +48,7 @@ export const Banner = ({hiddenAdminLogin = false, image = false}: Props) => {
                         &nbsp;#|    #|    #|      #|      #|    #|  #|        #|  #|          #|  #|    #|        #|          #|      #|    #|  #|            <i onClick={adminLogin}>  #|</i><br/>
                         &nbsp;#|    #|      #|#|    #|#|    #|#|#|    #|#|#|  #|    #|          #|        #|#|#|    #|#|#|      #|#|    #|#|    #|            <i onClick={adminLogin}>#|#|#|#|</i><br/>
                         <br/>
-                        <span className="text dark ">&nbsp;Version: <SilentLink href="https://github.com/n-of-one/attack_vector_2/blob/main/RELEASE_NOTES.md"><>2.5.0</></SilentLink></span>
+                        <span className="text dark ">&nbsp;Version: <SilentLink href="https://github.com/n-of-one/attack_vector_2/blob/main/RELEASE_NOTES.md">{version}</SilentLink></span>
                     </pre>
                     <br/>
                 </div>
