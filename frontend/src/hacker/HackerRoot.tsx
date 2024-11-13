@@ -10,6 +10,7 @@ import {HACKER_HOME} from "../common/menu/pageReducer";
 import {initRunServerActions} from "./RunServerActionProcessor";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
+import {handleZoom} from "../common/util/ZoomUtil";
 
 export class HackerRoot extends Component {
 
@@ -37,7 +38,9 @@ export class HackerRoot extends Component {
 
         terminalManager.init(this.store)
 
+        handleZoom()
     }
+
 
     render() {
         return(
