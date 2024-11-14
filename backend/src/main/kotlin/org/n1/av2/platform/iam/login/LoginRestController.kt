@@ -1,6 +1,7 @@
 package org.n1.av2.platform.iam.login
 
 import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.n1.av2.platform.config.ConfigItem
@@ -8,6 +9,7 @@ import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.authentication.expirationInS
 import org.n1.av2.platform.inputvalidation.SafeJwt
 import org.n1.av2.platform.inputvalidation.SafeString
+import org.n1.av2.platform.util.getIp
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -25,9 +27,10 @@ class LoginRestController(
     class LoginResponse(val success: Boolean, val message: String? = null)
 
     @PostMapping("/openapi/login")
-    fun login(@RequestBody @Valid input: LoginInput, response: HttpServletResponse): LoginResponse {
+    fun login(@RequestBody @Valid input: LoginInput, request: HttpServletRequest, response: HttpServletResponse): LoginResponse {
+        val ip = getIp(request)
         try {
-            val cookies = loginService.login(input.name, input.password)
+            val cookies = loginService.login(input.name, input.password, ip)
             response.addLoginCookies(cookies)
 
             return LoginResponse(true)

@@ -1,6 +1,7 @@
 package org.n1.av2.platform.util
 
 import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
 import java.net.HttpURLConnection
 import java.net.URI
 
@@ -28,4 +29,12 @@ class HttpClient {
         }
     }
 
+}
+
+fun getIp(request: HttpServletRequest): String {
+    val xfHeader = request.getHeader("X-Forwarded-For") ?: return request.remoteAddr
+    if (!xfHeader.contains(request.remoteAddr)) {
+        return request.remoteAddr
+    }
+    return xfHeader.split(",")[0].trim()
 }
