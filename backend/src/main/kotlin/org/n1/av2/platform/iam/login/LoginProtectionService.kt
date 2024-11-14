@@ -10,7 +10,7 @@ const val FAILED_LOGINS_PER_HOUR_MAX = 5
 
 @Service
 class LoginProtectionService {
-    private val cache = Cache<Int>(Duration.ofMinutes(1))
+    private val cache = Cache<Int>(Duration.ofHours(1))
 
     fun preventBruteForce(ipAddress: String) {
         val failedLoginsCount = cache.get(ipAddress, 0)
