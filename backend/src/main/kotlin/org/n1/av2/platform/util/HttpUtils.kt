@@ -32,6 +32,7 @@ class HttpClient {
 }
 
 fun getIp(request: HttpServletRequest): String {
+    println("X-Forwarded-For: \"${request.getHeader("X-Forwarded-For")}\", remoteAddr: \"${request.remoteAddr}\"")
     val xfHeader = request.getHeader("X-Forwarded-For") ?: return request.remoteAddr
     if (!xfHeader.contains(request.remoteAddr)) {
         return request.remoteAddr
