@@ -23,7 +23,7 @@ class WebsocketUserService(
 
     suspend fun login(userName: String): Pair<UserEntity, List<Cookie>> {
         val user = userEntityService.getByName(userName)
-        val cookies = loginService.login(userName, "")
+        val cookies = loginService.login(userName, "", "127.0.0.1")
         return Pair(user, cookies)
     }
 }

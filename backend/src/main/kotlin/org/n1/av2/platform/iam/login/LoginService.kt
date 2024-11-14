@@ -19,19 +19,25 @@ class LoginService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val googleOauthService: GoogleOauthService,
     private val currentUserService: CurrentUserService,
+    private val loginProtectionService: LoginProtectionService,
 ) {
 
-    fun login(userName: String, password: String): List<Cookie> {
-        checkPassword(password)
+    fun login(userName: String, password: String, ipAddress: String): List<Cookie> {
+        loginProtectionService.preventBruteForce(ipAddress)
+        checkPassword(password, ipAddress)
 
         val user = userEntityService.getByName(userName)
         if (user.type == UserType.SYSTEM) error("Cannot login as system user")
         return getCookies(user)
     }
 
-    private fun checkPassword(password: String) {
+    private fun checkPassword(password: String, ipAddress: String) {
         if (password == "" && configService.get(ConfigItem.LOGIN_PATH) == "/devLogin") return
-        if (configService.get(ConfigItem.LOGIN_PASSWORD) != password) error("Wrong password")
+        if (configService.get(ConfigItem.LOGIN_PASSWORD) != password) {
+            loginProtectionService.updateFailedLogins(ipAddress)
+            loginProtectionService.issueWarning(ipAddress)
+            error("Wrong password")
+        }
     }
 
     fun logout(): List<Cookie> {
