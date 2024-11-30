@@ -52,4 +52,8 @@ class TimerEntityService(
         return (forSite + forTargetSite + forUser).distinctBy { it.id }
     }
 
+    fun update(timer: Timer) {
+        repository.save(timer)
+    }
+
 }

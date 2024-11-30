@@ -7,3 +7,15 @@ fun String.s(number: Int): String {
         else -> "${this}s"
     }
 }
+
+fun pluralS(number: Int): String {
+    return pluralS(number.toLong())
+}
+
+fun pluralS(number: Long): String {
+    return when(number) {
+        0L -> "s"
+        1L -> ""
+        else -> "s"
+    }
+}

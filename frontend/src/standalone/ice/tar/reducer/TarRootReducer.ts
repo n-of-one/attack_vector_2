@@ -1,13 +1,13 @@
 import {createTerminalReducer, TerminalState} from "../../../../common/terminal/TerminalReducer";
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import {combineReducers} from "redux";
-import {pageReducer} from "../../../../common/menu/pageReducer";
+import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 import {TarState, tarStateReducer} from "./TarReducer";
 
 
 export interface TarRootState {
-    currentPage: string,
+    currentPage: Page,
     hackers: IceHackers,
     iceState: TarState,
     displayTerminal: TerminalState,

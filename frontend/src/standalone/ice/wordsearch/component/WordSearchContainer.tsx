@@ -1,16 +1,16 @@
 import React from "react";
 import {WordSearchHome} from "./WordSearchHome";
 import {useSelector} from "react-redux";
-import {FORCE_DISCONNECT} from "../../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../../common/component/ForceDisconnected";
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
+import {Page} from "../../../../common/menu/pageReducer";
 
 
 export const WordSearchContainer = () => {
 
-    const currentPage: string =  useSelector((state: WordSearchRootState) =>  state.currentPage)
-    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+    const currentPage: Page =  useSelector((state: WordSearchRootState) =>  state.currentPage)
+    if (currentPage === Page.FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

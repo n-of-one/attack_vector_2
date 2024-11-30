@@ -10,6 +10,7 @@ import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {wordSearchManager} from "./WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string
@@ -22,7 +23,7 @@ export class WordSearchRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        const preLoadedState = { iceId: props.iceId, currentPage: "wordSearch"}
+        const preLoadedState = { iceId: props.iceId, currentPage: Page.ICE}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

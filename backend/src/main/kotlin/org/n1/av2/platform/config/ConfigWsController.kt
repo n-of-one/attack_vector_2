@@ -27,7 +27,7 @@ class ConfigWsController(
     @MessageMapping("/admin/config/set")
     fun setConfig(command: SetConfigItemCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
-            configService.set(command.item, command.value)
+            configService.setAndReply(command.item, command.value)
         }
 
     }

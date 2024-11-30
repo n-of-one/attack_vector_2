@@ -51,6 +51,9 @@ class CommandHelpService(
             "[b]attack",
             "Enter the site and start the attack..",
             "",
+            "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
+            "Run a script that you have loaded in memory.",
+            "",
             "[b]/share[/] [info]<user name>[/] (optionally more usernames)",
             "Share your run with one or more hackers so they can join you.",
             "",
@@ -97,6 +100,9 @@ class CommandHelpService(
             )
         }
         connectionService.replyTerminalReceive(
+            "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
+            "Run a script that you have loaded in memory.",
+            "",
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
             "",

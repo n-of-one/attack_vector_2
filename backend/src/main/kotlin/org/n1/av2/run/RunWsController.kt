@@ -30,7 +30,7 @@ class RunWsController(
 
     @MessageMapping("/run/newRun")
     fun scanForName(siteName: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runService.startNewRun(siteName) }
+        userTaskRunner.runTask(userPrincipal) { runService.startNewRunAndReply(siteName) }
     }
 
     @MessageMapping("/run/deleteRunLink")

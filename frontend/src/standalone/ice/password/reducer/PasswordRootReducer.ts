@@ -1,14 +1,14 @@
 import {createTerminalReducer, TerminalState} from "../../../../common/terminal/TerminalReducer";
 import {ActiveTerminalId, activeTerminalIdReducer, ICE_DISPLAY_TERMINAL_ID, ICE_INPUT_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import {combineReducers, Reducer} from "redux";
-import {pageReducer} from "../../../../common/menu/pageReducer";
+import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 import {AuthAppInfo, authInfoReducer} from "../../../app/auth/reducer/AuthInfoReducer";
 import {AuthAppUi, authUiReducer} from "../../../app/auth/reducer/AuthUiReducer";
 import {PasswordIceHackUi, passwordIceHackUiReducer} from "./PasswordReducer";
 
 export interface PasswordRootState {
-    currentPage: string,
+    currentPage: Page,
     hackers: IceHackers,
     iceInfo: AuthAppInfo
     ui: AuthAppUi,

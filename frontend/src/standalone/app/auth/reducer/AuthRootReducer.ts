@@ -1,10 +1,10 @@
 import {combineReducers} from "redux";
-import {pageReducer} from "../../../../common/menu/pageReducer";
+import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {AuthAppInfo, authInfoReducer} from "./AuthInfoReducer";
 import {AuthAppUi, authUiReducer} from "./AuthUiReducer";
 
 export interface AuthAppRootState {
-    currentPage: string,
+    currentPage: Page,
     info: AuthAppInfo
     ui: AuthAppUi,
     layerId: string,

@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {useSelector} from "react-redux";
 import {UserDetails} from "./UserDetails";
-import {GenericUserRootState} from "./UserReducer";
+import {GenericUserRootState} from "./CurrentUserReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {currentUser} from "../user/CurrentUser";
 

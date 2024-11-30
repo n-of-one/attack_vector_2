@@ -56,15 +56,20 @@ class ConfigService(
         return cache[item] ?: error("Unknown config item $item")
     }
 
+    fun setAndReply(item: ConfigItem, value: String) {
+        set(item, value)
+
+        replyConfigValues()
+        replySpecificConfigValue(item, value)
+    }
+
     fun set(item: ConfigItem, value: String) {
         checkValue(item, value)
         val entry = repo.findByItem(item)?.copy(value = value) ?: ConfigEntry(item, value)
         repo.save(entry)
         cache[item] = value
-
-        replyConfigValues()
-        replySpecificConfigValue(item, value)
     }
+
 
     private fun replySpecificConfigValue(item: ConfigItem, value: String) {
         val messageFunction = item.message ?: return // no message function

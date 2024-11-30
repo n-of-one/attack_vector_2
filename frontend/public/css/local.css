@@ -44,7 +44,6 @@ body {
 }
 
 
-
 input {
     font-variant-ligatures: none;
 }
@@ -52,6 +51,7 @@ input {
 .unselectable {
     user-select: none;
 }
+
 .darkWell {
     background-color: #333333;
     border-radius: 3px 3px 3px 3px;
@@ -94,7 +94,7 @@ input {
 
 .nodeInfoClose {
     font-size: 10px;
-    background-color:#337ab7;
+    background-color: #337ab7;
     border-radius: 3px 3px 3px 3px;
     border-color: #000000;
     /*padding: 3px 5px 0px 0px;*/
@@ -115,11 +115,37 @@ input {
 }
 
 .dark {
-    color: #777; !important;
+    color: #777;
+!important;
 }
 
 .muted {
-    color: #ccc; !important;
+    color: #ccc;
+!important;
+}
+
+.text_light {
+    color: #ddd;
+}
+
+
+.text_gold {
+    color: #8a6d3b;
+}
+
+.scriptBadge {
+    background-color: #333;
+    border-radius: 4px;
+    padding: 0 4px 0 4px;
+}
+
+.scriptBadgeDark {
+    background-color: #222;
+    border-radius: 4px;
+    padding: 0 4px 0 4px;
+}
+.scriptUnusable {
+    text-decoration: line-through wavy #aaa 1px;
 }
 
 .button-text {
@@ -127,6 +153,7 @@ input {
     font-size: 12px;
     line-height: 14px;
 }
+
 
 
 .errorPage {
@@ -144,10 +171,6 @@ input {
 .layer_text_label {
     margin-top: 0.5em;
     margin-bottom: 0;
-}
-
-.text_gold {
-    color: #8a6d3b;
 }
 
 .strong {
@@ -175,7 +198,6 @@ input {
     padding-right: 0;
     /*font-weight: bold;*/
 }
-
 
 
 .noRightPadding {
@@ -315,7 +337,6 @@ a.textLink {
 }
 
 
-
 .svg-color-royalblue {
     filter: invert(52%) sepia(91%) saturate(5135%) hue-rotate(215deg) brightness(93%) contrast(88%);
 }
@@ -339,8 +360,8 @@ a.textLink {
     height: 20px;
     width: 20px;
     font-size: 20px;
-    top: -1px!important;
-    left: -1px!important;
+    top: -1px !important;
+    left: -1px !important;
 }
 
 .saveIcon {
@@ -362,4 +383,38 @@ li.lvl2 {
     text-decoration: line-through;
     text-decoration-thickness: 2px;
     text-decoration-color: #ffc107;
+}
+
+.scriptPanel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    padding: 10px;
+    background: #000;
+    opacity: 0.5;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.scriptPanelButtonOuter {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+}
+
+.scriptPanelButtonOuterFolded {
+    width: 32px;
+    height: 32px;
+}
+
+.scriptPanelButton {
+    height: 25px;
+    padding: 0 2px 3px 4px
+}
+
+.scriptPanelButtonIcon {
+    font-size: 16px;
+    display: inherit;
+    height: 12px;
 }

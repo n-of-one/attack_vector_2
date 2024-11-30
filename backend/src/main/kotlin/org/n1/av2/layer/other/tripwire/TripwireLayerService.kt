@@ -1,7 +1,5 @@
 package org.n1.av2.layer.other.tripwire
 
-import org.n1.av2.editor.toDuration
-import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.connection.ConnectionService
@@ -12,8 +10,8 @@ import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.SystemTaskRunner
 import org.n1.av2.platform.engine.TaskIdentifiers
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.TimeService
+import org.n1.av2.platform.util.toDuration
 import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.site.SiteResetService
@@ -35,8 +33,6 @@ class TripwireLayerService(
     @Lazy private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val siteResetService: SiteResetService,
-    private val hackerEntityService: HackerEntityService,
-    private val currentUserService: CurrentUserService,
 ) {
 
 
@@ -52,7 +48,7 @@ class TripwireLayerService(
     fun hackerArrivesNode(siteId: String, layer: TripwireLayer, nodeId: String, runId: String) {
         val existingDetection = timerEntityService.findByLayer(layer.id)
         if (existingDetection != null) {
-            return
+            return // tripwire already active, cannot trigger twice
         }
 
         val (tripwireDuration, stealthAdjustmentDuration) = determineTripwireCountdownDuration(layer)
@@ -73,12 +69,12 @@ class TripwireLayerService(
 
         connectionService.toRun(runId, ServerActions.SERVER_FLASH_PATROLLER, "nodeId" to nodeId)
 
-        val identifiers = TaskIdentifiers(null, siteId, layer.id)
+        val identifiers = createTimerIdentifiers(siteId, layer.id)
         systemTaskRunner.queueInSeconds("tripwire effect", identifiers, countdown.seconds) { timerActivates(siteId, timer.id, layer) }
     }
 
     fun determineTripwireCountdownDuration(layer: TripwireLayer): Pair<Duration, Duration> {
-        val tripwireDuration = layer.countdown.toDuration("tripwire ${layer.id}")
+        val tripwireDuration = layer.countdown.toDuration()
 //        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
 //        val stealthSkill = hacker.skillAsIntOrNull(HackerSkillType.STEALTH) ?: 0
 //        if (stealthSkill == 0) {
@@ -111,7 +107,7 @@ class TripwireLayerService(
                 runService.hackerDisconnect(hackerState, "Disconnected (server abort)")
             }
 
-        val shutdownDuration = layer.shutdown.toDuration("shutdown")
+        val shutdownDuration = layer.shutdown.toDuration()
         val shutdownEndTime = time.now().plus(shutdownDuration)
 
         val shutdownTimer = timerEntityService.create(layer.id, null, shutdownEndTime, siteId, siteId, TimerType.SHUTDOWN_FINISH)
@@ -161,5 +157,29 @@ class TripwireLayerService(
         }
     }
 
+    fun increaseTimer(layer: TripwireLayer, duration: Duration, siteId: String): Boolean {
+        val timer = timerEntityService.findByLayer(layer.id)
+        if (timer == null) {
+            return false // tripwire not active, cannot increase
+        }
+
+        val updatedTimer = timer.copy(finishAt = timer.finishAt.plus(duration))
+        timerEntityService.update(updatedTimer)
+
+        connectionService.toSite(siteId, ServerActions.SERVER_CHANGE_TIMER, toTimerInfo(updatedTimer, layer))
+
+        val taskIdentifiers = createTimerIdentifiers(siteId, layer.id)
+        val taskDue = systemTaskRunner.removeTask(taskIdentifiers)
+
+        val newCountdownSeconds = taskDue.inSeconds + duration.toSeconds()
+
+        systemTaskRunner.queueInSeconds("tripwire effect", taskIdentifiers, newCountdownSeconds) { timerActivates(siteId, timer.id, layer) }
+
+        return true
+    }
+
+    private fun createTimerIdentifiers(siteId: String?, layerId: String): TaskIdentifiers {
+        return TaskIdentifiers(null, siteId, layerId)
+    }
 
 }

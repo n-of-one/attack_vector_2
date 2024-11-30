@@ -1,32 +1,41 @@
 import {AnyAction} from "redux";
 
 
-// Hacker pages
-export const HACKER_HOME = "HACKER_HOME";
-export const SITES = "SITES";
-export const RUN = "RUN";
-export const MAIL = "MAIL";
-export const ME = "ME";
+export enum Page {
+    LOADING = "LOADING",
+
+    HACKER_HOME = "HACKER_HOME",
+    SITES = "SITES",
+    RUN = "RUN",
+    HACKER_SCRIPTS = "HACKER_SCRIPTS",
+    ME = "ME",
+    ICE = "ICE",
+    ICE_AUTH = "ICE_AUTH",
 
 // Gm & admin pages
-export const USERS = "USERS"
-export const CONFIG = "CONFIG"
-export const TASKS = "TASKS"
+    USERS = "USERS",
+    CONFIG = "CONFIG",
+    TASKS = "TASKS",
+    GM_SCRIPTS_HOME = "GM_SCRIPTS_HOME",
+    SCRIPT_TYPE_MANAGEMENT = "SCRIPT_TYPE_MANAGEMENT",
+    SCRIPT_MANAGEMENT = "SCRIPT_MANAGEMENT",
+    SCRIPT_ACCESS_MANAGEMENT = "SCRIPT_ACCESS_MANAGEMENT",
 
 // Display this page when another tab was opened for the same hacker / app connection.
-export const FORCE_DISCONNECT = "FORCE_DISCONNECT"
+    FORCE_DISCONNECT = "FORCE_DISCONNECT",
 
+}
 
 
 // ACTIONS:
 export const NAVIGATE_PAGE = "NAVIGATE_PAGE";
 
 
-const defaultState = "No page yet.";
-
-export const pageReducer = (state: string = defaultState, action: AnyAction): string => {
-    switch(action.type) {
-        case NAVIGATE_PAGE : return action.to;
-        default: return state;
+export const pageReducer = (state: Page = Page.LOADING, action: AnyAction): Page => {
+    switch (action.type) {
+        case NAVIGATE_PAGE :
+            return action.to;
+        default:
+            return state;
     }
 }

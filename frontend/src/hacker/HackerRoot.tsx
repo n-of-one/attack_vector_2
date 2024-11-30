@@ -6,11 +6,10 @@ import {HackerPageChooser} from "./HackerPageChooser";
 import {hackerRootReducer, HackerRootState} from "./HackerRootReducer";
 import {webSocketConnection, WS_HACKER_MAIN} from "../common/server/WebSocketConnection";
 import {configureStore} from "@reduxjs/toolkit";
-import {HACKER_HOME} from "../common/menu/pageReducer";
 import {initRunServerActions} from "./RunServerActionProcessor";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
-import {handleZoom} from "../common/util/ZoomUtil";
+import {Page} from "../common/menu/pageReducer";
 
 export class HackerRoot extends Component {
 
@@ -18,7 +17,7 @@ export class HackerRoot extends Component {
 
     constructor(props: {}) {
         super(props)
-        const preLoadedState = {currentPage: HACKER_HOME};
+        const preLoadedState = {currentPage: Page.HACKER_HOME};
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
@@ -38,7 +37,6 @@ export class HackerRoot extends Component {
 
         terminalManager.init(this.store)
 
-        handleZoom()
     }
 
 

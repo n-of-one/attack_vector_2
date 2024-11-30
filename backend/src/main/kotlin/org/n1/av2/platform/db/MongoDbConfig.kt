@@ -33,7 +33,7 @@ class MongoClientFactory(
 
 @Configuration
 @EnableMongoRepositories(basePackages = ["org.n1.av2"])
-class MongoDbConfig(
+open class MongoDbConfig(
     private val mongoClient: MongoClient,
     private val timeService: TimeService,
     private val staticConfig: StaticConfig,
@@ -69,5 +69,7 @@ class MongoDbConfig(
             return Date.from(source.toInstant())
         }
     }
+
+    override fun autoIndexCreation() = true
 
 }

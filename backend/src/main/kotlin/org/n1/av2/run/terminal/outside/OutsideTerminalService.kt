@@ -10,6 +10,7 @@ import org.n1.av2.run.terminal.CommandHelpService
 import org.n1.av2.run.terminal.CommandScanService
 import org.n1.av2.run.terminal.SocialTerminalService
 import org.n1.av2.run.timings.TimingsService
+import org.n1.av2.script.ScriptService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
@@ -25,12 +26,12 @@ class OutsideTerminalService(
     private val commandHelpService: CommandHelpService,
     private val timingsService: TimingsService,
     private val configService: ConfigService,
+    private val scriptService: ScriptService,
 ) {
 
 
-    fun processCommand(runId: String, command: String) {
-        val tokens = command.split(" ")
-        when (tokens[0]) {
+    fun processCommand(runId: String, commandAction: String, tokens: List<String>) {
+        when (commandAction) {
             "help" -> commandHelpService.processHelp(false, tokens)
             "/share" -> socialTerminalService.processShare(runId, tokens)
             "move", "view", "hack", "connect" -> reportHackCommand()
@@ -82,5 +83,6 @@ class OutsideTerminalService(
         val now = timeService.now()
         return (siteProperties.shutdownEnd != null && now < siteProperties.shutdownEnd)
     }
+
 
 }

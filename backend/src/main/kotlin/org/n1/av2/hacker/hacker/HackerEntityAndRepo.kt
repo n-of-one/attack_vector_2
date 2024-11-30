@@ -33,6 +33,7 @@ data class HackerSkill(
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }
+val displayAsIs = { toDisplay: String -> toDisplay }
 //
 //val stealthValidation = { toValidate: String ->
 //    val value = stealthToFunctional(toValidate)
@@ -59,7 +60,7 @@ enum class HackerSkillType(
     val defaultValue: String? = null,
     val validate: ((String) -> String?)? = null,
     val toFunctionalValue: (String) -> String = noOpNormalization,
-    val toDisplayValue: (String) -> String = noOpNormalization
+    val toDisplayValue: (String) -> String = displayAsIs
 ) {
     CREATE_SITE(),
     SCAN(),

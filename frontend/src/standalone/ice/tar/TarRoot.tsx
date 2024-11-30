@@ -10,6 +10,7 @@ import {tarManager} from "./component/TarManager";
 import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {initTarServerActions} from "./TarServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string
@@ -23,7 +24,7 @@ export class TarRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        const preLoadedState = {currentPage: "tar"}
+        const preLoadedState = {currentPage: Page.ICE}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

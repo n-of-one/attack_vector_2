@@ -2,12 +2,12 @@ import {createTerminalReducer, TerminalState} from "../../../../common/terminal/
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import {combineReducers} from "redux";
 import {tangleIceReducer, TangleIceState} from "./TangleIceReducer";
-import {pageReducer} from "../../../../common/menu/pageReducer";
+import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 
 
 export interface TangleRootState {
-    currentPage: string,
+    currentPage: Page,
     hackers: IceHackers,
     tangle: TangleIceState,
     displayTerminal: TerminalState,

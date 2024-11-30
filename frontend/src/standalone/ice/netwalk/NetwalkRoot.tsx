@@ -10,6 +10,7 @@ import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {initNetwalkServerActions} from "./NetwalkServerActionProcessor";
 import {netwalkManager} from "./NetwalkManager";
 import {ice} from "../../StandaloneGlobals";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string
@@ -23,7 +24,7 @@ export class NetwalkRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        const preLoadedState = {currentPage: "netwalk"}
+        const preLoadedState = {currentPage: Page.ICE}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

@@ -22,11 +22,7 @@ class InsideTerminalService(
     private val commandDebugService: CommandDebugService,
 ) {
 
-    fun processCommand(runId: String, command: String) {
-        val tokens = command.trim().split(" ")
-        val commandAction = tokens[0].lowercase()
-
-
+    fun processCommand(runId: String, commandAction: String, tokens: List<String>) {
         when (commandAction) {
             "help" -> commandHelpService.processHelp(true, tokens)
             "dc" -> processDc()

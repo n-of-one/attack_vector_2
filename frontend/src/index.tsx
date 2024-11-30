@@ -17,6 +17,7 @@ import {Lola} from "./larp/frontier/Lola";
 import {AdminRoot} from "./admin/AdminRoot";
 import {GoogleAuth} from "./login/GoogleAuth";
 import {DevLogin} from "./login/DevLogin";
+import {handleZoom} from "./common/util/ZoomUtil";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -26,6 +27,8 @@ console.log("\nWelcome to _Attack Vector_" +
     "\n" +
     "\n_Attack Vector_ is open source: https://github.com/n-of-one/attack_vector_2" +
     "\n ")
+
+handleZoom()
 
 
 const ReRoute = (): React.JSX.Element => {

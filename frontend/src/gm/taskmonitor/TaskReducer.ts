@@ -1,4 +1,4 @@
-import {NAVIGATE_PAGE, TASKS} from "../../common/menu/pageReducer";
+import {NAVIGATE_PAGE, Page} from "../../common/menu/pageReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 
 export const SERVER_TASKS = "SERVER_TASKS"
@@ -27,8 +27,8 @@ export const tasksReducer = (state: Task[] = defaultState, action: any): Task[] 
 
 let processId: NodeJS.Timeout | null = null
 
-const navigatePage = (page: string) => {
-    if (page === TASKS) {
+const navigatePage = (page: Page) => {
+    if (page === Page.TASKS) {
         if (processId === null) {
             processId = setInterval(() => {
                 webSocketConnection.send('/admin/monitorTasks', null)
