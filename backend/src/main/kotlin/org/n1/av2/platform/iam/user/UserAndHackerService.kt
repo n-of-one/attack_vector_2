@@ -11,7 +11,11 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.script.ScriptAccess
+import org.n1.av2.script.ScriptAccessService
+import org.n1.av2.script.ScriptService
 import org.springframework.stereotype.Service
+import kotlin.system.measureTimeMillis
 
 @Service
 class UserAndHackerService(
@@ -20,6 +24,9 @@ class UserAndHackerService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val connectionService: ConnectionService,
     private val runLinkEntityService: RunLinkEntityService,
+    private val scriptService: ScriptService,
+    private val scriptAccessService: ScriptAccessService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -49,22 +56,61 @@ class UserAndHackerService(
         sendDetailsOfSpecificUser(user.id)
     }
 
+    class UiScript(
+        val code: String,
+        val typeId: String,
+        val timeLeft: String,
+        val usable: Boolean,
+    )
+
+    class UiHacker(
+        val hackerUserId: String,
+        val icon: HackerIcon,
+        val characterName: String,
+        val skills: List<HackerSkill>,
+        val scripts: List<UiScript>,
+        val scriptAccess: List<ScriptAccess>
+    )
+
     class UiUserDetails(
         val id: String,
         val name: String,
         val type: UserType,
-        val hacker: Hacker?,
+        val hacker: UiHacker?,
     )
 
-    fun sendDetailsOfSpecificUser(userId: String) {
-        val user = userEntityService.getById(userId)
-        val hacker = createHackerForSkillDisplay(user)
-
-        val uiUser = UiUserDetails(user.id, user.name, user.type, hacker)
-        connectionService.reply(ServerActions.SERVER_USER_DETAILS, uiUser)
+    fun sendDetailsOfCurrentUser() {
+        val millis = measureTimeMillis {
+            val uiUserDetails = getDetailsOfSpecificUser(currentUserService.userId)
+            connectionService.reply(ServerActions.SERVER_RECEIVE_CURRENT_USER, uiUserDetails)
+        }
+        println("sendDetailsOfSpecificUser took $millis ms")
     }
 
-    fun createHackerForSkillDisplay(user: UserEntity): Hacker? {
+    fun sendDetailsOfSpecificUser(userId: String) {
+        val millis = measureTimeMillis {
+            val uiUserDetails = getDetailsOfSpecificUser(userId)
+            connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, uiUserDetails)
+        }
+        println("sendDetailsOfSpecificUser took $millis ms")
+    }
+
+    private fun getDetailsOfSpecificUser(userId: String): UiUserDetails {
+        val user = userEntityService.getById(userId)
+        val scripts = scriptService.findScriptsForUser(userId)
+            .map { script ->
+                val timeLeft = scriptService.timeLeft(script)
+                val usable = scriptService.usable(script)
+                UiScript(script.code, script.typeId, timeLeft, usable)
+            }
+        val scriptAccess = scriptAccessService.findScriptAccessForUser(userId)
+        val hacker = createHackerForSkillDisplay(user, scripts, scriptAccess)
+
+
+        return UiUserDetails(user.id, user.name, user.type, hacker)
+    }
+
+    fun createHackerForSkillDisplay(user: UserEntity, uiScripts: List<UiScript>, scriptAccess: List<ScriptAccess>): UiHacker? {
         val hacker = if (user.type == UserType.HACKER) hackerEntityService.findForUser(user) else return null
         val skillsWithDisplayValues = hacker.skills.map { skill ->
             if (skill.value != null)
@@ -72,9 +118,15 @@ class UserAndHackerService(
             else
                 skill
         }
-        return hacker.copy(skills = skillsWithDisplayValues)
+        return UiHacker(
+            hackerUserId = hacker.hackerUserId,
+            icon = hacker.icon,
+            characterName = hacker.characterName,
+            skills = skillsWithDisplayValues,
+            scripts = uiScripts,
+            scriptAccess = scriptAccess
+        )
     }
-
 
     fun editSkillEnabled(userId: String, type: HackerSkillType, add: Boolean) {
         val (user, hacker) = retrieveUserAndHacker(userId)
@@ -99,6 +151,7 @@ class UserAndHackerService(
 
         updateSkillsAndNotifyFrontend(hacker, newSkills, user)
     }
+
     private fun validateSKillValue(userId: String, type: HackerSkillType, valueInput: String) {
         val validationFunction = type.validate ?: return // no validation function
         val errorMessage = validationFunction(valueInput) ?: return // no error
@@ -181,7 +234,7 @@ class UserAndHackerService(
         if (userEntity.name == newName) return userEntity
 
         if (userEntityService.findByNameIgnoreCase(newName) != null) {
-            connectionService.reply(ServerActions.SERVER_USER_DETAILS, userEntity) // Restore olds values in frontend
+            connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, userEntity) // Restore olds values in frontend
             throw ValidationException("User with name $newName already exists.")
         }
         return userEntity.copy(name = newName)
@@ -222,11 +275,6 @@ class UserAndHackerService(
             defaultSkills()
         )
         return user
-    }
-
-    fun replyHackerSkills(user: UserEntity) {
-        val hacker = hackerEntityService.findForUser(user)
-        connectionService.reply(ServerActions.SERVER_RECEIVE_HACKER_SKILLS, hacker.skills)
     }
 
     fun defaultSkills(): List<HackerSkill> {

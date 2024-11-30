@@ -6,21 +6,19 @@ import {HackerRootState} from "../HackerRootReducer";
 import {RunInfo} from "./HackerRunsReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
-import {HackerSkillType} from "../../common/users/UserReducer";
-import {hasSkill} from "../SkillsReducer";
+import {HackerSkillType, hasSkill, User} from "../../common/users/CurrentUserReducer";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 export const HackerHome = () => {
 
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
     const runs: RunInfo[] = useSelector((state: HackerRootState) => state.runs)
     const config = useSelector((rootState: ConfigRootState) => rootState.config)
+
     const hackersResetSite = (getConfigAsBoolean(ConfigItem.DEV_HACKER_RESET_SITE, config))
     const hackerDeleteRunLinks = (getConfigAsBoolean(ConfigItem.HACKER_DELETE_RUN_LINKS, config))
-
-
-
 
     return (
         <div className="row">
@@ -32,13 +30,13 @@ export const HackerHome = () => {
                         <span className="text"><strong>🜁 Verdant OS 🜃</strong></span>
                     </div>
                 </div>
-                <SearchSite/>
+                <SearchSite currentUser={currentUser}/>
             </div>
             <div className="col-lg-6">
                 <div className="row">
                     <div className="col-lg-12">
                         <div className="siteMap">
-                        <table className="table table-borderless table-sm text-muted text" id="sitesTable">
+                        <table className="table table-borderless table-sm text-muted text table-very-condensed" id="sitesTable">
                                 <thead>
                                 <tr>
                                     <td className="strong">Site name</td>
@@ -51,14 +49,14 @@ export const HackerHome = () => {
                                     runs.map((runInfo: RunInfo) => {
                                         return (
                                             <tr key={runInfo.runId}>
-                                                <td className="table-very-condensed">
+                                                <td>
                                                     <SilentLink title={runInfo.runId} onClick={() => {
                                                         prepareToEnterRun(runInfo.runId);
                                                     }}><>{runInfo.siteName}</>
                                                     </SilentLink>
                                                 </td>
-                                                <td className="table-very-condensed">{runInfo.nodes}</td>
-                                                <td className="table-very-condensed">
+                                                <td>{runInfo.nodes}</td>
+                                                <td>
                                                     {hackerDeleteRunLinks ? <DeleteRunLink runId={runInfo.runId}/> : <></>}
                                                     {hackersResetSite ? <ResetIceLink siteId={runInfo.siteId} siteName={runInfo.siteName}/> : <></>}
                                                 </td>
@@ -75,12 +73,8 @@ export const HackerHome = () => {
     )
 }
 
-const SearchSite = () => {
-
-    const skills = useSelector((state: HackerRootState) => state.skills)
-    if (skills === null) return <></> // waiting for skills to be received
-
-    const canSearchSite = hasSkill(skills, HackerSkillType.SEARCH_SITE)
+const SearchSite = ({currentUser}: {currentUser: User}) => {
+    const canSearchSite = hasSkill(currentUser, HackerSkillType.SEARCH_SITE)
 
     if (!canSearchSite) {
         return (

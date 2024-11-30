@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Provider} from 'react-redux'
 import {RequiresRole} from "../common/user/RequiresRole"
 import {configureStore} from "@reduxjs/toolkit"
-import {NAVIGATE_PAGE, SITES} from "../common/menu/pageReducer"
+import {NAVIGATE_PAGE, Page} from "../common/menu/pageReducer"
 import {Reducer, Store} from "redux"
 import {gmRootReducer, GmRootState} from "./GmRootReducer";
 import {GmPageChooser} from "./GmPageChooser";
@@ -32,7 +32,7 @@ export class GmRoot extends Component<Props>{
         })
 
         // set up initial state:
-        this.gmStore.dispatch({type: NAVIGATE_PAGE, to: SITES})
+        this.gmStore.dispatch({type: NAVIGATE_PAGE, to: Page.SITES})
 
         document.body.style.backgroundColor = "#222222"
     }

@@ -26,7 +26,7 @@ export const TaskMonitorHome = () => {
                             <td className="strong">Action</td>
                             <td className="strong">User</td>
                             <td className="strong">Site</td>
-                            <td className="strong">NodeId</td>
+                            <td className="strong">LayerId</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,10 +57,13 @@ const renderTasks = (tasks: Array<Task>) => {
     return <>
         {
             tasks.map((task: Task) => {
-                const id = `${task.due}${task.userName}${task.siteId}${task.layerId}`;
+                const id = `${task.due}${task.userName}${task.siteId}${task.layerId}`
+                const due = task.due-now
+                const dueSeconds = Math.floor(due / 1000).toString().padStart(2, '0')
+                const dueMillis = (due % 1000).toString().padStart(3, '0')
                 return (
                     <tr key={id}>
-                        <td>{`${(task.due-now)}`}</td>
+                        <td>{`${dueSeconds}.${dueMillis}`}</td>
                         <td>{task.description}</td>
                         <td>{task.userName}</td>
                         <td>{task.siteId}</td>

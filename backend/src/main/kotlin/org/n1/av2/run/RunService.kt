@@ -65,20 +65,18 @@ class RunService(
 
     class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val timers: List<TimerInfo>)
 
-    fun startNewRun(siteName: String) {
+    fun startNewRunAndReply(siteName: String): Run? {
         val siteProperties = sitePropertiesEntityService.findByName(siteName)
         if (siteProperties == null) {
             connectionService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
-            return
+            return null
         }
         if (!siteProperties.hackable) {
             replyNotHackable(siteProperties)
-            return
+            return null
         }
 
-        val nodeScanById = scanService.createInitialNodeScans(siteProperties.siteId)
-        val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
-        runLinkEntityService.createRunLink(run.runId, currentUserService.userEntity)
+        val run = startNewRun(siteProperties)
 
         connectionService.reply(
             ServerActions.SERVER_SITE_DISCOVERED,
@@ -88,6 +86,15 @@ class RunService(
         runLinkService.sendRunInfosToUser() // to update the scans in the home screen
 
         // enterRun will be called by the browser, the frontend needs to configure websocket connection for the run.
+
+        return run
+    }
+
+    fun startNewRun(siteProperties: SiteProperties): Run {
+        val nodeScanById = scanService.createInitialNodeScans(siteProperties.siteId)
+        val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
+        runLinkEntityService.createRunLink(run.runId, currentUserService.userEntity)
+        return run
     }
 
     fun prepareToEnterRun(runId: String) {

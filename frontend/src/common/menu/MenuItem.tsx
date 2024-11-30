@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Cookies from "js-cookie";
-import {NAVIGATE_PAGE, RUN} from "./pageReducer";
+import {NAVIGATE_PAGE, Page} from "./pageReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {Dispatch} from "redux";
 import {terminalManager} from "../terminal/TerminalManager";
@@ -10,7 +10,7 @@ import {HackerRootState} from "../../hacker/HackerRootReducer";
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
 interface Props {
-    targetPage: string,
+    targetPage: Page,
     label: string,
     requriesRole: string,
 }
@@ -43,11 +43,11 @@ export const MenuItem = (props: Props) => {
 
 }
 
-const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
+export const navigateTo = (currentPage: string, targetPage: string, runId: string | null, dispatch: Dispatch) => {
 
     updateTerminalState(targetPage)
 
-    if (currentPage === RUN && targetPage !== RUN) {
+    if (currentPage === Page.RUN && targetPage !== Page.RUN) {
         webSocketConnection.send("/run/leaveSite", runId);
     }
 
@@ -55,7 +55,7 @@ const navigateTo = (currentPage: string, targetPage: string, runId: string | nul
 }
 
 export const updateTerminalState = (targetPage: string) => {
-    if (targetPage === RUN) {
+    if (targetPage === Page.RUN) {
         terminalManager.start()
     } else {
         terminalManager.stop()

@@ -29,10 +29,14 @@ enum class ServerActions {
     SERVER_ADD_LAYER,
     SERVER_NODE_UPDATED,
 
+    SERVER_RECEIVE_CURRENT_USER,    // User details for current user
     SERVER_RECEIVE_USERS_OVERVIEW,  // List of users for user-overview
-    SERVER_USER_DETAILS,            // User details for editing
+    SERVER_RECEIVE_EDIT_USER,       // User details for editing
 
     SERVER_RECEIVE_CONFIG,          // Send the config to the client
+
+    SERVER_SCRIPT_TYPES,            // Send all script types to the client
+    SERVER_EDIT_SCRIPT_TYPE,        // Send to the client that this script type is being edited
 
 
     SERVER_UPDATE_USER_RUNS,        // Sent at logon to hacker to update the runs shown on home page of that user
@@ -53,8 +57,6 @@ enum class ServerActions {
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
 
-    SERVER_RECEIVE_HACKER_SKILLS,       // Send the skills of the current hacker to the client
-
     SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
     SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.
     SERVER_HACKER_DC,                   // A hacker disconnects from the site but is still at the site
@@ -67,6 +69,7 @@ enum class ServerActions {
 
     SERVER_START_TIMER,                 // The client can show the timer countdown
     SERVER_COMPLETE_TIMER,              // The timer countdown completes
+    SERVER_CHANGE_TIMER,                // The timer countdown changes due to a script or skill
 
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
 

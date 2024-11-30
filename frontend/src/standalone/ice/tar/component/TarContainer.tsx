@@ -1,7 +1,7 @@
 import React from "react";
 import {TarHome} from "./TarHome";
 import {useSelector} from "react-redux";
-import {FORCE_DISCONNECT} from "../../../../common/menu/pageReducer";
+import {Page} from "../../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../../common/component/ForceDisconnected";
 import {TarRootState} from "../reducer/TarRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
@@ -9,8 +9,8 @@ import {IceHackerPresence} from "../../common/IceHackerPresence";
 
 export const TarContainer = () => {
 
-    const currentPage: string =  useSelector((state: TarRootState) =>  state.currentPage)
-    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+    const currentPage: Page =  useSelector((state: TarRootState) =>  state.currentPage)
+    if (currentPage === Page.FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

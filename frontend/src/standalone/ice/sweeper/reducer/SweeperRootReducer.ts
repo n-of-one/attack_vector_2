@@ -2,12 +2,12 @@ import {createTerminalReducer, TerminalState} from "../../../../common/terminal/
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../../common/terminal/ActiveTerminalIdReducer";
 import {combineReducers} from "redux";
 import {SweeperUiState, sweeperUiStateReducer} from "./SweeperUiStateReducer";
-import {pageReducer} from "../../../../common/menu/pageReducer";
+import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 
 
 export interface SweeperRootState {
-    currentPage: string,
+    currentPage: Page,
     hackers: IceHackers,
     ui: SweeperUiState,
     displayTerminal: TerminalState,

@@ -10,6 +10,7 @@ import {initGenericServerActions} from "../../../common/server/GenericServerActi
 import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {SERVER_TANGLE_ENTER, SERVER_TANGLE_POINT_MOVED} from "./reducer/TangleIceReducer";
 import {ice} from "../../StandaloneGlobals";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string,
@@ -22,7 +23,7 @@ export class TangleRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        const preLoadedState = {currentPage: "tangle"}
+        const preLoadedState = {currentPage: Page.ICE}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

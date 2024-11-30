@@ -52,14 +52,16 @@ class RunLinkService(
         val scan = runEntityService.getByRunId(runId)
         val siteProperties = sitePropertiesEntityService.getBySiteId(scan.siteId)
 
-        connectionService.toUser(userEntity.id, SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
-        connectionService.toUser(
-            userEntity.id,
-            SERVER_TERMINAL_RECEIVE,
-            ConnectionService.TerminalReceive(TERMINAL_MAIN, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
-        )
+        if (sendFeedback) {
+            connectionService.toUser(userEntity.id, SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, myUserName, "Scan shared for: ${siteProperties.name}"))
+            connectionService.toUser(
+                userEntity.id,
+                SERVER_TERMINAL_RECEIVE,
+                ConnectionService.TerminalReceive(TERMINAL_MAIN, arrayOf("[warn]${myUserName}[/] shared scan: [info]${siteProperties.name}[/]"))
+            )
 
-        sendRunInfosToUser(userEntity.id)
+            sendRunInfosToUser(userEntity.id)
+        }
     }
 
     data class RunInfo(val runId: String, val siteName: String, val siteId: String, val nodes: String)

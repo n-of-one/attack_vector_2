@@ -1,15 +1,15 @@
 import React from "react";
 import {NetwalkHome} from "./NetwalkHome";
 import {useSelector} from "react-redux";
-import {FORCE_DISCONNECT} from "../../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../../common/component/ForceDisconnected";
 import {NetwalkRootState} from "../reducer/NetwalkRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
+import {Page} from "../../../../common/menu/pageReducer";
 
 export const NetwalkContainer = () => {
 
-    const currentPage: string = useSelector((state: NetwalkRootState) =>  state.currentPage)
-    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+    const currentPage: Page = useSelector((state: NetwalkRootState) =>  state.currentPage)
+    if (currentPage === Page.FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

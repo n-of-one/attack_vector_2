@@ -6,6 +6,7 @@ import {NAVIGATE_PAGE} from "../../../common/menu/pageReducer";
 
 export const SERVER_START_TIMER = "SERVER_START_TIMER"
 export const SERVER_COMPLETE_TIMER = "SERVER_COMPLETE_TIMER"
+export const SERVER_CHANGE_TIMER = "SERVER_CHANGE_TIMER"
 
 export const SERVER_FLASH_PATROLLER = "SERVER_FLASH_PATROLLER"
 
@@ -39,12 +40,14 @@ export const timersReducer = (state: TimerState[] = [], action: AnyAction): Time
             return startTimer(state, action.data)
         case SERVER_COMPLETE_TIMER:
             return completeTimer(state, action.data)
+        case SERVER_CHANGE_TIMER:
+            return updateTimer(state, action.data)
         default:
             return state
     }
 }
 
-interface TimerStart {
+interface TimerInfo {
     timerId: string,
     finishAt: string
     type: TimerType,
@@ -52,10 +55,13 @@ interface TimerStart {
     effect: string
 }
 
-const startTimer = (state: TimerState[], timerStart: TimerStart): TimerState[] => {
-    const secondsLeft = serverTime.secondsLeft(timerStart.finishAt)
-    const newTimer: TimerState = {...timerStart, secondsLeft: secondsLeft}
-    return [...state, newTimer]
+const startTimer = (state: TimerState[], timerStart: TimerInfo): TimerState[] => {
+    return [...state, createTimer(timerStart)]
+}
+
+const createTimer = (timerInfo: TimerInfo): TimerState => {
+    const secondsLeft = serverTime.secondsLeft(timerInfo.finishAt)
+    return {...timerInfo, secondsLeft: secondsLeft}
 }
 
 const processSecondElapsed = (state: TimerState[]) => {
@@ -78,4 +84,13 @@ interface SpecificTimer {
 
 const completeTimer = (state: TimerState[], action: SpecificTimer): TimerState[] => {
     return state.filter(timer => timer.timerId !== action.timerId)
+}
+
+const updateTimer = (state: TimerState[], toChange: TimerInfo): TimerState[] => {
+    return state.map(timer => {
+        if (timer.timerId === toChange.timerId) {
+            return createTimer(toChange)
+        }
+        return timer
+    })
 }

@@ -46,6 +46,10 @@ class UniqueConstraintAdder(
     }
 
     private fun createUniqueIndex() {
+        val indexAlreadyExists = collection.listIndexes().any { index -> index["name"] == uniqueFieldName }
+        if (indexAlreadyExists) {
+            return // do not create it again, this will fail.
+        }
         collection.createIndex(Document(uniqueFieldName, 1), IndexOptions().unique(true))
     }
 

@@ -11,6 +11,7 @@ import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
 import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_UPDATE} from "../../app/auth/AuthServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string,
@@ -25,7 +26,7 @@ export class PasswordRoot extends Component<Props> {
         super(props)
         ice.id = props.iceId
 
-        const preLoadedState = {activeTerminalId: ICE_INPUT_TERMINAL_ID as "iceInput", currentPage: "password"}
+        const preLoadedState = {activeTerminalId: ICE_INPUT_TERMINAL_ID as "iceInput", currentPage: Page.ICE}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

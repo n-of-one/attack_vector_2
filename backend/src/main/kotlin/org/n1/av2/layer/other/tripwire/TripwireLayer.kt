@@ -3,13 +3,14 @@ package org.n1.av2.layer.other.tripwire
 import org.n1.av2.editor.SiteRep
 import org.n1.av2.editor.SiteStateMessageType
 import org.n1.av2.editor.SiteValidationException
-import org.n1.av2.editor.toDuration
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.platform.util.toDuration
+import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.site.entity.enums.LayerType
 import java.time.Duration
 
-val MINIMUM_SHUTDOWN = Duration.ofMinutes(1)
+val MINIMUM_SHUTDOWN: Duration = Duration.ofMinutes(1)
 
 class TripwireLayer(
     id: String,
@@ -31,12 +32,16 @@ class TripwireLayer(
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateCountdown(siteRep: SiteRep) {
-        this.countdown.toDuration("countdown")
+        val errorText = this.countdown.validateDuration()
+        if (errorText != null) throw SiteValidationException("countdown $errorText")
     }
 
     @Suppress("UNUSED_PARAMETER")
     private fun validateShutdown(siteRep: SiteRep) {
-        val duration = this.shutdown.toDuration("shutdown")
+        val errorText = this.shutdown.validateDuration()
+        if (errorText != null) throw SiteValidationException("countdown $shutdown")
+
+        val duration = this.shutdown.toDuration()
 
         if (duration < MINIMUM_SHUTDOWN) {
             throw SiteValidationException("Shutdown must be at least 01:00 (1 minute).")
@@ -62,4 +67,5 @@ class TripwireLayer(
         }
         return true
     }
+
 }

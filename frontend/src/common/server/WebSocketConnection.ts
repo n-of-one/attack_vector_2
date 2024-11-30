@@ -4,7 +4,7 @@ import {TERMINAL_RECEIVE} from "../terminal/TerminalReducer"
 import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "./GenericServerActionProcessor"
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
-import {FORCE_DISCONNECT, NAVIGATE_PAGE} from "../menu/pageReducer";
+import {NAVIGATE_PAGE, Page} from "../menu/pageReducer";
 
 
 export const WS_UNRESTRICTED = "WS_UNRESTRICTED"
@@ -232,7 +232,7 @@ export class WebSocketConnection {
     }
 
     abort(message: string) {
-        this.store.dispatch({type: NAVIGATE_PAGE, to: FORCE_DISCONNECT})
+        this.store.dispatch({type: NAVIGATE_PAGE, to: Page.FORCE_DISCONNECT})
         this.client.disconnect()
         notify({type: "fatal", message, title: "ERROR"})
     }

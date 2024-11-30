@@ -8,6 +8,13 @@ import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.site.tutorial.TutorialService
 import org.springframework.stereotype.Component
 
+/**
+ * V6
+ *
+ * Change how default data is imported. Rather than being created on application startup,
+ * it is now created during the migration process. This way admins can remove default data
+ * that they don't need, and it won't be recreated on the next startup.
+ */
 @Component
 class V6_ImportDefaultData(
     private val tutorialService: TutorialService,

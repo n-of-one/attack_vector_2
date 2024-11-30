@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 
 /*
 For all config that is static, i.e. fixed at startup
-Minimize usage to connection to database
 */
 @Service
 class StaticConfig(
@@ -19,5 +18,8 @@ class StaticConfig(
     // Needed to set up the date/time convertors for MongoDB. Could theoretically be supported to change at runtime, but this would introduce a lot of complexity
     @Value("\${environment.TIME_ZONE:default}")
     val timeZoneInput: String,
+
+    @Value("\${DEVELOPMENT:false}")
+    val developmentEnvironment: Boolean
 
 )

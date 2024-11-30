@@ -1,8 +1,10 @@
 import {AnyAction} from "redux";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigState} from "../../admin/config/ConfigReducer";
+import {Script} from "../script/ScriptModel";
+import {HackerScriptAccess} from "../script/ScriptAccessModel";
 
-export const SERVER_USER_DETAILS = "SERVER_USER_DETAILS"
+export const SERVER_RECEIVE_CURRENT_USER = "SERVER_RECEIVE_CURRENT_USER"
 
 export enum UserType {
     NO_DATA = "NO_DATA",
@@ -17,6 +19,11 @@ export interface User {
     name: string,
     type: UserType,
     hacker?: Hacker,
+}
+
+export const hasSkill = ( user: User, requested: HackerSkillType): boolean => {
+    const skills = user.hacker?.skills || []
+    return skills.some((hackerSKill) => hackerSKill.type === requested)
 }
 
 export enum HackerSkillType {
@@ -35,6 +42,8 @@ export interface Hacker {
     characterName: string,
     icon: HackerIcon,
     skills: HackerSkill[],
+    scripts: Script[],
+    scriptAccess: HackerScriptAccess[],
 }
 
 export interface GenericUserRootState {
@@ -53,7 +62,7 @@ const defaultUser = {
 
 export const currentUserReducer = (state: User = defaultUser, action: AnyAction): User => {
     switch(action.type) {
-        case SERVER_USER_DETAILS : return action.data
+        case SERVER_RECEIVE_CURRENT_USER : return action.data
         default: return state
     }
 }

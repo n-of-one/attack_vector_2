@@ -10,6 +10,11 @@ import org.n1.av2.platform.db.MigrationStep
 import org.n1.av2.platform.iam.user.UserTag
 import org.springframework.stereotype.Component
 
+/**
+ * V5
+ *
+ * Refactoring how hacker skills are modelled and stored in the database.
+ */
 @Component
 class V5_HackerSkills() : MigrationStep {
 

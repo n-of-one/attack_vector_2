@@ -37,9 +37,14 @@ class TutorialService(
     fun importTutorialSite(): Boolean {
         val site = sitePropertiesEntityService.findByName(TUTORIAL_TEMPLATE_NAME)
         if (site != null) return false
-        currentUserService.set(userEntityService.getSystemUser())
-        val json = this::class.java.getResource("/v3-tutorial.json")?.readText() ?: error("tutorial json not found")
-        importService.importSite(json)
+        try {
+            currentUserService.set(userEntityService.getSystemUser())
+            val json = this::class.java.getResource("/sites/v1-tutorial.json")?.readText() ?: error("tutorial json not found")
+            importService.importSite(json)
+        }
+        finally {
+            currentUserService.remove()
+        }
         return true
     }
 

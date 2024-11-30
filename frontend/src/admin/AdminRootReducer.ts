@@ -1,8 +1,8 @@
-import {currentUserReducer} from "../common/users/UserReducer";
+import {currentUserReducer} from "../common/users/CurrentUserReducer";
 import {configReducer} from "./config/ConfigReducer";
 import {combineReducers} from "redux";
 import {pageReducer} from "../common/menu/pageReducer";
-import {GmRootState, usersReducer} from "../gm/GmRootReducer";
+import {GmRootState, scriptManagementReducer, usersReducer} from "../gm/GmRootReducer";
 import {Task, tasksReducer} from "../gm/taskmonitor/TaskReducer";
 import {sitesReducer} from "../common/sites/SitesReducer";
 
@@ -19,6 +19,7 @@ export const adminRootReducer = combineReducers({
     currentPage: pageReducer,
     users: usersReducer,
     sites: sitesReducer,
+    scriptsManagement: scriptManagementReducer,
 
     // from AdminRootState
     tasks: tasksReducer,

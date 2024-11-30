@@ -10,6 +10,7 @@ import {ice} from "../../StandaloneGlobals";
 import {SweeperContainer} from "./component/SweeperContainer";
 import {sweeperIceManager} from "./SweeperIceManager";
 import {initSweeperServerActions} from "./SweeperServerActionProcessor";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string
@@ -23,7 +24,7 @@ export class SweeperRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
         ice.id = props.iceId
-        const preLoadedState = {currentPage: "netwalk"}
+        const preLoadedState = {currentPage: Page.ICE}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

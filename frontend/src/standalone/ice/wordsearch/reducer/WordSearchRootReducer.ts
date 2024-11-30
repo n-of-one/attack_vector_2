@@ -4,12 +4,12 @@ import {combineReducers} from "redux";
 import {WordSearchState, wordSearchStateReducer} from "./WordSearchStateReducer";
 import {WordSearchPuzzle, wordSearchPuzzleReducer} from "./WordSearchPuzzleReducer";
 import {UIState, wordSearchUiStateReducer} from "./WordSearchUiStateReducer";
-import {pageReducer} from "../../../../common/menu/pageReducer";
+import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
 
 
 export interface WordSearchRootState {
-    currentPage: string,
+    currentPage: Page,
     hackers: IceHackers,
     state: WordSearchState,
     puzzle: WordSearchPuzzle,

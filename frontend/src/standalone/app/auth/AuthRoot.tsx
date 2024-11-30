@@ -9,6 +9,7 @@ import {AuthAppRootState, authRootReducer} from "./reducer/AuthRootReducer";
 import {initAuthServerActions} from "./AuthServerActionProcessor";
 import {AuthContainer} from "./component/AuthContainer";
 import {ice, layer} from "../../StandaloneGlobals";
+import {Page} from "../../../common/menu/pageReducer";
 
 interface Props {
     iceId: string
@@ -24,7 +25,7 @@ export class AuthRoot extends Component<Props> {
         ice.id = props.iceId
         layer.id = props.layerId
 
-        const preLoadedState = {currentPage: "iceApp"}
+        const preLoadedState = {currentPage: Page.ICE_AUTH}
 
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 

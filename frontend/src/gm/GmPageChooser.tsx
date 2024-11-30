@@ -4,17 +4,31 @@ import {useSelector} from "react-redux"
 import {SitesPage} from "../common/sites/SitesPage";
 import {UserManagement} from "../common/users/UserManagement";
 import {GmRootState} from "./GmRootReducer";
-import {SITES, TASKS, USERS} from "../common/menu/pageReducer";
 import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
+import {UserType} from "../common/users/CurrentUserReducer";
+import {HackerRootState} from "../hacker/HackerRootReducer";
+import {Page} from "../common/menu/pageReducer";
+import {ScriptManagement} from "./scripts/ScriptManagement";
+import {ScriptAccessManagement} from "./scripts/ScriptAccessManagement";
+import {GmScriptHome} from "./scripts/GmScriptHome";
+import {ScriptTypeOverview} from "./scripts/scriptType/ScriptTypeOverview";
 
 
-const renderCurrentPage = (currentPage: string) => {
+const renderCurrentPage = (currentPage: Page) => {
     switch (currentPage) {
-        case SITES:
+        case Page.SITES:
             return <SitesPage/>
-        case USERS:
+        case Page.USERS:
             return <UserManagement/>
-        case TASKS:
+        case Page.GM_SCRIPTS_HOME:
+            return <GmScriptHome/>
+        case Page.SCRIPT_TYPE_MANAGEMENT:
+            return <ScriptTypeOverview/>
+        case Page.SCRIPT_MANAGEMENT:
+            return <ScriptManagement/>
+        case Page.SCRIPT_ACCESS_MANAGEMENT:
+            return <ScriptAccessManagement/>
+        case Page.TASKS:
             return <TaskMonitorHome/>
         default:
             return <SitesPage/>
@@ -23,7 +37,10 @@ const renderCurrentPage = (currentPage: string) => {
 
 export const GmPageChooser = () => {
 
-    const currentPage: string = useSelector((state: GmRootState) => state.currentPage)
+    const currentPage: Page = useSelector((state: GmRootState) => state.currentPage)
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+
+    if (currentUser.type === UserType.NO_DATA) return <></> // waiting for currentUser to be received
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

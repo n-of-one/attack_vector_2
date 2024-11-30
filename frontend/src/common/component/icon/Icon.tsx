@@ -27,15 +27,17 @@ interface Props {
     display?: string
     color?: string // use this if you want to always set the color
     svgColor?: string // use this if you only want to set the color if the icon is an svg. Use when glyphicon is colored by text
+    size?: string
+    height?: string
 }
 
-export const Icon = ({type, display, color, svgColor}: Props) => {
+export const Icon = ({type, display, color, svgColor, size, height}: Props) => {
     const family = iconFamily(type!)
 
 
     switch (family) {
         case "glyphicon" :
-            return <Glyphicon type={type} display={display} color={color}/>
+            return <Glyphicon type={type} display={display} color={color} size={size} height={height}/>
         case "svg":
             const finalColor = svgColor ? svgColor : color
             return <SvgIcon type={type} color={finalColor}/>
@@ -45,6 +47,10 @@ export const Icon = ({type, display, color, svgColor}: Props) => {
 }
 
 const iconFamily = (type: string) => {
+    if (type.startsWith("GLYPHICON")) {
+        return "glyphicon"
+    }
+
     switch (type) {
         case OS:
         case TEXT:

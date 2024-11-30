@@ -1,7 +1,7 @@
 import toast, {Toast, Toaster, ToastPosition} from 'react-hot-toast';
 import React from "react";
 
-const createNotification = (title: string | undefined, message: string, duration: number, location: ToastPosition="top-right", dismiss = true) => {
+export const createNotification = (title: string | undefined, message: string, duration: number, location: ToastPosition="top-right", dismiss = true) => {
 
     const text = title ? title + ": " + message : message
 
@@ -35,6 +35,7 @@ const createNotification = (title: string | undefined, message: string, duration
 export type NotificationType = "ok" | "neutral" | "error" | "fatal"
 
 export const notify = ({type, message, title}: { type: NotificationType, title?: string, message: string }) => {
+
 
     if (type === "ok") {
         createNotification(title, message, 8000)

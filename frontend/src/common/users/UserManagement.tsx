@@ -8,7 +8,7 @@ import {UserDetails} from "./UserDetails";
 import {RequiresRole} from "../user/RequiresRole";
 import {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {TextInput} from "../component/TextInput";
-import {User} from "./UserReducer";
+import {User} from "./CurrentUserReducer";
 
 
 export const UserManagement = () => {
@@ -41,8 +41,6 @@ export const UserManagementAuthorized = () => {
             <div className="col-lg-4">
                 <div className="text">
                     <h3 className="text-info">User management</h3><br/>
-                    <br/>
-                    <br/>
                     {CreateUser(user)}
                     {user !== null ? <UserDetails user={user}/> : <></>}
                 </div>

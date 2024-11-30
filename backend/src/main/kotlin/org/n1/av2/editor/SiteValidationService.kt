@@ -144,26 +144,6 @@ class SiteValidationService(
     }
 }
 
-fun String.toDuration(type: String): Duration {
-    val errorText = "${type} time must be \"0\" or in the format (hours):(minutes):(seconds) or (minutes):(second) for example: 0:12:00 or 12:00"
-    if (this.trim() == "0") return Duration.ZERO
 
-    val parts = this.split(":")
-
-    if (parts.size < 2 || parts.size > 3) throw SiteValidationException(errorText)
-
-    val normalizedParts = if (parts.size == 3) parts else listOf("0") + parts
-
-    val hours = normalizedParts[0].toLongOrNull() ?: throw SiteValidationException(errorText)
-    val minutes = normalizedParts[1].toLongOrNull() ?: throw SiteValidationException(errorText)
-    val seconds = normalizedParts[2].toLongOrNull() ?: throw SiteValidationException(errorText)
-
-    if (hours < 0 || minutes < 0 || seconds <0) {
-        throw SiteValidationException("${type} time must be positive.")
-    }
-
-    return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
-
-}
 
 class SiteValidationException(message: String, val type: SiteStateMessageType = SiteStateMessageType.ERROR) : Exception(message)

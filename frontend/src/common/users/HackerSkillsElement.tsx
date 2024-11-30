@@ -1,4 +1,4 @@
-import {HackerSkillType, User} from "./UserReducer";
+import {HackerSkillType, User} from "./CurrentUserReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {TextSaveInput} from "../component/TextSaveInput";
 import React from "react";
@@ -8,12 +8,12 @@ interface Props {
     readonlySkills: boolean,
 }
 
-export const UserSkills = ({user, readonlySkills}: Props) => {
+export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
     return <>
-        <UserSkill user={user} skillType={HackerSkillType.SCAN} skillName="Scan" readonly={readonlySkills} hasValue={false}/>
-        <UserSkill user={user} skillType={HackerSkillType.SEARCH_SITE} skillName="Search site" readonly={readonlySkills} hasValue={false}/>
-        <UserSkill user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}/>
-        {/*<UserSkill user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}/>*/}
+        <HackerSkillElement user={user} skillType={HackerSkillType.SCAN} skillName="Scan" readonly={readonlySkills} hasValue={false}/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.SEARCH_SITE} skillName="Search site" readonly={readonlySkills} hasValue={false}/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}/>
+        {/*<HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}/>*/}
     </>
 }
 
@@ -26,7 +26,7 @@ interface UserSkillProps {
     hasValue: boolean,
 }
 
-const UserSkill = ({user, skillType, skillName, readonly, hasValue}: UserSkillProps) => {
+const HackerSkillElement = ({user, skillType, skillName, readonly, hasValue}: UserSkillProps) => {
     if (!user.hacker) {
         return <></>
     }// no hacker data

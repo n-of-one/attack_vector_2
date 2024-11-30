@@ -10,6 +10,7 @@ import {ENTER_KEY} from "../../../common/util/KeyCodes";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";
 import {HackerRootState} from "../../HackerRootReducer";
+import {ScriptPanel} from "./script/ScriptPanel";
 
 
 const TerminalAndScanResultPanel = (infoNodeId: string | null, terminal: TerminalState, submit: () => void) => {
@@ -49,22 +50,25 @@ export const RunHome = () => {
     const infoNodeId = useSelector((state: HackerRootState) => state.run.infoNodeId)
 
     return (
-        <div className="row">
-            <div className="col-lg-4">
-                {TerminalAndScanResultPanel(infoNodeId, terminal, submit)}
-            </div>
-            <div className="col-lg-8">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <span className="text">Site: {siteName}</span>
+        <>
+            <ScriptPanel />
+            <div className="row">
+                <div className="col-lg-4">
+                    {TerminalAndScanResultPanel(infoNodeId, terminal, submit)}
+                </div>
+                <div className="col-lg-8">
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <span className="text">Site: {siteName}</span>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <RunCanvasPanel dispatch={dispatch} userId={currentUser.id}/>
+                        </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-lg-12">
-                        <RunCanvasPanel dispatch={dispatch} userId={currentUser.id}/>
-                    </div>
-                </div>
             </div>
-        </div>
+        </>
     )
 }

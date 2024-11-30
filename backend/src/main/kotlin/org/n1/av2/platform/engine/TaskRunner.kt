@@ -23,6 +23,8 @@ data class TaskIdentifiers(val userId: String?, val siteId: String?, val layerId
 
 private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 
+data class TaskDue(val inSeconds: Long, val dueAtLocalMillis: Long)
+
 /**
  * All actions are performed on a single thread, this way the execution becomes very predictable,
  * and we don't worry about parallel execution in the rest of our code.
@@ -75,6 +77,10 @@ class SystemTaskRunner(
         taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)
     }
 
+    fun removeTask(identifiers: TaskIdentifiers): TaskDue {
+        return taskEngine.removeSpecific(identifiers)
+    }
+
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
     @Deprecated(
         message = ">> Do not use run, Use runTask() instead",
@@ -84,6 +90,7 @@ class SystemTaskRunner(
     fun run(action: () -> Unit) {
         error(">> Do not use run, this is ambiguous with Kotlin run. Use runTask() instead")
     }
+
 }
 
 @Component
@@ -189,6 +196,10 @@ class TaskEngine(
         connectionService.toUser(userPrincipal.name, ServerActions.SERVER_TASKS, tasks)
     }
 
+    fun removeSpecific(identifiers: TaskIdentifiers): TaskDue {
+        return timedTaskRunner.removeSpecific(identifiers)
+    }
+
 }
 
 
@@ -228,6 +239,22 @@ private class TimedTaskRunner {
                     task.identifiers.layerId == identifiers.layerId
         }
         this.sort()
+    }
+
+    fun removeSpecific(identifiers: TaskIdentifiers): TaskDue {
+        val toRemove: TimedTask = timedTasks.find { task ->
+            task.identifiers.userId == identifiers.userId &&
+                task.identifiers.siteId == identifiers.siteId &&
+                task.identifiers.layerId == identifiers.layerId
+        } ?: error("Task not found")
+
+        timedTasks.remove(toRemove)
+        this.sort()
+
+        val dueInSeconds = (toRemove.due - System.currentTimeMillis()) / 1000
+        val dueAtLocalMillis = toRemove.due
+
+        return TaskDue(dueInSeconds, dueAtLocalMillis)
     }
 
     fun sort() {

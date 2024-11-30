@@ -1,6 +1,6 @@
 import React from "react";
 import {useSelector} from "react-redux";
-import {FORCE_DISCONNECT} from "../../../../common/menu/pageReducer";
+import {Page} from "../../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../../common/component/ForceDisconnected";
 import {SweeperRootState} from "../reducer/SweeperRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
@@ -9,8 +9,8 @@ import {SweeperHome} from "./SweeperHome";
 export const SweeperContainer = () => {
 
     const blockedUserIds = useSelector((state: SweeperRootState) => state.ui.blockedUserIds)
-    const currentPage: string = useSelector((state: SweeperRootState) =>  state.currentPage)
-    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+    const currentPage: Page = useSelector((state: SweeperRootState) =>  state.currentPage)
+    if (currentPage === Page.FORCE_DISCONNECT) return <ForceDisconnected/>
 
 
 

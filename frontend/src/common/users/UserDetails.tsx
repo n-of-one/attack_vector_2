@@ -1,6 +1,6 @@
 import React from 'react'
 import {CLOSE_USER_EDIT} from "./EditUserReducer";
-import {User, UserType} from "./UserReducer";
+import {User, UserType} from "./CurrentUserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
 import userAuthorizations, {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
@@ -10,7 +10,9 @@ import {webSocketConnection} from "../server/WebSocketConnection";
 import {currentUser} from "../user/CurrentUser";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
-import {UserSkills} from "./UserSkills";
+import {HackerSkillsElement} from "./HackerSkillsElement";
+import {ScriptManagementButton} from "../../gm/scripts/ScriptManagement";
+import {ScriptAccessManagementButton} from "../../gm/scripts/ScriptAccessManagement";
 
 const save = (userId: string, field: string, value: string) => {
     const message = {userId: userId, field, value}
@@ -86,6 +88,10 @@ const HackerDetails = ({user}: { user: User }) => {
     const readonlySkills = !(authorizationToEditSkills)
     const showSkills = (hackerShowSkills || authorizationToEditSkills)
 
+    const authorizationToManageScripts = userAuthorizations.hasRole(ROLE_USER_MANAGER)
+    const linkToManageScripts = authorizationToManageScripts ? <ScriptManagementButton/> : <></>
+    const linkToManageScriptAccess = authorizationToManageScripts ? <ScriptAccessManagementButton/> : <></>
+
 
     return <>
         <hr/>
@@ -115,8 +121,12 @@ const HackerDetails = ({user}: { user: User }) => {
             <div className="text">Skills</div>
             <br/>
 
-            <UserSkills user={user} readonlySkills={readonlySkills}/>
+            <HackerSkillsElement user={user} readonlySkills={readonlySkills}/>
         </> : <></>}
+        <hr/>
+        <div className="text">Scripts</div>
+        <br/>
+        {linkToManageScriptAccess} {linkToManageScripts}
     </>
 }
 
@@ -163,8 +173,8 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
 
     return <>
         <hr/>
-        <div className="d-flex flex-row">
-            <button className="btn btn-info btn-sm pull-right" onClick={deleteFunction}>Delete</button>
+        <div className="d-flex flex-row-reverse">
+            <button className="btn btn-info button-text" onClick={deleteFunction}>Delete</button>
         </div>
     </>
 }

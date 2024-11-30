@@ -1,16 +1,16 @@
 import React from "react";
 import {TangleIceHome} from "./TangleIceHome";
 import {useSelector} from "react-redux";
-import {FORCE_DISCONNECT} from "../../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../../common/component/ForceDisconnected";
 import {TangleRootState} from "../reducer/TangleRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
+import {Page} from "../../../../common/menu/pageReducer";
 
 
 export const TangleContainer = () => {
 
-    const currentPage: string =  useSelector((state: TangleRootState) =>  state.currentPage)
-    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+    const currentPage: Page =  useSelector((state: TangleRootState) =>  state.currentPage)
+    if (currentPage === Page.FORCE_DISCONNECT) return <ForceDisconnected/>
 
     return (
         <div className="container-fluid" data-bs-theme="dark">

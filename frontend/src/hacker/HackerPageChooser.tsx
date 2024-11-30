@@ -4,12 +4,13 @@ import {MenuBar} from "../common/menu/MenuBar"
 import {runCanvas} from "./run/component/RunCanvas"
 import {useSelector} from "react-redux"
 import {HackerRootState} from "./HackerRootReducer"
-import {FORCE_DISCONNECT, ME, RUN, SITES, USERS} from "../common/menu/pageReducer"
 import {RunHome} from "./run/component/RunHome";
-import {UserManagement} from "../common/users/UserManagement";
 import {ForceDisconnected} from "../common/component/ForceDisconnected";
 import {Me} from "../common/users/Me";
 import {SitesPage} from "../common/sites/SitesPage";
+import {UserType} from "../common/users/CurrentUserReducer";
+import {Page} from "../common/menu/pageReducer";
+import {HackerScriptsHome} from "./scripts/HackerScriptsHome";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -26,17 +27,16 @@ const dismissScanInfo = (infoNodeId: string | null, event: any) => {
 }
 
 
-
-const renderCurrentPage = (currentPage: string) => {
+const renderCurrentPage = (currentPage: Page) => {
     switch (currentPage) {
-        case RUN:
+        case Page.RUN:
             return <RunHome/>
-        case SITES:
+        case Page.SITES:
             return <SitesPage/>
-        case ME:
+        case Page.HACKER_SCRIPTS:
+            return <HackerScriptsHome />
+        case Page.ME:
             return <Me/>
-        case USERS:
-            return <UserManagement/>
         default:
             return <HackerHome/>
     }
@@ -45,10 +45,12 @@ const renderCurrentPage = (currentPage: string) => {
 
 export const HackerPageChooser = () => {
 
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
     const infoNodeId: string | null = useSelector((state: HackerRootState) => state.run?.infoNodeId)
+    const currentPage: Page = useSelector((state: HackerRootState) => state.currentPage)
 
-    const currentPage: string = useSelector((state: HackerRootState) => state.currentPage)
-    if (currentPage === FORCE_DISCONNECT) return <ForceDisconnected/>
+    if (currentPage === Page.FORCE_DISCONNECT) return <ForceDisconnected/>
+    if (currentUser.type === UserType.NO_DATA) return <></> // waiting for currentUser to be received
 
     return (
         <div className="container-fluid" data-bs-theme="dark" onClick={(event) => dismissScanInfo(infoNodeId, event)}>

@@ -14,7 +14,7 @@ import {Schedule} from "../common/util/Schedule"
 import {NodeScanStatus} from "../common/enums/NodeStatus";
 import {MAIN_TERMINAL_ID} from "../common/terminal/ActiveTerminalIdReducer";
 import {currentUser} from "../common/user/CurrentUser";
-import {NAVIGATE_PAGE, RUN} from "../common/menu/pageReducer";
+import {NAVIGATE_PAGE, Page} from "../common/menu/pageReducer";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {HIDE_NODE_INFO} from "./run/reducer/InfoNodeIdReducer";
 import {avEncodedUrl} from "../common/util/PathEncodeUtils";
@@ -172,7 +172,7 @@ export const initRunServerActions = (store: Store) => {
         dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: "[b]🜁 Verdant OS 🜃"})
         dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: ""})
         const currentPage = store.getState().currentPage
-        dispatch({type: NAVIGATE_PAGE, to: RUN, from: currentPage})
+        dispatch({type: NAVIGATE_PAGE, to: Page.RUN, from: currentPage})
         terminalManager.start()
 
         webSocketConnection.send("/run/enterRun", data.runId)

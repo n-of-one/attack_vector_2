@@ -4,12 +4,7 @@ import org.n1.av2.site.entity.Node
 import java.util.*
 
 
-fun neverFindExisting(ignore: String): Any? {
-    return null
-}
-
-
-fun createId(prefix: String, findExisting: (String)-> Any? = ::neverFindExisting): String {
+fun createId(prefix: String, findExisting: (String)-> Any?): String {
     return createId(prefix, findExisting, 9, 18)
 }
 

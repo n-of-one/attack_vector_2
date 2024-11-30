@@ -25,9 +25,11 @@ class HackerWsController(
     fun logon(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             runLinkService.sendRunInfosToUser()
-            siteService.sendSitesList()
             configService.replyConfigValues()
-            userAndHackerService.replyHackerSkills(userPrincipal.userEntity)
+            siteService.sendSitesList()
+
+            // This will trigger the rendering of the page, send last so that no page updates happen after.
+            userAndHackerService.sendDetailsOfCurrentUser()
         }
     }
 
