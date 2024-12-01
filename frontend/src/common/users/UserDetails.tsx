@@ -1,5 +1,5 @@
 import React from 'react'
-import {CLOSE_USER_EDIT} from "./EditUserReducer";
+import {CLOSE_USER_EDIT} from "./EditUserDataReducer";
 import {User, UserType} from "./CurrentUserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
@@ -11,8 +11,6 @@ import {currentUser} from "../user/CurrentUser";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
 import {HackerSkillsElement} from "./HackerSkillsElement";
-import {ScriptManagementButton} from "../../gm/scripts/ScriptManagement";
-import {ScriptAccessManagementButton} from "../../gm/scripts/ScriptAccessManagement";
 
 const save = (userId: string, field: string, value: string) => {
     const message = {userId: userId, field, value}
@@ -88,10 +86,6 @@ const HackerDetails = ({user}: { user: User }) => {
     const readonlySkills = !(authorizationToEditSkills)
     const showSkills = (hackerShowSkills || authorizationToEditSkills)
 
-    const authorizationToManageScripts = userAuthorizations.hasRole(ROLE_USER_MANAGER)
-    const linkToManageScripts = authorizationToManageScripts ? <ScriptManagementButton/> : <></>
-    const linkToManageScriptAccess = authorizationToManageScripts ? <ScriptAccessManagementButton/> : <></>
-
 
     return <>
         <hr/>
@@ -126,7 +120,6 @@ const HackerDetails = ({user}: { user: User }) => {
         <hr/>
         <div className="text">Scripts</div>
         <br/>
-        {linkToManageScriptAccess} {linkToManageScripts}
     </>
 }
 

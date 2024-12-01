@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import {SilentLink} from "../component/SilentLink";
-import {UserOverview} from "./EditUserReducer";
+import {UserOverview} from "./EditUserDataReducer";
 import {useSelector} from "react-redux";
 import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
@@ -25,14 +25,13 @@ export const UserManagementAuthorized = () => {
     }, [])
 
     const users: UserOverview[] = useSelector((state: GmRootState) => state.users.overview)
-    const sortedUsers = sortUsers(users)
 
 
-    const selectUser = (userId: string) => {
-        webSocketConnection.send("/user/select", userId)
+    const selectUser = (userOverview: UserOverview) => {
+        webSocketConnection.send("/user/select", userOverview.id)
     }
 
-    const user = useSelector((state: GmRootState) => state.users.edit)
+    const user = useSelector((state: GmRootState) => state.users.edit.userData)
 
     return (
         <div className="row">
@@ -48,34 +47,43 @@ export const UserManagementAuthorized = () => {
             </div>
             <div className="col-lg-6 rightPane rightPane">
                 <div className="siteMap">
-                    <table className="table table-sm text-muted text" id="sitesTable">
-                        <thead>
-                        <tr>
-                            <td className="strong">Name</td>
-                            <td className="strong">Character</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            sortedUsers.map((user: UserOverview) => {
-                                return (
-                                    <tr key={user.id}>
-                                        <td className="table-very-condensed"><SilentLink onClick={() => {
-                                            selectUser(user.id)
-                                        }}><>{user.name}</>
-                                        </SilentLink>
-                                        </td>
-                                        <td>{user.characterName}</td>
-                                    </tr>)
-                            })
-                        }
-                        </tbody>
-                    </table>
+                    <UserOverviewTable users={users} selectUser={selectUser}/>
                 </div>
             </div>
         </div>
     )
 }
+
+export const UserOverviewTable = ({users, selectUser}: { users: UserOverview[], selectUser: (user: UserOverview) => void }) => {
+    const sortedUsers = sortUsers(users)
+
+    return (
+        <table className="table table-sm text-muted text" id="sitesTable">
+            <thead>
+            <tr>
+                <td className="strong">Name</td>
+                <td className="strong">Character</td>
+            </tr>
+            </thead>
+            <tbody>
+            {
+                sortedUsers.map((user: UserOverview) => {
+                    return (
+                        <tr key={user.id}>
+                            <td className="table-very-condensed"><SilentLink onClick={() => {
+                                selectUser(user)
+                            }}><>{user.name}</>
+                            </SilentLink>
+                            </td>
+                            <td>{user.characterName}</td>
+                        </tr>)
+                })
+            }
+            </tbody>
+        </table>
+    )
+}
+
 
 const CreateUser = (user: User | null) => {
     if (user) return null
@@ -102,8 +110,12 @@ const CreateUser = (user: User | null) => {
 
 const sortUsers = (users: UserOverview[]) => {
     const alphabeticalUsers = [...users].sort((a, b) => {
-        if (a.name < b.name) return -1
-        if (a.name > b.name) return 1
+
+        const nameA = a.name.toUpperCase()
+        const nameB = b.name.toUpperCase()
+
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
         return 0
     })
 

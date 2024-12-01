@@ -10,11 +10,18 @@ import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
+import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.runlink.RunLinkEntityService
-import org.n1.av2.script.ScriptAccess
-import org.n1.av2.script.ScriptAccessService
 import org.n1.av2.script.ScriptService
+import org.n1.av2.script.ScriptState
+import org.n1.av2.script.access.ScriptAccess
+import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.type.ScriptType
+import org.n1.av2.script.type.ScriptTypeService
+import org.springframework.data.annotation.Id
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 import kotlin.system.measureTimeMillis
 
 @Service
@@ -27,6 +34,7 @@ class UserAndHackerService(
     private val scriptService: ScriptService,
     private val scriptAccessService: ScriptAccessService,
     private val currentUserService: CurrentUserService,
+    private val scriptTypeService: ScriptTypeService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -35,6 +43,7 @@ class UserAndHackerService(
         val id: String,
         val name: String,
         val characterName: String? = null,
+        val hacker: Boolean,
     )
 
     fun overview() {
@@ -42,9 +51,9 @@ class UserAndHackerService(
         val allHackers = hackerEntityService.findAll()
 
         val message = allUsers.map { user ->
-            if (user.type != UserType.HACKER) return@map UserOverview(user.id, user.name)
+            if (user.type != UserType.HACKER) return@map UserOverview(user.id, user.name, null, false)
             val hacker = allHackers.find { hacker -> hacker.hackerUserId == user.id } ?: error("Hacker not found for user: ${user.name} / ${user.id}")
-            UserOverview(user.id, user.name, hacker.characterName)
+            UserOverview(user.id, user.name, hacker.characterName, true)
         }
         connectionService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
     }
@@ -57,10 +66,15 @@ class UserAndHackerService(
     }
 
     class UiScript(
+        val id: String,
+        val name: String,
         val code: String,
-        val typeId: String,
+        val effects: List<String>,
         val timeLeft: String,
-        val usable: Boolean,
+        val state: ScriptState,
+        val ram: Int,
+        val loadStartedAt: ZonedDateTime?,      // "2024-12-01T15:38:40.9179757+02:00",
+        val loadTimeFinishAt: ZonedDateTime?,   // "2024-12-01T16:08:40.9179757+02:00",
     )
 
     class UiHacker(
@@ -69,7 +83,6 @@ class UserAndHackerService(
         val characterName: String,
         val skills: List<HackerSkill>,
         val scripts: List<UiScript>,
-        val scriptAccess: List<ScriptAccess>
     )
 
     class UiUserDetails(
@@ -80,19 +93,13 @@ class UserAndHackerService(
     )
 
     fun sendDetailsOfCurrentUser() {
-        val millis = measureTimeMillis {
-            val uiUserDetails = getDetailsOfSpecificUser(currentUserService.userId)
-            connectionService.reply(ServerActions.SERVER_RECEIVE_CURRENT_USER, uiUserDetails)
-        }
-        println("sendDetailsOfSpecificUser took $millis ms")
+        val uiUserDetails = getDetailsOfSpecificUser(currentUserService.userId)
+        connectionService.reply(ServerActions.SERVER_RECEIVE_CURRENT_USER, uiUserDetails)
     }
 
     fun sendDetailsOfSpecificUser(userId: String) {
-        val millis = measureTimeMillis {
-            val uiUserDetails = getDetailsOfSpecificUser(userId)
-            connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, uiUserDetails)
-        }
-        println("sendDetailsOfSpecificUser took $millis ms")
+        val uiUserDetails = getDetailsOfSpecificUser(userId)
+        connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, uiUserDetails)
     }
 
     private fun getDetailsOfSpecificUser(userId: String): UiUserDetails {
@@ -100,17 +107,16 @@ class UserAndHackerService(
         val scripts = scriptService.findScriptsForUser(userId)
             .map { script ->
                 val timeLeft = scriptService.timeLeft(script)
-                val usable = scriptService.usable(script)
-                UiScript(script.code, script.typeId, timeLeft, usable)
+                val type = scriptTypeService.getById(script.typeId)
+                val effects = type.effects.map{ it.playerDescription}
+                UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
             }
-        val scriptAccess = scriptAccessService.findScriptAccessForUser(userId)
-        val hacker = createHackerForSkillDisplay(user, scripts, scriptAccess)
-
+        val hacker = createHackerForSkillDisplay(user, scripts)
 
         return UiUserDetails(user.id, user.name, user.type, hacker)
     }
 
-    fun createHackerForSkillDisplay(user: UserEntity, uiScripts: List<UiScript>, scriptAccess: List<ScriptAccess>): UiHacker? {
+    fun createHackerForSkillDisplay(user: UserEntity, uiScripts: List<UiScript>,): UiHacker? {
         val hacker = if (user.type == UserType.HACKER) hackerEntityService.findForUser(user) else return null
         val skillsWithDisplayValues = hacker.skills.map { skill ->
             if (skill.value != null)
@@ -124,7 +130,6 @@ class UserAndHackerService(
             characterName = hacker.characterName,
             skills = skillsWithDisplayValues,
             scripts = uiScripts,
-            scriptAccess = scriptAccess
         )
     }
 

@@ -8,10 +8,10 @@ import {TaskMonitorHome} from "./taskmonitor/TaskMonitorHome";
 import {UserType} from "../common/users/CurrentUserReducer";
 import {HackerRootState} from "../hacker/HackerRootReducer";
 import {Page} from "../common/menu/pageReducer";
-import {ScriptManagement} from "./scripts/ScriptManagement";
-import {ScriptAccessManagement} from "./scripts/ScriptAccessManagement";
+import {ScriptAccessManagement} from "./scripts/access/ScriptAccessManagement";
 import {GmScriptHome} from "./scripts/GmScriptHome";
-import {ScriptTypeOverview} from "./scripts/scriptType/ScriptTypeOverview";
+import {ScriptTypeManagement} from "./scripts/scriptType/ScriptTypeManagement";
+import {CurrentScriptManagement} from "./scripts/currentScripts/CurrentScriptManagement";
 
 
 const renderCurrentPage = (currentPage: Page) => {
@@ -23,9 +23,9 @@ const renderCurrentPage = (currentPage: Page) => {
         case Page.GM_SCRIPTS_HOME:
             return <GmScriptHome/>
         case Page.SCRIPT_TYPE_MANAGEMENT:
-            return <ScriptTypeOverview/>
+            return <ScriptTypeManagement/>
         case Page.SCRIPT_MANAGEMENT:
-            return <ScriptManagement/>
+            return <CurrentScriptManagement/>
         case Page.SCRIPT_ACCESS_MANAGEMENT:
             return <ScriptAccessManagement/>
         case Page.TASKS:
