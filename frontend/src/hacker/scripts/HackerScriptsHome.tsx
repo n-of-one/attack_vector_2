@@ -1,10 +1,9 @@
 import React from "react";
 import {useSelector} from "react-redux";
 import {HackerRootState} from "../HackerRootReducer";
-import {Script} from "../../common/script/ScriptModel";
+import {ObsoleteScript} from "../../common/script/ScriptModel";
 import {SilentLink} from "../../common/component/SilentLink";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {ToolTip} from "../../common/component/ToolTip";
 
 
 export const HackerScriptsHome = () => {
@@ -59,26 +58,26 @@ export const HackerScriptsHome = () => {
                                 </thead>
                                 <tbody>
                                 {
-                                    scripts.map((script: Script) => {
-                                        const usableClass = script.usable ? "" : " scriptUnusable"
-
-                                        const deleteAction = script.usable ? <></> : <DeleteScript script={script}/>
-
-                                        return (
-                                            <tr key={script.code}>
-                                                <td className={usableClass}>{script.name}</td>
-                                                <td >
-                                                    <ToolTip text={script.value} id={script.code}>
-                                                        <span className="badge bg-secondary helpBadge">?</span>
-                                                    </ToolTip>
-                                                </td>
-                                                <td >{script.timeLeft}</td>
-                                                <td className={usableClass}><span className="scriptBadgeDark">{script.code}</span>
-                                                </td>
-                                                <td>{deleteAction}</td>
-
-                                            </tr>)
-                                    })
+                                    // scripts.map((script: ObsoleteScript) => {
+                                    //     const usableClass = script.usable ? "" : " scriptUnusable"
+                                    //
+                                    //     const deleteAction = script.usable ? <></> : <DeleteScript script={script}/>
+                                    //
+                                    //     return (
+                                    //         <tr key={script.code}>
+                                    //             <td className={usableClass}>{script.name}</td>
+                                    //             <td >
+                                    //                 <ToolTip text={script.value} id={script.code}>
+                                    //                     <span className="badge bg-secondary helpBadge">?</span>
+                                    //                 </ToolTip>
+                                    //             </td>
+                                    //             <td >{script.timeLeft}</td>
+                                    //             <td className={usableClass}><span className="scriptBadgeDark">{script.code}</span>
+                                    //             </td>
+                                    //             <td>{deleteAction}</td>
+                                    //
+                                    //         </tr>)
+                                    // })
                                 }
                                 </tbody>
                             </table>
@@ -90,7 +89,7 @@ export const HackerScriptsHome = () => {
     )
 }
 
-const DeleteScript = ({script}: { script: Script }) => {
+const DeleteScript = ({script}: { script: ObsoleteScript }) => {
 
     const deleteScript = () => {
         webSocketConnection.send("/hacker/script/delete", script.code)

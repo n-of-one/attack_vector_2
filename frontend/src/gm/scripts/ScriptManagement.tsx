@@ -1,7 +1,6 @@
 import {SilentLink} from "../../common/component/SilentLink";
 import React from "react";
-import {ScriptsList} from "../../hacker/scripts/ScriptsElement";
-import {scriptNames, ObsoleteScriptType} from "../../common/script/ScriptModel";
+import {ObsoleteScriptType, scriptNames} from "../../common/script/ScriptModel";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {useDispatch, useSelector} from "react-redux";
 import {GmRootState} from "../GmRootReducer";
@@ -30,7 +29,7 @@ interface ScriptEntry {
 }
 
 export const ScriptManagement = () => {
-    const user = useSelector((state: GmRootState) => state.users.edit)
+    const user = useSelector((state: GmRootState) => state.users.edit.userData)
     const dispatch = useDispatch()
 
     if (!user) return <></>
@@ -62,7 +61,7 @@ export const ScriptManagement = () => {
 
                         <br/>
                         <br/>
-                        <ScriptsList user={user}/>
+                        {/*<ScriptsListObsolete user={user}/>*/}
                     </div>
                 </div>
                 <div className="col-lg-6 rightPane rightPane">

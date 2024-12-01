@@ -12,11 +12,16 @@ import {GmRootState} from "../../GmRootReducer";
 import {CloseButton} from "../../../common/component/CloseButton";
 
 
-export const ScriptTypeOverview = () => {
+export const ScriptTypeManagement = () => {
     const editTypeId = useSelector((state: GmRootState) => state.scriptsManagement.editTypeId)
     const editType = useSelector((state: GmRootState) => state.scriptsManagement.types.find(type => type.id === editTypeId))
+    const dispatch = useDispatch()
 
     const mainElement = editType ? <ScriptTypeDetails scriptType={editType}/> : <ChooseOrCreateScriptType/>
+
+    const selectScriptType = (scriptType: ScriptType) => {
+        dispatch({type: EDIT_SCRIPT_TYPE, data: scriptType.id})
+    }
 
     return (
         <div className="row">
@@ -30,7 +35,9 @@ export const ScriptTypeOverview = () => {
             </div>
 
             <div className="col-lg-6 rightPane rightPane">
-                <ScriptTypesList/>
+                <div className="siteMap">
+                    <ScriptTypesTable onSelect={selectScriptType}/>
+                </div>
             </div>
         </div>
     )
@@ -212,49 +219,46 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
 
 }
 
-const ScriptTypesList = () => {
+interface ScriptTypesListProps {
+    onSelect: (scriptType: ScriptType) => void
+}
 
+export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
     const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
-    const dispatch = useDispatch()
-    const selectScriptType = (scriptType: ScriptType) => {
-        dispatch({type: EDIT_SCRIPT_TYPE, data: scriptType.id})
-    }
 
     return (
-        <div className="siteMap">
-            <table className="table table-sm text-muted text" id="sitesTable">
-                <thead>
-                <tr>
-                    <td className="strong">Script type</td>
-                    <td className="strong">Effects</td>
-                    <td className="strong">RAM</td>
-                    <td className="strong">Default price</td>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                    scriptTypes.map((type: ScriptType) => {
-                        return (
-                            <tr key={type.id}>
-                                <td><SilentLink onClick={() => {
-                                    selectScriptType(type)
-                                }} text={type.name}/></td>
-                                <td>{
-                                    type.effects.map((effect: Effect) => {
-                                        return (<>
-                                            <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
-                                                       badgeText={effect.effectNumber.toString()}/>
-                                            &nbsp;</>)
-                                    })
-                                }
-                                </td>
-                                <td>{type.ram}</td>
-                                <td>{type.defaultPrice}</td>
-                            </tr>)
-                    })
-                }
-                </tbody>
-            </table>
-        </div>
+        <table className="table table-sm text-muted text" id="sitesTable">
+            <thead>
+            <tr>
+                <td className="strong">Script type</td>
+                <td className="strong">Effects</td>
+                <td className="strong">RAM</td>
+                <td className="strong">Default price</td>
+            </tr>
+            </thead>
+            <tbody>
+            {
+                scriptTypes.map((type: ScriptType) => {
+                    return (
+                        <tr key={type.id}>
+                            <td><SilentLink onClick={() => {
+                                onSelect(type)
+                            }} text={type.name}/></td>
+                            <td>{
+                                type.effects.map((effect: Effect) => {
+                                    return (<>
+                                        <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
+                                                   badgeText={effect.effectNumber.toString()}/>
+                                        &nbsp;</>)
+                                })
+                            }
+                            </td>
+                            <td>{type.ram}</td>
+                            <td>{type.defaultPrice}</td>
+                        </tr>)
+                })
+            }
+            </tbody>
+        </table>
     )
 }

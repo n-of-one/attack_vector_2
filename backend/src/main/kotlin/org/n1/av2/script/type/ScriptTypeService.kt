@@ -72,7 +72,7 @@ class ScriptTypeService(
         )
         scriptTypeRepository.save(scriptType)
         sendScriptTypes()
-        connectionService.reply(ServerActions.SERVER_EDIT_SCRIPT_TYPE, id)
+        connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, id)
     }
 
     fun edit(scriptTypeId: String, name: String, ram: Int, defaultPrice: BigDecimal?) {

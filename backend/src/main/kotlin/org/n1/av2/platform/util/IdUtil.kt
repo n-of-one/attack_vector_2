@@ -5,23 +5,23 @@ import java.util.*
 
 
 fun createId(prefix: String, findExisting: (String)-> Any?): String {
-    return createId(prefix, findExisting, 9, 18)
+    return createIdGeneric("$prefix-", findExisting, 9, 18)
 }
 
 fun createLayerId(node: Node, findExisting: (String)-> Any?): String {
-    return createId("${node.id}:layer", findExisting, 9, 13)
+    return createIdGeneric("${node.id}:layer", findExisting, 9, 13)
 }
 
 fun nodeIdFromLayerId(layerId: String): String {
     return layerId.substring(0,14)
 }
 
-fun createId(prefix: String, findExisting: (String)-> Any?, start: Int, end: Int): String {
+fun createIdGeneric(prefix: String, findExisting: (String)-> Any?, start: Int = 9, end: Int = 18): String {
     var count = 0
     var id: String
     do {
         val uuidPart = UUID.randomUUID().toString().substring(start, end)
-        id = "$prefix-$uuidPart"
+        id = "$prefix$uuidPart"
         var existing = findExisting(id)
         if (existing is Optional<*> && !existing.isPresent) {
             existing = null

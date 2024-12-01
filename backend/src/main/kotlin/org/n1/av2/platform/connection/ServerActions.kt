@@ -38,6 +38,8 @@ enum class ServerActions {
     SERVER_SCRIPT_TYPES,            // Send all script types to the client
     SERVER_EDIT_SCRIPT_TYPE,        // Send to the client that this script type is being edited
 
+    SERVER_RECEIVE_SCRIPT_ACCESS,           // Send all script accesses of a user to the client
+
 
     SERVER_UPDATE_USER_RUNS,        // Sent at logon to hacker to update the runs shown on home page of that user
     SERVER_UPDATE_RUN_INFO,         // Scan info has changed (as displayed on home screen)

@@ -1,6 +1,5 @@
 package org.n1.av2.script
 
-import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -8,7 +7,9 @@ import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
 import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
+import org.n1.av2.platform.util.createIdGeneric
 import org.n1.av2.platform.util.toHumanTime
+import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.scripts.TripwireExtraTimeScript
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
@@ -29,7 +30,6 @@ class ScriptServiceInit(
 }
 
 
-
 @Service
 class ScriptService(
     private val scriptRepository: ScriptRepository,
@@ -43,12 +43,12 @@ class ScriptService(
 
     lateinit var userAndHackerService: UserAndHackerService
 
-    fun addScript(typeId: String,
-                  targetUserId: String,
-                  accessId: String? = null,
-                      ) {
+    fun addScript(
+        typeId: String,
+        targetUserId: String,
+    ) {
         val id = createId("script", scriptRepository::findById)
-        val code = createId("", scriptRepository::findByCode).substringAfter("-")
+        val code = createIdGeneric("", scriptRepository::findByCode)
 
         val expiry = timeService.now().plusDays(1)
             .withNano(0).withSecond(0).withMinute(0).withHour(6) // expire at 06:00 tomorrow
@@ -59,8 +59,9 @@ class ScriptService(
             ownerUserId = targetUserId,
             expiry = expiry,
             code = code,
-            accessId = accessId,
-            loadedByUserId = targetUserId,
+            loadStartedAt = null,
+            loadTimeFinishAt = null,
+            state = ScriptState.NOT_LOADED,
         )
         scriptRepository.save(script)
         userAndHackerService.sendDetailsOfSpecificUser(targetUserId)
@@ -72,17 +73,14 @@ class ScriptService(
 
 
     fun timeLeft(script: Script): String {
-        if (script.used) return "script used"
+        if (script.state == ScriptState.USED) return "script used"
+        if (script.state == ScriptState.EXPIRED) return "expired"
         val timeLeft = Duration.between(timeService.now(), script.expiry)
         return toHumanTime(timeLeft) ?: "expired"
     }
 
     fun expired(script: Script): Boolean {
         return timeService.now().isAfter(script.expiry)
-    }
-
-    fun usable(script: Script): Boolean {
-        return !script.used && !expired(script) && !script.deleted
     }
 
     fun deleteScript(code: String) {
@@ -96,31 +94,31 @@ class ScriptService(
 
     fun refreshScriptsForCurrentUser() {
         val userId = currentUserService.userId
-        val scriptAccesses = scriptAccessService.findScriptAccessForUser(userId)
 
-        scriptAccesses.forEach { access ->
-            val scriptsForThisAccess = scriptRepository.findByAccessId(access.id)
-            val expiredScripts = deleteExpiredScripts(scriptsForThisAccess)
-            val nonExpiredScripts = scriptsForThisAccess - expiredScripts
-
-            val scriptsToCreate = access.receiveForFree - nonExpiredScripts.size
-            (0 until scriptsToCreate).forEach { _ ->
-                addScript(access.typeId, userId, access.id)
-            }
-        }
-
-        val scriptsWithoutAccess = scriptRepository.findByAccessId(null)
-        deleteExpiredScripts(scriptsWithoutAccess)
-
+        removeExpiredScripts(userId)
+        addFreeReceiveScripts(userId)
         userAndHackerService.sendDetailsOfCurrentUser()
     }
 
-    private fun deleteExpiredScripts(scripts: List<Script>): List<Script> {
-        val expiredScripts = scripts.filter { expired(it) }
-        expiredScripts.forEach { script ->
-            scriptRepository.delete(script)
-        }
-        return expiredScripts
+    fun addFreeReceiveScripts(userId: String) {
+        val scriptAccesses = scriptAccessService.findScriptAccessForUser(userId)
+
+        scriptAccesses
+            .filterNot { access -> access.used }
+            .forEach { access ->
+                (0 until access.receiveForFree).forEach { _ ->
+                    addScript(access.typeId, userId)
+                }
+            }
+    }
+
+    fun removeExpiredScripts(userId: String) {
+        val scripts = scriptRepository.findByOwnerUserId(userId)
+        scripts
+            .filter { script -> script.state == ScriptState.EXPIRED || expired(script) }
+            .forEach { script ->
+                scriptRepository.delete(script)
+            }
     }
 
 
@@ -152,12 +150,12 @@ class ScriptService(
     private fun validateScriptRunnable(scriptCode: String): Script? {
         val script = scriptRepository.findByCode(scriptCode)
         if (script == null) {
-            errorScriptNotLoaded(scriptCode)
+            errorScriptUnknown(scriptCode)
             return null
         }
 
-        if (script.loadedByUserId != currentUserService.userId) {
-            errorScriptNotLoaded(scriptCode)
+        if (script.ownerUserId != currentUserService.userId) {
+            errorScriptUnknown(scriptCode)
             return null
         }
 
@@ -166,13 +164,8 @@ class ScriptService(
             return null
         }
 
-        if (script.used) {
+        if (script.state == ScriptState.USED) {
             connectionService.replyTerminalReceive("System has been patched against this script. (Script has already been used.)")
-            return null
-        }
-
-        if (script.deleted) {
-            errorScriptNotLoaded(scriptCode)
             return null
         }
 
@@ -180,7 +173,7 @@ class ScriptService(
 
     }
 
-    private fun errorScriptNotLoaded(scriptCode: String) {
+    private fun errorScriptUnknown(scriptCode: String) {
         connectionService.replyTerminalReceive("No script loaded with code: $scriptCode")
     }
 

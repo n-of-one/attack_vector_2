@@ -2,10 +2,9 @@ import React from "react";
 import {SilentLink} from "../../../../common/component/SilentLink";
 import {useSelector} from "react-redux";
 import {HackerRootState} from "../../../HackerRootReducer";
-import {Script} from "../../../../common/script/ScriptModel";
 import {createNotification} from "../../../../common/util/Notification";
-import {ToolTip} from "../../../../common/component/ToolTip";
-import {Hacker} from "../../../../common/users/CurrentUserReducer";
+import {InfoBadge} from "../../../../common/component/ToolTip";
+import {Script} from "../../../../common/script/ScriptModel";
 
 export const ScriptPanel = () => {
     const [expanded, setExpanded] = React.useState(false)
@@ -24,7 +23,7 @@ export const ScriptPanel = () => {
             <ScriptsTable scripts={scripts} minimize={toggle}/>
         </div>
     } else {
-        return <div className="scriptPanel" >
+        return <div className="scriptPanel">
             <ScriptsExpandButton toggle={toggle}/>
         </div>
     }
@@ -48,6 +47,7 @@ interface ScriptsTableProps {
 
 
 const ScriptsTable = ({scripts, minimize}: ScriptsTableProps) => {
+    const loadedScripts
 
     return <>
         <div className="scriptPanelButtonOuter">
@@ -74,30 +74,26 @@ const ScriptsTable = ({scripts, minimize}: ScriptsTableProps) => {
 
 
 const ScriptLine = ({script}: { script: Script }) => {
-    if (!script.usable) {
-        return <tr>
-            <td className="scriptUnusable">{script.code}</td>
-            <td >{script.name}</td>
-            <td >
-                <ToolTip text={script.value} id={script.code}>
-                    <span className="badge bg-secondary helpBadge">?</span>
-                </ToolTip>
-            </td>
-        </tr>
-    }
+
+    const strike
+    const codeElement = script.usable ? <td>
+        <SilentLink onClick={() => {
+            copyScript(script.code)
+        }}><>{script.code}</>
+        </SilentLink></td> : <td className="scriptUnusable">{script.code}</td>
+
+    const nameElement = script.usable ? <td className="text_light">{script.name}</td> : <td>{script.name}</td>
 
 
     return <tr>
-        <td >
-            <SilentLink onClick={() => {
-                copyScript(script.code)
-            }}><>{script.code}</>
-            </SilentLink></td>
-        <td className="text_light">{script.name}</td>
-        <td >
-            <ToolTip text={script.value} id={script.code}>
-                <span className="badge bg-secondary helpBadge">?</span>
-            </ToolTip>
+        {codeElement}
+        {nameElement}
+        <td>{script.name}</td>
+        <td>
+            {script.effects.map((effect, index) => {
+                const effectNumber = (index + 1).toString()
+                return <InfoBadge infoText={effect} key={effectNumber} badgeText={effectNumber}/>
+            })}
         </td>
     </tr>
 }
