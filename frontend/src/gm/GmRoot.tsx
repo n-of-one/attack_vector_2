@@ -10,6 +10,7 @@ import {webSocketConnection, WS_UNRESTRICTED} from "../common/server/WebSocketCo
 import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
 import {initGmServerActions} from "./GmServerActionProcessor";
 import {ROLE_GM} from "../common/user/UserAuthorizations";
+import {terminalManager} from "../common/terminal/TerminalManager";
 
 
 interface Props { }
@@ -34,7 +35,8 @@ export class GmRoot extends Component<Props>{
         // set up initial state:
         this.gmStore.dispatch({type: NAVIGATE_PAGE, to: Page.SITES})
 
-        document.body.style.backgroundColor = "#222222"
+
+        terminalManager.init(this.gmStore)
     }
 
     render() {

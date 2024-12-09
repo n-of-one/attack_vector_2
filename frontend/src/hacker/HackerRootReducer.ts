@@ -10,6 +10,8 @@ import {currentUserReducer, GenericUserRootState} from "../common/users/CurrentU
 import {hackerRunsReducer, RunInfo} from "./home/HackerRunsReducer";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {configReducer} from "../admin/config/ConfigReducer";
+import {ScriptAccess, scriptAccessReducer} from "../gm/scripts/access/ScriptAccessReducer";
+import {ScriptLoading, scriptLoadingReducer} from "../common/script/ScriptLoadingReducer";
 
 export interface HackerRootState extends GenericUserRootState {
     currentPage: Page,
@@ -21,6 +23,8 @@ export interface HackerRootState extends GenericUserRootState {
     activeTerminalId:ActiveTerminalId,
     theme: string,
     users: Users,
+    scriptAccess: ScriptAccess[],
+    scriptsLoading: ScriptLoading[],
 }
 
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true})
@@ -40,4 +44,6 @@ export const hackerRootReducer = combineReducers({
     activeTerminalId: activeTerminalIdReducer,
     theme: themeReducer,
     users: usersReducer,
+    scriptAccess: scriptAccessReducer,
+    scriptsLoading: scriptLoadingReducer,
 })

@@ -113,7 +113,7 @@ const SitesPanel = ({sites}: SitesPanelProperties) => {
     const unhackableSites = mySites.filter(site => !site.hackable)
 
     return (
-        <div className="siteMap">
+        <div className="rightPanel">
             <div className="text">Hackable sites</div>
             <SiteList sites={hackableSites}/>
             <div className="text">Unhackable sites</div>

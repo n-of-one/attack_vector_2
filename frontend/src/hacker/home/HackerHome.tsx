@@ -24,19 +24,17 @@ export const HackerHome = () => {
         <div className="row">
             <div className="col-lg-2">
             </div>
-            <div className="col-lg-4">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <span className="text"><strong>🜁 Verdant OS 🜃</strong></span>
-                    </div>
-                </div>
+            <div className="col-lg-4 text">
+                <br/>
+                <strong>🜁 Verdant OS 🜃</strong>
+                <br/>
                 <SearchSite currentUser={currentUser}/>
             </div>
             <div className="col-lg-6">
                 <div className="row">
                     <div className="col-lg-12">
-                        <div className="siteMap">
-                        <table className="table table-borderless table-sm text-muted text table-very-condensed" id="sitesTable">
+                        <div className="rightPanel">
+                            <table className="table table-borderless table-sm text-muted text table-very-condensed" id="sitesTable">
                                 <thead>
                                 <tr>
                                     <td className="strong">Site name</td>
@@ -73,7 +71,7 @@ export const HackerHome = () => {
     )
 }
 
-const SearchSite = ({currentUser}: {currentUser: User}) => {
+const SearchSite = ({currentUser}: { currentUser: User }) => {
     const canSearchSite = hasSkill(currentUser, HackerSkillType.SEARCH_SITE)
 
     if (!canSearchSite) {

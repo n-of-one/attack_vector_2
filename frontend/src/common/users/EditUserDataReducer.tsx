@@ -5,7 +5,7 @@ export const CLOSE_USER_EDIT = "CLOSE_USER_EDIT"
 export const SERVER_RECEIVE_EDIT_USER = "SERVER_RECEIVE_EDIT_USER"
 
 
-export const editUserDataReducer = (state: User | null = null, action: any) => {
+export const editUserDataReducer = (state: User | null = null, action: any): User | null => {
         switch (action.type) {
             case SERVER_RECEIVE_EDIT_USER:
                 return action.data

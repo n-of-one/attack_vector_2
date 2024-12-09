@@ -71,14 +71,13 @@ input {
     margin-right: 0;
 }
 
-.siteMap {
+.rightPanel {
     background-color: #333333;
     border-radius: 3px 3px 3px 3px;
-    height: 815px;
-    width: 835px;
     margin-top: 10px;
     margin-bottom: 10px;
     padding: 10px 10px 10px 10px;
+    height: 889px;
 }
 
 
@@ -392,7 +391,7 @@ li.lvl2 {
     z-index: 1;
     padding: 10px;
     background: #000;
-    opacity: 0.5;
+    opacity: 1;
     margin: 10px;
     border-radius: 5px;
 }
@@ -417,4 +416,29 @@ li.lvl2 {
     font-size: 16px;
     display: inherit;
     height: 12px;
+}
+
+.scriptStatusBadge {
+    width: 68px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.cursorNotAllowed {
+    cursor: not-allowed;
+}
+
+.noSelect {
+    -webkit-user-select: none; /* Safari */
+    user-select: none;
+}
+
+.form-switch .form-check-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='black'/%3e%3c/svg%3e");
+}
+
+.form-check-input:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
 }

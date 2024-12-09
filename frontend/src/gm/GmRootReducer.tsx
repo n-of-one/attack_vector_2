@@ -6,16 +6,20 @@ import {currentUserReducer, GenericUserRootState, User} from "../common/users/Cu
 import {configReducer} from "../admin/config/ConfigReducer";
 import {editScriptTypeReducer, ScriptType, scriptTypesReducer} from "./scripts/scriptType/ScriptTypeReducer";
 import {ScriptAccess, scriptAccessReducer} from "./scripts/access/ScriptAccessReducer";
+import {ScriptLoading, scriptLoadingReducer} from "../common/script/ScriptLoadingReducer";
+import {ScriptStatistics, scriptStatisticsReducer} from "./scripts/ScriptStatisticsReducer";
 
 
 export interface EditUser {
     userData: User | null,
     scriptAccess: ScriptAccess[],
+    scriptsLoading: ScriptLoading[]
 }
 
 export const editUserReducer = combineReducers({
     userData: editUserDataReducer,
     scriptAccess: scriptAccessReducer,
+    scriptsLoading: scriptLoadingReducer,
 })
 
 
@@ -32,10 +36,12 @@ export const usersReducer = combineReducers({
 export interface ScriptManagement {
     types: ScriptType[],
     editTypeId: String | null,
+    statistics: ScriptStatistics[],
 }
 export const scriptManagementReducer = combineReducers({
     types: scriptTypesReducer,
     editTypeId: editScriptTypeReducer,
+    statistics: scriptStatisticsReducer,
 })
 
 

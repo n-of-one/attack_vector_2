@@ -8,8 +8,11 @@ import {ScriptTypesTable} from "../scriptType/ScriptTypeManagement";
 import {UserOverviewTable} from "../../../common/users/UserManagement";
 import {User} from "../../../common/users/CurrentUserReducer";
 import {CloseButton} from "../../../common/component/CloseButton";
-import {Script, ScriptState} from "../../../common/script/ScriptModel";
 import {ErrorPage} from "../../../common/component/ErrorPage";
+import {ScriptLine, ScriptLineUseCase} from "../../../common/script/ScriptLine";
+import {Script} from "../../../common/script/ScriptModel";
+import {DataTable} from "../../../common/component/dataTable/DataTable";
+import {Hr} from "../../../common/component/dataTable/Hr";
 
 export const CurrentScriptManagement = () => {
 
@@ -28,7 +31,8 @@ export const CurrentScriptManagement = () => {
     const selectUser = (userOverview: UserOverview) => {
         webSocketConnection.send("/user/select", userOverview.id)
     }
-    const tableElement = user ? <ScriptsToAddTable user={user}/> : <UserOverviewTable users={hackers} selectUser={selectUser}/>
+    const tableElement = user ? <ScriptsToAddTable user={user}/> :
+        <UserOverviewTable users={hackers} selectUser={selectUser}/>
 
     return (
         <div className="row">
@@ -41,7 +45,7 @@ export const CurrentScriptManagement = () => {
                 {userScriptsElement}
             </div>
             <div className="col-lg-6 rightPane rightPane">
-                <div className="siteMap">
+                <div className="rightPanel">
                     {tableElement}
                 </div>
             </div>
@@ -63,13 +67,26 @@ const ScriptsToAddTable = ({user}: { user: User }) => {
 
 
 export const ScriptsOfUser = ({user}: { user: User }) => {
-    const scripts = user.hacker?.scripts
     const dispatch = useDispatch()
+    const scriptsLoading = useSelector((state: GmRootState) => state.users.edit.scriptsLoading)
+
+    const scripts = user.hacker?.scripts
     const close = () => {
         dispatch({type: CLOSE_USER_EDIT})
     }
 
     if (!scripts) return <ErrorPage message="No scripts information found for this user."/>
+
+    const rows = scripts.map((script: Script) => {
+        const loading = scriptsLoading.find((loading) => loading.scriptId === script.id)
+        return <ScriptLine script={script}
+                           loading={loading}
+                           useCase={ScriptLineUseCase.GM}
+                           key={script.id}/>
+    })
+    const rowTexts = scripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)
+
+    const hr = <Hr color="#999"/>
 
     return (<>
 
@@ -83,52 +100,17 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
 
         <div className="text">
             <br/>
-            <div className="row">
-                <div className="col-lg-2">Name</div>
-                <div className="col-lg-1">RAM</div>
-                <div className="col-lg-2">State</div>
-                <div className="col-lg-1">Action</div>
-            </div>
-            <br/>
-            <br/>
-            <>{scripts.map(script => <ScriptElement script={script} key={script.id}/>)}</>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-
-
+            <DataTable rows={rows} rowTexts={rowTexts} pageSize={30} hr={hr}>
+                <div className="row text strong">
+                    <div className="col-lg-2 text-end">Code</div>
+                    <div className="col-lg-2">Name</div>
+                    <div className="col-lg-1">RAM</div>
+                    <div className="col-lg-2">State</div>
+                    <div className="col-lg-2">Action</div>
+                    <div className="col-lg-2">Effects</div>
+                </div>
+            </DataTable>
         </div>
     </>)
 }
 
-export const ScriptElement = ({script}: { script: Script }) => {
-
-
-    return (<div className="row">
-            <div className="col-lg-2">{script.name}</div>
-            <div className="col-lg-1">{script.ram}</div>
-            <div className="col-lg-2"><ScriptStateElement script={script}/></div>
-            <div className="col-lg-1">-</div>
-        </div>
-    )
-}
-
-const ScriptStateElement = ({script}: { script: Script }) => {
-    switch (script.state) {
-        case ScriptState.NOT_LOADED:
-            return <span className="badge bg-secondary">Available</span>
-        case ScriptState.LOADING:
-            return <span className="badge bg-secondary">Loading</span>
-        case ScriptState.LOADED:
-            return <span className="badge bg-secondary">Loaded</span>
-        case ScriptState.USED:
-            return <span className="badge bg-secondary">Used</span>
-        case ScriptState.EXPIRED:
-            return <span className="badge bg-secondary">Expired</span>
-        case ScriptState.DELETED:
-            return <span className="badge bg-secondary">Deleted</span>
-        default:
-            return <span>Unknown</span>
-    }
-}

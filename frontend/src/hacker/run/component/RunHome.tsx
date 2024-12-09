@@ -51,7 +51,7 @@ export const RunHome = () => {
 
     return (
         <>
-            <ScriptPanel />
+            <ScriptPanel/>
             <div className="row">
                 <div className="col-lg-4">
                     {TerminalAndScanResultPanel(infoNodeId, terminal, submit)}

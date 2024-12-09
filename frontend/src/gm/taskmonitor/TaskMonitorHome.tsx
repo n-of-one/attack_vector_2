@@ -18,15 +18,14 @@ export const TaskMonitorHome = () => {
                 </div>
             </div>
             <div className="col-lg-5 rightPane rightPane">
-                <div className="siteMap">
+                <div className="rightPanel">
                     <table className="table table-sm text-muted text" id="sitesTable">
                         <thead>
                         <tr>
                             <td className="strong">Due</td>
                             <td className="strong">Action</td>
                             <td className="strong">User</td>
-                            <td className="strong">Site</td>
-                            <td className="strong">LayerId</td>
+                            <td className="strong">Identifier</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,7 +56,7 @@ const renderTasks = (tasks: Array<Task>) => {
     return <>
         {
             tasks.map((task: Task) => {
-                const id = `${task.due}${task.userName}${task.siteId}${task.layerId}`
+                const id = `${task.due}${task.userName}${task.identifier}`
                 const due = task.due-now
                 const dueSeconds = Math.floor(due / 1000).toString().padStart(2, '0')
                 const dueMillis = (due % 1000).toString().padStart(3, '0')
@@ -66,8 +65,7 @@ const renderTasks = (tasks: Array<Task>) => {
                         <td>{`${dueSeconds}.${dueMillis}`}</td>
                         <td>{task.description}</td>
                         <td>{task.userName}</td>
-                        <td>{task.siteId}</td>
-                        <td>{task.layerId}</td>
+                        <td>{task.identifier}</td>
                     </tr>)
             })
         }

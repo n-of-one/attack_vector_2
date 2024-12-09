@@ -10,7 +10,6 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.TaskEngine
-import org.n1.av2.platform.engine.TaskIdentifiers
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
@@ -53,7 +52,7 @@ class SiteResetService(
 
     @CalledBySystem
     fun resetSite(siteId: String) {
-        taskEngine.removeAll(TaskIdentifiers(null, siteId, null))
+        taskEngine.removeAll(mapOf("siteId" to siteId))
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach { node ->
             node.layers.forEach { layer ->

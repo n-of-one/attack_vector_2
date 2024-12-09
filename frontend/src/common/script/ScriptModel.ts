@@ -22,12 +22,11 @@ export interface ObsoleteScript {
 }
 
 export enum ScriptState {
-    NOT_LOADED = "NOT_LOADED",
+    AVAILABLE = "AVAILABLE",
     LOADING = "LOADING",
     LOADED = "LOADED",
     USED = "USED",
     EXPIRED = "EXPIRED",
-    DELETED = "DELETED",
 }
 
 export interface Script {

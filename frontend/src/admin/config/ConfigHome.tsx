@@ -44,7 +44,7 @@ export const ConfigHome = () => {
 
             </div>
             <div className="col-lg-6 rightPane">
-                <div className="siteMap">
+                <div className="rightPanel">
                     <table className="table table-sm text-muted text" id="sitesTable">
                         <thead>
                         <tr>
