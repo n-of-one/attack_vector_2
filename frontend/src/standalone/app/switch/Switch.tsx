@@ -31,8 +31,8 @@ export const Switch = () => {
                     </div>
                 </div>
                 <div className="d-flex flex-row mb-3">
-                    <div className="p-2 text switchLabel">{state.textForRed}</div>
-                    <div className="p-2"><span className="form-check form-switch">
+                    <div className="p-2 text appSwitch switchLabel">{state.textForRed}</div>
+                    <div className="p-2"><span className="appSwitch form-check form-switch">
                                 <input className="form-check-input switch" type="checkbox" role="switch" checked={state.status}
                                        onChange={() => setValue(!state.status)}
                                 /></span>

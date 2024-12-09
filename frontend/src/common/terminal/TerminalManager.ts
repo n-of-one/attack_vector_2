@@ -52,6 +52,11 @@ class TerminalManager {
         }
         if (event.ctrlKey && key === "c") return // Copy
 
+        const activeElement = document.activeElement
+        if (activeElement instanceof HTMLInputElement) {
+            return
+        } // Ignore if an input field is active
+
         event.preventDefault();
 
         const terminalId = this.store.getState().activeTerminalId;

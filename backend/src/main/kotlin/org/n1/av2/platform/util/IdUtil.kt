@@ -9,7 +9,7 @@ fun createId(prefix: String, findExisting: (String)-> Any?): String {
 }
 
 fun createLayerId(node: Node, findExisting: (String)-> Any?): String {
-    return createIdGeneric("${node.id}:layer", findExisting, 9, 13)
+    return createIdGeneric("${node.id}:layer-", findExisting, 9, 13)
 }
 
 fun nodeIdFromLayerId(layerId: String): String {

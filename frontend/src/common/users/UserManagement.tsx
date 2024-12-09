@@ -9,6 +9,8 @@ import {RequiresRole} from "../user/RequiresRole";
 import {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {TextInput} from "../component/TextInput";
 import {User} from "./CurrentUserReducer";
+import {DataTable} from "../component/dataTable/DataTable";
+import {Hr} from "../component/dataTable/Hr";
 
 
 export const UserManagement = () => {
@@ -46,7 +48,7 @@ export const UserManagementAuthorized = () => {
 
             </div>
             <div className="col-lg-6 rightPane rightPane">
-                <div className="siteMap">
+                <div className="rightPanel">
                     <UserOverviewTable users={users} selectUser={selectUser}/>
                 </div>
             </div>
@@ -55,32 +57,32 @@ export const UserManagementAuthorized = () => {
 }
 
 export const UserOverviewTable = ({users, selectUser}: { users: UserOverview[], selectUser: (user: UserOverview) => void }) => {
-    const sortedUsers = sortUsers(users)
+    const sortedUsers = sortUsers(users).map((user: UserOverview) => {
+        return {...user, name: user.name.toLowerCase()}
+    })
+    const sortedTexts = sortedUsers.map(user => `${user.name}~${user.characterName}`)
+
+    const rows = sortedUsers.map((user: UserOverview) => {
+        return (
+            <div className="row text" key={user.id}>
+                <div className="col-lg-6"><SilentLink onClick={() => {
+                    selectUser(user)
+                }}><>{user.name}</>
+                </SilentLink>
+                </div>
+                <div className="col-lg-6">{user.characterName}</div>
+            </div>)
+    })
+
+    const hr = <Hr height={4} marginTop={2}/>
 
     return (
-        <table className="table table-sm text-muted text" id="sitesTable">
-            <thead>
-            <tr>
-                <td className="strong">Name</td>
-                <td className="strong">Character</td>
-            </tr>
-            </thead>
-            <tbody>
-            {
-                sortedUsers.map((user: UserOverview) => {
-                    return (
-                        <tr key={user.id}>
-                            <td className="table-very-condensed"><SilentLink onClick={() => {
-                                selectUser(user)
-                            }}><>{user.name}</>
-                            </SilentLink>
-                            </td>
-                            <td>{user.characterName}</td>
-                        </tr>)
-                })
-            }
-            </tbody>
-        </table>
+        <DataTable rows={rows} rowTexts={sortedTexts} pageSize={35} hr={hr}>
+            <div className="row text">
+                <div className="col-lg-6 strong">Name</div>
+                <div className="col-lg-6 strong">Character</div>
+            </div>
+        </DataTable>
     )
 }
 
@@ -108,7 +110,7 @@ const CreateUser = (user: User | null) => {
 
 }
 
-const sortUsers = (users: UserOverview[]) => {
+const sortUsers = (users: UserOverview[]): UserOverview[] => {
     const alphabeticalUsers = [...users].sort((a, b) => {
 
         const nameA = a.name.toUpperCase()

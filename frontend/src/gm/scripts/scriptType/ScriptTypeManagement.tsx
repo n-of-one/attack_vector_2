@@ -10,6 +10,8 @@ import {CLOSE_SCRIPT_TYPE, EDIT_SCRIPT_TYPE, Effect, EffectType, ScriptType} fro
 import {useDispatch, useSelector} from "react-redux";
 import {GmRootState} from "../../GmRootReducer";
 import {CloseButton} from "../../../common/component/CloseButton";
+import {DataTable} from "../../../common/component/dataTable/DataTable";
+import {Hr} from "../../../common/component/dataTable/Hr";
 
 
 export const ScriptTypeManagement = () => {
@@ -35,7 +37,7 @@ export const ScriptTypeManagement = () => {
             </div>
 
             <div className="col-lg-6 rightPane rightPane">
-                <div className="siteMap">
+                <div className="rightPanel">
                     <ScriptTypesTable onSelect={selectScriptType}/>
                 </div>
             </div>
@@ -226,39 +228,42 @@ interface ScriptTypesListProps {
 export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
     const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
 
+    const scriptTypeRows = scriptTypes.map(type => <ScriptTypeRow type={type} onSelect={onSelect}/>)
+    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.ram}~${type.defaultPrice}`)
+
+    const hr = <Hr height={6} marginTop={3} color="black"/>
+
+
+    return (<>
+            <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={35} hr={hr}>
+                <div className="row text">
+                    <div className="col-lg-2 strong">Script type</div>
+                    <div className="col-lg-2 strong">Effects</div>
+                    <div className="col-lg-1 strong">RAM</div>
+                    <div className="col-lg-2 strong">Default price</div>
+                </div>
+
+            </DataTable>
+        </>)
+}
+
+const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptType: ScriptType) => void }) => {
     return (
-        <table className="table table-sm text-muted text" id="sitesTable">
-            <thead>
-            <tr>
-                <td className="strong">Script type</td>
-                <td className="strong">Effects</td>
-                <td className="strong">RAM</td>
-                <td className="strong">Default price</td>
-            </tr>
-            </thead>
-            <tbody>
-            {
-                scriptTypes.map((type: ScriptType) => {
-                    return (
-                        <tr key={type.id}>
-                            <td><SilentLink onClick={() => {
-                                onSelect(type)
-                            }} text={type.name}/></td>
-                            <td>{
-                                type.effects.map((effect: Effect) => {
-                                    return (<>
-                                        <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
-                                                   badgeText={effect.effectNumber.toString()}/>
-                                        &nbsp;</>)
-                                })
-                            }
-                            </td>
-                            <td>{type.ram}</td>
-                            <td>{type.defaultPrice}</td>
-                        </tr>)
+        <div className="row text">
+            <div className="col-lg-2"><SilentLink onClick={() => {
+                onSelect(type)
+            }} text={type.name}/>
+            </div>
+            <div className="col-lg-2">{
+                type.effects.map((effect: Effect) => {
+                    return (<>
+                        <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
+                                   badgeText={effect.effectNumber.toString()}/>
+                        &nbsp;</>)
                 })
             }
-            </tbody>
-        </table>
-    )
+            </div>
+            <div className="col-lg-1">{type.ram}</div>
+            <div className="col-lg-2">{type.defaultPrice}</div>
+        </div>)
 }

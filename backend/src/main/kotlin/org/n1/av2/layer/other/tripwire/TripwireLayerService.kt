@@ -9,7 +9,6 @@ import org.n1.av2.platform.connection.ServerActions.SERVER_TERMINAL_RECEIVE
 import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.SystemTaskRunner
-import org.n1.av2.platform.engine.TaskIdentifiers
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.run.RunService
@@ -114,7 +113,7 @@ class TripwireLayerService(
         connectionService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(shutdownTimer, layer))
 
         siteResetService.shutdownSite(siteId, shutdownEndTime)
-        val identifiers = TaskIdentifiers(null, siteId, null)
+        val identifiers = mapOf("siteId" to siteId)
         systemTaskRunner.queueInSeconds("site shutdown end", identifiers, shutdownDuration.seconds) { shutdownFinished(siteId, shutdownTimer.id) }
     }
 
@@ -178,8 +177,8 @@ class TripwireLayerService(
         return true
     }
 
-    private fun createTimerIdentifiers(siteId: String?, layerId: String): TaskIdentifiers {
-        return TaskIdentifiers(null, siteId, layerId)
+    private fun createTimerIdentifiers(siteId: String, layerId: String): Map<String, String> {
+        return mapOf("siteId" to siteId, "layerId" to layerId)
     }
 
 }

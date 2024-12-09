@@ -7,8 +7,7 @@ export interface Task {
     description: string
     due: number
     userName: string
-    siteId: string,
-    layerId: string
+    identifier: string,
 }
 
 const defaultState: Array<Task> = []

@@ -5,6 +5,7 @@ import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
 import org.n1.av2.platform.iam.user.UserAndHackerService
+import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.createId
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.context.annotation.Configuration
@@ -44,6 +45,7 @@ class ScriptAccessService(
         val type: ScriptTypeUi,
         val receiveForFree: Int,
         val price: BigDecimal?,
+        val used: Boolean,
     )
 
     class ScriptTypeUi(
@@ -68,6 +70,7 @@ class ScriptAccessService(
                 type = uiType,
                 receiveForFree = scriptAccess.receiveForFree,
                 price = scriptAccess.price,
+                used = scriptAccess.used,
             )
         }
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_ACCESS, scriptAccessUis)
@@ -75,6 +78,7 @@ class ScriptAccessService(
 
     fun addScriptAccess(typeId: String, userId: String) {
         validateCanManageAccess()
+        validateDoesNotAlreadyHaveAccess(userId, typeId)
         val id = createId("access", scriptAccessRepository::findById)
         val type = scriptTypeService.getById(typeId)
 
@@ -90,9 +94,16 @@ class ScriptAccessService(
         sendScriptAccess(userId)
     }
 
+    private fun validateDoesNotAlreadyHaveAccess(userId: String, typeId: String) {
+        val accesses = scriptAccessRepository.findByOwnerUserId(userId)
+        if (accesses.any { it.typeId == typeId }) {
+            throw ValidationException("User already has access to this script.")
+        }
+    }
+
     fun deleteAccess(accessId: String) {
         validateCanManageAccess()
-        val access= scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
+        val access = scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
 
         scriptAccessRepository.delete(access)
         sendScriptAccess(access.ownerUserId)
@@ -105,26 +116,30 @@ class ScriptAccessService(
         }
     }
 
-    fun editAccess(accessId: String, receiveForFree: Int, price: BigDecimal?) {
+    fun editAccess(accessId: String, receiveForFree: Int, priceInput: BigDecimal?) {
         validateCanManageAccess()
-        val access= scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
+        val access = scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
 
-        if (price != null && price < BigDecimal.ZERO) {
+        if (priceInput != null && priceInput < BigDecimal.ZERO) {
             connectionService.replyError("Price cannot be negative.")
             sendScriptAccess(access.ownerUserId)
             return
         }
 
-        if (price == BigDecimal.ZERO) {
-            connectionService.replyError("You have set the price to 0, this means the script is free and hackers can buy unlimited number of copies. " +
-                "If you want to make it so that hackers cannot buy this script, clear the price field instead.")
-            sendScriptAccess(access.ownerUserId)
-            return
-        }
+        val price = if (priceInput == BigDecimal.ZERO) null else priceInput
 
-        val editedAccess = access.copy( receiveForFree = receiveForFree, price = price)
+        val editedAccess = access.copy(receiveForFree = receiveForFree, price = price)
         scriptAccessRepository.save(editedAccess)
         sendScriptAccess(access.ownerUserId)
+    }
+
+    fun markUsed(access: ScriptAccess) {
+        val updatedAccess = access.copy(used = true)
+        scriptAccessRepository.save(updatedAccess)
+    }
+
+    fun findAll(): List<ScriptAccess> {
+        return scriptAccessRepository.findAll().toList()
     }
 
 }

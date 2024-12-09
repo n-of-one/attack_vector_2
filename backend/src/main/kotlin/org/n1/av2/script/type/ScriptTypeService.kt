@@ -141,4 +141,8 @@ class ScriptTypeService(
         scriptTypeRepository.save(editedScriptType)
         sendScriptTypes()
     }
+
+    fun findAll(): List<ScriptType> {
+        return scriptTypeRepository.findAll().toList()
+    }
 }

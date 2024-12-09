@@ -11,30 +11,63 @@ import java.math.BigDecimal
 class ScriptWsController(
     private val userTaskRunner: UserTaskRunner,
     private val scriptService: ScriptService,
-    private val scriptAccessService: ScriptAccessService,
 ) {
-
     class AddScriptCommand(val typeId: String, val userId: String)
+
+    @MessageMapping("/gm/script/getStatistics")
+    fun addScript(userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            scriptService.getStatistics()
+        }
+    }
+
     @MessageMapping("/gm/script/add")
     fun addScript(command: AddScriptCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
-            scriptService.addScript(command.typeId, command.userId)
+            scriptService.addScriptAndInformUser(command.typeId, command.userId)
         }
     }
 
-    @MessageMapping("/hacker/script/refresh")
-    fun refreshScripts(userPrincipal: UserPrincipal) {
+    @MessageMapping("/gm/script/instantLoad")
+    fun instantLoad(scriptId: ScriptId, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
-            scriptService.refreshScriptsForCurrentUser()
+            scriptService.instantLoadScript(scriptId)
         }
     }
 
-    @MessageMapping("/hacker/script/delete")
-    fun deleteScript(scriptCode: String, userPrincipal: UserPrincipal) {
+    @MessageMapping("/hacker/script/cleanup")
+    fun cleanup(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
-            scriptService.deleteScript(scriptCode)
+            scriptService.cleanup()
         }
     }
 
+    @MessageMapping("/hacker/script/freeReceive")
+    fun freeReceive(userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            scriptService.addFreeReceiveScriptsForCurrentUser()
+        }
+    }
+
+    @MessageMapping("/script/delete")
+    fun delete(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            scriptService.deleteScript(scriptId)
+        }
+    }
+
+    @MessageMapping("/script/load")
+    fun load(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            scriptService.loadScript(scriptId)
+        }
+    }
+
+    @MessageMapping("/script/unload")
+    fun unload(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            scriptService.unloadScript(scriptId)
+        }
+    }
 
 }

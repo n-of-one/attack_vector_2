@@ -33,6 +33,13 @@ class ServerTime {
         return Math.ceil((serverMillis - nowMillis) / 1000);
     }
 
+    seconds(from: string, to: string) {
+        const fromMillis = new Date(from).getTime();
+        const toMillis = new Date(to).getTime();
+
+        return Math.ceil((toMillis - fromMillis) / 1000);
+    }
+
 }
 
 export const serverTime = new ServerTime();

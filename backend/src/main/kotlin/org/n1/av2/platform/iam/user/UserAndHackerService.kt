@@ -12,6 +12,7 @@ import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.script.ScriptId
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.ScriptState
 import org.n1.av2.script.access.ScriptAccess
@@ -66,12 +67,13 @@ class UserAndHackerService(
     }
 
     class UiScript(
-        val id: String,
+        val id: ScriptId,
         val name: String,
         val code: String,
         val effects: List<String>,
         val timeLeft: String,
         val state: ScriptState,
+        val inMemory: Boolean,
         val ram: Int,
         val loadStartedAt: ZonedDateTime?,      // "2024-12-01T15:38:40.9179757+02:00",
         val loadTimeFinishAt: ZonedDateTime?,   // "2024-12-01T16:08:40.9179757+02:00",
@@ -100,6 +102,7 @@ class UserAndHackerService(
     fun sendDetailsOfSpecificUser(userId: String) {
         val uiUserDetails = getDetailsOfSpecificUser(userId)
         connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, uiUserDetails)
+        connectionService.toUser(userId, ServerActions.SERVER_RECEIVE_CURRENT_USER, uiUserDetails)
     }
 
     private fun getDetailsOfSpecificUser(userId: String): UiUserDetails {
@@ -109,7 +112,7 @@ class UserAndHackerService(
                 val timeLeft = scriptService.timeLeft(script)
                 val type = scriptTypeService.getById(script.typeId)
                 val effects = type.effects.map{ it.playerDescription}
-                UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
+                UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, script.inMemory, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
             }
         val hacker = createHackerForSkillDisplay(user, scripts)
 

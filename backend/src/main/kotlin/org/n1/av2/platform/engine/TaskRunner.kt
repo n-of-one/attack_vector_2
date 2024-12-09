@@ -9,6 +9,7 @@ import org.n1.av2.platform.util.FatalException
 import org.n1.av2.platform.util.ServerFatal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -18,8 +19,6 @@ import javax.annotation.PreDestroy
 const val TICK_MILLIS = 50
 const val SECOND_MILLIS = 1000
 const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS
-
-data class TaskIdentifiers(val userId: String?, val siteId: String?, val layerId: String?)
 
 private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 
@@ -40,14 +39,24 @@ class UserTaskRunner(
     }
 
     fun queueInTicksForSite(description: String, siteId: String, waitTicks: Int, action: () -> Unit) {
-        val identifiers = TaskIdentifiers(currentUserService.userId, siteId, null)
+        val identifiers = mapOf("siteId" to siteId)
         queueInTicks(description, identifiers, waitTicks, action)
     }
 
-    fun queueInTicks(description: String, identifiers: TaskIdentifiers, waitTicks: Int, action: () -> Unit) {
+    fun queueInTicks(description: String, identifiers: Map<String, String>, waitTicks: Int, action: () -> Unit) {
         val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
         val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
         taskEngine.queueInMillis(description, identifiers, due, userPrincipal, action)
+    }
+
+    fun queue(description: String, identifiers: Map<String, String>, wait: Duration, action: () -> Unit) {
+        val due = System.currentTimeMillis() + wait.toMillis()
+        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
+        taskEngine.queueInMillis(description, identifiers, due, userPrincipal, action)
+    }
+
+    fun removeTask(identifiers: Map<String, String>): TaskDue {
+        return taskEngine.removeSpecific(identifiers)
     }
 
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
@@ -72,12 +81,12 @@ class SystemTaskRunner(
     private val taskEngine: TaskEngine,
 ) {
 
-    fun queueInSeconds(description: String, identifiers: TaskIdentifiers, seconds: Long, action: () -> Unit) {
+    fun queueInSeconds(description: String, identifiers: Map<String, String>, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + seconds * 1000
         taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)
     }
 
-    fun removeTask(identifiers: TaskIdentifiers): TaskDue {
+    fun removeTask(identifiers: Map<String, String>): TaskDue {
         return taskEngine.removeSpecific(identifiers)
     }
 
@@ -115,7 +124,7 @@ class TaskEngine(
         queue.put(task)
     }
 
-    fun queueInMillis(description: String, identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
+    fun queueInMillis(description: String, identifiers: Map<String, String>, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
         timedTaskRunner.queueInMillis(description, identifiers, due, userPrincipal, action)
     }
 
@@ -178,25 +187,26 @@ class TaskEngine(
         this.queue.removeIf { it.userPrincipal.userId == userId }
     }
 
-    fun removeAll(identifiers: TaskIdentifiers) {
+    fun removeAll(identifiers: Map<String, String>) {
         timedTaskRunner.removeAll(identifiers)
-        if (identifiers.userId != null) {
-            removeForUser(identifiers.userId)
+        val userIdIdentifier = identifiers["userId"]
+        if (userIdIdentifier != null) {
+            removeForUser(userIdIdentifier)
         }
     }
 
     fun sendTasks(userPrincipal: UserPrincipal) {
-        class TaskInfo(val due: Long, val description: String, val userName: String, val layerId: String, val siteId: String)
+        class TaskInfo(val due: Long, val description: String, val userName: String, val identifier: String)
 
         val tasks = timedTaskRunner.getTasks().map { task ->
             val userName = task.userPrincipal.userEntity.name
-            TaskInfo(task.due, task.description, userName, task.identifiers.layerId ?: "", task.identifiers.siteId ?: "")
+            TaskInfo(task.due, task.description, userName, task.identifier)
         }
 
         connectionService.toUser(userPrincipal.name, ServerActions.SERVER_TASKS, tasks)
     }
 
-    fun removeSpecific(identifiers: TaskIdentifiers): TaskDue {
+    fun removeSpecific(identifiers: Map<String, String>): TaskDue {
         return timedTaskRunner.removeSpecific(identifiers)
     }
 
@@ -208,7 +218,7 @@ private class TimedTask(
     val description: String,
     val userPrincipal: UserPrincipal,
     val action: () -> Unit,
-    val identifiers: TaskIdentifiers,
+    val identifier: String,
 )
 
 private class TimedTaskRunner {
@@ -226,27 +236,27 @@ private class TimedTaskRunner {
         return task
     }
 
-    fun queueInMillis(description: String, identifiers: TaskIdentifiers, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
-        val task = TimedTask(due, description, userPrincipal, action, identifiers)
+    fun queueInMillis(description: String, identifiers: Map<String, String>, due: Long, userPrincipal: UserPrincipal, action: () -> Unit) {
+        val identifier = toIdentifierString(identifiers)
+        val task = TimedTask(due, description, userPrincipal, action, identifier)
         timedTasks.add(task)
         this.sort()
     }
 
-    fun removeAll(identifiers: TaskIdentifiers) {
-        timedTasks.removeIf { task ->
-            task.identifiers.userId == identifiers.userId ||
-                    task.identifiers.siteId == identifiers.siteId ||
-                    task.identifiers.layerId == identifiers.layerId
-        }
+    fun toIdentifierString(identifiers: Map<String, String>): String {
+        return identifiers.entries.joinToString(", ") { "${it.key}=${it.value}" }
+    }
+
+    fun removeAll(identifiers: Map<String, String>) {
+        val identifier = toIdentifierString(identifiers)
+
+        timedTasks.removeIf { task -> task.identifier == identifier }
         this.sort()
     }
 
-    fun removeSpecific(identifiers: TaskIdentifiers): TaskDue {
-        val toRemove: TimedTask = timedTasks.find { task ->
-            task.identifiers.userId == identifiers.userId &&
-                task.identifiers.siteId == identifiers.siteId &&
-                task.identifiers.layerId == identifiers.layerId
-        } ?: error("Task not found")
+    fun removeSpecific(identifiers: Map<String, String>): TaskDue {
+        val identifier = toIdentifierString(identifiers)
+        val toRemove: TimedTask = timedTasks.find { task -> task.identifier == identifier } ?: error("Task not found")
 
         timedTasks.remove(toRemove)
         this.sort()

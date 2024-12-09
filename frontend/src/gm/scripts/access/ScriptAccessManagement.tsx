@@ -36,7 +36,7 @@ export const ScriptAccessManagement = () => {
         webSocketConnection.send("/gm/scriptAccess/add", {userId: user!!.id, typeId: type.id})
     }
 
-    const tableElement = user ? <ScriptTypesTable onSelect={addScriptAccess}/> : <UserOverviewTable users={hackers} selectUser={selectUser}/>
+    const tableElement = user ? <ScriptTypesForAcess onSelect={addScriptAccess}/> : <UserOverviewTable users={hackers} selectUser={selectUser}/>
 
     return (
         <div className="row">
@@ -49,11 +49,24 @@ export const ScriptAccessManagement = () => {
                 {userAccessElement}
             </div>
             <div className="col-lg-6 rightPane rightPane">
-                <div className="siteMap">
+                <div className="rightPanel">
                     {tableElement}
                 </div>
             </div>
         </div>
+    )
+}
+
+const ScriptTypesForAcess = ({onSelect}: { onSelect: (type: ScriptType) => void }) => {
+    return (<>
+            <div className="row">
+                <div className="col-lg-12 text">
+                    Click in a script type to give the hacker access to it to.<br/>
+                    <br/>
+                </div>
+            </div>
+            <ScriptTypesTable onSelect={onSelect}/>
+        </>
     )
 }
 
@@ -64,16 +77,35 @@ export const AccessOfUser = ({user}: { user: User }) => {
     const close = () => {
         dispatch({type: CLOSE_USER_EDIT})
     }
-    return (<>
 
-        <div className="text">
-            <div className="d-flex justify-content-between">
-
-                <h5 className="text-muted">{user.name}'s access to scripts</h5>
-                <h5><CloseButton closeAction={close}/></h5>
-            </div>
-            <br/>
+    const header = (<div className="text">
+        <div className="d-flex justify-content-between">
+            <h5 className="text-muted">{user.name}'s access to scripts</h5>
+            <h5><CloseButton closeAction={close}/></h5>
         </div>
+        <br/>
+    </div>)
+
+    if (accesses.length === 0) {
+        return (<>
+            {header}å
+            <div className="row">
+                <div className="col-lg-12 text"><br/><br/>
+                    {user.name} currently does not have access to any scripts.<br/>
+                    <br/>
+                    This means they will not receive them for free and cannot buy them on the dark web.<br/>
+                    They can still receive them from fellow hackers if they have the skill to run scripts.<br/>
+                    <br/>
+                    <br/>
+                    Click on a script type in the table on the right to give them access to it.<br/>
+                </div>
+            </div>
+        </>)
+    }
+
+
+    return (<>
+        {header}
 
         <div className="text">
             <br/>
@@ -81,17 +113,13 @@ export const AccessOfUser = ({user}: { user: User }) => {
                 <div className="col-lg-4">Name</div>
                 <div className="col-lg-2">Receive&nbsp;<InfoBadge infoText="The number of scripts the hacker will receive for free." placement="top"/>
                 </div>
-                <div className="col-lg-2">Price&nbsp;<InfoBadge infoText="The price this hacker can buy the script for." placement="top"/></div>
+                <div className="col-lg-2">Price&nbsp;<InfoBadge
+                    infoText="The price this hacker can buy the script for. If empty, the hacker cannot buy this script." placement="top"/></div>
                 <div className="col-lg-1">Action</div>
             </div>
             <br/>
             <br/>
             <>{accesses.map(access => <ScriptAccessElement access={access} key={access.id}/>)}</>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            Click on a script in the table on the right to add access to it.
 
         </div>
     </>)

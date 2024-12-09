@@ -6,7 +6,6 @@ import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.TaskEngine
-import org.n1.av2.platform.engine.TaskIdentifiers
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
 import org.n1.av2.site.entity.NodeEntityService
@@ -50,13 +49,11 @@ class CoreLayerService(
                     .filterIsInstance<TripwireLayer>()
                     .filter { tripwireLayer -> tripwireLayer.coreLayerId == layer.id }
             }
-        val timers = tripwires
-            .map { tripwireLayer -> timerEntityService.findByLayer(tripwireLayer.id) }
-            .filterNotNull()
+        val timers = tripwires.mapNotNull { tripwireLayer -> timerEntityService.findByLayer(tripwireLayer.id) }
         timers.forEach { timer ->
             timerEntityService.deleteById(timer.id)
 
-            val identifiers = TaskIdentifiers(null, null, timer.layerId)
+            val identifiers = mapOf("layerId" to timer.layerId)
 //            timedTaskRunner.removeAll(identifiers)
             taskEngine.removeAll(identifiers)
 

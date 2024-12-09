@@ -7,6 +7,7 @@ export interface ScriptAccess {
     type: ScriptTypeForAccess,
     receiveForFree: number,
     price: number | null,
+    used: boolean,
 }
 
 export interface ScriptTypeForAccess {

@@ -26,7 +26,7 @@ export const WebsitePlayers = () => {
                     A site consists of nodes that are connected to each other. The general goal is to progress deeper into a site and find information hidden in
                     nodes<br/>
                     <br/>
-                    <WebsiteImage path="/img/website/players/sitemap.png" alt="A picture of a site map"/><br/>
+                    <WebsiteImage path="/img/website/players/rightPanelFlexible.png" alt="A picture of a site map"/><br/>
                 </p>
 
                 <h3 className="muted">Nodes and layers</h3>

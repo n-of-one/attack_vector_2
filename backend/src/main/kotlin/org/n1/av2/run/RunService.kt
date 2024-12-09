@@ -14,7 +14,6 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.TaskEngine
-import org.n1.av2.platform.engine.TaskIdentifiers
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntityService
@@ -268,7 +267,7 @@ class RunService(
 
     fun deleteRuns(siteId: String): Int {
         timerEntityService.deleteBySiteId(siteId)
-        taskEngine.removeAll(TaskIdentifiers(null, siteId, null))
+        taskEngine.removeAll(mapOf("siteId" to siteId))
 
 
         val siteName = sitePropertiesEntityService.getBySiteId(siteId).name
