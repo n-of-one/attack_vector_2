@@ -40,10 +40,10 @@ data class TraverseNode(
 
     companion object {
 
-        fun removeIceBlockedNodes(target: TraverseNode, traverseNodes: Collection<TraverseNode>) {
+        fun removeIceBlockedNodes(target: TraverseNode, traverseNodes: Collection<TraverseNode>, iceNodeIdToIgnore: String? = null) {
             traverseNodes.forEach { node ->
                 if (node == target) return@forEach
-                if (node.unhackedIce) {
+                if (node.unhackedIce && node.nodeId != iceNodeIdToIgnore) {
                     node.connections.forEach { iceBlockedNode -> iceBlockedNode.connections.remove(node) }
                     node.connections.clear()
                 }
@@ -68,10 +68,10 @@ data class TraverseNode(
         }
     }
 
-    fun unblockedNetwork(network: List<TraverseNode>): List<TraverseNode> {
+    fun unblockedNetwork(network: List<TraverseNode>, ignoreBlockedStart: Boolean = false): List<TraverseNode> {
         this.visited = true
 
-        if (this.unhackedIce) {
+        if (this.unhackedIce && !ignoreBlockedStart) {
             return network + this
         }
 
@@ -83,7 +83,9 @@ data class TraverseNode(
             }
             n.addAll(it.unblockedNetwork(network))
         }
-
         return network + n + this
     }
+
+
+
 }

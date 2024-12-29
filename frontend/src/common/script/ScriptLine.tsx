@@ -16,9 +16,10 @@ interface Props {
     loading?: ScriptLoading,
     useCase: ScriptLineUseCase
     hrColor?: string
+    minimize?: () => void
 }
 
-export const ScriptLine = ({script, loading, useCase}: Props) => {
+export const ScriptLine = ({script, loading, useCase, minimize}: Props) => {
     const forGm = useCase === ScriptLineUseCase.GM
 
     const actionInstantLoad = forGm ? <><ScriptActionInstantLoad script={script}/>&nbsp;</> : <></>
@@ -26,7 +27,7 @@ export const ScriptLine = ({script, loading, useCase}: Props) => {
 
     return (<>
             <div className="row text" style={{marginBottom: "2px"}}>
-                <div className="col-lg-2 text-end"><CodeElement script={script}/></div>
+                <div className="col-lg-2 text-end"><CodeElement script={script} minimize={minimize}/></div>
                 <div className="col-lg-2">{script.name}</div>
                 <div className="col-lg-1">{script.ram}</div>
                 <div className="col-lg-2"><ScriptStateBadge script={script} loading={loading}/></div>
@@ -43,7 +44,8 @@ export const ScriptLine = ({script, loading, useCase}: Props) => {
     )
 }
 
-const CodeElement = ({script}: { script: Script }) => {
+const CodeElement = ({script, minimize}: { script: Script, minimize?: () => void
+}) => {
     if (script.state === ScriptState.EXPIRED || script.state === ScriptState.USED) {
         return <span className="text" style={{color: "#666"}}>{script.code}</span>
     }
@@ -51,6 +53,7 @@ const CodeElement = ({script}: { script: Script }) => {
     return (
         <SilentLink onClick={() => {
             copyScript(script.code)
+            if (minimize) minimize()
         }}><>{script.code}</>
         </SilentLink>
     )}

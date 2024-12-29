@@ -10,20 +10,14 @@ import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
-import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.runlink.RunLinkEntityService
 import org.n1.av2.script.ScriptId
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.ScriptState
-import org.n1.av2.script.access.ScriptAccess
 import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeService
-import org.springframework.data.annotation.Id
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 import java.time.ZonedDateTime
-import kotlin.system.measureTimeMillis
 
 @Service
 class UserAndHackerService(
@@ -107,13 +101,7 @@ class UserAndHackerService(
 
     private fun getDetailsOfSpecificUser(userId: String): UiUserDetails {
         val user = userEntityService.getById(userId)
-        val scripts = scriptService.findScriptsForUser(userId)
-            .map { script ->
-                val timeLeft = scriptService.timeLeft(script)
-                val type = scriptTypeService.getById(script.typeId)
-                val effects = type.effects.map{ it.playerDescription}
-                UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, script.inMemory, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
-            }
+        val scripts = scriptService.findUiScriptsForUser(userId)
         val hacker = createHackerForSkillDisplay(user, scripts)
 
         return UiUserDetails(user.id, user.name, user.type, hacker)

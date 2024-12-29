@@ -63,17 +63,6 @@ class CommandScanService(
         return true
     }
 
-// TODO: use this code to implement architect scanning.
-
-//    private fun canScanNode(run: Run, node: Node): Boolean {
-//        val status: NodeScanStatus = run.nodeScanById[node.id]!!.status
-//
-//        return status != NodeScanStatus.UNDISCOVERED_0 && status != NodeScanStatus.UNCONNECTABLE_1
-//    }
-//
-//    private fun reportNodeNotFound(networkId: String) {
-//        stompService.replyTerminalReceive("Node [ok]${networkId}[/] not found.")
-//    }
 
     fun processQuickScan(run: Run) {
         if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {

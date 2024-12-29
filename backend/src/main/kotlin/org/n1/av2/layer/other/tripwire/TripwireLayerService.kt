@@ -11,6 +11,7 @@ import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.SystemTaskRunner
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.toDuration
+import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.site.SiteResetService
@@ -156,11 +157,8 @@ class TripwireLayerService(
         }
     }
 
-    fun increaseTimer(layer: TripwireLayer, duration: Duration, siteId: String): Boolean {
-        val timer = timerEntityService.findByLayer(layer.id)
-        if (timer == null) {
-            return false // tripwire not active, cannot increase
-        }
+    fun increaseTimer(layer: TripwireLayer, duration: Duration, siteId: String) {
+        val timer = timerEntityService.findByLayer(layer.id) ?: error("No active countdown timer found for tripwire-layer ${layer.id}")
 
         val updatedTimer = timer.copy(finishAt = timer.finishAt.plus(duration))
         timerEntityService.update(updatedTimer)
@@ -171,10 +169,10 @@ class TripwireLayerService(
         val taskDue = systemTaskRunner.removeTask(taskIdentifiers)
 
         val newCountdownSeconds = taskDue.inSeconds + duration.toSeconds()
-
         systemTaskRunner.queueInSeconds("tripwire effect", taskIdentifiers, newCountdownSeconds) { timerActivates(siteId, timer.id, layer) }
 
-        return true
+        connectionService.replyTerminalReceive("Tripwire countdown delayed by ${toHumanTime(duration)}")
+
     }
 
     private fun createTimerIdentifiers(siteId: String, layerId: String): Map<String, String> {

@@ -99,6 +99,10 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
         webSocketConnection.send("/gm/scriptType/addEffect", command)
     }
 
+    const deleteType = () => {
+        webSocketConnection.send("/gm/scriptType/delete", scriptType.id)
+    }
+
     return (<>
             <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={close}/></div>
             <br/>
@@ -164,6 +168,14 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                     }}/>
                 </div>
             </div>
+            <br/>
+            <div className="row">
+                <div className="col-lg-10 text ">
+                    <hr/>
+                    <div className="btn btn-info textSize" onClick={deleteType}>Delete type</div>
+                </div>
+            </div>
+
         </>
     )
 }

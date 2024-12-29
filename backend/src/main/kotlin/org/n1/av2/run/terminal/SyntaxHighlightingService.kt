@@ -43,7 +43,7 @@ class SyntaxHighlightingService(
         syntaxOutside["help"] = Syntax("t_b", "t_b")
         syntaxOutside["scan"] = Syntax("t_b")
         syntaxOutside["dc"] = Syntax("t_b", "t_error t_s")
-        syntaxOutside["run"] = Syntax("t_b", "t_primary")
+        syntaxOutside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
         syntaxOutside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
 
         syntaxOutside["attack"] = Syntax("t_b")

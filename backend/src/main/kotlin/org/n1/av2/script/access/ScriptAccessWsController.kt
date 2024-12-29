@@ -29,25 +29,25 @@ class ScriptAccessWsController(
         }
     }
 
-    class AddScriptCommand(val typeId: String, val userId: String)
+    class AddScriptAccessCommand(val typeId: String, val userId: String)
     @MessageMapping("/gm/scriptAccess/add")
-    fun addScriptAccess(command: AddScriptCommand, userPrincipal: UserPrincipal) {
+    fun addScriptAccess(command: AddScriptAccessCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             scriptAccessService.addScriptAccess(command.typeId, command.userId)
         }
     }
 
     @MessageMapping("/gm/scriptAccess/delete")
-    fun addScriptAccess(accessId: String, userPrincipal: UserPrincipal) {
+    fun addScriptAccess(accessId: ScriptAccessId, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             scriptAccessService.deleteAccess(accessId)
         }
     }
 
-    class ScriptEditCommand(val id: String, val receiveForFree: Int, val price: BigDecimal?)
+    class EditScriptAccessCommand(val id: ScriptAccessId, val receiveForFree: Int, val price: BigDecimal?)
 
     @MessageMapping("/gm/scriptAccess/edit")
-    fun editScriptAccess(command: ScriptEditCommand, userPrincipal: UserPrincipal) {
+    fun editScriptAccess(command: EditScriptAccessCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
             scriptAccessService.editAccess(command.id, command.receiveForFree, command.price)
         }

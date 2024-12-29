@@ -32,7 +32,7 @@ export const ScriptPanel = () => {
     if (expanded) {
         return <div className="scriptPanel" style={{width: "780px"}}>
             <ScriptMinimizeButton minimize={minimize} onlyShowLoaded={onlyShowLoaded} setOnlyShowLoaded={setOnlyShowLoaded}/>
-            <ScriptsTable scripts={filteredScripts} hr={hr}/>
+            <ScriptsTable scripts={filteredScripts} hr={hr} minimize={minimize}/>
         </div>
     } else {
         return <div className="scriptPanel">
@@ -84,9 +84,10 @@ const ScriptMinimizeButton = ({minimize,onlyShowLoaded, setOnlyShowLoaded}: Scri
 interface ScriptsTableProps {
     scripts: Script[]
     hr?: React.JSX.Element
+    minimize?: () => void
 }
 
-export const ScriptsTable = ({scripts, hr}: ScriptsTableProps) => {
+export const ScriptsTable = ({scripts, hr, minimize}: ScriptsTableProps) => {
     const scriptsLoading = useSelector((state: GmRootState) => state.users.edit.scriptsLoading)
     const sortedScripts = sortScripts(scripts)
 
@@ -95,7 +96,9 @@ export const ScriptsTable = ({scripts, hr}: ScriptsTableProps) => {
         return <ScriptLine script={script}
                            loading={loading}
                            useCase={ScriptLineUseCase.HACKER}
-                           key={script.id}/>
+                           key={script.id}
+                           minimize={minimize}
+        />
     })
     const rowTexts = sortedScripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)
 

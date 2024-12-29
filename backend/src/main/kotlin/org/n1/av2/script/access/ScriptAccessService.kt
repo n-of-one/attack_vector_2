@@ -7,6 +7,7 @@ import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
 import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.createId
+import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
@@ -41,7 +42,7 @@ class ScriptAccessService(
     }
 
     class ScriptAccessUi(
-        val id: String,
+        val id: ScriptAccessId,
         val type: ScriptTypeUi,
         val receiveForFree: Int,
         val price: BigDecimal?,
@@ -63,7 +64,10 @@ class ScriptAccessService(
                 id = type.id,
                 name = type.name,
                 ram = type.ram,
-                effects = type.effects.map { it.playerDescription }
+                effects = type.effects.map { effect ->
+                    val service = scriptTypeService.effectService(effect.type)
+                    service.playerDescription(effect)
+                }
             )
             ScriptAccessUi(
                 id = scriptAccess.id,
@@ -101,7 +105,7 @@ class ScriptAccessService(
         }
     }
 
-    fun deleteAccess(accessId: String) {
+    fun deleteAccess(accessId: ScriptAccessId) {
         validateCanManageAccess()
         val access = scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
 
@@ -116,7 +120,7 @@ class ScriptAccessService(
         }
     }
 
-    fun editAccess(accessId: String, receiveForFree: Int, priceInput: BigDecimal?) {
+    fun editAccess(accessId: ScriptAccessId, receiveForFree: Int, priceInput: BigDecimal?) {
         validateCanManageAccess()
         val access = scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
 
@@ -140,6 +144,10 @@ class ScriptAccessService(
 
     fun findAll(): List<ScriptAccess> {
         return scriptAccessRepository.findAll().toList()
+    }
+
+    fun findByTypeId(typeId: ScriptTypeId): List<ScriptAccess> {
+        return scriptAccessRepository.findByTypeId(typeId)
     }
 
 }

@@ -3,25 +3,66 @@ package org.n1.av2.script.type
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.util.createId
-import org.n1.av2.script.effect.ScriptEffect
-import org.n1.av2.script.effect.ScriptEffectType
-import org.n1.av2.script.effect.ScriptEffectWithValue
+import org.n1.av2.script.Script
+import org.n1.av2.script.ScriptService
+import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.effect.ScriptEffectService
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import javax.annotation.PostConstruct
 import kotlin.jvm.optionals.getOrElse
+
+@Service
+class ScriptTypeServiceInit(
+    private val ScriptTypeService: ScriptTypeService,
+    private val ScriptService: ScriptService,
+    private val scriptAccessService: ScriptAccessService) {
+
+    @PostConstruct
+    fun postConstruct() {
+        ScriptTypeService.scriptService = ScriptService
+        ScriptTypeService.scriptAccessService = scriptAccessService
+    }
+}
+
 
 @Service
 class ScriptTypeService(
     val scriptTypeRepository: ScriptTypeRepository,
     val connectionService: ConnectionService,
-) {
+)  : ApplicationContextAware {
 
-    fun getById(id: String): ScriptType {
+    lateinit var scriptService: ScriptService
+    lateinit var scriptAccessService: ScriptAccessService
+
+
+    private lateinit var applicationContext: ApplicationContext
+    override fun setApplicationContext(context: ApplicationContext) {
+        this.applicationContext = context
+    }
+
+    @EventListener(ContextRefreshedEvent::class)
+    fun initServices() {
+        ScriptEffectType.entries.forEach { type -> servicesByType[type] = applicationContext.getBean(type.effectServiceClass.java) }
+    }
+
+    private val servicesByType: MutableMap<ScriptEffectType, ScriptEffectService> = mutableMapOf()
+
+    fun effectService(type: ScriptEffectType): ScriptEffectService {
+        return servicesByType[type] ?: error("Script effect service not found for type: $type")
+    }
+
+
+
+    fun getById(id: ScriptTypeId): ScriptType {
         return scriptTypeRepository.findById(id).getOrElse { error("Script type not found with id: $id") }
     }
 
     class ScriptTypeEffectUi(
-        val id: String,
         val value: String?,
         val name: String,
         val playerDescription: String,
@@ -29,7 +70,7 @@ class ScriptTypeService(
     )
 
     class ScriptTypeUI(
-        val id: String,
+        val id: ScriptTypeId,
         val name: String,
         val ram: Int,
         val defaultPrice: BigDecimal?,
@@ -44,15 +85,12 @@ class ScriptTypeService(
                 ram = scriptType.ram,
                 defaultPrice = scriptType.defaultPrice,
                 effects = scriptType.effects.mapIndexed { index: Int, effect: ScriptEffect ->
+                    val effectService = effectService(effect.type)
                     ScriptTypeEffectUi(
-                        id = (index + 1).toString(),
-                        value = when (effect) {
-                            is ScriptEffectWithValue -> effect.value
-                            else -> null
-                        },
-                        name = effect.name,
-                        playerDescription = effect.playerDescription,
-                        gmDescription = effect.gmDescription,
+                        value = effect.value,
+                        name = effectService.name,
+                        playerDescription = effectService.playerDescription(effect),
+                        gmDescription = effectService.gmDescription,
                     )
                 }
             )
@@ -72,10 +110,11 @@ class ScriptTypeService(
         )
         scriptTypeRepository.save(scriptType)
         sendScriptTypes()
-        connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, id)
+        connectionService.reply(ServerActions.SERVER_EDIT_SCRIPT_TYPE, id)
+
     }
 
-    fun edit(scriptTypeId: String, name: String, ram: Int, defaultPrice: BigDecimal?) {
+    fun edit(scriptTypeId: ScriptTypeId, name: String, ram: Int, defaultPrice: BigDecimal?) {
         val scriptType = getById(scriptTypeId)
 
         val editedScriptType = scriptType.copy(
@@ -95,9 +134,13 @@ class ScriptTypeService(
         sendScriptTypes()
     }
 
-    fun addEffect(scriptTypeId: String, type: ScriptEffectType) {
+    fun addEffect(scriptTypeId: ScriptTypeId, type: ScriptEffectType) {
         val scriptType = getById(scriptTypeId)
-        val effect = type.createEffect()
+        val effectService = effectService(type)
+        val effect = ScriptEffect(
+            type = type,
+            value = effectService.defaultValue
+        )
         val editedScriptType = scriptType.copy(
             effects = scriptType.effects + effect
         )
@@ -105,7 +148,7 @@ class ScriptTypeService(
         sendScriptTypes()
     }
 
-    fun deleteEffect(scriptTypeId: String, effectNumber: Int) {
+    fun deleteEffect(scriptTypeId: ScriptTypeId, effectNumber: Int) {
         val scriptType = getById(scriptTypeId)
 
         val effectToDelete = scriptType.effects.getOrNull(effectNumber.toInt() - 1) ?: error("Effect with number ${effectNumber} not found")
@@ -118,25 +161,25 @@ class ScriptTypeService(
         sendScriptTypes()
     }
 
-    fun editEffect(scriptTypeId: String, effectNumber: Int, value: String) {
+    fun editEffect(scriptTypeId: ScriptTypeId, effectNumber: Int, value: String) {
         val scriptType = getById(scriptTypeId)
 
         val effectToEdit = scriptType.effects.getOrNull(effectNumber.toInt() - 1) ?: error("Effect with number ${effectNumber} not found")
-        if (effectToEdit !is ScriptEffectWithValue) {
-            error("Effect with number ${effectNumber} is not editable")
-        }
 
-        val validationErrorMessage = effectToEdit.validate(value)
+
+        val effectService = effectService(effectToEdit.type)
+
+        val effectWithNewValue = effectToEdit.copy(value = value)
+
+        val validationErrorMessage = effectService.validate(effectWithNewValue)
         if (validationErrorMessage != null) {
             sendScriptTypes()
             error(validationErrorMessage)
         }
 
-        val editedEffect = effectToEdit.copyWithNewValue(value)
-
         val editedScriptType = scriptType.copy(
             effects = scriptType.effects
-                .map { if (it == effectToEdit) editedEffect else it }
+                .map { if (it == effectToEdit) effectWithNewValue else it }
         )
         scriptTypeRepository.save(editedScriptType)
         sendScriptTypes()
@@ -145,4 +188,26 @@ class ScriptTypeService(
     fun findAll(): List<ScriptType> {
         return scriptTypeRepository.findAll().toList()
     }
+
+    fun delete(scriptTypeId: ScriptTypeId) {
+        val scriptType = getById(scriptTypeId)
+        val existingScripts: List<Script> = scriptService.findByTypeId(scriptTypeId )
+        val usableExistingScripts = existingScripts.filter { scriptService.usable(it)}
+
+        if (usableExistingScripts.isNotEmpty()) {
+            error("Cannot delete ${scriptType.name} because there are still ${usableExistingScripts.size} scripts of this type.")
+        }
+
+        val accesses = scriptAccessService.findByTypeId(scriptTypeId)
+        if (accesses.isNotEmpty()) {
+            error("Cannot delete ${scriptType.name} because there are still ${accesses.size} access entries for this type.")
+        }
+
+        val unusableScripts = existingScripts - usableExistingScripts
+        unusableScripts.forEach { script: Script -> scriptService.deleteScript(script.id) }
+
+        scriptTypeRepository.deleteById(scriptTypeId)
+        sendScriptTypes()
+    }
+
 }

@@ -1,5 +1,7 @@
 package org.n1.av2.script
 
+import org.n1.av2.script.type.ScriptType
+import org.n1.av2.script.type.ScriptTypeId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
@@ -27,5 +29,6 @@ data class Script(
 interface ScriptRepository : CrudRepository<Script, ScriptId> {
     fun findByCode(code: String): Script?
     fun findByOwnerUserId(userId: String): List<Script>
+    fun findByTypeId(typeId: ScriptTypeId): List<Script>
 }
 
