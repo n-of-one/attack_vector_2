@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 )
 @Retention(AnnotationRetention.RUNTIME)
 @Pattern(regexp = "[a-zA-Z0-9_/-]+")
-@Size(min = 1, max = 20, )
+@Size(min = 1, max = 80, ) // long enough for: /x/<encoded app path>
 annotation class LoginRedirectParam(
     val message: String = "",
     val groups: Array<KClass<out Any>> = [],

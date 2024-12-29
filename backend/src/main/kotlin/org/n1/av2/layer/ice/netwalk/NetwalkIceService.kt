@@ -58,7 +58,7 @@ class NetwalkIceService(
     fun enter(iceId: String) {
         val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
-        connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.hacked, netwalk.wrapping, quickPlaying))
+        connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.wrapping, netwalk.hacked, quickPlaying))
         runService.enterNetworkedApp(iceId)
     }
 
