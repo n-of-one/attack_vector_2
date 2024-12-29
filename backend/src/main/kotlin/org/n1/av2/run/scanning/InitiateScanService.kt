@@ -14,6 +14,7 @@ import org.n1.av2.run.scanning.NodeScanType.OUTSIDE_SCAN
 import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
 enum class NodeScanType() {
@@ -33,13 +34,36 @@ class InitiateScanService(
     private val runLinkService: RunLinkService,
     private val scanService: ScanService,
     private val timingsService: TimingsService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
+
+    fun scanWithScript(run: Run, startNode: Node?, targetNode: Node) {
+        val startNodeNetworkId = startNode?.networkId ?: sitePropertiesEntityService.getBySiteId(run.siteId).startNodeNetworkId
+        val iceNodeIdToIgnore = targetNode.id
+        val nodes = nodeEntityService.getAll(run.siteId)
+
+        val startNode = nodes.find { it.networkId == startNodeNetworkId } ?: error("Start node not found for network ID: $startNodeNetworkId")
+
+
+        val (start, traverseNodesById) = traverseNodeService.createTraverseNodesWithDistance(run.siteId, startNode.id, nodes, targetNode.id, iceNodeIdToIgnore)
+        val target: TraverseNode = traverseNodesById[targetNode.id]!!
+
+        scanFromOutSide(start, target, run, targetNode, nodes, true)
+    }
 
     fun scanFromOutside(run: Run, startNode: Node) {
         val nodes = nodeEntityService.getAll(run.siteId)
         val (start, traverseNodesById) = traverseNodeService.createTraverseNodesWithDistance(run.siteId, startNode.id, nodes, startNode.id)
         val target: TraverseNode = traverseNodesById[startNode.id]!!
 
+        scanFromOutSide(start, target, run, startNode, nodes, false)
+    }
+
+    fun scanFromOutSide(start: TraverseNode,
+                        target: TraverseNode,
+                        run: Run, targetNode:
+                        Node, nodes: List<Node>,
+                        ignoreIceAtTarget: Boolean) {
         try {
             val path = TraverseNode.createPath(start, target)
 
@@ -53,8 +77,8 @@ class InitiateScanService(
             )
 
             val totalTicks = (path.size) * timings.connection + timings.totalWithoutConnection
-            userTaskRunner.queueInTicksForSite("scan-arrive", startNode.siteId, totalTicks - 20) {
-                scanService.areaScan(run, startNode, nodes)
+            userTaskRunner.queueInTicksForSite("scan-arrive", run.siteId, totalTicks - 20) {
+                scanService.areaScan(run, targetNode, nodes, ignoreIceAtTarget)
             }
 
         }
@@ -63,6 +87,7 @@ class InitiateScanService(
             return
         }
     }
+
 
     fun scanFromInside(run: Run, targetNode: Node) {
         val nodes = nodeEntityService.getAll(run.siteId)
@@ -75,7 +100,7 @@ class InitiateScanService(
             "timings" to timingsService.INSIDE_SCAN
         )
         userTaskRunner.queueInTicksForSite("internalscan-complete", run.siteId, timingsService.INSIDE_SCAN.totalTicks) {
-            scanService.areaScan(run, targetNode, nodes)
+            scanService.areaScan(run, targetNode, nodes, false)
         }
     }
 

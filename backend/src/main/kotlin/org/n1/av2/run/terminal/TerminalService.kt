@@ -1,13 +1,11 @@
 package org.n1.av2.run.terminal
 
 import org.n1.av2.hacker.hackerstate.HackerActivity
-import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.run.terminal.inside.InsideTerminalService
 import org.n1.av2.run.terminal.outside.OutsideTerminalService
-import org.n1.av2.script.ScriptService
 import org.springframework.stereotype.Service
 
 const val TERMINAL_MAIN = "main"
@@ -19,7 +17,7 @@ class TerminalService(
     private val outsideTerminalService: OutsideTerminalService,
     private val insideTerminalService: InsideTerminalService,
     private val connectionService: ConnectionService,
-    private val scriptService: ScriptService,
+    private val commandRunScriptService: CommandRunScriptService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -39,7 +37,7 @@ class TerminalService(
         val hackerSate = hackerStateEntityService.retrieveForCurrentUser()
 
         if (commandAction == "run") {
-            processRunScript(tokens, hackerSate)
+            commandRunScriptService.processRunScript(tokens, hackerSate)
             return
         }
 
@@ -53,12 +51,5 @@ class TerminalService(
         }
     }
 
-    private fun processRunScript(tokens: List<String>, hackerSate: HackerState) {
-        if (tokens.size < 2) {
-            connectionService.replyTerminalReceive("[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd")
-            return
-        }
-        val scriptCode = tokens[1]
-        scriptService.runScript(scriptCode, hackerSate)
-    }
+
 }

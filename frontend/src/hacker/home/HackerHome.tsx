@@ -104,7 +104,7 @@ const SearchSite = ({currentUser}: { currentUser: User }) => {
             </div>
         </div>
         <TextInput placeholder="Site name"
-                   buttonLabel="Scan"
+                   buttonLabel="Search"
                    buttonClass="btn-info"
                    save={(siteName) => startRunByName(siteName)}
                    clearAfterSubmit={true}

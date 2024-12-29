@@ -113,6 +113,10 @@ input {
     line-height: 14px;
 }
 
+.textSize {
+    font-size: 12px;
+}
+
 .dark {
     color: #777;
 !important;

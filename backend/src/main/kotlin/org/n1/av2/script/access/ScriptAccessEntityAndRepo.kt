@@ -1,14 +1,17 @@
 package org.n1.av2.script.access
 
+import org.n1.av2.script.type.ScriptType
+import org.n1.av2.script.type.ScriptTypeId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import java.math.BigDecimal
 
+typealias ScriptAccessId = String
 
 @Document
 data class ScriptAccess(
-    @Id val id: String,
+    @Id val id: ScriptAccessId,
     val ownerUserId: String,
     val typeId: String,
     val receiveForFree: Int,
@@ -16,6 +19,7 @@ data class ScriptAccess(
     val used: Boolean, // used this day/event/session.
 )
 
-interface ScriptAccessRepository : CrudRepository<ScriptAccess, String> {
+interface ScriptAccessRepository : CrudRepository<ScriptAccess, ScriptAccessId> {
     fun findByOwnerUserId(userId: String): List<ScriptAccess>
+    fun findByTypeId(typeId: ScriptTypeId): List<ScriptAccess>
 }
