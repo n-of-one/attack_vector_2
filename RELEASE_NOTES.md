@@ -1,3 +1,10 @@
+# Release notes AV 2.5.2 (29 Dec 2024)
+
+## Bugfixes
+- Fix broken Netwalk Very strong and Onyx ICE puzzles
+- Fix login and redirect to ICE puzzle 
+
+
 # Release notes AV 2.5.1 (13 Nov 2024)
 
 ## Features
