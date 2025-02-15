@@ -18,8 +18,8 @@ class TripwireLayer(
     level: Int,
     name: String,
     note: String,
-    var countdown: String,
-    var shutdown: String,
+    var countdown: String, // shutdown activates after a duration of $countdown
+    var shutdown: String, // shut down lasts for a duration of $shutdown
     var coreLayerId: String? = null,
 
     ) : Layer(id, type, level, name, note) {

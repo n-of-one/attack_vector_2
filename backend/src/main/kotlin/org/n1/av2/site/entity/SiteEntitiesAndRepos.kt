@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import java.time.Duration
 import java.time.ZonedDateTime
 
 @Document
@@ -22,6 +23,7 @@ data class SiteProperties(
     var hackable: Boolean = false,
     val shutdownEnd: ZonedDateTime? = null,
     val siteStructureOk: Boolean = true,
+    val alertnessTimerAdjustment: Duration? = null,
 )
 
 @Document

@@ -13,6 +13,7 @@ import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createIdGeneric
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.effect.ScriptEffectLookup
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
@@ -45,6 +46,7 @@ class ScriptService(
     private val connectionService: ConnectionService,
     private val userTaskRunner: UserTaskRunner,
     private val scriptTypeService: ScriptTypeService,
+    private val scriptEffectLookup: ScriptEffectLookup,
 ) {
 
     lateinit var userAndHackerService: UserAndHackerService
@@ -95,7 +97,7 @@ class ScriptService(
             val timeLeft = timeLeft(script)
             val type = scriptTypeService.getById(script.typeId)
             val effects = type.effects.map{ effect ->
-                val effectService = scriptTypeService.effectService(effect.type)
+                val effectService = scriptEffectLookup.getForType(effect.type)
                 effectService.playerDescription(effect)
             }
             UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, script.inMemory, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
@@ -114,9 +116,9 @@ class ScriptService(
 
     fun timeLeft(script: Script): String {
         if (script.state == ScriptState.USED) return "script used"
-        if (script.state == ScriptState.EXPIRED) return "expired"
+        if (script.state == ScriptState.EXPIRED || timeService.now().isAfter(script.expiry)) return "expired"
         val timeLeft = Duration.between(timeService.now(), script.expiry)
-        return toHumanTime(timeLeft) ?: "expired"
+        return timeLeft.toHumanTime()
     }
 
     fun expired(script: Script): Boolean {
@@ -194,8 +196,10 @@ class ScriptService(
     fun addFreeReceiveScripts(userId: String) {
         val scriptAccesses = scriptAccessService.findScriptAccessForUser(userId)
 
+        val refreshInstant = timeService.scriptResetMoment()
+
         scriptAccesses
-            .filterNot { access -> access.used }
+            .filter { access -> access.lastUsed < refreshInstant }
             .forEach { access ->
                 (0 until access.receiveForFree).forEach { _ ->
                     addScript(access.typeId, userId)
@@ -229,33 +233,30 @@ class ScriptService(
     fun validateScriptRunnable(scriptCode: String): Script? {
         val script = scriptRepository.findByCode(scriptCode)
 
-        if (script == null) {
-            errorScriptUnknown(scriptCode)
+        if (script == null || script.ownerUserId != currentUserService.userId) {
+            connectionService.replyTerminalReceive("No script loaded with code: $scriptCode")
             return null
         }
-
-        if (script.ownerUserId != currentUserService.userId) {
-            errorScriptUnknown(scriptCode)
-            return null
-        }
-
-        if (script.state == ScriptState.EXPIRED || expired(script)) {
+        if (expired(script)) {
             connectionService.replyTerminalReceive("System has been patched against this script. (Script is expired.)")
             return null
         }
 
-        if (script.state == ScriptState.USED) {
-            connectionService.replyTerminalReceive("System has been patched against this script. (Script has already been used.)")
-            return null
+        if (script.state == ScriptState.LOADED) {
+            return script
         }
 
-        return script
-    }
+        val message = when (script.state) {
+            ScriptState.EXPIRED -> "System has been patched against this script. (Script is expired.)"
+            ScriptState.USED -> "System has been patched against this script. (Script has already been used.)"
+            ScriptState.LOADING -> "Script has not finished loading."
+            ScriptState.AVAILABLE -> "Script has not been loaded."
+            ScriptState.LOADED -> error("illegal code path")
+        }
 
-    private fun errorScriptUnknown(scriptCode: String) {
-        connectionService.replyTerminalReceive("No script loaded with code: $scriptCode")
+        connectionService.replyTerminalReceive(message)
+        return null
     }
-
 
     class ScriptStatisticsLine(val name: String, val owned: Int, val loaded: Int, val loading: Int, val freeReceive: Int)
 

@@ -7,6 +7,7 @@ import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.LinkedList
 
 @Service
 class TimeService(
@@ -24,6 +25,11 @@ class TimeService(
     fun longAgo(): ZonedDateTime {
         return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, timeZoneId)
     }
+
+    fun scriptResetMoment() = now()
+            .withHour(4)
+            .withMinute(0)
+            .withSecond(0)
 
     fun formatDuration(duration: Duration): String {
         return String.format("%d:%02d:%02d", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart())
@@ -74,18 +80,22 @@ fun String.validateDuration(): String? {
     return null
 }
 
+fun toHumanTime(durationString: String): String? {
+    return durationString.toDuration().toHumanTime()
+}
 
+fun Duration.toHumanTime(): String {
+    val textParts = LinkedList<String>()
+    val hours = this.toHours()
+    if (hours > 0) textParts.add("$hours hour${pluralS(hours)}")
 
+    val minutes = this.toMinutesPart()
+    if (minutes > 0) textParts.add("$minutes minute${pluralS(minutes)}")
 
-fun toHumanTime(duration: Duration): String? {
-    val hours = duration.toHours()
-    if (hours > 0) return "$hours hour${pluralS(hours)}"
+    val seconds = this.toSecondsPart()
+    if (seconds > 0) textParts.add("$seconds second${pluralS(seconds)}")
 
-    val minutes = duration.toMinutes()
-    if (minutes > 0) return "$minutes minute${pluralS(minutes)}"
+    if (textParts.isEmpty()) return "0 seconds"
 
-    val seconds = duration.toSeconds()
-    if (seconds > 0) return "$seconds second${pluralS(seconds)}"
-
-    return null
+    return textParts.joinToString(" ")
 }

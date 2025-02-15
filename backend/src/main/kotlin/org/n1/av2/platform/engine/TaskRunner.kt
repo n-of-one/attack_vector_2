@@ -22,7 +22,7 @@ const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS
 
 private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
 
-data class TaskDue(val inSeconds: Long, val dueAtLocalMillis: Long)
+data class TaskInfo(val inSeconds: Long, val dueAtLocalMillis: Long, val description: String)
 
 /**
  * All actions are performed on a single thread, this way the execution becomes very predictable,
@@ -55,7 +55,7 @@ class UserTaskRunner(
         taskEngine.queueInMillis(description, identifiers, due, userPrincipal, action)
     }
 
-    fun removeTask(identifiers: Map<String, String>): TaskDue {
+    fun removeTask(identifiers: Map<String, String>): TaskInfo {
         return taskEngine.removeSpecific(identifiers)
     }
 
@@ -86,7 +86,7 @@ class SystemTaskRunner(
         taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)
     }
 
-    fun removeTask(identifiers: Map<String, String>): TaskDue {
+    fun removeTask(identifiers: Map<String, String>): TaskInfo {
         return taskEngine.removeSpecific(identifiers)
     }
 
@@ -206,7 +206,7 @@ class TaskEngine(
         connectionService.toUser(userPrincipal.name, ServerActions.SERVER_TASKS, tasks)
     }
 
-    fun removeSpecific(identifiers: Map<String, String>): TaskDue {
+    fun removeSpecific(identifiers: Map<String, String>): TaskInfo {
         return timedTaskRunner.removeSpecific(identifiers)
     }
 
@@ -244,17 +244,17 @@ private class TimedTaskRunner {
     }
 
     fun toIdentifierString(identifiers: Map<String, String>): String {
-        return identifiers.entries.joinToString(", ") { "${it.key}=${it.value}" }
+        return identifiers.entries.sortedBy{it.key}.joinToString(", ") { "${it.key}=${it.value}" }
     }
 
     fun removeAll(identifiers: Map<String, String>) {
         val identifier = toIdentifierString(identifiers)
 
-        timedTasks.removeIf { task -> task.identifier == identifier }
+        timedTasks.removeIf { task -> task.identifier.contains(identifier) }
         this.sort()
     }
 
-    fun removeSpecific(identifiers: Map<String, String>): TaskDue {
+    fun removeSpecific(identifiers: Map<String, String>): TaskInfo {
         val identifier = toIdentifierString(identifiers)
         val toRemove: TimedTask = timedTasks.find { task -> task.identifier == identifier } ?: error("Task not found")
 
@@ -264,7 +264,7 @@ private class TimedTaskRunner {
         val dueInSeconds = (toRemove.due - System.currentTimeMillis()) / 1000
         val dueAtLocalMillis = toRemove.due
 
-        return TaskDue(dueInSeconds, dueAtLocalMillis)
+        return TaskInfo(dueInSeconds, dueAtLocalMillis, toRemove.description)
     }
 
     fun sort() {

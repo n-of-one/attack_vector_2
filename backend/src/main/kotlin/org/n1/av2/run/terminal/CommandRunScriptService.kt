@@ -4,6 +4,7 @@ import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
+import org.n1.av2.script.effect.ScriptEffectLookup
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeService
@@ -14,6 +15,7 @@ class CommandRunScriptService(
     private val connectionService: ConnectionService,
     private val scriptService: ScriptService,
     private val scriptTypeService: ScriptTypeService,
+    private val scriptEffectLookup: ScriptEffectLookup,
 ) {
 
     fun processRunScript(tokens: List<String>, hackerSate: HackerState) {
@@ -31,8 +33,8 @@ class CommandRunScriptService(
         val type = scriptTypeService.getById(script.typeId)
 
         val executionProblems = type.effects.mapNotNull { effect ->
-            val service = scriptTypeService.effectService(effect.type)
-            service.checkCanExecute(effect, tokens, hackerSate)
+            val effectService = scriptEffectLookup.getForType(effect.type)
+            effectService.checkCanExecute(effect, tokens, hackerSate)
         }
 
         if (executionProblems.isNotEmpty()) {
@@ -41,10 +43,10 @@ class CommandRunScriptService(
             return
         }
 
-        val lockState = runEffects(type, tokens, hackerSate)
+        val terminalLockState = runEffects(type, tokens, hackerSate)
         scriptService.markAsUsedAndNotify(script)
 
-        if (lockState == TerminalLockState.UNLOCK) {
+        if (terminalLockState == TerminalLockState.UNLOCK) {
             connectionService.replyTerminalSetLocked(false)
         }
     }
@@ -56,8 +58,8 @@ class CommandRunScriptService(
         }
 
         val unlockTerminalFromEffects = type.effects.map { effect ->
-            val service = scriptTypeService.effectService(effect.type)
-            service.execute(effect, tokens, state)
+            val effectService = scriptEffectLookup.getForType(effect.type)
+            effectService.execute(effect, tokens, state)
         }
 
         if (unlockTerminalFromEffects.any { it == TerminalLockState.LOCK } ) return TerminalLockState.LOCK

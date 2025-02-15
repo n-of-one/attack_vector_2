@@ -7,8 +7,6 @@ import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
-import org.n1.av2.layer.other.tripwire.TimerEntityService
-import org.n1.av2.layer.other.tripwire.TimerInfo
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
@@ -32,6 +30,9 @@ import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.timer.TimerEntityService
+import org.n1.av2.timer.TimerInfo
+import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
 
 @Service
@@ -48,10 +49,10 @@ class RunService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val runLinkService: RunLinkService,
     private val timerEntityService: TimerEntityService,
-    private val tripwireLayerService: TripwireLayerService,
     private val scanService: ScanService,
     private val nodeEntityService: NodeEntityService,
     private val hackerEntityService: HackerEntityService,
+    private val timerService: TimerService,
 ) {
 
     class HackerPresence(
@@ -129,7 +130,7 @@ class RunService(
 
         val hackerPresences = getPresenceInRun(runId)
 
-        val timers = tripwireLayerService.findForEnterSite(run.siteId, userId)
+        val timers = timerService.findForEnterSite(run.siteId, userId)
 
         val siteInfo = SiteInfo(run, siteFull, hackerPresences, timers)
         connectionService.toUser(userId, ServerActions.SERVER_ENTERED_RUN, siteInfo)
@@ -337,7 +338,7 @@ class RunService(
 
     fun getTimers(runId: String, userId: String) {
         val run = runEntityService.getByRunId(runId)
-        val timers = tripwireLayerService.findForEnterSite(run.siteId, userId)
+        val timers = timerService.findForEnterSite(run.siteId, userId)
 
         val timerInfo = TimersInfo(timers)
         connectionService.toUser(userId, ServerActions.SERVER_RUN_TIMER, timerInfo)

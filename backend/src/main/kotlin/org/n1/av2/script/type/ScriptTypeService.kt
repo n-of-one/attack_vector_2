@@ -6,11 +6,7 @@ import org.n1.av2.platform.util.createId
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.effect.ScriptEffectService
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
-import org.springframework.context.event.ContextRefreshedEvent
-import org.springframework.context.event.EventListener
+import org.n1.av2.script.effect.ScriptEffectLookup
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import javax.annotation.PostConstruct
@@ -32,31 +28,13 @@ class ScriptTypeServiceInit(
 
 @Service
 class ScriptTypeService(
-    val scriptTypeRepository: ScriptTypeRepository,
-    val connectionService: ConnectionService,
-)  : ApplicationContextAware {
+    private val scriptTypeRepository: ScriptTypeRepository,
+    private val connectionService: ConnectionService,
+    private val effectService: ScriptEffectLookup,
+)  {
 
     lateinit var scriptService: ScriptService
     lateinit var scriptAccessService: ScriptAccessService
-
-
-    private lateinit var applicationContext: ApplicationContext
-    override fun setApplicationContext(context: ApplicationContext) {
-        this.applicationContext = context
-    }
-
-    @EventListener(ContextRefreshedEvent::class)
-    fun initServices() {
-        ScriptEffectType.entries.forEach { type -> servicesByType[type] = applicationContext.getBean(type.effectServiceClass.java) }
-    }
-
-    private val servicesByType: MutableMap<ScriptEffectType, ScriptEffectService> = mutableMapOf()
-
-    fun effectService(type: ScriptEffectType): ScriptEffectService {
-        return servicesByType[type] ?: error("Script effect service not found for type: $type")
-    }
-
-
 
     fun getById(id: ScriptTypeId): ScriptType {
         return scriptTypeRepository.findById(id).getOrElse { error("Script type not found with id: $id") }
@@ -85,7 +63,7 @@ class ScriptTypeService(
                 ram = scriptType.ram,
                 defaultPrice = scriptType.defaultPrice,
                 effects = scriptType.effects.mapIndexed { index: Int, effect: ScriptEffect ->
-                    val effectService = effectService(effect.type)
+                    val effectService = effectService.getForType(effect.type)
                     ScriptTypeEffectUi(
                         value = effect.value,
                         name = effectService.name,
@@ -136,7 +114,7 @@ class ScriptTypeService(
 
     fun addEffect(scriptTypeId: ScriptTypeId, type: ScriptEffectType) {
         val scriptType = getById(scriptTypeId)
-        val effectService = effectService(type)
+        val effectService = effectService.getForType(type)
         val effect = ScriptEffect(
             type = type,
             value = effectService.defaultValue
@@ -167,7 +145,7 @@ class ScriptTypeService(
         val effectToEdit = scriptType.effects.getOrNull(effectNumber.toInt() - 1) ?: error("Effect with number ${effectNumber} not found")
 
 
-        val effectService = effectService(effectToEdit.type)
+        val effectService = effectService.getForType(effectToEdit.type)
 
         val effectWithNewValue = effectToEdit.copy(value = value)
 

@@ -8,7 +8,7 @@ enum class TerminalLockState {
     LOCK, UNLOCK
 }
 
-interface ScriptEffectService {
+interface ScriptEffectInterface {
     val name: String
     val defaultValue: String?
     val gmDescription: String

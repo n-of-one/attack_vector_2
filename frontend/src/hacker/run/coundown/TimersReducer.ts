@@ -10,7 +10,7 @@ export const SERVER_CHANGE_TIMER = "SERVER_CHANGE_TIMER"
 
 export const SERVER_FLASH_PATROLLER = "SERVER_FLASH_PATROLLER"
 
-export enum TimerType {
+export enum TimerEffect {
     SHUTDOWN_START = "SHUTDOWN_START",
     SHUTDOWN_FINISH = "SHUTDOWN_FINISH",
 }
@@ -19,9 +19,9 @@ export interface TimerState {
     timerId: string,
     finishAt: string | null,    // "2019-08-26T15:38:40.9179757+02:00",
     secondsLeft: number | null,
-    type: TimerType,
+    effect: TimerEffect,
     target: string,
-    effect: string
+    effectDescription: string
 }
 
 export const timersReducer = (state: TimerState[] = [], action: AnyAction): TimerState[] => {
@@ -50,9 +50,9 @@ export const timersReducer = (state: TimerState[] = [], action: AnyAction): Time
 interface TimerInfo {
     timerId: string,
     finishAt: string
-    type: TimerType,
+    effect: TimerEffect,
     target: string,
-    effect: string
+    effectDescription: string
 }
 
 const startTimer = (state: TimerState[], timerStart: TimerInfo): TimerState[] => {

@@ -37,10 +37,10 @@ export const DataTable = ({rows, rowTexts, pageSize, children, hr}: DataTablePro
         <br/>
         {children}
         {pagedRows.map((row, index) => {
-            return (<>
+            return (<span key={index}>
                     {hr}
                     {row}
-                </>
+                </span>
             )
         })
         }

@@ -1,22 +1,26 @@
-package org.n1.av2.layer.other.tripwire
+package org.n1.av2.timer
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import java.time.Duration
 import java.time.ZonedDateTime
 
-enum class TimerType { SHUTDOWN_START, SHUTDOWN_FINISH }
+enum class TimerEffect { SHUTDOWN_START, SHUTDOWN_FINISH }
+enum class TimerLabel { SCRIPT_SITE_SHUTDOWN }
 
 @Document
 data class Timer(
     @Id val id: String,
-    val layerId: String,
+    val layerId: String?,
     val siteId: String,
     val targetSiteId: String,
     val userId: String?,
     val finishAt: ZonedDateTime,
-    val type: TimerType,
+    val effect: TimerEffect,
+    val label: TimerLabel? = null,
+    val effectDuration: Duration,
 )
 
 @Repository

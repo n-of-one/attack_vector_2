@@ -2,7 +2,7 @@ import React from 'react';
 import {useSelector} from "react-redux";
 import {HackerRootState} from "../../HackerRootReducer";
 import {formatTimeInterval} from "../../../common/util/Util";
-import {TimerState, TimerType} from "./TimersReducer";
+import {TimerState, TimerEffect} from "./TimersReducer";
 
 export const Timers = () => {
 
@@ -23,22 +23,22 @@ export const Timers = () => {
 
 const TimerDisplay = (props: TimerState) => {
 
-    const textColor = props.type === TimerType.SHUTDOWN_START ? "text-warning" : "text-info"
+    const textColor = props.effect === TimerEffect.SHUTDOWN_START ? "text-warning" : "text-info"
 
     return <div className="row">
         <div className="col-lg-12">
             <span className="text">
                 <span className={`timer ${textColor}`}>{formatTimeInterval(props.secondsLeft)}</span>
-                &nbsp;{typeText(props)} [{props.target}] ➜ {props.effect}
+                &nbsp;{typeText(props)} [{props.target}] ➜ {props.effectDescription}
             </span>
         </div>
     </div>
 }
 
 const typeText = (timer: TimerState) => {
-    switch (timer.type) {
-        case TimerType.SHUTDOWN_START: return "tripwire"
-        case TimerType.SHUTDOWN_FINISH: return "shutdown"
+    switch (timer.effect) {
+        case TimerEffect.SHUTDOWN_START: return "tripwire"
+        case TimerEffect.SHUTDOWN_FINISH: return "shutdown"
         default: return ""
     }
 }

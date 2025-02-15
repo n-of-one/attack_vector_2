@@ -4,7 +4,7 @@ import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.run.entity.NodeScanStatus
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
-import org.n1.av2.script.effect.ScriptEffectService
+import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.NodeEntityService
@@ -15,7 +15,7 @@ class ScanIceNodeEffectService(
     private val runEntityService: RunEntityService,
     private val initiateScanService: InitiateScanService,
     private val nodeEntityService: NodeEntityService,
-) : ScriptEffectService {
+) : ScriptEffectInterface {
 
     override val name = "Scan beyond ICE node"
     override val defaultValue = "00:01:00"

@@ -1,7 +1,8 @@
-package org.n1.av2.layer.other.tripwire
+package org.n1.av2.timer
 
 import org.n1.av2.platform.util.createId
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.ZonedDateTime
 
 @Service
@@ -13,7 +14,14 @@ class TimerEntityService(
         return repository.findByLayerId(layerId)
     }
 
-    fun create(layerId: String, userId: String?, finishAt: ZonedDateTime, siteId: String, targetSiteId: String, type: TimerType): Timer {
+    fun findAll(): List<Timer> {
+        return repository.findAll().toList()
+    }
+
+    fun create(
+        layerId: String?, userId: String?, finishAt: ZonedDateTime, siteId: String, targetSiteId: String,
+        effect: TimerEffect, effectDuration: Duration, label: TimerLabel? = null
+    ): Timer {
         val id = createId("timer", repository::findById)
 
         val timer = Timer(
@@ -23,7 +31,9 @@ class TimerEntityService(
             finishAt = finishAt,
             siteId = siteId,
             targetSiteId = targetSiteId,
-            type = type,
+            effect = effect,
+            effectDuration = effectDuration,
+            label = label,
         )
 
         return repository.save(timer)
@@ -33,16 +43,10 @@ class TimerEntityService(
         repository.deleteById(timerId)
     }
 
-    fun deleteByLayerId(layerId: String): Timer? {
-        val timer = repository.findByLayerId(layerId) ?: return null
-        repository.delete(timer)
-        return timer
-    }
-
-    fun deleteBySiteId(siteId: String) {
-        repository
-            .findBySiteId(siteId)
-            .forEach { repository.delete(it) }
+    fun deleteBySiteId(siteId: String): List<Timer> {
+        val timers = repository.findBySiteId(siteId)
+        timers.forEach { repository.delete(it) }
+        return timers
     }
 
     fun findForEnterSite(siteId: String, userId: String): List<Timer> {
@@ -54,6 +58,10 @@ class TimerEntityService(
 
     fun update(timer: Timer) {
         repository.save(timer)
+    }
+
+    fun findByTargetSiteId(siteId: String): List<Timer> {
+        return repository.findByTargetSiteId(siteId)
     }
 
 }

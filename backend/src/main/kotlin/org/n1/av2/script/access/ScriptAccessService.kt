@@ -6,7 +6,9 @@ import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
 import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.n1.av2.platform.inputvalidation.ValidationException
+import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
+import org.n1.av2.script.effect.ScriptEffectLookup
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.context.annotation.Configuration
@@ -33,6 +35,8 @@ class ScriptAccessService(
     private val currentUserService: CurrentUserService,
     private val connectionService: ConnectionService,
     private val scriptTypeService: ScriptTypeService,
+    private val scriptEffectLookup: ScriptEffectLookup,
+    private val timeService: TimeService,
 ) {
 
     lateinit var userAndHackerService: UserAndHackerService
@@ -65,7 +69,7 @@ class ScriptAccessService(
                 name = type.name,
                 ram = type.ram,
                 effects = type.effects.map { effect ->
-                    val service = scriptTypeService.effectService(effect.type)
+                    val service = scriptEffectLookup.getForType(effect.type)
                     service.playerDescription(effect)
                 }
             )
@@ -74,7 +78,7 @@ class ScriptAccessService(
                 type = uiType,
                 receiveForFree = scriptAccess.receiveForFree,
                 price = scriptAccess.price,
-                used = scriptAccess.used,
+                used = scriptAccess.lastUsed >= timeService.scriptResetMoment(),
             )
         }
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_ACCESS, scriptAccessUis)
@@ -92,7 +96,7 @@ class ScriptAccessService(
             typeId = typeId,
             receiveForFree = 0,
             price = type.defaultPrice,
-            used = false,
+            lastUsed = timeService.longAgo(),
         )
         scriptAccessRepository.save(scriptAccess)
         sendScriptAccess(userId)
@@ -138,7 +142,7 @@ class ScriptAccessService(
     }
 
     fun markUsed(access: ScriptAccess) {
-        val updatedAccess = access.copy(used = true)
+        val updatedAccess = access.copy(lastUsed = timeService.now())
         scriptAccessRepository.save(updatedAccess)
     }
 

@@ -23,7 +23,7 @@ import org.n1.av2.layer.other.keystore.IcePassword
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.text.TextLayer
-import org.n1.av2.layer.other.tripwire.Timer
+import org.n1.av2.timer.Timer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.db.DbSchemaVersion
 import org.n1.av2.platform.db.MigrationStep

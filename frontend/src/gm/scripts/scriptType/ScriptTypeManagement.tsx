@@ -268,10 +268,10 @@ const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptTy
             </div>
             <div className="col-lg-2">{
                 type.effects.map((effect: Effect) => {
-                    return (<>
+                    return (<span key={effect.effectNumber}>
                         <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
                                    badgeText={effect.effectNumber.toString()}/>
-                        &nbsp;</>)
+                        &nbsp;</span>)
                 })
             }
             </div>

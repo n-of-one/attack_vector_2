@@ -25,7 +25,7 @@ export const ScriptPanel = () => {
         return <></>
     }
 
-    const filteredScripts = onlyShowLoaded ? scripts.filter(script => script.state === ScriptState.LOADED || script.state === ScriptState.LOADING) : scripts
+    const filteredScripts = onlyShowLoaded ? scripts.filter((script: Script) => script.state === ScriptState.LOADED || script.state === ScriptState.LOADING) : scripts
 
     const hr = <Hr color="#666"/>
 

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 typealias ScriptAccessId = String
 
@@ -16,7 +17,7 @@ data class ScriptAccess(
     val typeId: String,
     val receiveForFree: Int,
     val price: BigDecimal?,
-    val used: Boolean, // used this day/event/session.
+    val lastUsed: ZonedDateTime,
 )
 
 interface ScriptAccessRepository : CrudRepository<ScriptAccess, ScriptAccessId> {

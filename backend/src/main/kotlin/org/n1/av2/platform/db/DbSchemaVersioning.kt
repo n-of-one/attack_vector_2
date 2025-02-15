@@ -25,6 +25,9 @@ class DbSchemaVersioning(
 
     private val logger = mu.KotlinLogging.logger {}
 
+    // The ContextRefreshedEvent is fairly early in the spring boot startup cycle,just after all beans are ready.
+    // We want the database to be updated before other startup processes act, because they will assume the database
+    // to be in sync with the code.
     @EventListener(ContextRefreshedEvent::class)
     fun upgrade() {
         val existingVersions = dbSchemaVersionRepository.findAll()

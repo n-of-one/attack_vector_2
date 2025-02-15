@@ -1,20 +1,28 @@
 package org.n1.av2.site
 
+import org.n1.av2.hacker.hackerstate.HackerActivity
+import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreService
-import org.n1.av2.layer.other.tripwire.TimerEntityService
+import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.connection.ServerActions.SERVER_TERMINAL_RECEIVE
 import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.TaskEngine
+import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.run.RunService
+import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.timer.TimerService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
 
@@ -22,36 +30,39 @@ import javax.annotation.PostConstruct
 @Configuration
 class InitSiteResetService(
     val siteResetService: SiteResetService,
-    val runService: RunService
+    val runService: RunService,
+    val timerService: TimerService,
 ) {
 
     @PostConstruct
     fun postConstruct() {
         siteResetService.runService = runService
+        siteResetService.timerService = timerService
     }
 }
 
 @Service
 class SiteResetService(
     private val taskEngine: TaskEngine,
-    private val timerEntityService: TimerEntityService,
     private val nodeEntityService: NodeEntityService,
     private val keystoreService: KeystoreService,
     private val connectionService: ConnectionService,
     private val iceService: IceService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val hackerStateEntityService: HackerStateEntityService,
 ) {
 
     lateinit var runService: RunService
+    lateinit var timerService: TimerService
 
     fun refreshSite(siteId: String, shutdownDuration: String) {
-        resetSite(siteId)
+        resetSite(siteId, Duration.ZERO)
         shutdownFinished(siteId)
-        timerEntityService.deleteBySiteId(siteId)
+        timerService.removeTimersForSite(siteId)
     }
 
     @CalledBySystem
-    fun resetSite(siteId: String) {
+    fun resetSite(siteId: String, shutdownDuration: Duration) {
         taskEngine.removeAll(mapOf("siteId" to siteId))
         val nodes = nodeEntityService.getAll(siteId)
         nodes.forEach { node ->
@@ -62,23 +73,36 @@ class SiteResetService(
                 if (layer is KeyStoreLayer) {
                     keystoreService.deleteIcePassword(layer.iceLayerId)
                 }
-                if (layer is TripwireLayer) {
-                    val timer = timerEntityService.deleteByLayerId(layer.id)
-                    if (timer != null) {
-                        connectionService.toSite(siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)
-                    }
-                }
             }
             nodeEntityService.save(node)
         }
         iceService.deleteIce(siteId)
 
+        timerService.removeTimersForSite(siteId)
+
         runService.updateRunLinksForResetSite(siteId)
+
+        val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
+        connectionService.toSite(
+            siteId,
+            SERVER_TERMINAL_RECEIVE,
+            TerminalReceive(TERMINAL_MAIN, arrayOf("[info]Site down for maintenance for ${shutdownDuration.toHumanTime()}."))
+        )
+        hackerStates
+            .filter { it.activity == HackerActivity.INSIDE }
+            .forEach { hackerState ->
+                runService.hackerDisconnect(hackerState, "Disconnected (server abort)")
+            }
+
+
     }
 
     fun shutdownFinished(siteId: String) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
-        val shutdownProperties = properties.copy(shutdownEnd = null)
+        val shutdownProperties = properties.copy(
+            shutdownEnd = null,
+            alertnessTimerAdjustment = null,
+        )
         sitePropertiesEntityService.save(shutdownProperties)
         connectionService.toSite(siteId, ServerActions.SERVER_SITE_SHUTDOWN_FINISH)
     }

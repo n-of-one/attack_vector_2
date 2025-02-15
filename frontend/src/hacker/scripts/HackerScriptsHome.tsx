@@ -12,7 +12,7 @@ import {Hr} from "../../common/component/dataTable/Hr";
 
 export const HackerScriptsHome = () => {
     const currentUser = useSelector((state: HackerRootState) => state.currentUser)
-    const scripts = currentUser.hacker?.scripts || []
+    const scripts = currentUser.hacker!!.scripts
 
     useEffect(() => {
         webSocketConnection.send("/hacker/scriptAccess/get", currentUser.id)

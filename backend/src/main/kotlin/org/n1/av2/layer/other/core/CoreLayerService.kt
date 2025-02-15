@@ -1,7 +1,7 @@
 package org.n1.av2.layer.other.core
 
-import org.n1.av2.layer.other.tripwire.Timer
-import org.n1.av2.layer.other.tripwire.TimerEntityService
+import org.n1.av2.timer.Timer
+import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
@@ -49,17 +49,23 @@ class CoreLayerService(
                     .filterIsInstance<TripwireLayer>()
                     .filter { tripwireLayer -> tripwireLayer.coreLayerId == layer.id }
             }
-        val timers = tripwires.mapNotNull { tripwireLayer -> timerEntityService.findByLayer(tripwireLayer.id) }
-        timers.forEach { timer ->
-            timerEntityService.deleteById(timer.id)
 
-            val identifiers = mapOf("layerId" to timer.layerId)
-//            timedTaskRunner.removeAll(identifiers)
-            taskEngine.removeAll(identifiers)
+        val timers:List<Timer> = tripwires.mapNotNull { tripwireLayer ->
+            val timer = timerEntityService.findByLayer(tripwireLayer.id)
+            if ( timer == null) {
+                null
+            }
+            else {
+                timerEntityService.deleteById(timer.id)
 
+                val identifiers = mapOf("layerId" to tripwireLayer.id)
+                taskEngine.removeAll(identifiers)
 
-            connectionService.toSite(run.siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)
+                connectionService.toSite(run.siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)
+                timer
+            }
         }
+
         return timers
     }
 
