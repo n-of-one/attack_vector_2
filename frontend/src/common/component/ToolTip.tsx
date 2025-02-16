@@ -22,11 +22,13 @@ export const ToolTip = (props: Props) => {
     </OverlayTrigger>
 }
 
-export const InfoBadge = (props: { infoText: string, placement?: Placement, badgeText?: string }) => {
+export const InfoBadge = (props: { infoText: string, placement?: Placement, badgeText?: string, badgeClass?: string }) => {
     const badgeText = props.badgeText || "?"
+    const badgeClass = props.badgeClass || "bg-secondary"
     const [id] = useState(new Date().getTime() + ":" + Math.random())
     return <ToolTip id={id} text={props.infoText} placement={props.placement}>
-        <span className="badge bg-secondary helpBadge">{badgeText}</span>
+        <span className={`badge ${badgeClass} helpBadge`}>{badgeText}</span>
+        {/*<span className="badge bg-secondary helpBadge">{badgeText}</span>*/}
     </ToolTip>
 
 }

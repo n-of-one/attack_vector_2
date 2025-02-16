@@ -8,6 +8,7 @@ export const CLOSE_SCRIPT_TYPE = "CLOSE_SCRIPT_TYPE"
 export enum EffectType {
     DELAY_TRIPWIRE_COUNTDOWN = "DELAY_TRIPWIRE_COUNTDOWN",
     DECREASE_FUTURE_TIMERS = "DECREASE_FUTURE_TIMERS",
+    HIDDEN_EFFECTS = "HIDDEN_EFFECTS",
     START_RESET_TIMER = "START_RESET_TIMER",
     SPEED_UP_RESET_TIMER = "SPEED_UP_RESET_TIMER",
     SCAN_ICE_NODE = "SCAN_ICE_NODE"
@@ -19,6 +20,8 @@ export interface Effect {
     name: string,
     playerDescription: string,
     gmDescription: string,
+    hidden: boolean,
+    type: EffectType,
 }
 
 export interface ScriptType {

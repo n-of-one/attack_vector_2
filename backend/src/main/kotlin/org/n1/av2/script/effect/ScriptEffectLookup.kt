@@ -1,6 +1,7 @@
 package org.n1.av2.script.effect
 
 import org.n1.av2.script.effect.negative.DecreaseFutureTimersEffectService
+import org.n1.av2.script.effect.negative.HidenEffectsService
 import org.n1.av2.script.effect.negative.SpeedUpResetTimerEffectService
 import org.n1.av2.script.effect.negative.StartResetTimerEffectService
 import org.n1.av2.script.effect.positive.DelayTripwireCountdownService
@@ -14,6 +15,7 @@ class ScriptEffectLookup(
     decreaseFutureTimersEffectService: DecreaseFutureTimersEffectService,
     speedUpResetTimerEffectService: SpeedUpResetTimerEffectService,
     startResetTimerEffectService: StartResetTimerEffectService,
+    hiddenEffectsService: HidenEffectsService,
 
     delayTripwireCountdownService: DelayTripwireCountdownService,
     scanIceNodeEffectService: ScanIceNodeEffectService
@@ -24,7 +26,8 @@ class ScriptEffectLookup(
         SPEED_UP_RESET_TIMER to speedUpResetTimerEffectService,
         START_RESET_TIMER to startResetTimerEffectService,
         DELAY_TRIPWIRE_COUNTDOWN to delayTripwireCountdownService,
-        SCAN_ICE_NODE to scanIceNodeEffectService
+        SCAN_ICE_NODE to scanIceNodeEffectService,
+        HIDDEN_EFFECTS to hiddenEffectsService
     )
 
     fun getForType(type: ScriptEffectType): ScriptEffectInterface {

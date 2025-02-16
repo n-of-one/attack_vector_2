@@ -71,6 +71,9 @@ const ScriptMinimizeButton = ({minimize,onlyShowLoaded, setOnlyShowLoaded}: Scri
                     <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Only show loaded</label>
                 </div>
             </div>
+            <div className="col-lg-4">
+                <span className="text">Ram usage: <span className="badge bg-dark">2/4</span></span>
+            </div>
         </div>
         <div className="scriptPanelButtonOuter">
             <div className="btn btn-primary btn-s scriptPanelButton" onClick={minimize}>

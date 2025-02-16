@@ -27,6 +27,7 @@ enum class ScriptEffectType{
     START_RESET_TIMER,
     SPEED_UP_RESET_TIMER,
     DECREASE_FUTURE_TIMERS,
+    HIDDEN_EFFECTS,
 }
 
 interface ScriptTypeRepository : CrudRepository<ScriptType, ScriptTypeId> {

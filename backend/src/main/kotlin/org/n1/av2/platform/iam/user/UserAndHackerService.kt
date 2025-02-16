@@ -15,6 +15,7 @@ import org.n1.av2.script.ScriptId
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.ScriptState
 import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.common.UiEffectDescription
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
@@ -64,7 +65,7 @@ class UserAndHackerService(
         val id: ScriptId,
         val name: String,
         val code: String,
-        val effects: List<String>,
+        val effects: List<UiEffectDescription>,
         val timeLeft: String,
         val state: ScriptState,
         val inMemory: Boolean,

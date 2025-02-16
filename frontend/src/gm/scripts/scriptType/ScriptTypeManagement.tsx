@@ -154,6 +154,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                                 setNegativeEffect(event.target.value)
                             }}>
                         <option value=""></option>
+                        <option value={EffectType.HIDDEN_EFFECTS}>Hidden effects</option>
                         <option value={EffectType.DECREASE_FUTURE_TIMERS}>Decrease future timers</option>
                         <option value={EffectType.START_RESET_TIMER}>Start reset timer</option>
                         <option value={EffectType.SPEED_UP_RESET_TIMER}>Speed up reset timer</option>
@@ -268,9 +269,10 @@ const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptTy
             </div>
             <div className="col-lg-2">{
                 type.effects.map((effect: Effect) => {
+                    const text: string = effect.type === EffectType.HIDDEN_EFFECTS ? "*" : effect.effectNumber.toString()
                     return (<span key={effect.effectNumber}>
                         <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
-                                   badgeText={effect.effectNumber.toString()}/>
+                                   badgeText={text} badgeClass={effect.hidden ? 'bg-dark' : undefined}/>
                         &nbsp;</span>)
                 })
             }

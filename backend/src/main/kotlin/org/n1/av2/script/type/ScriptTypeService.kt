@@ -45,6 +45,8 @@ class ScriptTypeService(
         val name: String,
         val playerDescription: String,
         val gmDescription: String,
+        val hidden: Boolean,
+        val type: ScriptEffectType,
     )
 
     class ScriptTypeUI(
@@ -57,6 +59,9 @@ class ScriptTypeService(
 
     fun sendScriptTypes() {
         val uiScriptTypes = scriptTypeRepository.findAll().map { scriptType: ScriptType ->
+
+            val hideIndex = scriptType.effects.indexOfFirst { effect -> effect.type == ScriptEffectType.HIDDEN_EFFECTS }
+
             ScriptTypeUI(
                 id = scriptType.id,
                 name = scriptType.name,
@@ -69,6 +74,9 @@ class ScriptTypeService(
                         name = effectService.name,
                         playerDescription = effectService.playerDescription(effect),
                         gmDescription = effectService.gmDescription,
+                        hidden = (hideIndex > -1 && index > hideIndex),
+                        type = effect.type
+
                     )
                 }
             )

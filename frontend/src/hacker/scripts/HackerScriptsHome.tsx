@@ -6,7 +6,7 @@ import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {ScriptAccess} from "../../gm/scripts/access/ScriptAccessReducer";
 import {InfoBadge} from "../../common/component/ToolTip";
 import {ScriptsTable} from "../run/component/script/ScriptPanel";
-import {Script, ScriptState} from "../../common/script/ScriptModel";
+import {Script, ScriptEffectDisplay, ScriptState} from "../../common/script/ScriptModel";
 import {Hr} from "../../common/component/dataTable/Hr";
 
 
@@ -106,10 +106,10 @@ const FreeReceive = ({accesses}: { accesses: ScriptAccess[] }) => {
                         <div className="row" key={access.id}>
                             <div className="col-lg-offset-2 col-lg-4">{access.receiveForFree}x {access.type.name}</div>
                             <div className="col-lg-4">{
-                                access.type.effects.map((effect: string, index: number) => {
+                                access.type.effects.map((effect: ScriptEffectDisplay, index: number) => {
                                     return (<>
-                                        <InfoBadge infoText={effect} key={index}
-                                                   badgeText={(index + 1).toString()}/>
+                                        <InfoBadge infoText={effect.description} key={index}
+                                                   badgeText={effect.label}/>
                                         &nbsp;</>)
                                 })
                             }
@@ -139,23 +139,24 @@ const ScriptAccessStatus = ({access}: { access: ScriptAccess }) => {
 }
 
 const ShopForScripts = ({accesses}: { accesses: ScriptAccess[] }) => {
-    const accessWithPrice = accesses.filter(access => access.price !== null)
-
-    const openShop = () => {
-        webSocketConnection.send("/hacker/scriptAccess/get", null)
-    }
-
-
-    if (accessWithPrice.length === 0) {
-        return <></>
-    }
-    return (<>
-        <hr/>
-        You can also purchase scripts on the dark web. <SilentLink onClick={openShop}>
-        <div className="btn btn-info" style={{fontSize: "12px"}}>Visit script store</div>
-    </SilentLink>
-
-    </>)
+    return <></>
+    // const accessWithPrice = accesses.filter(access => access.price !== null)
+    //
+    // const openShop = () => {
+    //     webSocketConnection.send("/hacker/scriptAccess/get", null)
+    // }
+    //
+    //
+    // if (accessWithPrice.length === 0) {
+    //     return <></>
+    // }
+    // return (<>
+    //     <hr/>
+    //     You can also purchase scripts on the dark web. <SilentLink onClick={openShop}>
+    //     <div className="btn btn-info" style={{fontSize: "12px"}}>Visit script store</div>
+    // </SilentLink>
+    //
+    // </>)
 }
 
 

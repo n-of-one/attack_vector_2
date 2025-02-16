@@ -1,4 +1,5 @@
 import {AnyAction} from "redux";
+import {ScriptEffectDisplay} from "../../../common/script/ScriptModel";
 
 const SERVER_RECEIVE_SCRIPT_ACCESS = "SERVER_RECEIVE_SCRIPT_ACCESS"
 
@@ -14,7 +15,7 @@ export interface ScriptTypeForAccess {
     id: string,
     name: string,
     ram: number,
-    effects: string[]
+    effects: ScriptEffectDisplay[]
 }
 
 export const scriptAccessReducer = (state: ScriptAccess[] = [], action: AnyAction): ScriptAccess[] => {

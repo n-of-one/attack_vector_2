@@ -42,26 +42,6 @@ export class HackerRoot extends Component {
 
 
     render() {
-
-        const scripts: Script[] = []
-
-
-        for (var i = 0; i < 100; i++) {
-            scripts.push({
-                id: i.toString(),
-                effects: ["a", "b"],
-                name: "Script " + i,
-                ram: 10,
-                state: ScriptState.USED,
-                code: "code",
-                timeLeft: "1h",
-                loaded: false,
-                loadStartedAt: "2024-12-01T15:38:40.9179757+02:00",
-                loadTimeFinishAt: "2024-12-01T16:08:40.9179757+02:00",
-
-            })
-        }
-
         return(
             <RequiresRole requires="ROLE_HACKER">
                 <Provider store={this.store}>

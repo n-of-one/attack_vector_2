@@ -32,7 +32,7 @@ export enum ScriptState {
 export interface Script {
     id: string,
     name: string,
-    effects: string[]
+    effects: ScriptEffectDisplay[]
     code: string,
     timeLeft: string,
     state: ScriptState,
@@ -41,3 +41,9 @@ export interface Script {
     loadStartedAt: string,      // "2024-12-01T15:38:40.9179757+02:00",
     loadTimeFinishAt: string,   // "2024-12-01T16:08:40.9179757+02:00",
 }
+
+export interface ScriptEffectDisplay {
+    description: string,
+    label: string,
+}
+

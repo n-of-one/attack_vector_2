@@ -8,6 +8,8 @@ import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
+import org.n1.av2.script.common.UiEffectDescription
+import org.n1.av2.script.common.toUiEffectDescriptions
 import org.n1.av2.script.effect.ScriptEffectLookup
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
@@ -57,7 +59,7 @@ class ScriptAccessService(
         val id: String,
         val name: String,
         val ram: Int,
-        val effects: List<String>
+        val effects: List<UiEffectDescription>
     )
 
     fun sendScriptAccess(userId: String) {
@@ -68,10 +70,7 @@ class ScriptAccessService(
                 id = type.id,
                 name = type.name,
                 ram = type.ram,
-                effects = type.effects.map { effect ->
-                    val service = scriptEffectLookup.getForType(effect.type)
-                    service.playerDescription(effect)
-                }
+                effects = type.toUiEffectDescriptions(scriptEffectLookup)
             )
             ScriptAccessUi(
                 id = scriptAccess.id,

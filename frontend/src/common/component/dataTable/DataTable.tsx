@@ -12,12 +12,14 @@ export const DataTable = ({rows, rowTexts, pageSize, children, hr}: DataTablePro
     const [filter, setFilter] = React.useState("")
     const [pageSelection, setPageSelection] = React.useState(1)
 
-    const filteredRows = rows.map((script, index) => {
-        if (rowTexts[index].toLowerCase().includes(filter.toLowerCase())) {
-            return script
-        }
-        return null
-    }).filter((script) => script !== null) as React.JSX.Element[]
+    const filteredRows = rows
+        .map((element, index) => {
+            if (rowTexts[index].toLowerCase().includes(filter.toLowerCase())) {
+                return element
+            }
+            return null
+        })
+        .filter((element) => element !== null) as React.JSX.Element[]
 
     const {pagedRows, page, totalPages} = determinePagingInfo(filteredRows, pageSelection, pageSize)
 

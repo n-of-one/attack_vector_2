@@ -77,7 +77,7 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
 
     if (!scripts) return <ErrorPage message="No scripts information found for this user."/>
 
-    const rows = scripts.map((script: Script) => {
+    const rowElements = scripts.map((script: Script) => {
         const loading = scriptsLoading.find((loading) => loading.scriptId === script.id)
         return <ScriptLine script={script}
                            loading={loading}
@@ -100,7 +100,7 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
 
         <div className="text">
             <br/>
-            <DataTable rows={rows} rowTexts={rowTexts} pageSize={30} hr={hr}>
+            <DataTable rows={rowElements} rowTexts={rowTexts} pageSize={30} hr={hr}>
                 <div className="row text strong">
                     <div className="col-lg-2 text-end">Code</div>
                     <div className="col-lg-2">Name</div>

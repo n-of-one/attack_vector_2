@@ -14,6 +14,7 @@ export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
         <HackerSkillElement user={user} skillType={HackerSkillType.SEARCH_SITE} skillName="Search site" readonly={readonlySkills} hasValue={false}/>
         <HackerSkillElement user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}/>
         {/*<HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}/>*/}
+        <HackerSkillElement user={user} skillType={HackerSkillType.SCRIPT_RAM} skillName="Ram for scripts" readonly={readonlySkills} hasValue={true}/>
     </>
 }
 

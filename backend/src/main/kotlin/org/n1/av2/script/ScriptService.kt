@@ -13,7 +13,9 @@ import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createIdGeneric
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.common.toUiEffectDescriptions
 import org.n1.av2.script.effect.ScriptEffectLookup
+import org.n1.av2.script.type.ScriptEffectType
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
@@ -96,10 +98,7 @@ class ScriptService(
         return scripts.map { script ->
             val timeLeft = timeLeft(script)
             val type = scriptTypeService.getById(script.typeId)
-            val effects = type.effects.map{ effect ->
-                val effectService = scriptEffectLookup.getForType(effect.type)
-                effectService.playerDescription(effect)
-            }
+            val effects = type.toUiEffectDescriptions(scriptEffectLookup)
             UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, script.inMemory, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
         }
     }
@@ -112,7 +111,6 @@ class ScriptService(
                 scriptRepository.save(scriptExpired)
             }
     }
-
 
     fun timeLeft(script: Script): String {
         if (script.state == ScriptState.USED) return "script used"

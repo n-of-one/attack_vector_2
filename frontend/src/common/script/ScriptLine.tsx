@@ -4,7 +4,7 @@ import {webSocketConnection} from "../server/WebSocketConnection";
 import {SilentLink} from "../component/SilentLink";
 import React from "react";
 import {createNotification} from "../util/Notification";
-import {InfoBadge} from "../component/ToolTip";
+import {ScriptEffects} from "./ScriptEffects";
 
 export enum ScriptLineUseCase {
     GM,
@@ -68,13 +68,6 @@ const copyScript = (code: string) => {
         }
     )
 }
-
-export const ScriptEffects = ({script}: { script: Script }) => {
-    return <>{script.effects.map((effect, index) => {
-        return <><InfoBadge infoText={effect} key={index} badgeText={(index + 1).toString()}/>&nbsp;</>
-    })}</>
-}
-
 
 
 export const ScriptStateBadge = ({script, loading}: { script: Script, loading?: ScriptLoading }) => {
