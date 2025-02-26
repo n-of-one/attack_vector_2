@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import java.time.ZonedDateTime
 
-enum class ScriptState { AVAILABLE, LOADING, LOADED, USED, EXPIRED }
+enum class ScriptState { AVAILABLE, LOADED, USED, EXPIRED }
 
 
 typealias ScriptId = String
@@ -21,9 +21,6 @@ data class Script(
     val expiry: ZonedDateTime,
     @Indexed(unique = true) val code: String,
     val state: ScriptState,
-    val inMemory: Boolean,
-    val loadStartedAt: ZonedDateTime?,
-    val loadTimeFinishAt: ZonedDateTime?,
 )
 
 interface ScriptRepository : CrudRepository<Script, ScriptId> {

@@ -58,7 +58,7 @@ class ScriptAccessService(
     class ScriptTypeUi(
         val id: String,
         val name: String,
-        val ram: Int,
+        val size: Int,
         val effects: List<UiEffectDescription>
     )
 
@@ -69,7 +69,7 @@ class ScriptAccessService(
             val uiType = ScriptTypeUi(
                 id = type.id,
                 name = type.name,
-                ram = type.ram,
+                size = type.size,
                 effects = type.toUiEffectDescriptions(scriptEffectLookup)
             )
             ScriptAccessUi(
@@ -77,7 +77,7 @@ class ScriptAccessService(
                 type = uiType,
                 receiveForFree = scriptAccess.receiveForFree,
                 price = scriptAccess.price,
-                used = scriptAccess.lastUsed >= timeService.scriptResetMoment(),
+                used = !timeService.isPastReset(scriptAccess.lastUsed)
             )
         }
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_ACCESS, scriptAccessUis)

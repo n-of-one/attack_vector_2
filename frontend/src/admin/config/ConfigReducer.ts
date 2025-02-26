@@ -45,6 +45,7 @@ export const ConfigItemCategories = {
 
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "5. Larp specific - Frontier",
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN: "5. Larp specific - Frontier",
+
 }
 
 export const ConfigItemNames = {
@@ -68,7 +69,6 @@ export const ConfigItemNames = {
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "LOLA enabled",
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN: "Orthank token",
 }
-
 
 export interface ConfigEntry {
     item: ConfigItem,
@@ -117,7 +117,16 @@ const processServerReceiveConfig = (state: ConfigState, action: ActionReceiveCon
 const sortEntries = (entries: ConfigEntry[]) => {
     entries.sort((a, b) => {
             const categoryA = ConfigItemCategories[a.item]
+            if (categoryA === undefined) {
+                console.error("Config item exists on server but not on frontend: " + a.item)
+                return -1
+            }
             const categoryB = ConfigItemCategories[b.item]
+            if (categoryB === undefined) {
+                console.error("Config item exists on server but not on frontend " + b.item)
+                return 1
+            }
+
             const categoryComparison = categoryA.localeCompare(categoryB)
             if (categoryComparison !== 0) return categoryComparison
 

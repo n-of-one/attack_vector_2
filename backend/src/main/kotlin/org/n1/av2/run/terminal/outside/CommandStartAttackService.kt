@@ -12,6 +12,7 @@ import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.run.terminal.inside.CommandMoveService
 import org.n1.av2.run.timings.Timings
 import org.n1.av2.run.timings.TimingsService
+import org.n1.av2.script.ram.RamService
 import org.springframework.stereotype.Service
 
 
@@ -24,6 +25,7 @@ class CommandStartAttackService(
     private val syntaxHighlightingService: SyntaxHighlightingService,
     private val connectionService: ConnectionService,
     private val timingsService: TimingsService,
+    private val ramService: RamService,
 ) {
 
     fun startAttack(run: Run, quick: Boolean) {
@@ -40,10 +42,17 @@ class CommandStartAttackService(
         connectionService.reply(ServerActions.SERVER_TERMINAL_UPDATE_PROMPT, "prompt" to "⇋ ", "terminalId" to TERMINAL_MAIN)
 
         userTaskRunner.queueInTicksForSite("attack-arrive", run.siteId, timings.totalTicks) { startAttackArrive(userId, run.runId) }
+
+        ramService.startHack(userId)
     }
 
     @ScheduledTask
     fun startAttackArrive(userId: String, runId: String) {
+        val hackerState = hackerStateEntityService.retrieve(userId)
+        if (hackerState.runId == null ) {
+            return // left hack during the attack sequence
+        }
+
         syntaxHighlightingService.sendForInside()
         val state = hackerStateEntityService.startedRun(userId, runId)
 

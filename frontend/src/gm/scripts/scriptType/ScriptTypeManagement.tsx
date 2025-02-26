@@ -80,17 +80,17 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
 
 
     const editName = (newValue: string) => {
-        const editCommand = {scriptTypeId: scriptType.id, name: newValue, ram: scriptType.ram, defaultPrice: scriptType.defaultPrice}
+        const editCommand = {scriptTypeId: scriptType.id, name: newValue, size: scriptType.size, defaultPrice: scriptType.defaultPrice}
         webSocketConnection.send("/gm/scriptType/edit", editCommand)
     }
 
-    const editRam = (newValue: string) => {
-        const editCommand = {scriptTypeId: scriptType.id, name: scriptType.name, ram: newValue, defaultPrice: scriptType.defaultPrice}
+    const editSize = (newValue: string) => {
+        const editCommand = {scriptTypeId: scriptType.id, name: scriptType.name, size: newValue, defaultPrice: scriptType.defaultPrice}
         webSocketConnection.send("/gm/scriptType/edit", editCommand)
     }
 
     const editDefaultPrice = (newValue: string) => {
-        const editCommand = {scriptTypeId: scriptType.id, name: scriptType.name, ram: scriptType.ram, defaultPrice: newValue}
+        const editCommand = {scriptTypeId: scriptType.id, name: scriptType.name, size: scriptType.size, defaultPrice: newValue}
         webSocketConnection.send("/gm/scriptType/edit", editCommand)
     }
 
@@ -107,7 +107,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={close}/></div>
             <br/>
             <FormTextInputRow label="Name" value={scriptType.name} save={editName} labelColumns={2} valueColumns={4}/>
-            <FormTextInputRow label="RAM" value={scriptType.ram.toString()} save={editRam} labelColumns={2} valueColumns={2}/>
+            <FormTextInputRow label="Size" value={scriptType.size.toString()} save={editSize} labelColumns={2} valueColumns={2}/>
             <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""} save={editDefaultPrice} labelColumns={2}
                               valueColumns={2}/>
             <br/>
@@ -242,7 +242,7 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
     const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
 
     const scriptTypeRows = scriptTypes.map(type => <ScriptTypeRow type={type} onSelect={onSelect}/>)
-    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.ram}~${type.defaultPrice}`)
+    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.size}~${type.defaultPrice}`)
 
     const hr = <Hr height={6} marginTop={3} color="black"/>
 
@@ -252,7 +252,7 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
                 <div className="row text">
                     <div className="col-lg-2 strong">Script type</div>
                     <div className="col-lg-2 strong">Effects</div>
-                    <div className="col-lg-1 strong">RAM</div>
+                    <div className="col-lg-1 strong">Size</div>
                     <div className="col-lg-2 strong">Default price</div>
                 </div>
 
@@ -277,7 +277,7 @@ const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptTy
                 })
             }
             </div>
-            <div className="col-lg-1">{type.ram}</div>
+            <div className="col-lg-1">{type.size}</div>
             <div className="col-lg-2">{type.defaultPrice}</div>
         </div>)
 }

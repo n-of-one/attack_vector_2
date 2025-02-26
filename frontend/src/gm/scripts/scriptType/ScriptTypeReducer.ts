@@ -27,7 +27,7 @@ export interface Effect {
 export interface ScriptType {
     id: string,
     name: string,
-    ram: number,
+    size: number,
     defaultPrice?: number,
     effects: Effect[]
 }

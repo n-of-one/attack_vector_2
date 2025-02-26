@@ -16,7 +16,7 @@ import {Dispatch} from "redux"
 import {DisplayCollection} from "./util/DisplayCollection"
 import {NodeDisplay} from "./NodeDisplay"
 import {Canvas, IUtilAminEaseFunction} from "fabric/fabric-impl"
-import {HackerActivity, HackerPresence} from "../../../hacker/run/reducer/HackersReducer"
+import {HackerActivity, HackerPresence} from "../../../hacker/run/reducer/HackerPresencesReducer"
 import {notEmpty} from "../../util/Util";
 import {Timings} from "../../model/Ticks";
 import {CANVAS_HEIGHT} from "../CanvasConst";

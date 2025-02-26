@@ -23,7 +23,6 @@ export interface ObsoleteScript {
 
 export enum ScriptState {
     AVAILABLE = "AVAILABLE",
-    LOADING = "LOADING",
     LOADED = "LOADED",
     USED = "USED",
     EXPIRED = "EXPIRED",

@@ -2,42 +2,17 @@ package org.n1.av2.script
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.platform.engine.ScheduledTask
-import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
-import org.n1.av2.platform.iam.user.UserAndHackerService
-import org.n1.av2.platform.iam.user.UserAndHackerService.UiScript
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createIdGeneric
-import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.common.toUiEffectDescriptions
-import org.n1.av2.script.effect.ScriptEffectLookup
-import org.n1.av2.script.type.ScriptEffectType
+import org.n1.av2.script.ram.RamService
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
-import java.time.Duration
-import javax.annotation.PostConstruct
-import kotlin.jvm.optionals.getOrNull
-
-
-@Configuration
-class ScriptServiceInit(
-    private val userAndHackerService: UserAndHackerService,
-    private val scriptService: ScriptService,
-) {
-
-    @PostConstruct
-    fun postConstruct() {
-        scriptService.userAndHackerService = userAndHackerService
-    }
-}
-
 
 @Service
 class ScriptService(
@@ -46,20 +21,28 @@ class ScriptService(
     private val currentUserService: CurrentUserService,
     private val scriptAccessService: ScriptAccessService,
     private val connectionService: ConnectionService,
-    private val userTaskRunner: UserTaskRunner,
     private val scriptTypeService: ScriptTypeService,
-    private val scriptEffectLookup: ScriptEffectLookup,
+    private val ramService: RamService,
+    private val scriptStatusNotifier: ScriptStatusNotifier,
 ) {
-
-    lateinit var userAndHackerService: UserAndHackerService
-
     fun getScriptById(scriptId: ScriptId): Script {
         return scriptRepository.findById(scriptId).orElseThrow { error("Script not found with id: $scriptId") }
     }
 
+    fun sendScriptStatusToCurrentUser() {
+        val scripts = getAndUpdateScripts(currentUserService.userId)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts)
+    }
+
+    fun sendScriptStatusForUser(userId: String) {
+        val scripts = getAndUpdateScripts(userId)
+        scriptStatusNotifier.sendScriptStatusOfSpecificUser(userId, scripts)
+    }
+
     fun addScriptAndInformUser(typeId: ScriptTypeId, targetUserId: String) {
         addScript(typeId, targetUserId)
-        userAndHackerService.sendDetailsOfSpecificUser(targetUserId)
+        val scripts = getAndUpdateScripts(targetUserId)
+        scriptStatusNotifier.sendScriptStatusOfSpecificUser(targetUserId, scripts)
     }
 
     fun addScript(typeId: ScriptTypeId, targetUserId: String) {
@@ -75,33 +58,22 @@ class ScriptService(
             ownerUserId = targetUserId,
             expiry = expiry,
             code = code,
-            loadStartedAt = null,
-            loadTimeFinishAt = null,
-            inMemory = false,
             state = ScriptState.AVAILABLE,
         )
         scriptRepository.save(script)
     }
 
-    fun findUiScriptsForUser(userId: String): List<UiScript> {
+    fun getAndUpdateScripts(userId: String): List<Script> {
         val scripts = scriptRepository.findByOwnerUserId(userId)
 
         if (scripts.none { script -> script.state != ScriptState.EXPIRED && expired(script) }) {
-            return toUiScripts(scripts)
+            return scripts
         }
 
         setStateToExpired(scripts)
-        return toUiScripts(scriptRepository.findByOwnerUserId(userId))
+        return scriptRepository.findByOwnerUserId(userId)
     }
 
-    private fun toUiScripts(scripts: List<Script>): List<UiScript> {
-        return scripts.map { script ->
-            val timeLeft = timeLeft(script)
-            val type = scriptTypeService.getById(script.typeId)
-            val effects = type.toUiEffectDescriptions(scriptEffectLookup)
-            UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, script.inMemory, type.ram, script.loadStartedAt, script.loadTimeFinishAt)
-        }
-    }
 
     private fun setStateToExpired(scripts: List<Script>) {
         scripts
@@ -112,13 +84,6 @@ class ScriptService(
             }
     }
 
-    fun timeLeft(script: Script): String {
-        if (script.state == ScriptState.USED) return "script used"
-        if (script.state == ScriptState.EXPIRED || timeService.now().isAfter(script.expiry)) return "expired"
-        val timeLeft = Duration.between(timeService.now(), script.expiry)
-        return timeLeft.toHumanTime()
-    }
-
     fun expired(script: Script): Boolean {
         return timeService.now().isAfter(script.expiry)
     }
@@ -127,77 +92,61 @@ class ScriptService(
         val script = getScriptById(id)
         validateCanManage(script.ownerUserId)
 
+        val type = scriptTypeService.getById(script.typeId)
+        if (script.state == ScriptState.LOADED || script.state == ScriptState.USED) {
+            ramService.unload(script.ownerUserId, type.size, false)
+        }
+
         scriptRepository.delete(script)
-        informUserOfScriptStatus(script)
+        informUserOfScriptChanged(script)
     }
 
-    fun loadScript(id: ScriptId) {
+    fun loadScript(id: ScriptId, overrideLocked: Boolean = false) {
         val script = getScriptById(id)
         validateCanManage(script.ownerUserId)
 
-        val loadTime = Duration.ofSeconds(10)
+        val type = scriptTypeService.getById(script.typeId)
+        ramService.load(script.ownerUserId, type.size, overrideLocked)
 
-        val scriptLoading = script.copy(state = ScriptState.LOADING, loadStartedAt = timeService.now(), loadTimeFinishAt = timeService.now() + loadTime)
+        val updatedScript = script.copy(state = ScriptState.LOADED)
+        scriptRepository.save(updatedScript)
+        informUserOfScriptChanged(script)
+    }
+
+    fun unloadScript(id: ScriptId, overrideLocked: Boolean = false) {
+        val script = getScriptById(id)
+        validateCanManage(script.ownerUserId)
+        val type = scriptTypeService.getById(script.typeId)
+        ramService.unload(script.ownerUserId, type.size, overrideLocked)
+
+
+        val scriptLoading = script.copy(state = ScriptState.AVAILABLE, )
         scriptRepository.save(scriptLoading)
-        informUserOfScriptStatus(script)
-        val identifiers = mapOf("scriptId" to script.id)
-        userTaskRunner.queue("script loaded", identifiers, loadTime) { scriptLoadComplete(script.id) }
+        informUserOfScriptChanged(script)
     }
 
-    @ScheduledTask
-    private fun scriptLoadComplete(scriptId: ScriptId) {
-        val script = scriptRepository.findById(scriptId).getOrNull() ?: return // script has been deleted.
-        if (script.state != ScriptState.LOADING) return // script has been changed to another state.
-        val scriptLoaded = script.copy(state = ScriptState.LOADED, loadStartedAt = null, loadTimeFinishAt = null)
-        scriptRepository.save(scriptLoaded)
-        informUserOfScriptStatus(script)
-    }
-
-    private fun informUserOfScriptStatus(script: Script) {
+    private fun informUserOfScriptChanged(script: Script) {
+        val scripts = getAndUpdateScripts(script.ownerUserId)
         if (currentUserService.userId == script.ownerUserId) {
-            userAndHackerService.sendDetailsOfCurrentUser() // hacker loads script
+            scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts) // hacker loads script
         } else {
-            userAndHackerService.sendDetailsOfSpecificUser(script.ownerUserId) // GM loads script for user
+            scriptStatusNotifier.sendScriptStatusOfSpecificUser(script.ownerUserId, scripts) // GM loads script for user
         }
     }
-
-    fun instantLoadScript(id: ScriptId) {
-        val script = getScriptById(id)
-        validateCanManage(script.ownerUserId)
-
-        val scriptLoading = script.copy(state = ScriptState.LOADED, loadStartedAt = null, loadTimeFinishAt = null)
-        scriptRepository.save(scriptLoading)
-        userAndHackerService.sendDetailsOfSpecificUser(script.ownerUserId)
-    }
-
-    fun unloadScript(id: ScriptId) {
-        val script = getScriptById(id)
-        validateCanManage(script.ownerUserId)
-
-        val scriptLoading = script.copy(state = ScriptState.AVAILABLE, loadStartedAt = null, loadTimeFinishAt = null)
-        scriptRepository.save(scriptLoading)
-        informUserOfScriptStatus(script)
-        if (script.state == ScriptState.LOADING) {
-            val identifiers = mapOf("scriptId" to script.id)
-            userTaskRunner.removeTask(identifiers)
-        }
-    }
-
 
     fun addFreeReceiveScriptsForCurrentUser() {
         val userId = currentUserService.userId
-
         addFreeReceiveScripts(userId)
-        userAndHackerService.sendDetailsOfCurrentUser()
+
+        val scripts = getAndUpdateScripts(userId)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts)
     }
 
     fun addFreeReceiveScripts(userId: String) {
         val scriptAccesses = scriptAccessService.findScriptAccessForUser(userId)
 
-        val refreshInstant = timeService.scriptResetMoment()
-
         scriptAccesses
-            .filter { access -> access.lastUsed < refreshInstant }
+            .filter { access -> timeService.isPastReset(access.lastUsed)}
             .forEach { access ->
                 (0 until access.receiveForFree).forEach { _ ->
                     addScript(access.typeId, userId)
@@ -221,11 +170,10 @@ class ScriptService(
             .forEach { script ->
                 scriptRepository.delete(script)
             }
-        userAndHackerService.sendDetailsOfCurrentUser()
+
+        val updatedScripts = getAndUpdateScripts(currentUserService.userId)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(updatedScripts)
     }
-
-
-
 
 
     fun validateScriptRunnable(scriptCode: String): Script? {
@@ -247,7 +195,6 @@ class ScriptService(
         val message = when (script.state) {
             ScriptState.EXPIRED -> "System has been patched against this script. (Script is expired.)"
             ScriptState.USED -> "System has been patched against this script. (Script has already been used.)"
-            ScriptState.LOADING -> "Script has not finished loading."
             ScriptState.AVAILABLE -> "Script has not been loaded."
             ScriptState.LOADED -> error("illegal code path")
         }
@@ -256,8 +203,7 @@ class ScriptService(
         return null
     }
 
-    class ScriptStatisticsLine(val name: String, val owned: Int, val loaded: Int, val loading: Int, val freeReceive: Int)
-
+    class ScriptStatisticsLine(val name: String, val owned: Int, val loaded: Int, val freeReceive: Int)
     fun getStatistics() {
         val typesById = scriptTypeService.findAll().associateBy { it.id }
 
@@ -267,8 +213,6 @@ class ScriptService(
         val loadedScripts = usableScripts.filter { script -> script.state == ScriptState.LOADED }
         val loadedStats: Map<String, Int> = loadedScripts.groupingBy { it.typeId }.eachCount()
 
-        val loadingScripts = usableScripts.filter { script -> script.state == ScriptState.LOADING }
-        val loadingStats: Map<String, Int> = loadingScripts.groupingBy { it.typeId }.eachCount()
 
         val ownedStats = usableScripts.groupingBy { it.typeId }.eachCount()
 
@@ -279,11 +223,10 @@ class ScriptService(
 
         val lines = typesById.values.map { type: ScriptType ->
             val loaded = loadedStats[type.id] ?: 0
-            val loading = loadingStats[type.id] ?: 0
             val owned = ownedStats[type.id] ?: 0
             val freeReceive = freeReceiveStats[type.id] ?: 0
 
-            ScriptStatisticsLine(type.name, owned, loaded, loading, freeReceive)
+            ScriptStatisticsLine(type.name, owned, loaded, freeReceive)
         }
 
         connectionService.reply(ServerActions.SERVER_SCRIPT_STATISTICS, lines)
@@ -296,11 +239,23 @@ class ScriptService(
     fun markAsUsedAndNotify(script: Script) {
         val copy = script.copy(state = ScriptState.USED)
         scriptRepository.save(copy)
-        userAndHackerService.sendDetailsOfCurrentUser()
+
+        val scripts = getAndUpdateScripts(currentUserService.userId)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts)
     }
 
     fun findByTypeId(typeId: ScriptTypeId): List<Script> {
         return scriptRepository.findByTypeId(typeId)
+    }
+
+    fun unloadAllScriptsForShrinkedRam(userId: String) {
+        val scripts = scriptRepository.findByOwnerUserId(userId)
+        scripts.forEach { script ->
+            if (script.state == ScriptState.LOADED) {
+                val unloadedScript = script.copy(state = ScriptState.AVAILABLE)
+                scriptRepository.save(unloadedScript)
+            }
+        }
     }
 
 }

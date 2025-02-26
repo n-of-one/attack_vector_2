@@ -35,6 +35,8 @@ enum class ServerActions {
 
     SERVER_RECEIVE_CONFIG,          // Send the config to the client
 
+    SERVER_RECEIVE_SCRIPT_STATUS,   // Send the script status of a user to the client
+
     SERVER_SCRIPT_STATISTICS,       // Send the script statistics to the client
     SERVER_SCRIPT_TYPES,            // Send all script types to the client
     SERVER_EDIT_SCRIPT_TYPE,        // Send to the client that this script type is being edited

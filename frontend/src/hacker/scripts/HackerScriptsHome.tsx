@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {useSelector} from "react-redux";
 import {HackerRootState} from "../HackerRootReducer";
 import {SilentLink} from "../../common/component/SilentLink";
@@ -8,17 +8,13 @@ import {InfoBadge} from "../../common/component/ToolTip";
 import {ScriptsTable} from "../run/component/script/ScriptPanel";
 import {Script, ScriptEffectDisplay, ScriptState} from "../../common/script/ScriptModel";
 import {Hr} from "../../common/component/dataTable/Hr";
+import {RamDisplay} from "./RamDisplay";
 
 
 export const HackerScriptsHome = () => {
-    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
-    const scripts = currentUser.hacker!!.scripts
-
-    useEffect(() => {
-        webSocketConnection.send("/hacker/scriptAccess/get", currentUser.id)
-    }, [scripts, currentUser.id])
-
-
+    const scriptStatus = useSelector((state: HackerRootState) => state.scriptStatus)
+    const scripts = scriptStatus?.scripts || []
+    const ram = scriptStatus?.ram || null
     const accesses = useSelector((state: HackerRootState) => state.scriptAccess)
 
 const hr= <Hr />
@@ -35,7 +31,7 @@ const hr= <Hr />
                 so all script are use once. Scripts can only be used on the day they are created. The daily patching cycle runs at 06:00.<br/>
                 <br/>
                 <hr/>
-                You have 12 RAM slots available for scripts. Loading a script takes 30 minutes.<br/>
+                <RamDisplay size={509}/>
                 <br/>
                 <FreeReceive accesses={accesses}/>
                 <br/>
@@ -55,7 +51,7 @@ const hr= <Hr />
                         </div>
                     </div>
                     <br/>
-                    <ScriptsTable scripts={scripts} hr={hr}/>
+                    <ScriptsTable scripts={scripts} hr={hr} ram={ram} shownInRun={false}/>
                     <br/>
 
                 </div>
@@ -107,10 +103,10 @@ const FreeReceive = ({accesses}: { accesses: ScriptAccess[] }) => {
                             <div className="col-lg-offset-2 col-lg-4">{access.receiveForFree}x {access.type.name}</div>
                             <div className="col-lg-4">{
                                 access.type.effects.map((effect: ScriptEffectDisplay, index: number) => {
-                                    return (<>
+                                    return (<span key={index}>
                                         <InfoBadge infoText={effect.description} key={index}
                                                    badgeText={effect.label}/>
-                                        &nbsp;</>)
+                                        &nbsp;</span>)
                                 })
                             }
                             </div>

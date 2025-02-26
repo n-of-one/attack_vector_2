@@ -30,7 +30,7 @@ class CommandHelpService(
 
     private fun processHelpOutside() {
         val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSKill(HackerSkillType.SCAN)
+        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
 
         connectionService.replyTerminalReceive(
             "You are outside of the site.",
@@ -71,7 +71,7 @@ class CommandHelpService(
 
     private fun processHelpInside() {
         val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSKill(HackerSkillType.SCAN)
+        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
 
         connectionService.replyTerminalReceive(
             "You are inside the site.",

@@ -1,10 +1,12 @@
 import {Script, ScriptState} from "./ScriptModel";
-import {ScriptLoading} from "./ScriptLoadingReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {SilentLink} from "../component/SilentLink";
 import React from "react";
-import {createNotification} from "../util/Notification";
+import {createNotification, notify} from "../util/Notification";
 import {ScriptEffects} from "./ScriptEffects";
+import {Ram} from "./ScriptStatusReducer";
+import {serverTime} from "../server/ServerTime";
+import {formatTimeInterval} from "../util/Util";
 
 export enum ScriptLineUseCase {
     GM,
@@ -13,16 +15,19 @@ export enum ScriptLineUseCase {
 
 interface Props {
     script: Script,
-    loading?: ScriptLoading,
     useCase: ScriptLineUseCase
     hrColor?: string
     minimize?: () => void
+    ram: Ram | null
+    shownInRun: boolean
 }
 
-export const ScriptLine = ({script, loading, useCase, minimize}: Props) => {
+export const ScriptLine = ({script, useCase, minimize, ram, shownInRun}: Props) => {
+    if (ram == null) return <></>
+
     const forGm = useCase === ScriptLineUseCase.GM
 
-    const actionInstantLoad = forGm ? <><ScriptActionInstantLoad script={script}/>&nbsp;</> : <></>
+    const actionGmLoad = forGm ? <><ScriptActionGmLoad script={script}/>&nbsp;</> : <></>
     const actionSend = forGm ? <></> : <><ScriptActionSend script={script}/>&nbsp;</>
 
     return (<>
@@ -30,10 +35,10 @@ export const ScriptLine = ({script, loading, useCase, minimize}: Props) => {
                 <div className="col-lg-2 text-end"><CodeElement script={script} minimize={minimize}/></div>
                 <div className="col-lg-2">{script.name}</div>
                 <div className="col-lg-1">{script.ram}</div>
-                <div className="col-lg-2"><ScriptStateBadge script={script} loading={loading}/></div>
+                <div className="col-lg-2"><ScriptStateBadge script={script} /></div>
                 <div className="col-lg-2 noSelect">
-                    {actionInstantLoad}
-                    <ScriptLoadAction script={script}/>&nbsp;
+                    {actionGmLoad}
+                    <ScriptLoadAction script={script} ram={ram} shownInRun={shownInRun}/>&nbsp;
                     {actionSend}
                     &nbsp;<ScriptActionDelete script={script}/>&nbsp;
 
@@ -70,7 +75,7 @@ const copyScript = (code: string) => {
 }
 
 
-export const ScriptStateBadge = ({script, loading}: { script: Script, loading?: ScriptLoading }) => {
+export const ScriptStateBadge = ({script}: { script: Script }) => {
     switch (script.state) {
         case ScriptState.AVAILABLE:
             return <span className="badge bg-secondary scriptStatusBadge">Available</span>
@@ -80,69 +85,72 @@ export const ScriptStateBadge = ({script, loading}: { script: Script, loading?: 
             return <span className="badge bg-dark scriptStatusBadge">Used</span>
         case ScriptState.EXPIRED:
             return <span className="badge bg-dark scriptStatusBadge">Expired</span>
-        case ScriptState.LOADING:
-            return <ScriptStateBadgeLoading script={script} loading={loading}/>
         default:
             return <span>Unknown</span>
     }
 }
 
-const ScriptLoadAction = ({script}: { script: Script }) => {
-    if (script.state === ScriptState.LOADING || script.state === ScriptState.LOADED) {
-        return <ScriptActionUnload script={script}/>
+const ScriptLoadAction = ({script, ram, shownInRun}: { script: Script, ram: Ram, shownInRun: boolean }) => {
+    if (script.state === ScriptState.LOADED) {
+        return <ScriptActionUnload script={script} ram={ram}/>
     }
-    if (script.state === ScriptState.AVAILABLE) {
-        return <ScriptActionLoad script={script}/>
+    if (script.state === ScriptState.AVAILABLE && ram.free >= script.ram && !shownInRun) {
+        return <ScriptActionLoad script={script} lockedUntil={ram.lockedUntil}/>
     }
     return <></>
 }
 
-const ScriptStateBadgeLoading = ({script, loading}: { script: Script, loading?: ScriptLoading }) => {
+// const ScriptStateBadgeLoading = ({script, loading}: { script: Script, loading?: ScriptLoading }) => {
+//
+//     if (!loading) return <span className="badge bg-secondary">Loading</span>
+//
+//     const loadPercentage = Math.round(100 * (loading.totalLoadTime - loading.secondsLeft) / loading.totalLoadTime)
+//
+//     return (
+//         <div className="progress scriptStatusBadge" style={{
+//             height: 15.28,
+//             cursor: "pointer",
+//             position: "relative",
+//             top: "-15",
+//             backgroundColor: "",
+//         }}>
+//
+//             <div className={`progress-bar bg-primary progress-bar-striped progress-bar-animated noTransition`}
+//                  role="progressbar"
+//                  aria-valuenow={75} aria-valuemin={0}
+//                  aria-valuemax={100} style={{width: `${loadPercentage}%`}}>
+//             </div>
+//
+//             <div className="text" style={{
+//                 position: "absolute", top: 0, paddingLeft: 16, zIndex: 100,
+//                 fontSize: 10, color: "black", cursor: "pointer", userSelect: "none", pointerEvents: "none",
+//             }}><strong>{loadPercentage}%</strong>
+//             </div>
+//
+//
+//         </div>)
+//     // </span>
+// }
 
-    if (!loading) return <span className="badge bg-secondary">Loading</span>
-
-    const loadPercentage = Math.round(100 * (loading.totalLoadTime - loading.secondsLeft) / loading.totalLoadTime)
-
-    return (
-        <div className="progress scriptStatusBadge" style={{
-            height: 15.28,
-            cursor: "pointer",
-            position: "relative",
-            top: "-15",
-            backgroundColor: "",
-        }}>
-
-            <div className={`progress-bar bg-primary progress-bar-striped progress-bar-animated noTransition`}
-                 role="progressbar"
-                 aria-valuenow={75} aria-valuemin={0}
-                 aria-valuemax={100} style={{width: `${loadPercentage}%`}}>
-            </div>
-
-            <div className="text" style={{
-                position: "absolute", top: 0, paddingLeft: 16, zIndex: 100,
-                fontSize: 10, color: "black", cursor: "pointer", userSelect: "none", pointerEvents: "none",
-            }}><strong>{loadPercentage}%</strong>
-            </div>
 
 
-        </div>)
-    // </span>
-}
-
-
-
-const ScriptActionInstantLoad = ({script}: { script: Script }) => {
+const ScriptActionGmLoad = ({script}: { script: Script }) => {
     const action = () => {
-        webSocketConnection.send("/gm/script/instantLoad", script.id)
+        webSocketConnection.send("/gm/script/load", script.id)
     }
     return <SilentLink onClick={action} title="Instant load in memory"><span className="glyphicon glyphicon-save"/></SilentLink>
 }
 
-const ScriptActionUnload = ({script}: { script: Script }) => {
+const ScriptActionUnload = ({script, ram}: { script: Script, ram: Ram }) => {
     const action = () => {
         webSocketConnection.send("/script/unload", script.id)
     }
-    return <SilentLink onClick={action} title="Unload from memory"><span className="glyphicon glyphicon-open"/></SilentLink>
+    if (ram.lockedUntil != null) {
+        return <SilentLink onClick={action} title="Unload from memory"><span className="glyphicon glyphicon-export"/></SilentLink>
+    }
+    else {
+        return <SilentLink onClick={action} title="Unload from memory"><span className="glyphicon glyphicon-open"/></SilentLink>
+    }
 }
 
 const ScriptActionDelete = ({script}: { script: Script }) => {
@@ -152,7 +160,16 @@ const ScriptActionDelete = ({script}: { script: Script }) => {
     return <SilentLink onClick={action} title="Delete"><span className="glyphicon glyphicon-trash"/></SilentLink>
 }
 
-const ScriptActionLoad = ({script}: { script: Script }) => {
+const ScriptActionLoad = ({script, lockedUntil}: { script: Script, lockedUntil: string | null }) => {
+    if (lockedUntil) {
+        const action = () => {
+            const lockedSecondsLeft = serverTime.secondsLeft(lockedUntil)
+            const duration = formatTimeInterval(lockedSecondsLeft)
+            notify({type: "neutral", message: `Cannot load, memory locked (too recently hacked, try again in: ${duration}).`})
+        }
+        return <SilentLink onClick={action} title="Cannot load, too recently hacked."><span className="glyphicon glyphicon-import" style={{cursor: "not-allowed"}}/></SilentLink>
+    }
+
     const action = () => {
         webSocketConnection.send("/script/load", script.id)
     }

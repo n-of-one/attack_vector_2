@@ -3,3 +3,5 @@ target
 ### IntelliJ IDEA ###
 .idea
 *.iml
+
+.qodo

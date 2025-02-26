@@ -13,7 +13,7 @@ data class Hacker(
     val characterName: String,
     val skills: List<HackerSkill>
 ) {
-    fun hasSKill(requestType: HackerSkillType): Boolean {
+    fun hasSkill(requestType: HackerSkillType): Boolean {
         return skills.any { it.type == requestType }
     }
 

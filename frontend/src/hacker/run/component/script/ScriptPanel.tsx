@@ -3,16 +3,22 @@ import {useSelector} from "react-redux";
 import {HackerRootState} from "../../../HackerRootReducer";
 import {Script, ScriptState} from "../../../../common/script/ScriptModel";
 import {ScriptLine, ScriptLineUseCase} from "../../../../common/script/ScriptLine";
-import {GmRootState} from "../../../../gm/GmRootReducer";
 import {DataTable} from "../../../../common/component/dataTable/DataTable";
 import {Hr} from "../../../../common/component/dataTable/Hr";
+import {RamBar} from "../../../scripts/RamDisplay";
+import {Ram} from "../../../../common/script/ScriptStatusReducer";
+import {formatTimeInterval} from "../../../../common/util/Util";
 
 export const ScriptPanel = () => {
     const [expanded, setExpanded] = React.useState(false)
-    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+    const scriptStatus = useSelector((state: HackerRootState) => state.scriptStatus)
     const [onlyShowLoaded, setOnlyShowLoaded] = useState(true)
 
-    const scripts = currentUser.hacker?.scripts || []
+    if (!scriptStatus) {
+        return <></>
+    }
+
+    const scripts = scriptStatus?.scripts
 
     const expand = () => {
         setExpanded(true)
@@ -21,18 +27,15 @@ export const ScriptPanel = () => {
         setExpanded(false)
     }
 
-    if (scripts.length === 0) {
-        return <></>
-    }
 
-    const filteredScripts = onlyShowLoaded ? scripts.filter((script: Script) => script.state === ScriptState.LOADED || script.state === ScriptState.LOADING) : scripts
+    const filteredScripts = onlyShowLoaded ? scripts.filter((script: Script) => script.state === ScriptState.LOADED) : scripts
 
     const hr = <Hr color="#666"/>
 
     if (expanded) {
         return <div className="scriptPanel" style={{width: "780px"}}>
-            <ScriptMinimizeButton minimize={minimize} onlyShowLoaded={onlyShowLoaded} setOnlyShowLoaded={setOnlyShowLoaded}/>
-            <ScriptsTable scripts={filteredScripts} hr={hr} minimize={minimize}/>
+            <ScriptPanelExpandedHead minimize={minimize} onlyShowLoaded={onlyShowLoaded} setOnlyShowLoaded={setOnlyShowLoaded} ram={scriptStatus.ram}/>
+            <ScriptsTable scripts={filteredScripts} hr={hr} minimize={minimize} ram={scriptStatus.ram} shownInRun={true}/>
         </div>
     } else {
         return <div className="scriptPanel">
@@ -55,13 +58,16 @@ interface ScriptMinimizeButtonProps {
     minimize: () => void
     onlyShowLoaded: boolean
     setOnlyShowLoaded: (onlyShowLoaded: boolean) => void
+    ram: Ram
 }
 
-const ScriptMinimizeButton = ({minimize,onlyShowLoaded, setOnlyShowLoaded}: ScriptMinimizeButtonProps) => {
+const ScriptPanelExpandedHead = ({minimize, onlyShowLoaded, setOnlyShowLoaded, ram}: ScriptMinimizeButtonProps) => {
+
+    const refreshText = ram.nextRefreshSecondsLeft === null ? "" : `(${formatTimeInterval(ram.nextRefreshSecondsLeft)})`
 
     return <>
         <div className="row text">
-            <div className="col-lg-6">
+            <div className="col-lg-3">
                 <div className="form-check form-switch">
                     <input className="form-check-input" type="checkbox" role="switch"
                            style={{lineHeight: "16px", marginTop: "2px"}}
@@ -71,9 +77,13 @@ const ScriptMinimizeButton = ({minimize,onlyShowLoaded, setOnlyShowLoaded}: Scri
                     <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Only show loaded</label>
                 </div>
             </div>
-            <div className="col-lg-4">
-                <span className="text">Ram usage: <span className="badge bg-dark">2/4</span></span>
+            <div className="col-lg-1" style={{"textAlign": "right", "paddingRight": 0}}>
+                RAM
             </div>
+            <div className="col-lg-6">
+                <RamBar ram={ram} size={368}/>
+            </div>
+            <div className="col-lg-2" style={{paddingLeft: 0}}>{refreshText}</div>
         </div>
         <div className="scriptPanelButtonOuter">
             <div className="btn btn-primary btn-s scriptPanelButton" onClick={minimize}>
@@ -88,19 +98,22 @@ interface ScriptsTableProps {
     scripts: Script[]
     hr?: React.JSX.Element
     minimize?: () => void
+    ram: Ram | null
+    shownInRun: boolean
 }
 
-export const ScriptsTable = ({scripts, hr, minimize}: ScriptsTableProps) => {
-    const scriptsLoading = useSelector((state: GmRootState) => state.users.edit.scriptsLoading)
+export const ScriptsTable = ({scripts, hr, minimize, ram, shownInRun}: ScriptsTableProps) => {
+    if (!ram) return <></>
+
     const sortedScripts = sortScripts(scripts)
 
     const rows = sortedScripts.map((script: Script) => {
-        const loading = scriptsLoading.find((loading) => loading.scriptId === script.id)
         return <ScriptLine script={script}
-                           loading={loading}
                            useCase={ScriptLineUseCase.HACKER}
                            key={script.id}
                            minimize={minimize}
+                           ram={ram}
+                           shownInRun={shownInRun}
         />
     })
     const rowTexts = sortedScripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)
@@ -127,41 +140,9 @@ const compareScriptStatus = (a: Script, b: Script) => {
     if (a.state === b.state) return a.name.localeCompare(b.name)
     if (a.state === ScriptState.LOADED) return -1
     if (b.state === ScriptState.LOADED) return 1
-    if (a.state === ScriptState.LOADING) return -1
-    if (b.state === ScriptState.LOADING) return 1
     if (a.state === ScriptState.AVAILABLE) return -1
     if (b.state === ScriptState.AVAILABLE) return 1
     if (a.state === ScriptState.USED) return -1
     if (b.state === ScriptState.USED) return 1
     return a.name.localeCompare(b.name)
 }
-
-// const ScriptLine = ({script}: { script: Script }) => {
-//
-//     const scriptUsable = script.state !== ScriptState.USED && script.state !== ScriptState.EXPIRED
-//     const codeElement = scriptUsable ? <td>
-//         <SilentLink onClick={() => {
-//             copyScript(script.code)
-//         }}><>{script.code}</>
-//         </SilentLink></td> : <td className="scriptUnusable">{script.code}</td>
-//
-//     const nameElement = scriptUsable ? <td className="text_light">{script.name}</td> : <td>{script.name}</td>
-//
-//
-//     return <tr>
-//         {codeElement}
-//         {nameElement}
-//         <td>
-//             {script.effects.map((effect, index) => {
-//                 const effectNumber = (index + 1).toString()
-//                 return <><InfoBadge infoText={effect} key={effectNumber} badgeText={effectNumber}/>&nbsp;</>
-//             })}
-//         </td>
-//         <td>
-//             <ScriptStateBadge script={script} loading={null as unknown as ScriptLoading[]}/>
-//         </td>
-//     </tr>
-// }
-
-
-

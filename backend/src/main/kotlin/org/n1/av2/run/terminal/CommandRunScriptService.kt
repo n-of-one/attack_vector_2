@@ -6,6 +6,7 @@ import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.effect.ScriptEffectLookup
 import org.n1.av2.script.effect.TerminalLockState
+import org.n1.av2.script.ram.RamService
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.stereotype.Service
@@ -16,6 +17,7 @@ class CommandRunScriptService(
     private val scriptService: ScriptService,
     private val scriptTypeService: ScriptTypeService,
     private val scriptEffectLookup: ScriptEffectLookup,
+    private val ramService: RamService,
 ) {
 
     fun processRunScript(tokens: List<String>, hackerSate: HackerState) {
@@ -44,6 +46,7 @@ class CommandRunScriptService(
         }
 
         val terminalLockState = runEffects(type, tokens, hackerSate)
+        ramService.useScript(hackerSate.userId, type.size)
         scriptService.markAsUsedAndNotify(script)
 
         if (terminalLockState == TerminalLockState.UNLOCK) {

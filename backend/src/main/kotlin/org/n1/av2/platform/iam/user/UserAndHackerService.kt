@@ -11,14 +11,11 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
-import org.n1.av2.script.ScriptId
 import org.n1.av2.script.ScriptService
-import org.n1.av2.script.ScriptState
 import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.common.UiEffectDescription
 import org.n1.av2.script.type.ScriptTypeService
+import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
-import java.time.ZonedDateTime
 
 @Service
 class UserAndHackerService(
@@ -27,10 +24,8 @@ class UserAndHackerService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val connectionService: ConnectionService,
     private val runLinkEntityService: RunLinkEntityService,
-    private val scriptService: ScriptService,
-    private val scriptAccessService: ScriptAccessService,
     private val currentUserService: CurrentUserService,
-    private val scriptTypeService: ScriptTypeService,
+    private val applicationContext: ApplicationContext,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -61,25 +56,11 @@ class UserAndHackerService(
         sendDetailsOfSpecificUser(user.id)
     }
 
-    class UiScript(
-        val id: ScriptId,
-        val name: String,
-        val code: String,
-        val effects: List<UiEffectDescription>,
-        val timeLeft: String,
-        val state: ScriptState,
-        val inMemory: Boolean,
-        val ram: Int,
-        val loadStartedAt: ZonedDateTime?,      // "2024-12-01T15:38:40.9179757+02:00",
-        val loadTimeFinishAt: ZonedDateTime?,   // "2024-12-01T16:08:40.9179757+02:00",
-    )
-
     class UiHacker(
         val hackerUserId: String,
         val icon: HackerIcon,
         val characterName: String,
         val skills: List<HackerSkill>,
-        val scripts: List<UiScript>,
     )
 
     class UiUserDetails(
@@ -102,13 +83,12 @@ class UserAndHackerService(
 
     private fun getDetailsOfSpecificUser(userId: String): UiUserDetails {
         val user = userEntityService.getById(userId)
-        val scripts = scriptService.findUiScriptsForUser(userId)
-        val hacker = createHackerForSkillDisplay(user, scripts)
+        val hacker = createHackerForSkillDisplay(user)
 
         return UiUserDetails(user.id, user.name, user.type, hacker)
     }
 
-    fun createHackerForSkillDisplay(user: UserEntity, uiScripts: List<UiScript>,): UiHacker? {
+    fun createHackerForSkillDisplay(user: UserEntity): UiHacker? {
         val hacker = if (user.type == UserType.HACKER) hackerEntityService.findForUser(user) else return null
         val skillsWithDisplayValues = hacker.skills.map { skill ->
             if (skill.value != null)
@@ -121,7 +101,6 @@ class UserAndHackerService(
             icon = hacker.icon,
             characterName = hacker.characterName,
             skills = skillsWithDisplayValues,
-            scripts = uiScripts,
         )
     }
 
@@ -138,7 +117,7 @@ class UserAndHackerService(
     }
 
     fun editSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
-        validateSKillValue(userId, type, valueInput)
+        validateSkillValue(userId, type, valueInput)
 
         val value = type.toFunctionalValue(valueInput)
         val (user, hacker) = retrieveUserAndHacker(userId)
@@ -147,9 +126,10 @@ class UserAndHackerService(
         val newSkills = hacker.skills.map { if (it.type == type) updatedSkill else it }
 
         updateSkillsAndNotifyFrontend(hacker, newSkills, user)
+        type.processUpdate(userId, value, applicationContext)
     }
 
-    private fun validateSKillValue(userId: String, type: HackerSkillType, valueInput: String) {
+    private fun validateSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
         val validationFunction = type.validate ?: return // no validation function
         val errorMessage = validationFunction(valueInput) ?: return // no error
 

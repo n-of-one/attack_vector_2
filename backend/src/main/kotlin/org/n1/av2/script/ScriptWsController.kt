@@ -2,11 +2,9 @@ package org.n1.av2.script
 
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
-import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.type.ScriptTypeId
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
-import java.math.BigDecimal
 
 @Controller
 class ScriptWsController(
@@ -23,6 +21,13 @@ class ScriptWsController(
         }
     }
 
+    @MessageMapping("/gm/script/getForUser")
+    fun addScript(userId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask(userPrincipal) {
+            scriptService.sendScriptStatusForUser(userId)
+        }
+    }
+
     @MessageMapping("/gm/script/add")
     fun addScript(command: AddScriptCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
@@ -30,10 +35,10 @@ class ScriptWsController(
         }
     }
 
-    @MessageMapping("/gm/script/instantLoad")
-    fun instantLoad(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+    @MessageMapping("/gm/script/load")
+    fun gmLoad(scriptId: ScriptId, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask(userPrincipal) {
-            scriptService.instantLoadScript(scriptId)
+            scriptService.loadScript(scriptId, true)
         }
     }
 

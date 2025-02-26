@@ -54,7 +54,7 @@ class CommandScanService(
 
     private fun checkHasScanSkill(): Boolean {
         val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSKill(HackerSkillType.SCAN)
+        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
 
         if (!hasScanSkill) {
             connectionService.replyTerminalReceive("Scan command not installed (missing skill)")

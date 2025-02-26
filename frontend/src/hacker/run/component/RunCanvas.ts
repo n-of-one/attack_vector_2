@@ -7,7 +7,7 @@ import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
-import {HackerPresence} from "../reducer/HackersReducer"
+import {HackerPresence} from "../reducer/HackerPresencesReducer"
 import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";

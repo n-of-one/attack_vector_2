@@ -7,7 +7,7 @@ import org.n1.av2.script.type.ScriptEffect
 import org.springframework.stereotype.Service
 
 @Service
-class HidenEffectsService(
+class HiddenEffectsService(
 ) : ScriptEffectInterface {
 
     override val name = "Drawback: other effects are hidden"

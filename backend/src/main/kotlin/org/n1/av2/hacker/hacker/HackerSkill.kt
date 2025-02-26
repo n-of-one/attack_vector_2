@@ -1,5 +1,8 @@
 package org.n1.av2.hacker.hacker
 
+import org.n1.av2.script.ram.RamService
+import org.springframework.context.ApplicationContext
+
 data class HackerSkill(
     val type: HackerSkillType,
     val value: String?
@@ -12,17 +15,19 @@ enum class HackerSkillType(
     val defaultValue: String? = null,
     val validate: ((String) -> String?)? = null,
     val toFunctionalValue: (String) -> String = noOpNormalization,
-    val toDisplayValue: (String) -> String = displayAsIs
+    val toDisplayValue: (String) -> String = displayAsIs,
+    val processUpdate: (userId: String, value: String, context: ApplicationContext) -> Unit = noUpdate
 ) {
     CREATE_SITE(),
     SCAN(),
     SEARCH_SITE(),
-    SCRIPT_RAM("3", ::validatePositiveNumber),
+    SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate),
 //    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay, ) // Await confirmation from the organisers who use AV that this is a skill they want
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }
 val displayAsIs = { toDisplay: String -> toDisplay }
+val noUpdate = { _: String, _: String, _: ApplicationContext -> }
 
 fun validatePositiveNumber(input: String): String? {
     val value = input.toIntOrNull() ?: return "must be a whole number"
@@ -30,6 +35,9 @@ fun validatePositiveNumber(input: String): String? {
     return null
 }
 
+fun ramSkillUpdate(userId: String, value: String, context: ApplicationContext) {
+    context.getBean(RamService::class.java).alterRamSize(userId, value.toInt())
+}
 
 //
 //val stealthValidation = { toValidate: String ->

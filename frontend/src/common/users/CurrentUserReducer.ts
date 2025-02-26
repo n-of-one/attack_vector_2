@@ -1,7 +1,6 @@
 import {AnyAction} from "redux";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigState} from "../../admin/config/ConfigReducer";
-import {Script} from "../script/ScriptModel";
 
 export const SERVER_RECEIVE_CURRENT_USER = "SERVER_RECEIVE_CURRENT_USER"
 
@@ -42,7 +41,6 @@ export interface Hacker {
     characterName: string,
     icon: HackerIcon,
     skills: HackerSkill[],
-    scripts: Script[],
 }
 
 export interface GenericUserRootState {

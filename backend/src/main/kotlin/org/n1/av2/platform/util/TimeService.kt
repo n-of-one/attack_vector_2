@@ -2,34 +2,51 @@ package org.n1.av2.platform.util
 
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.platform.config.StaticConfig
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import java.time.Clock
 import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 
+@Configuration
+class clockConfiguration(val staticConfig: StaticConfig) {
+
+    @Bean
+    fun clock(): Clock {
+        val timeZoneId: ZoneId = if (staticConfig.timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(staticConfig.timeZoneInput)
+        return Clock.system(timeZoneId)
+    }
+}
+
 @Service
 class TimeService(
-    staticConfig: StaticConfig,
+    val clock: Clock
     ) {
-    val timeZoneId: ZoneId = if (staticConfig.timeZoneInput == "default") ZoneId.systemDefault() else ZoneId.of(staticConfig.timeZoneInput)
-
     private val dateTimeFOrmat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
 
     fun now(): ZonedDateTime {
-        return ZonedDateTime.now(timeZoneId)
+        return ZonedDateTime.now(clock)
     }
 
     fun longAgo(): ZonedDateTime {
-        return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, timeZoneId)
+        return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
     }
 
-    fun scriptResetMoment() = now()
-            .withHour(4)
+    private fun scriptResetMoment() = now()
+            .withHour(6)
             .withMinute(0)
             .withSecond(0)
+
+    fun isPastReset(lastUsed: ZonedDateTime): Boolean {
+        val resetMoment = if (now() > scriptResetMoment()) scriptResetMoment() else scriptResetMoment().minusDays(1)
+
+        return lastUsed < resetMoment
+    }
 
     fun formatDuration(duration: Duration): String {
         return String.format("%d:%02d:%02d", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart())

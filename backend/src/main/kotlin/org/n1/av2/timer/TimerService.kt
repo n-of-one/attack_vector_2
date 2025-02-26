@@ -37,7 +37,7 @@ class TimerService(
     private val logger = KotlinLogging.logger {}
 
     @EventListener(ApplicationStartedEvent::class)
-    fun removeTimersFromDatabase() {
+    fun recreateTimerAfterApplicationRestart() {
         val timers = timerEntityService.findAll()
         timers.forEach { timer ->
             when (timer.effect) {
@@ -211,14 +211,14 @@ class TimerService(
         connectionService.replyTerminalReceive("Tripwire countdown delayed by ${duration.toHumanTime()}")
         connectionService.toSite(siteId, ServerActions.SERVER_CHANGE_TIMER, toTimerInfo(updatedTimer))
 
-        alterTimerTask(updatedTimer, layer, duration.negated(), siteId)
+        alterTimerTask(updatedTimer, layer, duration, siteId)
     }
 
     fun alterTimerTask(timer: Timer, layer: TripwireLayer?, delta: Duration, siteId: String) {
         val taskIdentifiers = createTimerIdentifiers(siteId, layer?.id)
         val taskInfo = systemTaskRunner.removeTask(taskIdentifiers)
 
-        val newCountdownSeconds = taskInfo.inSeconds + delta.toSeconds()
+        val newCountdownSeconds = taskInfo.inSeconds + delta.toSeconds() +1 // +1 to compensate for the time it takes to queue the task
         systemTaskRunner.queueInSeconds(taskInfo.description, taskIdentifiers, newCountdownSeconds) { shutdownStart(siteId, timer.id, timer.effectDuration) }
     }
 

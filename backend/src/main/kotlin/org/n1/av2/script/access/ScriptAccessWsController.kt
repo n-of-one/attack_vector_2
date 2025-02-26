@@ -22,13 +22,6 @@ class ScriptAccessWsController(
         }
     }
 
-    @MessageMapping("/hacker/scriptAccess/get")
-    fun getScriptAccessForHacker(userId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
-            scriptAccessService.sendScriptAccess(userId)
-        }
-    }
-
     class AddScriptAccessCommand(val typeId: String, val userId: String)
     @MessageMapping("/gm/scriptAccess/add")
     fun addScriptAccess(command: AddScriptAccessCommand, userPrincipal: UserPrincipal) {

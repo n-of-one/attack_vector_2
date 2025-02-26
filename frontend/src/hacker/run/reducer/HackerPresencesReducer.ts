@@ -17,10 +17,9 @@ export interface HackerPresence {
     activity: HackerActivity,
 }
 
-
 const defaultState: HackerPresence[] = [];
 
-export const hackersReducer = (state: HackerPresence[] = defaultState, action: AnyAction): HackerPresence[] => {
+export const hackerPresencesReducer = (state: HackerPresence[] = defaultState, action: AnyAction): HackerPresence[] => {
     switch (action.type) {
         case SERVER_ENTERED_RUN:
             return action.data.hackers;

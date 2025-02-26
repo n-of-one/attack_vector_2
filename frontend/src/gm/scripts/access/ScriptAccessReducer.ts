@@ -14,7 +14,7 @@ export interface ScriptAccess {
 export interface ScriptTypeForAccess {
     id: string,
     name: string,
-    ram: number,
+    size: number,
     effects: ScriptEffectDisplay[]
 }
 

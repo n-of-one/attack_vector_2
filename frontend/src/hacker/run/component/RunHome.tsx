@@ -5,7 +5,7 @@ import {RunCanvasPanel} from "./RunCanvasPanel"
 import {NodeScanInfo} from "./scaninfo/NodeScanInfo"
 import {TERMINAL_SUBMIT, TerminalState} from "../../../common/terminal/TerminalReducer"
 import {Dispatch} from "redux"
-import {Timers} from "../coundown/Timers";
+import {Timers} from "../timer/Timers";
 import {ENTER_KEY} from "../../../common/util/KeyCodes";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {currentUser} from "../../../common/user/CurrentUser";

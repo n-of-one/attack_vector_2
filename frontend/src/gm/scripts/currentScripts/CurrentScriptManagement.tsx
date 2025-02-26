@@ -30,6 +30,7 @@ export const CurrentScriptManagement = () => {
 
     const selectUser = (userOverview: UserOverview) => {
         webSocketConnection.send("/user/select", userOverview.id)
+        webSocketConnection.send("/gm/script/getForUser", userOverview.id)
     }
     const tableElement = user ? <ScriptsToAddTable user={user}/> :
         <UserOverviewTable users={hackers} selectUser={selectUser}/>
@@ -68,9 +69,11 @@ const ScriptsToAddTable = ({user}: { user: User }) => {
 
 export const ScriptsOfUser = ({user}: { user: User }) => {
     const dispatch = useDispatch()
-    const scriptsLoading = useSelector((state: GmRootState) => state.users.edit.scriptsLoading)
+    const scriptStatus = useSelector((state: GmRootState) => state.scriptStatus)
 
-    const scripts = user.hacker?.scripts
+
+    const scripts = (scriptStatus) ? scriptStatus.scripts : []
+    const ram = (scriptStatus) ? scriptStatus.ram : null
     const close = () => {
         dispatch({type: CLOSE_USER_EDIT})
     }
@@ -78,11 +81,12 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
     if (!scripts) return <ErrorPage message="No scripts information found for this user."/>
 
     const rowElements = scripts.map((script: Script) => {
-        const loading = scriptsLoading.find((loading) => loading.scriptId === script.id)
         return <ScriptLine script={script}
-                           loading={loading}
                            useCase={ScriptLineUseCase.GM}
-                           key={script.id}/>
+                           key={script.id}
+                           ram={ram}
+                           shownInRun={false}
+        />
     })
     const rowTexts = scripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)
 
@@ -104,7 +108,7 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
                 <div className="row text strong">
                     <div className="col-lg-2 text-end">Code</div>
                     <div className="col-lg-2">Name</div>
-                    <div className="col-lg-1">RAM</div>
+                    <div className="col-lg-1">Size</div>
                     <div className="col-lg-2">State</div>
                     <div className="col-lg-2">Action</div>
                     <div className="col-lg-2">Effects</div>

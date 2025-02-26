@@ -6,20 +6,18 @@ import {currentUserReducer, GenericUserRootState, User} from "../common/users/Cu
 import {configReducer} from "../admin/config/ConfigReducer";
 import {editScriptTypeReducer, ScriptType, scriptTypesReducer} from "./scripts/scriptType/ScriptTypeReducer";
 import {ScriptAccess, scriptAccessReducer} from "./scripts/access/ScriptAccessReducer";
-import {ScriptLoading, scriptLoadingReducer} from "../common/script/ScriptLoadingReducer";
 import {ScriptStatistics, scriptStatisticsReducer} from "./scripts/ScriptStatisticsReducer";
+import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
 
 
 export interface EditUser {
     userData: User | null,
     scriptAccess: ScriptAccess[],
-    scriptsLoading: ScriptLoading[]
 }
 
 export const editUserReducer = combineReducers({
     userData: editUserDataReducer,
     scriptAccess: scriptAccessReducer,
-    scriptsLoading: scriptLoadingReducer,
 })
 
 
@@ -49,7 +47,8 @@ export interface GmRootState extends GenericUserRootState {
     currentPage: Page,
     users: Users,
     sites: Array<SiteInfo>,
-    scriptsManagement: ScriptManagement
+    scriptsManagement: ScriptManagement,
+    scriptStatus: ScriptStatus | null,
 }
 export const gmRootReducer = combineReducers({
     // from GenericUserRootState
@@ -61,4 +60,5 @@ export const gmRootReducer = combineReducers({
     users: usersReducer,
     sites: sitesReducer,
     scriptsManagement: scriptManagementReducer,
+    scriptStatus: scriptStatusReducer,
 })
