@@ -14,13 +14,13 @@ class NetwalkIceController(
     data class EnterInput(val iceId: String)
     @MessageMapping("/ice/netwalk/enter")
     fun enter(command: EnterInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { netwalkService.enter(command.iceId) }
+        userTaskRunner.runTask("/ice/netwalk/enter", userPrincipal) { netwalkService.enter(command.iceId) }
     }
 
     data class RotateInput(val iceId: String, val x: Int, val y: Int)
     @MessageMapping("/ice/netwalk/rotate")
     fun rotate(command: RotateInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { netwalkService.rotate(command.iceId, command.x, command.y) }
+        userTaskRunner.runTask("/ice/netwalk/rotate", userPrincipal) { netwalkService.rotate(command.iceId, command.x, command.y) }
     }
 
 }

@@ -17,50 +17,48 @@ class RunWsController(
     private val runLinkService: RunLinkService,
     private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
-
-    ) {
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 
-
     @MessageMapping("/run/sendRunInfosToUser")
     fun scansOfPlayer(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runLinkService.sendRunInfosToUser() }
+        userTaskRunner.runTask("/run/sendRunInfosToUser", userPrincipal) { runLinkService.sendRunInfosToUser() }
     }
 
     @MessageMapping("/run/newRun")
     fun scanForName(siteName: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runService.startNewRunAndReply(siteName) }
+        userTaskRunner.runTask("/run/newRun", userPrincipal) { runService.startNewRunAndReply(siteName) }
     }
 
     @MessageMapping("/run/deleteRunLink")
     fun deleteScan(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runLinkService.deleteRunLink(runId) }
+        userTaskRunner.runTask("/run/deleteRunLink", userPrincipal) { runLinkService.deleteRunLink(runId) }
     }
-
 
     @MessageMapping("/run/prepareToEnterRun")
     fun prepareToEnterRun(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runService.prepareToEnterRun(runId) }
+        userTaskRunner.runTask("/run/prepareToEnterRun", userPrincipal) { runService.prepareToEnterRun(runId) }
     }
 
     @MessageMapping("/run/enterRun")
     fun enterRun(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { runService.enterRun(userPrincipal.userId, runId, userPrincipal.connectionId) }
+        userTaskRunner.runTask("/run/enterRun", userPrincipal) { runService.enterRun(userPrincipal.userId, runId, userPrincipal.connectionId) }
     }
-
 
     @MessageMapping("/run/leaveSite")
     fun leaveScan(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/run/leaveSite", userPrincipal) {
             val state = hackerStateEntityService.retrieveForCurrentUser()
-            runService.leaveSite(state, true) }
+            runService.leaveSite(state, true)
+        }
     }
 
     @MessageMapping("/run/getTimers")
     fun getTimers(runId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
-            runService.getTimers(runId, userPrincipal.userId) }
+        userTaskRunner.runTask("/run/getTimers", userPrincipal) {
+            runService.getTimers(runId, userPrincipal.userId)
+        }
     }
 
 

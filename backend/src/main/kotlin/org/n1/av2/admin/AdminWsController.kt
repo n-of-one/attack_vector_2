@@ -16,7 +16,7 @@ class AdminWsController(
 
     @MessageMapping("/admin/logon")
     fun logon(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/admin/logon", userPrincipal) {
 
             // This will trigger the rendering of the page, send last so that no page updates happen after.
             userAndHackerService.sendDetailsOfCurrentUser()

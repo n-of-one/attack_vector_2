@@ -29,7 +29,7 @@ class HackerWsController(
     @PreAuthorize("hasRole('ROLE_HACKER')")
     @MessageMapping("/hacker/logon")
     fun logon(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/hacker/logon", userPrincipal) {
             runLinkService.sendRunInfosToUser()
             configService.replyConfigValues()
             siteService.sendSitesList()

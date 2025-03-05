@@ -18,7 +18,7 @@ class GmWsController(
     @PreAuthorize("hasRole('ROLE_GM')")
     @MessageMapping("/gm/logon")
     fun siteList(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/logon", userPrincipal) {
             siteService.sendSitesList()
 
             // This will trigger the rendering of the page, send last so that no page updates happen after.

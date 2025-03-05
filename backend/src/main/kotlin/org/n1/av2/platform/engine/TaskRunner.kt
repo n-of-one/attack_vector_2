@@ -15,12 +15,13 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import kotlin.system.measureTimeMillis
 
 const val TICK_MILLIS = 50
 const val SECOND_MILLIS = 1000
 const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS
 
-private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal)
+private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal, val description: String)
 
 data class TaskInfo(val inSeconds: Long, val dueAtLocalMillis: Long, val description: String)
 
@@ -31,11 +32,14 @@ data class TaskInfo(val inSeconds: Long, val dueAtLocalMillis: Long, val descrip
 @Component
 class UserTaskRunner(
     private val taskEngine: TaskEngine,
-    private val currentUserService: CurrentUserService
 ) {
 
-    fun runTask(userPrincipal: UserPrincipal, action: () -> Unit) {
-        taskEngine.runForUser(userPrincipal, action)
+//    fun runTask(userPrincipal: UserPrincipal, action: () -> Unit) {
+//        taskEngine.runForUser(userPrincipal, action)
+//    }
+
+    fun runTask(description: String, userPrincipal: UserPrincipal, action: () -> Unit) {
+        taskEngine.runForUser(userPrincipal, action, description)
     }
 
     fun queueInTicksForSite(description: String, siteId: String, waitTicks: Int, action: () -> Unit) {
@@ -65,6 +69,7 @@ class UserTaskRunner(
         level = DeprecationLevel.ERROR,
         replaceWith = ReplaceWith("userTaskRunner.runTask(principal) {}")
     )
+    @Suppress("unused")
     fun run(action: () -> Unit) {
         error(">> Do not use run, this is ambiguous with Kotlin run. Use runTask() instead")
     }
@@ -90,13 +95,14 @@ class SystemTaskRunner(
         return taskEngine.removeSpecific(identifiers)
     }
 
-    /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
+    // run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
     @Deprecated(
         message = ">> Do not use run, Use runTask() instead",
         level = DeprecationLevel.ERROR,
         replaceWith = ReplaceWith("taskRunner.runTask(principal) {}")
     )
-    fun run(action: () -> Unit) {
+    @Suppress("unused")
+    fun run(unused: () -> Unit) {
         error(">> Do not use run, this is ambiguous with Kotlin run. Use runTask() instead")
     }
 
@@ -119,8 +125,8 @@ class TaskEngine(
         Thread(this).start()
     }
 
-    fun runForUser(userPrincipal: UserPrincipal, action: () -> Unit) {
-        val task = Task(action, userPrincipal)
+    fun runForUser(userPrincipal: UserPrincipal, action: () -> Unit, description: String) {
+        val task = Task(action, userPrincipal, description)
         queue.put(task)
     }
 
@@ -137,7 +143,7 @@ class TaskEngine(
 
     fun checkTimedTasks() {
         val event = timedTaskRunner.getEvent() ?: return
-        runForUser(event.userPrincipal, event.action)
+        runForUser(event.userPrincipal, event.action, event.description)
     }
 
     private fun runTask() {
@@ -145,7 +151,7 @@ class TaskEngine(
         try {
             currentUserService.set(task.userPrincipal.userEntity)
             SecurityContextHolder.getContext().authentication = task.userPrincipal
-            task.action()
+            runAndLogTiming(task)
         } catch (exception: Exception) {
             if (exception is InterruptedException) {
                 throw exception
@@ -178,6 +184,13 @@ class TaskEngine(
         }
     }
 
+    private fun runAndLogTiming(task: Task) {
+        val millis = measureTimeMillis {
+            task.action()
+        }
+        logger.info("Task took ${millis}ms : ${task.description}")
+    }
+
     @PreDestroy
     fun terminate() {
         this.running = false
@@ -196,6 +209,7 @@ class TaskEngine(
     }
 
     fun sendTasks(userPrincipal: UserPrincipal) {
+        @Suppress("unused")
         class TaskInfo(val due: Long, val description: String, val userName: String, val identifier: String)
 
         val tasks = timedTaskRunner.getTasks().map { task ->
@@ -244,7 +258,7 @@ private class TimedTaskRunner {
     }
 
     fun toIdentifierString(identifiers: Map<String, String>): String {
-        return identifiers.entries.sortedBy{it.key}.joinToString(", ") { "${it.key}=${it.value}" }
+        return identifiers.entries.sortedBy { it.key }.joinToString(", ") { "${it.key}=${it.value}" }
     }
 
     fun removeAll(identifiers: Map<String, String>) {

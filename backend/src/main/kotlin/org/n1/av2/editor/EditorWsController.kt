@@ -6,100 +6,100 @@ import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
 
 @Controller
-class EditorController(
+class EditorWsController(
     private val editorService: EditorService,
     private val userTaskRunner: UserTaskRunner
 ) {
     @MessageMapping("/editor/open")
     fun open(siteName: String, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteByName(siteName, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.open(siteName) }
+        userTaskRunner.runTask("/editor/open", userPrincipal) { editorService.open(siteName) }
     }
 
     @MessageMapping("/editor/siteFull")
     fun siteFull(siteId: String, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.sendSiteFull(siteId) }
+        userTaskRunner.runTask("/editor/siteFull", userPrincipal) { editorService.sendSiteFull(siteId) }
     }
 
     @MessageMapping("/editor/addNode")
     fun addNode(command: AddNode, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.addNode(command) }
+        userTaskRunner.runTask("/editor/addNode", userPrincipal) { editorService.addNode(command) }
     }
 
     @MessageMapping("/editor/moveNode")
     fun moveNode(command: MoveNode, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.moveNode(command) }
+        userTaskRunner.runTask("/editor/moveNode", userPrincipal) { editorService.moveNode(command) }
     }
 
     @MessageMapping("/editor/addConnection")
     fun addConnection(command: AddConnection, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.addConnection(command) }
+        userTaskRunner.runTask("/editor/addConnection", userPrincipal) { editorService.addConnection(command) }
     }
 
     @MessageMapping("/editor/editSiteProperty")
     fun editSiteData(command: EditSiteProperty, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.updateSiteProperties(command) }
+        userTaskRunner.runTask("/editor/editSiteProperty", userPrincipal) { editorService.updateSiteProperties(command) }
     }
 
     data class DeleteCommand(val siteId: String = "", val nodeId: String = "" )
     @MessageMapping("/editor/deleteConnections")
     fun deleteConnections(command: DeleteCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.deleteConnections(command.siteId, command.nodeId) }
+        userTaskRunner.runTask("/editor/deleteConnections", userPrincipal) { editorService.deleteConnections(command.siteId, command.nodeId) }
     }
 
     @MessageMapping("/editor/deleteNode")
     fun deleteNode(command: DeleteCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.deleteNode(command.siteId, command.nodeId) }
+        userTaskRunner.runTask("/editor/deleteNode", userPrincipal) { editorService.deleteNode(command.siteId, command.nodeId) }
     }
 
     data class SiteCommand(val siteId: String = "")
     @MessageMapping("/editor/snap")
     fun snap(command: SiteCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.snap(command.siteId) }
+        userTaskRunner.runTask("/editor/snap", userPrincipal) { editorService.snap(command.siteId) }
     }
 
     @MessageMapping("/editor/center")
     fun center(command: SiteCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.center(command.siteId) }
+        userTaskRunner.runTask("/editor/center", userPrincipal) { editorService.center(command.siteId) }
     }
 
     @MessageMapping("/editor/editNetworkId")
     fun editNetworkId(command: EditNetworkIdCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.editNetworkId(command) }
+        userTaskRunner.runTask("/editor/editNetworkId", userPrincipal) { editorService.editNetworkId(command) }
     }
 
     @MessageMapping("/editor/editLayerData")
     fun editServiceData(command: EditLayerDataCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.editLayerData(command) }
+        userTaskRunner.runTask("/editor/editLayerData", userPrincipal) { editorService.editLayerData(command) }
     }
 
     @MessageMapping("/editor/addLayer")
     fun addLayer(command: AddLayerCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.addLayer(command) }
+        userTaskRunner.runTask("/editor/addLayer", userPrincipal) { editorService.addLayer(command) }
     }
 
     @MessageMapping("/editor/removeLayer")
     fun removeService(command: RemoveLayerCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.removeLayer(command) }
+        userTaskRunner.runTask("/editor/removeLayer", userPrincipal) { editorService.removeLayer(command) }
     }
 
     @MessageMapping("/editor/swapLayers")
     fun swapServiceLayer(command: SwapLayerCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)
-        userTaskRunner.runTask(userPrincipal) { editorService.swapLayers(command) }
+        userTaskRunner.runTask("/editor/swapLayers", userPrincipal) { editorService.swapLayers(command) }
     }
 
 }

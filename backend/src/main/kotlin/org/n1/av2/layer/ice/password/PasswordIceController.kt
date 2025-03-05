@@ -15,13 +15,13 @@ class PasswordIceController(
 
     @MessageMapping("/ice/password/enter")
     fun enter(command: EnterInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { authAppService.enter(command.iceId) }
+        userTaskRunner.runTask("/ice/password/enter", userPrincipal) { authAppService.enter(command.iceId) }
     }
 
     class SubmitPassword(val iceId: String, val password: String)
 
     @MessageMapping("/ice/password/submit")
     fun submit(command: SubmitPassword, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { authAppService.submitAttempt(command.iceId, command.password) }
+        userTaskRunner.runTask("/ice/password/submit", userPrincipal) { authAppService.submitAttempt(command.iceId, command.password) }
     }
 }

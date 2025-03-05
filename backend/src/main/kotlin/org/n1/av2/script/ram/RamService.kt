@@ -295,15 +295,20 @@ class RamService(
         val sanitizeRefreshing = (ram.refreshing.coerceAtMost(ram.size)).coerceAtLeast(0)
         val sanitizedFree = (ram.size - sanitizedLoaded - sanitizeRefreshing).coerceAtLeast(0)
 
-        if (sanitizedLoaded != ram.loaded) logger.error("Sanitized loaded RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedLoaded")
-        if (sanitizeRefreshing != ram.loaded) logger.error("Sanitized refreshing RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizeRefreshing")
-        if (sanitizedFree != ram.loaded) logger.error("Sanitized free RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedFree")
-
-        return ram.copy(
+        val sanitized = ram.copy(
             loaded = sanitizedLoaded,
             refreshing = sanitizeRefreshing,
             free = sanitizedFree
         )
+
+        if (sanitized == ram ) return ram
+
+        if (sanitizedLoaded != ram.loaded) logger.error("Sanitized loaded RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedLoaded")
+        if (sanitizeRefreshing != ram.refreshing) logger.error("Sanitized refreshing RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizeRefreshing")
+        if (sanitizedFree != ram.free) logger.error("Sanitized free RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedFree")
+
+        return sanitized
+
     }
 
     fun startHack(userId: String) {

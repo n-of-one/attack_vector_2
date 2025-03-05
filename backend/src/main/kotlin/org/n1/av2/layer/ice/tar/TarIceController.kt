@@ -14,12 +14,12 @@ class TarIceController(
     data class EnterInput(val iceId: String)
     @MessageMapping("/ice/tar/enter")
     fun enter(command: EnterInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { tarService.enter(command.iceId) }
+        userTaskRunner.runTask("/ice/tar/enter", userPrincipal) { tarService.enter(command.iceId) }
     }
 
     data class RotateInput(val iceId: String, val units: Int)
     @MessageMapping("/ice/tar/hackedUnits")
     fun rotate(command: RotateInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { tarService.hackedUnits(command.iceId, command.units) }
+        userTaskRunner.runTask("/ice/tar/hackedUnits", userPrincipal) { tarService.hackedUnits(command.iceId, command.units) }
     }
 }

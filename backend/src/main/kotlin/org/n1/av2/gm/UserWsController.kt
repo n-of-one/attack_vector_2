@@ -14,47 +14,44 @@ import org.springframework.validation.annotation.Validated
 class UserWsController(
     private val userTaskRunner: UserTaskRunner,
     private val userAndHackerService: UserAndHackerService
-
 ) {
 
     @MessageMapping("/user/overview")
     fun overview(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.overview() }
+        userTaskRunner.runTask("/user/overview", userPrincipal) { userAndHackerService.overview() }
     }
 
     @MessageMapping("/user/create")
     fun create(@UserName name: String, userPrincipal: UserPrincipal) {
-
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.createFromUserManagementScreen(name) }
+        userTaskRunner.runTask("/user/create", userPrincipal) { userAndHackerService.createFromUserManagementScreen(name) }
     }
 
     @MessageMapping("/user/select")
     fun select(userId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.sendDetailsOfSpecificUser(userId) }
+        userTaskRunner.runTask("/user/select", userPrincipal) { userAndHackerService.sendDetailsOfSpecificUser(userId) }
     }
 
     class UserEdit(val userId: String, val field: String, val value: String)
 
     @MessageMapping("/user/edit")
     fun edit(input: UserEdit, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.edit(input.userId, input.field, input.value) }
+        userTaskRunner.runTask("/user/edit", userPrincipal) { userAndHackerService.edit(input.userId, input.field, input.value) }
     }
 
     class UserEditSkillEnabled(val userId: String, val type: HackerSkillType, val enabled: Boolean)
     @MessageMapping("/user/editSkillEnabled")
     fun editSkillEnabled(input: UserEditSkillEnabled, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.editSkillEnabled(input.userId, input.type, input.enabled) }
+        userTaskRunner.runTask("/user/editSkillEnabled", userPrincipal) { userAndHackerService.editSkillEnabled(input.userId, input.type, input.enabled) }
     }
 
     class UserEditSkillValue(val userId: String, val type: HackerSkillType, val value: String)
     @MessageMapping("/user/editSkillValue")
     fun editSkillValue(input: UserEditSkillValue, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.editSkillValue(input.userId, input.type, input.value) }
+        userTaskRunner.runTask("/user/editSkillValue", userPrincipal) { userAndHackerService.editSkillValue(input.userId, input.type, input.value) }
     }
-
 
     @MessageMapping("/user/delete")
     fun delete(userId: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { userAndHackerService.delete(userId) }
+        userTaskRunner.runTask("/user/delete", userPrincipal) { userAndHackerService.delete(userId) }
     }
 }

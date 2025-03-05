@@ -16,7 +16,7 @@ class TerminalController(
 
     @MessageMapping("/terminal/main")
     fun terminalMain(terminalCommand: TerminalCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { terminalService.processCommand(terminalCommand.runId, terminalCommand.command) }
+        userTaskRunner.runTask("/terminal/main", userPrincipal) { terminalService.processCommand(terminalCommand.runId, terminalCommand.command) }
     }
 
 }

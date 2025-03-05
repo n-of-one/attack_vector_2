@@ -15,6 +15,6 @@ class GenericIceController(
     data class NextInput(val layerId: String)
     @MessageMapping("/ice/next")
     fun enter(command: NextInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { appService.gotoNextLayerAfterExternalHack(command.layerId) }
+        userTaskRunner.runTask("/ice/next", userPrincipal) { appService.gotoNextLayerAfterExternalHack(command.layerId) }
     }
 }

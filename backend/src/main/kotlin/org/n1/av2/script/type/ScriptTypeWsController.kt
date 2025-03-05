@@ -12,24 +12,23 @@ class ScriptTypeWsController(
     private val scriptTypeService: ScriptTypeService,
 ) {
 
-
     @MessageMapping("/gm/scriptType/getAll")
     fun getScriptTypes(userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/getAll", userPrincipal) {
             scriptTypeService.sendScriptTypes()
         }
     }
 
     @MessageMapping("/gm/scriptType/add")
     fun addScriptType(name: String, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/add", userPrincipal) {
             scriptTypeService.add(name)
         }
     }
 
     @MessageMapping("/gm/scriptType/delete")
     fun deleteScriptType(scriptTypeId: ScriptTypeId, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/delete", userPrincipal) {
             scriptTypeService.delete(scriptTypeId)
         }
     }
@@ -37,7 +36,7 @@ class ScriptTypeWsController(
     class EditCommand(val scriptTypeId: ScriptTypeId, val name: String, val size: Int, val defaultPrice: BigDecimal?)
     @MessageMapping("/gm/scriptType/edit")
     fun editScriptType(command: EditCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/edit", userPrincipal) {
             scriptTypeService.edit(command.scriptTypeId, command.name, command.size, command.defaultPrice)
         }
     }
@@ -45,21 +44,23 @@ class ScriptTypeWsController(
     class AddEffectCommand(val scriptTypeId: ScriptTypeId, val effectType: ScriptEffectType)
     @MessageMapping("/gm/scriptType/addEffect")
     fun addEffect(command: AddEffectCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/addEffect", userPrincipal) {
             scriptTypeService.addEffect(command.scriptTypeId, command.effectType)
         }
     }
+
     class DeleteEffectCommand(val scriptTypeId: ScriptTypeId, val effectNumber: Int)
     @MessageMapping("/gm/scriptType/deleteEffect")
     fun deleteEffect(command: DeleteEffectCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/deleteEffect", userPrincipal) {
             scriptTypeService.deleteEffect(command.scriptTypeId, command.effectNumber)
         }
     }
+
     class EditEffectCommand(val scriptTypeId: ScriptTypeId, val effectNumber: Int, val value: String)
     @MessageMapping("/gm/scriptType/editEffect")
     fun editEffect(command: EditEffectCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) {
+        userTaskRunner.runTask("/gm/scriptType/editEffect", userPrincipal) {
             scriptTypeService.editEffect(command.scriptTypeId, command.effectNumber, command.value)
         }
     }

@@ -14,13 +14,13 @@ class StatusLightController (
     class StatusLightMessage(val layerId: String)
     @MessageMapping("/app/statusLight/enter")
     fun enter(command: StatusLightMessage, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { statusLightService.enter(command.layerId) }
+        userTaskRunner.runTask("/app/statusLight/enter", userPrincipal) { statusLightService.enter(command.layerId) }
     }
 
     class SetValueMessage(val layerId: String, val value: Boolean)
     @MessageMapping("/app/statusLight/setValue")
     fun toggle(command: SetValueMessage, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask(userPrincipal) { statusLightService.setValue(command.layerId, command.value) }
+        userTaskRunner.runTask("/app/statusLight/setValue", userPrincipal) { statusLightService.setValue(command.layerId, command.value) }
     }
 
 }
