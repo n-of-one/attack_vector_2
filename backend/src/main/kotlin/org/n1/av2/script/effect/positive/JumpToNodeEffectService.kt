@@ -30,9 +30,9 @@ class JumpToNodeEffectService(
     private val hackerStateRepo: HackerStateRepo,
 ) : ScriptEffectInterface {
 
-    override val name = "Jump"
+    override val name = "Jump to node"
     override val defaultValue = null
-    override val gmDescription = "Jump to another node."
+    override val gmDescription = "Jump to another node, blocked by ICE along the way."
 
     override fun playerDescription(effect: ScriptEffect) = gmDescription
 
@@ -46,7 +46,7 @@ class JumpToNodeEffectService(
         nodeAccessHelper.checkNodeRevealed(targetNetworkId, hackerState.runId!!)?.let { return ScriptExecution(it) }
 
         val siteId: String = hackerState.siteId!!
-        val nodes: List<Node> = nodeEntityService.getAll(siteId)
+        val nodes: List<Node> = nodeEntityService.findBySiteId(siteId)
         val targetNodeId = nodes.find { it.networkId == targetNetworkId }?.id ?: error("Node not found for network ID: $targetNetworkId")
         val currentNodeId = hackerState.currentNodeId ?: error("Current node ID not found.")
 

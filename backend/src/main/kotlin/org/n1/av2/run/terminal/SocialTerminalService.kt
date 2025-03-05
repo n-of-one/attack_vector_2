@@ -35,7 +35,7 @@ class SocialTerminalService(
     private fun shareWithUser(userName: String, runId: String) {
         val user = userEntityService.findByNameIgnoreCase(userName)
         if (user == null) {
-            connectionService.replyTerminalReceive("[warn]not found[/] - user [info]${userName}[/] not found.")
+            connectionService.replyTerminalReceive(hackerNotFound(userName))
             return
         }
 
@@ -44,7 +44,10 @@ class SocialTerminalService(
         } else {
             runLinkService.shareRun(runId, user, true)
         }
+    }
 
+    companion object {
+        fun hackerNotFound(userName: String) = "[warn]not found[/] - user [info]${userName}[/] not found."
     }
 
 }

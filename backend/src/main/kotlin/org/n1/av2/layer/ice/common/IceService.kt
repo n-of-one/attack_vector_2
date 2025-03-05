@@ -73,7 +73,7 @@ class IceService(
 
     fun deleteIce(siteId: String) {
         val iceLayers = nodeEntityService
-            .getAll(siteId)
+            .findBySiteId(siteId)
             .map { node -> node.layers }
             .flatten()
             .filterIsInstance<IceLayer>()

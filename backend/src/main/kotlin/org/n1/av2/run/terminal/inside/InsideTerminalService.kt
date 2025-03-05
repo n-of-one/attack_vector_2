@@ -37,6 +37,7 @@ class InsideTerminalService(
 
         when (commandAction) {
             "move" -> commandMoveService.processCommand(runId, tokens, state)
+            "qmove" -> commandMoveService.processQuickMove(runId, tokens, state)
             "hack" -> commandHackService.processHackCommand(runId, tokens, state)
             "qhack" -> commandHackService.processQuickHack(runId, tokens, state)
             "view" -> commandViewService.process(runId, state)

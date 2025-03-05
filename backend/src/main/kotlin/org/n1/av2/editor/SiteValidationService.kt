@@ -11,7 +11,6 @@ import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
-import java.time.Duration
 
 @Service
 class SiteValidationService(
@@ -30,7 +29,7 @@ class SiteValidationService(
     fun validate(siteId: String, alwaysPersistResult: Boolean): List<SiteStateMessage> {
         val messages = ArrayList<SiteStateMessage>()
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        val nodes = nodeEntityService.getAll(siteId)
+        val nodes = nodeEntityService.findBySiteId(siteId)
         val traverseNodesById = traverseNodeService.createTraverseNodes(siteId, nodes)
 
         validateSiteProperties(siteProperties, nodes, messages)

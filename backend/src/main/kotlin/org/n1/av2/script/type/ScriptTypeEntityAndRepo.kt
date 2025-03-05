@@ -30,6 +30,7 @@ enum class ScriptEffectType{
     HIDDEN_EFFECTS,
     SITE_STATS,
     JUMP_TO_NODE,
+    JUMP_TO_HACKER_IGNORING_ICE,
 }
 
 interface ScriptTypeRepository : CrudRepository<ScriptType, ScriptTypeId> {

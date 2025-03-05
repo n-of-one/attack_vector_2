@@ -6,6 +6,7 @@ import org.n1.av2.script.effect.negative.SpeedUpResetTimerEffectService
 import org.n1.av2.script.effect.negative.StartResetTimerEffectService
 import org.n1.av2.script.effect.positive.DelayTripwireCountdownService
 import org.n1.av2.script.effect.positive.JumpToNodeEffectService
+import org.n1.av2.script.effect.positive.JumpToHackerIgnoringIceEffectService
 import org.n1.av2.script.effect.positive.ScanBeyondIceNodeEffectService
 import org.n1.av2.script.effect.positive.SiteStatsEffectService
 import org.n1.av2.script.type.ScriptEffectType
@@ -23,6 +24,7 @@ class ScriptEffectLookup(
     scanBeyondIceNodeEffectService: ScanBeyondIceNodeEffectService,
     siteStatsEffectService: SiteStatsEffectService,
     jumpToNodeEffectService: JumpToNodeEffectService,
+    jumpToHackerIgnoringIceEffectService: JumpToHackerIgnoringIceEffectService,
 ) {
 
     private val effectServicesByType = mapOf(
@@ -34,6 +36,7 @@ class ScriptEffectLookup(
         HIDDEN_EFFECTS to hiddenEffectsService,
         SITE_STATS to siteStatsEffectService,
         JUMP_TO_NODE to jumpToNodeEffectService,
+        JUMP_TO_HACKER_IGNORING_ICE to jumpToHackerIgnoringIceEffectService,
     )
 
     fun getForType(type: ScriptEffectType): ScriptEffectInterface {

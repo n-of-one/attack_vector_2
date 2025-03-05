@@ -14,6 +14,7 @@ export enum EffectType {
     SCAN_ICE_NODE = "SCAN_ICE_NODE",
     SITE_STATS = "SITE_STATS",
     JUMP_TO_NODE = "JUMP_TO_NODE",
+    JUMP_TO_HACKER_IGNORING_ICE = "JUMP_TO_HACKER_IGNORING_ICE",
 }
 
 export interface Effect {

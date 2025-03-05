@@ -25,7 +25,7 @@ class ScanService(
 ) {
 
     @ScheduledTask
-    fun hackerArrivedNodeScan(nodeId: String, userId: String, runId: String) {
+    fun hackerArrivedNodeScan(nodeId: String, runId: String) {
         val run = runEntityService.getByRunId(runId)
         val nodeScan = run.nodeScanById[nodeId]!!
 
@@ -33,7 +33,7 @@ class ScanService(
             return
         }  // another @ScheduledTask has changed the state of things, nothing left to do.
 
-        val nodes = nodeEntityService.getAll(run.siteId)
+        val nodes = nodeEntityService.findBySiteId(run.siteId)
         val targetNode = nodes.find { it.id == nodeId }!!
         areaScan(run, targetNode, nodes, false)
     }
@@ -59,7 +59,7 @@ class ScanService(
         }
         runEntityService.save(run)
 
-        val nodeStatusById = discoveries.map { it.nodeId to it.scanStatus }.toMap()
+        val nodeStatusById = discoveries.associate { it.nodeId to it.scanStatus }
 
         connectionService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
         runLinkService.sendUpdatedRunInfoToHackers(run)
@@ -91,7 +91,7 @@ class ScanService(
     }
 
     fun createInitialNodeScans(siteId: String): MutableMap<String, NodeScan> {
-        val nodes = nodeEntityService.getAll(siteId)
+        val nodes = nodeEntityService.findBySiteId(siteId)
         val startNode = siteService.findStartNode(nodes) ?: throw IllegalStateException("Start node of site does not exist")
         val traverseNodes = traverseNodeService.createTraverseNodesWithDistance(siteId, startNode.id, nodes)
 

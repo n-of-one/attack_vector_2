@@ -264,13 +264,30 @@ class RamService(
 
     fun alterRamSize(userId: String, newSize: Int) {
         val ram = getRamForUser(userId)
+        if (newSize == 0) {
+            val newRam = sanitize(
+                ram.copy(
+                    size = 0,
+                    free = 0,
+                    loaded = 0,
+                    refreshing = 0,
+                    nextRefresh = null,
+                    lockedUntil = null,
+                    enabled = false,
+                )
+            )
+            ramRepository.save(newRam)
+            return
+        }
+
         val newFree = newSize - ram.loaded - ram.refreshing
 
         if (newFree >= 0) {
             val newRam = sanitize(
                 ram.copy(
                     size = newSize,
-                    free = newFree
+                    free = newFree,
+                    enabled = true,
                 )
             )
             ramRepository.save(newRam)
@@ -282,6 +299,7 @@ class RamService(
                     loaded = 0,
                     refreshing = 0,
                     nextRefresh = null,
+                    enabled = true,
                 )
             )
             ramRepository.save(newRam)

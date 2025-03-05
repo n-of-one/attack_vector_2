@@ -51,14 +51,14 @@ data class TraverseNode(
         }
 
         @NotEmpty
-        fun createPath(startNode: TraverseNode, targetNode: TraverseNode): List<String> {
+        fun createPath(startNode: TraverseNode, targetNode: TraverseNode, ignoreIce: Boolean = false): List<String> {
             val path = LinkedList(listOf(targetNode.nodeId))
             var currentNode = targetNode
             while (currentNode != startNode) {
                 if (currentNode.distance == null) throw BlockedPathException("ICE blocks path to ${currentNode.networkId}")
                 val previousNode = currentNode
                     .connections
-                    .find { it.distance == (currentNode.distance!! - 1) && !it.unhackedIce }
+                    .find { it.distance == (currentNode.distance!! - 1) && (ignoreIce || !it.unhackedIce)}
                     ?: throw BlockedPathException("ICE blocks path to ${currentNode.networkId}")
                 currentNode = previousNode
                 path.add(0, currentNode.nodeId)

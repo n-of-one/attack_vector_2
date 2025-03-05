@@ -16,18 +16,20 @@ enum class HackerSkillType(
     val validate: ((String) -> String?)? = null,
     val toFunctionalValue: (String) -> String = noOpNormalization,
     val toDisplayValue: (String) -> String = displayAsIs,
-    val processUpdate: (userId: String, value: String, context: ApplicationContext) -> Unit = noUpdate
+    val processUpdate: (userId: String, value: String?, context: ApplicationContext) -> Unit = noUpdateAction,
+    val processSkillRemoval: (userId: String, context: ApplicationContext) -> Unit = noRemovalAction,
 ) {
     CREATE_SITE(),
     SCAN(),
     SEARCH_SITE(),
-    SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate),
+    SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
 //    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay, ) // Await confirmation from the organisers who use AV that this is a skill they want
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }
 val displayAsIs = { toDisplay: String -> toDisplay }
-val noUpdate = { _: String, _: String, _: ApplicationContext -> }
+val noUpdateAction = { _: String, _: String?, _: ApplicationContext -> }
+val noRemovalAction = { _: String, _: ApplicationContext -> }
 
 fun validatePositiveNumber(input: String): String? {
     val value = input.toIntOrNull() ?: return "must be a whole number"
@@ -35,8 +37,12 @@ fun validatePositiveNumber(input: String): String? {
     return null
 }
 
-fun ramSkillUpdate(userId: String, value: String, context: ApplicationContext) {
-    context.getBean(RamService::class.java).alterRamSize(userId, value.toInt())
+fun ramSkillUpdate(userId: String, value: String?, context: ApplicationContext) {
+    context.getBean(RamService::class.java).alterRamSize(userId, value!!.toInt())
+}
+
+fun ramSkillRemoval(userId: String, context: ApplicationContext) {
+    context.getBean(RamService::class.java).alterRamSize(userId, 0)
 }
 
 //

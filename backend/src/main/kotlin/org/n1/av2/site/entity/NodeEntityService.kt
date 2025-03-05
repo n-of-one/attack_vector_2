@@ -42,7 +42,7 @@ class NodeEntityService(
     fun createNode(command: AddNode): Node {
         val id = createId("node", nodeRepo::findById)
         val siteId = command.siteId
-        val nodes = getAll(siteId)
+        val nodes = findBySiteId(siteId)
         val networkId = command.networkId ?: nextFreeNetworkId(siteId, nodes)
         val layers = mutableListOf(createOsLayer(id))
 
@@ -90,7 +90,7 @@ class NodeEntityService(
         throw IllegalStateException("Failed to find a free network ID for site: ${siteId}")
     }
 
-    fun getAll(siteId: String): List<Node> {
+    fun findBySiteId(siteId: String): List<Node> {
         return nodeRepo.findBySiteId(siteId)
     }
 
@@ -114,7 +114,7 @@ class NodeEntityService(
     }
 
     fun snap(siteId: String) {
-        val nodes = getAll(siteId)
+        val nodes = findBySiteId(siteId)
         nodes.forEach { node ->
 
             val xOffset = (CANVAS_WIDTH /2) % 40
@@ -129,7 +129,7 @@ class NodeEntityService(
     }
 
     fun center(siteId: String, startNodeNetworkId: String) {
-        val nodes = getAll(siteId)
+        val nodes = findBySiteId(siteId)
 
         val startNode = nodes.find { it.networkId == startNodeNetworkId } ?: error("Start node not found: ${startNodeNetworkId}")
 

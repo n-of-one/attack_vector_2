@@ -39,7 +39,7 @@ class SiteStatsEffectService(
         return ScriptExecution{
             connectionService.replyTerminalReceive("", "Site stats", "----------")
 
-            val nodes = nodeEntityService.getAll(hackerState.siteId!!)
+            val nodes = nodeEntityService.findBySiteId(hackerState.siteId!!)
             connectionService.replyTerminalReceive("Nodes: ${nodes.size}", "")
 
             reportCountOf(nodes, LayerType.CORE, "", 23)

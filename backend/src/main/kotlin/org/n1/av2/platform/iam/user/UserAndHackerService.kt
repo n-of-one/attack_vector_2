@@ -11,9 +11,6 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
-import org.n1.av2.script.ScriptService
-import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
@@ -30,6 +27,7 @@ class UserAndHackerService(
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
+    @Suppress("unused")
     class UserOverview(
         val id: String,
         val name: String,
@@ -56,6 +54,7 @@ class UserAndHackerService(
         sendDetailsOfSpecificUser(user.id)
     }
 
+    @Suppress("unused")
     class UiHacker(
         val hackerUserId: String,
         val icon: HackerIcon,
@@ -114,6 +113,13 @@ class UserAndHackerService(
         }
 
         updateSkillsAndNotifyFrontend(hacker, newSkills, user)
+        if (add) {
+            type.processUpdate(userId, type.defaultValue, applicationContext)
+        }
+        else {
+            type.processSkillRemoval(userId, applicationContext)
+        }
+
     }
 
     fun editSkillValue(userId: String, type: HackerSkillType, valueInput: String) {

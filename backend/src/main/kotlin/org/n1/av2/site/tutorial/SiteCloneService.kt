@@ -14,7 +14,6 @@ import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.site.entity.*
 import org.springframework.stereotype.Service
@@ -26,7 +25,6 @@ class SiteCloneService(
     private val connectionEntityService: ConnectionEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
     private val siteValidationService: SiteValidationService,
-    private val currentUserService: CurrentUserService,
 ) {
 
     fun cloneSite(sourceSideProperties: SiteProperties, targetSiteName: String, owner: UserEntity): String {
@@ -34,7 +32,7 @@ class SiteCloneService(
 
         val siteId = cloneSiteProperties(targetSiteName, owner)
 
-        val sourceNodes = nodeEntityService.getAll(sourceSiteId)
+        val sourceNodes = nodeEntityService.findBySiteId(sourceSiteId)
         val nodesBySourceId = cloneNodes(sourceNodes, siteId)
 
         val sourceConnections = connectionEntityService.getAll(sourceSiteId)

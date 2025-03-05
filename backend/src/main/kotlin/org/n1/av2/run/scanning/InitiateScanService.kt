@@ -40,7 +40,7 @@ class InitiateScanService(
     fun scanWithScript(run: Run, startNode: Node?, targetNode: Node) {
         val startNodeNetworkId = startNode?.networkId ?: sitePropertiesEntityService.getBySiteId(run.siteId).startNodeNetworkId
         val iceNodeIdToIgnore = targetNode.id
-        val nodes = nodeEntityService.getAll(run.siteId)
+        val nodes = nodeEntityService.findBySiteId(run.siteId)
 
         val startNode = nodes.find { it.networkId == startNodeNetworkId } ?: error("Start node not found for network ID: $startNodeNetworkId")
 
@@ -52,7 +52,7 @@ class InitiateScanService(
     }
 
     fun scanFromOutside(run: Run, startNode: Node) {
-        val nodes = nodeEntityService.getAll(run.siteId)
+        val nodes = nodeEntityService.findBySiteId(run.siteId)
         val (start, traverseNodesById) = traverseNodeService.createTraverseNodesWithDistance(run.siteId, startNode.id, nodes, startNode.id)
         val target: TraverseNode = traverseNodesById[startNode.id]!!
 
@@ -90,7 +90,7 @@ class InitiateScanService(
 
 
     fun scanFromInside(run: Run, targetNode: Node) {
-        val nodes = nodeEntityService.getAll(run.siteId)
+        val nodes = nodeEntityService.findBySiteId(run.siteId)
 
         connectionService.toRun(
             run.runId,
@@ -105,7 +105,7 @@ class InitiateScanService(
     }
 
     fun quickScan(run: Run) {
-        val nodes = nodeEntityService.getAll(run.siteId)
+        val nodes = nodeEntityService.findBySiteId(run.siteId)
 
         nodes.forEach {node ->
             val oldStatus = run.nodeScanById[node.id]

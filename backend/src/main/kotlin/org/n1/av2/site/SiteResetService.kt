@@ -6,8 +6,6 @@ import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreService
-import org.n1.av2.timer.TimerEntityService
-import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
@@ -55,7 +53,7 @@ class SiteResetService(
     lateinit var runService: RunService
     lateinit var timerService: TimerService
 
-    fun refreshSite(siteId: String, shutdownDuration: String) {
+    fun refreshSite(siteId: String) {
         resetSite(siteId, Duration.ZERO)
         shutdownFinished(siteId)
         timerService.removeTimersForSite(siteId)
@@ -64,7 +62,7 @@ class SiteResetService(
     @CalledBySystem
     fun resetSite(siteId: String, shutdownDuration: Duration) {
         taskEngine.removeAll(mapOf("siteId" to siteId))
-        val nodes = nodeEntityService.getAll(siteId)
+        val nodes = nodeEntityService.findBySiteId(siteId)
         nodes.forEach { node ->
             node.layers.forEach { layer ->
                 if (layer is IceLayer) {

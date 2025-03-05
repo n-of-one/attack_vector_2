@@ -135,6 +135,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.DELAY_TRIPWIRE_COUNTDOWN}>Delay tripwire countdown</option>
                         <option value={EffectType.SCAN_ICE_NODE}>Scan node with ICE</option>
                         <option value={EffectType.JUMP_TO_NODE}>Jump to node</option>
+                        <option value={EffectType.JUMP_TO_HACKER_IGNORING_ICE}>Jump to hacker, ignoring ICE</option>
                     </select>
                 </div>
                 <div className="col-lg-1">

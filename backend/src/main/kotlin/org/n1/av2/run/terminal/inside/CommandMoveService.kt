@@ -5,6 +5,8 @@ import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.ScheduledTask
@@ -32,6 +34,7 @@ class CommandMoveService(
     private val userTaskRunner: UserTaskRunner,
     private val connectionService: ConnectionService,
     private val timingsService: TimingsService,
+    private val configService: ConfigService,
 ) {
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -91,6 +94,8 @@ class CommandMoveService(
 
     private fun handleMove(runId: String, toNode: Node, state: HackerStateRunning) {
         connectionService.replyTerminalSetLocked(true)
+
+        @Suppress("unused")
         class StartMove(val userId: String, val nodeId: String, val timings: Timings)
         connectionService.toRun(runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(state.userId, toNode.id, timingsService.MOVE_START))
 
@@ -112,7 +117,7 @@ class CommandMoveService(
             connectionService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to timingsService.INSIDE_SCAN)
 
             userTaskRunner.queueInTicksForSite("internal-scan", runState.siteId, timingsService.INSIDE_SCAN.totalTicks) {
-                scanService.hackerArrivedNodeScan(nodeId, userId, runId)
+                scanService.hackerArrivedNodeScan(nodeId, runId)
                 arriveComplete(nodeId, userId, runId)
             }
         }
@@ -139,4 +144,21 @@ class CommandMoveService(
             }
         }
     }
+
+    fun processQuickMove(runId: String, tokens: List<String>, state: HackerStateRunning) {
+        if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
+            connectionService.replyTerminalReceive("QuickHack is disabled.")
+            return
+        }
+
+        if (tokens.size == 1) {
+            connectionService.replyTerminalReceive("Missing [ok]<network id>[/], for example: [b]mv[ok] 01[/].")
+            return
+        }
+        val networkId = tokens[1]
+        val toNode = nodeEntityService.findByNetworkId(state.siteId, networkId) ?: return reportNodeNotFound(networkId)
+
+        moveArrive(toNode.id, state.userId, runId)
+    }
+
 }

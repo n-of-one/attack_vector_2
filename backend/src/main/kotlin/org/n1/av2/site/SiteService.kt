@@ -75,7 +75,7 @@ class SiteService(
 
     fun getSiteFull(siteId: String): SiteFull {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        val nodes = nodeEntityService.getAll(siteId).toMutableList()
+        val nodes = nodeEntityService.findBySiteId(siteId).toMutableList()
         val startNodeId = findStartNode(siteProperties.startNodeNetworkId, nodes)?.id
         val connections = connectionEntityService.getAll(siteId)
         val state = siteEditorStateEntityService.getById(siteId)

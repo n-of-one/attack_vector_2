@@ -7,7 +7,6 @@ import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
-import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.CalledBySystem
@@ -63,6 +62,7 @@ class RunService(
         val activity: HackerActivity,
     )
 
+    @Suppress("unused")
     class SiteInfo(val run: Run, val site: SiteFull, val hackers: List<HackerPresence>, val timers: List<TimerInfo>)
 
     fun startNewRunAndReply(siteName: String): Run? {
@@ -181,6 +181,7 @@ class RunService(
 
         taskEngine.removeForUser(hackerState.userId)
 
+        @Suppress("unused")
         class HackerLeaveNotification(val userId: String)
         connectionService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
 
@@ -300,7 +301,7 @@ class RunService(
 
     fun updateRunLinksForResetSite(siteId: String) {
 
-        val nodes = nodeEntityService.getAll(siteId)
+        val nodes = nodeEntityService.findBySiteId(siteId)
         val nodeById = nodes.associateBy { it.id }
 
         val runs = runEntityService.findAllForSiteId(siteId)
@@ -334,6 +335,7 @@ class RunService(
         }
     }
 
+    @Suppress("unused")
     class TimersInfo(val timers: List<TimerInfo>)
 
     fun getTimers(runId: String, userId: String) {

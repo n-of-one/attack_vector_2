@@ -43,7 +43,7 @@ class CoreLayerService(
 
     private fun stopTimers(runId: String, layer: CoreLayer): List<Timer> {
         val run = runEntityService.getByRunId(runId)
-        val tripwires = nodeEntityService.getAll(run.siteId)
+        val tripwires = nodeEntityService.findBySiteId(run.siteId)
             .flatMap { node ->
                 node.layers
                     .filterIsInstance<TripwireLayer>()
