@@ -14,6 +14,6 @@ interface ScriptEffectInterface {
     val gmDescription: String
     fun playerDescription(effect: ScriptEffect): String
     fun validate(effect: ScriptEffect): String?
-    fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): String?
-    fun execute(effect: ScriptEffect, strings: List<String>, state: HackerState): TerminalLockState
+    fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String?
+    fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState): TerminalLockState
 }

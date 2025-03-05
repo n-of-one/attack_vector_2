@@ -37,7 +37,7 @@ class ScriptService(
 
     fun sendScriptStatusForUser(userId: String) {
         val scriptsAndTypes = getUpdatedScriptsAndTypes(userId)
-        val ram = ramService.updateRamFromScripts(currentUserService.userId, scriptsAndTypes)
+        val ram = ramService.updateRamFromScripts(userId, scriptsAndTypes)
         scriptStatusNotifier.sendScriptStatusOfSpecificUser(userId, scriptsAndTypes, ram)
     }
 

@@ -32,12 +32,12 @@ class StartResetTimerEffectService(
         return effect.value.validateDuration()
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): String? {
-        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerSate)
+    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
+        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerState)
     }
 
-    override fun execute(effect: ScriptEffect, strings: List<String>, hackerSate: HackerState): TerminalLockState {
-        val siteId = hackerSate.siteId!!
+    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState): TerminalLockState {
+        val siteId = hackerState.siteId!!
         val siteTimers = timerEntityService.findByTargetSiteId(siteId)
         val hasScriptSiteShutdown = siteTimers.any { it.label == TimerLabel.SCRIPT_SITE_SHUTDOWN }
         if (hasScriptSiteShutdown) {

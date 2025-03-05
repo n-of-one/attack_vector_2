@@ -34,12 +34,12 @@ class SpeedUpResetTimerEffectService(
         return effect.value.validateDuration()
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): String? {
-        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerSate)
+    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
+        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerState)
     }
 
-    override fun execute(effect: ScriptEffect, strings: List<String>, state: HackerState): TerminalLockState {
-        timerService.speedUpScriptResetTimer(effect.value!!.toDuration(), state.siteId!!)
+    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState): TerminalLockState {
+        timerService.speedUpScriptResetTimer(effect.value!!.toDuration(), hackerState.siteId!!)
         return TerminalLockState.UNLOCK
     }
 }

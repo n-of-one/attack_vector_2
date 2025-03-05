@@ -10,12 +10,12 @@ class ScriptEffectHelper(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
 
-    fun checkHackerAtNonShutdownSite(hackerSate: HackerState): String? {
-        if (hackerSate.activity == HackerActivity.OFFLINE || hackerSate.siteId == null) {
+    fun checkHackerAtNonShutdownSite(hackerState: HackerState): String? {
+        if (hackerState.activity == HackerActivity.OFFLINE || hackerState.siteId == null) {
             return "You must run this script when hacking a site."
         }
 
-        val siteState = sitePropertiesEntityService.getBySiteId(hackerSate.siteId)
+        val siteState = sitePropertiesEntityService.getBySiteId(hackerState.siteId)
         if (siteState.shutdownEnd != null) {
             return "Cannot run this script while the site is shut down."
         }

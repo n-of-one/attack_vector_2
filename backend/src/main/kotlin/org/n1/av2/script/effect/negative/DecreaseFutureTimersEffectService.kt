@@ -31,12 +31,12 @@ class DecreaseFutureTimersEffectService(
         return effect.value.validateDuration()
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): String? {
-        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerSate)
+    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
+        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerState)
     }
 
-    override fun execute(effect: ScriptEffect, strings: List<String>, hackerSate: HackerState): TerminalLockState {
-        val siteProperties = sitePropertiesEntityService.getBySiteId(hackerSate.siteId!!)
+    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState): TerminalLockState {
+        val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId!!)
 
         val scriptDurationChange = effect.value!!.toDuration()
         val currentAlertnessAdjustment:Duration = siteProperties.alertnessTimerAdjustment ?: Duration.ZERO

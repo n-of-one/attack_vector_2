@@ -18,8 +18,8 @@ class HiddenEffectsService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState) = null
+    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState) = null
 
-    override fun execute(effect: ScriptEffect, strings: List<String>, hackerSate: HackerState) = TerminalLockState.UNLOCK
+    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState) = TerminalLockState.UNLOCK
 
 }

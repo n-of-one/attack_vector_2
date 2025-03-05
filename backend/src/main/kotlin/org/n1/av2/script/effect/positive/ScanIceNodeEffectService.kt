@@ -27,13 +27,13 @@ class ScanIceNodeEffectService(
         return null
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): String? {
+    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
         if (tokens.size < 3) {
             return "Provide the [ok]network id[/] of the node to scan."
         }
         val networkId = tokens[2]
 
-        val runId = hackerSate.runId ?: return "Error, not in a run."
+        val runId = hackerState.runId ?: return "Error, not in a run."
         val run = runEntityService.getByRunId(runId)
 
 
@@ -46,9 +46,9 @@ class ScanIceNodeEffectService(
         return null
     }
 
-    override fun execute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): TerminalLockState {
+    override fun execute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): TerminalLockState {
         val networkId = tokens[2]
-        val run = runEntityService.getByRunId(hackerSate.runId!!)
+        val run = runEntityService.getByRunId(hackerState.runId!!)
         val targetNode = nodeEntityService.findByNetworkId(run.siteId, networkId) ?: error("Node not found for network ID: $networkId")
 
         initiateScanService.scanWithScript(run, null,targetNode )

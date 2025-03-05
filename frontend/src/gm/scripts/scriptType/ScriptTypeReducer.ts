@@ -11,7 +11,8 @@ export enum EffectType {
     HIDDEN_EFFECTS = "HIDDEN_EFFECTS",
     START_RESET_TIMER = "START_RESET_TIMER",
     SPEED_UP_RESET_TIMER = "SPEED_UP_RESET_TIMER",
-    SCAN_ICE_NODE = "SCAN_ICE_NODE"
+    SCAN_ICE_NODE = "SCAN_ICE_NODE",
+    SITE_STATS = "SITE_STATS",
 }
 
 export interface Effect {
@@ -36,13 +37,13 @@ export interface ScriptType {
 export const scriptTypesReducer = (state: ScriptType[] = [], action: AnyAction): ScriptType[] => {
     switch (action.type) {
         case SERVER_SCRIPT_TYPES:
-            return enrichtTypesFromServer(action.data)
+            return enrichTypesFromServer(action.data)
         default:
             return state
     }
 }
 
-const enrichtTypesFromServer = (types: ScriptType[]): ScriptType[] => {
+const enrichTypesFromServer = (types: ScriptType[]): ScriptType[] => {
     return types.map((type: ScriptType) => {
         return {
             ...type,

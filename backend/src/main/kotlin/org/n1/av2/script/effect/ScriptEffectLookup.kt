@@ -6,6 +6,7 @@ import org.n1.av2.script.effect.negative.SpeedUpResetTimerEffectService
 import org.n1.av2.script.effect.negative.StartResetTimerEffectService
 import org.n1.av2.script.effect.positive.DelayTripwireCountdownService
 import org.n1.av2.script.effect.positive.ScanIceNodeEffectService
+import org.n1.av2.script.effect.positive.SiteStatsEffectService
 import org.n1.av2.script.type.ScriptEffectType
 import org.n1.av2.script.type.ScriptEffectType.*
 import org.springframework.stereotype.Service
@@ -18,7 +19,8 @@ class ScriptEffectLookup(
     hiddenEffectsService: HiddenEffectsService,
 
     delayTripwireCountdownService: DelayTripwireCountdownService,
-    scanIceNodeEffectService: ScanIceNodeEffectService
+    scanIceNodeEffectService: ScanIceNodeEffectService,
+    siteStatsEffectService: SiteStatsEffectService,
 ) {
 
     private val effectServicesByType = mapOf(
@@ -27,12 +29,11 @@ class ScriptEffectLookup(
         START_RESET_TIMER to startResetTimerEffectService,
         DELAY_TRIPWIRE_COUNTDOWN to delayTripwireCountdownService,
         SCAN_ICE_NODE to scanIceNodeEffectService,
-        HIDDEN_EFFECTS to hiddenEffectsService
+        HIDDEN_EFFECTS to hiddenEffectsService,
+        SITE_STATS to siteStatsEffectService,
     )
 
     fun getForType(type: ScriptEffectType): ScriptEffectInterface {
         return effectServicesByType[type] ?: error("Script effect service not found for type: $type")
     }
-
-
 }

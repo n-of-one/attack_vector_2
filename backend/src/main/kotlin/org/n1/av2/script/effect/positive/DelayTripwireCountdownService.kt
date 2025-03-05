@@ -38,12 +38,12 @@ class DelayTripwireCountdownService(
         return effect.value.validateDuration()
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerSate: HackerState): String? {
-        if (hackerSate.activity == HackerActivity.OUTSIDE || hackerSate.currentNodeId == null) {
+    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
+        if (hackerState.activity == HackerActivity.OUTSIDE || hackerState.currentNodeId == null) {
             return "You can only run this script inside a node."
         }
 
-        val node = nodeEntityService.getById(hackerSate.currentNodeId)
+        val node = nodeEntityService.getById(hackerState.currentNodeId)
         val tripwireLayers = node.layers.filterIsInstance<TripwireLayer>()
         if (tripwireLayers.isEmpty()) {
             return "This node has no tripwires."
@@ -57,12 +57,12 @@ class DelayTripwireCountdownService(
         return null
     }
 
-    override fun execute(effect: ScriptEffect, strings: List<String>, hackerSate: HackerState): TerminalLockState {
-        val node = nodeEntityService.getById(hackerSate.currentNodeId!!)
+    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState): TerminalLockState {
+        val node = nodeEntityService.getById(hackerState.currentNodeId!!)
         val tripwireLayers = node.layers.filterIsInstance<TripwireLayer>()
 
         tripwireLayers.forEach { layer ->
-            timerService.delayTripwireTimer(layer, effect.value!!.toDuration(), hackerSate.siteId!!)
+            timerService.delayTripwireTimer(layer, effect.value!!.toDuration(), hackerState.siteId!!)
         }
 
         return TerminalLockState.UNLOCK
