@@ -9,7 +9,10 @@ import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
+import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
+import org.n1.av2.script.ScriptState
+import org.n1.av2.script.type.ScriptType
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
@@ -101,6 +104,24 @@ class RamService(
         }
     }
 
+    fun updateRamFromScripts(userId: String, scriptsAndTypes: List<Pair<Script, ScriptType>>): RamEntity {
+        val ram = getRamForUser(userId)
+
+        val loadedSize = scriptsAndTypes.filter { it.first.state == ScriptState.LOADED }.sumOf { it.second.size }
+        val refreshingSize = ram.refreshing
+        val free = ram.size - loadedSize - refreshingSize
+
+        val updatedRam = sanitize(
+            ram.copy(
+                loaded = loadedSize,
+                free = free
+            )
+        )
+        if (ram != updatedRam) {
+            ramRepository.save(updatedRam)
+        }
+        return updatedRam
+    }
 
     fun getRamById(ramId: RamId): RamEntity {
         return ramRepository.findById(ramId).orElseThrow {
@@ -108,7 +129,7 @@ class RamService(
         }
     }
 
-    fun getRam(userId: String): RamEntity {
+    fun getRamForUser(userId: String): RamEntity {
         val ram = ramRepository.findByUserId(userId)
         if (ram != null) {
             return ram
@@ -146,7 +167,7 @@ class RamService(
     fun load(userId: String, size: Int, overrideLocked: Boolean) {
         if (size <= 0) return
 
-        val ram = getRam(userId)
+        val ram = getRamForUser(userId)
         if (!ram.enabled) error("Cannot load script, hacker cannot use scripts")
         if (ram.free < size) error("Not enough free RAM. Need $size, but only ${ram.free} is free.")
         if (ram.lockedUntil != null && !overrideLocked) error("Cannot load script, hacker has joined a hacking run too recently.")
@@ -163,7 +184,7 @@ class RamService(
     fun unload(userId: String, size: Int, overrideLocked: Boolean) {
         if (size <= 0) return
 
-        val ram = getRam(userId)
+        val ram = getRamForUser(userId)
         val needToRefreshMemory = (ram.lockedUntil != null && !overrideLocked)
 
         val updatedRam = if (needToRefreshMemory) {
@@ -193,7 +214,7 @@ class RamService(
 
     fun useScript(userId: String, size: Int) {
         if (size <= 0) return
-        val ram = getRam(userId)
+        val ram = getRamForUser(userId)
 
         val startsRefresh = ram.refreshing == 0
         val nextRefresh = if (startsRefresh) timeService.now() + REFRESH_DURATION else ram.nextRefresh
@@ -242,7 +263,7 @@ class RamService(
     }
 
     fun alterRamSize(userId: String, newSize: Int) {
-        val ram = getRam(userId)
+        val ram = getRamForUser(userId)
         val newFree = newSize - ram.loaded - ram.refreshing
 
         if (newFree >= 0) {
@@ -286,7 +307,7 @@ class RamService(
     }
 
     fun startHack(userId: String) {
-        val ram = getRam(userId)
+        val ram = getRamForUser(userId)
         val updatedRam = ram.copy(lockedUntil = timeService.now() + HACKING_LOCK_DURATION)
         ramRepository.save(updatedRam)
         scriptService.sendScriptStatusToCurrentUser()
@@ -304,7 +325,7 @@ class RamService(
 
     @ScheduledTask
     private fun unlockRam(userId: String) {
-        val ram = getRam(userId)
+        val ram = getRamForUser(userId)
         val updatedRam = ram.copy(lockedUntil = null)
         ramRepository.save(updatedRam)
         scriptService.sendScriptStatusToCurrentUser()

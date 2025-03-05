@@ -30,19 +30,26 @@ class ScriptService(
     }
 
     fun sendScriptStatusToCurrentUser() {
-        val scripts = getAndUpdateScripts(currentUserService.userId)
-        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(currentUserService.userId)
+        val ram = ramService.updateRamFromScripts(currentUserService.userId, scriptsAndTypes)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram)
     }
 
     fun sendScriptStatusForUser(userId: String) {
-        val scripts = getAndUpdateScripts(userId)
-        scriptStatusNotifier.sendScriptStatusOfSpecificUser(userId, scripts)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(userId)
+        val ram = ramService.updateRamFromScripts(currentUserService.userId, scriptsAndTypes)
+        scriptStatusNotifier.sendScriptStatusOfSpecificUser(userId, scriptsAndTypes, ram)
     }
+
+    private fun getUpdatedScriptsAndTypes(userId: String): List<Pair<Script, ScriptType>> =
+        getAndUpdateScripts(userId).map { script -> Pair(script, scriptTypeService.getById(script.typeId)) }
+
 
     fun addScriptAndInformUser(typeId: ScriptTypeId, targetUserId: String) {
         addScript(typeId, targetUserId)
-        val scripts = getAndUpdateScripts(targetUserId)
-        scriptStatusNotifier.sendScriptStatusOfSpecificUser(targetUserId, scripts)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(targetUserId)
+        val ram = ramService.updateRamFromScripts(targetUserId, scriptsAndTypes)
+        scriptStatusNotifier.sendScriptStatusOfSpecificUser(targetUserId, scriptsAndTypes, ram)
     }
 
     fun addScript(typeId: ScriptTypeId, targetUserId: String) {
@@ -120,17 +127,18 @@ class ScriptService(
         ramService.unload(script.ownerUserId, type.size, overrideLocked)
 
 
-        val scriptLoading = script.copy(state = ScriptState.AVAILABLE, )
+        val scriptLoading = script.copy(state = ScriptState.AVAILABLE)
         scriptRepository.save(scriptLoading)
         informUserOfScriptChanged(script)
     }
 
     private fun informUserOfScriptChanged(script: Script) {
-        val scripts = getAndUpdateScripts(script.ownerUserId)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(script.ownerUserId)
+        val ram = ramService.updateRamFromScripts(script.ownerUserId, scriptsAndTypes)
         if (currentUserService.userId == script.ownerUserId) {
-            scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts) // hacker loads script
+            scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram) // hacker loads script
         } else {
-            scriptStatusNotifier.sendScriptStatusOfSpecificUser(script.ownerUserId, scripts) // GM loads script for user
+            scriptStatusNotifier.sendScriptStatusOfSpecificUser(script.ownerUserId, scriptsAndTypes, ram) // GM loads script for user
         }
     }
 
@@ -138,15 +146,16 @@ class ScriptService(
         val userId = currentUserService.userId
         addFreeReceiveScripts(userId)
 
-        val scripts = getAndUpdateScripts(userId)
-        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(userId)
+        val ram = ramService.updateRamFromScripts(userId, scriptsAndTypes)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram)
     }
 
     fun addFreeReceiveScripts(userId: String) {
         val scriptAccesses = scriptAccessService.findScriptAccessForUser(userId)
 
         scriptAccesses
-            .filter { access -> timeService.isPastReset(access.lastUsed)}
+            .filter { access -> timeService.isPastReset(access.lastUsed) }
             .forEach { access ->
                 (0 until access.receiveForFree).forEach { _ ->
                     addScript(access.typeId, userId)
@@ -171,8 +180,9 @@ class ScriptService(
                 scriptRepository.delete(script)
             }
 
-        val updatedScripts = getAndUpdateScripts(currentUserService.userId)
-        scriptStatusNotifier.sendScriptStatusOfCurrentUser(updatedScripts)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(currentUserService.userId)
+        val ram = ramService.updateRamFromScripts(currentUserService.userId, scriptsAndTypes)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram)
     }
 
 
@@ -203,7 +213,9 @@ class ScriptService(
         return null
     }
 
+    @Suppress("unused")
     class ScriptStatisticsLine(val name: String, val owned: Int, val loaded: Int, val freeReceive: Int)
+
     fun getStatistics() {
         val typesById = scriptTypeService.findAll().associateBy { it.id }
 
@@ -240,8 +252,9 @@ class ScriptService(
         val copy = script.copy(state = ScriptState.USED)
         scriptRepository.save(copy)
 
-        val scripts = getAndUpdateScripts(currentUserService.userId)
-        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scripts)
+        val scriptsAndTypes = getUpdatedScriptsAndTypes(currentUserService.userId)
+        val ram = ramService.updateRamFromScripts(currentUserService.userId, scriptsAndTypes)
+        scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram)
     }
 
     fun findByTypeId(typeId: ScriptTypeId): List<Script> {

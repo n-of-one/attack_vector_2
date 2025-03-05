@@ -2,14 +2,13 @@ package org.n1.av2.script
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.common.UiEffectDescription
 import org.n1.av2.script.common.toUiEffectDescriptions
 import org.n1.av2.script.effect.ScriptEffectLookup
-import org.n1.av2.script.ram.RamService
-import org.n1.av2.script.type.ScriptTypeService
+import org.n1.av2.script.ram.RamEntity
+import org.n1.av2.script.type.ScriptType
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -17,13 +16,11 @@ import java.time.ZonedDateTime
 @Service
 class ScriptStatusNotifier(
     private val connectionService: ConnectionService,
-    private val currentUserService: CurrentUserService,
-    private val scriptTypeService: ScriptTypeService,
     private val scriptEffectLookup: ScriptEffectLookup,
     private val timeService: TimeService,
-    private val ramService: RamService,
 ) {
 
+    @Suppress("unused")
     class UiScript(
         val id: ScriptId,
         val name: String,
@@ -34,6 +31,7 @@ class ScriptStatusNotifier(
         val ram: Int,
     )
 
+    @Suppress("unused")
     class UiRam(
         val enabled: Boolean,
         val size: Int,
@@ -44,35 +42,34 @@ class ScriptStatusNotifier(
         val lockedUntil: ZonedDateTime?,
     )
 
+    @Suppress("unused")
     class UIScriptStatus(
         val scripts: List<UiScript>,
         val ram: UiRam,
     )
 
-    fun sendScriptStatusOfCurrentUser(scripts: List<Script>) {
-        val status = createUiScriptStatus(currentUserService.userId, scripts)
+    fun sendScriptStatusOfCurrentUser(scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity) {
+        val status = createUiScriptStatus(scriptsAndTypes, ram)
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
     }
 
-    fun sendScriptStatusOfSpecificUser(userId: String, scripts: List<Script>) {
-        val status = createUiScriptStatus(userId, scripts)
+    fun sendScriptStatusOfSpecificUser(userId: String, scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity) {
+        val status = createUiScriptStatus(scriptsAndTypes, ram)
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
         connectionService.toUser(userId, ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
     }
 
 
-    fun createUiScriptStatus(userId: String, scripts: List<Script>): UIScriptStatus {
-        val ram = ramService.getRam(userId)
-
+    fun createUiScriptStatus(scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity): UIScriptStatus {
         return UIScriptStatus(
-            scripts.map { toUiScript(it) },
+            scriptsAndTypes.map { toUiScript(it) },
             UiRam(ram.enabled, ram.size, ram.loaded, ram.refreshing, ram.free, ram.nextRefresh, ram.lockedUntil)
         )
     }
 
-    private fun toUiScript(script: Script): UiScript {
+    private fun toUiScript(scriptAndType: Pair<Script, ScriptType>): UiScript {
+        val (script, type) = scriptAndType
         val timeLeft = timeLeft(script)
-        val type = scriptTypeService.getById(script.typeId)
         val effects = type.toUiEffectDescriptions(scriptEffectLookup)
         return UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, type.size)
     }
