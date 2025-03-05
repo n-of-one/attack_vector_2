@@ -5,9 +5,9 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.effect.ScriptEffectLookup
+import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.ram.RamService
-import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.stereotype.Service
 
@@ -28,44 +28,36 @@ class CommandRunScriptService(
         val scriptCode = tokens[1]
         val script = scriptService.validateScriptRunnable(scriptCode) ?: return
 
-        runScript(script, tokens, hackerSate)
+        runScript(script, tokens.drop(2), hackerSate)
     }
 
-    fun runScript(script: Script, tokens: List<String>, hackerSate: HackerState) {
+    fun runScript(script: Script, argumentTokens: List<String>, hackerSate: HackerState) {
         val type = scriptTypeService.getById(script.typeId)
 
-        val executionProblems = type.effects.mapNotNull { effect ->
+        val executions: List<ScriptExecution> = type.effects.map { effect ->
             val effectService = scriptEffectLookup.getForType(effect.type)
-            effectService.checkCanExecute(effect, tokens, hackerSate)
+            effectService.prepareExecution(effect, argumentTokens, hackerSate)
         }
 
-        if (executionProblems.isNotEmpty()) {
-            executionProblems.forEach { connectionService.replyTerminalReceive(it) }
+        val errorMessages = executions.mapNotNull { it.errorMessage }
+        if (errorMessages.isNotEmpty()) {
+            errorMessages.forEach {
+                connectionService.replyTerminalReceive(it)
+            }
             connectionService.replyTerminalSetLocked(false)
             return
         }
 
-        val terminalLockState = runEffects(type, tokens, hackerSate)
-        ramService.useScript(hackerSate.userId, type.size)
-        scriptService.markAsUsedAndNotify(script)
-
-        if (terminalLockState == TerminalLockState.UNLOCK) {
-            connectionService.replyTerminalSetLocked(false)
-        }
-    }
-
-
-    private fun runEffects(type: ScriptType, tokens: List<String>, state: HackerState): TerminalLockState {
-        if (type.effects.isEmpty()) {
+        val lockStates: List<TerminalLockState> = executions.map { it.executionMethod }.map { it() }
+        if (lockStates.isEmpty()) {
             connectionService.replyTerminalReceive("Script executed successfully, but it has no effects.")
         }
 
-        val unlockTerminalFromEffects = type.effects.map { effect ->
-            val effectService = scriptEffectLookup.getForType(effect.type)
-            effectService.execute(effect, tokens, state)
-        }
+        ramService.useScript(hackerSate.userId, type.size)
+        scriptService.markAsUsedAndNotify(script)
 
-        if (unlockTerminalFromEffects.any { it == TerminalLockState.LOCK } ) return TerminalLockState.LOCK
-        return TerminalLockState.UNLOCK
+        if (lockStates.all { it == TerminalLockState.UNLOCK }) {
+            connectionService.replyTerminalSetLocked(false)
+        }
     }
 }

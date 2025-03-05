@@ -86,6 +86,4 @@ data class TraverseNode(
         return network + n + this
     }
 
-
-
 }

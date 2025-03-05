@@ -6,7 +6,6 @@ export interface ScriptStatistics {
     name: string,
     owned: number,
     loaded: number,
-    loading: number,
     freeReceive: number,
 }
 

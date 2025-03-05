@@ -99,7 +99,9 @@ class CommandMoveService(
 
     @ScheduledTask
     fun moveArrive(nodeId: String, userId: String, runId: String ) {
-        val state = hackerStateEntityService.retrieve(userId).toRunState()
+        val hackerState = hackerStateEntityService.retrieve(userId)
+        if (hackerState.runId == null || hackerState.runId != runId) return // hacker has left the original run
+        val runState = hackerState.toRunState()
 
         val run = runEntityService.getByRunId(runId)
         val nodeStatus = run.nodeScanById[nodeId]!!.status
@@ -109,7 +111,7 @@ class CommandMoveService(
         } else {
             connectionService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to timingsService.INSIDE_SCAN)
 
-            userTaskRunner.queueInTicksForSite("internal-scan", state.siteId, timingsService.INSIDE_SCAN.totalTicks) {
+            userTaskRunner.queueInTicksForSite("internal-scan", runState.siteId, timingsService.INSIDE_SCAN.totalTicks) {
                 scanService.hackerArrivedNodeScan(nodeId, userId, runId)
                 arriveComplete(nodeId, userId, runId)
             }

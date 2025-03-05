@@ -29,6 +29,7 @@ enum class ScriptEffectType{
     DECREASE_FUTURE_TIMERS,
     HIDDEN_EFFECTS,
     SITE_STATS,
+    JUMP_TO_NODE,
 }
 
 interface ScriptTypeRepository : CrudRepository<ScriptType, ScriptTypeId> {

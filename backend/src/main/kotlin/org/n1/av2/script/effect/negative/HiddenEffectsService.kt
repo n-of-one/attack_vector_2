@@ -2,6 +2,7 @@ package org.n1.av2.script.effect.negative
 
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.script.effect.ScriptEffectInterface
+import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.type.ScriptEffect
 import org.springframework.stereotype.Service
@@ -18,8 +19,8 @@ class HiddenEffectsService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState) = null
-
-    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState) = TerminalLockState.UNLOCK
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState) = ScriptExecution {
+        TerminalLockState.UNLOCK
+    }
 
 }

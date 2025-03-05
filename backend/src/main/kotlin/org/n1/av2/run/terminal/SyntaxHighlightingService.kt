@@ -65,7 +65,7 @@ class SyntaxHighlightingService(
         syntaxInside["view"] = Syntax("t_b")
         syntaxInside["hack"] = Syntax("t_b", "t_primary")
         syntaxInside["password"] = Syntax("t_b", "t_primary")
-        syntaxInside["run"] = Syntax("t_b", "t_primary")
+        syntaxInside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
 
     }
 

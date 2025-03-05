@@ -13,6 +13,7 @@ export enum EffectType {
     SPEED_UP_RESET_TIMER = "SPEED_UP_RESET_TIMER",
     SCAN_ICE_NODE = "SCAN_ICE_NODE",
     SITE_STATS = "SITE_STATS",
+    JUMP_TO_NODE = "JUMP_TO_NODE",
 }
 
 export interface Effect {

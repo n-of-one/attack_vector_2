@@ -84,12 +84,12 @@ const ScriptStatisticsPanel = () => {
             return (<div className="row text">
                     <div className="col-lg-2">{line.name}</div>
                     <div className="col-lg-2"><DarkZero value={line.owned}/></div>
-                    <div className="col-lg-2"><DarkZero value={line.loaded}/> <DarkZero value={line.loading} text={`(${line.loading})`}/></div>
+                    <div className="col-lg-2"><DarkZero value={line.loaded}/></div>
                     <div className="col-lg-4"><DarkZero value={line.freeReceive}/></div>
                 </div>
             )
         })
-    const texts = sortedList.map(line => `${line.name}~${line.owned}~${line.loaded}~(${line.loading})~${line.freeReceive}`)
+    const texts = sortedList.map(line => `${line.name}~${line.owned}~${line.loaded}~${line.freeReceive}`)
     const hr = <Hr height={4} marginTop={2}/>
 
     return (
@@ -97,7 +97,7 @@ const ScriptStatisticsPanel = () => {
             <div className="row text">
                 <div className="col-lg-2">Type</div>
                 <div className="col-lg-2">Owned</div>
-                <div className="col-lg-2">Loaded (Loading)</div>
+                <div className="col-lg-2">Loaded</div>
                 <div className="col-lg-4">Available per event for free</div>
             </div>
         </DataTable>

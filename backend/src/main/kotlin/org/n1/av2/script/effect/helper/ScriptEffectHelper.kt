@@ -10,7 +10,7 @@ class ScriptEffectHelper(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
 
-    fun checkHackerAtNonShutdownSite(hackerState: HackerState): String? {
+    fun checkAtNonShutdownSite(hackerState: HackerState): String? {
         if (hackerState.activity == HackerActivity.OFFLINE || hackerState.siteId == null) {
             return "You must run this script when hacking a site."
         }
@@ -18,6 +18,20 @@ class ScriptEffectHelper(
         val siteState = sitePropertiesEntityService.getBySiteId(hackerState.siteId)
         if (siteState.shutdownEnd != null) {
             return "Cannot run this script while the site is shut down."
+        }
+        return null
+    }
+
+    fun checkInRun(state: HackerState): String? {
+        if (state.runId != null) {
+            return "You must run this script when hacking a site."
+        }
+        return null
+    }
+
+    fun checkInNode(hackerState: HackerState): String? {
+        if (hackerState.activity == HackerActivity.OUTSIDE || hackerState.currentNodeId == null) {
+            return "You can only run this script inside a node."
         }
         return null
     }

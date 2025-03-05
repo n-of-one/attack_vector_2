@@ -5,7 +5,9 @@ import org.n1.av2.layer.Layer
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
+import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
+import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
@@ -18,9 +20,10 @@ class SiteStatsEffectService(
     private val nodeEntityService: NodeEntityService,
     private val connectionService: ConnectionService,
     private val themeService: ThemeService,
-) : ScriptEffectInterface {
+    private val scriptEffectHelper: ScriptEffectHelper,
+    ) : ScriptEffectInterface {
 
-    override val name = "Sitestats"
+    override val name = "Site stats"
     override val defaultValue = null
     override val gmDescription = "Show the number of nodes, cores, tripwires and for each ICE type the number and highest strength."
 
@@ -30,27 +33,27 @@ class SiteStatsEffectService(
         return null
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
-        return null
-    }
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+        scriptEffectHelper.checkInRun(hackerState)?.let { return ScriptExecution(it) }
 
-    override fun execute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): TerminalLockState {
-        connectionService.replyTerminalReceive("", "Site stats", "----------")
+        return ScriptExecution{
+            connectionService.replyTerminalReceive("", "Site stats", "----------")
 
-        val nodes = nodeEntityService.getAll(hackerState.siteId!!)
-        connectionService.replyTerminalReceive("Nodes: ${nodes.size}", "")
+            val nodes = nodeEntityService.getAll(hackerState.siteId!!)
+            connectionService.replyTerminalReceive("Nodes: ${nodes.size}", "")
 
-        reportCountOf(nodes, LayerType.CORE, "", 23)
-        reportCountOf(nodes, LayerType.TRIPWIRE, "", 19)
-        reportCountOf(nodes, LayerType.TAR_ICE, "(tar)", 14)
-        reportCountOf(nodes, LayerType.TANGLE_ICE, "(tangle)", 8)
-        reportCountOf(nodes, LayerType.PASSWORD_ICE, "(password)", 6, )
-        reportCountOf(nodes, LayerType.WORD_SEARCH_ICE, "(word search)", 5)
-        reportCountOf(nodes, LayerType.NETWALK_ICE, "(netwalk)", 3)
-        reportCountOf(nodes, LayerType.SWEEPER_ICE, "(minesweeper)", 0)
+            reportCountOf(nodes, LayerType.CORE, "", 23)
+            reportCountOf(nodes, LayerType.TRIPWIRE, "", 19)
+            reportCountOf(nodes, LayerType.TAR_ICE, "(tar)", 14)
+            reportCountOf(nodes, LayerType.TANGLE_ICE, "(tangle)", 8)
+            reportCountOf(nodes, LayerType.PASSWORD_ICE, "(password)", 6, )
+            reportCountOf(nodes, LayerType.WORD_SEARCH_ICE, "(word search)", 5)
+            reportCountOf(nodes, LayerType.NETWALK_ICE, "(netwalk)", 3)
+            reportCountOf(nodes, LayerType.SWEEPER_ICE, "(minesweeper)", 0)
 
-        connectionService.replyTerminalReceive("")
-        return TerminalLockState.UNLOCK
+            connectionService.replyTerminalReceive("")
+            TerminalLockState.UNLOCK
+        }
     }
 
     private fun reportCountOf(nodes: List<Node>, type: LayerType, typeText: String = "", padding: Int = 0) {

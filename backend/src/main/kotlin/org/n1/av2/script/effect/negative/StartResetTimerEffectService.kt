@@ -5,6 +5,7 @@ import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.effect.ScriptEffectInterface
+import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
@@ -32,11 +33,15 @@ class StartResetTimerEffectService(
         return effect.value.validateDuration()
     }
 
-    override fun checkCanExecute(effect: ScriptEffect, tokens: List<String>, hackerState: HackerState): String? {
-        return scriptEffectHelper.checkHackerAtNonShutdownSite(hackerState)
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+        scriptEffectHelper.checkAtNonShutdownSite(hackerState)?.let { return ScriptExecution(it) }
+
+        return ScriptExecution  {
+            execute(effect, hackerState)
+        }
     }
 
-    override fun execute(effect: ScriptEffect, strings: List<String>, hackerState: HackerState): TerminalLockState {
+    fun execute(effect: ScriptEffect, hackerState: HackerState): TerminalLockState {
         val siteId = hackerState.siteId!!
         val siteTimers = timerEntityService.findByTargetSiteId(siteId)
         val hasScriptSiteShutdown = siteTimers.any { it.label == TimerLabel.SCRIPT_SITE_SHUTDOWN }
