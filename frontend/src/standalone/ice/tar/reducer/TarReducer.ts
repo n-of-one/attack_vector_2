@@ -7,13 +7,11 @@ export const TAR_BEGIN = "TAR_BEGIN"
 
 export interface TarState {
     strength: IceStrength,
-    hacked: boolean,
     uiState: "HIDDEN" | "VISIBLE",
 }
 
 const defaultState: TarState = {
     strength: IceStrength.AVERAGE,
-    hacked: false,
     uiState: HIDDEN,
 }
 
@@ -32,7 +30,6 @@ export const tarStateReducer = (state: TarState = defaultState, action: any): Ta
 const enter =  (state: TarState, action: any): TarState => {
     return {
         strength: action.data.strength,
-        hacked: action.data.hacked,
         uiState: HIDDEN,
     }
 }

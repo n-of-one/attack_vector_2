@@ -11,8 +11,8 @@ import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.enums.IceStrength
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
-import kotlin.system.measureNanoTime
 
+@Suppress("unused")
 private class TangleLineSegment(val x1: Int, val y1: Int, val x2: Int, val y2: Int, val id: String)
 
 @Service
@@ -37,11 +37,8 @@ class TangleService(
         val points: MutableList<TanglePoint>,
         val lines: List<TangleLine>,
         val clusters: Int,
-        val hacked: Boolean,
         val quickPlaying: Boolean,
     )
-
-    private val logger = mu.KotlinLogging.logger {}
 
     fun findOrCreateIceByLayerId(layer: TangleIceLayer): TangleIceStatus {
         return tangleIceStatusRepo.findByLayerId(layer.id) ?: createTangleIce(layer)
@@ -69,13 +66,13 @@ class TangleService(
         val tangleStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
         val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
-        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, layer.hacked, quickPlaying)
+        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, quickPlaying)
         connectionService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         runService.enterNetworkedApp(iceId)
     }
     // Puzzle solving //
 
-    data class TanglePointMoved(val id: String, val x: Int, val y: Int, val solved: Boolean)
+    data class TanglePointMoved(val id: String, val x: Int, val y: Int)
 
     fun move(command: TangleIceController.TanglePointMoveInput) {
         val x = keepInPlayArea(command.x, X_SIZE)
@@ -88,15 +85,13 @@ class TangleService(
         tangleStatus.points.add(newPoint)
         tangleIceStatusRepo.save(tangleStatus)
 
-        val solved = tangleSolved(tangleStatus)
-        if (solved) {
-            hackedUtil.iceHacked(tangleStatus.layerId, 70)
-        }
-
-        val message = TanglePointMoved(command.pointId, x, y, solved)
+        val message = TanglePointMoved(command.pointId, x, y)
         connectionService.toIce(command.iceId, ServerActions.SERVER_TANGLE_POINT_MOVED, message)
 
-
+        val solved = tangleSolved(tangleStatus)
+        if (solved) {
+            hackedUtil.iceHacked(command.iceId, tangleStatus.layerId, 70)
+        }
     }
 
     private fun keepInPlayArea(position: Int, size: Int): Int {
@@ -107,16 +102,9 @@ class TangleService(
 
 
     private fun tangleSolved(tangleStatus: TangleIceStatus): Boolean {
-
         val segments = toSegments(tangleStatus)
 
-        var solved: Boolean?
-        val nanos = measureNanoTime {
-            solved = tangleSolvedInternal(segments)
-        }
-        logger.debug("Measure intersections of ${tangleStatus.points.size} took ${nanos} nanos")
-
-        return solved!!
+        return tangleSolvedInternal(segments)
     }
 
     private fun toSegments(tangleStatus: TangleIceStatus): List<TangleLineSegment> {
@@ -130,10 +118,8 @@ class TangleService(
 
     private fun tangleSolvedInternal(segments: List<TangleLineSegment>): Boolean {
         val uncheckedSegments = segments.toMutableList()
-        var solved = true
         while (!uncheckedSegments.isEmpty()) {
             val segment_1 = uncheckedSegments.removeAt(0)
-
 
             uncheckedSegments.forEach { segment_2 ->
                 if (!connected(segment_1, segment_2)) {
@@ -143,12 +129,12 @@ class TangleService(
                     )
 
                     if (intersect) {
-                        solved = false
+                        return false
                     }
                 }
             }
         }
-        return solved
+        return true
     }
 
     private fun connected(segment_1: TangleLineSegment, segment_2: TangleLineSegment): Boolean {

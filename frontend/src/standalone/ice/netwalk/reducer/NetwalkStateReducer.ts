@@ -8,13 +8,11 @@ export const NETWALK_BEGIN = "NETWALK_BEGIN"
 
 export interface NetwalkState {
     strength: IceStrength,
-    hacked: boolean,
     uiState: "HIDDEN" | "UNLOCKED"
 }
 
 const defaultState: NetwalkState = {
     strength: IceStrength.AVERAGE,
-    hacked: false,
     uiState: "HIDDEN"
 }
 
@@ -22,7 +20,7 @@ export const netwalkStateReducer = (state: NetwalkState = defaultState, action: 
 
     switch (action.type) {
         case SERVER_NETWALK_ENTER:
-            return enter(state, action as unknown as NetwalkEnterFromServer)
+            return enter(action as unknown as NetwalkEnterFromServer)
         case NETWALK_BEGIN:
             return { ...state, uiState: "UNLOCKED" }
         default:
@@ -34,10 +32,9 @@ interface NetwalkEnterFromServer {
     data: ServerEnterIceNetwalk
 }
 
-const enter =  (state: NetwalkState, action: NetwalkEnterFromServer): NetwalkState => {
+const enter =  (action: NetwalkEnterFromServer): NetwalkState => {
     return {
         strength: action.data.strength,
-        hacked: action.data.hacked,
         uiState: "HIDDEN"
     }
 }

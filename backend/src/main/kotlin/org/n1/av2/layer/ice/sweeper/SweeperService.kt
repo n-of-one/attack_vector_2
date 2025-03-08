@@ -32,13 +32,13 @@ class SweeperService(
 
     private val sweeperCreator = SweeperCreator()
 
+    @Suppress("unused")
     class SweeperEnter(
         val cells: List<String>,
         val modifiers: List<String>,
         val strength: IceStrength,
         val blockedUserIds: List<String>,
         val minesLeft: Int,
-        val hacked: Boolean,
         val quickPlaying: Boolean,
     )
 
@@ -61,7 +61,7 @@ class SweeperService(
         val minesLeft = minesLeft(sweeper)
         val quickPlaying =  configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
 
-        val sweeperEnter = SweeperEnter(sweeper.cells, sweeper.modifiers, sweeper.strength, sweeper.blockedUserIds, minesLeft, false, quickPlaying)
+        val sweeperEnter = SweeperEnter(sweeper.cells, sweeper.modifiers, sweeper.strength, sweeper.blockedUserIds, minesLeft, quickPlaying)
         connectionService.reply(ServerActions.SERVER_SWEEPER_ENTER, sweeperEnter)
         runService.enterNetworkedApp(iceId)
     }
@@ -93,9 +93,10 @@ class SweeperService(
             modify(sweeper, x, y, action)
         }
 
-        if (isCompleted(sweeper)) handleSolved(sweeper)
+        if (isCompleted(sweeper)) handleSolved(iceId, sweeper)
     }
 
+    @Suppress("unused")
     private class SweeperModifyMessage(val cells: List<String>, val action: SweeperModifyAction)
 
     private fun modify(sweeper: SweeperIceStatus, x: Int, y: Int, action: SweeperModifyAction) {
@@ -197,12 +198,10 @@ class SweeperService(
     }
 
 
-    class SweeperSolvedMessage(val sweeperId: String)
-    private fun handleSolved(sweeper: SweeperIceStatus) {
+    private fun handleSolved(iceId: String, sweeper: SweeperIceStatus) {
         val solvedSweeper = sweeper.copy(hacked = true)
         sweeperIceStatusRepo.save(solvedSweeper)
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_SOLVED, SweeperSolvedMessage(sweeper.id))
-        hackedUtil.iceHacked(sweeper.layerId, 4 * SECONDS_IN_TICKS)
+        hackedUtil.iceHacked(iceId, sweeper.layerId, 4 * SECONDS_IN_TICKS)
     }
 
     class SweeperResetMessage(val userName: String)
@@ -222,6 +221,7 @@ class SweeperService(
         connectionService.toIce(iceId, ServerActions.SERVER_SWEEPER_RESET_STOP, SweeperResetMessage(currentUser.userEntity.name))
     }
 
+    @Suppress("unused")
     class SweeperResetCompleteMessage(val userName: String, val newIceId: String)
     fun completeReset(iceId: String) {
         val sweeper = sweeperIceStatusRepo.findById(iceId).getOrElse {
@@ -254,8 +254,6 @@ class SweeperService(
         val updatedIceStatus = iceStatus.copy(blockedUserIds = updatedBlockedUserIds)
         sweeperIceStatusRepo.save(updatedIceStatus)
         connectionService.toIce(iceStatus.id, ServerActions.SERVER_SWEEPER_UNBLOCK_USER, SweeperBlockUserMessage(currentUser.userId, currentUser.userEntity.name))
-
     }
-
 
 }

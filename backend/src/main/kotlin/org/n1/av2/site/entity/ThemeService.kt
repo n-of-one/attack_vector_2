@@ -6,23 +6,32 @@ import org.springframework.stereotype.Service
 @Service
 class ThemeService {
 
-    fun getDefaultName(serviceType: LayerType): String {
-        return when(serviceType) {
-            LayerType.OS -> "OS"
-            LayerType.TEXT -> "Database"
-            LayerType.KEYSTORE -> "Keystore"
-            LayerType.TRIPWIRE -> "Tripwire"
-            LayerType.CORE -> "Core"
+    fun themeName(type: LayerType) = when (type) {
+        LayerType.OS -> "OS"
+        LayerType.TEXT -> "Database"
+        LayerType.KEYSTORE -> "Keystore"
+        LayerType.TRIPWIRE -> "Tripwire"
+        LayerType.CORE -> "Core"
 
-            LayerType.STATUS_LIGHT -> "Status Light"
-            LayerType.LOCK -> "Lock"
+        LayerType.STATUS_LIGHT -> "Status Light"
+        LayerType.LOCK -> "Lock"
 
-            LayerType.PASSWORD_ICE -> "Rahasy" // mystery in Hindi
-            LayerType.TANGLE_ICE -> "Gaanth" // knot in Hindi
-            LayerType.WORD_SEARCH_ICE -> "Jaal" // grid in Hindi
-            LayerType.NETWALK_ICE -> "Sanrachana" // structure in Hindi
-            LayerType.TAR_ICE -> "Tar" // In Hindi this would be "taar" but in this case it's nice that it's clear in English
-            LayerType.SWEEPER_ICE -> "Visphotak" // explosive in Hindi
-        }
+        LayerType.PASSWORD_ICE -> "Rahasy" // mystery in Hindi
+        LayerType.TANGLE_ICE -> "Gaanth" // knot in Hindi
+        LayerType.WORD_SEARCH_ICE -> "Jaal" // grid in Hindi
+        LayerType.NETWALK_ICE -> "Sanrachana" // structure in Hindi
+        LayerType.TAR_ICE -> "Tar" // In Hindi this would be "taar" but in this case it's nice that it's clear in English
+        LayerType.SWEEPER_ICE -> "Visphotak" // explosive in Hindi
     }
+
+    fun iceSimpleName(type: LayerType): String = when (type) {
+        LayerType.PASSWORD_ICE -> "static password"
+        LayerType.TANGLE_ICE -> "tangle"
+        LayerType.WORD_SEARCH_ICE -> "word search"
+        LayerType.NETWALK_ICE -> "netwalk"
+        LayerType.TAR_ICE -> "tar"
+        LayerType.SWEEPER_ICE -> "minesweeper"
+        else -> error("Not ICE: $type")
+    }
+
 }

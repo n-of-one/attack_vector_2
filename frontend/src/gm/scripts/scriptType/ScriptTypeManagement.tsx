@@ -12,6 +12,8 @@ import {GmRootState} from "../../GmRootReducer";
 import {CloseButton} from "../../../common/component/CloseButton";
 import {DataTable} from "../../../common/component/dataTable/DataTable";
 import {Hr} from "../../../common/component/dataTable/Hr";
+import {DropDownSaveInput} from "../../../common/component/DropDownSaveInput";
+import {LayerType} from "../../../common/enums/LayerTypes";
 
 
 export const ScriptTypeManagement = () => {
@@ -136,8 +138,9 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.SCAN_ICE_NODE}>Scan node with ICE</option>
                         <option value={EffectType.JUMP_TO_NODE}>Jump to node</option>
                         <option value={EffectType.JUMP_TO_HACKER_IGNORING_ICE}>Jump to hacker, ignoring ICE</option>
-                        <option value={EffectType.SWEEPER_UNBLOCK}>Sweeper unblock</option>
-                        <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search show next words</option>
+                        <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
+                        <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
+                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
                     </select>
                 </div>
                 <div className="col-lg-1">
@@ -203,15 +206,6 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
         webSocketConnection.send("/gm/scriptType/deleteEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber})
     }
 
-    const editValue = effect.value ? (<div className="col-lg-2">
-        <TextSaveInput className="form-control"
-                       placeholder="" value={effect.value}
-                       save={(value) => {
-                           webSocketConnection.send("/gm/scriptType/editEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber, value})
-                       }}
-                       readonly={false}/>
-    </div>) : <div className="col-lg-2"/>
-
 
     return <>
         <div className="row text">
@@ -227,7 +221,7 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
             <div className={`col-lg-6`}>
                 {effect.name}
             </div>
-            {editValue}
+            <EffectValue effect={effect} scriptType={scriptType}/>
 
             <div className="col-lg-1" style={{paddingTop: "9px"}}>
                 <SilentLink onClick={deleteEffect} title="Remove effect">
@@ -238,6 +232,66 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
     </>
 
 }
+
+const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
+    switch (effect.type) {
+        case EffectType.HIDDEN_EFFECTS:
+        case EffectType.SITE_STATS:
+        case EffectType.JUMP_TO_NODE:
+        case EffectType.JUMP_TO_HACKER_IGNORING_ICE:
+            return <div className="col-lg-2"/>
+
+        case EffectType.DECREASE_FUTURE_TIMERS:
+        case EffectType.START_RESET_TIMER:
+        case EffectType.SPEED_UP_RESET_TIMER:
+        case EffectType.SCAN_ICE_NODE:
+        case EffectType.SWEEPER_UNBLOCK:
+        case EffectType.WORD_SEARCH_NEXT_WORDS:
+            return <EffectValueText effect={effect} scriptType={scriptType}/>
+        case EffectType.AUTO_HACK_SPECIFIC_ICE:
+            return <EffectValueIceType effect={effect} scriptType={scriptType}/>
+        default:
+            return <div>Unknown effect type</div>
+    }
+
+
+}
+
+const EffectValueText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
+    return <div className="col-lg-2">
+        <TextSaveInput className="form-control"
+                       placeholder="" value={effect.value as string}
+                       save={(value) => {
+                           webSocketConnection.send("/gm/scriptType/editEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber, value})
+                       }}
+                       readonly={false}/>
+    </div>
+}
+
+const EffectValueIceType = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
+    return <div className="col-lg-2">
+        <DropDownSaveInput className="form-control"
+                           selectedValue={effect.value as string}
+                           save={(value) => {
+                               webSocketConnection.send("/gm/scriptType/editEffect", {
+                                   "scriptTypeId": scriptType.id,
+                                   "effectNumber": effect.effectNumber,
+                                   value
+                               })
+                           }}
+                           readonly={false}>
+            <>
+                <option value={LayerType.PASSWORD_ICE}>Password</option>
+                <option value={LayerType.TANGLE_ICE}>Tangle</option>
+                <option value={LayerType.WORD_SEARCH_ICE}>Word search</option>
+                <option value={LayerType.NETWALK_ICE}>Netwalk</option>
+                <option value={LayerType.TAR_ICE}>Tar</option>
+                <option value={LayerType.SWEEPER_ICE}>Minesweeper</option>
+            </>
+        </DropDownSaveInput>
+    </div>
+}
+
 
 interface ScriptTypesListProps {
     onSelect: (scriptType: ScriptType) => void
@@ -253,16 +307,16 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
 
 
     return (<>
-            <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={35} hr={hr}>
-                <div className="row text">
-                    <div className="col-lg-2 strong">Script type</div>
-                    <div className="col-lg-2 strong">Effects</div>
-                    <div className="col-lg-1 strong">Size</div>
-                    <div className="col-lg-2 strong">Default price</div>
-                </div>
+        <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={35} hr={hr}>
+            <div className="row text">
+                <div className="col-lg-2 strong">Script type</div>
+                <div className="col-lg-2 strong">Effects</div>
+                <div className="col-lg-1 strong">Size</div>
+                <div className="col-lg-2 strong">Default price</div>
+            </div>
 
-            </DataTable>
-        </>)
+        </DataTable>
+    </>)
 }
 
 const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptType: ScriptType) => void }) => {

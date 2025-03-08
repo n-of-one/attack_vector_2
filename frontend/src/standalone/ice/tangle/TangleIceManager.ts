@@ -55,12 +55,10 @@ class TangleIceManager extends GenericIceManager {
     }
 
     moved(data: TanglePointMoved) {
-
-        // state.run.ice.currentIce
         tangleIceCanvas.serverMovedPoint(data)
-        if (!data.solved) {
-            return
-        }
+    }
+
+    serverSentIceHacked() {
         notify({type: "ok", title: "Result", message: "Ice hacked"})
         this.displayTerminal(0, "")
         this.displayTerminal(20, "Decryption complete")

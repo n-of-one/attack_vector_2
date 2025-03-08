@@ -62,7 +62,7 @@ class NodeEntityService(
     }
 
     private fun createOsLayer(nodeId: String): Layer {
-        val name = themeService.getDefaultName(LayerType.OS)
+        val name = themeService.themeName(LayerType.OS)
         val layerId = createOsLayerId(nodeId)
         return OsLayer(layerId, name)
     }
@@ -203,7 +203,7 @@ class NodeEntityService(
         val level = node.layers.size
         val layerId = createLayerId(node)
 
-        val defaultName = themeService.getDefaultName(layerType)
+        val defaultName = themeService.themeName(layerType)
 
         return when (layerType) {
             LayerType.TEXT -> TextLayer(layerId, level, defaultName)

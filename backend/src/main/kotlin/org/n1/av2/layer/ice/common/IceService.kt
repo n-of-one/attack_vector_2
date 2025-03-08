@@ -13,9 +13,12 @@ import org.n1.av2.layer.ice.tar.TarService
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchService
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.site.entity.ThemeService
+import org.n1.av2.site.entity.enums.LayerType
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
+import kotlin.reflect.KClass
 
 // To prevent circular bean dependencies
 @Configuration
@@ -26,7 +29,7 @@ class InitIceService(
     val wordSearchService: WordSearchService,
     val netwalkIceService: NetwalkIceService,
     val sweeperService: SweeperService,
-    val tarService: TarService
+    val tarService: TarService,
 ) {
 
     @PostConstruct
@@ -36,14 +39,15 @@ class InitIceService(
         iceService.wordSearchService = wordSearchService
         iceService.netwalkIceService = netwalkIceService
         iceService.tarService = tarService
-        iceService. sweeperService = sweeperService
+        iceService.sweeperService = sweeperService
     }
 }
 
 @Service
 class IceService(
     private val nodeEntityService: NodeEntityService,
-) {
+    private val themeService: ThemeService,
+    ) {
 
     lateinit var tangleService: TangleService
     lateinit var authAppService: AuthAppService
@@ -87,5 +91,15 @@ class IceService(
         iceLayers.filterIsInstance<SweeperIceLayer>().forEach { sweeperService.deleteByLayerId(it.id) }
     }
 
+    fun klassFor(layerType: LayerType): KClass<out IceLayer> = when (layerType) {
+        LayerType.TANGLE_ICE -> TangleIceLayer::class
+        LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer::class
+        LayerType.NETWALK_ICE -> NetwalkIceLayer::class
+        LayerType.TAR_ICE -> TarIceLayer::class
+        LayerType.PASSWORD_ICE -> PasswordIceLayer::class
+        LayerType.SWEEPER_ICE -> SweeperIceLayer::class
+        else -> error("Unsupported ice layer type: $layerType")
+    }
 
+    fun nameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE (${themeService.iceSimpleName(layerType)})"
 }

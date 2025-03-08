@@ -57,8 +57,7 @@ class CommandRunScriptService(
 //        ramService.useScript(hackerSate.userId, type.size)
 //        scriptService.markAsUsedAndNotify(script)
 
-        if (lockStates.all { it == TerminalLockState.UNLOCK }) {
-            connectionService.replyTerminalSetLocked(false)
-        }
+        val lockedState = lockStates.all { it == TerminalLockState.LOCK }
+        connectionService.replyTerminalSetLocked(lockedState)
     }
 }

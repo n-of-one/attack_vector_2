@@ -2,6 +2,7 @@ import {Store} from "redux";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {IceStrength} from "../../../common/model/IceStrength";
 import {tarManager} from "./component/TarManager";
+import {SERVER_ICE_HACKED} from "../../../common/server/GenericServerActionProcessor";
 
 export const SERVER_TAR_ENTER = "SERVER_TAR_ENTER"
 export const SERVER_TAR_UPDATE = "SERVER_TAR_UPDATE"
@@ -28,5 +29,7 @@ export const initTarServerActions = (store: Store) => {
     webSocketConnection.addAction(SERVER_TAR_UPDATE, (data: TarStatusUpdate) => {
         tarManager.serverSentUpdate(data)
     })
-
+    webSocketConnection.addAction(SERVER_ICE_HACKED, () => {
+        tarManager.serverSentIceHacked()
+    })
 }

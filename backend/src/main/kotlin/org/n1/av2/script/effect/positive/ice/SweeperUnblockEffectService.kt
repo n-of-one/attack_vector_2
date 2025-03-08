@@ -2,7 +2,6 @@ package org.n1.av2.script.effect.positive.ice
 
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.layer.ice.common.IceLayer
-import org.n1.av2.layer.ice.sweeper.SweeperIceLayer
 import org.n1.av2.layer.ice.sweeper.SweeperIceStatusRepo
 import org.n1.av2.layer.ice.sweeper.SweeperService
 import org.n1.av2.platform.connection.ConnectionService
@@ -12,6 +11,7 @@ import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
+import org.n1.av2.site.entity.enums.LayerType
 import org.springframework.stereotype.Service
 
 
@@ -38,7 +38,7 @@ class SweeperUnblockEffectService(
     override fun validate(effect: ScriptEffect) = null
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        return scriptEffectHelper.runForIceLayer("Visphotak ICE (minesweeper)", SweeperIceLayer::class, argumentTokens, hackerState) { layer: IceLayer ->
+        return scriptEffectHelper.runForIceLayer(LayerType.SWEEPER_ICE, argumentTokens, hackerState) { layer: IceLayer ->
             val iceStatus = sweeperIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
             sweeperService.unblockHacker(iceStatus, currentUserService.userId)
             connectionService.replyTerminalReceive("Hacker unblocked.")

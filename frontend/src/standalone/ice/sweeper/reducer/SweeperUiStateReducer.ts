@@ -25,7 +25,6 @@ export enum SweeperResetState {
 export interface SweeperUiState {
     strength: IceStrength,
     mode: UiMode,
-    hacked: boolean,
     resetState: SweeperResetState,
     resetProgress: number,
     resetStartMillis: number,
@@ -35,7 +34,6 @@ export interface SweeperUiState {
 
 const defaultState: SweeperUiState = {
     strength: IceStrength.UNKNOWN,
-    hacked: false,
     mode: HIDDEN,
     resetState: SweeperResetState.IDLE,
     resetProgress: 0,
@@ -71,9 +69,6 @@ export const sweeperUiStateReducer = (state: SweeperUiState = defaultState, acti
             return blockUser(state, action.data)
         case SERVER_SWEEPER_UNBLOCK_USER:
             return unblockUser(state, action.data)
-        case SERVER_SWEEPER_SOLVED: {
-            return {...state, hacked: true, minesLeft: 0}
-        }
         default:
             return state
     }
@@ -86,7 +81,6 @@ const enter =  (action: SweeperEnterFromServer): SweeperUiState => {
     return {
         ...defaultState,
         strength: action.data.strength,
-        hacked: action.data.hacked,
         blockedUserIds: action.data.blockedUserIds,
         minesLeft: action.data.minesLeft
     }

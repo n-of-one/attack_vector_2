@@ -63,7 +63,7 @@ class SiteStatsEffectService(
         val padding = " ".repeat(padding)
 
         if (!type.ice) {
-            connectionService.replyTerminalReceive("${themeService.getDefaultName(type)}${padding}: ${count}")
+            connectionService.replyTerminalReceive("${themeService.themeName(type)}${padding}: ${count}")
             return
         }
 
@@ -75,6 +75,6 @@ class SiteStatsEffectService(
             .let { if (it != null) (it as IceLayer).strength else null}
         val strengthText = if(maxStrength != null) " (strongest: ${maxStrength.description})" else ""
 
-        connectionService.replyTerminalReceive("${themeService.getDefaultName(type)} ICE ${typeText}${padding}: ${count}${strengthText}")
+        connectionService.replyTerminalReceive("${themeService.themeName(type)} ICE ${typeText}${padding}: ${count}${strengthText}")
     }
 }

@@ -79,6 +79,7 @@ enum class ServerActions {
     SERVER_FLASH_PATROLLER,             // Clients show a patroller for a brief period of time (visual effect only)
 
     SERVER_REDIRECT_HACK_ICE,           // open a new window to start hacking ICE
+    SERVER_ICE_HACKED,                  // sent to ice screen to indicate ICE has been hacked.
     SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                 // change icon of node in run
 
@@ -106,7 +107,6 @@ enum class ServerActions {
     SERVER_SWEEPER_MODIFY,              // sent to everyone when a cell has been modified (revealed, flagged,... )
     SERVER_SWEEPER_BLOCK_USER,          // sent to everyone when a user is blocked because of exploding a cell
     SERVER_SWEEPER_UNBLOCK_USER,        // sent to everyone when a user is unblocked because of script or debug action
-    SERVER_SWEEPER_SOLVED,              // sent to everyone when the sweeper is solved
     SERVER_SWEEPER_RESET_START,         // sent to everyone when someone initiates reset
     SERVER_SWEEPER_RESET_STOP,          // sent to everyone when someone stops reset
     SERVER_SWEEPER_RESET_COMPLETE,      // sent to everyone when someone completes reset

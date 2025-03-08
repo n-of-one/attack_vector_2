@@ -54,11 +54,12 @@ class NetwalkIceService(
     }
 
 
-    class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, val wrapping: Boolean, val hacked: Boolean, val quickPlaying: Boolean)
+    @Suppress("unused")
+    class NetwalkEnter(val iceId: String, val cellGrid: List<List<NetwalkCell>>, val strength: IceStrength, val wrapping: Boolean, val quickPlaying: Boolean)
     fun enter(iceId: String) {
         val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
-        connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.wrapping, netwalk.hacked, quickPlaying))
+        connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.wrapping, quickPlaying))
         runService.enterNetworkedApp(iceId)
     }
 
@@ -81,12 +82,13 @@ class NetwalkIceService(
 
         netwalkIceStatusRepo.save(updatedNetWalk)
 
-        class NetwalkRotateUpdate(val iceId: String, val x: Int, val y: Int, val connected: List<Point>, val hacked: Boolean)
-        val message = NetwalkRotateUpdate(iceId, x, y, connectedList, hacked)
+        @Suppress("unused")
+        class NetwalkRotateUpdate(val iceId: String, val x: Int, val y: Int, val connected: List<Point>)
+        val message = NetwalkRotateUpdate(iceId, x, y, connectedList)
         connectionService.toIce(iceId, ServerActions.SERVER_NETWALK_NODE_ROTATED, message)
 
         if (hacked) {
-            hackedUtil.iceHacked(netwalk.layerId, 7 * SECONDS_IN_TICKS)
+            hackedUtil.iceHacked(iceId, netwalk.layerId, 7 * SECONDS_IN_TICKS)
         }
     }
 

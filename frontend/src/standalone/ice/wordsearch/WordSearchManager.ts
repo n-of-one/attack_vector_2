@@ -62,46 +62,43 @@ class WordSearchManager extends GenericIceManager {
 
     displayNextWord(wordIndex: number) {
         const rootState = this.store.getState() as WordSearchRootState
+        if (wordIndex >= rootState.puzzle.words.length ) return // ICE is hacked
         const nextWord = rootState.puzzle.words[wordIndex]
         const index = `${wordIndex + 1}/${rootState.puzzle.words.length}`
         this.displayTerminal(0, `Search fragment: [info]${nextWord}[/] ${index}`)
     }
 
     update(data: UpdateAction) {
-        if (!data.hacked) {
-            this.displayNextWord(data.wordIndex)
-        }
-        // warm up
+        this.displayNextWord(data.wordIndex)
         this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: ["x:x"]})
-        // end test
         data.lettersCorrect.forEach((letter: string) => {
             this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: [letter]})
         })
         data.lettersCorrect.forEach((letter: string) => {
             this.schedule.dispatch(1, {type: LETTER_CORRECT, positions: [letter]})
         })
+    }
 
-        if (data.hacked) {
-            const rootState = this.store.getState() as WordSearchRootState
-            const sizeY = rootState.puzzle.letterGrid.length
-            const sizeX = rootState.puzzle.letterGrid[0].length
+    serverSentIceHacked() {
+        const rootState = this.store.getState() as WordSearchRootState
+        const sizeY = rootState.puzzle.letterGrid.length
+        const sizeX = rootState.puzzle.letterGrid[0].length
 
-            for (let x = sizeX - 1; x >= 0; x--) {
-                const positions = []
-                for (let y = 0; y < sizeY; y++) {
-                    positions.push(`${x}:${y}`)
-                }
-                this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: positions})
+        for (let x = sizeX - 1; x >= 0; x--) {
+            const positions = []
+            for (let y = 0; y < sizeY; y++) {
+                positions.push(`${x}:${y}`)
             }
-            this.schedule.wait(25)
-
-            this.displayTerminal(0, "");
-            this.displayTerminal(20, "Memory analysis complete. Status: [strong ok]success");
-            this.displayTerminal(0, "");
-            this.displayTerminal(40, "[i primary]↼ Ice restored, access granted.");
-
-            this.processHacked()
+            this.schedule.dispatch(3, {type: LETTER_CORRECT_HIGHLIGHT, positions: positions})
         }
+        this.schedule.wait(25)
+
+        this.displayTerminal(0, "");
+        this.displayTerminal(20, "Memory analysis complete. Status: [strong ok]success");
+        this.displayTerminal(0, "");
+        this.displayTerminal(40, "[i primary]↼ Ice restored, access granted.");
+
+        this.processHacked()
     }
 }
 

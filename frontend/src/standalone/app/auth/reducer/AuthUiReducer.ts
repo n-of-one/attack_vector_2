@@ -2,8 +2,7 @@ import {AnyAction} from "redux";
 import {TICK} from "../../../../common/terminal/TerminalReducer";
 import {serverTime} from "../../../../common/server/ServerTime";
 import {AuthEnter, AuthStateUpdate, SERVER_AUTH_ENTER, SERVER_AUTH_PASSWORD_CORRECT, SERVER_AUTH_UPDATE} from "../AuthServerActionProcessor";
-
-export const ICE_PASSWORD_LOCK = "ICE_PASSWORD_LOCK";
+import {SERVER_ICE_HACKED} from "../../../../common/server/GenericServerActionProcessor";
 
 export const UI_STATE_UNLOCKED = "UI_STATE_UNLOCKED"
 export const UI_STATE_LOCKED = "UI_STATE_LOCKED"
@@ -27,12 +26,12 @@ export const defaultUi = {
     waitSeconds: 0,
     lockedUntil: "2019-08-26T15:38:40.9179757+02:00",
     type: "unknown",
-    attempts:  [],
+    attempts: [],
     hacked: false,
     showHint: false,
 }
 
-export const authUiReducer = (state : AuthAppUi = defaultUi, action: AnyAction): AuthAppUi => {
+export const authUiReducer = (state: AuthAppUi = defaultUi, action: AnyAction): AuthAppUi => {
 
     switch (action.type) {
         case TICK: {
@@ -43,28 +42,30 @@ export const authUiReducer = (state : AuthAppUi = defaultUi, action: AnyAction):
             return processEnterIce(action.data)
         case SERVER_AUTH_UPDATE:
             return processServerUpdate(action.data, state)
+        case SERVER_ICE_HACKED:
+            return processIceHacked(state)
         case SUBMIT_PASSWORD:
             return {...state, state: UI_STATE_SUBMITTING}
         case SERVER_AUTH_PASSWORD_CORRECT:
-        return { ...state, state: UI_STATE_PASSWORD_CORRECT}
+            return {...state, state: UI_STATE_PASSWORD_CORRECT}
         default:
             return state
     }
 }
 
 const processTick = (state: AuthAppUi): AuthAppUi => {
-    if (state.waitSeconds <= 0 ) {
+    if (state.waitSeconds <= 0) {
         return state;
     }
 
     const waitSeconds = calculateWaitSeconds(state)
     if (waitSeconds > 0) {
         return {...state, waitSeconds: waitSeconds}
-    }
-    else {
+    } else {
         return {...state, waitSeconds: 0, state: UI_STATE_UNLOCKED}
     }
 }
+
 
 const processEnterIce = (serverStatus: AuthEnter): AuthAppUi => {
     const waitSeconds = calculateWaitSeconds(serverStatus);
@@ -80,17 +81,24 @@ const processEnterIce = (serverStatus: AuthEnter): AuthAppUi => {
 
 const processServerUpdate = (stateUpdate: AuthStateUpdate, oldState: AuthAppUi): AuthAppUi => {
     const waitSeconds = calculateWaitSeconds(stateUpdate);
-    return {...oldState,
+    return {
+        ...oldState,
         waitSeconds: waitSeconds,
         lockedUntil: stateUpdate.lockedUntil,
         state: (waitSeconds > 0) ? UI_STATE_LOCKED : UI_STATE_UNLOCKED,
-        hacked: stateUpdate.hacked,
         attempts: stateUpdate.attempts,
         showHint: stateUpdate.showHint
     }
 }
 
-interface WithLockedUntil { lockedUntil: string}
+interface WithLockedUntil {
+    lockedUntil: string
+}
+
 const calculateWaitSeconds = (serverStatus: WithLockedUntil) => {
     return serverTime.secondsLeft(serverStatus.lockedUntil);
+}
+
+const processIceHacked = (oldState: AuthAppUi): AuthAppUi => {
+    return {...oldState, hacked: true}
 }

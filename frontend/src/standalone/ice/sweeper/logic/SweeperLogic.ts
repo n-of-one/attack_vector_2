@@ -50,7 +50,6 @@ export interface SweeperGameState {
     cells: SweeperCellType[][]
     modifiers: SweeperCellModifier[][]
     strength: IceStrength
-    hacked: boolean
     blockedUserIds: string[]
     minesLeft: number
 }

@@ -37,10 +37,9 @@ class NetwalkManager extends GenericIceManager {
 
     serverSentNodeRotated(data: NetwalkRotateUpdate) {
         netwalkCanvas.serverSentNodeRotated(data)
+    }
 
-        if (!data.hacked) {
-            return
-        }
+    serverSentIceHacked() {
         netwalkCanvas.finish()
         this.displayTerminal(10, "⇁ Configuration [ok]restored");
         this.displayTerminal(44, "");

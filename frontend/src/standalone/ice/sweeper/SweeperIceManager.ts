@@ -109,7 +109,7 @@ class SweeperIceManager extends GenericIceManager {
         throw new Error("unexpected state: " + modifier + " leftClick: " + leftClick)
     }
 
-    serverSolved() {
+    serverSentIceHacked() {
         this.solved = true
         sweeperCanvas.serverSolved(() => this.processHacked())
 

@@ -3,7 +3,7 @@ import {GenericIceManager} from "../common/GenericIceManager"
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer"
 import {terminalManager} from "../../../common/terminal/TerminalManager"
 import {ICE_PASSWORD_BEGIN} from "./reducer/PasswordReducer";
-import {AuthEnter, AuthStateUpdate} from "../../app/auth/AuthServerActionProcessor";
+import {AuthEnter} from "../../app/auth/AuthServerActionProcessor";
 
 
 class PasswordIceManager extends GenericIceManager {
@@ -34,23 +34,17 @@ class PasswordIceManager extends GenericIceManager {
         })
     }
 
-
     close() {
         this.schedule.clear()
     }
 
-    serverPasswordIceUpdate(serverIceState: AuthStateUpdate) {
-        if (!serverIceState.hacked) {
-            return
-        }
-
+    serverSentIceHacked() {
         this.displayTerminal(0, "")
         this.displayTerminal(20, "Password accepted")
         this.displayTerminal(40, "ICE grants access.")
 
         this.processHacked()
     }
-
 }
 
 export const passwordIceManager = new PasswordIceManager()

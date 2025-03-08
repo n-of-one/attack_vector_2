@@ -2,6 +2,7 @@ import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {IceStrength} from "../../../common/model/IceStrength";
 import {SERVER_NETWALK_ENTER, SERVER_NETWALK_NODE_ROTATED} from "./reducer/NetwalkStateReducer";
 import {netwalkManager} from "./NetwalkManager";
+import {SERVER_ICE_HACKED} from "../../../common/server/GenericServerActionProcessor";
 
 export interface NetwalkCell {
     "type": CellType,
@@ -59,4 +60,11 @@ export const initNetwalkServerActions = () => {
         netwalkManager.serverSentNodeRotated(data)
     })
 
+    webSocketConnection.addAction(SERVER_NETWALK_NODE_ROTATED, (data: NetwalkRotateUpdate) => {
+        netwalkManager.serverSentNodeRotated(data)
+    })
+
+    webSocketConnection.addAction(SERVER_ICE_HACKED, () => {
+        netwalkManager.serverSentIceHacked()
+    })
 }

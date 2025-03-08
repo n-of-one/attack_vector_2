@@ -87,17 +87,17 @@ class TarManager extends GenericIceManager {
     serverSentUpdate(data: TarStatusUpdate) {
         tarCanvas.update(data)
         this.unitsHacked = data.unitsHacked
+    }
 
-        if (data.hacked) {
-            tarCanvas.finish()
-            this.displayTerminal(30, "");
-            this.displayTerminal(50, "[warn]↼ Access granted.");
+    serverSentIceHacked () {
+        tarCanvas.finish()
+        this.displayTerminal(30, "");
+        this.displayTerminal(50, "[warn]↼ Access granted.");
 
-            if (this.hackingIntervalId) {
-                clearInterval(this.hackingIntervalId)
-            }
-            this.processHacked()
+        if (this.hackingIntervalId) {
+            clearInterval(this.hackingIntervalId)
         }
+        this.processHacked()
     }
 }
 

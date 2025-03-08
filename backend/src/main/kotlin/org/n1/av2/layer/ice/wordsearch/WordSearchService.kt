@@ -54,20 +54,20 @@ class WordSearchService(
     fun findBestCreation(strength: IceStrength): WordSearchCreation {
         var creation: WordSearchCreation
         measureTimeMillis {
-            creation = (1..CREATION_ATTEMPTS).map {
+            creation = (1..CREATION_ATTEMPTS).mapNotNull {
                 WordSearchCreator(strength).create()
             }
-                .filterNotNull()
                 .ifEmpty { error("Failed to create ice") }
                 .sortedBy { it.score }
                 .onEach { println(it.score) }
                 .last()
         }.run {
-            logger.debug("Creating word search ice ${strength} took ${this} ms")
+            logger.debug { "Creating word search ice ${strength} took ${this} ms" }
         }
         return creation
     }
 
+    @Suppress("unused")
     class EnterWordSearch(
         val layerId: String,
         val strength: IceStrength,
@@ -76,7 +76,6 @@ class WordSearchService(
         val correctPositions: List<String>,
         val solutions: List<List<String>>,
         val wordIndex: Int,
-        val hacked: Boolean,
         val quickPlaying: Boolean,
     )
 
@@ -90,18 +89,14 @@ class WordSearchService(
             iceStatus.correctPositions,
             iceStatus.solutions,
             iceStatus.wordIndex,
-            iceStatus.hacked,
             configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
         )
         connectionService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, enterWordSearch)
         runService.enterNetworkedApp(iceId)
     }
 
-    class WordSearchUpdate(
-        val iceId: String,
-        val wordIndex: Int,
-        val lettersCorrect: List<String>, val hacked: Boolean
-    )
+    @Suppress("unused")
+    class WordSearchUpdate(val iceId: String, val wordIndex: Int, val lettersCorrect: List<String>)
 
     fun selected(iceId: String, letters: List<String>) {
         val iceStatus = wordSearchIceStatusRepo.findById(iceId).getOrElse { error("Ice not found for \"${iceId}\"") }
@@ -112,7 +107,7 @@ class WordSearchService(
         if (wordSelected != nexWord && wordSelected.reversed() != nexWord) return
 
         val hacked = (iceStatus.wordIndex == iceStatus.words.size - 1)
-        val nextIndex = if (hacked) -1 else iceStatus.wordIndex + 1
+        val nextIndex = iceStatus.wordIndex + 1
         val lettersCorrect = iceStatus.correctPositions + letters
         val newIceStatus = iceStatus.copy(
             correctPositions = lettersCorrect,
@@ -121,10 +116,11 @@ class WordSearchService(
         )
         wordSearchIceStatusRepo.save(newIceStatus)
 
-        val updateMessage = WordSearchUpdate(iceStatus.id, nextIndex, letters, hacked)
+        val updateMessage = WordSearchUpdate(iceStatus.id, nextIndex, letters)
         connectionService.toIce(iceStatus.id, ServerActions.SERVER_WORD_SEARCH_UPDATED, updateMessage)
+
         if (hacked) {
-            hackedUtil.iceHacked(iceStatus.layerId, 70)
+            hackedUtil.iceHacked(iceId, iceStatus.layerId, 70)
         }
     }
 

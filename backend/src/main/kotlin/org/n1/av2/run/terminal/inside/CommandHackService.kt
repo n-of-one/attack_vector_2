@@ -102,7 +102,7 @@ class CommandHackService(
         connectionService.replyTerminalReceive("Hack opened in new window.")
     }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     private fun handlePassword(node: Node, layer: Layer, runId: String) {
         if (layer !is IceLayer) {
             connectionService.replyTerminalReceive("[info]not supported[/] - Only ICE can be given a password.")
@@ -114,9 +114,14 @@ class CommandHackService(
         connectionService.replyTerminalReceive("Opened in new window.")
     }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     private fun handleQuickHack(node: Node, layer: Layer, runId: String) {
-        hackedUtil.iceHacked(layer.id, node, 0)
+        if (layer !is IceLayer ) {
+            connectionService.replyTerminalReceive("[info]not supported[/] - Only ICE can be quick hacked.")
+            return
+        }
+        val iceId = iceService.findOrCreateIceForLayer(layer)
+        hackedUtil.iceHacked(iceId, layer.id, node, 0)
         connectionService.replyTerminalReceive("Quick hacked ${layer.level}.")
     }
 

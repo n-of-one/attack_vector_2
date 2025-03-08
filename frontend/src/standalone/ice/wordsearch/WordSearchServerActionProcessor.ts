@@ -3,6 +3,7 @@ import {SERVER_WORD_SEARCH_ENTER} from "./reducer/WordSearchPuzzleReducer";
 import {wordSearchManager} from "./WordSearchManager";
 import {delay} from "../../../common/util/Util";
 import {IceStrength} from "../../../common/model/IceStrength";
+import {SERVER_ICE_HACKED} from "../../../common/server/GenericServerActionProcessor";
 
 export const SERVER_WORD_SEARCH_UPDATED = "SERVER_WORD_SEARCH_UPDATED"
 
@@ -34,5 +35,8 @@ export const initWordSearchServerActions = () => {
         delay(() => {
             wordSearchManager.update(data)
         })
+    })
+    webSocketConnection.addAction(SERVER_ICE_HACKED, () => {
+        wordSearchManager.serverSentIceHacked()
     })
 }

@@ -86,6 +86,11 @@ class SystemTaskRunner(
     private val taskEngine: TaskEngine,
 ) {
 
+    fun queueInTicks(description: String, identifiers: Map<String, String>, waitTicks: Int, action: () -> Unit) {
+        val due = System.currentTimeMillis() + TICK_MILLIS * waitTicks
+        taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)
+    }
+
     fun queueInSeconds(description: String, identifiers: Map<String, String>, seconds: Long, action: () -> Unit) {
         val due = System.currentTimeMillis() + seconds * 1000
         taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)

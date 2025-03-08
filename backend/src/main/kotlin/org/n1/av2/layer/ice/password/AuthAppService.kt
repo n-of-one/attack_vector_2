@@ -72,7 +72,6 @@ class AuthAppService(
         val lockedUntil: ZonedDateTime,
         val attempts: List<String>,
         val showHint: Boolean,
-        val hacked: Boolean,
         val quickPlaying: Boolean,
     )
 
@@ -85,7 +84,7 @@ class AuthAppService(
         val showHint = showHint(iceStatus, layer)
         val hint = if (layer is PasswordIceLayer) layer.hint else null
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
-        val iceEnter = IceAppEnter(type, layer.strength, hint, iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, layer.hacked, quickPlaying)
+        val iceEnter = IceAppEnter(type, layer.strength, hint, iceStatus.lockedUntil, iceStatus.hackerAttempts, showHint, quickPlaying)
 
         connectionService.reply(ServerActions.SERVER_AUTH_ENTER, iceEnter)
 
@@ -99,7 +98,7 @@ class AuthAppService(
         val layer = findLayer(iceStatus)
 
         if (currentUser.userEntity.type == UserType.HACKER) {
-            resolveForHacker(password, iceStatus, layer)
+            resolveForHacker(iceId, password, iceStatus, layer)
         }
         else {
             resolveForUser(password, iceStatus, layer)
@@ -110,12 +109,10 @@ class AuthAppService(
         var lockedUntil: ZonedDateTime,
         val attempts: List<String>,
         val showHint: Boolean,
-        val hacked: Boolean,
     )
 
     private fun resolveForUser(password: String, icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
         if (checkPassword(password, layer, icePasswordStatus.id)) {
-            respondStatusHacked(icePasswordStatus, layer)
             val newStatus = icePasswordStatus.copy(authorized = icePasswordStatus.authorized + currentUser.userId)
             icePasswordStatusRepo.save(newStatus)
             redirectToNextLayer(layer)
@@ -128,7 +125,7 @@ class AuthAppService(
             )
             icePasswordStatusRepo.save(newStatus)
             val showHint = showHint(newStatus, layer)
-            val result = UiStateUpdate(newStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint, layer.hacked)
+            val result = UiStateUpdate(newStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint)
             connectionService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
         }
     }
@@ -136,19 +133,18 @@ class AuthAppService(
     private fun redirectToNextLayer(layer: IceLayer) {
         val nextLayerPath = appService.determineNextLayerPath(layer)
 
+        @Suppress("unused")
         class PasswordCorrect(val path: String?)
         connectionService.reply(ServerActions.SERVER_AUTH_PASSWORD_CORRECT, PasswordCorrect(nextLayerPath))
     }
 
 
-    private fun resolveForHacker(password: String, icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
+    private fun resolveForHacker(iceId: String, password: String, icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
         if (icePasswordStatus.hackerAttempts.contains(password)) {
             resolveDuplicate(icePasswordStatus, password, layer)
         }
         else if (checkPassword(password, layer, icePasswordStatus.id)) {
-            respondStatusHacked(icePasswordStatus, layer)
-
-            if (!layer.hacked) hackedUtil.iceHacked(icePasswordStatus.layerId, 70)
+            hackedUtil.iceHacked(iceId, icePasswordStatus.layerId, 70)
             redirectToNextLayer(layer)
         }
         else {
@@ -168,16 +164,10 @@ class AuthAppService(
         connectionService.replyNeutral("Password \"${password}\" already attempted, ignoring")
 
         val showHint = showHint(icePasswordStatus, layer)
-        val result = UiStateUpdate(icePasswordStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint, layer.hacked)
+        val result = UiStateUpdate(icePasswordStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint)
         connectionService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
     }
 
-    private fun respondStatusHacked(icePasswordStatus: IcePasswordStatus, layer: IceLayer) {
-        val showHint = showHint(icePasswordStatus, layer)
-        val result = UiStateUpdate(time.longAgo(), icePasswordStatus.hackerAttempts, showHint, true)
-        connectionService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
-
-    }
 
     private fun resolveHackAttemptFailed(icePasswordStatus: IcePasswordStatus, password: String, layer: IceLayer) {
         val newAttempts = icePasswordStatus.hackerAttempts.plus(password).sorted()
@@ -191,7 +181,7 @@ class AuthAppService(
         icePasswordStatusRepo.save(newStatus)
         connectionService.replyNeutral("Password incorrect: ${password}")
         val showHint = showHint(newStatus, layer)
-        val result = UiStateUpdate(newStatus.lockedUntil, newStatus.hackerAttempts, showHint, layer.hacked)
+        val result = UiStateUpdate(newStatus.lockedUntil, newStatus.hackerAttempts, showHint)
         connectionService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
     }
 

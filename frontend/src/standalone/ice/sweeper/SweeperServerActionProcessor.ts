@@ -1,10 +1,10 @@
 import {IceStrength} from "../../../common/model/IceStrength";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {sweeperIceManager} from "./SweeperIceManager";
+import {SERVER_ICE_HACKED} from "../../../common/server/GenericServerActionProcessor";
 
 export const SERVER_SWEEPER_ENTER = "SERVER_SWEEPER_ENTER"
 export const SERVER_SWEEPER_MODIFY = "SERVER_SWEEPER_MODIFY"
-export const SERVER_SWEEPER_SOLVED = "SERVER_SWEEPER_SOLVED"
 export const SERVER_SWEEPER_BLOCK_USER = "SERVER_SWEEPER_BLOCK_USER"
 export const SERVER_SWEEPER_UNBLOCK_USER = "SERVER_SWEEPER_UNBLOCK_USER"
 export const SERVER_SWEEPER_RESET_START = "SERVER_SWEEPER_RESET_START"
@@ -51,12 +51,8 @@ export const initSweeperServerActions = () => {
     webSocketConnection.addAction(SERVER_SWEEPER_ENTER, (data: SweeperEnterData) => {
         sweeperIceManager.enter(data)
     })
-
     webSocketConnection.addAction(SERVER_SWEEPER_MODIFY, (data: SweeperModifyData) => {
         sweeperIceManager.serverModified(data)
-    })
-    webSocketConnection.addAction(SERVER_SWEEPER_SOLVED, (data: any) => {
-        sweeperIceManager.serverSolved()
     })
     webSocketConnection.addAction(SERVER_SWEEPER_BLOCK_USER, (data: SweeperBlockUserData) => {
         sweeperIceManager.blockUser(data.userId, data.userName)
@@ -73,6 +69,7 @@ export const initSweeperServerActions = () => {
     webSocketConnection.addAction(SERVER_SWEEPER_RESET_COMPLETE, (data: SweeperResetCompleteData) => {
         sweeperIceManager.completeReset(data.userName, data.newIceId)
     })
-
-
+    webSocketConnection.addAction(SERVER_ICE_HACKED, () => {
+        sweeperIceManager.serverSentIceHacked()
+    })
 }

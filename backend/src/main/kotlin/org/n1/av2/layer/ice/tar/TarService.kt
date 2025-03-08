@@ -42,18 +42,18 @@ class TarService(
         return tarIceStatusRepo.save(tarIceStatus)
     }
 
-    class TarEnter(val iceId: String, val totalUnits: Int, val unitsHacked: Int, val strength: IceStrength, val unitsPerSecond: Int, val hacked: Boolean, val quickPlaying: Boolean)
+    @Suppress("unused")
+    class TarEnter(val iceId: String, val totalUnits: Int, val unitsHacked: Int, val strength: IceStrength, val unitsPerSecond: Int, val quickPlaying: Boolean)
     fun enter(iceId: String) {
         val tarIceStatus = tarIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
 
-        val playerLevel = 5 // TODO: get actual player level
-        val unitsPerSecond = unitsPerSecond(playerLevel)
+        val unitsPerSecond = unitsPerSecond(5)
 
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
 
         connectionService.reply(
             ServerActions.SERVER_TAR_ENTER,
-            TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, unitsPerSecond, tarIceStatus.hacked, quickPlaying)
+            TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, unitsPerSecond, quickPlaying)
         )
         runService.enterNetworkedApp(iceId)
     }
@@ -67,12 +67,13 @@ class TarService(
         val newStatus  = tarIceStatus.copy(unitsHacked = newUnitsHacked, hacked = hacked)
         tarIceStatusRepo.save(newStatus)
 
-        class TarStatusUpdate(val unitsHacked: Int, val hacked: Boolean)
-        val message = TarStatusUpdate(newUnitsHacked, hacked)
+        @Suppress("unused")
+        class TarStatusUpdate(val unitsHacked: Int)
+        val message = TarStatusUpdate(newUnitsHacked)
         connectionService.toIce(iceId, ServerActions.SERVER_TAR_UPDATE, message)
 
         if (hacked) {
-            hackedUtil.iceHacked(tarIceStatus.layerId, 7 * SECONDS_IN_TICKS)
+            hackedUtil.iceHacked(iceId, tarIceStatus.layerId, 7 * SECONDS_IN_TICKS)
         }
     }
 
