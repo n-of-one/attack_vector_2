@@ -7,7 +7,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
-import org.n1.av2.script.effect.helper.ScriptEffectHelper
+import org.n1.av2.script.effect.helper.IceEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.enums.LayerType
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
  */
 @Service
 class WordSearchNextWordsEffectService(
-    private val scriptEffectHelper: ScriptEffectHelper,
+    private val iceEffectHelper: IceEffectHelper,
     private val connectionService: ConnectionService,
     private val wordSearchIceStatusRepo: WordSearchIceStatusRepo,
 ) : ScriptEffectInterface {
@@ -33,7 +33,7 @@ class WordSearchNextWordsEffectService(
     override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateIntegerGreaterThanZero(effect)
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        return scriptEffectHelper.runForIceLayer(LayerType.WORD_SEARCH_ICE, argumentTokens, hackerState) { layer: IceLayer ->
+        return iceEffectHelper.runForSpecificIceLayer(LayerType.WORD_SEARCH_ICE, argumentTokens, hackerState) { layer: IceLayer ->
             val iceStatus = wordSearchIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
             val wordsLeft = iceStatus.words.drop(iceStatus.wordIndex)
             val wordsToShow = wordsLeft.take(effect.value!!.toInt())

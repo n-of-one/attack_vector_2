@@ -141,6 +141,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
                         <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
+                        <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
                     </select>
                 </div>
                 <div className="col-lg-1">
@@ -237,6 +238,7 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
     switch (effect.type) {
         case EffectType.HIDDEN_EFFECTS:
         case EffectType.SITE_STATS:
+        case EffectType.AUTO_HACK_ANY_ICE:
             return <div className="col-lg-2"/>
         case EffectType.JUMP_TO_NODE:
         case EffectType.JUMP_TO_HACKER:

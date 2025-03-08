@@ -1,20 +1,13 @@
 package org.n1.av2.script.effect.positive.ice
 
 import org.n1.av2.hacker.hackerstate.HackerState
-import org.n1.av2.layer.ice.HackedUtil
-import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
-import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.engine.SECONDS_IN_TICKS
-import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
-import org.n1.av2.script.effect.helper.ScriptEffectHelper
+import org.n1.av2.script.effect.helper.IceEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.enums.LayerType
 import org.springframework.stereotype.Service
-import java.time.Duration
 
 /**
  * Linked type:
@@ -22,16 +15,13 @@ import java.time.Duration
  */
 @Service
 class AutoHackSpecificIceEffectService(
-    private val scriptEffectHelper: ScriptEffectHelper,
-    private val connectionService: ConnectionService,
-    private val hackedUtil: HackedUtil,
-    private val userTaskRunner: UserTaskRunner,
+    private val iceEffectHelper: IceEffectHelper,
     private val iceService: IceService,
 ) : ScriptEffectInterface {
 
-    override val name = "Automatically hack ICE"
+    override val name = "Automatically hack specific ICE type"
     override val defaultValue = "WORD_SEARCH_ICE"
-    override val gmDescription = "Automatically hack one layer of ICE."
+    override val gmDescription = "Automatically hack one specific type of ICE."
 
     override fun playerDescription(effect: ScriptEffect): String {
         val layerType = LayerType.valueOf(effect.value!!)
@@ -51,26 +41,6 @@ class AutoHackSpecificIceEffectService(
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         val iceType = LayerType.valueOf(effect.value!!)
-
-        return scriptEffectHelper.runForIceLayer(iceType, argumentTokens, hackerState) { layer: IceLayer ->
-            connectionService.replyTerminalReceive("Hacking ICE...")
-            val siteId = hackerState.siteId!!
-            userTaskRunner.queue("start auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {
-                startHackedIce(layer, siteId)
-            }
-            TerminalLockState.LOCK
-        }
+        return iceEffectHelper.autoHackSpecificIceLayer(iceType, argumentTokens, hackerState)
     }
-
-    private fun startHackedIce(layer: IceLayer, siteId: String) {
-        val iceId = iceService.findOrCreateIceForLayer(layer)
-        val iceHackedAnimationSeconds = 5
-        hackedUtil.iceHacked(iceId, layer.id, SECONDS_IN_TICKS * iceHackedAnimationSeconds)
-
-        userTaskRunner.queue("complete auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(iceHackedAnimationSeconds.toLong())) {
-            connectionService.replyTerminalReceive("ICE hack complete.")
-            connectionService.replyTerminalSetLocked(false)
-        }
-    }
-
 }

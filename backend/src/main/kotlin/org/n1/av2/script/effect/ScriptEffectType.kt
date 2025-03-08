@@ -5,6 +5,7 @@ import org.n1.av2.script.effect.negative.HiddenEffectsService
 import org.n1.av2.script.effect.negative.SpeedUpResetTimerEffectService
 import org.n1.av2.script.effect.negative.StartResetTimerEffectService
 import org.n1.av2.script.effect.positive.*
+import org.n1.av2.script.effect.positive.ice.AutoHackAnyIceEffectService
 import org.n1.av2.script.effect.positive.ice.AutoHackSpecificIceEffectService
 import org.n1.av2.script.effect.positive.ice.SweeperUnblockEffectService
 import org.n1.av2.script.effect.positive.ice.WordSearchNextWordsEffectService
@@ -29,6 +30,7 @@ enum class ScriptEffectType(
     SWEEPER_UNBLOCK(SweeperUnblockEffectService::class),
     WORD_SEARCH_NEXT_WORDS(WordSearchNextWordsEffectService::class),
     AUTO_HACK_SPECIFIC_ICE(AutoHackSpecificIceEffectService::class),
+    AUTO_HACK_ANY_ICE(AutoHackAnyIceEffectService::class),
 }
 
 @Service
