@@ -15,6 +15,10 @@ import org.springframework.data.mongodb.core.query.Term
 import org.springframework.stereotype.Service
 import java.time.Duration
 
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.DECREASE_FUTURE_TIMERS
+ */
 @Service
 class DecreaseFutureTimersEffectService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,

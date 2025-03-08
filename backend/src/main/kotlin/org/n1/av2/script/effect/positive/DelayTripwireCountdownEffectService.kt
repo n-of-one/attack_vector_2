@@ -1,6 +1,5 @@
 package org.n1.av2.script.effect.positive
 
-import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
@@ -16,9 +15,12 @@ import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
 
-
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.DELAY_TRIPWIRE_COUNTDOWN
+ */
 @Service
-class DelayTripwireCountdownService(
+class DelayTripwireCountdownEffectService(
     private val nodeEntityService: NodeEntityService,
     private val timerService: TimerService,
     private val timerEntityService: TimerEntityService,

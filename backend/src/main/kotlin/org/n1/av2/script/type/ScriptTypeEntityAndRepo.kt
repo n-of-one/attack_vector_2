@@ -1,5 +1,6 @@
 package org.n1.av2.script.type
 
+import org.n1.av2.script.effect.ScriptEffectType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
@@ -20,18 +21,6 @@ data class ScriptEffect(
     val type: ScriptEffectType,
     val value: String?,
 )
-
-enum class ScriptEffectType{
-    DELAY_TRIPWIRE_COUNTDOWN,
-    SCAN_ICE_NODE,
-    START_RESET_TIMER,
-    SPEED_UP_RESET_TIMER,
-    DECREASE_FUTURE_TIMERS,
-    HIDDEN_EFFECTS,
-    SITE_STATS,
-    JUMP_TO_NODE,
-    JUMP_TO_HACKER_IGNORING_ICE,
-}
 
 interface ScriptTypeRepository : CrudRepository<ScriptType, ScriptTypeId> {
 }

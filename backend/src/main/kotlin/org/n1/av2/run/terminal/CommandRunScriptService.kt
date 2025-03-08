@@ -4,7 +4,7 @@ import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
-import org.n1.av2.script.effect.ScriptEffectLookup
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.ram.RamService
@@ -16,7 +16,7 @@ class CommandRunScriptService(
     private val connectionService: ConnectionService,
     private val scriptService: ScriptService,
     private val scriptTypeService: ScriptTypeService,
-    private val scriptEffectLookup: ScriptEffectLookup,
+    private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val ramService: RamService,
 ) {
 
@@ -35,7 +35,7 @@ class CommandRunScriptService(
         val type = scriptTypeService.getById(script.typeId)
 
         val executions: List<ScriptExecution> = type.effects.map { effect ->
-            val effectService = scriptEffectLookup.getForType(effect.type)
+            val effectService = scriptEffectTypeLookup.getForType(effect.type)
             effectService.prepareExecution(effect, argumentTokens, hackerSate)
         }
 
@@ -53,8 +53,9 @@ class CommandRunScriptService(
             connectionService.replyTerminalReceive("Script executed successfully, but it has no effects.")
         }
 
-        ramService.useScript(hackerSate.userId, type.size)
-        scriptService.markAsUsedAndNotify(script)
+// FIXME
+//        ramService.useScript(hackerSate.userId, type.size)
+//        scriptService.markAsUsedAndNotify(script)
 
         if (lockStates.all { it == TerminalLockState.UNLOCK }) {
             connectionService.replyTerminalSetLocked(false)

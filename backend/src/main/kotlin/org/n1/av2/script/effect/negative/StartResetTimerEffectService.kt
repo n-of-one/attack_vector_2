@@ -15,6 +15,10 @@ import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
 import java.time.Duration
 
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.START_RESET_TIMER
+ */
 @Service
 class StartResetTimerEffectService(
     private val scriptEffectHelper: ScriptEffectHelper,

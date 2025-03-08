@@ -7,6 +7,10 @@ import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.type.ScriptEffect
 import org.springframework.stereotype.Service
 
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.HIDDEN_EFFECTS
+ */
 @Service
 class HiddenEffectsService(
 ) : ScriptEffectInterface {

@@ -105,6 +105,7 @@ enum class ServerActions {
     SERVER_SWEEPER_ENTER,               // sent to hacker that hacks this ice, first message of Ice window
     SERVER_SWEEPER_MODIFY,              // sent to everyone when a cell has been modified (revealed, flagged,... )
     SERVER_SWEEPER_BLOCK_USER,          // sent to everyone when a user is blocked because of exploding a cell
+    SERVER_SWEEPER_UNBLOCK_USER,        // sent to everyone when a user is unblocked because of script or debug action
     SERVER_SWEEPER_SOLVED,              // sent to everyone when the sweeper is solved
     SERVER_SWEEPER_RESET_START,         // sent to everyone when someone initiates reset
     SERVER_SWEEPER_RESET_STOP,          // sent to everyone when someone stops reset

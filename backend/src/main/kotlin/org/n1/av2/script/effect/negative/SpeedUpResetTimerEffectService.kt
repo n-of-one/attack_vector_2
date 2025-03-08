@@ -12,7 +12,10 @@ import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
 
-
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.SPEED_UP_RESET_TIMER
+ */
 @Service
 class SpeedUpResetTimerEffectService(
     private val scriptEffectHelper: ScriptEffectHelper,

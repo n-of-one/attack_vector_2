@@ -146,13 +146,13 @@ class SweeperService(
     }
 
     class SweeperBlockUserMessage(val userId: String, val userName: String)
-    private fun explode(sweeper: SweeperIceStatus, x: Int, y: Int) {
-        sweeper.modifiers[y] = sweeper.modifiers[y].replaceRange(x, x+1, REVEALED.toString())
-        val sweeperWithUserBlocked = sweeper.copy(blockedUserIds = sweeper.blockedUserIds + currentUser.userId)
+    private fun explode(sweeperStatus: SweeperIceStatus, x: Int, y: Int) {
+        sweeperStatus.modifiers[y] = sweeperStatus.modifiers[y].replaceRange(x, x+1, REVEALED.toString())
+        val sweeperWithUserBlocked = sweeperStatus.copy(blockedUserIds = sweeperStatus.blockedUserIds + currentUser.userId)
         sweeperIceStatusRepo.save(sweeperWithUserBlocked)
 
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_BLOCK_USER, SweeperBlockUserMessage(currentUser.userId, currentUser.userEntity.name))
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE))
+        connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_BLOCK_USER, SweeperBlockUserMessage(currentUser.userId, currentUser.userEntity.name))
+        connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE))
     }
 
     private fun revealSingle(sweeper: SweeperIceStatus, x: Int, y: Int) {
@@ -241,14 +241,20 @@ class SweeperService(
         sweeperIceStatusRepo.delete(iceStatus)
     }
 
-    // DEV debug: unblock player
+
     fun debugUnblock(layer: SweeperIceLayer, userId: String) {
         if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) return connectionService.replyTerminalReceive("Debug unblock only available in dev mode.")
         val iceStatus = sweeperIceStatusRepo.findByLayerId(layer.id) ?: return connectionService.replyTerminalReceive("Ice not found for ${layer.id}.")
+        unblockHacker(iceStatus, userId)
+        connectionService.replyTerminalReceive("Unblocked current player for ICE.")
+    }
+
+    fun unblockHacker(iceStatus: SweeperIceStatus, userId: String) {
         val updatedBlockedUserIds = iceStatus.blockedUserIds - userId
         val updatedIceStatus = iceStatus.copy(blockedUserIds = updatedBlockedUserIds)
         sweeperIceStatusRepo.save(updatedIceStatus)
-        connectionService.replyTerminalReceive("Unblocked current player for ICE.")
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_SWEEPER_UNBLOCK_USER, SweeperBlockUserMessage(currentUser.userId, currentUser.userEntity.name))
+
     }
 
 

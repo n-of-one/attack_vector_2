@@ -6,7 +6,8 @@ import org.n1.av2.platform.util.createId
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.effect.ScriptEffectLookup
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
+import org.n1.av2.script.effect.ScriptEffectType
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import javax.annotation.PostConstruct
@@ -30,7 +31,7 @@ class ScriptTypeServiceInit(
 class ScriptTypeService(
     private val scriptTypeRepository: ScriptTypeRepository,
     private val connectionService: ConnectionService,
-    private val effectService: ScriptEffectLookup,
+    private val effectService: ScriptEffectTypeLookup,
 )  {
 
     lateinit var scriptService: ScriptService

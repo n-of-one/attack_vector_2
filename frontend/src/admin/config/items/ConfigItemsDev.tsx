@@ -11,7 +11,7 @@ export const ConfigItemHackerUseDevCommands = (props: { value: string }) => {
                 General advice: leave this to false.<br/><br/>
                 There are a number of terminal commands that are very overpowered, and not intended to be part of the game.
                 They are used to make it quicker to test during development.
-                These commands include: quickscan (qs), quickattack (qa), quickhack, sweeperunblock.
+                These commands include: quickscan (qs), quickattack (qa), quickhack, qmove, sweeperunblock.
             </small>
         </>
     )

@@ -2,6 +2,7 @@ package org.n1.av2.script.type
 
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.script.effect.ScriptEffectType
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
 import java.math.BigDecimal

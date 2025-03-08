@@ -24,7 +24,7 @@ class SiteWsController(
     fun resetSite(siteId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/site/resetSite", userPrincipal) {
             runService.gmRefreshSite(siteId)
-            siteResetService.refreshSite(siteId, "00:00")
+            siteResetService.refreshSite(siteId)
             connectionService.replyMessage(NotyMessage.neutral("site reset"))
         }
     }
@@ -32,7 +32,7 @@ class SiteWsController(
     @MessageMapping("/site/deleteRuns")
     fun deleteRuns(siteId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/site/deleteRuns", userPrincipal) {
-            siteResetService.refreshSite(siteId, "00:00")
+            siteResetService.refreshSite(siteId)
             val count = runService.deleteRuns(siteId)
             connectionService.replyMessage(NotyMessage.neutral("Site reset and ${count} runs removed"))
         }

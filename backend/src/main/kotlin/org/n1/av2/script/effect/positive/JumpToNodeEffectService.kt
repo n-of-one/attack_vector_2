@@ -17,7 +17,10 @@ import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
-
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.JUMP_TO_NODE
+ */
 @Service
 class JumpToNodeEffectService(
     private val nodeEntityService: NodeEntityService,

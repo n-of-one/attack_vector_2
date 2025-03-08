@@ -23,6 +23,7 @@ export class SweeperCellDisplay {
     userBlocked: boolean
 
     image: fabric.Image
+    imageInfo: SweeperImageInfo
     crossFadeImage: fabric.Image | null = null
 
     constructor(canvas: Canvas, x: number, y: number, cellType: SweeperCellType, modifier: SweeperCellModifier, size: number, userBlocked: boolean, corner: boolean) {
@@ -36,24 +37,24 @@ export class SweeperCellDisplay {
         this.modifier = modifier
         this.size = size
         this.userBlocked = userBlocked
-        this.image = this.creatImage(1)
+        this.imageInfo = this.determineImageInfo()
 
+        this.image = this.creatImage(1)
 
 
         canvas.add(this.image)
     }
 
     private creatImage(opacity: number): fabric.Image {
-        const imageInfo = this.determineImageType()
-        const imageElement = this.getHtmlImage(imageInfo)
-        const hoverCursor = this.userBlocked ? "not-allowed" : imageInfo.cursor
+        const imageElement = this.getHtmlImage(this.imageInfo)
+        const hoverCursor = this.userBlocked ? "not-allowed" : this.imageInfo.cursor
 
-        const scale = this.size / imageInfo.size
+        const scale = this.size / this.imageInfo.size
         return new fabric.Image(imageElement, {
             left: PADDING_LEFT + (0.5) * this.size + this.x * this.size,
             top: PADDING_TOP + (0.5) * this.size + this.y * this.size,
-            height: imageInfo.size,
-            width: imageInfo.size,
+            height: this.imageInfo.size,
+            width: this.imageInfo.size,
             lockRotation: true,
             lockScalingX: true,
             lockScalingY: true,
@@ -66,17 +67,18 @@ export class SweeperCellDisplay {
             hoverCursor: hoverCursor,
             opacity: opacity
         })
+
     }
 
-    private determineImageType(): SweeperImageInfo {
+    private determineImageInfo(): SweeperImageInfo {
 
         const imageTypeKey = (this.modifier === SweeperCellModifier.REVEALED)  ? this.cellType.toString() : this.modifier.toString()
-        let image = SWEEPER_IMAGES[imageTypeKey]
-        if (image !== undefined) {
+        let imageInfo = SWEEPER_IMAGES[imageTypeKey]
+        if (imageInfo !== undefined) {
             if (imageTypeKey === "HIDDEN" && this.corner) {
-                image = SWEEPER_IMAGES["HIDDEN_CORNER"]
+                imageInfo = SWEEPER_IMAGES["HIDDEN_CORNER"]
             }
-            return image
+            return imageInfo
         }
         throw new Error(`No image found for "${imageTypeKey}"`)
     }
@@ -86,6 +88,7 @@ export class SweeperCellDisplay {
     }
 
     updateModifier(newModifier: SweeperCellModifier) {
+        if (this.modifier === newModifier) return
         this.modifier = newModifier
         this.crossFadeToNewImage()
     }
@@ -99,13 +102,7 @@ export class SweeperCellDisplay {
     }
 
     changeUserBlocked(userBlocked: boolean) {
-        this.image.hoverCursor = userBlocked ? "not-allowed" : "pointer"
-    }
-
-    revealIfHidden() {
-        if (this.modifier !== SweeperCellModifier.FLAG) {
-            this.updateModifier(SweeperCellModifier.FLAG)
-        }
+        this.image.hoverCursor = userBlocked ? "not-allowed" : this.imageInfo.cursor
     }
 
     crossFadeToNewImage() {
@@ -114,6 +111,7 @@ export class SweeperCellDisplay {
         this.crossFadeImage = this.image
         this.canvas.sendToBack(this.crossFadeImage)
 
+        this.imageInfo = this.determineImageInfo()
         this.image = this.creatImage(0)
         this.canvas.add(this.image)
 
@@ -138,11 +136,11 @@ export interface SweeperImageInfo {
     cursor: string,
 }
 
-export interface SweeperImageTypes {
+export interface SweeperImageInfos {
     [key: string]: SweeperImageInfo
 }
 
-export const SWEEPER_IMAGES: SweeperImageTypes = {
+export const SWEEPER_IMAGES: SweeperImageInfos = {
     "0": {
         size: 320,
         fileName: "empty_blur.png",
@@ -153,49 +151,49 @@ export const SWEEPER_IMAGES: SweeperImageTypes = {
         size: 420,
         fileName: "1_888787.png",
         id: "n1",
-        cursor: "pointer"
+        cursor: "default"
     },
     "2": {
         size: 420,
         fileName: "2_cccca0.png",
         id: "n2",
-        cursor: "pointer"
+        cursor: "default"
     },
     "3": {
         size: 420,
         fileName: "3_ffc387.png",
         id: "n3",
-        cursor: "pointer"
+        cursor: "default"
     },
     "4": {
         size: 420,
         fileName: "4_86a0bf.png",
         id: "n4",
-        cursor: "pointer"
+        cursor: "default"
     },
     "5": {
         size: 420,
         fileName: "5_99bf86.png",
         id: "n5",
-        cursor: "pointer"
+        cursor: "default"
     },
     "6": {
         size: 420,
         fileName: "6_8565aa.png",
         id: "n6",
-        cursor: "pointer"
+        cursor: "default"
     },
     "7": {
         size: 420,
         fileName: "7_aa5c54.png",
         id: "n7",
-        cursor: "pointer"
+        cursor: "default"
     },
     "8": {
         size: 420,
         fileName: "8_f7f7f7.png",
         id: "n8",
-        cursor: "pointer"
+        cursor: "default"
     },
     "MINE": {
         size: 230,

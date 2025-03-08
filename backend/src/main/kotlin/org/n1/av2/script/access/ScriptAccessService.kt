@@ -10,7 +10,7 @@ import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.script.common.UiEffectDescription
 import org.n1.av2.script.common.toUiEffectDescriptions
-import org.n1.av2.script.effect.ScriptEffectLookup
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.context.annotation.Configuration
@@ -37,7 +37,7 @@ class ScriptAccessService(
     private val currentUserService: CurrentUserService,
     private val connectionService: ConnectionService,
     private val scriptTypeService: ScriptTypeService,
-    private val scriptEffectLookup: ScriptEffectLookup,
+    private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val timeService: TimeService,
 ) {
 
@@ -70,7 +70,7 @@ class ScriptAccessService(
                 id = type.id,
                 name = type.name,
                 size = type.size,
-                effects = type.toUiEffectDescriptions(scriptEffectLookup)
+                effects = type.toUiEffectDescriptions(scriptEffectTypeLookup)
             )
             ScriptAccessUi(
                 id = scriptAccess.id,

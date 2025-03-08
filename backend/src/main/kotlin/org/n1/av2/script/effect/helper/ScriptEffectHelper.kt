@@ -23,13 +23,14 @@ class ScriptEffectHelper(
     }
 
     fun checkInRun(state: HackerState): String? {
-        if (state.runId != null) {
+        if (state.runId == null) {
             return "You must run this script when hacking a site."
         }
         return null
     }
 
     fun checkInNode(hackerState: HackerState): String? {
+        checkInRun(hackerState)?.let { return it }
         if (hackerState.activity == HackerActivity.OUTSIDE || hackerState.currentNodeId == null) {
             return "You can only run this script inside a node."
         }

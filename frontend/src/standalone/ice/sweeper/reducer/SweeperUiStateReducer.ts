@@ -2,7 +2,13 @@ import {AnyAction} from "redux";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {HIDDEN, UiMode, VISIBLE} from "../../common/IceModel";
 import {TICK} from "../../../../common/terminal/TerminalReducer";
-import {SERVER_SWEEPER_BLOCK_USER, SERVER_SWEEPER_MODIFY, SweeperModifyAction, SweeperModifyData} from "../SweeperServerActionProcessor";
+import {
+    SERVER_SWEEPER_BLOCK_USER,
+    SERVER_SWEEPER_MODIFY,
+    SERVER_SWEEPER_UNBLOCK_USER,
+    SweeperModifyAction,
+    SweeperModifyData
+} from "../SweeperServerActionProcessor";
 import {SweeperGameState} from "../logic/SweeperLogic";
 
 export const SERVER_SWEEPER_ENTER = "SERVER_SWEEPER_ENTER"
@@ -63,6 +69,8 @@ export const sweeperUiStateReducer = (state: SweeperUiState = defaultState, acti
             return processResetStop(state)
         case SERVER_SWEEPER_BLOCK_USER:
             return blockUser(state, action.data)
+        case SERVER_SWEEPER_UNBLOCK_USER:
+            return unblockUser(state, action.data)
         case SERVER_SWEEPER_SOLVED: {
             return {...state, hacked: true, minesLeft: 0}
         }
@@ -115,5 +123,9 @@ interface BlockUserData {
 
 const blockUser = (state: SweeperUiState, data: BlockUserData) => {
     return {...state, blockedUserIds: [...state.blockedUserIds, data.userId]}
+}
+
+const unblockUser = (state: SweeperUiState, data: BlockUserData) => {
+    return {...state, blockedUserIds: state.blockedUserIds.filter(userId => userId !== data.userId) }
 }
 

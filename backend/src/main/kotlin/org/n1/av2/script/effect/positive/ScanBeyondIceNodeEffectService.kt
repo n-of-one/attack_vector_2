@@ -13,6 +13,10 @@ import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
 
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.SCAN_ICE_NODE
+ */
 @Service
 class ScanBeyondIceNodeEffectService(
     private val runEntityService: RunEntityService,

@@ -1,8 +1,7 @@
 package org.n1.av2.script.common
 
-import org.n1.av2.platform.iam.user.UserAndHackerService
-import org.n1.av2.script.effect.ScriptEffectLookup
-import org.n1.av2.script.type.ScriptEffectType
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
+import org.n1.av2.script.effect.ScriptEffectType
 import org.n1.av2.script.type.ScriptType
 
 
@@ -11,7 +10,7 @@ class UiEffectDescription(
     val label: String,
 )
 
-fun ScriptType.toUiEffectDescriptions(scriptEffectLookup: ScriptEffectLookup): List<UiEffectDescription> {
+fun ScriptType.toUiEffectDescriptions(scriptEffectTypeLookup: ScriptEffectTypeLookup): List<UiEffectDescription> {
 
     val hideIndex = this.effects.indexOfFirst { effect -> effect.type == ScriptEffectType.HIDDEN_EFFECTS }
 
@@ -20,7 +19,7 @@ fun ScriptType.toUiEffectDescriptions(scriptEffectLookup: ScriptEffectLookup): L
             null
         }
         else {
-            val effectService = scriptEffectLookup.getForType(effect.type)
+            val effectService = scriptEffectTypeLookup.getForType(effect.type)
             val description = effectService.playerDescription(effect)
             val label = if (effect.type == ScriptEffectType.HIDDEN_EFFECTS) "*" else index.toString()
 

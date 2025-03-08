@@ -6,6 +6,7 @@ export const SERVER_SWEEPER_ENTER = "SERVER_SWEEPER_ENTER"
 export const SERVER_SWEEPER_MODIFY = "SERVER_SWEEPER_MODIFY"
 export const SERVER_SWEEPER_SOLVED = "SERVER_SWEEPER_SOLVED"
 export const SERVER_SWEEPER_BLOCK_USER = "SERVER_SWEEPER_BLOCK_USER"
+export const SERVER_SWEEPER_UNBLOCK_USER = "SERVER_SWEEPER_UNBLOCK_USER"
 export const SERVER_SWEEPER_RESET_START = "SERVER_SWEEPER_RESET_START"
 export const SERVER_SWEEPER_RESET_STOP = "SERVER_SWEEPER_RESET_STOP"
 export const SERVER_SWEEPER_RESET_COMPLETE = "SERVER_SWEEPER_RESET_COMPLETE"
@@ -60,7 +61,9 @@ export const initSweeperServerActions = () => {
     webSocketConnection.addAction(SERVER_SWEEPER_BLOCK_USER, (data: SweeperBlockUserData) => {
         sweeperIceManager.blockUser(data.userId, data.userName)
     })
-
+    webSocketConnection.addAction(SERVER_SWEEPER_UNBLOCK_USER, (data: SweeperBlockUserData) => {
+        sweeperIceManager.unblockUser(data.userId, data.userName)
+    })
     webSocketConnection.addAction(SERVER_SWEEPER_RESET_START, (data: SweeperResetData) => {
         sweeperIceManager.startReset(data.userName)
     })

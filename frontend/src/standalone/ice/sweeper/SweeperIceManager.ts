@@ -131,6 +131,15 @@ class SweeperIceManager extends GenericIceManager {
         }
     }
 
+    unblockUser(userId: string, userName: string) {
+        this.displayTerminal(5, "");
+        this.displayTerminal(5, `↼ Memory access restored for [info]${userName}[/].`);
+        if (currentUser.id === userId) {
+            this.userBlocked = false
+            sweeperCanvas.changeUserBlocked(false)
+        }
+    }
+
     startReset(userName: string) {
         this.dispatch({type: SWEEPER_RESET_START})
         this.displayTerminal(5, `↼ Reset initiated by [info]${userName}[/]`);

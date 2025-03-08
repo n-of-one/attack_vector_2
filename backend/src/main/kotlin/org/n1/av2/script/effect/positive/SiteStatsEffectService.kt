@@ -15,6 +15,10 @@ import org.n1.av2.site.entity.ThemeService
 import org.n1.av2.site.entity.enums.LayerType
 import org.springframework.stereotype.Service
 
+/**
+ * Linked type:
+ * @see org.n1.av2.script.effect.ScriptEffectType.SITE_STATS
+ */
 @Service
 class SiteStatsEffectService(
     private val nodeEntityService: NodeEntityService,

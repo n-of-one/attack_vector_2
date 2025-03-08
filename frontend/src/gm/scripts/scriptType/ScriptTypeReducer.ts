@@ -15,6 +15,7 @@ export enum EffectType {
     SITE_STATS = "SITE_STATS",
     JUMP_TO_NODE = "JUMP_TO_NODE",
     JUMP_TO_HACKER_IGNORING_ICE = "JUMP_TO_HACKER_IGNORING_ICE",
+    SWEEPER_UNBLOCK = "SWEEPER_UNBLOCK",
 }
 
 export interface Effect {

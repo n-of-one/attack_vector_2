@@ -6,7 +6,7 @@ import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.common.UiEffectDescription
 import org.n1.av2.script.common.toUiEffectDescriptions
-import org.n1.av2.script.effect.ScriptEffectLookup
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.ram.RamEntity
 import org.n1.av2.script.type.ScriptType
 import org.springframework.stereotype.Service
@@ -16,7 +16,7 @@ import java.time.ZonedDateTime
 @Service
 class ScriptStatusNotifier(
     private val connectionService: ConnectionService,
-    private val scriptEffectLookup: ScriptEffectLookup,
+    private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val timeService: TimeService,
 ) {
 
@@ -70,7 +70,7 @@ class ScriptStatusNotifier(
     private fun toUiScript(scriptAndType: Pair<Script, ScriptType>): UiScript {
         val (script, type) = scriptAndType
         val timeLeft = timeLeft(script)
-        val effects = type.toUiEffectDescriptions(scriptEffectLookup)
+        val effects = type.toUiEffectDescriptions(scriptEffectTypeLookup)
         return UiScript(script.id, type.name, script.code, effects, timeLeft, script.state, type.size)
     }
 
