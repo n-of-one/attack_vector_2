@@ -34,10 +34,6 @@ class UserTaskRunner(
     private val taskEngine: TaskEngine,
 ) {
 
-//    fun runTask(userPrincipal: UserPrincipal, action: () -> Unit) {
-//        taskEngine.runForUser(userPrincipal, action)
-//    }
-
     fun runTask(description: String, userPrincipal: UserPrincipal, action: () -> Unit) {
         taskEngine.runForUser(userPrincipal, action, description)
     }

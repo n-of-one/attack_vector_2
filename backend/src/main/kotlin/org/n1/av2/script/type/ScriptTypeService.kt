@@ -6,8 +6,8 @@ import org.n1.av2.platform.util.createId
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.access.ScriptAccessService
-import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.effect.ScriptEffectType
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import javax.annotation.PostConstruct
@@ -50,6 +50,7 @@ class ScriptTypeService(
         val type: ScriptEffectType,
     )
 
+    @Suppress("unused")
     class ScriptTypeUI(
         val id: ScriptTypeId,
         val name: String,
@@ -99,6 +100,7 @@ class ScriptTypeService(
         sendScriptTypes()
         connectionService.reply(ServerActions.SERVER_EDIT_SCRIPT_TYPE, id)
 
+        checkScriptNameLength(name)
     }
 
     fun edit(scriptTypeId: ScriptTypeId, name: String, size: Int, defaultPrice: BigDecimal?) {
@@ -119,6 +121,13 @@ class ScriptTypeService(
 
         scriptTypeRepository.save(editedScriptType)
         sendScriptTypes()
+        checkScriptNameLength(name)
+    }
+
+    private fun checkScriptNameLength(name: String) {
+        if (name.length > 15) {
+            connectionService.replyNeutral("Script name is long, it will truncated for hackers.")
+        }
     }
 
     fun addEffect(scriptTypeId: ScriptTypeId, type: ScriptEffectType) {

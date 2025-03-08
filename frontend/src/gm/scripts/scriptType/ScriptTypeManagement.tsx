@@ -108,7 +108,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     return (<>
             <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={close}/></div>
             <br/>
-            <FormTextInputRow label="Name" value={scriptType.name} save={editName} labelColumns={2} valueColumns={4}/>
+            <FormTextInputRow label="Name" value={scriptType.name} save={editName} labelColumns={2} valueColumns={2}/>
             <FormTextInputRow label="Size" value={scriptType.size.toString()} save={editSize} labelColumns={2} valueColumns={2}/>
             <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""} save={editDefaultPrice} labelColumns={2}
                               valueColumns={2}/>
@@ -137,7 +137,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.DELAY_TRIPWIRE_COUNTDOWN}>Delay tripwire countdown</option>
                         <option value={EffectType.SCAN_ICE_NODE}>Scan node with ICE</option>
                         <option value={EffectType.JUMP_TO_NODE}>Jump to node</option>
-                        <option value={EffectType.JUMP_TO_HACKER_IGNORING_ICE}>Jump to hacker, ignoring ICE</option>
+                        <option value={EffectType.JUMP_TO_HACKER}>Jump to hacker</option>
                         <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
                         <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
@@ -237,10 +237,10 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
     switch (effect.type) {
         case EffectType.HIDDEN_EFFECTS:
         case EffectType.SITE_STATS:
-        case EffectType.JUMP_TO_NODE:
-        case EffectType.JUMP_TO_HACKER_IGNORING_ICE:
             return <div className="col-lg-2"/>
-
+        case EffectType.JUMP_TO_NODE:
+        case EffectType.JUMP_TO_HACKER:
+            return <EffectValueJumpBlockedType effect={effect} scriptType={scriptType}/>
         case EffectType.DECREASE_FUTURE_TIMERS:
         case EffectType.START_RESET_TIMER:
         case EffectType.SPEED_UP_RESET_TIMER:
@@ -265,6 +265,27 @@ const EffectValueText = ({scriptType, effect}: { scriptType: ScriptType, effect:
                            webSocketConnection.send("/gm/scriptType/editEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber, value})
                        }}
                        readonly={false}/>
+    </div>
+}
+
+
+const EffectValueJumpBlockedType = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
+    return <div className="col-lg-2">
+        <DropDownSaveInput className="form-control"
+                           selectedValue={effect.value as string}
+                           save={(value) => {
+                               webSocketConnection.send("/gm/scriptType/editEffect", {
+                                   "scriptTypeId": scriptType.id,
+                                   "effectNumber": effect.effectNumber,
+                                   value
+                               })
+                           }}
+                           readonly={false}>
+            <>
+                <option value="IGNORE_ICE">Ignoring ICE</option>
+                <option value="BLOCKED_BY_ICE">Blocked by ICE</option>
+            </>
+        </DropDownSaveInput>
     </div>
 }
 

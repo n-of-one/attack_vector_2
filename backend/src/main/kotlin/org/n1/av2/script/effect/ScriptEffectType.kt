@@ -25,7 +25,7 @@ enum class ScriptEffectType(
     HIDDEN_EFFECTS(HiddenEffectsService::class),
     SITE_STATS(SiteStatsEffectService::class),
     JUMP_TO_NODE(JumpToNodeEffectService::class),
-    JUMP_TO_HACKER_IGNORING_ICE(JumpToHackerIgnoringIceEffectService::class),
+    JUMP_TO_HACKER(JumpToHackerEffectService::class),
     SWEEPER_UNBLOCK(SweeperUnblockEffectService::class),
     WORD_SEARCH_NEXT_WORDS(WordSearchNextWordsEffectService::class),
     AUTO_HACK_SPECIFIC_ICE(AutoHackSpecificIceEffectService::class),

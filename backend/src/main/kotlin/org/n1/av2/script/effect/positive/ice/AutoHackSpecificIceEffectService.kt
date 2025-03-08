@@ -5,7 +5,7 @@ import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.engine.TICK_MILLIS
+import org.n1.av2.platform.engine.SECONDS_IN_TICKS
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
@@ -62,12 +62,12 @@ class AutoHackSpecificIceEffectService(
         }
     }
 
-
     private fun startHackedIce(layer: IceLayer, siteId: String) {
         val iceId = iceService.findOrCreateIceForLayer(layer)
-        hackedUtil.iceHacked(iceId, layer.id, (1000 / TICK_MILLIS) * 5) // Allow the animation to finish
+        val iceHackedAnimationSeconds = 5
+        hackedUtil.iceHacked(iceId, layer.id, SECONDS_IN_TICKS * iceHackedAnimationSeconds)
 
-        userTaskRunner.queue("complete auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {
+        userTaskRunner.queue("complete auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(iceHackedAnimationSeconds.toLong())) {
             connectionService.replyTerminalReceive("ICE hack complete.")
             connectionService.replyTerminalSetLocked(false)
         }

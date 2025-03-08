@@ -36,12 +36,13 @@ class ScanBeyondIceNodeEffectService(
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         scriptEffectHelper.checkInRun(hackerState)?.let { return ScriptExecution(it) }
         val networkId = argumentTokens.firstOrNull() ?: return ScriptExecution("Provide the [ok]network id[/] of the node to scan.")
-        nodeAccessHelper.checkNodeRevealed(networkId, hackerState.runId!!)?.let { return ScriptExecution(it) }
+
+        val targetNode = nodeEntityService.findByNetworkId(hackerState.siteId!!, networkId)
+        nodeAccessHelper.checkNodeRevealed(targetNode, networkId, hackerState.runId!!)?.let { return ScriptExecution(it) }
 
         return ScriptExecution {
             val run = runEntityService.getByRunId(hackerState.runId)
-            val targetNode = nodeEntityService.findByNetworkId(run.siteId, networkId) ?: error("Node not found for network ID: $networkId")
-            initiateScanService.scanWithScript(run, null,targetNode )
+            initiateScanService.scanWithScript(run, null, targetNode!!)
             TerminalLockState.LOCK
         }
     }

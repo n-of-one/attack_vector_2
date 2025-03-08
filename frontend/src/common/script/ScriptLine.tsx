@@ -33,7 +33,7 @@ export const ScriptLine = ({script, useCase, minimize, ram, shownInRun}: Props) 
     return (<>
             <div className="row text" style={{marginBottom: "2px"}}>
                 <div className="col-lg-2 text-end"><CodeElement script={script} minimize={minimize}/></div>
-                <div className="col-lg-2">{script.name}</div>
+                <div className="col-lg-2">{truncateScriptName(script.name)}</div>
                 <div className="col-lg-1">{script.ram}</div>
                 <div className="col-lg-2"><ScriptStateBadge script={script} /></div>
                 <div className="col-lg-2 noSelect">
@@ -47,6 +47,13 @@ export const ScriptLine = ({script, useCase, minimize, ram, shownInRun}: Props) 
             </div>
         </>
     )
+}
+
+const truncateScriptName = (name: string) => {
+    if (name.length > 15) {
+        return name.substring(0, 15) + "…"
+    }
+    return name
 }
 
 const CodeElement = ({script, minimize}: { script: Script, minimize?: () => void
