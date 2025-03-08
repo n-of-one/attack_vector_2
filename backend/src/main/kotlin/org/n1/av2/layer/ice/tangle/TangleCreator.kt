@@ -14,7 +14,7 @@ import kotlin.random.Random
  */
 
 
-class IdTPoint(val x: Float, val y: Float, val id: String)
+class IdTPoint(val x: Float, val y: Float, val id: String, val clusterNumber: Int)
 
 data class TConnection(val from: TPoint, val to: TPoint)
 
@@ -71,8 +71,8 @@ class TangleCreator {
 
         val points = LinkedList<IdTPoint>()
         val tangleLines = LinkedList<TangleLine>()
-        (1..clusters).forEach {
-            val (clusterPoints, clusterLines) = createSingleTangle("p$it", strength)
+        (1..clusters).forEach { clusterNumber ->
+            val (clusterPoints, clusterLines) = createSingleTangle(clusterNumber, strength)
             points.addAll(clusterPoints)
             tangleLines.addAll(clusterLines)
         }
@@ -92,7 +92,7 @@ class TangleCreator {
         return TangleCreation(tanglePoints.toMutableList(), tangleLines)
     }
 
-    private fun createSingleTangle(prefix: String, strength: IceStrength): Pair<MutableList<IdTPoint>, MutableList<TangleLine>> {
+    private fun createSingleTangle(clusterNumber: Int, strength: IceStrength): Pair<MutableList<IdTPoint>, MutableList<TangleLine>> {
         val lineCount = determineLineCount(strength)
 
         val lines = (1..lineCount).map { createLine() }
@@ -112,7 +112,7 @@ class TangleCreator {
         // so we create a unique TPoint for each x-y location
         val points = HashSet<TPoint>()
         lines.forEach { points.addAll(it.intersections) }
-        val idPoints = points.mapIndexed { index, point -> IdTPoint(point.x, point.y, "${prefix}-${index}") }.toMutableList()
+        val idPoints = points.mapIndexed { index, point -> IdTPoint(point.x, point.y, "p${clusterNumber}-${index}", clusterNumber) }.toMutableList()
 
         val tangleLines = connections.mapIndexed { index, connection ->
             toIdConnection(connection, idPoints, index)
@@ -134,8 +134,8 @@ class TangleCreator {
     private fun createLinePoints(lines: List<TLine>): List<IdTPoint> {
         val linePoints = LinkedList<IdTPoint>()
         lines.forEachIndexed { index, line ->
-            linePoints.add(IdTPoint(line.x1, line.y1, "op-${line}-1"))
-            linePoints.add(IdTPoint(line.x2, line.y2, "op-${index}-2"))
+            linePoints.add(IdTPoint(line.x1, line.y1, "op-${line}-1", 1))
+            linePoints.add(IdTPoint(line.x2, line.y2, "op-${index}-2", 1))
         }
         return linePoints
     }
@@ -157,9 +157,11 @@ class TangleCreator {
 
 
         return idPoints.map {
-            TanglePoint("p-${it.id}",
+            TanglePoint("p${it.clusterNumber}-${it.id}",
                     (50 + (it.x - minX) / scaleX).roundToInt(),
-                    (30 + (it.y - minY) / scaleY).roundToInt())
+                    (30 + (it.y - minY) / scaleY).roundToInt(),
+                    it.clusterNumber
+                )
         }
     }
 
@@ -184,7 +186,7 @@ class TangleCreator {
             val angle = angleStep * index
             val x = (xCenter + xRadius * Math.sin(angle)).roundToInt()
             val y = (yCenter + yRadius * Math.cos(angle)).roundToInt()
-            tanglePoints.add(TanglePoint(idTPoint.id, x, y))
+            tanglePoints.add(TanglePoint(idTPoint.id, x, y, idTPoint.clusterNumber))
         }
         return tanglePoints
     }

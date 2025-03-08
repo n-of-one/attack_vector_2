@@ -3,11 +3,11 @@ import {Canvas, Circle} from "fabric/fabric-impl";
 import {TanglePoint} from "../reducer/TangleIceReducer";
 import {TangleLineDisplay} from "./TangleLineDisplay";
 
-const aCOLOR_NORMAL = "#5ec6c8"
-const aCOLOR_HIGHLIGHT_PRIMARY = "#337ab7"
-const aCOLOR_HIGHLIGHT_SECONDARY = "#337ab7"
 
-const COLOR_NORMAL = "#5ec6c8"
+const COLOR_NORMAL_1 = "#5ec6c8"
+const COLOR_NORMAL_2 = "#C8B65E"
+const COLOR_NORMAL_3 = "#6CC85E"
+const COLOR_NORMAL_4 = "#9C7ECA"
 const COLOR_STROKE_NORMAL = "#000"
 const STROKE_WIDTH_NORMAL = 0.7
 
@@ -25,17 +25,22 @@ export class TanglePointDisplay {
     id: string
     lines: TangleLineDisplay[]
     icon: Circle
+    colorNormal: string
+    cluster: number
 
-    constructor(canvas: Canvas, pointData: TanglePoint) {
+    constructor(canvas: Canvas, pointData: TanglePoint, clustersRevealed: boolean) {
         this.canvas = canvas;
         this.id = pointData.id;
+        this.cluster = pointData.cluster;
         this.lines = [];
+
+        this.colorNormal = this.determineColorNormal(clustersRevealed)
 
         this.icon = new fabric.Circle({
             radius: 6,
             top: pointData.y,
             left: pointData.x,
-            fill: COLOR_NORMAL,
+            fill: this.colorNormal,
             stroke: COLOR_STROKE_NORMAL,
             strokeWidth: STROKE_WIDTH_NORMAL,
             selectable: true,
@@ -72,6 +77,24 @@ export class TanglePointDisplay {
         // })
     }
 
+    determineColorNormal(clustersRevealed: boolean): string {
+        if (!clustersRevealed) {
+            return COLOR_NORMAL_1
+        }
+        switch (this.cluster) {
+            case 1:
+                return COLOR_NORMAL_1
+            case 2:
+                return COLOR_NORMAL_2
+            case 3:
+                return COLOR_NORMAL_3
+            case 4:
+                return COLOR_NORMAL_4
+            default:
+                return COLOR_NORMAL_1
+        }
+    }
+
     show() {
         this.canvas.add(this.icon);
         // this.canvas.add(this.idIcon);
@@ -79,6 +102,11 @@ export class TanglePointDisplay {
 
     addLine(tangleLine: TangleLineDisplay) {
         this.lines.push(tangleLine);
+    }
+
+    revealClusters() {
+        this.colorNormal = this.determineColorNormal(true)
+        this.icon.set("fill", this.colorNormal);
     }
 
     highLight() {
@@ -100,7 +128,7 @@ export class TanglePointDisplay {
     }
 
     secondaryUnHighlight() {
-        this.icon.set("fill", COLOR_NORMAL);
+        this.icon.set("fill", this.colorNormal);
         this.icon.set("stroke", COLOR_STROKE_NORMAL);
         this.icon.set("strokeWidth", STROKE_WIDTH_NORMAL);
 

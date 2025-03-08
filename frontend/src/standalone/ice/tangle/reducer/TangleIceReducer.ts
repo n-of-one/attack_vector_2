@@ -6,6 +6,7 @@ export const ICE_TANGLE_BEGIN = "ICE_TANGLE_BEGIN";
 export const SERVER_TANGLE_ENTER = "SERVER_TANGLE_ENTER";
 export const SERVER_TANGLE_POINT_MOVED = "SERVER_TANGLE_POINT_MOVED";
 
+
 export interface TangleIceState {
     layerId: string,
     strength: IceStrength,
@@ -13,12 +14,14 @@ export interface TangleIceState {
     lines: TangleLine[],
     uiState: string,
     clusters: number,
+    clustersRevealed: boolean,
 }
 
 export interface TanglePoint {
     id: string,
     x: number,
-    y: number
+    y: number,
+    cluster: number
 }
 
 export interface TangleLine {
@@ -34,7 +37,8 @@ export const defaultState: TangleIceState = {
     uiState: HIDDEN,
     points: [],
     lines: [],
-    clusters: 0
+    clusters: 0,
+    clustersRevealed: false,
 };
 
 export const tangleIceReducer = (state: TangleIceState = defaultState, action: AnyAction): TangleIceState => {

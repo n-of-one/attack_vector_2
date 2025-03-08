@@ -56,7 +56,7 @@ class TangleIceCanvas {
 
         this.pointDisplayById = {};
 
-        points.forEach(point => this.addPoint(point));
+        points.forEach(point => this.addPoint(point, puzzleData.clustersRevealed));
         lines.forEach(lines => this.addLine(lines));
         Object.values(this.pointDisplayById).forEach(pointDisplay => pointDisplay.show());
 
@@ -65,8 +65,8 @@ class TangleIceCanvas {
         this.canvas.renderAll();
     }
 
-    addPoint(pointData: TanglePoint) {
-        const pointDisplay = new TanglePointDisplay(this.canvas, pointData);
+    addPoint(pointData: TanglePoint, clustersRevealed: boolean) {
+        const pointDisplay = new TanglePointDisplay(this.canvas, pointData, clustersRevealed);
         this.pointDisplayById[pointData.id] = pointDisplay;
     }
 
@@ -114,6 +114,11 @@ class TangleIceCanvas {
 
     serverMovedPoint(actionData: TanglePointMoved) {
         this.pointDisplayById[actionData.id].moved(actionData.x, actionData.y);
+        this.canvas.renderAll();
+    }
+
+    clustersRevealed() {
+        Object.values(this.pointDisplayById).forEach(pointDisplay => pointDisplay.revealClusters());
         this.canvas.renderAll();
     }
 }

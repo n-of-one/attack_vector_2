@@ -93,6 +93,7 @@ enum class ServerActions {
 
     SERVER_TANGLE_ENTER,                // sent to hacker that hacks this ice, first message of Ice window
     SERVER_TANGLE_POINT_MOVED,          // some hacker moved a tangle point
+    SERVER_TANGLE_CLUSTERS_REVEALED,    // sent to hackers when clusters are revealed
 
     SERVER_WORD_SEARCH_ENTER,           // sent to hacker that hacks this ice, first message of Ice window
     SERVER_WORD_SEARCH_UPDATED,         // sent to run when a word was found

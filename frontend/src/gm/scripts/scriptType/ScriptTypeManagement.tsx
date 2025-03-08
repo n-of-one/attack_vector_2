@@ -139,6 +139,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.JUMP_TO_NODE}>Jump to node</option>
                         <option value={EffectType.JUMP_TO_HACKER}>Jump to hacker</option>
                         <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
+                        <option value={EffectType.TANGLE_REVEAL_CLUSTERS}>Tangle - reveal clusters</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
                         <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
@@ -239,6 +240,7 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
         case EffectType.HIDDEN_EFFECTS:
         case EffectType.SITE_STATS:
         case EffectType.AUTO_HACK_ANY_ICE:
+        case EffectType.TANGLE_REVEAL_CLUSTERS:
             return <div className="col-lg-2"/>
         case EffectType.JUMP_TO_NODE:
         case EffectType.JUMP_TO_HACKER:

@@ -37,6 +37,7 @@ class TangleService(
         val points: MutableList<TanglePoint>,
         val lines: List<TangleLine>,
         val clusters: Int,
+        val clustersRevealed: Boolean,
         val quickPlaying: Boolean,
     )
 
@@ -55,7 +56,8 @@ class TangleService(
             strength = layer.strength,
             originalPoints = creation.points,
             points = creation.points,
-            lines = creation.lines
+            lines = creation.lines,
+            clustersRevealed = false,
         )
         tangleIceStatusRepo.save(iceTangleStatus)
         return iceTangleStatus
@@ -66,7 +68,7 @@ class TangleService(
         val tangleStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
         val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
-        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, quickPlaying)
+        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, tangleStatus.clustersRevealed, quickPlaying)
         connectionService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         runService.enterNetworkedApp(iceId)
     }
@@ -80,8 +82,10 @@ class TangleService(
 
         val tangleStatus = tangleIceStatusRepo.findById(command.iceId).getOrElse { error("Ice not found for \"${command.iceId}\"") }
 
-        tangleStatus.points.removeIf { it.id == command.pointId }
-        val newPoint = TanglePoint(command.pointId, x, y)
+        val oldPoint = tangleStatus.points.find { it.id == command.pointId } ?: error("Point not found for id: \"${command.pointId}\"")
+        val newPoint = oldPoint.copy(x = x, y =  y)
+
+        tangleStatus.points.remove(oldPoint)
         tangleStatus.points.add(newPoint)
         tangleIceStatusRepo.save(tangleStatus)
 
@@ -149,6 +153,14 @@ class TangleService(
     fun deleteByLayerId(layerId: String) {
         val status = tangleIceStatusRepo.findByLayerId(layerId) ?: return
         tangleIceStatusRepo.delete(status)
+    }
+
+    fun revealClusters(status: TangleIceStatus) {
+        val updatedStatus = status.copy (
+            clustersRevealed = true
+        )
+        tangleIceStatusRepo.save(updatedStatus)
+        connectionService.toIce(status.id, ServerActions.SERVER_TANGLE_CLUSTERS_REVEALED)
     }
 
 }

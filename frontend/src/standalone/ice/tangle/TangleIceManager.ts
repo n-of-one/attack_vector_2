@@ -12,6 +12,7 @@ export interface EnterTanglePuzzle {
     lines: TangleLine[],
     clusters: Number,
     hacked: boolean,
+    clustersRevealed: boolean,
     quickPlaying: boolean,
 }
 
@@ -56,6 +57,12 @@ class TangleIceManager extends GenericIceManager {
 
     moved(data: TanglePointMoved) {
         tangleIceCanvas.serverMovedPoint(data)
+    }
+
+    clustersRevealed() {
+        tangleIceCanvas.clustersRevealed()
+        this.displayTerminal(20, "")
+        this.displayTerminal(0, "Clusters revealed")
     }
 
     serverSentIceHacked() {
