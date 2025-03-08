@@ -3,7 +3,6 @@ package org.n1.av2.script.effect.negative
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
-import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
@@ -33,10 +32,7 @@ class SpeedUpResetTimerEffectService(
     override fun playerDescription(effect: ScriptEffect) =
         "If there already was a reset countdown triggered by another script, it is sped up by ${toHumanTime(effect.value!!)}."
 
-    override fun validate(effect: ScriptEffect): String? {
-        if (effect.value == null) return "Duration is required."
-        return effect.value.validateDuration()
-    }
+    override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateDuration(effect)
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         scriptEffectHelper.checkAtNonShutdownSite(hackerState)?.let { return ScriptExecution(it) }

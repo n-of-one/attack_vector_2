@@ -3,7 +3,6 @@ package org.n1.av2.script.effect.negative
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
-import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
@@ -32,10 +31,7 @@ class StartResetTimerEffectService(
 
     override fun playerDescription(effect: ScriptEffect) = "Start a countdown of ${toHumanTime(effect.value!!)} to reset the site."
 
-    override fun validate(effect: ScriptEffect): String? {
-        if (effect.value == null) return "Duration is required."
-        return effect.value.validateDuration()
-    }
+    override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateDuration(effect)
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         scriptEffectHelper.checkAtNonShutdownSite(hackerState)?.let { return ScriptExecution(it) }

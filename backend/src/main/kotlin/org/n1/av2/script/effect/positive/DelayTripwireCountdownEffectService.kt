@@ -1,17 +1,16 @@
 package org.n1.av2.script.effect.positive
 
 import org.n1.av2.hacker.hackerstate.HackerState
-import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
-import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
 
@@ -37,10 +36,7 @@ class DelayTripwireCountdownEffectService(
     override fun playerDescription(effect: ScriptEffect) = "Delay a running tripwire countdown timer by" +
         " ${toHumanTime(effect.value!!)}."
 
-    override fun validate(effect: ScriptEffect): String? {
-        if (effect.value == null) return "Duration is required."
-        return effect.value.validateDuration()
-    }
+    override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateDuration(effect)
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         scriptEffectHelper.checkInNode(hackerState)?.let { return ScriptExecution(it) }

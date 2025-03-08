@@ -33,9 +33,7 @@ class SiteStatsEffectService(
 
     override fun playerDescription(effect: ScriptEffect) = gmDescription
 
-    override fun validate(effect: ScriptEffect): String? {
-        return null
-    }
+    override fun validate(effect: ScriptEffect) = null
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         scriptEffectHelper.checkInRun(hackerState)?.let { return ScriptExecution(it) }

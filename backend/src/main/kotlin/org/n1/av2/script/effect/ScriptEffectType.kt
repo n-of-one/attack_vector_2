@@ -6,6 +6,7 @@ import org.n1.av2.script.effect.negative.SpeedUpResetTimerEffectService
 import org.n1.av2.script.effect.negative.StartResetTimerEffectService
 import org.n1.av2.script.effect.positive.*
 import org.n1.av2.script.effect.positive.ice.SweeperUnblockEffectService
+import org.n1.av2.script.effect.positive.ice.WordSearchNextWordsEffectService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationContext
 import org.springframework.context.event.EventListener
@@ -25,6 +26,7 @@ enum class ScriptEffectType(
     JUMP_TO_NODE(JumpToNodeEffectService::class),
     JUMP_TO_HACKER_IGNORING_ICE(JumpToHackerIgnoringIceEffectService::class),
     SWEEPER_UNBLOCK(SweeperUnblockEffectService::class),
+    WORD_SEARCH_NEXT_WORDS(WordSearchNextWordsEffectService::class),
 }
 
 @Service

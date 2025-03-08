@@ -2,12 +2,20 @@ package org.n1.av2.script.effect.helper
 
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.layer.ice.common.IceLayer
+import org.n1.av2.layer.ice.common.IceService
+import org.n1.av2.script.effect.ScriptExecution
+import org.n1.av2.script.effect.TerminalLockState
+import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
+import kotlin.reflect.KClass
 
 @Service
 class ScriptEffectHelper(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val nodeEntityService: NodeEntityService,
+    private val iceService: IceService,
 ) {
 
     fun checkAtNonShutdownSite(hackerState: HackerState): String? {
@@ -35,5 +43,25 @@ class ScriptEffectHelper(
             return "You can only run this script inside a node."
         }
         return null
+    }
+
+    fun runForIceLayer(
+        iceName: String,
+        klass: KClass<out IceLayer>,
+        argumentTokens: List<String>,
+        hackerState: HackerState,
+        executionForIceLayer: (IceLayer) -> TerminalLockState
+    ): ScriptExecution {
+        checkInNode(hackerState)?.let { return ScriptExecution(it) }
+        val layerNumber = argumentTokens.firstOrNull() ?: return ScriptExecution("Provide the [primary]layer[/] to use this script on.")
+        val node = nodeEntityService.getById(hackerState.currentNodeId!!)
+        val layer = node.layers.find { it.level == layerNumber.toInt() } ?: return ScriptExecution("Layer not found.")
+        if (layer !is IceLayer || !klass.isInstance(layer)) return ScriptExecution("This script can only be used on ${iceName}")
+        if (layer.hacked) return ScriptExecution("This ICE has already been hacked.")
+
+        return ScriptExecution {
+            iceService.findOrCreateIceForLayer(layer)
+            executionForIceLayer(layer)
+        }
     }
 }
