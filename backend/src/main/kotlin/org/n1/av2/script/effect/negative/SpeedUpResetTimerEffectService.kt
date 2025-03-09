@@ -5,7 +5,6 @@ import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.timer.TimerService
@@ -39,7 +38,6 @@ class SpeedUpResetTimerEffectService(
 
         return ScriptExecution {
             timerService.speedUpScriptResetTimer(effect.value!!.toDuration(), hackerState.siteId!!)
-            TerminalLockState.UNLOCK
         }
     }
 }

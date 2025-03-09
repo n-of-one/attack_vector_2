@@ -77,7 +77,7 @@ class CommandHackService(
     }
 
 
-    private fun handleHack(node: Node, layer: Layer, runId: String) {
+    fun handleHack(node: Node, layer: Layer, runId: String) {
         when (layer) {
             is OsLayer -> osLayerService.hack(layer)
             is TextLayer -> textLayerService.hack(layer, node)

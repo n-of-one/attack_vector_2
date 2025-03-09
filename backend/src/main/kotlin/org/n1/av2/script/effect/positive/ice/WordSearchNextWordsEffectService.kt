@@ -6,7 +6,6 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceStatusRepo
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.IceEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.enums.LayerType
@@ -34,15 +33,16 @@ class WordSearchNextWordsEffectService(
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         return iceEffectHelper.runForSpecificIceLayer(LayerType.WORD_SEARCH_ICE, argumentTokens, hackerState) { layer: IceLayer ->
-            val iceStatus = wordSearchIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
-            val wordsLeft = iceStatus.words.drop(iceStatus.wordIndex)
-            val wordsToShow = wordsLeft.take(effect.value!!.toInt())
+            ScriptExecution {
+                val iceStatus = wordSearchIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
+                val wordsLeft = iceStatus.words.drop(iceStatus.wordIndex)
+                val wordsToShow = wordsLeft.take(effect.value!!.toInt())
 
-            connectionService.replyTerminalReceive("The next words are:")
-            wordsToShow.forEach {
-                connectionService.replyTerminalReceive("- $it")
+                connectionService.replyTerminalReceive("The next words are:")
+                wordsToShow.forEach {
+                    connectionService.replyTerminalReceive("- $it")
+                }
             }
-            TerminalLockState.UNLOCK
         }
     }
 }

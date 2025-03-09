@@ -143,6 +143,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
                         <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
+                        <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
                     </select>
                 </div>
                 <div className="col-lg-1">
@@ -237,14 +238,10 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
 
 const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
     switch (effect.type) {
-        case EffectType.HIDDEN_EFFECTS:
-        case EffectType.SITE_STATS:
-        case EffectType.AUTO_HACK_ANY_ICE:
-        case EffectType.TANGLE_REVEAL_CLUSTERS:
-            return <div className="col-lg-2"/>
         case EffectType.JUMP_TO_NODE:
         case EffectType.JUMP_TO_HACKER:
             return <EffectValueJumpBlockedType effect={effect} scriptType={scriptType}/>
+
         case EffectType.DECREASE_FUTURE_TIMERS:
         case EffectType.START_RESET_TIMER:
         case EffectType.SPEED_UP_RESET_TIMER:
@@ -252,10 +249,18 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
         case EffectType.SWEEPER_UNBLOCK:
         case EffectType.WORD_SEARCH_NEXT_WORDS:
             return <EffectValueText effect={effect} scriptType={scriptType}/>
+
         case EffectType.AUTO_HACK_SPECIFIC_ICE:
             return <EffectValueIceType effect={effect} scriptType={scriptType}/>
+
+        case EffectType.HIDDEN_EFFECTS:
+        case EffectType.SITE_STATS:
+        case EffectType.AUTO_HACK_ANY_ICE:
+        case EffectType.TANGLE_REVEAL_CLUSTERS:
+        case EffectType.HACK_BELOW_NON_HACKED_ICE:
+            return <div className="col-lg-2"/>
         default:
-            return <div>Unknown effect type</div>
+            return <div className="col-lg-2"/>
     }
 
 

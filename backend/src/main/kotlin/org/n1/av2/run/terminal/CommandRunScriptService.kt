@@ -6,8 +6,8 @@ import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.ram.RamService
+import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.stereotype.Service
 
@@ -34,30 +34,34 @@ class CommandRunScriptService(
     fun runScript(script: Script, argumentTokens: List<String>, hackerSate: HackerState) {
         val type = scriptTypeService.getById(script.typeId)
 
-        val executions: List<ScriptExecution> = type.effects.map { effect ->
-            val effectService = scriptEffectTypeLookup.getForType(effect.type)
-            effectService.prepareExecution(effect, argumentTokens, hackerSate)
-        }
+        val executions: List<ScriptExecution> = prepareExecutions(type, argumentTokens, hackerSate)
+        if (processErrors(executions)) return
 
-        val errorMessages = executions.mapNotNull { it.errorMessage }
-        if (errorMessages.isNotEmpty()) {
-            errorMessages.forEach {
-                connectionService.replyTerminalReceive(it)
-            }
-            connectionService.replyTerminalSetLocked(false)
-            return
-        }
-
-        val lockStates: List<TerminalLockState> = executions.map { it.executionMethod }.map { it() }
-        if (lockStates.isEmpty()) {
+        if (executions.isEmpty()) {
             connectionService.replyTerminalReceive("Script executed successfully, but it has no effects.")
+        } else {
+            executions.forEach { it.executionMethod() }
         }
 
 // FIXME
 //        ramService.useScript(hackerSate.userId, type.size)
 //        scriptService.markAsUsedAndNotify(script)
 
-        val lockedState = lockStates.all { it == TerminalLockState.LOCK }
-        connectionService.replyTerminalSetLocked(lockedState)
     }
+
+    private fun prepareExecutions(type: ScriptType, argumentTokens: List<String>, hackerSate: HackerState): List<ScriptExecution> {
+        return type.effects.map { effect ->
+            val effectService = scriptEffectTypeLookup.getForType(effect.type)
+            effectService.prepareExecution(effect, argumentTokens, hackerSate)
+        }
+    }
+    private fun processErrors(executions: List<ScriptExecution>): Boolean {
+        val errorMessages = executions.mapNotNull { it.errorMessage }.ifEmpty { return false }
+        errorMessages.forEach {
+            connectionService.replyTerminalReceive(it)
+        }
+        connectionService.replyTerminalSetLocked(false)
+        return true
+    }
+
 }

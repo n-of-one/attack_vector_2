@@ -5,17 +5,9 @@ import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.type.ScriptEffect
 
 
-enum class TerminalLockState {
-    LOCK, UNLOCK
-}
-
-class ScriptExecution(errorMessage: String?, executionMethod: () -> TerminalLockState) {
-
-    constructor(errorMessage: String): this(errorMessage, { TerminalLockState.UNLOCK })
-    constructor(executionMethod: () -> TerminalLockState): this(null, executionMethod)
-
-    val errorMessage: String? = errorMessage
-    val executionMethod: () -> TerminalLockState = executionMethod
+class ScriptExecution (val errorMessage: String?, val executionMethod: () -> Unit) {
+    constructor(errorMessage: String): this(errorMessage, { })
+    constructor(executionMethod: () -> Unit): this(null, executionMethod)
 }
 
 interface ScriptEffectInterface {

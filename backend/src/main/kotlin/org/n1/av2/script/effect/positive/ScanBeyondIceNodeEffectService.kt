@@ -5,7 +5,6 @@ import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.NodeAccessHelper
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
@@ -43,7 +42,6 @@ class ScanBeyondIceNodeEffectService(
         return ScriptExecution {
             val run = runEntityService.getByRunId(hackerState.runId)
             initiateScanService.scanWithScript(run, null, targetNode!!)
-            TerminalLockState.LOCK
         }
     }
 

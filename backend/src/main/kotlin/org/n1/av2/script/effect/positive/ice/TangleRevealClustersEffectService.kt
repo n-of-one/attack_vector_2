@@ -7,7 +7,6 @@ import org.n1.av2.layer.ice.tangle.TangleService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.IceEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.enums.LayerType
@@ -37,10 +36,11 @@ class TangleRevealClustersEffectService(
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         return iceEffectHelper.runForSpecificIceLayer(LayerType.TANGLE_ICE, argumentTokens, hackerState) { layer: IceLayer ->
-            val iceStatus = tangleIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
-            tangleService.revealClusters(iceStatus)
-            connectionService.replyTerminalReceive("Clusters revealed.")
-            TerminalLockState.UNLOCK
+            ScriptExecution {
+                val iceStatus = tangleIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
+                tangleService.revealClusters(iceStatus)
+                connectionService.replyTerminalReceive("Clusters revealed.")
+            }
         }
     }
 }

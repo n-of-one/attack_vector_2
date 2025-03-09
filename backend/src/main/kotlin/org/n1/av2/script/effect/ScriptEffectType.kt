@@ -29,7 +29,7 @@ enum class ScriptEffectType(
     WORD_SEARCH_NEXT_WORDS(WordSearchNextWordsEffectService::class),
     AUTO_HACK_SPECIFIC_ICE(AutoHackSpecificIceEffectService::class),
     AUTO_HACK_ANY_ICE(AutoHackAnyIceEffectService::class),
-
+    HACK_BELOW_NON_HACKED_ICE(HackBelowNonHackedIceEffectService::class),
 }
 
 @Service

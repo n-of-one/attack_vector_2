@@ -6,7 +6,6 @@ import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.Node
@@ -38,7 +37,7 @@ class SiteStatsEffectService(
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         scriptEffectHelper.checkInRun(hackerState)?.let { return ScriptExecution(it) }
 
-        return ScriptExecution{
+        return ScriptExecution {
             connectionService.replyTerminalReceive("", "Site stats", "----------")
 
             val nodes = nodeEntityService.findBySiteId(hackerState.siteId!!)
@@ -54,7 +53,6 @@ class SiteStatsEffectService(
             reportCountOf(nodes, LayerType.SWEEPER_ICE, "(minesweeper)", 0)
 
             connectionService.replyTerminalReceive("")
-            TerminalLockState.UNLOCK
         }
     }
 
