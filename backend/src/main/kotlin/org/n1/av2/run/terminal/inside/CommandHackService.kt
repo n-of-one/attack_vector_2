@@ -13,6 +13,8 @@ import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreLayerService
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.os.OsLayerService
+import org.n1.av2.layer.other.script.ScriptInteractionLayer
+import org.n1.av2.layer.other.script.ScriptInteractionLayerService
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.text.TextLayerService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
@@ -39,6 +41,7 @@ class CommandHackService(
     private val configService: ConfigService,
     private val hackedUtil: HackedUtil,
     private val coreLayerService: CoreLayerService,
+    private val scriptInteractionLayerService: ScriptInteractionLayerService,
 ) {
 
     fun processHackCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -77,16 +80,18 @@ class CommandHackService(
     }
 
 
+    @Suppress("unused")
     fun handleHack(node: Node, layer: Layer, runId: String) {
         when (layer) {
             is OsLayer -> osLayerService.hack(layer)
-            is TextLayer -> textLayerService.hack(layer, node)
+            is TextLayer -> textLayerService.hack(layer)
             is IceLayer -> hackIce(layer)
             is StatusLightLayer -> statusLightLayerService.hack(layer)
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
             is CoreLayer -> coreLayerService.hack(layer, runId)
             is TripwireLayer -> tripwireLayerService.hack(layer)
-            else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}")
+            is ScriptInteractionLayer -> scriptInteractionLayerService.hack()
+            else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }
     }
 

@@ -20,6 +20,7 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
@@ -159,45 +160,52 @@ class ImportService(
         return when (layerType) {
             LayerType.OS -> mapLayerOs(input, id, level, name, note)
             LayerType.TEXT -> TextLayer(type = LayerType.TEXT, id = id, level = level, name = name, note = note, text = input.get("text").asText())
-            LayerType.CORE -> CoreLayer(
-                type = LayerType.CORE,
-                id = id,
-                level = level,
-                name = name,
-                note = note,
-                revealNetwork = input.get("revealNetwork").asBoolean()
-            )
-
-            LayerType.KEYSTORE -> KeyStoreLayer(
-                type = LayerType.KEYSTORE,
-                id = id,
-                level = level,
-                name = name,
-                note = note,
-                iceLayerId = input.get("iceLayerId").asText()
-            )
-
+            LayerType.CORE -> mapLayerCore(input, id, level, name, note)
+            LayerType.KEYSTORE -> mapLayerKeystore(input, id, level, name, note)
             LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
+            LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
             LayerType.NETWALK_ICE,
             LayerType.TANGLE_ICE,
             LayerType.TAR_ICE,
             LayerType.PASSWORD_ICE,
             LayerType.WORD_SEARCH_ICE,
-            LayerType.SWEEPER_ICE ->  mapIceLayer(input, layerType, id, level, name, note)
+            LayerType.SWEEPER_ICE -> mapIceLayer(input, layerType, id, level, name, note)
         }
+    }
+
+    private fun mapLayerCore(input: JsonNode, id: String, level: Int, name: String, note: String): CoreLayer {
+        return CoreLayer(
+            type = LayerType.CORE,
+            id = id,
+            level = level,
+            name = name,
+            note = note,
+            revealNetwork = input.get("revealNetwork").asBoolean()
+        )
     }
 
     private fun mapLayerOs(input: JsonNode, id: String, level: Int, name: String, note: String): OsLayer {
         val nodeName = input.get("nodeName").asText()
         val layerId = fixOsLayerId(id)
-        return OsLayer( type = LayerType.OS, id = layerId, level = level, name = name, note = note, nodeName = nodeName)
+        return OsLayer(type = LayerType.OS, id = layerId, level = level, name = name, note = note, nodeName = nodeName)
+    }
+
+    private fun mapLayerKeystore(input: JsonNode, id: String, level: Int, name: String, note: String): KeyStoreLayer {
+        return KeyStoreLayer(
+            type = LayerType.KEYSTORE,
+            id = id,
+            level = level,
+            name = name,
+            note = note,
+            iceLayerId = input.get("iceLayerId").asText()
+        )
     }
 
     // Initial version has OS layerId: {nodeId}-layer-0000 . This break in format makes it incompatible with input validation.
     private fun fixOsLayerId(idInput: String): String {
-        if (!(idInput.endsWith("-layer-0000")) ) return idInput
+        if (!(idInput.endsWith("-layer-0000"))) return idInput
 
         val nodeId = idInput.substringBefore("-layer-0000")
         return nodeEntityService.createOsLayerId(nodeId)
@@ -225,6 +233,15 @@ class ImportService(
         )
     }
 
+    private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {
+        return ScriptInteractionLayer(
+            type = LayerType.SCRIPT_INTERACTION,
+            id = id, level = level, name = name, note = note,
+            interactionKey =  input.get("interactionKey").asText(),
+            message = input.get("message").asText(),
+        )
+    }
+
     private fun mapIceLayer(input: JsonNode, layerType: LayerType, id: String, level: Int, name: String, note: String): IceLayer {
         val strength = IceStrength.valueOf(input.get("strength").asText())
 
@@ -246,7 +263,7 @@ class ImportService(
     }
 
     private fun mapTangleIce(input: JsonNode, id: String, level: Int, name: String, note: String, strength: IceStrength): TangleIceLayer {
-        val clusters = if (input.has("clusters") ) input.get("clusters").asInt() else 1
+        val clusters = if (input.has("clusters")) input.get("clusters").asInt() else 1
         return TangleIceLayer(id, LayerType.TANGLE_ICE, level, name, note, strength, false, clusters)
     }
 

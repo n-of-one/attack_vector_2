@@ -11,6 +11,7 @@ enum class LayerType(
     LOCK,
     STATUS_LIGHT,
     CORE,
+    SCRIPT_INTERACTION,
 
     WORD_SEARCH_ICE(true),
     PASSWORD_ICE(true),

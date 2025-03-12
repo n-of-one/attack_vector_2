@@ -62,9 +62,12 @@ export interface LayerDetails {
 
     iceLayerId?: string          // Keystore layer
 
-    revealNetwork?: boolean       // Core layer
+    revealNetwork?: boolean      // Core layer
 
-    clusters?: number             // Tangle Ice layer
+    interactionKey?: string      // Script Interaction layer
+    message?: string             // Script Interaction layer
+
+    clusters?: number            // Tangle Ice layer
 
 }
 

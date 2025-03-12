@@ -1,3 +1,20 @@
+export enum LayerType {
+    OS = "OS",
+    TEXT= "TEXT",
+    PASSWORD_ICE = "PASSWORD_ICE",
+    TANGLE_ICE = "TANGLE_ICE",
+    WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
+    NETWALK_ICE = "NETWALK_ICE",
+    TAR_ICE = "TAR_ICE",
+    SWEEPER_ICE = "SWEEPER_ICE",
+    LOCK = "LOCK",
+    STATUS_LIGHT = "STATUS_LIGHT",
+    KEYSTORE = "KEYSTORE",
+    TRIPWIRE = "TRIPWIRE",
+    CORE = "CORE",
+    SCRIPT_INTERACTION = "SCRIPT_INTERACTION",
+}
+
 export const OS = "OS"
 export const TEXT = "TEXT"
 export const TRACER = "TRACER"
@@ -20,21 +37,9 @@ export const STATUS_LIGHT = "STATUS_LIGHT"
 export const KEYSTORE = "KEYSTORE"
 export const TRIPWIRE = "TRIPWIRE"
 
-export enum LayerType {
-    OS = "OS",
-    TEXT= "TEXT",
-    PASSWORD_ICE = "PASSWORD_ICE",
-    TANGLE_ICE = "TANGLE_ICE",
-    WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
-    NETWALK_ICE = "NETWALK_ICE",
-    TAR_ICE = "TAR_ICE",
-    SWEEPER_ICE = "SWEEPER_ICE",
-    LOCK = "LOCK",
-    STATUS_LIGHT = "STATUS_LIGHT",
-    KEYSTORE = "KEYSTORE",
-    TRIPWIRE = "TRIPWIRE",
-    CORE = "CORE",
-}
+export const SCRIPT_INTERACTION = LayerType.SCRIPT_INTERACTION.toString()
+
+
 
 export const layerTypeFromIceId = (iceId: string): LayerType | null => {
     const [iceType] = iceId.split("-")

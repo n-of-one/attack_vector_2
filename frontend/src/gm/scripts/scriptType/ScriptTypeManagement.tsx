@@ -145,6 +145,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
                         <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
                         <option value={EffectType.SHOW_MESSAGE}>Show message</option>
+                        <option value={EffectType.INTERACT_WITH_SCRIPT_LAYER}>Interact with script layer</option>
 
                     </select>
                 </div>
@@ -251,6 +252,7 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
         case EffectType.SCAN_ICE_NODE:
         case EffectType.WORD_SEARCH_NEXT_WORDS:
         case EffectType.SHOW_MESSAGE:
+        case EffectType.INTERACT_WITH_SCRIPT_LAYER:
             return <EffectValueText effect={effect} scriptType={scriptType}/>
 
         case EffectType.AUTO_HACK_SPECIFIC_ICE:

@@ -10,7 +10,7 @@ import {
     NETWALK_ICE,
     OS,
     PASSWORD_ICE,
-    SCAN_BLOCK,
+    SCAN_BLOCK, SCRIPT_INTERACTION,
     STATUS_LIGHT,
     SWEEPER_ICE,
     TANGLE_ICE,
@@ -66,6 +66,7 @@ const iconFamily = (type: string) => {
         case WORD_SEARCH_ICE:
         case KEYSTORE:
         case SWEEPER_ICE:
+        case SCRIPT_INTERACTION:
             return "glyphicon"
         case LOCK:
         case TRIPWIRE:

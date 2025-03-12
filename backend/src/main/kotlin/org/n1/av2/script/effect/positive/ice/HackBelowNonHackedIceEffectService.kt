@@ -34,9 +34,7 @@ class HackBelowNonHackedIceEffectService(
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         val runOnLayerResult = scriptEffectHelper.runOnLayer(argumentTokens, hackerState)
-        if (runOnLayerResult.execution != null) {
-            return runOnLayerResult.execution
-        }
+        runOnLayerResult.execution?.let { return it }
         val layer = checkNotNull(runOnLayerResult.layer)
         val node = checkNotNull(runOnLayerResult.node)
 

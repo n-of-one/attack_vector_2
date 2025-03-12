@@ -6,7 +6,7 @@ import {
     NETWALK_ICE,
     OS,
     PASSWORD_ICE,
-    SCAN_BLOCK,
+    SCAN_BLOCK, SCRIPT_INTERACTION,
     SWEEPER_ICE,
     TANGLE_ICE,
     TAR_ICE,
@@ -68,6 +68,7 @@ export const glyphiconFromType = (type: string) => {
         case GLYPHICON_COLLAPSE_UP: return "glyphicon-collapse-up"
         case GLYPHICON_FLASH: return "glyphicon-flash"
         case GLYPHICON_LOGIN: return "glyphicon-log-in"
+        case SCRIPT_INTERACTION: return "glyphicon-expand"
         default:
             console.log("unknown type:" + type)
             return "glyphicon-thumbs-down"
