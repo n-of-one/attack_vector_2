@@ -6,7 +6,6 @@ import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.TerminalLockState
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.SitePropertiesEntityService
@@ -36,25 +35,18 @@ class DecreaseFutureTimersEffectService(
         scriptEffectHelper.checkAtNonShutdownSite(hackerState)?.let { return ScriptExecution(it) }
 
         return ScriptExecution {
-            execute(effect, hackerState)
-        }
-    }
+            val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId!!)
 
+            val scriptDurationChange = effect.value!!.toDuration()
+            val currentAlertnessAdjustment: Duration = siteProperties.alertnessTimerAdjustment ?: Duration.ZERO
+            val newAdjustment = currentAlertnessAdjustment - scriptDurationChange
 
-    fun execute(effect: ScriptEffect, hackerState: HackerState): TerminalLockState {
-        val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId!!)
-
-        val scriptDurationChange = effect.value!!.toDuration()
-        val currentAlertnessAdjustment:Duration = siteProperties.alertnessTimerAdjustment ?: Duration.ZERO
-        val newAdjustment = currentAlertnessAdjustment - scriptDurationChange
-
-        sitePropertiesEntityService.save(
-            siteProperties.copy(
-                alertnessTimerAdjustment = newAdjustment
+            sitePropertiesEntityService.save(
+                siteProperties.copy(
+                    alertnessTimerAdjustment = newAdjustment
+                )
             )
-        )
-        connectionService.replyTerminalReceive("System alertness increased,  future timers will be decreased by ${toHumanTime(effect.value)}.")
-
-        return TerminalLockState.UNLOCK
+            connectionService.replyTerminalReceive("System alertness increased,  future timers will be decreased by ${toHumanTime(effect.value)}.")
+        }
     }
 }

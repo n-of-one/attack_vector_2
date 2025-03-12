@@ -31,6 +31,12 @@ interface ScriptEffectInterface {
             if (value == null || value <=0) return "Value must be a number greater than zero."
             return null
         }
+
+        fun validateNonEmptyText(effect: ScriptEffect): String? {
+            if (effect.value == null) return "Text is required."
+            if (effect.value.isBlank()) return "Text cannot be empty."
+            return null
+        }
     }
 }
 

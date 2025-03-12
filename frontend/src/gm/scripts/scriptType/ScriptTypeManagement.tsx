@@ -144,6 +144,8 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
                         <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
+                        <option value={EffectType.SHOW_MESSAGE}>Show message</option>
+
                     </select>
                 </div>
                 <div className="col-lg-1">
@@ -242,25 +244,27 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
         case EffectType.JUMP_TO_HACKER:
             return <EffectValueJumpBlockedType effect={effect} scriptType={scriptType}/>
 
+        case EffectType.DELAY_TRIPWIRE_COUNTDOWN:
         case EffectType.DECREASE_FUTURE_TIMERS:
         case EffectType.START_RESET_TIMER:
         case EffectType.SPEED_UP_RESET_TIMER:
         case EffectType.SCAN_ICE_NODE:
-        case EffectType.SWEEPER_UNBLOCK:
         case EffectType.WORD_SEARCH_NEXT_WORDS:
+        case EffectType.SHOW_MESSAGE:
             return <EffectValueText effect={effect} scriptType={scriptType}/>
 
         case EffectType.AUTO_HACK_SPECIFIC_ICE:
             return <EffectValueIceType effect={effect} scriptType={scriptType}/>
 
         case EffectType.HIDDEN_EFFECTS:
+        case EffectType.SWEEPER_UNBLOCK:
         case EffectType.SITE_STATS:
         case EffectType.AUTO_HACK_ANY_ICE:
         case EffectType.TANGLE_REVEAL_CLUSTERS:
         case EffectType.HACK_BELOW_NON_HACKED_ICE:
             return <div className="col-lg-2"/>
         default:
-            return <div className="col-lg-2"/>
+            return <div className="col-lg-2 text">Missing effect type, see: ScriptTypeManagement.tsx</div>
     }
 
 

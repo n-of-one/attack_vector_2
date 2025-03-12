@@ -30,6 +30,8 @@ enum class ScriptEffectType(
     AUTO_HACK_SPECIFIC_ICE(AutoHackSpecificIceEffectService::class),
     AUTO_HACK_ANY_ICE(AutoHackAnyIceEffectService::class),
     HACK_BELOW_NON_HACKED_ICE(HackBelowNonHackedIceEffectService::class),
+    SHOW_MESSAGE(ShowMessageEffectService::class),
+
 }
 
 @Service

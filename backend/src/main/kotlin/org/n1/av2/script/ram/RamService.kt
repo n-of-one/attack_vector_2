@@ -43,6 +43,7 @@ class RamService(
 
     lateinit var scriptService: ScriptService
 
+// FIXME : configurable timers
     private val REFRESH_DURATION = Duration.ofSeconds(10)
     private val HACKING_LOCK_DURATION = Duration.ofMinutes(1)
 
@@ -77,7 +78,8 @@ class RamService(
 
         if (ram.nextRefresh.isBefore(timeService.now()) == true) {
             val durationUntilRefresh = Duration.between(timeService.now(), ram.nextRefresh)
-            scheduleRamRefresh(ram.id, durationUntilRefresh)
+//            scheduleRamRefresh(ram, durationUntilRefresh)
+//            FIXME
         } else {
             val nextRefresh = if (ram.refreshing == 1) null else ram.nextRefresh + REFRESH_DURATION
 
@@ -190,7 +192,7 @@ class RamService(
         val updatedRam = if (needToRefreshMemory) {
             val nextRefresh = ram.nextRefresh ?: (timeService.now() + REFRESH_DURATION)
             if (ram.nextRefresh == null) {
-                scheduleRamRefresh(ram.id, REFRESH_DURATION)
+                scheduleRamRefresh(ram, REFRESH_DURATION)
             }
             sanitize(
                 ram.copy(
@@ -229,14 +231,15 @@ class RamService(
         ramRepository.save(updatedRam)
 
         if (startsRefresh) {
-            scheduleRamRefresh(ram.id, REFRESH_DURATION)
+            scheduleRamRefresh(ram, REFRESH_DURATION)
         }
     }
 
-    private fun scheduleRamRefresh(ramId: RamId, duration: Duration) {
+    @ScheduledTask
+    private fun scheduleRamRefresh(staleRam: RamEntity, duration: Duration) {
         val identifiers = emptyMap<String, String>()
-        userTaskRunner.queue("refresh ram for ${currentUserService.userEntity.name}", identifiers, duration) {
-            ramRefreshTick(ramId)
+        userTaskRunner.queue("refresh ram for ${staleRam.userId}", identifiers, duration) {
+            ramRefreshTick(staleRam.id)
         }
     }
 
@@ -257,7 +260,7 @@ class RamService(
         )
         ramRepository.save(updatedRam)
         if (newRefreshing > 0) {
-            scheduleRamRefresh(ram.id, REFRESH_DURATION)
+            scheduleRamRefresh(ram, REFRESH_DURATION)
         }
         scriptService.sendScriptStatusToCurrentUser()
     }
