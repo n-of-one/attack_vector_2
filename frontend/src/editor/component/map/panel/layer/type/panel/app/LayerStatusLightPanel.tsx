@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch} from "react-redux"
 import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {LayerStatusLight} from "../../../../../../../../common/model/layer/LayerStatusLight";
 import {AttributeDropdown} from "../../../element/AttributeDropdown";
 import {AttributeUrlWithQr} from "../../../element/AttributeUrlWithQr";

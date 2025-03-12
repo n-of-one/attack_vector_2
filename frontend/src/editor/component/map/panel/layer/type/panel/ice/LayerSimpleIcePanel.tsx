@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
 import {AttributeIceStrength} from "../../../element/AttributeIceStrength"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {AttributeIceUrlWithQr} from "../../../element/AttributeIceUrlWithQr";
 import {LayerIce} from "../../../../../../../../common/model/layer/LayerIce";
 

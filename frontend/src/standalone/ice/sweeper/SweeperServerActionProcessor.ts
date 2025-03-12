@@ -1,7 +1,7 @@
 import {IceStrength} from "../../../common/model/IceStrength";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {sweeperIceManager} from "./SweeperIceManager";
-import {SERVER_ICE_HACKED} from "../../../common/server/GenericServerActionProcessor";
+import {SERVER_ICE_HACKED, SERVER_RESET_ICE} from "../../../common/server/GenericServerActionProcessor";
 
 export const SERVER_SWEEPER_ENTER = "SERVER_SWEEPER_ENTER"
 export const SERVER_SWEEPER_MODIFY = "SERVER_SWEEPER_MODIFY"
@@ -71,5 +71,8 @@ export const initSweeperServerActions = () => {
     })
     webSocketConnection.addAction(SERVER_ICE_HACKED, () => {
         sweeperIceManager.serverSentIceHacked()
+    })
+    webSocketConnection.addAction(SERVER_RESET_ICE, () => {
+        sweeperIceManager.processIceReset()
     })
 }

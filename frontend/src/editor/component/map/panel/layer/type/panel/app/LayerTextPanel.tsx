@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux"
 import {LayerText} from "../../../../../../../../common/model/layer/LayerText"
 import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {TextSaveType} from "../../../../../../../../common/component/TextSaveInput";
 
 interface Props {

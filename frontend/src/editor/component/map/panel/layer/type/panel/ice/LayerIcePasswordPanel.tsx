@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux"
 import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerIcePassword} from "../../../../../../../../common/model/layer/LayerIcePassword"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {AttributeIceUrlWithQr} from "../../../element/AttributeIceUrlWithQr";
 
 

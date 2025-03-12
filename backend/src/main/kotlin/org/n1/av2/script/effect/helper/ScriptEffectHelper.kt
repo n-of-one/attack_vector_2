@@ -42,7 +42,7 @@ class ScriptEffectHelper(
         return null
     }
 
-    class RunOnLayerResult(val layer: Layer?, val node: Node?, val execution: ScriptExecution?) {
+    class RunOnLayerResult(val layer: Layer?, val node: Node?, val errorExecution: ScriptExecution?) {
         constructor(errorMessage: String) : this(null, null, ScriptExecution(errorMessage))
     }
 

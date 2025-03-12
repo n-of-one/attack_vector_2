@@ -2,8 +2,7 @@ import React from 'react'
 import {useDispatch} from "react-redux"
 import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
-import {LayerOs} from "../../../../../../../../common/model/layer/LayerOs"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {LayerScriptInteraction} from "../../../../../../../../common/model/layer/LayerScriptInteraction";
 
 interface Props {

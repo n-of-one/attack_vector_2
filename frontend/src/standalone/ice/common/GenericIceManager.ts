@@ -67,4 +67,13 @@ export class GenericIceManager {
         })
     }
 
+    processIceReset() {
+        this.displayTerminal(0, "")
+        this.displayTerminal(20, "↼ ICE reset detected.")
+        this.displayTerminal(80, "[error]connection lost")
+        this.schedule.run(0, () => {
+            window.close()
+        })
+    }
+
 }

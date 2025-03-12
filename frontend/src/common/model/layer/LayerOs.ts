@@ -1,7 +1,7 @@
 import {Layer} from "./Layer";
 import {editorCanvas} from "../../../editor/component/map/canvas/EditorCanvas";
 import {sendEditNetworkId} from "../../../editor/server/EditorServerClient";
-import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
+import {LayerDetails, NodeI} from "../../sites/SiteModel";
 import {Dispatch} from "redux";
 
 export class LayerOs extends Layer {

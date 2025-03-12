@@ -150,9 +150,11 @@ class TangleService(
                 (x == segment.x2 && y == segment.y2)
     }
 
-    fun deleteByLayerId(layerId: String) {
-        val status = tangleIceStatusRepo.findByLayerId(layerId) ?: return
-        tangleIceStatusRepo.delete(status)
+    fun resetIceByLayerId(layerId: String) {
+        val iceStatus = tangleIceStatusRepo.findByLayerId(layerId) ?: return
+        tangleIceStatusRepo.delete(iceStatus)
+
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_RESET_ICE)
     }
 
     fun revealClusters(status: TangleIceStatus) {

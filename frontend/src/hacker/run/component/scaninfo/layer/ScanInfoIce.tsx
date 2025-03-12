@@ -1,7 +1,6 @@
 import React from "react"
 import {Pad} from "../../../../../common/component/Pad"
-import {LayerDetails} from "../../../../../editor/reducer/NodesReducer"
-
+import {LayerDetails} from "../../../../../common/sites/SiteModel";
 export const ScanInfoIce =({layer, iceDescription}: {layer: LayerDetails, iceDescription: string}) => {
 
     const hackedText = layer.hacked ? "Yes" : "No"

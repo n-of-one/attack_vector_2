@@ -14,8 +14,8 @@ import {
     TRANSIT_2,
     TRANSIT_3,
     TRANSIT_4,
-    UNHACKABLE,
-} from "../../editor/reducer/NodesReducer";
+    UNHACKABLE
+} from "../sites/SiteModel";
 
 export class NodeFileType {
     name: NodeTypeName

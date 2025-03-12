@@ -1,5 +1,5 @@
 import React from "react";
-import {LayerDetails} from "../../../../../editor/reducer/NodesReducer";
+import {LayerDetails} from "../../../../../common/sites/SiteModel";
 
 export const ScanInfoTripwire = ({layer}: {layer: LayerDetails}) => {
     return (

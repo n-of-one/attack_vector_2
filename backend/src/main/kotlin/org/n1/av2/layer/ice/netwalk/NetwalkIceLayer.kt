@@ -11,9 +11,9 @@ class NetwalkIceLayer(
     name: String,
     note: String,
     strength: IceStrength,
-    hacked: Boolean
-
-) : IceLayer(id, type, level, name, note, strength, hacked) {
+    hacked: Boolean,
+    original: IceLayer? = null,
+) : IceLayer(id, type, level, name, note, strength, hacked, original) {
 
     constructor(id: String, level: Int, defaultName: String) :
             this(id, LayerType.NETWALK_ICE, level, defaultName, "", IceStrength.AVERAGE, false)

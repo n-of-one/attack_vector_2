@@ -5,9 +5,10 @@ import {getHtmlImage} from "../CanvasUtils"
 import {IMAGE_SIZE} from "./util/DisplayConstants"
 import {Display, Graphics} from "./Display"
 import {Schedule} from "../../util/Schedule"
-import {MoveNodeI, NodeI} from "../../../editor/reducer/NodesReducer"
 import {HackerDisplay} from "./HackerDisplay"
 import {delayTicks} from "../../util/Util";
+import {NodeI} from "../../sites/SiteModel";
+import {MoveNodeI} from "../../../editor/reducer/EditorNodesReducer";
 
 const SCAN_OPACITY = 0.3
 const HACK_OPACITY = 1

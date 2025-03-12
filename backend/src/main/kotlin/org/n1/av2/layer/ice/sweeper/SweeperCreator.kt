@@ -95,7 +95,7 @@ class SweeperMap(
                 row.append(valueAt(x, y))
             }
             grid.add(row.toString())
-            println(row)
+//            println(row)
         }
         return grid
     }

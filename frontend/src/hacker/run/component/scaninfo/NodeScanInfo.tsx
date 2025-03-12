@@ -5,8 +5,8 @@ import {findElementById} from "../../../../common/util/Immutable"
 import {NodeScanInfoByStatus} from "./NodeScanInfoByStatus"
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus"
 import {Pad} from "../../../../common/component/Pad"
-import {NodeI} from "../../../../editor/reducer/NodesReducer";
 import {HackerRootState} from "../../../HackerRootReducer";
+import {NodeI} from "../../../../common/sites/SiteModel";
 
 const statusText = (status: NodeScanStatus) => {
     switch (status) {

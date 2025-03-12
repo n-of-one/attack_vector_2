@@ -35,7 +35,7 @@ class IceAuthorizationService(
     }
 
     fun isAuthorized(layer: IceLayer): Boolean {
-        val iceId = iceService.findOrCreateIceForLayer(layer)
+        val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
         val iceStatus = authAppService.findOrCreateIceStatus(iceId, layer)
         val isHacker = currentUserService.userEntity.type == UserType.HACKER
         if (isHacker && layer.hacked) {

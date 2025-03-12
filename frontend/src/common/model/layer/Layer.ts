@@ -1,6 +1,6 @@
 import {sendEditLayerData} from "../../../editor/server/EditorServerClient";
-import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
+import {LayerDetails, NodeI} from "../../sites/SiteModel";
 
 const NOTE = "note";
 const NAME = "name";

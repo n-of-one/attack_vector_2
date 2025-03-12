@@ -131,8 +131,9 @@ class WordSearchService(
         return builder.toString()
     }
 
-    fun deleteByLayerId(layerId: String) {
+    fun resetIceByLayerId(layerId: String) {
         val iceStatus = wordSearchIceStatusRepo.findByLayerId(layerId) ?: return
         wordSearchIceStatusRepo.delete(iceStatus)
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_RESET_ICE)
     }
 }

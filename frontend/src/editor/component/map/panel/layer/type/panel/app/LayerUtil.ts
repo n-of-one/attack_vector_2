@@ -1,4 +1,4 @@
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer";
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {LayerType} from "../../../../../../../../common/enums/LayerTypes";
 
 export type DropdownOption = {

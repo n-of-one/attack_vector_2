@@ -10,6 +10,7 @@ export const SERVER_TIME_SYNC = "SERVER_TIME_SYNC"
 export const SERVER_USER_CONNECTION = "SERVER_USER_CONNECTION"
 export const SERVER_OPEN_EDITOR = "SERVER_OPEN_EDITOR"
 export const SERVER_ICE_HACKED = "SERVER_ICE_HACKED"
+export const SERVER_RESET_ICE = "SERVER_RESET_ICE"
 
 export const initGenericServerActions = () => {
 
@@ -29,6 +30,4 @@ export const initGenericServerActions = () => {
         const type = data.recoverable ? 'error' : 'fatal'
         notify({type: type, message: data.message})
     })
-
-
 }

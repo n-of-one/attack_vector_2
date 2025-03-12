@@ -1,5 +1,5 @@
 import {Layer} from "./Layer"
-import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../sites/SiteModel";
 import {Dispatch} from "redux"
 
 export class LayerKeyStore extends Layer {

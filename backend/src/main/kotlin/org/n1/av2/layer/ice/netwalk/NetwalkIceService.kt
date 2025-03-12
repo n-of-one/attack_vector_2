@@ -107,8 +107,9 @@ class NetwalkIceService(
         return gridWithRotatedCell
     }
 
-    fun deleteByLayerId(layerId: String) {
+    fun resetIceByLayerId(layerId: String) {
         val iceStatus = netwalkIceStatusRepo.findByLayerId(layerId) ?: return
         netwalkIceStatusRepo.delete(iceStatus)
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_RESET_ICE)
     }
 }

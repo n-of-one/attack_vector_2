@@ -1,6 +1,6 @@
 import {LayerIce} from "./LayerIce";
-import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer";
 import {Dispatch} from "redux";
+import {LayerDetails, NodeI} from "../../sites/SiteModel";
 
 export class LayerIceTar extends LayerIce {
 

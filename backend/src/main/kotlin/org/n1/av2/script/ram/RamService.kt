@@ -4,9 +4,11 @@ import mu.KotlinLogging
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hacker.HackerSkillType
+import org.n1.av2.platform.connection.ConnectionType
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
-import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.script.Script
@@ -16,6 +18,7 @@ import org.n1.av2.script.type.ScriptType
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.util.*
@@ -38,12 +41,12 @@ class RamService(
     private val hackerEntityService: HackerEntityService,
     private val timeService: TimeService,
     private val userTaskRunner: UserTaskRunner,
-    private val currentUserService: CurrentUserService,
+    private val userEntityService: UserEntityService,
 ) {
 
     lateinit var scriptService: ScriptService
 
-// FIXME : configurable timers
+    // FIXME : configurable timers
     private val REFRESH_DURATION = Duration.ofSeconds(10)
     private val HACKING_LOCK_DURATION = Duration.ofMinutes(1)
 
@@ -52,12 +55,22 @@ class RamService(
     @EventListener(ApplicationStartedEvent::class)
     fun recreateRefreshTimersAfterApplicationRestart() {
         ramRepository.findAll().forEach { ram ->
-            if (ram.refreshing > 0) {
-                processRefreshDuringServerDown(ram)
+            try {
+                val user = userEntityService.getByIdOrNull(ram.userId) ?: return // user no longer exists
+                val authentication = UserPrincipal("", "system-1", user, ConnectionType.NONE)
+                SecurityContextHolder.getContext().authentication = authentication
+
+                if (ram.refreshing > 0) {
+                    processRefreshDuringServerDown(ram)
+                }
+                if (ram.lockedUntil != null) {
+                    processLockedDuringServerDown(ram)
+                }
+            } finally {
+                SecurityContextHolder.clearContext()
             }
-            if (ram.lockedUntil != null) {
-                processLockedDuringServerDown(ram)
-            }
+
+
         }
     }
 
@@ -78,8 +91,7 @@ class RamService(
 
         if (ram.nextRefresh.isBefore(timeService.now()) == true) {
             val durationUntilRefresh = Duration.between(timeService.now(), ram.nextRefresh)
-//            scheduleRamRefresh(ram, durationUntilRefresh)
-//            FIXME
+            scheduleRamRefresh(ram, durationUntilRefresh)
         } else {
             val nextRefresh = if (ram.refreshing == 1) null else ram.nextRefresh + REFRESH_DURATION
 
@@ -100,8 +112,7 @@ class RamService(
         if (ram.lockedUntil.isBefore(timeService.now())) {
             val updatedRam = ram.copy(lockedUntil = null)
             ramRepository.save(updatedRam)
-        }
-        else {
+        } else {
             scheduleRamUnlock(ram)
         }
     }
@@ -322,7 +333,7 @@ class RamService(
             free = sanitizedFree
         )
 
-        if (sanitized == ram ) return ram
+        if (sanitized == ram) return ram
 
         if (sanitizedLoaded != ram.loaded) logger.error("Sanitized loaded RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedLoaded")
         if (sanitizeRefreshing != ram.refreshing) logger.error("Sanitized refreshing RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizeRefreshing")

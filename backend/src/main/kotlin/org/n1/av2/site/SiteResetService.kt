@@ -74,7 +74,7 @@ class SiteResetService(
             }
             nodeEntityService.save(node)
         }
-        iceService.deleteIce(siteId)
+        iceService.resetIceForSite(siteId)
 
         timerService.removeTimersForSite(siteId)
 

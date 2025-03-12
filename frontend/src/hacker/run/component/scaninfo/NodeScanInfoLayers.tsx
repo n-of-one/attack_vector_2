@@ -1,6 +1,6 @@
 import React from 'react'
 import {LayerInfo} from "./LayerInfo"
-import {LayerDetails, NodeI} from "../../../../editor/reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../common/sites/SiteModel";
 
 function findProtectedLayer(layers: LayerDetails[]) {
     for (let i = layers.length - 1; i >= 0; i--) {

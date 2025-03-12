@@ -1,7 +1,7 @@
 import React from "react"
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus"
 import {NodeScanInfoLayers} from "./NodeScanInfoLayers"
-import {NodeI} from "../../../../editor/reducer/NodesReducer"
+import {NodeI} from "../../../../common/sites/SiteModel";
 
 function renderUnconnectable() {
     return <>

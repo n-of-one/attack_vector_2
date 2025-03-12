@@ -51,6 +51,8 @@ enum class ServerActions {
     SERVER_ENTERED_RUN,             // Step 2 of entering a run: frontend can now start processing messages for this run
     SERVER_RUN_TIMER,               // Optional resending of timer info for a site (at request of client)
 
+    SERVER_RESET_ICE,               // Sent to ICE when site is reset and hacking stops. Also triggered by RotateIceEffectService
+
     SERVER_SITE_SHUTDOWN_START,     // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
     SERVER_SITE_SHUTDOWN_FINISH,    // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
 
@@ -82,6 +84,7 @@ enum class ServerActions {
     SERVER_ICE_HACKED,                  // sent to ice screen to indicate ICE has been hacked.
     SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
     SERVER_NODE_HACKED,                 // change icon of node in run
+    SERVER_LAYER_CHANGED,               // sent to run to update info, this is visible when clicking on icon
 
     SERVER_ICE_HACKERS_UPDATED,         // sent to ice to inform all hackers of the current hackers on this ice
 

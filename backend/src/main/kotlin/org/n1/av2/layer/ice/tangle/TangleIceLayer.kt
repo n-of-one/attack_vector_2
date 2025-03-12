@@ -13,8 +13,8 @@ class TangleIceLayer(
     strength: IceStrength,
     hacked: Boolean,
     var clusters: Int?,
-
-    ) : IceLayer(id, type, level, name, note, strength, hacked) {
+    original: IceLayer? = null,
+    ) : IceLayer(id, type, level, name, note, strength, hacked, original) {
 
 
     constructor(id: String, level: Int, defaultName: String) :

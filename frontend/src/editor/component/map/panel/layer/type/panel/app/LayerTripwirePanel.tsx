@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerTripwire} from "../../../../../../../../common/model/layer/LayerTripwire"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {EditorState} from "../../../../../../../EditorRootReducer";
 import {coreLayerOptions} from "./LayerUtil";
 import {AttributeDropdown} from "../../../element/AttributeDropdown";

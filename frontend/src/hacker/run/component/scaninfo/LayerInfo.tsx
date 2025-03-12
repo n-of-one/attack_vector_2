@@ -2,9 +2,9 @@ import React from 'react'
 import {LayerType} from "../../../../common/enums/LayerTypes"
 import {Pad} from "../../../../common/component/Pad"
 import {ScanInfoIce} from "./layer/ScanInfoIce"
-import {LayerDetails} from "../../../../editor/reducer/NodesReducer";
 import {ScanInfoTripwire} from "./layer/ScanInfoTripwire";
 import {ScanInfoCore} from "./layer/ScanInfoCore";
+import {LayerDetails} from "../../../../common/sites/SiteModel";
 
 const renderLayer = (layer: LayerDetails) => {
     switch (layer.type) {

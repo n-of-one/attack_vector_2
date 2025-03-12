@@ -35,7 +35,7 @@ class TangleRevealClustersEffectService(
     override fun validate(effect: ScriptEffect) = null
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        return iceEffectHelper.runForSpecificIceLayer(LayerType.TANGLE_ICE, argumentTokens, hackerState) { layer: IceLayer ->
+        return iceEffectHelper.runForSpecificIceType(LayerType.TANGLE_ICE, argumentTokens, hackerState) { layer: IceLayer ->
             ScriptExecution {
                 val iceStatus = tangleIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
                 tangleService.revealClusters(iceStatus)

@@ -8,7 +8,6 @@ import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackerPresencesReducer"
-import {LayerDetails, NodeI} from "../../../editor/reducer/NodesReducer"
 import {Connection} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
@@ -18,6 +17,7 @@ import {Timings} from "../../../common/model/Ticks";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPatrollerDisplay";
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../reducer/InfoNodeIdReducer";
+import {LayerDetails, NodeI} from "../../../common/sites/SiteModel";
 
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.

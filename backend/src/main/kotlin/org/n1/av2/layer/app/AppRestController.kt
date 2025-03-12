@@ -19,6 +19,7 @@ class AppRestController(
 
     /** See routes.md in the fronted for an explanation on how this works */
 
+    @Suppress("unused")
     class AppResponse(val appId: String?, val redirectLayerId: String?, val error: String?)
 
     @GetMapping("/api/app/{layerId}")
@@ -37,7 +38,7 @@ class AppRestController(
                 AppResponse(layer.appId, null, null)
             }
             is IceLayer -> {
-                val iceId = iceService.findOrCreateIceForLayer(layer)
+                val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
                 return AppResponse(iceId, null, null)
             }
 

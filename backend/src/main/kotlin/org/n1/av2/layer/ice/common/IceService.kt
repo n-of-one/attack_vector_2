@@ -1,5 +1,6 @@
 package org.n1.av2.layer.ice.common
 
+import org.n1.av2.layer.Layer
 import org.n1.av2.layer.ice.netwalk.NetwalkIceLayer
 import org.n1.av2.layer.ice.netwalk.NetwalkIceService
 import org.n1.av2.layer.ice.password.AuthAppService
@@ -12,6 +13,9 @@ import org.n1.av2.layer.ice.tar.TarIceLayer
 import org.n1.av2.layer.ice.tar.TarService
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchService
+import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.ThemeService
 import org.n1.av2.site.entity.enums.LayerType
@@ -23,13 +27,13 @@ import kotlin.reflect.KClass
 // To prevent circular bean dependencies
 @Configuration
 class InitIceService(
-    val iceService: IceService,
-    val tangleService: TangleService,
-    val authAppService: AuthAppService,
-    val wordSearchService: WordSearchService,
-    val netwalkIceService: NetwalkIceService,
-    val sweeperService: SweeperService,
-    val tarService: TarService,
+    private val iceService: IceService,
+    private val tangleService: TangleService,
+    private val authAppService: AuthAppService,
+    private val wordSearchService: WordSearchService,
+    private val netwalkIceService: NetwalkIceService,
+    private val sweeperService: SweeperService,
+    private val tarService: TarService,
 ) {
 
     @PostConstruct
@@ -47,7 +51,8 @@ class InitIceService(
 class IceService(
     private val nodeEntityService: NodeEntityService,
     private val themeService: ThemeService,
-    ) {
+    private val connectionService: ConnectionService,
+) {
 
     lateinit var tangleService: TangleService
     lateinit var authAppService: AuthAppService
@@ -57,13 +62,13 @@ class IceService(
     lateinit var sweeperService: SweeperService
 
 
-    fun findOrCreateIceForLayer(layer: IceLayer): String {
+    fun findOrCreateIceForLayerAndIceStatus(layer: IceLayer): String {
         val iceId = createIceForLayerInternal(layer)
         authAppService.findOrCreateIceStatus(iceId, layer)
         return iceId
     }
 
-    private fun createIceForLayerInternal(layer: IceLayer): String {
+    fun createIceForLayerInternal(layer: IceLayer): String {
         return when (layer) {
             is TangleIceLayer -> tangleService.findOrCreateIceByLayerId(layer).id
             is WordSearchIceLayer -> wordSearchService.findOrCreateIceByLayerId(layer).id
@@ -75,20 +80,43 @@ class IceService(
         }
     }
 
-    fun deleteIce(siteId: String) {
-        val iceLayers = nodeEntityService
-            .findBySiteId(siteId)
-            .map { node -> node.layers }
-            .flatten()
-            .filterIsInstance<IceLayer>()
+    fun resetIceForSite(siteId: String) {
 
-        iceLayers.forEach { authAppService.deleteByLayerId(it.id) }
+        nodeEntityService.findBySiteId(siteId).forEach { node ->
+            var iceChangedBackToOriginal = false
+            node.layers
+                .filterIsInstance<IceLayer>()
+                .forEach { currentIceLayer ->
+                    resetIceForLayer(currentIceLayer)
+                    if (currentIceLayer.original != null) {
+                        currentIceLayer.original.hacked = false
+                        node.layers[node.layers.indexOf(currentIceLayer)] = currentIceLayer.original
+                        updateFrontendOfLayerChanged(node, currentIceLayer.original)
+                        iceChangedBackToOriginal = true
+                    }
+                }
+            if (iceChangedBackToOriginal) {
+                nodeEntityService.save(node)
+            }
+        }
+    }
 
-        iceLayers.filterIsInstance<TangleIceLayer>().forEach { tangleService.deleteByLayerId(it.id) }
-        iceLayers.filterIsInstance<WordSearchIceLayer>().forEach { wordSearchService.deleteByLayerId(it.id) }
-        iceLayers.filterIsInstance<NetwalkIceLayer>().forEach { netwalkIceService.deleteByLayerId(it.id) }
-        iceLayers.filterIsInstance<TarIceLayer>().forEach { tarService.deleteByLayerId(it.id) }
-        iceLayers.filterIsInstance<SweeperIceLayer>().forEach { sweeperService.deleteByLayerId(it.id) }
+    class LayerUpdatedData(val nodeId: String, val layer: Layer)
+    fun updateFrontendOfLayerChanged(node: Node, updatedLayer: Layer) {
+        connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, LayerUpdatedData(node.id, updatedLayer))
+    }
+
+    fun resetIceForLayer(layer: IceLayer) {
+        when (layer) {
+            is TangleIceLayer -> tangleService.resetIceByLayerId(layer.id)
+            is WordSearchIceLayer -> wordSearchService.resetIceByLayerId(layer.id)
+            is NetwalkIceLayer -> netwalkIceService.resetIceByLayerId(layer.id)
+            is TarIceLayer -> tarService.resetIceByLayerId(layer.id)
+            is PasswordIceLayer -> authAppService.resetIceByLayerId(layer.id)
+            is SweeperIceLayer -> sweeperService.resetIceByLayerId(layer.id)
+            else -> error("Unsupported ice layer: $layer")
+        }
+        authAppService.deleteByLayerId(layer.id)
     }
 
     fun klassFor(layerType: LayerType): KClass<out IceLayer> = when (layerType) {
@@ -101,5 +129,7 @@ class IceService(
         else -> error("Unsupported ice layer type: $layerType")
     }
 
-    fun nameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE (${themeService.iceSimpleName(layerType)})"
+    fun formalNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE"
+    fun simpleNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE (${themeService.iceSimpleName(layerType)})"
+
 }

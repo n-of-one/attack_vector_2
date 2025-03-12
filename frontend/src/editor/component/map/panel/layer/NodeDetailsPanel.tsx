@@ -7,7 +7,6 @@ import {LayerTextPanel} from "./type/panel/app/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {LayerIcePasswordPanel} from "./type/panel/ice/LayerIcePasswordPanel"
 import {EditorState} from "../../../../EditorRootReducer"
-import {LayerDetails, NodeI} from "../../../../reducer/NodesReducer"
 import {SELECT_LAYER} from "../../../../reducer/CurrentLayerIdReducer"
 import {LayerSimpleIcePanel} from "./type/panel/ice/LayerSimpleIcePanel";
 import {LayerIceTarPanel} from "./type/panel/ice/LayerIceTarPanel";
@@ -18,7 +17,8 @@ import {LayerKeyStorePanel} from "./type/panel/app/LayerKeyStorePanel";
 import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
 import {LayerCorePanel} from "./type/panel/app/LayerCorePanel";
 import {TangleIcePanel} from "./type/panel/ice/TangleIcePanel";
-import {LayerScriptInteractionPanel} from "./type/panel/app/LayerOsScriptInteraction";
+import {LayerScriptInteractionPanel} from "./type/panel/app/LayerScriptInteraction";
+import {LayerDetails, NodeI} from "../../../../../common/sites/SiteModel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

@@ -21,7 +21,7 @@ class KeystoreService(
     fun getIcePassword(iceLayerId: String): IcePassword {
         val node = nodeEntityService.findByLayerId(iceLayerId)
         val layer = node.getLayerById(iceLayerId) as IceLayer
-        val iceId = iceService.findOrCreateIceForLayer(layer)
+        val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
 
         return icePasswordRepository.findByIceId(iceId) ?: createNewPassword(iceId, layer)
     }

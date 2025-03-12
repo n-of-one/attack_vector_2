@@ -1,7 +1,7 @@
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {SERVER_TANGLE_ENTER, SERVER_TANGLE_POINT_MOVED} from "./reducer/TangleIceReducer";
 import {EnterTanglePuzzle, tangleIceManager, TanglePointMoved} from "./TangleIceManager";
-import {SERVER_ICE_HACKED} from "../../../common/server/GenericServerActionProcessor";
+import {SERVER_ICE_HACKED, SERVER_RESET_ICE} from "../../../common/server/GenericServerActionProcessor";
 
 const SERVER_TANGLE_CLUSTERS_REVEALED = "SERVER_TANGLE_CLUSTERS_REVEALED"
 
@@ -17,5 +17,8 @@ export const initTangleIceServerActions = () => {
     })
     webSocketConnection.addAction(SERVER_TANGLE_CLUSTERS_REVEALED, () => {
         tangleIceManager.clustersRevealed()
+    })
+    webSocketConnection.addAction(SERVER_RESET_ICE, () => {
+        tangleIceManager.processIceReset()
     })
 }

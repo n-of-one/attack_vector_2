@@ -77,8 +77,9 @@ class TarService(
         }
     }
 
-    fun deleteByLayerId(layerId: String) {
-        val tarIceStatus = tarIceStatusRepo.findByLayerId(layerId) ?: return
-        tarIceStatusRepo.delete(tarIceStatus)
+    fun resetIceByLayerId(layerId: String) {
+        val iceStatus = tarIceStatusRepo.findByLayerId(layerId) ?: return
+        tarIceStatusRepo.delete(iceStatus)
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_RESET_ICE)
     }
 }

@@ -23,56 +23,45 @@ class IceEffectHelper(
     private val iceService: IceService,
 ) {
 
-    fun runForSpecificIceLayer(
+    fun runForSpecificIceType(
         layerType: LayerType,
         argumentTokens: List<String>,
         hackerState: HackerState,
         executionForIceLayer: (IceLayer) -> ScriptExecution
     ): ScriptExecution {
         val klass = iceService.klassFor(layerType)
-        val layerDescription = iceService.nameFor(layerType)
+        val layerDescription = iceService.formalNameFor(layerType)
         return runForIceType(klass, layerDescription, argumentTokens, hackerState, executionForIceLayer)
     }
 
-    fun autoHackSpecificIceType(layerType: LayerType, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        val klass = iceService.klassFor(layerType)
-        val layerDescription = iceService.nameFor(layerType)
-        return runForIceType(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
-            autoHack(layer, hackerState)
-        }
-    }
-
-    fun autoHackAnyIceLayer(argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        val klass = IceLayer::class
-        val layerDescription = "ICE layers"
-        return runForIceType(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
-            autoHack(layer, hackerState)
-        }
-    }
-
-    private fun runForIceType(
+    fun runForIceType(
         klass: KClass<out IceLayer>,
         layerDescription: String,
         argumentTokens: List<String>,
         hackerState: HackerState,
         executionForIceLayer: (IceLayer) -> ScriptExecution,
-
-        ): ScriptExecution {
+    ): ScriptExecution {
         val runOnLayerResult = scriptEffectHelper.runOnLayer(argumentTokens, hackerState)
-        if (runOnLayerResult.execution != null) {
-            return runOnLayerResult.execution
+        if (runOnLayerResult.errorExecution != null) {
+            return runOnLayerResult.errorExecution
         }
         val layer = checkNotNull(runOnLayerResult.layer)
-
         if (layer !is IceLayer || !klass.isInstance(layer)) return ScriptExecution("This script can only be used on ${layerDescription}.")
-        if (layer.hacked) return ScriptExecution("This ICE has already been hacked.")
 
-        iceService.findOrCreateIceForLayer(layer)
+        iceService.findOrCreateIceForLayerAndIceStatus(layer)
         return executionForIceLayer(layer)
     }
 
+    fun autoHackSpecificIceType(layerType: LayerType, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+        val klass = iceService.klassFor(layerType)
+        val layerDescription = iceService.formalNameFor(layerType)
+        return runForIceType(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
+            autoHack(layer, hackerState)
+        }
+    }
 
     fun autoHack(layer: IceLayer, hackerState: HackerState): ScriptExecution {
+        if (layer.hacked) return ScriptExecution("This ICE has already been hacked.")
         return ScriptExecution {
             connectionService.replyTerminalReceiveAndLocked(true, "Hacking ICE...")
             val siteId = hackerState.siteId!!
@@ -84,7 +73,7 @@ class IceEffectHelper(
 
     @ScheduledTask
     private fun startHackedIce(layer: IceLayer, siteId: String) {
-        val iceId = iceService.findOrCreateIceForLayer(layer)
+        val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
         val iceHackedAnimationSeconds = 5
         hackedUtil.iceHacked(iceId, layer.id, SECONDS_IN_TICKS * iceHackedAnimationSeconds)
 

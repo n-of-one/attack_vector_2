@@ -25,7 +25,7 @@ class AutoHackIceTypeEffectService(
 
     override fun playerDescription(effect: ScriptEffect): String {
         val layerType = LayerType.valueOf(effect.value!!)
-        return "Automatically hack one layer of ${iceService.nameFor(layerType)}."
+        return "Automatically hack one layer of ${iceService.simpleNameFor(layerType)}."
     }
 
     override fun validate(effect: ScriptEffect): String? {

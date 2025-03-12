@@ -1,8 +1,8 @@
 import {findElementById} from "../../common/util/Immutable"
 import {AnyAction} from "redux"
-import {NodeI} from "./NodesReducer"
 import {SERVER_ADD_LAYER, SERVER_NODE_UPDATED} from "../server/EditorServerActionProcessor"
 import {SELECT_NODE} from "./CurrentNodeIdReducer"
+import {NodeI} from "../../common/sites/SiteModel";
 
 export const SELECT_LAYER = "SELECT_LAYER"
 

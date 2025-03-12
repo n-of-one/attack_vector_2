@@ -102,7 +102,7 @@ class SiteService(
         connectionEntityService.deleteAllForSite(siteId)
         siteEditorStateEntityService.delete(siteId)
 
-        iceService.deleteIce(siteId)
+        iceService.resetIceForSite(siteId)
         sendSitesList()
     }
 

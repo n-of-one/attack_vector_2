@@ -100,7 +100,7 @@ class CommandHackService(
             connectionService.replyTerminalReceive("[info]not required[/] Ice already hacked.")
             return
         }
-        val iceId = iceService.findOrCreateIceForLayer(layer)
+        val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
 
         data class EnterIce(val iceId: String)
         connectionService.reply(ServerActions.SERVER_REDIRECT_HACK_ICE, EnterIce(iceId))
@@ -125,7 +125,7 @@ class CommandHackService(
             connectionService.replyTerminalReceive("[info]not supported[/] - Only ICE can be quick hacked.")
             return
         }
-        val iceId = iceService.findOrCreateIceForLayer(layer)
+        val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
         hackedUtil.iceHacked(iceId, layer.id, node, 0)
         connectionService.replyTerminalReceive("Quick hacked ${layer.level}.")
     }

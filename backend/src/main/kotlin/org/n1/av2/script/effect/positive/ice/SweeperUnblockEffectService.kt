@@ -37,7 +37,7 @@ class SweeperUnblockEffectService(
     override fun validate(effect: ScriptEffect) = null
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        return iceEffectHelper.runForSpecificIceLayer(LayerType.SWEEPER_ICE, argumentTokens, hackerState) { layer: IceLayer ->
+        return iceEffectHelper.runForSpecificIceType(LayerType.SWEEPER_ICE, argumentTokens, hackerState) { layer: IceLayer ->
             ScriptExecution {
                 val iceStatus = sweeperIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")
                 sweeperService.unblockHacker(iceStatus, currentUserService.userId)

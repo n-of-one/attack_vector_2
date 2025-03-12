@@ -1,9 +1,9 @@
 import React from 'react'
 import {useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {LayerCore} from "../../../../../../../../common/model/layer/LayerCore";
 import {AttributeDropdown} from "../../../element/AttributeDropdown";
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 
 
 interface Props {

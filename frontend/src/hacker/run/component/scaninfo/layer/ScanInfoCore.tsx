@@ -1,6 +1,5 @@
 import React from "react";
-import {LayerDetails} from "../../../../../editor/reducer/NodesReducer";
-
+import {LayerDetails} from "../../../../../common/sites/SiteModel";
 export const ScanInfoCore = ({layer}: {layer: LayerDetails}) => {
     const reveal = layer.revealNetwork ? "yes" : "no"
     return (

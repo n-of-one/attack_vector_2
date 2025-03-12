@@ -1,7 +1,7 @@
 import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {AttributeDropdown} from "../../../element/AttributeDropdown";
 import {EditorState} from "../../../../../../../EditorRootReducer";
 import {editorCanvas} from "../../../../../canvas/EditorCanvas";

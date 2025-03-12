@@ -4,7 +4,6 @@ import {NodeDisplay, SiteStatus} from "../../../../common/canvas/display/NodeDis
 import {ConnectionDisplay} from "../../../../common/canvas/display/ConnectionDisplay"
 import {Dispatch} from "redux"
 import {Connection} from "../../../reducer/ConnectionsReducer"
-import {MoveNodeI, NodeI} from "../../../reducer/NodesReducer"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {delay} from "../../../../common/util/Util"
 import {sendAddConnection, sendMoveNode} from "../../../server/EditorServerClient"
@@ -13,6 +12,8 @@ import {DisplayCollection} from "../../../../common/canvas/display/util/DisplayC
 import {NodeScanStatus} from "../../../../common/enums/NodeStatus";
 import {saveTextInput} from "../../../../common/component/TextSaveInput";
 import {CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
+import {NodeI} from "../../../../common/sites/SiteModel";
+import {MoveNodeI} from "../../../reducer/EditorNodesReducer";
 
 export interface LoadSiteData {
     id: string,

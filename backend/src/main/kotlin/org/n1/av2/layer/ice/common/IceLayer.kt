@@ -15,9 +15,13 @@ open class IceLayer(
     note: String,
     var strength: IceStrength,
     var hacked: Boolean,
+
+    // Ice layers can be changed by hackers. The original (if set) contains the layer as part of the site design.
+    // If a site resets, the changed layer is replaced with the original and the value of original is set to null.
+    val original: IceLayer? = null,
     ) : Layer(id, type, level, name, note) {
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     var ice: Boolean
         set(ignore) {
             // Needed setter because creating the object from Mongo always called the setter.

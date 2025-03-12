@@ -1,7 +1,6 @@
 package org.n1.av2.layer.ice.sweeper
 
 import org.n1.av2.layer.ice.HackedUtil
-import org.n1.av2.layer.ice.password.AuthAppService
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
@@ -25,7 +24,6 @@ class SweeperService(
     private val hackedUtil: HackedUtil,
     private val sweeperIceStatusRepo: SweeperIceStatusRepo,
     private val currentUser: CurrentUserService,
-    private val authAppService: AuthAppService,
     private val configService: ConfigService,
     private val runService: RunService,
 ) {
@@ -230,15 +228,15 @@ class SweeperService(
         if (sweeper.hacked) return // cannot reset a solved sweeper
 
         sweeperIceStatusRepo.delete(sweeper)
-        authAppService.deleteByLayerId(sweeper.layerId)
         val newSweeper = createIce(sweeper.layerId, sweeper.strength)
 
         connectionService.toIce(iceId, ServerActions.SERVER_SWEEPER_RESET_COMPLETE, SweeperResetCompleteMessage(currentUser.userEntity.name, newSweeper.id))
     }
 
-    fun deleteByLayerId(layerId: String) {
+    fun resetIceByLayerId(layerId: String) {
         val iceStatus = sweeperIceStatusRepo.findByLayerId(layerId) ?: return
         sweeperIceStatusRepo.delete(iceStatus)
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_RESET_ICE)
     }
 
 

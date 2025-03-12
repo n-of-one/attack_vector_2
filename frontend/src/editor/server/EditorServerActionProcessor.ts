@@ -1,8 +1,9 @@
 import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {NotificationType} from "../../common/util/Notification"
 import {editorCanvas, LoadSiteData} from "../component/map/canvas/EditorCanvas"
-import {MoveNodeI, NodeI} from "../reducer/NodesReducer"
 import {Connection} from "../reducer/ConnectionsReducer"
+import {NodeI} from "../../common/sites/SiteModel";
+import {MoveNodeI} from "../reducer/EditorNodesReducer";
 
 export const SERVER_SITE_FULL  = "SERVER_SITE_FULL"
 export const SERVER_UPDATE_SITE_DATA = "SERVER_UPDATE_SITE_DATA"

@@ -212,4 +212,8 @@ class AuthAppService(
         icePasswordStatusRepo.delete(iceStatus)
     }
 
+    fun resetIceByLayerId(layerId: String) {
+        val iceStatus = icePasswordStatusRepo.findByLayerId(layerId) ?: return
+        connectionService.toIce(iceStatus.id, ServerActions.SERVER_RESET_ICE)
+    }
 }

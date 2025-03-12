@@ -94,10 +94,25 @@ class TarManager extends GenericIceManager {
         this.displayTerminal(30, "");
         this.displayTerminal(50, "[warn]↼ Access granted.");
 
+        this.clearIntervalTasks()
+        this.processHacked()
+    }
+
+    clearIntervalTasks() {
         if (this.hackingIntervalId) {
             clearInterval(this.hackingIntervalId)
+            this.hackingIntervalId = null
         }
-        this.processHacked()
+
+        if (this.reportingIntervalId) {
+            clearInterval(this.reportingIntervalId)
+            this.reportingIntervalId = null
+        }
+    }
+
+    processTarIceReset() {
+        this.clearIntervalTasks()
+        super.processIceReset()
     }
 }
 

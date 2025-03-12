@@ -2,10 +2,10 @@ import React from 'react'
 import {useDispatch} from "react-redux"
 import {LayerPanel} from "../LayerPanel"
 import {AttributeIceStrength} from "../../../element/AttributeIceStrength"
-import {LayerDetails, NodeI} from "../../../../../../../reducer/NodesReducer"
 import {AttributeIceUrlWithQr} from "../../../element/AttributeIceUrlWithQr";
 import {AttributeDropdown} from "../../../element/AttributeDropdown";
 import {LayerIceTangle} from "../../../../../../../../common/model/layer/LayerIceTangle";
+import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 
 interface Props {
     node: NodeI,
