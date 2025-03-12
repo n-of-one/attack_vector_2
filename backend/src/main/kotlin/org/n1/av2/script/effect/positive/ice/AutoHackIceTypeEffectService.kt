@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service
 
 /**
  * Linked type:
- * @see org.n1.av2.script.effect.ScriptEffectType.AUTO_HACK_SPECIFIC_ICE
+ * @see org.n1.av2.script.effect.ScriptEffectType.AUTO_HACK_ICE_TYPE
  */
 @Service
-class AutoHackSpecificIceEffectService(
+class AutoHackIceTypeEffectService(
     private val iceEffectHelper: IceEffectHelper,
     private val iceService: IceService,
 ) : ScriptEffectInterface {
@@ -41,6 +41,6 @@ class AutoHackSpecificIceEffectService(
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         val iceType = LayerType.valueOf(effect.value!!)
-        return iceEffectHelper.autoHackSpecificIceLayer(iceType, argumentTokens, hackerState)
+        return iceEffectHelper.autoHackSpecificIceType(iceType, argumentTokens, hackerState)
     }
 }

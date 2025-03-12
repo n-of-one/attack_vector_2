@@ -141,11 +141,12 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
                         <option value={EffectType.TANGLE_REVEAL_CLUSTERS}>Tangle - reveal clusters</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
-                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack specific ICE type</option>
+                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack ICE of a specific type</option>
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
                         <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
                         <option value={EffectType.SHOW_MESSAGE}>Show message</option>
                         <option value={EffectType.INTERACT_WITH_SCRIPT_LAYER}>Interact with script layer</option>
+                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER} style={{fontFeatureSettings: "liga: 0" }}>Automatically hack a specific ICE layer</option>
 
                     </select>
                 </div>
@@ -253,6 +254,7 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
         case EffectType.WORD_SEARCH_NEXT_WORDS:
         case EffectType.SHOW_MESSAGE:
         case EffectType.INTERACT_WITH_SCRIPT_LAYER:
+        case EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER:
             return <EffectValueText effect={effect} scriptType={scriptType}/>
 
         case EffectType.AUTO_HACK_SPECIFIC_ICE:
@@ -264,16 +266,16 @@ const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Eff
         case EffectType.AUTO_HACK_ANY_ICE:
         case EffectType.TANGLE_REVEAL_CLUSTERS:
         case EffectType.HACK_BELOW_NON_HACKED_ICE:
-            return <div className="col-lg-2"/>
+            return <div className="col-lg-4"/>
         default:
-            return <div className="col-lg-2 text">Missing effect type, see: ScriptTypeManagement.tsx</div>
+            return <div className="col-lg-4 text">Missing effect type, see: ScriptTypeManagement.tsx</div>
     }
 
 
 }
 
 const EffectValueText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-2">
+    return <div className="col-lg-4">
         <TextSaveInput className="form-control"
                        placeholder="" value={effect.value as string}
                        save={(value) => {
@@ -285,7 +287,7 @@ const EffectValueText = ({scriptType, effect}: { scriptType: ScriptType, effect:
 
 
 const EffectValueJumpBlockedType = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-2">
+    return <div className="col-lg-4">
         <DropDownSaveInput className="form-control"
                            selectedValue={effect.value as string}
                            save={(value) => {
@@ -305,7 +307,7 @@ const EffectValueJumpBlockedType = ({scriptType, effect}: { scriptType: ScriptTy
 }
 
 const EffectValueIceType = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-2">
+    return <div className="col-lg-4">
         <DropDownSaveInput className="form-control"
                            selectedValue={effect.value as string}
                            save={(value) => {

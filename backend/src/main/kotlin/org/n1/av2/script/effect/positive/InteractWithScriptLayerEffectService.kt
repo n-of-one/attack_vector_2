@@ -6,6 +6,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.helper.ScriptEffectHelper
+import org.n1.av2.script.effect.scriptCannotInteractWithThisLayer
 import org.n1.av2.script.type.ScriptEffect
 import org.springframework.stereotype.Service
 
@@ -33,7 +34,7 @@ class InteractWithScriptLayerEffectService(
         val layer = checkNotNull(runOnLayerResult.layer)
 
         if (layer !is ScriptInteractionLayer || !layer.interactionKey.equals(effect.value, ignoreCase = true)) {
-            return ScriptExecution("Script cannot interact with this layer.")
+            return ScriptExecution(scriptCannotInteractWithThisLayer)
         }
 
         return ScriptExecution {

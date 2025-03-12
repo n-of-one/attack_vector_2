@@ -4,6 +4,7 @@ import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.type.ScriptEffect
 
+val scriptCannotInteractWithThisLayer = "Script cannot interact with this layer."
 
 class ScriptExecution (val errorMessage: String?, val executionMethod: () -> Unit) {
     constructor(errorMessage: String): this(errorMessage, { })
@@ -37,6 +38,8 @@ interface ScriptEffectInterface {
             if (effect.value.isBlank()) return "Text cannot be empty."
             return null
         }
+
+
     }
 }
 

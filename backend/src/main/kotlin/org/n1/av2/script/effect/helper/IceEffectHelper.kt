@@ -6,6 +6,7 @@ import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.engine.SECONDS_IN_TICKS
+import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.site.entity.enums.LayerType
@@ -30,13 +31,13 @@ class IceEffectHelper(
     ): ScriptExecution {
         val klass = iceService.klassFor(layerType)
         val layerDescription = iceService.nameFor(layerType)
-        return runForIceLayer(klass, layerDescription, argumentTokens, hackerState, executionForIceLayer)
+        return runForIceType(klass, layerDescription, argumentTokens, hackerState, executionForIceLayer)
     }
 
-    fun autoHackSpecificIceLayer(layerType: LayerType, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    fun autoHackSpecificIceType(layerType: LayerType, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         val klass = iceService.klassFor(layerType)
         val layerDescription = iceService.nameFor(layerType)
-        return runForIceLayer(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
+        return runForIceType(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
             autoHack(layer, hackerState)
         }
     }
@@ -44,12 +45,12 @@ class IceEffectHelper(
     fun autoHackAnyIceLayer(argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
         val klass = IceLayer::class
         val layerDescription = "ICE layers"
-        return runForIceLayer(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
+        return runForIceType(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
             autoHack(layer, hackerState)
         }
     }
 
-    private fun runForIceLayer(
+    private fun runForIceType(
         klass: KClass<out IceLayer>,
         layerDescription: String,
         argumentTokens: List<String>,
@@ -71,16 +72,17 @@ class IceEffectHelper(
     }
 
 
-    private fun autoHack(layer: IceLayer, hackerState: HackerState): ScriptExecution {
-        return ScriptExecution {}
-        connectionService.replyTerminalReceiveAndLocked(true, "Hacking ICE...")
-        val siteId = hackerState.siteId!!
-        userTaskRunner.queue("start auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {
-            startHackedIce(layer, siteId)
+    fun autoHack(layer: IceLayer, hackerState: HackerState): ScriptExecution {
+        return ScriptExecution {
+            connectionService.replyTerminalReceiveAndLocked(true, "Hacking ICE...")
+            val siteId = hackerState.siteId!!
+            userTaskRunner.queue("start auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {
+                startHackedIce(layer, siteId)
+            }
         }
     }
 
-
+    @ScheduledTask
     private fun startHackedIce(layer: IceLayer, siteId: String) {
         val iceId = iceService.findOrCreateIceForLayer(layer)
         val iceHackedAnimationSeconds = 5

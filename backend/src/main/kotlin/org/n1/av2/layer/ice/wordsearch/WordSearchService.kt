@@ -20,7 +20,7 @@ class WordSearchService(
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
     private val configService: ConfigService,
-    ) {
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 
@@ -58,9 +58,7 @@ class WordSearchService(
                 WordSearchCreator(strength).create()
             }
                 .ifEmpty { error("Failed to create ice") }
-                .sortedBy { it.score }
-                .onEach { println(it.score) }
-                .last()
+                .maxBy { it.score }
         }.run {
             logger.debug { "Creating word search ice ${strength} took ${this} ms" }
         }

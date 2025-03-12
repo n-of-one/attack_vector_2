@@ -27,11 +27,12 @@ enum class ScriptEffectType(
     SWEEPER_UNBLOCK(SweeperUnblockEffectService::class),
     TANGLE_REVEAL_CLUSTERS(TangleRevealClustersEffectService::class),
     WORD_SEARCH_NEXT_WORDS(WordSearchNextWordsEffectService::class),
-    AUTO_HACK_SPECIFIC_ICE(AutoHackSpecificIceEffectService::class),
+    AUTO_HACK_ICE_TYPE(AutoHackIceTypeEffectService::class),
     AUTO_HACK_ANY_ICE(AutoHackAnyIceEffectService::class),
     HACK_BELOW_NON_HACKED_ICE(HackBelowNonHackedIceEffectService::class),
     SHOW_MESSAGE(ShowMessageEffectService::class),
     INTERACT_WITH_SCRIPT_LAYER(InteractWithScriptLayerEffectService::class),
+    AUTO_HACK_SPECIFIC_ICE_LAYER(AutoHackSpecificIceLayerEffectService::class),
 
 }
 

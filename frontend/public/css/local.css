@@ -1,5 +1,8 @@
 body {
     background-color: #222222;
+    font-family: 'SpaceMono', 'EmojiSymbols', monospace;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0 !important;
 }
 
 @font-face {
@@ -37,14 +40,11 @@ body {
     font-style: normal;
 }
 
-body {
-    /*padding-bottom: 40px;*/
-    font-family: 'SpaceMono', 'EmojiSymbols', monospace;
+input {
     font-variant-ligatures: none;
 }
 
-
-input {
+select {
     font-variant-ligatures: none;
 }
 
@@ -111,6 +111,7 @@ input {
     color: #aaa;
     font-size: 12px;
     line-height: 14px;
+    font-variant-ligatures: none;
 }
 
 .textSize {
@@ -147,6 +148,7 @@ input {
     border-radius: 4px;
     padding: 0 4px 0 4px;
 }
+
 .scriptUnusable {
     text-decoration: line-through wavy #aaa 1px;
 }
@@ -156,7 +158,6 @@ input {
     font-size: 12px;
     line-height: 14px;
 }
-
 
 
 .errorPage {
