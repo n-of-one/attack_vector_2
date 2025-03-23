@@ -108,19 +108,6 @@ class TangleService(
     private fun tangleSolved(tangleStatus: TangleIceStatus): Boolean {
         val segments = toSegments(tangleStatus)
 
-        return tangleSolvedInternal(segments)
-    }
-
-    private fun toSegments(tangleStatus: TangleIceStatus): List<TangleLineSegment> {
-        return tangleStatus.lines.map { line ->
-            val from = tangleStatus.points.find { it.id == line.fromId }!!
-            val to = tangleStatus.points.find { it.id == line.toId }!!
-
-            TangleLineSegment(from.x, from.y, to.x, to.y, line.id)
-        }
-    }
-
-    private fun tangleSolvedInternal(segments: List<TangleLineSegment>): Boolean {
         val uncheckedSegments = segments.toMutableList()
         while (!uncheckedSegments.isEmpty()) {
             val segment_1 = uncheckedSegments.removeAt(0)
@@ -140,6 +127,16 @@ class TangleService(
         }
         return true
     }
+
+    private fun toSegments(tangleStatus: TangleIceStatus): List<TangleLineSegment> {
+        return tangleStatus.lines.map { line ->
+            val from = tangleStatus.points.find { it.id == line.fromId }!!
+            val to = tangleStatus.points.find { it.id == line.toId }!!
+
+            TangleLineSegment(from.x, from.y, to.x, to.y, line.id)
+        }
+    }
+
 
     private fun connected(segment_1: TangleLineSegment, segment_2: TangleLineSegment): Boolean {
         return connected(segment_1.x1, segment_1.y1, segment_2) || connected(segment_1.x2, segment_1.y2, segment_2)

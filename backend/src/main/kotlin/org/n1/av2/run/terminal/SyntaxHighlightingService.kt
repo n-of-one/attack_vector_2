@@ -45,7 +45,6 @@ class SyntaxHighlightingService(
         syntaxOutside["dc"] = Syntax("t_b", "t_error t_s")
         syntaxOutside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
         syntaxOutside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
-
         syntaxOutside["attack"] = Syntax("t_b")
 
         syntaxOutside["move"] = Syntax("t_error t_s")
@@ -54,19 +53,15 @@ class SyntaxHighlightingService(
         syntaxOutside["password"] = Syntax("t_error t_s")
 
 
-
-
         syntaxInside["help"] = Syntax("t_b", "t_b")
         syntaxInside["scan"] = Syntax("t_b")
         syntaxInside["dc"] = Syntax("t_b")
         syntaxInside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
-
         syntaxInside["move"] = Syntax("t_b", "t_ok")
         syntaxInside["view"] = Syntax("t_b")
         syntaxInside["hack"] = Syntax("t_b", "t_primary")
         syntaxInside["password"] = Syntax("t_b", "t_primary")
         syntaxInside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
-
     }
 
 

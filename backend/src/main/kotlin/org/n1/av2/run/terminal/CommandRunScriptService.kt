@@ -55,6 +55,7 @@ class CommandRunScriptService(
             effectService.prepareExecution(effect, argumentTokens, hackerSate)
         }
     }
+
     private fun processErrors(executions: List<ScriptExecution>): Boolean {
         val errorMessages = executions.mapNotNull { it.errorMessage }.ifEmpty { return false }
         errorMessages.forEach {

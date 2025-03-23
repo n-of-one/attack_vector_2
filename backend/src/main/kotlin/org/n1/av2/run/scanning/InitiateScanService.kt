@@ -18,9 +18,7 @@ import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
 enum class NodeScanType() {
-    SCAN_NODE_INITIAL, // to be used when implementing additional scanning by architects
     OUTSIDE_SCAN,
-    SCAN_NODE_DEEP,  // to be used when implementing additional scanning by architects
 }
 
 @Service
@@ -37,7 +35,7 @@ class InitiateScanService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
 
-    fun scanWithScript(run: Run, startNode: Node?, targetNode: Node) {
+    fun scanIgnoringIceAtTargetNode(run: Run, startNode: Node?, targetNode: Node) {
         val startNodeNetworkId = startNode?.networkId ?: sitePropertiesEntityService.getBySiteId(run.siteId).startNodeNetworkId
         val iceNodeIdToIgnore = targetNode.id
         val nodes = nodeEntityService.findBySiteId(run.siteId)
@@ -59,7 +57,7 @@ class InitiateScanService(
         scanFromOutSide(start, target, run, startNode, nodes, false)
     }
 
-    fun scanFromOutSide(start: TraverseNode,
+    private fun scanFromOutSide(start: TraverseNode,
                         target: TraverseNode,
                         run: Run, targetNode:
                         Node, nodes: List<Node>,
@@ -113,9 +111,10 @@ class InitiateScanService(
         }
         runEntityService.save(run)
 
-        val nodeStatusById = nodes.map { node ->
-            node.id to if (node.unhackedIce) NodeScanStatus.ICE_PROTECTED_3 else NodeScanStatus.FULLY_SCANNED_4
-        }.toMap()
+        val nodeStatusById = nodes.associate { node ->
+            val status = if (node.unhackedIce) NodeScanStatus.ICE_PROTECTED_3 else NodeScanStatus.FULLY_SCANNED_4
+            node.id to status
+        }
 
         connectionService.toRun(run.runId, ServerActions.SERVER_DISCOVER_NODES, "nodeStatusById" to nodeStatusById)
         runLinkService.sendUpdatedRunInfoToHackers(run)

@@ -147,7 +147,7 @@ class CommandMoveService(
 
     fun processQuickMove(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
-            connectionService.replyTerminalReceive("QuickHack is disabled.")
+            connectionService.replyTerminalReceive("QuickMove is not enabled outside of development.")
             return
         }
 

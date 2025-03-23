@@ -91,7 +91,7 @@ class IceService(
                     if (currentIceLayer.original != null) {
                         currentIceLayer.original.hacked = false
                         node.layers[node.layers.indexOf(currentIceLayer)] = currentIceLayer.original
-                        updateFrontendOfLayerChanged(node, currentIceLayer.original)
+                        informFrontendOfLayerChanged(node, currentIceLayer.original)
                         iceChangedBackToOriginal = true
                     }
                 }
@@ -102,7 +102,7 @@ class IceService(
     }
 
     class LayerUpdatedData(val nodeId: String, val layer: Layer)
-    fun updateFrontendOfLayerChanged(node: Node, updatedLayer: Layer) {
+    fun informFrontendOfLayerChanged(node: Node, updatedLayer: Layer) {
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, LayerUpdatedData(node.id, updatedLayer))
     }
 
@@ -130,6 +130,6 @@ class IceService(
     }
 
     fun formalNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE"
-    fun simpleNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE (${themeService.iceSimpleName(layerType)})"
+    fun helpfulNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE (${themeService.iceSimpleName(layerType)})"
 
 }

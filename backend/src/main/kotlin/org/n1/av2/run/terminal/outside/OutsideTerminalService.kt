@@ -10,7 +10,6 @@ import org.n1.av2.run.terminal.CommandHelpService
 import org.n1.av2.run.terminal.CommandScanService
 import org.n1.av2.run.terminal.SocialTerminalService
 import org.n1.av2.run.timings.TimingsService
-import org.n1.av2.script.ScriptService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
@@ -26,7 +25,6 @@ class OutsideTerminalService(
     private val commandHelpService: CommandHelpService,
     private val timingsService: TimingsService,
     private val configService: ConfigService,
-    private val scriptService: ScriptService,
 ) {
 
 
@@ -64,16 +62,11 @@ class OutsideTerminalService(
         connectionService.replyTerminalReceive("[warn]You are outside[/] - First, start the attack with: [b]attack[/]")
     }
 
-
-
-
     private fun processAttack(run: Run, quick: Boolean) {
         if (quick && !configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
             connectionService.replyTerminalReceive("QuickAttack is disabled.")
             return
         }
-
-
         commandStartAttackService.startAttack(run, quick)
     }
 
@@ -83,6 +76,5 @@ class OutsideTerminalService(
         val now = timeService.now()
         return (siteProperties.shutdownEnd != null && now < siteProperties.shutdownEnd)
     }
-
 
 }

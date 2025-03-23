@@ -70,9 +70,9 @@ class ScanService(
     class Discovery(val nodeId: String, val scanStatus: NodeScanStatus)
 
 
-    private fun determineDiscoveries(tagetNodeId: String, run: Run, traverseNodesById: Map<String, TraverseNode>, ignoreIceAtScanNode: Boolean): List<Discovery> {
+    private fun determineDiscoveries(targetNodeId: String, run: Run, traverseNodesById: Map<String, TraverseNode>, ignoreIceAtScanNode: Boolean): List<Discovery> {
 
-        val target = traverseNodesById[tagetNodeId]!!
+        val target = traverseNodesById[targetNodeId]!!
         val scannedNodes: List<TraverseNode> = target.unblockedNetwork(emptyList(), ignoreIceAtScanNode)
 
         val scannedIceNodes = scannedNodes.filter { it.unhackedIce }

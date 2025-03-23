@@ -53,7 +53,7 @@ class RotateIceEffectService(
             nodeEntityService.save(node)
             iceService.findOrCreateIceForLayerAndIceStatus(rotatedIceLayer)
             val newName = iceService.formalNameFor(rotatedIceLayer.type)
-            iceService.updateFrontendOfLayerChanged(node, rotatedIceLayer)
+            iceService.informFrontendOfLayerChanged(node, rotatedIceLayer)
             connectionService.replyTerminalReceive("ICE type changed to ${newName}.")
         }
     }

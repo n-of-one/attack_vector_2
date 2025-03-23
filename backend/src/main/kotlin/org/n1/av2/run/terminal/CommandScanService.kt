@@ -26,7 +26,6 @@ class CommandScanService(
     private val hackerEntityService: HackerEntityService,
 ) {
 
-
     fun processScanFromOutside(run: Run) {
         if (!checkHasScanSkill()) return
 
@@ -38,7 +37,6 @@ class CommandScanService(
         connectionService.replyTerminalSetLocked(true)
         initiateScanService.scanFromOutside(run, node)
     }
-
 
     fun processScanFromInside(runId: String, tokens: List<String>, state: HackerStateRunning) {
         if (!checkHasScanSkill()) return
@@ -62,7 +60,6 @@ class CommandScanService(
         }
         return true
     }
-
 
     fun processQuickScan(run: Run) {
         if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {

@@ -41,7 +41,7 @@ class ScanBeyondIceNodeEffectService(
 
         return ScriptExecution {
             val run = runEntityService.getByRunId(hackerState.runId)
-            initiateScanService.scanWithScript(run, null, targetNode!!)
+            initiateScanService.scanIgnoringIceAtTargetNode(run, null, targetNode!!)
         }
     }
 

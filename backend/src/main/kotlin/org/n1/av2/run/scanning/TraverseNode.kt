@@ -58,7 +58,7 @@ data class TraverseNode(
                 if (currentNode.distance == null) throw BlockedPathException("ICE blocks path to ${currentNode.networkId}")
                 val previousNode = currentNode
                     .connections
-                    .find { it.distance == (currentNode.distance!! - 1) && (ignoreIce || !it.unhackedIce)}
+                    .find { it.distance == (currentNode.distance!! - 1) && (ignoreIce || !it.unhackedIce) }
                     ?: throw BlockedPathException("ICE blocks path to ${currentNode.networkId}")
                 currentNode = previousNode
                 path.add(0, currentNode.nodeId)

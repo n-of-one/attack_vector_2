@@ -47,6 +47,7 @@ class ScriptAccessService(
         return scriptAccessRepository.findByOwnerUserId(userId)
     }
 
+    @Suppress("unused")
     class ScriptAccessUi(
         val id: ScriptAccessId,
         val type: ScriptTypeUi,
@@ -55,6 +56,7 @@ class ScriptAccessService(
         val used: Boolean,
     )
 
+    @Suppress("unused")
     class ScriptTypeUi(
         val id: String,
         val name: String,

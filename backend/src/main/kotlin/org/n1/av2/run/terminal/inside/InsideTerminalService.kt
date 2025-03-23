@@ -52,8 +52,6 @@ class InsideTerminalService(
         }
     }
 
-
-
     fun processDc() {
         val hackerState = hackerStateEntityService.retrieveForCurrentUser()
         runService.hackerDisconnect(hackerState, "Disconnected")
