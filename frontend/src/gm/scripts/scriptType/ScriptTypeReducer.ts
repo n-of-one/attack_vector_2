@@ -17,7 +17,7 @@ export enum EffectType {
     JUMP_TO_HACKER = "JUMP_TO_HACKER",
     SWEEPER_UNBLOCK = "SWEEPER_UNBLOCK",
     WORD_SEARCH_NEXT_WORDS = "WORD_SEARCH_NEXT_WORDS",
-    AUTO_HACK_SPECIFIC_ICE = "AUTO_HACK_SPECIFIC_ICE",
+    AUTO_HACK_ICE_TYPE = "AUTO_HACK_ICE_TYPE",
     AUTO_HACK_ANY_ICE = "AUTO_HACK_ANY_ICE",
     TANGLE_REVEAL_CLUSTERS = "TANGLE_REVEAL_CLUSTERS",
     HACK_BELOW_NON_HACKED_ICE = "HACK_BELOW_NON_HACKED_ICE",
@@ -40,6 +40,7 @@ export interface Effect {
 export interface ScriptType {
     id: string,
     name: string,
+    category: string,
     size: number,
     defaultPrice?: number,
     effects: Effect[]

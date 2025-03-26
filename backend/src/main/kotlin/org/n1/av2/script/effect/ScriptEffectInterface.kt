@@ -2,13 +2,20 @@ package org.n1.av2.script.effect
 
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.platform.util.validateDuration
+import org.n1.av2.script.effect.TerminalState.UNLOCK_AFTER_SCRIPT
 import org.n1.av2.script.type.ScriptEffect
 
-val scriptCannotInteractWithThisLayer = "Script cannot interact with this layer."
+const val scriptCannotInteractWithThisLayer = "Script cannot interact with this layer."
 
-class ScriptExecution (val errorMessage: String?, val executionMethod: () -> Unit) {
+enum class TerminalState {
+    UNLOCK_AFTER_SCRIPT,
+    KEEP_LOCKED
+}
+
+class ScriptExecution (val errorMessage: String?, val executionMethod: () -> Unit, val terminalState: TerminalState = UNLOCK_AFTER_SCRIPT) {
     constructor(errorMessage: String): this(errorMessage, { })
     constructor(executionMethod: () -> Unit): this(null, executionMethod)
+    constructor(terminalState: TerminalState, executionMethod: () -> Unit): this(null, executionMethod, terminalState)
 }
 
 interface ScriptEffectInterface {

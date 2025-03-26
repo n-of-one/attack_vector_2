@@ -1,4 +1,4 @@
-import {TerminalBlockType, TerminalLineBlock, TerminalLineData} from "./TerminalReducer";
+import {EMPTY_LINE, TerminalBlockType, TerminalLineBlock, TerminalLineData} from "./TerminalReducer";
 
 
 let terminalLineKey = 0
@@ -7,6 +7,9 @@ const nextTerminalLineKey = () => {
 }
 
 export const parseTextToTerminalLine = (line: string): TerminalLineData => {
+    if (!line) {
+        return {blocks: [EMPTY_LINE], key: -1}
+    }
     const rawTokens = parseLineToTokens(line)
 
     const normalizedTokens = normalizeSpaces(rawTokens)

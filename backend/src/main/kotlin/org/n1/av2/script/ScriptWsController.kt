@@ -15,14 +15,14 @@ class ScriptWsController(
     class AddScriptCommand(val typeId: ScriptTypeId, val userId: String)
 
     @MessageMapping("/gm/script/getStatistics")
-    fun addScript(userPrincipal: UserPrincipal) {
+    fun getStatistics(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/gm/script/getStatistics", userPrincipal) {
             scriptService.getStatistics()
         }
     }
 
     @MessageMapping("/gm/script/getForUser")
-    fun addScript(userId: String, userPrincipal: UserPrincipal) {
+    fun getForUser(userId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/gm/script/getForUser", userPrincipal) {
             scriptService.sendScriptStatusForUser(userId)
         }

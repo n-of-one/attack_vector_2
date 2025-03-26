@@ -9,6 +9,7 @@ import org.n1.av2.platform.engine.SECONDS_IN_TICKS
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.script.effect.ScriptExecution
+import org.n1.av2.script.effect.TerminalState
 import org.n1.av2.site.entity.enums.LayerType
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -62,7 +63,7 @@ class IceEffectHelper(
 
     fun autoHack(layer: IceLayer, hackerState: HackerState): ScriptExecution {
         if (layer.hacked) return ScriptExecution("This ICE has already been hacked.")
-        return ScriptExecution {
+        return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceiveAndLocked(true, "Hacking ICE...")
             val siteId = hackerState.siteId!!
             userTaskRunner.queue("start auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {

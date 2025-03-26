@@ -6,6 +6,7 @@ import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.effect.ScriptExecution
+import org.n1.av2.script.effect.TerminalState
 import org.n1.av2.script.ram.RamService
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeService
@@ -41,7 +42,14 @@ class CommandRunScriptService(
             connectionService.replyTerminalReceive("Script executed successfully, but it has no effects.")
         } else {
             executions.forEach { it.executionMethod() }
+
+            // Manually unlock terminal in case no effect returned any text to the terminal (and thus unlocking it),
+            // except when an execution specifically tells us to keep it locked.
+            if (executions.none { it.terminalState == TerminalState.KEEP_LOCKED } ) {
+                connectionService.replyTerminalSetLocked(false)
+            }
         }
+
 
 // FIXME
 //        ramService.useScript(hackerSate.userId, type.size)

@@ -1,7 +1,7 @@
 import {InfoBadge} from "../../../common/component/ToolTip";
 import React from "react";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
-import {TextSaveInput} from "../../../common/component/TextSaveInput";
+import {TextSaveInput, TextSaveType} from "../../../common/component/TextSaveInput";
 import {SilentLink} from "../../../common/component/SilentLink";
 import {ActionButton} from "../../../common/component/ActionButton";
 import {FormTextInputRow} from "../../../common/component/FormTextInputRow";
@@ -81,18 +81,15 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     const [negativeEffect, setNegativeEffect] = React.useState<string>("")
 
 
-    const editName = (newValue: string) => {
-        const editCommand = {scriptTypeId: scriptType.id, name: newValue, size: scriptType.size, defaultPrice: scriptType.defaultPrice}
-        webSocketConnection.send("/gm/scriptType/edit", editCommand)
-    }
-
-    const editSize = (newValue: string) => {
-        const editCommand = {scriptTypeId: scriptType.id, name: scriptType.name, size: newValue, defaultPrice: scriptType.defaultPrice}
-        webSocketConnection.send("/gm/scriptType/edit", editCommand)
-    }
-
-    const editDefaultPrice = (newValue: string) => {
-        const editCommand = {scriptTypeId: scriptType.id, name: scriptType.name, size: scriptType.size, defaultPrice: newValue}
+    const edit = (property: string, value: string) => {
+        const editCommand: { [key: string]: any } = {
+            scriptTypeId: scriptType.id,
+            name: scriptType.name,
+            category: scriptType.category,
+            size: scriptType.size,
+            defaultPrice: scriptType.defaultPrice
+        }
+        editCommand[property] = value
         webSocketConnection.send("/gm/scriptType/edit", editCommand)
     }
 
@@ -108,9 +105,11 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     return (<>
             <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={close}/></div>
             <br/>
-            <FormTextInputRow label="Name" value={scriptType.name} save={editName} labelColumns={2} valueColumns={2}/>
-            <FormTextInputRow label="Size" value={scriptType.size.toString()} save={editSize} labelColumns={2} valueColumns={2}/>
-            <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""} save={editDefaultPrice} labelColumns={2}
+            <FormTextInputRow label="Name" value={scriptType.name} save={value => edit("name", value)} labelColumns={2} valueColumns={2}/>
+            <FormTextInputRow label="Category" value={scriptType.category} save={value => edit("category", value)} labelColumns={2} valueColumns={2}/>
+            <FormTextInputRow label="Size" value={scriptType.size.toString()} save={value => edit("size", value)} labelColumns={2} valueColumns={2}/>
+            <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""} save={value => edit("defaultPrice", value)}
+                              labelColumns={2}
                               valueColumns={2}/>
             <br/>
             <br/>
@@ -125,9 +124,8 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             </div>
             <br/>
             <div className="row form-group text">
-                <div className="colg-lg-3"/>
                 <label htmlFor="addEffect" className="col-lg-3 control-label text-muted">Useful effect:</label>
-                <div className="col-lg-6">
+                <div className="col-lg-7">
                     <select className="form-control" value={positiveEffect}
                             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                                 setPositiveEffect(event.target.value)
@@ -141,7 +139,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
                         <option value={EffectType.TANGLE_REVEAL_CLUSTERS}>Tangle - reveal clusters</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
-                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE}>Automatically hack ICE of a specific type</option>
+                        <option value={EffectType.AUTO_HACK_ICE_TYPE}>Automatically hack ICE of a specific type</option>
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
                         <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
                         <option value={EffectType.SHOW_MESSAGE}>Show message</option>
@@ -162,9 +160,8 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             </div>
             <br/>
             <div className="row form-group text">
-                <div className="colg-lg-3"/>
                 <label htmlFor="addEffect" className="col-lg-3 control-label text-muted">Drawback effect:</label>
-                <div className="col-lg-6">
+                <div className="col-lg-7">
                     <select className="form-control" value={negativeEffect}
                             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                                 setNegativeEffect(event.target.value)
@@ -187,7 +184,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             </div>
             <br/>
             <div className="row">
-                <div className="col-lg-10 text ">
+                <div className="col-lg-11 text ">
                     <hr/>
                     <div className="btn btn-info textSize" onClick={deleteType}>Delete type</div>
                 </div>
@@ -201,7 +198,7 @@ const EffectList = (props: { scriptType: ScriptType }) => {
     return <>
         {props.scriptType.effects.map(effect => <EffectLine scriptType={props.scriptType} effect={effect} key={effect.effectNumber}/>)}
         <div className="row text">
-            <div className="col-lg-10">
+            <div className="col-lg-11">
                 <hr/>
             </div>
         </div>
@@ -217,7 +214,7 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
 
     return <>
         <div className="row text">
-            <div className="col-lg-10">
+            <div className="col-lg-11">
                 <hr/>
             </div>
         </div>
@@ -243,37 +240,38 @@ const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effe
 
 const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
     switch (effect.type) {
-        case EffectType.JUMP_TO_NODE:
         case EffectType.JUMP_TO_HACKER:
+        case EffectType.JUMP_TO_NODE:
             return <EffectValueJumpBlockedType effect={effect} scriptType={scriptType}/>
 
+        case EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER:
         case EffectType.DELAY_TRIPWIRE_COUNTDOWN:
         case EffectType.DECREASE_FUTURE_TIMERS:
-        case EffectType.START_RESET_TIMER:
-        case EffectType.SPEED_UP_RESET_TIMER:
-        case EffectType.SCAN_ICE_NODE:
-        case EffectType.WORD_SEARCH_NEXT_WORDS:
-        case EffectType.SHOW_MESSAGE:
         case EffectType.INTERACT_WITH_SCRIPT_LAYER:
-        case EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER:
+        case EffectType.SPEED_UP_RESET_TIMER:
+        case EffectType.START_RESET_TIMER:
+        case EffectType.WORD_SEARCH_NEXT_WORDS:
             return <EffectValueText effect={effect} scriptType={scriptType}/>
 
-        case EffectType.AUTO_HACK_SPECIFIC_ICE:
+        case EffectType.AUTO_HACK_ICE_TYPE:
             return <EffectValueIceType effect={effect} scriptType={scriptType}/>
 
-        case EffectType.HIDDEN_EFFECTS:
-        case EffectType.SWEEPER_UNBLOCK:
-        case EffectType.SITE_STATS:
         case EffectType.AUTO_HACK_ANY_ICE:
-        case EffectType.TANGLE_REVEAL_CLUSTERS:
         case EffectType.HACK_BELOW_NON_HACKED_ICE:
+        case EffectType.HIDDEN_EFFECTS:
+        case EffectType.SCAN_ICE_NODE:
+        case EffectType.SWEEPER_UNBLOCK:
         case EffectType.ROTATE_ICE:
+        case EffectType.SITE_STATS:
+        case EffectType.TANGLE_REVEAL_CLUSTERS:
             return <div className="col-lg-4"/>
+
+        case EffectType.SHOW_MESSAGE:
+            return <EffectValueTerminalText effect={effect} scriptType={scriptType}/>
+
         default:
             return <div className="col-lg-4 text">Missing effect type, see: ScriptTypeManagement.tsx</div>
     }
-
-
 }
 
 const EffectValueText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
@@ -332,6 +330,20 @@ const EffectValueIceType = ({scriptType, effect}: { scriptType: ScriptType, effe
     </div>
 }
 
+const EffectValueTerminalText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
+    return <div className="col-lg-4">
+        <TextSaveInput className="form-control"
+                       placeholder="Text to be shown to hackers. Links to web pages or images can be added like this: [http://example.com]click here[/]"
+                       value={effect.value as string}
+                       save={(value) => {
+                           webSocketConnection.send("/gm/scriptType/editEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber, value})
+                       }}
+                       readonly={false} rows={3}
+                       type={TextSaveType.TERMINAL_TEXTAREA}
+        />
+    </div>
+}
+
 
 interface ScriptTypesListProps {
     onSelect: (scriptType: ScriptType) => void
@@ -341,7 +353,7 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
     const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
 
     const scriptTypeRows = scriptTypes.map(type => <ScriptTypeRow type={type} onSelect={onSelect}/>)
-    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.size}~${type.defaultPrice}`)
+    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}~${type.defaultPrice}`)
 
     const hr = <Hr height={6} marginTop={3} color="black"/>
 
@@ -353,6 +365,7 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
                 <div className="col-lg-2 strong">Effects</div>
                 <div className="col-lg-1 strong">Size</div>
                 <div className="col-lg-2 strong">Default price</div>
+                <div className="col-lg-2 strong">Category</div>
             </div>
 
         </DataTable>
@@ -378,5 +391,6 @@ const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptTy
             </div>
             <div className="col-lg-1">{type.size}</div>
             <div className="col-lg-2">{type.defaultPrice}</div>
+            <div className="col-lg-2">{type.category}</div>
         </div>)
 }

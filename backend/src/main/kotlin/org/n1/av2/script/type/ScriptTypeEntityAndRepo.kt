@@ -12,6 +12,7 @@ typealias ScriptTypeId = String
 data class ScriptType(
     @Id val id: ScriptTypeId,
     val name: String,
+    val category: String,
     val size: Int,
     val effects: List<ScriptEffect>,
     val defaultPrice: BigDecimal?,

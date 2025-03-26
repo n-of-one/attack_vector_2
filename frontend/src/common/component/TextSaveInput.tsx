@@ -77,8 +77,7 @@ export const TextSaveInput = (props: Props) => {
         if (state === State.IDLE) {
             stateMap.set(id, State.EDITING)
         }
-        const newValue = event.target.value;
-        value = newValue
+        value = event.target.value
         currentTextInputBlurMethod = handleBlur
 
         setDummy(dummy + 1) // force re-rendering
@@ -125,7 +124,7 @@ export const TextSaveInput = (props: Props) => {
 
     if (props.type === TextSaveType.TEXTAREA || props.type === TextSaveType.TERMINAL_TEXTAREA) {
         const rows = (props.rows) ? props.rows : 5
-        const terminalText = props.terminalPrefix + text
+        const terminalText = (props.terminalPrefix ? props.terminalPrefix : "") + text
         const terminalPreview = props.type === TextSaveType.TERMINAL_TEXTAREA ?
             <TerminalPreview text={terminalText}/> : <></>
         return (

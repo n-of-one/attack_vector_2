@@ -27,7 +27,7 @@ export interface HackerRootState extends GenericUserRootState {
     scriptStatus: ScriptStatus|null,
 }
 
-const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true})
+const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true, readOnly: false})
 
 export const hackerRootReducer = combineReducers({
     // from GenericUserRootState

@@ -33,6 +33,8 @@ export enum TerminalBlockType {
     IMAGE
 }
 
+export const EMPTY_LINE = {type: TerminalBlockType.EMPTY_LINE, text: "", size: 0, key: -1, className: ""}
+
 export interface TerminalLineBlock {
     type: TerminalBlockType
     text: string
@@ -134,7 +136,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
             case SERVER_ERROR:
                 return handleServerError(state, action)
             case TERMINAL_CLEAR:
-                return handleTerminalClear(state, action)
+                return handleTerminalClear(state)
             case TERMINAL_LOCK:
                 return terminalSetReadonly(state, true)
             case TERMINAL_UNLOCK:
@@ -194,7 +196,7 @@ interface TerminalLineReceiveAction {
 }
 
 const receive = (state: TerminalState, action: TerminalLineReceiveAction): TerminalState => {
-    return  {
+    return {
         ...state,
         unrenderedLines: [...state.unrenderedLines, parseTextToTerminalLine(action.data)]
     }
@@ -213,7 +215,6 @@ const receiveFromServer = (terminal: TerminalState, action: AnyAction): Terminal
         unrenderedLines: [...terminal.unrenderedLines, ...serverLines],
     }
 }
-
 
 
 const handlePressKey = (terminal: TerminalState, action: AnyAction): TerminalState => {
@@ -285,10 +286,10 @@ const limitLines = (lines: any[]) => {
 
 const handleServerError = (terminal: TerminalState, action: AnyAction): TerminalState => {
     const retryLines = (action.data.recoverable) ? [
-            parseTextToTerminalLine(""),
-            parseTextToTerminalLine("[warn b]A server error occurred. Please refresh.\"}") ] :[
-            parseTextToTerminalLine(""),
-            parseTextToTerminalLine("[warn b]A fatal server error occurred.")]
+        parseTextToTerminalLine(""),
+        parseTextToTerminalLine("[warn b]A server error occurred. Please refresh.\"}")] : [
+        parseTextToTerminalLine(""),
+        parseTextToTerminalLine("[warn b]A fatal server error occurred.")]
 
     const errorLines = [
         parseTextToTerminalLine(""),
@@ -301,7 +302,7 @@ const handleServerError = (terminal: TerminalState, action: AnyAction): Terminal
     }
 }
 
-const handleTerminalClear = (terminal: TerminalState, action: AnyAction) => {
+const handleTerminalClear = (terminal: TerminalState,) => {
     return {
         ...terminal,
         renderedLines: [],

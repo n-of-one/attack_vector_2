@@ -9,6 +9,7 @@ import org.n1.av2.run.scanning.TraverseNode
 import org.n1.av2.run.scanning.TraverseNodeService
 import org.n1.av2.run.terminal.inside.CommandMoveService
 import org.n1.av2.script.effect.ScriptExecution
+import org.n1.av2.script.effect.TerminalState
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
@@ -49,7 +50,7 @@ class JumpEffectHelper(
 
         val path = TraverseNode.createPath(startTraverseNode, targetTraverseNode, true)
 
-        return ScriptExecution {
+        return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceive("Jumping to ${targetDescription}.")
             setPreviousNode(hackerState, path)
             commandMoveService.moveArrive(targetNodeId, currentUserService.userId, hackerState.runId!!)
@@ -89,7 +90,7 @@ class JumpEffectHelper(
         catch (_: BlockedPathException) {
             return ScriptExecution("Cannot jump to that node, ICE blocks the path.")
         }
-        return ScriptExecution {
+        return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceiveAndLocked(true, "Jumping to ${targetDescription}.")
 
             setPreviousNodeToPreviousInPath(path, hackerState)

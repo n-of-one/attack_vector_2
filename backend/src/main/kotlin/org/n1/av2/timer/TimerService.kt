@@ -51,6 +51,7 @@ class TimerService(
                         logger.info("Removed timer for shutdown end of ${timer.siteId}")
                     }
                 }
+
                 TimerEffect.SHUTDOWN_START -> {
                     logger.info("Removed timer for shutdown-start for ${timer.siteId}")
                     // Do nothing here, these are just removed
@@ -218,19 +219,18 @@ class TimerService(
         val taskIdentifiers = createTimerIdentifiers(siteId, layer?.id)
         val taskInfo = systemTaskRunner.removeTask(taskIdentifiers)
 
-        val newCountdownSeconds = taskInfo.inSeconds + delta.toSeconds() +1 // +1 to compensate for the time it takes to queue the task
+        val newCountdownSeconds = taskInfo.inSeconds + delta.toSeconds() + 1 // +1 to compensate for the time it takes to queue the task
         systemTaskRunner.queueInSeconds(taskInfo.description, taskIdentifiers, newCountdownSeconds) { shutdownStart(siteId, timer.id, timer.effectDuration) }
     }
 
     fun speedUpScriptResetTimer(duration: Duration, siteId: String) {
-        val timers = timerEntityService.findByTargetSiteId(siteId).filter {
-            it.label == TimerLabel.SCRIPT_SITE_SHUTDOWN
-        }
+        val timers = timerEntityService.findByTargetSiteId(siteId).filter { it.label == TimerLabel.SCRIPT_SITE_SHUTDOWN }
         if (timers.isEmpty()) {
             return // no timers yet.
         }
         if (timers.size > 1) {
-            error("Multiple script shutdown timers found")
+            connectionService.replyTerminalReceive("The script encountered an error: multiple script shutdown timers found.")
+            return
         }
 
         val timer = timers.first()

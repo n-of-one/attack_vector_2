@@ -149,6 +149,7 @@ class ScriptService(
         val scriptsAndTypes = getUpdatedScriptsAndTypes(userId)
         val ram = ramService.updateRamFromScripts(userId, scriptsAndTypes)
         scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram)
+        scriptAccessService.sendScriptAccess(currentUserService.userId)
     }
 
     fun addFreeReceiveScripts(userId: String) {

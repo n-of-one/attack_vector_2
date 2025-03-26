@@ -46,10 +46,15 @@ export const WebsiteOrganizers = () => {
                         <br/>
                         If you want to host it yourself, there are instructions in the source code. It requires Java and Mongodb.
                     </p>
-                    <h3 className="muted">Support</h3>
+                    <h3 className="muted">Discord server - Support</h3>
                     <p className="text">
                         There is a Discord server dedicated to using Attack Vector on your event.<br/>
-                        Invite link: discord.gg / EkNFsHMbfC (add https:// and remove the spaces.)<br/>
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        Invite link: <a href="#" onClick={() => {
+                        alert("To discourage spam-bots from entering the Discord server, please copy-paste the link in the address bar " +
+                            "and remove the spaces.")
+                        return false
+                    }}>discord.gg / EkNFsHMbfC</a><br/>
                         <br/>
                         <br/>If you consider using Attack Vector, have questions or problems using it, please go here and ask for help. I usually reply within a
                         day.
@@ -113,18 +118,6 @@ export const WebsiteOrganizers = () => {
                                 hack
                                 on their
                                 phone.<br/><br/><br/>
-                            </li>
-                            <li>Scripts<br/><br/>
-                                Version 1 had scripts: single use commands that could be used to give players an edge. This tied in with the rule-system of
-                                Frontier,
-                                where hackers could become better if they spent experience points on the hacking-skill tree.<br/>
-                                <br/>
-                                Scrips could give a player extra time on a countdown timer, or outright bypass ICE.<br/>
-                                <br/>
-                                Scripts are not necessary for Attack Vector to work, and they make site-design harder (as the game masters need to take them
-                                into
-                                account). However, scripts can be a cool reward for players or a way to show that some hackers are better than
-                                others.<br/><br/><br/>
                             </li>
                         </ul>
                     </p>

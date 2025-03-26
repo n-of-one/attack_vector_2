@@ -128,7 +128,7 @@ const FreeReceive = ({accesses}: { accesses: ScriptAccess[] }) => {
 
 const ScriptAccessStatus = ({access}: { access: ScriptAccess }) => {
     if (access.used) {
-        return <span className="badge bg-secondary">Already received</span>
+        return <span className="badge bg-secondary">Received today</span>
     }
     return <span className="badge bg-primary">Available</span>
 

@@ -57,9 +57,10 @@ enum class ServerActions {
     SERVER_SITE_SHUTDOWN_FINISH,    // All ice is reset and unhacked, all nodes are unhacked, threats reset, connections refused for shutdown time
 
 
-    SERVER_TERMINAL_SYNTAX_HIGHLIGHTING, // transfer syntax highlighting to terminal
-    SERVER_TERMINAL_RECEIVE,
-    SERVER_TERMINAL_UPDATE_PROMPT,         // Update the prompt of the terminal
+    SERVER_TERMINAL_SYNTAX_HIGHLIGHTING,    // transfer syntax highlighting to terminal
+    SERVER_TERMINAL_RECEIVE,                // Message to render in the terminal
+    SERVER_TERMINAL_UPDATE_PROMPT,          // Update the prompt of the terminal
+
     SERVER_PROBE_LAUNCH,
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,

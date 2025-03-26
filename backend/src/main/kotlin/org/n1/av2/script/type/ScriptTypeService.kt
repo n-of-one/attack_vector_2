@@ -54,6 +54,7 @@ class ScriptTypeService(
     class ScriptTypeUI(
         val id: ScriptTypeId,
         val name: String,
+        val category: String,
         val size: Int,
         val defaultPrice: BigDecimal?,
         val effects: List<ScriptTypeEffectUi>
@@ -67,6 +68,7 @@ class ScriptTypeService(
             ScriptTypeUI(
                 id = scriptType.id,
                 name = scriptType.name,
+                category =  scriptType.category,
                 size = scriptType.size,
                 defaultPrice = scriptType.defaultPrice,
                 effects = scriptType.effects.mapIndexed { index: Int, effect: ScriptEffect ->
@@ -92,6 +94,7 @@ class ScriptTypeService(
         val scriptType = ScriptType(
             id = id,
             name = name,
+            category = "",
             size = 1,
             defaultPrice = null,
             effects = emptyList()
@@ -103,11 +106,12 @@ class ScriptTypeService(
         checkScriptNameLength(name)
     }
 
-    fun edit(scriptTypeId: ScriptTypeId, name: String, size: Int, defaultPrice: BigDecimal?) {
+    fun edit(scriptTypeId: ScriptTypeId, name: String, category: String, size: Int, defaultPrice: BigDecimal?) {
         val scriptType = getById(scriptTypeId)
 
         val editedScriptType = scriptType.copy(
             name = name,
+            category = category,
             size = when {
                 size < 1 -> 0
                 else -> size
