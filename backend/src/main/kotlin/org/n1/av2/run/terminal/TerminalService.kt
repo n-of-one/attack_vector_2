@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 
 const val TERMINAL_MAIN = "main"
 
+const val UNKNOWN_COMMAND_RESPONSE = "Unknown command, try [b]help[/]."
 
 @Service
 class TerminalService(

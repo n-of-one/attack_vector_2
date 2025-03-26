@@ -14,7 +14,7 @@ class CommandHelpService(
     private val configService: ConfigService,
     private val currentUser: CurrentUserService,
     private val hackerEntityService: HackerEntityService,
-    ) {
+) {
 
     fun processHelp(inside: Boolean, tokens: List<String>) {
         if (tokens.size == 1 || tokens[1] != "shortcuts") {
@@ -37,7 +37,8 @@ class CommandHelpService(
             "Here you can examine the site before entering to plan your attack. Click on a node in the map to see what layers it contains.",
             "",
             "There are only a few commands you can use when outside:",
-            "")
+            ""
+        )
         if (hasScanSkill) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
@@ -58,6 +59,8 @@ class CommandHelpService(
             "Share your run with one or more hackers so they can join you.",
             "",
         )
+        showDownloadScriptHelp()
+
         if (configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
             connectionService.replyTerminalReceive(
                 "",
@@ -90,7 +93,8 @@ class CommandHelpService(
             "",
             "",
             "These commands are only used occasionally:",
-            "")
+            ""
+        )
 
         if (hasScanSkill) {
             connectionService.replyTerminalReceive(
@@ -111,9 +115,13 @@ class CommandHelpService(
             "",
             "[b]/share[/] [info]<user name>[/] (optionally more usernames)",
             "Share your run with one or more hackers so they can join you.",
-            "",
+            ""
+        )
+        showDownloadScriptHelp()
+
+        connectionService.replyTerminalReceive(
             "For information on shortcuts, type: [b]help[/] [b]shortcuts[/]",
-            "",
+            ""
         )
     }
 
@@ -125,5 +133,16 @@ class CommandHelpService(
             "Ctrl-L: clear the terminal.",
             "",
         )
+    }
+
+    private fun showDownloadScriptHelp() {
+        if (configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN)) {
+            connectionService.replyTerminalReceive(
+                "[b]/download-script[/] [primary]<script code>[/] - download a script.",
+                "You can download a script from another hacker who has offered it, or you can buy it from someone.",
+                ""
+            )
+        }
+
     }
 }

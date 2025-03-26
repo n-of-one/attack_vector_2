@@ -6,6 +6,7 @@ import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.CommandHelpService
 import org.n1.av2.run.terminal.CommandScanService
 import org.n1.av2.run.terminal.SocialTerminalService
+import org.n1.av2.run.terminal.UNKNOWN_COMMAND_RESPONSE
 import org.springframework.stereotype.Service
 
 @Service
@@ -28,6 +29,7 @@ class InsideTerminalService(
             "dc" -> processDc()
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
+            "/download-script" -> socialTerminalService.downloadScript(tokens)
             else -> processPrivilegedCommand(runId, tokens, commandAction)
         }
     }
@@ -48,7 +50,7 @@ class InsideTerminalService(
             "sweeperunblock" -> commandDebugService.processSweepUnblock(tokens, state)
 
 
-            else -> connectionService.replyTerminalReceive("Unknown command, try [b]help[/].")
+            else -> connectionService.replyTerminalReceive(UNKNOWN_COMMAND_RESPONSE)
         }
     }
 

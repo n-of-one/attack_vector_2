@@ -56,6 +56,13 @@ class ScriptWsController(
         }
     }
 
+    @MessageMapping("hacker/script/download")
+    fun download(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("hacker/script/download", userPrincipal) {
+            scriptService.downloadScript(scriptId, false)
+        }
+    }
+
     @MessageMapping("/script/delete")
     fun delete(scriptId: ScriptId, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/script/delete", userPrincipal) {
@@ -74,6 +81,14 @@ class ScriptWsController(
     fun unload(scriptId: ScriptId, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/script/unload", userPrincipal) {
             scriptService.unloadScript(scriptId)
+        }
+    }
+
+    data class ScriptOfferCommand(val scriptId: ScriptId, val offer: Boolean)
+    @MessageMapping("/script/offer")
+    fun offer(command: ScriptOfferCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/script/offer", userPrincipal) {
+            scriptService.offer(command.scriptId, command.offer)
         }
     }
 

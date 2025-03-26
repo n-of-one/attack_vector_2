@@ -5,6 +5,7 @@ export enum ScriptState {
     LOADED = "LOADED",
     USED = "USED",
     EXPIRED = "EXPIRED",
+    OFFERING = "OFFERING",
 }
 
 export interface Script {

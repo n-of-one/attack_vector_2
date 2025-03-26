@@ -85,7 +85,7 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
                            useCase={ScriptLineUseCase.GM}
                            key={script.id}
                            ram={ram}
-                           shownInRun={false}
+                           showLoadButton={false}
         />
     })
     const rowTexts = scripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)

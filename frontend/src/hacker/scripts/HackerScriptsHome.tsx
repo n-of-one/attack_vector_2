@@ -9,6 +9,7 @@ import {ScriptsTable} from "../run/component/script/ScriptPanel";
 import {Script, ScriptEffectDisplay, ScriptState} from "../../common/script/ScriptModel";
 import {Hr} from "../../common/component/dataTable/Hr";
 import {RamDisplay} from "./RamDisplay";
+import {TextInput} from "../../common/component/TextInput";
 
 
 export const HackerScriptsHome = () => {
@@ -17,7 +18,7 @@ export const HackerScriptsHome = () => {
     const ram = scriptStatus?.ram || null
     const accesses = useSelector((state: HackerRootState) => state.scriptAccess)
 
-const hr= <Hr />
+    const hr = <Hr/>
 
     return (
         <div className="row content">
@@ -32,13 +33,9 @@ const hr= <Hr />
                 <br/>
                 <hr/>
                 <RamDisplay size={509}/>
-                <br/>
+                <hr/>
+                <DownloadScript/>
                 <FreeReceive accesses={accesses}/>
-                <br/>
-                <br/>
-                <br/>
-                <ShopForScripts accesses={accesses}/>
-
             </div>
             <div className="col-lg-7">
                 <div className="rightPanel">
@@ -51,7 +48,7 @@ const hr= <Hr />
                         </div>
                     </div>
                     <br/>
-                    <ScriptsTable scripts={scripts} hr={hr} ram={ram} shownInRun={false}/>
+                    <ScriptsTable scripts={scripts} hr={hr} ram={ram} showLoadButton={true}/>
                     <br/>
 
                 </div>
@@ -61,7 +58,7 @@ const hr= <Hr />
     )
 }
 
-const DeleteUsedAndExpired = ({scripts}:{scripts: Script[]}) => {
+const DeleteUsedAndExpired = ({scripts}: { scripts: Script[] }) => {
     const userOrExpired = scripts.filter(script => script.state === ScriptState.USED || script.state === ScriptState.EXPIRED)
     if (userOrExpired.length === 0) {
         return <></>
@@ -134,29 +131,19 @@ const ScriptAccessStatus = ({access}: { access: ScriptAccess }) => {
 
 }
 
-const ShopForScripts = ({accesses}: { accesses: ScriptAccess[] }) => {
-    return <></>
-    // const accessWithPrice = accesses.filter(access => access.price !== null)
-    //
-    // const openShop = () => {
-    //     webSocketConnection.send("/hacker/scriptAccess/get", null)
-    // }
-    //
-    //
-    // if (accessWithPrice.length === 0) {
-    //     return <></>
-    // }
-    // return (<>
-    //     <hr/>
-    //     You can also purchase scripts on the dark web. <SilentLink onClick={openShop}>
-    //     <div className="btn btn-info" style={{fontSize: "12px"}}>Visit script store</div>
-    // </SilentLink>
-    //
-    // </>)
+const downloadScript = (code: string) => {
+    webSocketConnection.send("/hacker/script/download", code)
 }
 
-
-
-
-
-
+const DownloadScript = () => {
+    return <TextInput placeholder="1234-abcd"
+                      buttonLabel="Download"
+                      buttonClass="btn-info"
+                      save={(code) => downloadScript(code)}
+                      clearAfterSubmit={true}
+                      autofocus={true}
+                      size={3}
+                      label="Download script from external source"
+                      labelColumns={4}
+    />
+}

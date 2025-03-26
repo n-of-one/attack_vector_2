@@ -91,7 +91,8 @@ export const ConfigItemHackerScriptRamRefreshDuration = (props: { value: string 
 
                 Setting this value too high will prevent hackers from using multiple scripts in consecutive hacks on different sites.<br/><br/>
 
-                See also: Script lockout duration.
+                See also: Script lockout duration.<br/>
+                See also: Script loading during run.
             </small><br/>
         </>
     )
@@ -113,7 +114,30 @@ export const ConfigItemHackerScriptLockoutDuration = (props: { value: string }) 
 
                 Setting this value too high will prevent hackers from using multiple scripts in consecutive hacks on different sites.<br/><br/>
 
-                See also: Script RAM refresh duration.
+                See also: Script RAM refresh duration.<br/>
+                See also: Script loading during run.
+            </small><br/>
+        </>
+    )
+}
+
+export const ConfigItemHackerScriptLoadDuringRun = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Hacker: Script loading during run" value={props.value} item={ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN}/>
+            <small className="form-text text-muted">Script loading during run<br/><br/>
+                Default: false<br/><br/>
+
+                Hackers have a script overlay where they can access their scripts during a run. For each script there are buttons to
+                unload/share/delete their scripts. If this value is set to true, it will also include a button to load a script.<br/><br/>
+
+                Allowing hackers to load scripts during a run will make it less predictable for GMs to know how hard a site will be.<br/><br/>
+
+                That said, for most sites, hackers can just disconnect from the site, load scripts using the script page and then connect again.
+                So disallowing this is more of a statement than a real prevention.<br/><br/>
+
+                See also: Script RAM refresh duration.<br/>
+                See also: Script lockout duration.
             </small><br/>
         </>
     )

@@ -53,10 +53,12 @@ class ScriptStatusNotifier(
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
     }
 
-    fun sendScriptStatusOfSpecificUser(userId: String, scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity) {
+    fun sendScriptStatusOfSpecificUser(userId: String, scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity, alsoSendToCurrentUser: Boolean = true) {
         val status = createUiScriptStatus(scriptsAndTypes, ram)
-        connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
         connectionService.toUser(userId, ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
+        if (alsoSendToCurrentUser) {
+            connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
+        }
     }
 
 

@@ -11,6 +11,8 @@ interface Props {
     clearAfterSubmit?: boolean
     autofocus?: boolean
     size?: number
+    label?: string
+    labelColumns?: number
 }
 
 export const TextInput = (props: Props) => {
@@ -39,8 +41,11 @@ export const TextInput = (props: Props) => {
         }
     }
 
+    const label = (props.label && props.labelColumns) ? <div className={`col-lg-${props.labelColumns}`}>{props.label}</div> : <></>
+
     return (
         <div className="row">
+            {label}
             <div className={`col-lg-${size}`} style={{fontSize: "12px"}}>
                 <input type="text" className="form-control"
                        placeholder={props.placeholder}

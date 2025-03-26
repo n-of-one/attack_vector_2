@@ -19,16 +19,15 @@ interface Props {
     hrColor?: string
     minimize?: () => void
     ram: Ram | null
-    shownInRun: boolean
+    showLoadButton: boolean
 }
 
-export const ScriptLine = ({script, useCase, minimize, ram, shownInRun}: Props) => {
+export const ScriptLine = ({script, useCase, minimize, ram, showLoadButton}: Props) => {
     if (ram == null) return <></>
 
     const forGm = useCase === ScriptLineUseCase.GM
 
     const actionGmLoad = forGm ? <><ScriptActionGmLoad script={script}/>&nbsp;</> : <></>
-    const actionSend = forGm ? <></> : <><ScriptActionSend script={script}/>&nbsp;</>
 
     return (<>
             <div className="row text" style={{marginBottom: "2px"}}>
@@ -38,8 +37,8 @@ export const ScriptLine = ({script, useCase, minimize, ram, shownInRun}: Props) 
                 <div className="col-lg-2"><ScriptStateBadge script={script} /></div>
                 <div className="col-lg-2 noSelect">
                     {actionGmLoad}
-                    <ScriptLoadAction script={script} ram={ram} shownInRun={shownInRun}/>&nbsp;
-                    {actionSend}
+                    <ScriptLoadAction script={script} ram={ram} showLoadButton={showLoadButton}/>&nbsp;
+                    <ScriptOfferAction script={script}/>&nbsp;
                     &nbsp;<ScriptActionDelete script={script}/>&nbsp;
 
                 </div>
@@ -86,6 +85,8 @@ export const ScriptStateBadge = ({script}: { script: Script }) => {
     switch (script.state) {
         case ScriptState.AVAILABLE:
             return <span className="badge bg-secondary scriptStatusBadge">Available</span>
+        case ScriptState.OFFERING:
+            return <span className="badge bg-success scriptStatusBadge">Offering</span>
         case ScriptState.LOADED:
             return <span className="badge bg-primary scriptStatusBadge">Loaded</span>
         case ScriptState.USED:
@@ -97,11 +98,11 @@ export const ScriptStateBadge = ({script}: { script: Script }) => {
     }
 }
 
-const ScriptLoadAction = ({script, ram, shownInRun}: { script: Script, ram: Ram, shownInRun: boolean }) => {
+const ScriptLoadAction = ({script, ram, showLoadButton}: { script: Script, ram: Ram, showLoadButton: boolean }) => {
     if (script.state === ScriptState.LOADED) {
         return <ScriptActionUnload script={script} ram={ram}/>
     }
-    if (script.state === ScriptState.AVAILABLE && ram.free >= script.ram && !shownInRun) {
+    if (script.state === ScriptState.AVAILABLE && ram.free >= script.ram && showLoadButton) {
         return <ScriptActionLoad script={script} lockedUntil={ram.lockedUntil}/>
     }
     return <></>
@@ -183,12 +184,15 @@ const ScriptActionLoad = ({script, lockedUntil}: { script: Script, lockedUntil: 
     return <SilentLink onClick={action} title="Start loading in memory"><span className="glyphicon glyphicon-import"/></SilentLink>
 }
 
-const ScriptActionSend = ({script}: { script: Script }) => {
-    if (script.state === ScriptState.EXPIRED || script.state === ScriptState.USED) {
-        return <></>
+const ScriptOfferAction = ({script}: { script: Script }) => {
+    const action = (offer: boolean) => {
+        webSocketConnection.send("/script/offer", {scriptId: script.id, offer: offer})
     }
-    const action = () => {
-        webSocketConnection.send("/script/send", script.id)
+    if (script.state === ScriptState.AVAILABLE) {
+        return <SilentLink onClick={() => action(true)} title="Offer script for download by another hacker"><span className="glyphicon glyphicon-share-alt"/></SilentLink>
     }
-    return <SilentLink onClick={action} title="Send to other hacker"><span className="glyphicon glyphicon-share-alt"/></SilentLink>
+    if (script.state === ScriptState.OFFERING) {
+        return <SilentLink onClick={() => action(false)} title="Offer script for download by another hacker"><span className="glyphicon glyphicon-remove-circle"/></SilentLink>
+    }
+    return <></>
 }

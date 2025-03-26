@@ -5,7 +5,7 @@ import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {
     ConfigItemHackerDeleteRunLinks,
     ConfigItemHackerEditCharacterName,
-    ConfigItemHackerEditUserName,
+    ConfigItemHackerEditUserName, ConfigItemHackerScriptLoadDuringRun,
     ConfigItemHackerScriptLockoutDuration,
     ConfigItemHackerScriptRamRefreshDuration,
     ConfigItemHackerShowSKills,
@@ -107,6 +107,8 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemHackerScriptRamRefreshDuration value={props.value}/>
         case ConfigItem.HACKER_SCRIPT_LOCKOUT_DURATION:
             return <ConfigItemHackerScriptLockoutDuration value={props.value}/>
+        case ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN:
+            return <ConfigItemHackerScriptLoadDuringRun value={props.value}/>
 
         case ConfigItem.LOGIN_PATH:
             return <ConfigItemLoginPath value={props.value}/>

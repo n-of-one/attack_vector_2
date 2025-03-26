@@ -9,6 +9,7 @@ import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.terminal.CommandHelpService
 import org.n1.av2.run.terminal.CommandScanService
 import org.n1.av2.run.terminal.SocialTerminalService
+import org.n1.av2.run.terminal.UNKNOWN_COMMAND_RESPONSE
 import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
@@ -35,6 +36,7 @@ class OutsideTerminalService(
         when (commandAction) {
             "help" -> commandHelpService.processHelp(false, tokens)
             "/share" -> socialTerminalService.processShare(runId, tokens)
+            "/download-script" -> socialTerminalService.downloadScript(tokens)
             "move", "view", "hack", "connect" -> reportHackCommand()
             "servererror" -> error("gah")
             "quick"-> {
@@ -57,7 +59,7 @@ class OutsideTerminalService(
             "quickscan", "qs" -> commandScanService.processQuickScan(run)
             "attack" ->  processAttack(run, false)
             "quickattack", "qa" -> processAttack(run, true)
-        else -> connectionService.replyTerminalReceive("Unknown command, try [b]help[/].")
+        else -> connectionService.replyTerminalReceive(UNKNOWN_COMMAND_RESPONSE)
         }
     }
 

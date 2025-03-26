@@ -20,6 +20,7 @@ enum class ConfigItem(
     HACKER_TUTORIAL_SITE_NAME(""),
     HACKER_SCRIPT_RAM_REFRESH_DURATION("00:15:00", ::validDuration),
     HACKER_SCRIPT_LOCKOUT_DURATION("01:00:00", ::validDuration),
+    HACKER_SCRIPT_LOAD_DURING_RUN("false", ::validBoolean),
 
     LOGIN_PATH("/login", ::notEmpty, ::loginPathMessage),
     LOGIN_PASSWORD("", ::validPassword, ::loginPasswordMessage),

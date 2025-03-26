@@ -181,7 +181,26 @@ class RamService(
 
         val ram = getRamForUser(userId)
         if (!ram.enabled) error("Cannot load script, hacker cannot use scripts")
-        if (ram.free < size) error("Not enough free RAM. Need $size, but only ${ram.free} is free.")
+        if (ram.free < size) {
+            if (ram.free + ram.refreshing >= size) {
+                if (!overrideLocked) {
+                    error("Not enough free RAM. Need $size, but only ${ram.free} is free. There is ${ram.refreshing} RAM currently refreshing from previous use. Please try again when it has refreshed.")
+                }
+
+                val refreshingRamNeeded = size - ram.free
+                val updatedRam = sanitize(
+                    ram.copy(
+                        loaded = ram.loaded + size,
+                        free = 0,
+                        refreshing = ram.refreshing - refreshingRamNeeded,
+                    )
+                )
+                ramRepository.save(updatedRam)
+                return
+            } else {
+                error("Not enough free RAM. Need $size, but only ${ram.free} is free.")
+            }
+        }
         if (ram.lockedUntil != null && !overrideLocked) error("Cannot load script, hacker has joined a hacking run too recently.")
 
         val updatedRam = sanitize(
@@ -325,11 +344,26 @@ class RamService(
         val sanitizedLoaded = (ram.loaded.coerceAtMost(ram.size)).coerceAtLeast(0)
         val sanitizeRefreshing = (ram.refreshing.coerceAtMost(ram.size)).coerceAtLeast(0)
         val sanitizedFree = (ram.size - sanitizedLoaded - sanitizeRefreshing).coerceAtLeast(0)
+        val sanitizedNextRefresh = if (ram.nextRefresh?.isBefore(timeService.now()) == true) null else ram.nextRefresh
+        val sanitizedLockedUntil = if (ram.lockedUntil?.isBefore(timeService.now()) == true) null else ram.lockedUntil
+
+        if (sanitizedNextRefresh != ram.nextRefresh) {
+            // this is a problem: refresh has not triggered. Just freeing all ram to prevent hacker from being stuck with ram that will never refresh.
+            logger.error("Sanitized nextRefresh for user ${ram.userId} from ${ram.nextRefresh} (it is currently: ${timeService.now()})")
+            return sanitize( // recursive call to sanitize other properties as well.
+                ram.copy(
+                    free = ram.free + ram.refreshing,
+                    refreshing = 0,
+                    nextRefresh = null,
+                )
+            )
+        }
 
         val sanitized = ram.copy(
             loaded = sanitizedLoaded,
             refreshing = sanitizeRefreshing,
-            free = sanitizedFree
+            free = sanitizedFree,
+            lockedUntil = sanitizedLockedUntil,
         )
 
         if (sanitized == ram) return ram
@@ -337,6 +371,7 @@ class RamService(
         if (sanitizedLoaded != ram.loaded) logger.error("Sanitized loaded RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedLoaded")
         if (sanitizeRefreshing != ram.refreshing) logger.error("Sanitized refreshing RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizeRefreshing")
         if (sanitizedFree != ram.free) logger.error("Sanitized free RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedFree")
+        if (sanitizedLockedUntil != ram.lockedUntil) logger.error("Sanitized locked until for user ${ram.userId} from ${ram.lockedUntil} (it is currently: ${timeService.now()})")
 
         return sanitized
 

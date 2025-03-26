@@ -1,12 +1,16 @@
 package org.n1.av2.script
 
+import org.n1.av2.frontend.model.NotyMessage
+import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createIdGeneric
+import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.ram.RamService
 import org.n1.av2.script.type.ScriptType
@@ -35,10 +39,10 @@ class ScriptService(
         scriptStatusNotifier.sendScriptStatusOfCurrentUser(scriptsAndTypes, ram)
     }
 
-    fun sendScriptStatusForUser(userId: String) {
+    fun sendScriptStatusForUser(userId: String, alsoSendToCurrentUser: Boolean = true) {
         val scriptsAndTypes = getUpdatedScriptsAndTypes(userId)
         val ram = ramService.updateRamFromScripts(userId, scriptsAndTypes)
-        scriptStatusNotifier.sendScriptStatusOfSpecificUser(userId, scriptsAndTypes, ram)
+        scriptStatusNotifier.sendScriptStatusOfSpecificUser(userId, scriptsAndTypes, ram, alsoSendToCurrentUser)
     }
 
     private fun getUpdatedScriptsAndTypes(userId: String): List<Pair<Script, ScriptType>> =
@@ -132,6 +136,27 @@ class ScriptService(
         informUserOfScriptChanged(script)
     }
 
+    fun offer(scriptId: ScriptId, offer: Boolean) {
+        val script = getScriptById(scriptId)
+        validateCanManage(script.ownerUserId)
+
+        val updatedScript = if (offer) {
+            if (script.state != ScriptState.AVAILABLE) {
+                error("Script is not available to offer.")
+            }
+            script.copy(state = ScriptState.OFFERING)
+        } else {
+            if (script.state != ScriptState.OFFERING) {
+                error("Script is not being offered.")
+            }
+            script.copy(state = ScriptState.AVAILABLE)
+        }
+
+        scriptRepository.save(updatedScript)
+        informUserOfScriptChanged(script)
+    }
+
+
     private fun informUserOfScriptChanged(script: Script) {
         val scriptsAndTypes = getUpdatedScriptsAndTypes(script.ownerUserId)
         val ram = ramService.updateRamFromScripts(script.ownerUserId, scriptsAndTypes)
@@ -207,6 +232,7 @@ class ScriptService(
             ScriptState.EXPIRED -> "System has been patched against this script. (Script is expired.)"
             ScriptState.USED -> "System has been patched against this script. (Script has already been used.)"
             ScriptState.AVAILABLE -> "Script has not been loaded."
+            ScriptState.OFFERING -> "Script has not been loaded."
             ScriptState.LOADED -> error("illegal code path")
         }
 
@@ -270,6 +296,35 @@ class ScriptService(
                 scriptRepository.save(unloadedScript)
             }
         }
+    }
+
+    fun downloadScript(scriptCode: String, fromTerminal: Boolean) {
+        val currentUser = currentUserService.userEntity
+        val script = scriptRepository.findByCode(scriptCode)
+
+        if (script == null) {
+            reply(currentUser.id, "No script found with code: $scriptCode", fromTerminal)
+            return
+        }
+
+        if (script.state != ScriptState.OFFERING) {
+            reply(currentUser.id, "Script is not available for download.", fromTerminal)
+            return
+
+        }
+        val type = scriptTypeService.getById(script.typeId)
+
+        val updatedScript = script.copy(state = ScriptState.AVAILABLE, ownerUserId = currentUser.id)
+        scriptRepository.save(updatedScript)
+        sendScriptStatusToCurrentUser()
+        sendScriptStatusForUser(script.ownerUserId, false)
+        reply(currentUser.id, "Script ${type.name} downloaded.", fromTerminal)
+        reply(script.ownerUserId, "Script ${type.name} has been downloaded by ${currentUser.name}", false)
+    }
+
+    private fun reply(userId: String, message: String, toTerminal: Boolean) {
+        if (toTerminal) connectionService.toUser( userId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf(message)))
+        else connectionService.toUser(userId, ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, "", message))
     }
 
 }

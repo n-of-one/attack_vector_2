@@ -26,15 +26,15 @@ import org.springframework.stereotype.Service
 
 data class Syntax(val main: List<String>, val rest: String) {
 
-    constructor(first: String): this(listOf<String>(first), "t_error t_s")
-    constructor(first: String, second: String ): this(listOf<String>(first, second), "t_error t_s")
+    constructor(first: String) : this(listOf<String>(first), "t_error t_s")
+    constructor(first: String, second: String) : this(listOf<String>(first, second), "t_error t_s")
 
 }
 
 @Service
 class SyntaxHighlightingService(
     private val connectionService: ConnectionService,
-    ) {
+) {
 
     private val syntaxOutside = HashMap<String, Syntax>()
     private val syntaxInside = HashMap<String, Syntax>()
@@ -45,6 +45,7 @@ class SyntaxHighlightingService(
         syntaxOutside["dc"] = Syntax("t_b", "t_error t_s")
         syntaxOutside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
         syntaxOutside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
+        syntaxOutside["/download-script"] = Syntax("t_b t_warn", "t_primary")
         syntaxOutside["attack"] = Syntax("t_b")
 
         syntaxOutside["move"] = Syntax("t_error t_s")
@@ -57,6 +58,7 @@ class SyntaxHighlightingService(
         syntaxInside["scan"] = Syntax("t_b")
         syntaxInside["dc"] = Syntax("t_b")
         syntaxInside["/share"] = Syntax(listOf("t_b t_warn"), "t_info")
+        syntaxInside["/download-script"] = Syntax("t_b t_warn", "t_primary")
         syntaxInside["move"] = Syntax("t_b", "t_ok")
         syntaxInside["view"] = Syntax("t_b")
         syntaxInside["hack"] = Syntax("t_b", "t_primary")

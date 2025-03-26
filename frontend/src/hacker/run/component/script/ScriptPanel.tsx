@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {useSelector} from "react-redux";
 import {HackerRootState} from "../../../HackerRootReducer";
 import {Script, ScriptState} from "../../../../common/script/ScriptModel";
@@ -8,11 +8,14 @@ import {Hr} from "../../../../common/component/dataTable/Hr";
 import {RamBar} from "../../../scripts/RamDisplay";
 import {Ram} from "../../../../common/script/ScriptStatusReducer";
 import {formatTimeInterval} from "../../../../common/util/Util";
+import {ConfigItem, getConfigAsBoolean} from "../../../../admin/config/ConfigReducer";
 
 export const ScriptPanel = () => {
     const [expanded, setExpanded] = React.useState(false)
     const scriptStatus = useSelector((state: HackerRootState) => state.scriptStatus)
-    const [onlyShowLoaded, setOnlyShowLoaded] = useState(true)
+    const [onlyShowLoaded, setOnlyShowLoaded] = React.useState(true)
+    const config = useSelector((state: HackerRootState) => state.config)
+    const showLoadButton = getConfigAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN, config)
 
     if (!scriptStatus) {
         return <></>
@@ -35,7 +38,7 @@ export const ScriptPanel = () => {
     if (expanded) {
         return <div className="scriptPanel" style={{width: "780px"}}>
             <ScriptPanelExpandedHead minimize={minimize} onlyShowLoaded={onlyShowLoaded} setOnlyShowLoaded={setOnlyShowLoaded} ram={scriptStatus.ram}/>
-            <ScriptsTable scripts={filteredScripts} hr={hr} minimize={minimize} ram={scriptStatus.ram} shownInRun={true}/>
+            <ScriptsTable scripts={filteredScripts} hr={hr} minimize={minimize} ram={scriptStatus.ram} showLoadButton={showLoadButton}/>
         </div>
     } else {
         return <div className="scriptPanel">
@@ -99,10 +102,10 @@ interface ScriptsTableProps {
     hr?: React.JSX.Element
     minimize?: () => void
     ram: Ram | null
-    shownInRun: boolean
+    showLoadButton: boolean
 }
 
-export const ScriptsTable = ({scripts, hr, minimize, ram, shownInRun}: ScriptsTableProps) => {
+export const ScriptsTable = ({scripts, hr, minimize, ram, showLoadButton}: ScriptsTableProps) => {
     if (!ram) return <></>
 
     const sortedScripts = sortScripts(scripts)
@@ -113,7 +116,7 @@ export const ScriptsTable = ({scripts, hr, minimize, ram, shownInRun}: ScriptsTa
                            key={script.id}
                            minimize={minimize}
                            ram={ram}
-                           shownInRun={shownInRun}
+                           showLoadButton={showLoadButton}
         />
     })
     const rowTexts = sortedScripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)
@@ -140,6 +143,8 @@ const compareScriptStatus = (a: Script, b: Script) => {
     if (a.state === b.state) return a.name.localeCompare(b.name)
     if (a.state === ScriptState.LOADED) return -1
     if (b.state === ScriptState.LOADED) return 1
+    if (a.state === ScriptState.OFFERING) return -1
+    if (b.state === ScriptState.OFFERING) return 1
     if (a.state === ScriptState.AVAILABLE) return -1
     if (b.state === ScriptState.AVAILABLE) return 1
     if (a.state === ScriptState.USED) return -1
