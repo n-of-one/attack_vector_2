@@ -4,6 +4,8 @@ import mu.KotlinLogging
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hacker.HackerSkillType
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionType
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
@@ -42,13 +44,10 @@ class RamService(
     private val timeService: TimeService,
     private val userTaskRunner: UserTaskRunner,
     private val userEntityService: UserEntityService,
+    private val configService: ConfigService,
 ) {
 
     lateinit var scriptService: ScriptService
-
-    // FIXME : configurable timers
-    private val REFRESH_DURATION = Duration.ofSeconds(10)
-    private val HACKING_LOCK_DURATION = Duration.ofMinutes(1)
 
     private val logger = KotlinLogging.logger {}
 
@@ -93,7 +92,7 @@ class RamService(
             val durationUntilRefresh = Duration.between(timeService.now(), ram.nextRefresh)
             scheduleRamRefresh(ram, durationUntilRefresh)
         } else {
-            val nextRefresh = if (ram.refreshing == 1) null else ram.nextRefresh + REFRESH_DURATION
+            val nextRefresh = if (ram.refreshing == 1) null else ram.nextRefresh + getRefreshDuration()
 
             val refreshedRam = sanitize(
                 ram.copy(
@@ -198,12 +197,12 @@ class RamService(
         if (size <= 0) return
 
         val ram = getRamForUser(userId)
-        val needToRefreshMemory = (ram.lockedUntil != null && !overrideLocked)
+        val needToRefreshMemory = !overrideLocked
 
         val updatedRam = if (needToRefreshMemory) {
-            val nextRefresh = ram.nextRefresh ?: (timeService.now() + REFRESH_DURATION)
+            val nextRefresh = ram.nextRefresh ?: (timeService.now() + getRefreshDuration())
             if (ram.nextRefresh == null) {
-                scheduleRamRefresh(ram, REFRESH_DURATION)
+                scheduleRamRefresh(ram, getRefreshDuration())
             }
             sanitize(
                 ram.copy(
@@ -230,7 +229,7 @@ class RamService(
         val ram = getRamForUser(userId)
 
         val startsRefresh = ram.refreshing == 0
-        val nextRefresh = if (startsRefresh) timeService.now() + REFRESH_DURATION else ram.nextRefresh
+        val nextRefresh = if (startsRefresh) timeService.now() + getRefreshDuration() else ram.nextRefresh
 
         val updatedRam = sanitize(
             ram.copy(
@@ -242,7 +241,7 @@ class RamService(
         ramRepository.save(updatedRam)
 
         if (startsRefresh) {
-            scheduleRamRefresh(ram, REFRESH_DURATION)
+            scheduleRamRefresh(ram, getRefreshDuration())
         }
     }
 
@@ -260,7 +259,7 @@ class RamService(
         if (ram.refreshing == 0) return
 
         val newRefreshing = ram.refreshing - 1
-        val nextRefresh = if (newRefreshing > 0) timeService.now() + REFRESH_DURATION else null
+        val nextRefresh = if (newRefreshing > 0) timeService.now() + getRefreshDuration() else null
 
         val updatedRam = sanitize(
             ram.copy(
@@ -271,7 +270,7 @@ class RamService(
         )
         ramRepository.save(updatedRam)
         if (newRefreshing > 0) {
-            scheduleRamRefresh(ram, REFRESH_DURATION)
+            scheduleRamRefresh(ram, getRefreshDuration())
         }
         scriptService.sendScriptStatusToCurrentUser()
     }
@@ -345,7 +344,7 @@ class RamService(
 
     fun startHack(userId: String) {
         val ram = getRamForUser(userId)
-        val updatedRam = ram.copy(lockedUntil = timeService.now() + HACKING_LOCK_DURATION)
+        val updatedRam = ram.copy(lockedUntil = timeService.now() + getLockoutDuration())
         ramRepository.save(updatedRam)
         scriptService.sendScriptStatusToCurrentUser()
 
@@ -367,4 +366,9 @@ class RamService(
         ramRepository.save(updatedRam)
         scriptService.sendScriptStatusToCurrentUser()
     }
+
+    private fun getRefreshDuration() = configService.getAsDuration(ConfigItem.HACKER_SCRIPT_RAM_REFRESH_DURATION)
+
+    private fun getLockoutDuration() = configService.getAsDuration(ConfigItem.HACKER_SCRIPT_LOCKOUT_DURATION)
+
 }

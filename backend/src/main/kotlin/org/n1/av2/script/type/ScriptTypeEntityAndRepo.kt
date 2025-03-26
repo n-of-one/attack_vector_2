@@ -12,6 +12,7 @@ typealias ScriptTypeId = String
 data class ScriptType(
     @Id val id: ScriptTypeId,
     val name: String,
+    val gmNote: String,
     val category: String,
     val size: Int,
     val effects: List<ScriptEffect>,
@@ -24,4 +25,5 @@ data class ScriptEffect(
 )
 
 interface ScriptTypeRepository : CrudRepository<ScriptType, ScriptTypeId> {
+    fun findByNameIgnoreCase(name: String): ScriptType?
 }

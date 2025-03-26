@@ -21,7 +21,7 @@ export const HackerHome = () => {
     const hackerDeleteRunLinks = (getConfigAsBoolean(ConfigItem.HACKER_DELETE_RUN_LINKS, config))
 
     return (
-        <div className="row">
+        <div className="row content">
             <div className="col-lg-2">
             </div>
             <div className="col-lg-4 text">

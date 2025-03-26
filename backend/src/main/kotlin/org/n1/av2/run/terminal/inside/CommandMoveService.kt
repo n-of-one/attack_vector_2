@@ -20,6 +20,7 @@ import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.ConnectionEntityService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
 
@@ -35,6 +36,7 @@ class CommandMoveService(
     private val connectionService: ConnectionService,
     private val timingsService: TimingsService,
     private val configService: ConfigService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
 
     fun processCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
@@ -103,18 +105,29 @@ class CommandMoveService(
     }
 
     @ScheduledTask
-    fun moveArrive(nodeId: String, userId: String, runId: String ) {
+    fun moveArrive(nodeId: String, userId: String, runId: String) {
         val hackerState = hackerStateEntityService.retrieve(userId)
         if (hackerState.runId == null || hackerState.runId != runId) return // hacker has left the original run
         val runState = hackerState.toRunState()
-
         val run = runEntityService.getByRunId(runId)
+        if (sitePropertiesEntityService.getBySiteId(run.siteId).shutdownEnd != null) {
+            // site has shut down, abort moving
+            connectionService.replyTerminalSetLocked(false)
+            return
+        }
+
         val nodeStatus = run.nodeScanById[nodeId]!!.status
 
         if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
             arriveComplete(nodeId, userId, runId)
         } else {
-            connectionService.toRun(runId, ServerActions.SERVER_HACKER_SCANS_NODE, "userId" to userId, "nodeId" to nodeId, "timings" to timingsService.INSIDE_SCAN)
+            connectionService.toRun(
+                runId,
+                ServerActions.SERVER_HACKER_SCANS_NODE,
+                "userId" to userId,
+                "nodeId" to nodeId,
+                "timings" to timingsService.INSIDE_SCAN
+            )
 
             userTaskRunner.queueInTicksForSite("internal-scan", runState.siteId, timingsService.INSIDE_SCAN.totalTicks) {
                 scanService.hackerArrivedNodeScan(nodeId, runId)

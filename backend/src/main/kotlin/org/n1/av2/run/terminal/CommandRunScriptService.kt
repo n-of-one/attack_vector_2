@@ -50,11 +50,8 @@ class CommandRunScriptService(
             }
         }
 
-
-// FIXME
-//        ramService.useScript(hackerSate.userId, type.size)
-//        scriptService.markAsUsedAndNotify(script)
-
+        ramService.useScript(hackerSate.userId, type.size)
+        scriptService.markAsUsedAndNotify(script)
     }
 
     private fun prepareExecutions(type: ScriptType, argumentTokens: List<String>, hackerSate: HackerState): List<ScriptExecution> {

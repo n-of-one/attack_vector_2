@@ -6,7 +6,10 @@ import {
     ConfigItemHackerDeleteRunLinks,
     ConfigItemHackerEditCharacterName,
     ConfigItemHackerEditUserName,
-    ConfigItemHackerShowSKills, ConfigItemHackerTutorialSiteName
+    ConfigItemHackerScriptLockoutDuration,
+    ConfigItemHackerScriptRamRefreshDuration,
+    ConfigItemHackerShowSKills,
+    ConfigItemHackerTutorialSiteName
 } from "./items/ConfigItemsHacker";
 import {ConfigEntry, ConfigItem, ConfigItemCategories, ConfigItemNames, SELECT_CONFIG} from "./ConfigReducer";
 import {SilentLink} from "../../common/component/SilentLink";
@@ -100,6 +103,10 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemHackerDeleteRunLinks value={props.value}/>
         case ConfigItem.HACKER_TUTORIAL_SITE_NAME:
             return <ConfigItemHackerTutorialSiteName value={props.value}/>
+        case ConfigItem.HACKER_SCRIPT_RAM_REFRESH_DURATION:
+            return <ConfigItemHackerScriptRamRefreshDuration value={props.value}/>
+        case ConfigItem.HACKER_SCRIPT_LOCKOUT_DURATION:
+            return <ConfigItemHackerScriptLockoutDuration value={props.value}/>
 
         case ConfigItem.LOGIN_PATH:
             return <ConfigItemLoginPath value={props.value}/>

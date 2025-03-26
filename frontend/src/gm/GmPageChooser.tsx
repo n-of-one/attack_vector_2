@@ -44,18 +44,20 @@ export const GmPageChooser = () => {
 
     return (
         <div className="container-fluid" data-bs-theme="dark">
-            <div className="row">
-                <div className="col-lg-2">
-                    <span className="text">&nbsp;</span>
+            <div className="content">
+                <div className="row">
+                    <div className="col-lg-2">
+                        <span className="text">&nbsp;</span>
+                    </div>
+                    <div className="col-lg-5 backgroundLight">
+                        <span className="text">&nbsp;</span>
+                    </div>
+                    <div className="col-lg-5 rightPane">
+                        <span className="text">&nbsp;</span>
+                    </div>
                 </div>
-                <div className="col-lg-5 backgroundLight">
-                    <span className="text">&nbsp;</span>
-                </div>
-                <div className="col-lg-5 rightPane">
-                    <span className="text">&nbsp;</span>
-                </div>
+                {renderCurrentPage(currentPage)}
             </div>
-            {renderCurrentPage(currentPage)}
             <MenuBar/>
         </div>
     )

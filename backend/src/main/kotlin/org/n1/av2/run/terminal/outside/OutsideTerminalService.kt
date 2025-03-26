@@ -13,6 +13,9 @@ import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
+
+const val CANNOT_SCAN_DURING_SITE_RESET = "Connection refused. (site is in shutdown mode)"
+
 @Service
 class OutsideTerminalService(
     private val socialTerminalService: SocialTerminalService,
@@ -45,7 +48,7 @@ class OutsideTerminalService(
     fun processActiveSiteCommand(runId: String, tokens: List<String>) {
         val run = runEntityService.getByRunId(runId)
         if (isSiteShutdown(run)) {
-            connectionService.replyTerminalReceive("Connection refused. (site is in shutdown mode)")
+            connectionService.replyTerminalReceive(CANNOT_SCAN_DURING_SITE_RESET)
             return
         }
 

@@ -73,3 +73,48 @@ export const ConfigItemHackerTutorialSiteName = (props: { value: string }) => {
         </>
     )
 }
+
+export const ConfigItemHackerScriptRamRefreshDuration = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Hacker: Script RAM refresh duration" value={props.value} item={ConfigItem.HACKER_SCRIPT_RAM_REFRESH_DURATION}/>
+            <small className="form-text text-muted">Script RAM refresh duration<br/><br/>
+                Default: 00:15:00<br/><br/>
+
+                Scripts give hackers a way to make sites easier. To allow GMs to have some control over the amount of scripts a hacker can bring to a single
+                site, the RAM of a script is locked for a certain amount of time after it is used.<br/><br/>
+
+                This prevents hackers from quickly loading new scripts after they have used their initial set of scripts. A single block of RAM becomes
+                available again after this duration has passed.<br/><br/>
+
+                Setting this value too low will allow hackers to possibly bring multiple scripts to a single run<br/><br/>
+
+                Setting this value too high will prevent hackers from using multiple scripts in consecutive hacks on different sites.<br/><br/>
+
+                See also: Script lockout duration.
+            </small><br/>
+        </>
+    )
+}
+
+export const ConfigItemHackerScriptLockoutDuration = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Hacker: Script lockout duration" value={props.value} item={ConfigItem.HACKER_SCRIPT_LOCKOUT_DURATION}/>
+            <small className="form-text text-muted">Script lockout duration<br/><br/>
+                Default: 01:00:00<br/><br/>
+
+                Scripts give hackers a way to make sites easier. To allow GMs to have some control over the amount of scripts a hacker can bring to a single
+                site, hackers cannot load scripts for a certain duration after they have have entered a site.<br/><br/>
+
+                This provides a minimum time window in which a hacker cannot load new scripts.<br/><br/>
+
+                Setting this value too low will allow hackers to possibly bring multiple scripts to a single run<br/><br/>
+
+                Setting this value too high will prevent hackers from using multiple scripts in consecutive hacks on different sites.<br/><br/>
+
+                See also: Script RAM refresh duration.
+            </small><br/>
+        </>
+    )
+}

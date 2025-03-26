@@ -11,6 +11,7 @@ import org.n1.av2.run.entity.Run
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.runlink.RunLinkService
 import org.n1.av2.run.scanning.NodeScanType.OUTSIDE_SCAN
+import org.n1.av2.run.terminal.outside.CANNOT_SCAN_DURING_SITE_RESET
 import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
@@ -36,7 +37,13 @@ class InitiateScanService(
 ) {
 
     fun scanIgnoringIceAtTargetNode(run: Run, startNode: Node?, targetNode: Node) {
-        val startNodeNetworkId = startNode?.networkId ?: sitePropertiesEntityService.getBySiteId(run.siteId).startNodeNetworkId
+        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        if (siteProperties.shutdownEnd != null) {
+            connectionService.replyTerminalReceive(CANNOT_SCAN_DURING_SITE_RESET)
+            return
+        }
+
+        val startNodeNetworkId = startNode?.networkId ?: siteProperties.startNodeNetworkId
         val iceNodeIdToIgnore = targetNode.id
         val nodes = nodeEntityService.findBySiteId(run.siteId)
 
@@ -50,6 +57,14 @@ class InitiateScanService(
     }
 
     fun scanFromOutside(run: Run, startNode: Node) {
+        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        if (siteProperties.shutdownEnd != null) {
+            connectionService.replyTerminalReceive(CANNOT_SCAN_DURING_SITE_RESET)
+            connectionService.replyTerminalSetLocked(false)
+            return
+        }
+
+
         val nodes = nodeEntityService.findBySiteId(run.siteId)
         val (start, traverseNodesById) = traverseNodeService.createTraverseNodesWithDistance(run.siteId, startNode.id, nodes, startNode.id)
         val target: TraverseNode = traverseNodesById[startNode.id]!!

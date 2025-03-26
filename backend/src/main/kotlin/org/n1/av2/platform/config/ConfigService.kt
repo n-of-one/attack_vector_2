@@ -3,7 +3,10 @@ package org.n1.av2.platform.config
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
+import org.n1.av2.platform.util.toDuration
+import org.n1.av2.platform.util.validateDuration
 import org.springframework.stereotype.Service
+import java.time.Duration
 import javax.annotation.PostConstruct
 
 @Service
@@ -29,15 +32,6 @@ class ConfigService(
             allEntries.find { it.item == item } ?: ConfigEntry(item, item.defaultValue)
         }
         updateCache(allItems)
-    }
-
-    fun initForTest(values: Map<ConfigItem, String>) {
-        val allItems = ConfigItem.entries.map { item: ConfigItem ->
-            val value = values[item] ?: item.defaultValue
-            ConfigEntry(item, value)
-        }
-        updateCache(allItems)
-
     }
 
     private fun updateCache(allItems: List<ConfigEntry>) {
@@ -86,14 +80,20 @@ class ConfigService(
         throw ValidationException(errorMessage)
     }
 
-    fun getAsBoolean(devHackerAdminCommands: ConfigItem): Boolean {
-        val stringValue = get(devHackerAdminCommands)
+    fun getAsBoolean(item: ConfigItem): Boolean {
+        val stringValue = get(item)
         return stringValue.toBoolean()
     }
 
-    fun getAsLong(devSimulateNonLocalhostDelayMs: ConfigItem): Long {
-        val stringValue = get(devSimulateNonLocalhostDelayMs)
+    fun getAsLong(item: ConfigItem): Long {
+        val stringValue = get(item)
         return stringValue.toLong()
+    }
+
+    fun getAsDuration(item: ConfigItem): Duration {
+        val stringValue = get(item)
+        if (stringValue.validateDuration() != null ) error("Duration invalid for config item: $item")
+        return stringValue.toDuration()
     }
 
 }

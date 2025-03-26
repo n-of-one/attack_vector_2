@@ -40,6 +40,7 @@ export interface Effect {
 export interface ScriptType {
     id: string,
     name: string,
+    gmNote: string,
     category: string,
     size: number,
     defaultPrice?: number,
@@ -67,6 +68,8 @@ const enrichTypesFromServer = (types: ScriptType[]): ScriptType[] => {
                 }
             })
         }
+    }).sort((a: ScriptType, b: ScriptType) => {
+        return a.name.localeCompare(b.name)
     })
 }
 

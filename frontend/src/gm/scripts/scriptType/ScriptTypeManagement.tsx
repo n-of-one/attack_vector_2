@@ -70,6 +70,17 @@ const ChooseOrCreateScriptType = () => {
     </>)
 }
 
+const numericInputDefault0 = (value: string) => {
+    if (/^\d+$/.test(value)) return value
+    return "0"
+}
+
+const numericInputDefault1 = (value: string) => {
+    if (/^\d+$/.test(value)) return value
+    return "1"
+}
+
+const textInput = (value: string) => value
 
 const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
 
@@ -81,15 +92,18 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     const [negativeEffect, setNegativeEffect] = React.useState<string>("")
 
 
-    const edit = (property: string, value: string) => {
+    const edit = (property: string, value: string, inputFilter: (value: string) => string) => {
+        const filteredValue = inputFilter(value)
+
         const editCommand: { [key: string]: any } = {
             scriptTypeId: scriptType.id,
             name: scriptType.name,
             category: scriptType.category,
             size: scriptType.size,
-            defaultPrice: scriptType.defaultPrice
+            defaultPrice: scriptType.defaultPrice,
+            gmNote: scriptType.gmNote,
         }
-        editCommand[property] = value
+        editCommand[property] = filteredValue
         webSocketConnection.send("/gm/scriptType/edit", editCommand)
     }
 
@@ -105,12 +119,22 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     return (<>
             <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={close}/></div>
             <br/>
-            <FormTextInputRow label="Name" value={scriptType.name} save={value => edit("name", value)} labelColumns={2} valueColumns={2}/>
-            <FormTextInputRow label="Category" value={scriptType.category} save={value => edit("category", value)} labelColumns={2} valueColumns={2}/>
-            <FormTextInputRow label="Size" value={scriptType.size.toString()} save={value => edit("size", value)} labelColumns={2} valueColumns={2}/>
-            <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""} save={value => edit("defaultPrice", value)}
-                              labelColumns={2}
-                              valueColumns={2}/>
+            <FormTextInputRow label="Name" value={scriptType.name} save={value => edit("name", value, textInput)}
+                              labelColumns={3} valueColumns={3} maxLength={15}
+                              toolTip="This is what the scripts will be called. This is seen by the hacker. Max length is 15 characters."/>
+            <FormTextInputRow label="Category" value={scriptType.category} save={value => edit("category", value, textInput)}
+                              labelColumns={3} valueColumns={3}
+                              toolTip="Optional category. This can be used to organize scripts, and filter for them in the scripts panel."/>
+            <FormTextInputRow label="Size" value={scriptType.size.toString()} save={value => edit("size", value, numericInputDefault1)}
+                              labelColumns={3} valueColumns={2}
+                              toolTip="This is the amount of RAM the script will take up. Set to 0 if you are not using RAM."/>
+            <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""}
+                              save={value => edit("defaultPrice", value, numericInputDefault0)}
+                              labelColumns={3} valueColumns={2}
+                              toolTip="This is the default price for hackers to buy this script. (currently not yet implemented). You can override
+                              this for each individual hacker."/>
+            <FormTextInputRow label="Note" value={scriptType.gmNote} save={value => edit("gmNote", value, textInput)} labelColumns={3} valueColumns={8}
+                              toolTip="This note is for GM's only, it is not shown to the hackers. It can be used to keep track of why this script type exists."/>
             <br/>
             <br/>
             <div className="row text">
@@ -131,21 +155,21 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                                 setPositiveEffect(event.target.value)
                             }}>
                         <option value=""></option>
-                        <option value={EffectType.SITE_STATS}>Site stats</option>
+                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER}>Automatically hack a specific ICE layer</option>
+                        <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
+                        <option value={EffectType.AUTO_HACK_ICE_TYPE}>Automatically hack ICE of a specific type</option>
                         <option value={EffectType.DELAY_TRIPWIRE_COUNTDOWN}>Delay tripwire countdown</option>
-                        <option value={EffectType.SCAN_ICE_NODE}>Scan node with ICE</option>
+                        <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
+                        <option value={EffectType.INTERACT_WITH_SCRIPT_LAYER}>Interact with script layer</option>
                         <option value={EffectType.JUMP_TO_NODE}>Jump to node</option>
                         <option value={EffectType.JUMP_TO_HACKER}>Jump to hacker</option>
                         <option value={EffectType.SWEEPER_UNBLOCK}>Minesweeper - unblock</option>
+                        <option value={EffectType.ROTATE_ICE}>Rotate ICE - change ICE type</option>
+                        <option value={EffectType.SCAN_ICE_NODE}>Scan node with ICE</option>
+                        <option value={EffectType.SHOW_MESSAGE}>Show message</option>
+                        <option value={EffectType.SITE_STATS}>Site stats</option>
                         <option value={EffectType.TANGLE_REVEAL_CLUSTERS}>Tangle - reveal clusters</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
-                        <option value={EffectType.AUTO_HACK_ICE_TYPE}>Automatically hack ICE of a specific type</option>
-                        <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
-                        <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
-                        <option value={EffectType.SHOW_MESSAGE}>Show message</option>
-                        <option value={EffectType.INTERACT_WITH_SCRIPT_LAYER}>Interact with script layer</option>
-                        <option value={EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER}>Automatically hack a specific ICE layer</option>
-                        <option value={EffectType.ROTATE_ICE}>Rotate ICE - change ICE type</option>
 
                     </select>
                 </div>
@@ -167,10 +191,10 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                                 setNegativeEffect(event.target.value)
                             }}>
                         <option value=""></option>
-                        <option value={EffectType.HIDDEN_EFFECTS}>Hidden effects</option>
                         <option value={EffectType.DECREASE_FUTURE_TIMERS}>Decrease future timers</option>
-                        <option value={EffectType.START_RESET_TIMER}>Start reset timer</option>
+                        <option value={EffectType.HIDDEN_EFFECTS}>Hidden effects</option>
                         <option value={EffectType.SPEED_UP_RESET_TIMER}>Speed up reset timer</option>
+                        <option value={EffectType.START_RESET_TIMER}>Start reset timer</option>
                     </select>
                 </div>
                 <div className="col-lg-1">
@@ -359,7 +383,7 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
 
 
     return (<>
-        <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={35} hr={hr}>
+        <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={34} hr={hr}>
             <div className="row text">
                 <div className="col-lg-2 strong">Script type</div>
                 <div className="col-lg-2 strong">Effects</div>

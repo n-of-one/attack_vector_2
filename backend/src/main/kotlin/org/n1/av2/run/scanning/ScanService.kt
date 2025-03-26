@@ -12,6 +12,7 @@ import org.n1.av2.run.runlink.RunLinkService
 import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,6 +23,7 @@ class ScanService(
     private val runLinkService: RunLinkService,
     private val traverseNodeService: TraverseNodeService,
     private val siteService: SiteService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
 
     @ScheduledTask
@@ -40,6 +42,11 @@ class ScanService(
 
     @ScheduledTask
     fun areaScan(run: Run, scanNode: Node, nodes: List<Node>, ignoreIceAtScanNode: Boolean) {
+        if (sitePropertiesEntityService.getBySiteId(run.siteId).shutdownEnd != null ) {
+            // the site has shut down since we started scanning
+            connectionService.replyTerminalSetLocked(false)
+            return
+        }
         if (scanNode.unhackedIce && !ignoreIceAtScanNode) {
             connectionService.replyTerminalReceive("Scan blocked by ICE at [ok]${scanNode.networkId}")
         }

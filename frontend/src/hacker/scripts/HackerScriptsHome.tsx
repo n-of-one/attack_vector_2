@@ -20,15 +20,15 @@ export const HackerScriptsHome = () => {
 const hr= <Hr />
 
     return (
-        <div className="row">
+        <div className="row content">
             <div className="col-lg-1">
             </div>
             <div className="col-lg-4 text">
                 <br/>
                 <strong>🜁 Verdant OS 🜃</strong><br/>
                 <br/>
-                Scripts exploit security flaws, but those flaws will be patched automatically by security systems after use,
-                so all script are use once. Scripts can only be used on the day they are created. The daily patching cycle runs at 06:00.<br/>
+                Scripts exploit security flaws. Those flaws will be patched automatically by security systems after use,
+                so all script can only be used once. The flaws are also patched daily at 06:00, so scripts can only be used on the day they are created.<br/>
                 <br/>
                 <hr/>
                 <RamDisplay size={509}/>

@@ -54,6 +54,7 @@ class ScriptTypeService(
     class ScriptTypeUI(
         val id: ScriptTypeId,
         val name: String,
+        val gmNote: String,
         val category: String,
         val size: Int,
         val defaultPrice: BigDecimal?,
@@ -70,6 +71,7 @@ class ScriptTypeService(
                 name = scriptType.name,
                 category =  scriptType.category,
                 size = scriptType.size,
+                gmNote = scriptType.gmNote,
                 defaultPrice = scriptType.defaultPrice,
                 effects = scriptType.effects.mapIndexed { index: Int, effect: ScriptEffect ->
                     val effectService = effectService.getForType(effect.type)
@@ -80,7 +82,6 @@ class ScriptTypeService(
                         gmDescription = effectService.gmDescription,
                         hidden = (hideIndex > -1 && index > hideIndex),
                         type = effect.type
-
                     )
                 }
             )
@@ -90,11 +91,16 @@ class ScriptTypeService(
     }
 
     fun add(name: String) {
+        scriptTypeRepository.findByNameIgnoreCase(name)?.let {
+            error("A script type with name $name already exists")
+        }
+
         val id = createId("type", scriptTypeRepository::findById)
         val scriptType = ScriptType(
             id = id,
             name = name,
             category = "",
+            gmNote = "",
             size = 1,
             defaultPrice = null,
             effects = emptyList()
@@ -106,7 +112,9 @@ class ScriptTypeService(
         checkScriptNameLength(name)
     }
 
-    fun edit(scriptTypeId: ScriptTypeId, name: String, category: String, size: Int, defaultPrice: BigDecimal?) {
+    fun edit(scriptTypeId: ScriptTypeId, name: String, category: String, gmNote: String, size: Int, defaultPrice: BigDecimal?) {
+        checkScriptNameLength(name)
+
         val scriptType = getById(scriptTypeId)
 
         val editedScriptType = scriptType.copy(
@@ -120,17 +128,18 @@ class ScriptTypeService(
                 defaultPrice == null -> null
                 defaultPrice <= BigDecimal.ZERO -> null
                 else -> defaultPrice
-            }
+            },
+            gmNote = gmNote,
         )
 
         scriptTypeRepository.save(editedScriptType)
         sendScriptTypes()
-        checkScriptNameLength(name)
     }
 
     private fun checkScriptNameLength(name: String) {
-        if (name.length > 15) {
-            connectionService.replyNeutral("Script name is long, it will truncated for hackers.")
+        if (name.isEmpty() || name.length > 15) {
+            sendScriptTypes()
+            error("Script name is invalid. Min 1 character, max is 15 characters. Otherwise it can't be properly shown to the hackers.")
         }
     }
 

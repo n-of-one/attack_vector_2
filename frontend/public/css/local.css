@@ -3,6 +3,18 @@ body {
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
     font-variant-ligatures: none !important;
     font-feature-settings: "liga" 0 !important;
+
+}
+
+.navbar {
+    height: 42px;
+}
+
+.content {
+    height: calc(100vh - 42px);
+    overflow-y: auto;
+    padding-bottom: 6px;
+    overflow-x: hidden;
 }
 
 @font-face {
@@ -77,7 +89,7 @@ select {
     margin-top: 10px;
     margin-bottom: 10px;
     padding: 10px 10px 10px 10px;
-    height: 889px;
+    height: 850px;
 }
 
 

@@ -23,6 +23,7 @@ interface Props {
     rows?: number,
     readonly?: boolean,
     terminalPrefix?: string,
+    maxLength?: number
 }
 
 enum State {
@@ -154,6 +155,7 @@ export const TextSaveInput = (props: Props) => {
                            onKeyDown={(event) => handleKeyDown(event, true)}
                            onBlur={handleBlur}
                            disabled={readonly}
+                           maxLength={props.maxLength}
                     />
                 {icon}
                 </span>
