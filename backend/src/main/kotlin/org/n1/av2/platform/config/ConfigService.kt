@@ -14,12 +14,9 @@ class ConfigService(
     private val repo: ConfigEntryRepo,
     private val connectionService: ConnectionService,
 ) {
-
-
     private val logger = mu.KotlinLogging.logger {}
 
     val cache: MutableMap<ConfigItem, String> = HashMap()
-
 
     @PostConstruct
     fun logEnvironment() {
@@ -64,7 +61,6 @@ class ConfigService(
         cache[item] = value
     }
 
-
     private fun replySpecificConfigValue(item: ConfigItem, value: String) {
         val messageFunction = item.message ?: return // no message function
         val message = messageFunction(value) ?: return // no message
@@ -95,5 +91,4 @@ class ConfigService(
         if (stringValue.validateDuration() != null ) error("Duration invalid for config item: $item")
         return stringValue.toDuration()
     }
-
 }
