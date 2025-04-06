@@ -1,3 +1,13 @@
+# Release notes AV 2.6.0 (06 Apr 2025)
+
+## Features
+- Scripts, including 19 script effects
+- Pagination and filtering for sites and users
+
+## Bugfixes
+- Add brute force protection for admin login
+
+
 # Release notes AV 2.5.2 (29 Dec 2024)
 
 ## Bugfixes
