@@ -38,13 +38,12 @@ export const WebsiteOrganizers = () => {
                     <p className="text">
                         Attack Vector is free, but it's also a piece of software that needs to be hosted somewhere.<br/>
                         <br/>
-                        Fortunately, it's quite cheap to host in the cloud, it runs on an Amazon AWS t4g.micro, costing around 1 dollar-cent/euro-cent per hour
-                        of usage.
-                        There are additional costs for having an IP address and having a domain name. But it's still so cheap that I am willing to set it up and
-                        host it
-                        for the first event to allow organisations to see if Attack Vector is something for them.<br/>
+                        The simplest option is to just install it on a laptop or desktop. There are installation instructions for Windows and Linux in the <a
+                        href="https://github.com/n-of-one/attack_vector_2/blob/main/README.md">Readme</a>.<br/><br/>
+                        Another option is to host it on the cloud. It runs on an Amazon AWS t4g.micro, costing around 1 dollar-cent/euro-cent per hour
+                        of usage. There are additional costs for having an IP address and having a domain name.<br/>
                         <br/>
-                        If you want to host it yourself, there are instructions in the source code. It requires Java and Mongodb.
+                        Running Attack Vector requires Java 21+ and Mongodb.
                     </p>
                     <h3 className="muted">Discord server - Support</h3>
                     <p className="text">
