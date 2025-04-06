@@ -1,5 +1,6 @@
 package org.n1.av2.run.terminal
 
+import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.platform.config.ConfigItem
@@ -17,21 +18,19 @@ class CommandHelpService(
 ) {
 
     fun processHelp(inside: Boolean, tokens: List<String>) {
+        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
         if (tokens.size == 1 || tokens[1] != "shortcuts") {
             if (inside) {
-                processHelpInside()
+                processHelpInside(hacker)
             } else {
-                processHelpOutside()
+                processHelpOutside(hacker)
             }
         } else {
             processHelpKeys()
         }
     }
 
-    private fun processHelpOutside() {
-        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
-
+    private fun processHelpOutside(hacker: Hacker) {
         connectionService.replyTerminalReceive(
             "You are outside of the site.",
             "Here you can examine the site before entering to plan your attack. Click on a node in the map to see what layers it contains.",
@@ -39,7 +38,7 @@ class CommandHelpService(
             "There are only a few commands you can use when outside:",
             ""
         )
-        if (hasScanSkill) {
+        if (hacker.hasSkill(HackerSkillType.SCAN)) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
                 "Scan the site to reveal nodes. Does not scan beyond ICE nodes.",
@@ -52,14 +51,10 @@ class CommandHelpService(
             "[b]attack",
             "Enter the site and start the attack..",
             "",
-            "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
-            "Run a script that you have loaded in memory.",
-            "",
-            "[b]/share[/] [info]<user name>[/] (optionally more usernames)",
-            "Share your run with one or more hackers so they can join you.",
-            "",
         )
-        showDownloadScriptHelp()
+        showRunScriptHelp(hacker)
+        showShareHelp()
+        showDownloadScriptHelp(hacker)
 
         if (configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
             connectionService.replyTerminalReceive(
@@ -72,10 +67,7 @@ class CommandHelpService(
         }
     }
 
-    private fun processHelpInside() {
-        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
-
+    private fun processHelpInside(hacker: Hacker) {
         connectionService.replyTerminalReceive(
             "You are inside the site.",
             "",
@@ -96,28 +88,24 @@ class CommandHelpService(
             ""
         )
 
-        if (hasScanSkill) {
+        if (hacker.hasSkill(HackerSkillType.SCAN)) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
                 "Scan to reveal new nodes once ICE has been hacked.",
                 "",
             )
         }
+        showRunScriptHelp(hacker)
         connectionService.replyTerminalReceive(
-            "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
-            "Run a script that you have loaded in memory.",
-            "",
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
             "",
             "[b]dc",
             "Disconnect from the site, stop your attack. You can also click on 'Home' in the menu at the bottom.",
             "",
-            "[b]/share[/] [info]<user name>[/] (optionally more usernames)",
-            "Share your run with one or more hackers so they can join you.",
-            ""
         )
-        showDownloadScriptHelp()
+        showShareHelp()
+        showDownloadScriptHelp(hacker)
 
         connectionService.replyTerminalReceive(
             "For information on shortcuts, type: [b]help[/] [b]shortcuts[/]",
@@ -125,7 +113,7 @@ class CommandHelpService(
         )
     }
 
-    private fun processHelpKeys() {
+    private fun processHelpKeys() =
         connectionService.replyTerminalReceive(
             "Terminal shortcuts:",
             "",
@@ -133,16 +121,31 @@ class CommandHelpService(
             "Ctrl-L: clear the terminal.",
             "",
         )
+
+    private fun showRunScriptHelp(hacker: Hacker) {
+        if (hacker.hasSkill(HackerSkillType.SCRIPT_RAM)) {
+            connectionService.replyTerminalReceive(
+                "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
+                "Run a script that you have loaded in memory.",
+                "",
+            )
+        }
     }
 
-    private fun showDownloadScriptHelp() {
-        if (configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN)) {
+    private fun showDownloadScriptHelp(hacker: Hacker) {
+        if (configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN) && hacker.hasSkill(HackerSkillType.SCRIPT_RAM)) {
             connectionService.replyTerminalReceive(
                 "[b]/download-script[/] [primary]<script code>[/] - download a script.",
                 "You can download a script from another hacker who has offered it, or you can buy it from someone.",
                 ""
             )
         }
-
     }
+
+    private fun showShareHelp() =
+        connectionService.replyTerminalReceive(
+            "[b]/share[/] [info]<user name>[/] (optionally more usernames)",
+            "Share your run with one or more hackers so they can join you.",
+            "",
+        )
 }

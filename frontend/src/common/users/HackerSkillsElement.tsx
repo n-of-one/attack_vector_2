@@ -2,6 +2,7 @@ import {HackerSkillType, User} from "./CurrentUserReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {TextSaveInput} from "../component/TextSaveInput";
 import React from "react";
+import {InfoBadge} from "../component/ToolTip";
 
 interface Props {
     user: User,
@@ -10,11 +11,15 @@ interface Props {
 
 export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
     return <>
-        <HackerSkillElement user={user} skillType={HackerSkillType.SCAN} skillName="Scan" readonly={readonlySkills} hasValue={false}/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.SEARCH_SITE} skillName="Search site" readonly={readonlySkills} hasValue={false}/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.SEARCH_SITE} skillName="Search site" readonly={readonlySkills} hasValue={false}
+                            infoText="The hacker can search for sites and start a hacking run. Without this skill, the hacker always needs another hacker find the site and invite them to the run."/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.SCAN} skillName="Scan" readonly={readonlySkills} hasValue={false}
+                            infoText="The hacker can use the scan command."/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}
+                            infoText="The hacker can create their own sites."/>
         {/*<HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}/>*/}
-        <HackerSkillElement user={user} skillType={HackerSkillType.SCRIPT_RAM} skillName="Ram for scripts" readonly={readonlySkills} hasValue={true}/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.SCRIPT_RAM} skillName="Scripts (RAM)" readonly={readonlySkills} hasValue={true}
+                            infoText="The hacker can run scripts. Without this skill the hacker cannot interact with scripts in any way. The value is the amount of RAM available for scripts."/>
     </>
 }
 
@@ -25,9 +30,11 @@ interface UserSkillProps {
     skillName: string,
     readonly: boolean,
     hasValue: boolean,
+    infoText: string,
 }
 
-const HackerSkillElement = ({user, skillType, skillName, readonly, hasValue}: UserSkillProps) => {
+const HackerSkillElement = (props: UserSkillProps) => {
+    const {user, skillType, skillName, readonly, hasValue, infoText} = props
     if (!user.hacker) {
         return <></>
     }// no hacker data
@@ -41,7 +48,7 @@ const HackerSkillElement = ({user, skillType, skillName, readonly, hasValue}: Us
         }
         const valueDisplay = hasValue ? ` : ${skill.value}` : ""
         return <ul>
-            <li className="text-muted">{skillName}{valueDisplay}</li>
+            <li className="text-muted"><InfoBadge infoText={infoText}/> {skillName}{valueDisplay}</li>
         </ul>
     }
 
@@ -60,7 +67,7 @@ const HackerSkillElement = ({user, skillType, skillName, readonly, hasValue}: Us
 
     return <div className="row form-group">
         <div className={`col-lg-1`}/>
-        <label htmlFor={skillName} className="col-lg-3 control-label text-muted">{skillName}</label>
+        <label htmlFor={skillName} className="col-lg-3 control-label text-muted"><InfoBadge infoText={infoText}/> {skillName}</label>
         <div className={`col-lg-1`}>
             <input id={skillName} type="checkbox" checked={hasSkill} className="checkbox-inline" onClick={(event: any) => {
                 saveSkillEnabled(!hasSkill)

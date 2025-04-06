@@ -1,7 +1,12 @@
 package org.n1.av2.run.terminal
 
+import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
@@ -13,15 +18,35 @@ import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.stereotype.Service
 
 @Service
-class CommandRunScriptService(
+class CommandScriptService(
     private val connectionService: ConnectionService,
     private val scriptService: ScriptService,
     private val scriptTypeService: ScriptTypeService,
     private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val ramService: RamService,
+    private val hackerEntityService: HackerEntityService,
+    private val currentUser: CurrentUserService,
+    private val configService: ConfigService,
 ) {
 
+    fun processDownloadScript(tokens: List<String>) {
+        if (!configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN)) {
+            connectionService.replyTerminalReceive(UNKNOWN_COMMAND_RESPONSE)
+            return
+        }
+        if (!checkHasScriptsSkill()) return
+
+        if (tokens.size == 1) {
+            connectionService.replyTerminalReceive("Missing [primary]<script code>[/] for example /download-script [primary]1234-abcd[/].")
+            return
+        }
+        val scriptCode = tokens[1]
+        scriptService.downloadScript(scriptCode, true)
+    }
+
     fun processRunScript(tokens: List<String>, hackerSate: HackerState) {
+        if (!checkHasScriptsSkill()) return
+
         if (tokens.size < 2) {
             connectionService.replyTerminalReceive("[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd")
             return
@@ -31,6 +56,18 @@ class CommandRunScriptService(
 
         runScript(script, tokens.drop(2), hackerSate)
     }
+
+    private fun checkHasScriptsSkill(): Boolean {
+        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
+        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCRIPT_RAM)
+
+        if (!hasScanSkill) {
+            connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
+            return false
+        }
+        return true
+    }
+
 
     fun runScript(script: Script, argumentTokens: List<String>, hackerSate: HackerState) {
         val type = scriptTypeService.getById(script.typeId)

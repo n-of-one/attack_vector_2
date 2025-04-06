@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import {SilentLink} from "../component/SilentLink";
-import {UserOverview} from "./EditUserDataReducer";
+import {UserOverview, UserTagLabels} from "./EditUserDataReducer";
 import {useSelector} from "react-redux";
 import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
@@ -8,7 +8,7 @@ import {UserDetails} from "./UserDetails";
 import {RequiresRole} from "../user/RequiresRole";
 import {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
 import {TextInput} from "../component/TextInput";
-import {User} from "./CurrentUserReducer";
+import {User, UserType, UserTypeLabels} from "./CurrentUserReducer";
 import {DataTable} from "../component/dataTable/DataTable";
 import {Hr} from "../component/dataTable/Hr";
 
@@ -60,17 +60,19 @@ export const UserOverviewTable = ({users, selectUser}: { users: UserOverview[], 
     const sortedUsers = sortUsers(users).map((user: UserOverview) => {
         return {...user, name: user.name.toLowerCase()}
     })
-    const sortedTexts = sortedUsers.map(user => `${user.name}~${user.characterName}`)
+    const sortedTexts = sortedUsers.map(user => `${user.name}~${user.characterName}~${UserTypeLabels[user.type]}~${UserTagLabels[user.tag]}`)
 
     const rows = sortedUsers.map((user: UserOverview) => {
         return (
             <div className="row text" key={user.id}>
-                <div className="col-lg-6"><SilentLink onClick={() => {
+                <div className="col-lg-4"><SilentLink onClick={() => {
                     selectUser(user)
                 }}><>{user.name}</>
                 </SilentLink>
                 </div>
-                <div className="col-lg-6">{user.characterName}</div>
+                <div className="col-lg-4">{user.characterName}</div>
+                <div className="col-lg-2">{UserTypeLabels[user.type]}</div>
+                <div className="col-lg-2">{UserTagLabels[user.tag]}</div>
             </div>)
     })
 
@@ -79,8 +81,10 @@ export const UserOverviewTable = ({users, selectUser}: { users: UserOverview[], 
     return (
         <DataTable rows={rows} rowTexts={sortedTexts} pageSize={35} hr={hr}>
             <div className="row text">
-                <div className="col-lg-6 strong">Name</div>
-                <div className="col-lg-6 strong">Character</div>
+                <div className="col-lg-4 strong">Name</div>
+                <div className="col-lg-4 strong">Character</div>
+                <div className="col-lg-2 strong">Type</div>
+                <div className="col-lg-2 strong">Tag</div>
             </div>
         </DataTable>
     )
@@ -110,8 +114,10 @@ const CreateUser = (user: User | null) => {
 
 }
 
+// Sort users by: Type, Tag, Name.
 const sortUsers = (users: UserOverview[]): UserOverview[] => {
-    const alphabeticalUsers = [...users].sort((a, b) => {
+    const unsortedUsers = [...users]
+    const alphabeticalUsers = unsortedUsers.sort((a, b) => {
 
         const nameA = a.name.toUpperCase()
         const nameB = b.name.toUpperCase()
@@ -121,11 +127,23 @@ const sortUsers = (users: UserOverview[]): UserOverview[] => {
         return 0
     })
 
-    const template = alphabeticalUsers.find(user => user.name === "template")
-    if (!template) return alphabeticalUsers
-    // delete template from the list
-    alphabeticalUsers.splice(alphabeticalUsers.indexOf(template), 1)
-    // add template to the front of the list
-    alphabeticalUsers.unshift(template)
-    return alphabeticalUsers
+    const tagSortedUsers = alphabeticalUsers.sort((a, b) => {
+        const tagA = UserTagLabels[a.tag]
+        const tagB = UserTagLabels[b.tag]
+        if (tagA < tagB) return 1
+        if (tagA > tagB) return -1
+        return 0
+    })
+
+    const typeSortedUsers = tagSortedUsers.sort((a, b) => {
+        if (a.type === UserType.HACKER && b.type !== UserType.HACKER) return -1
+        if (a.type !== UserType.HACKER && b.type === UserType.HACKER) return 1
+
+        if (a.type === UserType.GM && b.type !== UserType.GM) return -1
+        if (a.type !== UserType.GM && b.type === UserType.GM) return 1
+
+        return 0
+    })
+
+    return typeSortedUsers
 }

@@ -10,6 +10,7 @@ import org.n1.av2.platform.connection.ConnectionType
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
@@ -45,6 +46,7 @@ class RamService(
     private val userTaskRunner: UserTaskRunner,
     private val userEntityService: UserEntityService,
     private val configService: ConfigService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     lateinit var scriptService: ScriptService
@@ -56,8 +58,9 @@ class RamService(
         ramRepository.findAll().forEach { ram ->
             try {
                 val user = userEntityService.getByIdOrNull(ram.userId) ?: return // user no longer exists
-                val authentication = UserPrincipal("", "system-1", user, ConnectionType.NONE)
+                val authentication = UserPrincipal(user.name, user.name, user, ConnectionType.NONE)
                 SecurityContextHolder.getContext().authentication = authentication
+                currentUserService.set(user)
 
                 if (ram.refreshing > 0) {
                     processRefreshDuringServerDown(ram)
@@ -67,9 +70,8 @@ class RamService(
                 }
             } finally {
                 SecurityContextHolder.clearContext()
+                currentUserService.remove()
             }
-
-
         }
     }
 
@@ -291,6 +293,7 @@ class RamService(
         if (newRefreshing > 0) {
             scheduleRamRefresh(ram, getRefreshDuration())
         }
+        println("ram refresh tick")
         scriptService.sendScriptStatusToCurrentUser()
     }
 

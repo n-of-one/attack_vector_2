@@ -12,13 +12,15 @@ const val TERMINAL_MAIN = "main"
 
 const val UNKNOWN_COMMAND_RESPONSE = "Unknown command, try [b]help[/]."
 
+const val MISSING_SKILL_RESPONSE = "Command not installed (missing skill)"
+
 @Service
 class TerminalService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val outsideTerminalService: OutsideTerminalService,
     private val insideTerminalService: InsideTerminalService,
     private val connectionService: ConnectionService,
-    private val commandRunScriptService: CommandRunScriptService,
+    private val commandScriptService: CommandScriptService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -38,7 +40,11 @@ class TerminalService(
         val hackerSate = hackerStateEntityService.retrieveForCurrentUser()
 
         if (commandAction == "run") {
-            commandRunScriptService.processRunScript(tokens, hackerSate)
+            commandScriptService.processRunScript(tokens, hackerSate)
+            return
+        }
+        if (commandAction == "/download-script") {
+            commandScriptService.processDownloadScript(tokens)
             return
         }
 
@@ -51,5 +57,4 @@ class TerminalService(
             }
         }
     }
-
 }

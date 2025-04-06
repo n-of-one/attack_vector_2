@@ -29,7 +29,6 @@ class InsideTerminalService(
             "dc" -> processDc()
             "servererror" -> error("gah")
             "/share" -> socialTerminalService.processShare(runId, tokens)
-            "/download-script" -> socialTerminalService.downloadScript(tokens)
             else -> processPrivilegedCommand(runId, tokens, commandAction)
         }
     }

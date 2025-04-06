@@ -81,6 +81,8 @@ const HackerDetails = ({user}: { user: User }) => {
     const config = useSelector((rootState: ConfigRootState) => rootState.config)
     const hackerShowSkills = getConfigAsBoolean(ConfigItem.HACKER_SHOW_SKILLS, config)
     const hackerEditCharacterName = getConfigAsBoolean(ConfigItem.HACKER_EDIT_CHARACTER_NAME, config)
+    const isUserManager = userAuthorizations.hasRole(ROLE_USER_MANAGER)
+    const editCharacterName = isUserManager || hackerEditCharacterName
 
     const authorizationToEditSkills = userAuthorizations.hasRole(ROLE_USER_MANAGER)
     const readonlySkills = !(authorizationToEditSkills)
@@ -94,7 +96,7 @@ const HackerDetails = ({user}: { user: User }) => {
             label="Character Name" id="characterName" size={4}
             value={user.hacker?.characterName}
             attributeSaveName="characterName"
-            readonly={!hackerEditCharacterName}
+            readonly={!editCharacterName}
         />
 
         <div className="row form-group">
@@ -117,9 +119,6 @@ const HackerDetails = ({user}: { user: User }) => {
 
             <HackerSkillsElement user={user} readonlySkills={readonlySkills}/>
         </> : <></>}
-        <hr/>
-        <div className="text">Scripts</div>
-        <br/>
     </>
 }
 

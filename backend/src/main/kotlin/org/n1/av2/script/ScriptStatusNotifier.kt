@@ -2,6 +2,7 @@ package org.n1.av2.script
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.common.UiEffectDescription
@@ -18,6 +19,7 @@ class ScriptStatusNotifier(
     private val connectionService: ConnectionService,
     private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val timeService: TimeService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     @Suppress("unused")
@@ -50,14 +52,14 @@ class ScriptStatusNotifier(
 
     fun sendScriptStatusOfCurrentUser(scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity) {
         val status = createUiScriptStatus(scriptsAndTypes, ram)
-        connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
+        connectionService.toUser (currentUserService.userId, ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
     }
 
     fun sendScriptStatusOfSpecificUser(userId: String, scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity, alsoSendToCurrentUser: Boolean = true) {
         val status = createUiScriptStatus(scriptsAndTypes, ram)
         connectionService.toUser(userId, ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
         if (alsoSendToCurrentUser) {
-            connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
+            connectionService.toUser (currentUserService.userId, ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
         }
     }
 

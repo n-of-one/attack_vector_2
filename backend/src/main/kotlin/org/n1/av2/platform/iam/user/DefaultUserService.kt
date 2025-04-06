@@ -34,14 +34,14 @@ class DefaultUserService(
         createDefaultHacker(TEMPLATE_USER_NAME, HackerIcon.NOT, UserTag.SKILL_TEMPLATE)
     }
 
-    fun createDefaultUser(name: String, type: UserType, role: UserTag = UserTag.REGUlAR): UserEntity? {
+    fun createDefaultUser(name: String, type: UserType, role: UserTag = UserTag.REGULAR): UserEntity? {
         val existingUser = userEntityService.findByNameIgnoreCase(name)
         if (existingUser != null) return null // no user created
 
         return userEntityService.createUser(name, type, null, role)
     }
 
-    fun createDefaultHacker(name: String, icon: HackerIcon, role: UserTag = UserTag.REGUlAR): UserEntity? {
+    fun createDefaultHacker(name: String, icon: HackerIcon, role: UserTag = UserTag.REGULAR): UserEntity? {
         val createdUser = createDefaultUser(name, UserType.HACKER, role)
         if (createdUser == null) return null // no user created, hacker already exists
 

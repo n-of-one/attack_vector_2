@@ -50,7 +50,7 @@ class AutoHackSpecificIceLayerEffectService(
 
     override fun validate(effect: ScriptEffect): String? {
         createPlayerDescription(effect)?.let { return null }
-        return "layer id not found. Please copy/paste the layer ID of a site. It should look like: node-1234-5678:layer-1234 ."
+        return "layer id not found. Please copy/paste the layer ID of a layer from the site editor. It should look like: node-1234-5678:layer-1234 ."
     }
 
     override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {

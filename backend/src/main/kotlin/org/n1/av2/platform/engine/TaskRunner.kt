@@ -170,7 +170,7 @@ class TaskEngine(
             if (!currentUserService.isSystemUser) {
                 val event = ServerFatal(true, exception.message ?: exception.javaClass.name)
                 connectionService.reply(ServerActions.SERVER_ERROR, event)
-                logger.info("User: ${task.userPrincipal.userEntity.name} - task triggered exception. ", exception)
+                logger.info("User: ${task.userPrincipal.userEntity.name} - task triggered exception. Task: ${task.description}", exception)
             } else {
                 logger.info("SYSTEM - task triggered exception. ", exception)
             }

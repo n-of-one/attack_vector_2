@@ -62,7 +62,7 @@ class UserEntityService(
         return userEntityRepo.findByNameIgnoreCase("system") ?: error("System user not found")
     }
 
-    fun createUser(userName: String, type: UserType, externalId: String? = null, role: UserTag = UserTag.REGUlAR): UserEntity {
+    fun createUser(userName: String, type: UserType, externalId: String? = null, role: UserTag = UserTag.REGULAR): UserEntity {
         if (findByNameIgnoreCase(userName) != null) {
             throw ValidationException("User with name $userName already exists.")
         }

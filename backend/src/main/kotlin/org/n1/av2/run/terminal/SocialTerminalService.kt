@@ -7,7 +7,6 @@ import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.run.runlink.RunLinkService
-import org.n1.av2.script.ScriptService
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,7 +16,6 @@ class SocialTerminalService(
     private val runLinkService: RunLinkService,
     private val configService: ConfigService,
     private val lolaService: LolaService,
-    private val scriptService: ScriptService,
 ) {
 
     fun processShare(runId: String, tokens: List<String>) {
@@ -46,20 +44,6 @@ class SocialTerminalService(
         } else {
             runLinkService.shareRun(runId, user, true)
         }
-    }
-
-    fun downloadScript(tokens: List<String>) {
-        if (!configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN)) {
-            connectionService.replyTerminalReceive(UNKNOWN_COMMAND_RESPONSE)
-            return
-        }
-
-        if (tokens.size == 1) {
-            connectionService.replyTerminalReceive("Missing [primary]<script code>[/] for example /download-script [primary]1234-abcd[/].")
-            return
-        }
-        val scriptCode = tokens[1]
-        scriptService.downloadScript(scriptCode, true)
     }
 
     companion object {

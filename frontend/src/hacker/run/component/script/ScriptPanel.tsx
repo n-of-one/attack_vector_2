@@ -9,6 +9,7 @@ import {RamBar} from "../../../scripts/RamDisplay";
 import {Ram} from "../../../../common/script/ScriptStatusReducer";
 import {formatTimeInterval} from "../../../../common/util/Util";
 import {ConfigItem, getConfigAsBoolean} from "../../../../admin/config/ConfigReducer";
+import {HackerSkillType, hasSkill} from "../../../../common/users/CurrentUserReducer";
 
 export const ScriptPanel = () => {
     const [expanded, setExpanded] = React.useState(false)
@@ -16,8 +17,10 @@ export const ScriptPanel = () => {
     const [onlyShowLoaded, setOnlyShowLoaded] = React.useState(true)
     const config = useSelector((state: HackerRootState) => state.config)
     const showLoadButton = getConfigAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN, config)
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+    const hackerHasScriptsSkill = hasSkill(currentUser, HackerSkillType.SCRIPT_RAM)
 
-    if (!scriptStatus) {
+    if (!scriptStatus || !hackerHasScriptsSkill) {
         return <></>
     }
 
@@ -139,15 +142,18 @@ const sortScripts = (scripts: Script[]) => {
     return scriptsCopy.sort(compareScriptStatus)
 }
 
+const isOfferingOrAvailable = (a: Script) => {
+    return (a.state === ScriptState.OFFERING || a.state === ScriptState.AVAILABLE)
+}
+
 const compareScriptStatus = (a: Script, b: Script) => {
-    if (a.state === b.state) return a.name.localeCompare(b.name)
+    if (a.state === b.state || (isOfferingOrAvailable(a) && isOfferingOrAvailable(b))) return a.name.localeCompare(b.name)
     if (a.state === ScriptState.LOADED) return -1
     if (b.state === ScriptState.LOADED) return 1
-    if (a.state === ScriptState.OFFERING) return -1
-    if (b.state === ScriptState.OFFERING) return 1
-    if (a.state === ScriptState.AVAILABLE) return -1
-    if (b.state === ScriptState.AVAILABLE) return 1
+    if (isOfferingOrAvailable(a)) return -1
+    if (isOfferingOrAvailable(b)) return 1
     if (a.state === ScriptState.USED) return -1
     if (b.state === ScriptState.USED) return 1
     return a.name.localeCompare(b.name)
 }
+

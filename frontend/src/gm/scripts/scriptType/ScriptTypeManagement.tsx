@@ -128,11 +128,11 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             <FormTextInputRow label="Size" value={scriptType.size.toString()} save={value => edit("size", value, numericInputDefault1)}
                               labelColumns={3} valueColumns={2}
                               toolTip="This is the amount of RAM the script will take up. Set to 0 if you are not using RAM."/>
-            <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""}
-                              save={value => edit("defaultPrice", value, numericInputDefault0)}
-                              labelColumns={3} valueColumns={2}
-                              toolTip="This is the default price for hackers to buy this script. (currently not yet implemented). You can override
-                              this for each individual hacker."/>
+            {/*<FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""}*/}
+            {/*                  save={value => edit("defaultPrice", value, numericInputDefault0)}*/}
+            {/*                  labelColumns={3} valueColumns={2}*/}
+            {/*                  toolTip="This is the default price for hackers to buy this script. (currently not yet implemented). You can override*/}
+            {/*                  this for each individual hacker."/>*/}
             <FormTextInputRow label="Note" value={scriptType.gmNote} save={value => edit("gmNote", value, textInput)} labelColumns={3} valueColumns={8}
                               toolTip="This note is for GM's only, it is not shown to the hackers. It can be used to keep track of why this script type exists."/>
             <br/>
@@ -377,7 +377,8 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
     const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
 
     const scriptTypeRows = scriptTypes.map(type => <ScriptTypeRow type={type} onSelect={onSelect}/>)
-    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}~${type.defaultPrice}`)
+    // const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}~${type.defaultPrice}`)
+    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}`)
 
     const hr = <Hr height={6} marginTop={3} color="black"/>
 
@@ -388,7 +389,7 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
                 <div className="col-lg-2 strong">Script type</div>
                 <div className="col-lg-2 strong">Effects</div>
                 <div className="col-lg-1 strong">Size</div>
-                <div className="col-lg-2 strong">Default price</div>
+                {/*<div className="col-lg-2 strong">Default price</div>*/}
                 <div className="col-lg-2 strong">Category</div>
             </div>
 
@@ -414,7 +415,7 @@ const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptTy
             }
             </div>
             <div className="col-lg-1">{type.size}</div>
-            <div className="col-lg-2">{type.defaultPrice}</div>
+            {/*<div className="col-lg-2">{type.defaultPrice}</div>*/}
             <div className="col-lg-2">{type.category}</div>
         </div>)
 }

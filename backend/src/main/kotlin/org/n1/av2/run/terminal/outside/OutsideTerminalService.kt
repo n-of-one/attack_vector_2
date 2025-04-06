@@ -36,7 +36,6 @@ class OutsideTerminalService(
         when (commandAction) {
             "help" -> commandHelpService.processHelp(false, tokens)
             "/share" -> socialTerminalService.processShare(runId, tokens)
-            "/download-script" -> socialTerminalService.downloadScript(tokens)
             "move", "view", "hack", "connect" -> reportHackCommand()
             "servererror" -> error("gah")
             "quick"-> {

@@ -27,7 +27,7 @@ export const ScriptLine = ({script, useCase, minimize, ram, showLoadButton}: Pro
 
     const forGm = useCase === ScriptLineUseCase.GM
 
-    const actionGmLoad = forGm ? <><ScriptActionGmLoad script={script}/>&nbsp;</> : <></>
+    const actionGmLoad = forGm ? <ScriptActionGmLoad script={script} ram={ram}/> : <ScriptLoadAction script={script} ram={ram} showLoadButton={showLoadButton}/>
 
     return (<>
             <div className="row text" style={{marginBottom: "2px"}}>
@@ -37,7 +37,7 @@ export const ScriptLine = ({script, useCase, minimize, ram, showLoadButton}: Pro
                 <div className="col-lg-2"><ScriptStateBadge script={script} /></div>
                 <div className="col-lg-2 noSelect">
                     {actionGmLoad}
-                    <ScriptLoadAction script={script} ram={ram} showLoadButton={showLoadButton}/>&nbsp;
+                    &nbsp;
                     <ScriptOfferAction script={script}/>&nbsp;
                     &nbsp;<ScriptActionDelete script={script}/>&nbsp;
 
@@ -100,7 +100,7 @@ export const ScriptStateBadge = ({script}: { script: Script }) => {
 
 const ScriptLoadAction = ({script, ram, showLoadButton}: { script: Script, ram: Ram, showLoadButton: boolean }) => {
     if (script.state === ScriptState.LOADED) {
-        return <ScriptActionUnload script={script} ram={ram}/>
+        return <ScriptActionUnload script={script} ram={ram} gmOverride={false}/>
     }
     if (script.state === ScriptState.AVAILABLE && ram.free >= script.ram && showLoadButton) {
         return <ScriptActionLoad script={script} lockedUntil={ram.lockedUntil}/>
@@ -142,23 +142,23 @@ const ScriptLoadAction = ({script, ram, showLoadButton}: { script: Script, ram: 
 
 
 
-const ScriptActionGmLoad = ({script}: { script: Script }) => {
+const ScriptActionGmLoad = ({script, ram}: { script: Script, ram: Ram }) => {
     const action = () => {
         webSocketConnection.send("/gm/script/load", script.id)
+    }
+    if (script.state === ScriptState.LOADED) {
+        return <ScriptActionUnload script={script} ram={ram} gmOverride={true}/>
     }
     return <SilentLink onClick={action} title="Instant load in memory"><span className="glyphicon glyphicon-save"/></SilentLink>
 }
 
-const ScriptActionUnload = ({script, ram}: { script: Script, ram: Ram }) => {
+const ScriptActionUnload = ({script, ram, gmOverride}: { script: Script, ram: Ram, gmOverride: boolean }) => {
     const action = () => {
-        webSocketConnection.send("/script/unload", script.id)
+        const path = gmOverride ? "/gm/script/unload" : "/script/unload"
+        webSocketConnection.send(path, script.id)
     }
-    if (ram.lockedUntil != null) {
-        return <SilentLink onClick={action} title="Unload from memory"><span className="glyphicon glyphicon-export"/></SilentLink>
-    }
-    else {
-        return <SilentLink onClick={action} title="Unload from memory"><span className="glyphicon glyphicon-open"/></SilentLink>
-    }
+    const glyphicon =  (ram.lockedUntil != null) ? "glyphicon-export" : "glyphicon-open"
+    return <SilentLink onClick={action} title="Unload from memory"><span className={`glyphicon ${glyphicon}`} /></SilentLink>
 }
 
 const ScriptActionDelete = ({script}: { script: Script }) => {
@@ -192,7 +192,7 @@ const ScriptOfferAction = ({script}: { script: Script }) => {
         return <SilentLink onClick={() => action(true)} title="Offer script for download by another hacker"><span className="glyphicon glyphicon-share-alt"/></SilentLink>
     }
     if (script.state === ScriptState.OFFERING) {
-        return <SilentLink onClick={() => action(false)} title="Offer script for download by another hacker"><span className="glyphicon glyphicon-remove-circle"/></SilentLink>
+        return <SilentLink onClick={() => action(false)} title="Stop offering script for download"><span className="glyphicon glyphicon-remove-circle"/></SilentLink>
     }
     return <></>
 }

@@ -100,7 +100,7 @@ class V5_HackerSkills() : MigrationStep {
                 "gm" -> UserTag.MANDATORY
                 LOLA_USER_NAME -> UserTag.EXTERNAL_SYSTEM
                 "template" -> UserTag.SKILL_TEMPLATE
-                else -> UserTag.REGUlAR
+                else -> UserTag.REGULAR
             }
 
             userCount += userEntities.updateOne(

@@ -39,10 +39,10 @@ export const MenuBar = () => {
 
 
     const hackersCanCreateSites = hasSkill(currentUser, HackerSkillType.CREATE_SITE)
-    const hackerHasScripts = true
+    const hackerHasScriptsSkill = hasSkill(currentUser, HackerSkillType.SCRIPT_RAM)
 
     const hackerSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
-    const hackerScripts = hackerHasScripts ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
+    const hackerScripts = hackerHasScriptsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
 
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{

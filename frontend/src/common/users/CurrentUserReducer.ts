@@ -12,6 +12,14 @@ export enum UserType {
     SYSTEM = "SYSTEM",
 }
 
+export const UserTypeLabels: Record<UserType, string> = {
+    [UserType.HACKER]: "Hacker",
+    [UserType.GM]: "GM",
+    [UserType.ADMIN]: "Admin",
+    [UserType.SYSTEM]: "System",
+    [UserType.NO_DATA]: "-",
+};
+
 export interface User {
     id: string,
     name: string,

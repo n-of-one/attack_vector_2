@@ -55,7 +55,7 @@ class CommandScanService(
         val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
 
         if (!hasScanSkill) {
-            connectionService.replyTerminalReceive("Scan command not installed (missing skill)")
+            connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
             return false
         }
         return true

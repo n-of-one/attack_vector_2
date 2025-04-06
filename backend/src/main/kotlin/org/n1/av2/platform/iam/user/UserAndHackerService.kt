@@ -27,12 +27,21 @@ class UserAndHackerService(
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
+    enum class UIUserType {
+        HACKER,
+        GM,
+        ADMIN,
+        SYSTEM,
+    }
+
     @Suppress("unused")
     class UserOverview(
         val id: String,
         val name: String,
         val characterName: String? = null,
         val hacker: Boolean,
+        val type: UIUserType,
+        val tag: UserTag,
     )
 
     fun overview() {
@@ -40,11 +49,22 @@ class UserAndHackerService(
         val allHackers = hackerEntityService.findAll()
 
         val message = allUsers.map { user ->
-            if (user.type != UserType.HACKER) return@map UserOverview(user.id, user.name, null, false)
+            val userType = determineUserType(user)
+            if (user.type != UserType.HACKER) return@map UserOverview(user.id, user.name, null, false, userType, user.tag)
             val hacker = allHackers.find { hacker -> hacker.hackerUserId == user.id } ?: error("Hacker not found for user: ${user.name} / ${user.id}")
-            UserOverview(user.id, user.name, hacker.characterName, true)
+
+            UserOverview(user.id, user.name, hacker.characterName, true, userType, user.tag)
         }
         connectionService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
+    }
+    private fun determineUserType(user: UserEntity): UIUserType {
+        return when (user.type) {
+            UserType.HACKER -> UIUserType.HACKER
+            UserType.GM -> UIUserType.GM
+            UserType.ADMIN -> UIUserType.ADMIN
+            UserType.SYSTEM -> UIUserType.SYSTEM
+            else -> error("unsupported user type: ${user.type}")
+        }
     }
 
     fun createFromUserManagementScreen(name: String, externalId: String? = null) {

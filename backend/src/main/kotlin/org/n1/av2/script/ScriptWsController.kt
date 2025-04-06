@@ -42,6 +42,14 @@ class ScriptWsController(
         }
     }
 
+    @MessageMapping("/gm/script/unload")
+    fun gmUnload(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/script/unload", userPrincipal) {
+            scriptService.unloadScript(scriptId, true)
+        }
+    }
+
+
     @MessageMapping("/hacker/script/cleanup")
     fun cleanup(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/hacker/script/cleanup", userPrincipal) {

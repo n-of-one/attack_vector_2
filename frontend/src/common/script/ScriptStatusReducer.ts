@@ -60,7 +60,7 @@ const toRam = (data: RamUpdate): Ram => {
 }
 
 const processSecondElapsed = (state: ScriptStatus|null): ScriptStatus|null => {
-    if (state === null || state.ram.nextRefreshSecondsLeft === null) {
+    if (state === null || state.ram == null || state.ram.nextRefreshSecondsLeft === null) {
         return state
     }
     const secondsLeft = Math.max(0, serverTime.secondsLeft(state.ram.nextRefreshAt))
