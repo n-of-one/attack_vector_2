@@ -1,8 +1,12 @@
 # Release notes AV 2.6.0 (06 Apr 2025)
 
 ## Features
-- Scripts, including 19 script effects
+- Scripts, including 19 script effects.
 - Pagination and filtering for users
+
+See Youtube for a video explanation of scripts:
+- for players: https://youtu.be/ri3hewshbKA
+- for GMs: https://youtu.be/3BBU9aGHK6U
 
 ## Bugfixes
 - Add brute force protection for admin login
@@ -60,6 +64,8 @@ This was not a scalable solution. Also, it's nicer to be explicit about what con
 
 ### Skills
 There is basic support for skills. These are meant to differentiate users of varying expertise at hacking.
+See Youtube for an explanation: https://youtu.be/gu0Fx9m9M1g
+
 You can assign or remove skills from hackers when logged in as a gm, via the user's menu.
 
 There is a new user named "template". This user is the skill template for new hackers. Any skills the template has, will automatically be assigned to new users.
