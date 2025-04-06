@@ -19,7 +19,7 @@ export const WebsiteSkills = () => {
                     <h3 className="muted">Skills</h3>
                     <p className="text">
                         <br/>
-                        SKills are abilities that hackers can have that help them in the game. They are optional, not needed for Attack Vector, but could be
+                        Skills are abilities that hackers can have that help them in the game. They are optional, not needed for Attack Vector, but could be
                         used to differentiate between professional hackers and hackers who are just starting out, or characters just helping out.
                         <br/>
                     </p>
@@ -59,6 +59,15 @@ export const WebsiteSkills = () => {
                         This skill allows the hacker to create their own sites. Other hackers can then hack these sites as normal. These can be in-game
                         sites or in-game tutorials to help teach new hackers.<br/><br/>
                         When a hacker has this skill, they will see a menu item "sites" that allows them to manage their sites.
+                    </p>
+
+                    <h5 className="muted">Scripts RAM</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill allows the hacker to load and execute scripts. The number value of this skill is the number of RAM blocks this player will
+                        have.<br/>
+                        <br/>
+                        More details can be found <a href="players-scripts">here</a>.
                     </p>
 
                     {/*<h5 className="muted">Stealth</h5>*/}

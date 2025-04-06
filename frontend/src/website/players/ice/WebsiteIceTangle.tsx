@@ -1,7 +1,7 @@
 import React from "react";
-import {Banner} from "../../login/Banner";
-import {SilentLink} from "../../common/component/SilentLink";
-import {WebsiteImage} from "../WebsiteImage";
+import {Banner} from "../../../login/Banner";
+import {SilentLink} from "../../../common/component/SilentLink";
+import {WebsiteImage} from "../../WebsiteImage";
 
 
 export const WebsiteIceTangle = () => {

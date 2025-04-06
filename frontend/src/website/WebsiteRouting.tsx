@@ -2,17 +2,18 @@ import React from "react";
 import {WebsitePlayers} from "./players/WebsitePlayers";
 import {useParams} from "react-router-dom";
 import {WebsiteTerminalCommands} from "./players/WebsiteTerminalCommands";
-import {WebsiteIceWordSearch} from "./players/WebsiteIceWordSearch";
-import {WebsiteIceTangle} from "./players/WebsiteIceTangle";
-import {WebsiteIceNetwalk} from "./players/WebsiteIceNetwalk";
-import {WebsiteIcePassword} from "./players/WebsiteIcePassword";
-import {WebsiteIceTar} from "./players/WebsiteIceTar";
+import {WebsiteIceWordSearch} from "./players/ice/WebsiteIceWordSearch";
+import {WebsiteIceTangle} from "./players/ice/WebsiteIceTangle";
+import {WebsiteIceNetwalk} from "./players/ice/WebsiteIceNetwalk";
+import {WebsiteIcePassword} from "./players/ice/WebsiteIcePassword";
+import {WebsiteIceTar} from "./players/ice/WebsiteIceTar";
 import {WebsiteLayers} from "./players/WebsiteLayers";
 import {WebsiteGms} from "./gms/WebsiteGms";
 import {WebsiteOrganizers} from "./organizers/WebsiteOrganizers";
 import {WebsiteLandingPage} from "./WebsiteLandingPage";
-import {WebsiteIceMineSweeper} from "./players/WebsiteIceMineSweeper";
+import {WebsiteIceMineSweeper} from "./players/ice/WebsiteIceMineSweeper";
 import {WebsiteSkills} from "./players/skill/WebsiteSkills";
+import {WebsitePlayerScripts} from "./players/WebsitePlayerScripts";
 
 export const WebsiteRouting = () => {
 
@@ -39,6 +40,8 @@ export const WebsiteRouting = () => {
             return <WebsiteIceMineSweeper/>
         case "players-skills":
             return <WebsiteSkills/>
+        case "players-scripts":
+            return <WebsitePlayerScripts/>
         case "gms":
             return <WebsiteGms/>
         case "organizers":

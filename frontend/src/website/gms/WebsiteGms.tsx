@@ -33,16 +33,23 @@ export const WebsiteGms = () => {
                         countdown timers to beat, and meta puzzles involving other elements from your setting, well that will take some more effort.
                         But ultimately the most fun can be had by tailoring your site to your event and players.<br/>
                         <br/>
-                        There is the option to export and import sites, so you can collaborate with other game masters or organizers to create sites.<br/>
+                        There is the option to export and import sites, so you can collaborate with other game masters or organizers to create sites.<br/><br/>
                     </p>
+                    <h3 className="muted">Scripts</h3>
+                    <p className="text">
+                        Scripts are an optional feature that give hackers run-once programs to help them hack sites.<br/>
+                        <br/>
+                        See this video for an explanation of how to manage scripts: <a href="https://youtu.be/3BBU9aGHK6U" target="_blank">Youtube</a>.<br/><br/>
+                    </p>
+
                     <h3 className="muted">Interaction with the real world</h3>
-                    <h4 className="muted">Password ICE</h4>
+                    <h5 className="muted">Password ICE</h5>
                     <p className="text">
                         The easiest way to force interaction with the real world is to use Password ICE and have the players find the password
                         somewhere outside of the digital world.<br/>
                         Password ICE has a 'hint' that can point players in the right direction.
                     </p>
-                    <h4 className="muted">Switch and status light</h4>
+                    <h5 className="muted">Switch and status light</h5>
                     <p className="text">
                         A more involved option is the the switch and status light layer<br/>
                         <br/>
@@ -60,7 +67,6 @@ export const WebsiteGms = () => {
                         <WebsiteImage path="/img/website/gm/status-light-green.png" alt="A picture of a switch"/><br/>
                         <br/>
                         The words on a switch & status light can be changed, so it can also be used disarm a trap, or turn off the life-support of a patient, etc.
-
                     </p>
                 </div>
             </div>

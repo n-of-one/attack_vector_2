@@ -26,7 +26,7 @@ export const WebsitePlayers = () => {
                     A site consists of nodes that are connected to each other. The general goal is to progress deeper into a site and find information hidden in
                     nodes<br/>
                     <br/>
-                    <WebsiteImage path="/img/website/players/rightPanelFlexible.png" alt="A picture of a site map"/><br/>
+                    <WebsiteImage path="/img/website/players/sitemap.png" alt="A picture of a site map"/><br/>
                 </p>
 
                 <h3 className="muted">Nodes and layers</h3>
@@ -70,6 +70,12 @@ export const WebsitePlayers = () => {
                     Skills allow some hackers to be better at hacking than others. How skills are used really depends on the larp you are playing.<br/>
                     <br/>
                     More details can be found <a href="/website/players-skills">here</a>.
+                </p>
+                <h3 className="muted">Scripts</h3>
+                <p className="text">
+                    Scripts are one-time-use programs that assist you during hacking runs.<br/>
+                    <br/>
+                    More details can be found <a href="/website/players-scripts">here</a>.
                 </p>
             </div>
         </div>
