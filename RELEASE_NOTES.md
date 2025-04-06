@@ -2,7 +2,7 @@
 
 ## Features
 - Scripts, including 19 script effects
-- Pagination and filtering for sites and users
+- Pagination and filtering for users
 
 ## Bugfixes
 - Add brute force protection for admin login
