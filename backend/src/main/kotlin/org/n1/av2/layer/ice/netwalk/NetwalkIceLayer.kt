@@ -19,5 +19,5 @@ class NetwalkIceLayer(
             this(id, LayerType.NETWALK_ICE, level, defaultName, "", IceStrength.AVERAGE, false)
 
     constructor(id: String, toClone: NetwalkIceLayer) :
-            this(id, LayerType.NETWALK_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked)
+            this(id, LayerType.NETWALK_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked, toClone.original)
 }

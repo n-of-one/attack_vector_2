@@ -56,9 +56,6 @@ export interface LayerDetails {
 
     interactionKey?: string      // Script Interaction layer
     message?: string             // Script Interaction layer
-
-    clusters?: number            // Tangle Ice layer
-
 }
 
 export interface NodeI {

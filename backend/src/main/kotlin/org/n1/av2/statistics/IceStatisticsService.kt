@@ -4,7 +4,6 @@ import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
-import org.n1.av2.layer.ice.tangle.TangleIceLayer
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.TimeService
@@ -64,7 +63,6 @@ class IceStatisticsService(
             layerId = layerId,
             iceType = layer.type,
             strength = layer.strength,
-            tangleClusters = if (layer is TangleIceLayer) layer.clusters else null,
             participants = emptyList(),
             hackTimeFromStartSeconds = 0,
             hackerConnectDurationSeconds = emptyMap(),
@@ -147,7 +145,7 @@ class IceStatisticsService(
 
     }
 
-    private fun csvHeader() = "ice type;strength;tangle clusters;" +
+    private fun csvHeader() = "ice type;strength;" +
         "state;hack time seconds;hack time total seconds;" +
         "hacker count;hackers;seconds per hacker;" +
         "site:node:level;" +
@@ -163,13 +161,11 @@ class IceStatisticsService(
             .map { entry: Map.Entry<String, Int> -> "${entry.key}:${entry.value}" }
             .joinToString("|")
 
-        val clusters = statistic.tangleClusters?.toString() ?: ""
-
         val startTimestamp = statistic.hackStartTimestamp.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
         val sweeperResets = statistic.sweeperResets?.toString() ?: ""
         val sweeperLockouts = statistic.sweeperLockouts?.toString() ?: ""
 
-        return "${iceType};${statistic.strength.toString().lowercase()};${clusters};" +
+        return "${iceType};${statistic.strength.toString().lowercase()};" +
             "${statistic.state.toString().lowercase()};${statistic.hackTimeFromStartSeconds};${statistic.totalHackerSeconds};" +
             "${statistic.participants.size};${participants};${hackerConnectDurationSeconds};" +
             "${statistic.siteName}:${statistic.nodeNetworkId}:${statistic.layerLevel};" +

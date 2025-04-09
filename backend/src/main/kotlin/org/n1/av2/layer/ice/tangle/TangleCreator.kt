@@ -10,7 +10,7 @@ import kotlin.random.Random
  * Create an (un)tangle puzzle:
  * - generate a number of lines (L) that are non-parallel and no 3 lines intersect at the same position
  * - calculate the intersections. These are the points. There are 0.5 * L * (L-1) points
- * - the lines are also the connections between the points. So if Lin
+ * - the lines are also the connections between the points.
  */
 
 
@@ -66,8 +66,8 @@ class TangleCreation(val points: MutableList<TanglePoint>, val lines: List<Tangl
 
 class TangleCreator {
 
-    fun create(strength: IceStrength, layerClusters: Int?): TangleCreation {
-        val clusters = layerClusters ?: 1
+    fun create(strength: IceStrength): TangleCreation {
+        val clusters = clusterCount(strength)
 
         val points = LinkedList<IdTPoint>()
         val tangleLines = LinkedList<TangleLine>()
@@ -89,6 +89,7 @@ class TangleCreator {
         points.shuffle()
         val tanglePoints = layoutAsCircle(points)
 
+        println("tangle points: ${tanglePoints.size} for strength: $strength")
         return TangleCreation(tanglePoints.toMutableList(), tangleLines)
     }
 
@@ -122,12 +123,12 @@ class TangleCreator {
 
     private fun determineLineCount(strength: IceStrength): Int {
         return when (strength) {
-            IceStrength.VERY_WEAK -> 5
-            IceStrength.WEAK -> 7
-            IceStrength.AVERAGE -> 9
-            IceStrength.STRONG -> 12
-            IceStrength.VERY_STRONG -> 15
-            IceStrength.ONYX -> 20
+            IceStrength.VERY_WEAK -> 5    // 10 points * 1 cluster  = 10 points
+            IceStrength.WEAK -> 6         // 15 points * 2 clusters = 30 points
+            IceStrength.AVERAGE -> 6      // 15 points * 3 clusters = 45 points
+            IceStrength.STRONG -> 8       // 28 points * 3 clusters = 84 points
+            IceStrength.VERY_STRONG -> 8  // 28 points * 4 clusters = 112 points
+            IceStrength.ONYX -> 10        // 45 points * 4 clusters = 180 points
         }
     }
 
@@ -205,6 +206,20 @@ class TangleCreator {
         val y2 = random.nextFloat() * 500
 
         return toLine(x1, y1, x2, y2)
+    }
+
+    companion object {
+
+        fun clusterCount(strength: IceStrength): Int {
+            return when (strength) {
+                IceStrength.VERY_WEAK -> 1
+                IceStrength.WEAK -> 2
+                IceStrength.AVERAGE -> 3
+                IceStrength.STRONG -> 3
+                IceStrength.VERY_STRONG -> 4
+                IceStrength.ONYX -> 4
+            }
+        }
     }
 
 

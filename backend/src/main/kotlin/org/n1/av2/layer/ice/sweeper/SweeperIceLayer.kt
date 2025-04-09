@@ -19,5 +19,5 @@ class SweeperIceLayer(
             this(id, LayerType.SWEEPER_ICE, level, defaultName, "", IceStrength.AVERAGE, false)
 
     constructor(id: String, toClone: SweeperIceLayer) :
-            this(id, LayerType.SWEEPER_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked)
+            this(id, LayerType.SWEEPER_ICE, toClone.level, toClone.name, toClone.note, toClone.strength, toClone.hacked, toClone.original)
 }

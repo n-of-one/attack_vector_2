@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component
  * if so: set the configuration for development.
  */
 @Component
-class V7_DevelopmentDefaults(
+class V07_DevelopmentDefaults(
     private val staticConfig: StaticConfig,
     private val configService: ConfigService,
     private val currentUserService: CurrentUserService,

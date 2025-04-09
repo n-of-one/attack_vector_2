@@ -263,8 +263,7 @@ class ImportService(
     }
 
     private fun mapTangleIce(input: JsonNode, id: String, level: Int, name: String, note: String, strength: IceStrength): TangleIceLayer {
-        val clusters = if (input.has("clusters")) input.get("clusters").asInt() else 1
-        return TangleIceLayer(id, LayerType.TANGLE_ICE, level, name, note, strength, false, clusters)
+        return TangleIceLayer(id, LayerType.TANGLE_ICE, level, name, note, strength, false)
     }
 
     private fun importConnections(root: JsonNode): List<Connection> {

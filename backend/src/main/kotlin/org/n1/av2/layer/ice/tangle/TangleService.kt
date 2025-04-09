@@ -7,7 +7,6 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
-import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.enums.IceStrength
 import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
@@ -22,7 +21,6 @@ class TangleService(
     private val connectionService: ConnectionService,
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
-    private val nodeEntityService: NodeEntityService,
     private val configService: ConfigService,
 ) {
 
@@ -48,7 +46,7 @@ class TangleService(
     }
 
     fun createTangleIce(layer: TangleIceLayer): TangleIceStatus {
-        val creation = TangleCreator().create(layer.strength, layer.clusters)
+        val creation = TangleCreator().create(layer.strength)
 
         val id = createId("tangle", tangleIceStatusRepo::findById)
         val iceTangleStatus = TangleIceStatus(
@@ -58,7 +56,7 @@ class TangleService(
             originalPoints = creation.points,
             points = creation.points,
             lines = creation.lines,
-            clustersRevealed = false,
+            clustersRevealed = layer.strength == IceStrength.WEAK,
         )
         tangleIceStatusRepo.save(iceTangleStatus)
         return iceTangleStatus
@@ -67,9 +65,9 @@ class TangleService(
 
     fun enter(iceId: String) {
         val tangleStatus = tangleIceStatusRepo.findById(iceId).getOrElse { error("No Tangle ice for ID: ${iceId}") }
-        val layer = nodeEntityService.findLayer(tangleStatus.layerId) as TangleIceLayer
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
-        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, tangleStatus.clustersRevealed, quickPlaying)
+        val clusters = TangleCreator.clusterCount(tangleStatus.strength)
+        val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, clusters, tangleStatus.clustersRevealed, quickPlaying)
         connectionService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
         runService.enterIce(iceId)
     }

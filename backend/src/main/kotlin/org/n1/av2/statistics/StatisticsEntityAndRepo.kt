@@ -16,7 +16,6 @@ data class IceHackStatistic(
     val layerId: String,
     val iceType: LayerType,
     val strength: IceStrength,
-    val tangleClusters: Int?, // specific to Tangle ICE: how many clusters where there?
     val state: IceHackState = IceHackState.IN_PROGRESS,
     val participants: List<String>, // hacker names (not user-ids)
     val hackStartTimestamp: ZonedDateTime,

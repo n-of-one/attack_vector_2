@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
  * Refactoring how hacker skills are modelled and stored in the database.
  */
 @Component
-class V5_HackerSkills() : MigrationStep {
+class V05_HackerSkills() : MigrationStep {
 
     override val version = 5
 

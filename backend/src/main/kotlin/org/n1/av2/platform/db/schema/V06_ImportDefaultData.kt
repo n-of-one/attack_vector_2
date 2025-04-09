@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
  * that they don't need, and it won't be recreated on the next startup.
  */
 @Component
-class V6_ImportDefaultData(
+class V06_ImportDefaultData(
     private val tutorialService: TutorialService,
     private val defaultUserService: DefaultUserService,
 ) : MigrationStep {

@@ -65,7 +65,7 @@ class RotateIceEffectService(
         return when (layer) {
             is WordSearchIceLayer -> TangleIceLayer(
                 layer.id, TANGLE_ICE, layer.level, themeService.themeName(TANGLE_ICE),
-                layer.note, layer.strength, false, 2, originalLayer
+                layer.note, layer.strength, false, originalLayer
             )
 
             is TangleIceLayer -> NetwalkIceLayer(

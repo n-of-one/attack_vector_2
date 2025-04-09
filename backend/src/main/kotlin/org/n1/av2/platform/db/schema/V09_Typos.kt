@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
  * Fix typo in UserTag enum: REGUlAR -> REGULAR
  */
 @Component
-class V9_Typos(
+class V09_Typos(
 ) : MigrationStep {
 
     override val version = 9

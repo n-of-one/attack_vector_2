@@ -1,3 +1,27 @@
+# Release notes AV 2.7.1 (09 Apr 2025)
+
+## Changes
+- You can no longer choose the number of clusters for Tangle ICE. This is now always based on the ICE strength
+
+
+Fixing the number of clusters makes the difficulty consistent, and prevents GMs from accidentally creating ICE that is _way_ harder than intended.
+It also simplifies gathering statistics for Tangle ICE.
+
+Number of clusters:
+- very weak  : 1 cluster, no changes.
+- weak       : 2 clusters, the clusters are revealed to help hackers learn how this works
+- average    : 3 clusters, not revealed.
+- strong     : 3 clusters, not revealed
+- very strong: 4 clusters, not revealed
+- onyx       : 4 clusters, not revealed
+
+
+# Release notes AV 2.7.0 (09 Apr 2025)
+
+## Features
+- Collect and export statics for how long it takes to hack ICE
+
+
 # Release notes AV 2.6.0 (06 Apr 2025)
 
 ## Features

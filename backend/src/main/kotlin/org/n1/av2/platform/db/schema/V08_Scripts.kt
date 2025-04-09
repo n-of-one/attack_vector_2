@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component
  * Delete all associated  IcePassword documents and IcePasswordStatus documents so that there are no dangling references.
  */
 @Component
-class V8_Scripts(
+class V08_Scripts(
 ) : MigrationStep {
 
     override val version = 8

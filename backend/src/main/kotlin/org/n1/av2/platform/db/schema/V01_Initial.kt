@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
  * No operation, the collections (and thus the schema) will be created when the Spring Data repositories save objects.
  */
 @Component
-class V1_Initial: MigrationStep {
+class V01_Initial: MigrationStep {
 
     override val version = 1
 

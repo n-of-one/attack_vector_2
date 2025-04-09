@@ -23,7 +23,6 @@ import org.n1.av2.layer.other.keystore.IcePassword
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.text.TextLayer
-import org.n1.av2.timer.Timer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.db.DbSchemaVersion
 import org.n1.av2.platform.db.MigrationStep
@@ -33,6 +32,7 @@ import org.n1.av2.run.runlink.RunLink
 import org.n1.av2.site.entity.Connection
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.SiteProperties
+import org.n1.av2.timer.Timer
 import org.springframework.stereotype.Component
 
 /**
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component
  * This migration step updates the class names in the database to correspond to the new package structure.
  */
 @Component
-class V4_PackageRefactor : MigrationStep {
+class V04_PackageRefactor : MigrationStep {
 
     override val version = 4
 
