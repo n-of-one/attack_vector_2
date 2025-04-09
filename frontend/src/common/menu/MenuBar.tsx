@@ -66,6 +66,7 @@ export const MenuBar = () => {
                                 <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={Page.USERS} label="Users"/>
                                 <MenuItem requriesRole={ROLE_ADMIN} targetPage={Page.CONFIG} label="Config"/>
                                 <MenuItem requriesRole={ROLE_ADMIN} targetPage={Page.TASKS} label="Tasks"/>
+                                <MenuItem requriesRole={ROLE_GM} targetPage={Page.STATISTICS} label="Statistics"/>
                             </ul>
                             <ul className="navbar-nav">
                                 <MenuItem requriesRole="ROLE_USER" targetPage={Page.ME} label={"{" + userName + "}"}/>

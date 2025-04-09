@@ -17,6 +17,7 @@ import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.statistics.IceStatisticsService
 import org.n1.av2.timer.TimerService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
@@ -48,6 +49,7 @@ class SiteResetService(
     private val iceService: IceService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val hackerStateEntityService: HackerStateEntityService,
+    private val iceStatisticsService: IceStatisticsService,
 ) {
 
     lateinit var runService: RunService
@@ -79,6 +81,8 @@ class SiteResetService(
         timerService.removeTimersForSite(siteId)
 
         runService.updateRunLinksForResetSite(siteId)
+
+        iceStatisticsService.siteReset(siteId)
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
         connectionService.toSite(

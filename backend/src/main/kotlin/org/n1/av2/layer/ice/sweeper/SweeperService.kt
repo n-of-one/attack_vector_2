@@ -10,6 +10,8 @@ import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.enums.IceStrength
+import org.n1.av2.statistics.IceHackState
+import org.n1.av2.statistics.IceStatisticsService
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
@@ -26,6 +28,7 @@ class SweeperService(
     private val currentUser: CurrentUserService,
     private val configService: ConfigService,
     private val runService: RunService,
+    private val iceStatisticsService: IceStatisticsService,
 ) {
 
     private val sweeperCreator = SweeperCreator()
@@ -61,7 +64,7 @@ class SweeperService(
 
         val sweeperEnter = SweeperEnter(sweeper.cells, sweeper.modifiers, sweeper.strength, sweeper.blockedUserIds, minesLeft, quickPlaying)
         connectionService.reply(ServerActions.SERVER_SWEEPER_ENTER, sweeperEnter)
-        runService.enterNetworkedApp(iceId)
+        runService.enterIce(iceId)
     }
 
     private fun minesLeft(sweeper: SweeperIceStatus): Int {
@@ -135,7 +138,7 @@ class SweeperService(
         if (sweeper.modifiers[y][x] != HIDDEN) return // can only reveal hidden cells
         when (sweeper.cells[y][x]) {
             NEIGHBOUR_MINES_0 -> revealArea(sweeper, x, y)
-            MINE -> explode(sweeper, x, y)
+            MINE -> explode(sweeper, x, y, sweeper.id)
             else -> revealSingle(sweeper, x, y)
         }
 
@@ -143,15 +146,19 @@ class SweeperService(
 //        This is not intuitive for new players, to we'll leave it out.
 //        if (areAllNonMinesRevealed(sweeper)) handleSolved(sweeper)
     }
-
+    @Suppress("unused")
     class SweeperBlockUserMessage(val userId: String, val userName: String)
-    private fun explode(sweeperStatus: SweeperIceStatus, x: Int, y: Int) {
+
+
+    private fun explode(sweeperStatus: SweeperIceStatus, x: Int, y: Int, iceId: String) {
         sweeperStatus.modifiers[y] = sweeperStatus.modifiers[y].replaceRange(x, x+1, REVEALED.toString())
         val sweeperWithUserBlocked = sweeperStatus.copy(blockedUserIds = sweeperStatus.blockedUserIds + currentUser.userId)
         sweeperIceStatusRepo.save(sweeperWithUserBlocked)
 
         connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_BLOCK_USER, SweeperBlockUserMessage(currentUser.userId, currentUser.userEntity.name))
         connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE))
+
+        iceStatisticsService.sweeperLockout(iceId)
     }
 
     private fun revealSingle(sweeper: SweeperIceStatus, x: Int, y: Int) {
@@ -199,7 +206,7 @@ class SweeperService(
     private fun handleSolved(iceId: String, sweeper: SweeperIceStatus) {
         val solvedSweeper = sweeper.copy(hacked = true)
         sweeperIceStatusRepo.save(solvedSweeper)
-        hackedUtil.iceHacked(iceId, sweeper.layerId, 4 * SECONDS_IN_TICKS)
+        hackedUtil.iceHacked(iceId, sweeper.layerId, 4 * SECONDS_IN_TICKS,IceHackState.HACKED)
     }
 
     class SweeperResetMessage(val userName: String)
@@ -229,6 +236,8 @@ class SweeperService(
 
         sweeperIceStatusRepo.delete(sweeper)
         val newSweeper = createIce(sweeper.layerId, sweeper.strength)
+
+        iceStatisticsService.sweeperReset(iceId)
 
         connectionService.toIce(iceId, ServerActions.SERVER_SWEEPER_RESET_COMPLETE, SweeperResetCompleteMessage(currentUser.userEntity.name, newSweeper.id))
     }

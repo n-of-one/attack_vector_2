@@ -10,6 +10,7 @@ import org.n1.av2.platform.engine.SECONDS_IN_TICKS
 import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.enums.IceStrength
+import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
@@ -55,7 +56,7 @@ class TarService(
             ServerActions.SERVER_TAR_ENTER,
             TarEnter(iceId, tarIceStatus.totalUnits, tarIceStatus.unitsHacked, tarIceStatus.strength, unitsPerSecond, quickPlaying)
         )
-        runService.enterNetworkedApp(iceId)
+        runService.enterIce(iceId)
     }
 
     fun hackedUnits(iceId: String, units: Int) {
@@ -73,7 +74,7 @@ class TarService(
         connectionService.toIce(iceId, ServerActions.SERVER_TAR_UPDATE, message)
 
         if (hacked) {
-            hackedUtil.iceHacked(iceId, tarIceStatus.layerId, 7 * SECONDS_IN_TICKS)
+            hackedUtil.iceHacked(iceId, tarIceStatus.layerId, 7 * SECONDS_IN_TICKS, IceHackState.HACKED)
         }
     }
 

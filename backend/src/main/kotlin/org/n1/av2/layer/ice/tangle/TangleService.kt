@@ -9,6 +9,7 @@ import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.enums.IceStrength
+import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
@@ -70,7 +71,7 @@ class TangleService(
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
         val uiState = UiTangleState(tangleStatus.strength, tangleStatus.points, tangleStatus.lines, layer.clusters ?: 1, tangleStatus.clustersRevealed, quickPlaying)
         connectionService.reply(ServerActions.SERVER_TANGLE_ENTER, uiState)
-        runService.enterNetworkedApp(iceId)
+        runService.enterIce(iceId)
     }
     // Puzzle solving //
 
@@ -94,7 +95,7 @@ class TangleService(
 
         val solved = tangleSolved(tangleStatus)
         if (solved) {
-            hackedUtil.iceHacked(command.iceId, tangleStatus.layerId, 70)
+            hackedUtil.iceHacked(command.iceId, tangleStatus.layerId, 70, IceHackState.HACKED)
         }
     }
 

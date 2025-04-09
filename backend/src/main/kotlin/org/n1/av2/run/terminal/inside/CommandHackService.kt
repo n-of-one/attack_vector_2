@@ -25,6 +25,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 
 @Service
@@ -126,7 +127,7 @@ class CommandHackService(
             return
         }
         val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
-        hackedUtil.iceHacked(iceId, layer.id, node, 0)
+        hackedUtil.iceHacked(iceId, layer.id, node, 0, IceHackState.USED_DEV_MODE)
         connectionService.replyTerminalReceive("Quick hacked ${layer.level}.")
     }
 

@@ -29,6 +29,7 @@ import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.statistics.IceStatisticsService
 import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.timer.TimerInfo
 import org.n1.av2.timer.TimerService
@@ -52,6 +53,7 @@ class RunService(
     private val nodeEntityService: NodeEntityService,
     private val hackerEntityService: HackerEntityService,
     private val timerService: TimerService,
+    private val statisticsService: IceStatisticsService,
 ) {
 
     class HackerPresence(
@@ -190,18 +192,18 @@ class RunService(
         }
     }
 
-
-    fun enterNetworkedApp(networkedAppId: String) {
-        hackerStateEntityService.enterNetworkedApp(networkedAppId)
+    fun enterIce(iceId: String) {
+        hackerStateEntityService.enterIce(iceId)
 
         val hackerState = hackerStateEntityService.retrieveForCurrentUser().toRunState()
-        updateIceHackers(hackerState.runId, networkedAppId)
+        updateIceHackers(hackerState.runId, iceId)
+        statisticsService.hackerEnterIce(iceId, currentUserService.userEntity)
     }
 
     class IceHacker(val userId: String, val name: String, val icon: HackerIcon)
 
     fun updateIceHackers(runId: String, iceId: String) {
-        val usersInIce = hackerStateEntityService.findHackersINetworkedApp(runId, iceId)
+        val usersInIce = hackerStateEntityService.findByRunIdAndIceId(runId, iceId)
 
         val iceHackers = usersInIce.map { userIceHackingState ->
             val user = userEntityService.getById(userIceHackingState.userId)
@@ -267,6 +269,7 @@ class RunService(
             }
     }
 
+
     fun deleteRuns(siteId: String): Int {
         timerEntityService.deleteBySiteId(siteId)
         taskEngine.removeAll(mapOf("siteId" to siteId))
@@ -295,6 +298,7 @@ class RunService(
             ServerActions.SERVER_NOTIFICATION,
             NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteName}")
         )
+
         // FIXME: properly inform browser that they need to move to home screen
 //            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
     }

@@ -35,17 +35,24 @@ class ConnectDisconnectService {
     fun connect(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("browser connect", userPrincipal) {
 
-            if (userPrincipal.type == WS_HACKER_MAIN || userPrincipal.type == WS_NETWORK_APP) {
-                hackerConnectionService.browserConnect(userPrincipal)
+            if (userPrincipal.type == WS_HACKER_MAIN) {
+                hackerConnectionService.browserConnectHackerMain(userPrincipal)
             }
+            if (userPrincipal.type == WS_NETWORK_APP) {
+                hackerConnectionService.browserConnectApp(userPrincipal)
+            }
+
         }
     }
 
     fun browserDisconnect(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("browser disconnect", userPrincipal) {
 
-            if (userPrincipal.type == WS_HACKER_MAIN || userPrincipal.type == WS_NETWORK_APP) {
-                hackerConnectionService.browserDisconnect(userPrincipal)
+            if (userPrincipal.type == WS_HACKER_MAIN ) {
+                hackerConnectionService.browserDisconnectHackerMain(userPrincipal)
+            }
+            if (userPrincipal.type == WS_NETWORK_APP) {
+                hackerConnectionService.browserDisconnectHackerApp(userPrincipal)
             }
         }
     }

@@ -115,13 +115,13 @@ class WebSocketConfig(
 
     @EventListener
     fun handleConnectEvent(event: SessionConnectEvent) {
-        // A bit hacky: need to set the security context for the stompConnectionEventService to be able to do its thing
-        // but because we are not formally connected yet.
         try {
+            // A bit hacky: need to set the security context for the stompConnectionEventService to be able to do its thing
+            // but because we are not formally connected yet.
             val userPrincipal = event.user!! as UserPrincipal
-
-            logger.debug { "<= connect ${userPrincipal.name}" }
             SecurityContextHolder.getContext().authentication = userPrincipal
+            logger.debug { "<= connect ${userPrincipal.name}" }
+
             connectDisconnectService.connect(userPrincipal)
         } finally {
             SecurityContextHolder.clearContext()

@@ -9,6 +9,7 @@ import org.n1.av2.platform.engine.SECONDS_IN_TICKS
 import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.enums.IceStrength
+import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
@@ -60,7 +61,7 @@ class NetwalkIceService(
         val netwalk = netwalkIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
         connectionService.reply(ServerActions.SERVER_NETWALK_ENTER, NetwalkEnter(iceId, netwalk.cellGrid, netwalk.strength, netwalk.wrapping, quickPlaying))
-        runService.enterNetworkedApp(iceId)
+        runService.enterIce(iceId)
     }
 
     fun rotate(iceId: String, x: Int, y: Int) {
@@ -88,7 +89,7 @@ class NetwalkIceService(
         connectionService.toIce(iceId, ServerActions.SERVER_NETWALK_NODE_ROTATED, message)
 
         if (hacked) {
-            hackedUtil.iceHacked(iceId, netwalk.layerId, 7 * SECONDS_IN_TICKS)
+            hackedUtil.iceHacked(iceId, netwalk.layerId, 7 * SECONDS_IN_TICKS, IceHackState.HACKED)
         }
     }
 

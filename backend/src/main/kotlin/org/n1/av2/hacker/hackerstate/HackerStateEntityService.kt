@@ -4,12 +4,14 @@ import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.SYSTEM_USER
 import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.entity.Run
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 
@@ -20,13 +22,16 @@ class HackerStateEntityService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
     private val nodeEntityService: NodeEntityService,
-    private val runEntityService: RunEntityService
+    private val runEntityService: RunEntityService,
+    private val timeService: TimeService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
     fun init() {
-        // If the server starts, all hackers are logged out by definition.
+        // Remove all existing hacker states, we are free to change the data model without having to do data model version management.
+        hackerStateRepo.deleteAll()
 
+        // If the server starts, all hackers are logged out by definition.
         userEntityService.findAll().forEach { user ->
             val newState = createLoggedOutState(user.id, "no-connection")
             hackerStateRepo.save(newState)
@@ -43,8 +48,9 @@ class HackerStateEntityService(
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.OUTSIDE,
-            networkedAppId = null,
+            iceId = null,
             networkedConnectionId = null,
+            iceConnectTimestamp = null,
         )
         hackerStateRepo.save(newState)
         return newState
@@ -59,8 +65,9 @@ class HackerStateEntityService(
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.OUTSIDE,
-            networkedAppId = null,
+            iceId = null,
             networkedConnectionId = null,
+            iceConnectTimestamp = null,
         )
         hackerStateRepo.save(newState)
     }
@@ -90,17 +97,19 @@ class HackerStateEntityService(
         hackerStateRepo.save(newPosition)
     }
 
-    fun enterNetworkedApp(networkedAppId: String) {
-        val currentUser = currentUserService.userEntity
-        val newState = retrieve(currentUser.id).copy(
-            networkedAppId = networkedAppId,
+    fun setConnectionForNetworkedApp(userPrincipal: UserPrincipal) {
+        val newState = retrieve(userPrincipal.userId).copy(
+            networkedConnectionId = userPrincipal.connectionId,
         )
         hackerStateRepo.save(newState)
     }
 
-    fun setConnectionForNetworkedApp(userPrincipal: UserPrincipal) {
+    fun enterIce(iceId: String) {
+        val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
+
         val newState = retrieve(userPrincipal.userId).copy(
-            networkedConnectionId = userPrincipal.connectionId,
+            iceId = iceId,
+            iceConnectTimestamp = timeService.now()
         )
         hackerStateRepo.save(newState)
     }
@@ -121,7 +130,7 @@ class HackerStateEntityService(
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.ONLINE,
-            networkedAppId = null,
+            iceId = null,
             networkedConnectionId = null,
         )
         hackerStateRepo.save(newState)
@@ -134,8 +143,9 @@ class HackerStateEntityService(
             runId = null, siteId = null,
             currentNodeId = null, previousNodeId = null,
             activity = HackerActivity.ONLINE,
-            networkedAppId = null,
+            iceId = null,
             networkedConnectionId = null,
+            iceConnectTimestamp = null,
         )
         hackerStateRepo.save(newState)
     }
@@ -145,10 +155,11 @@ class HackerStateEntityService(
         hackerStateRepo.save(newState)
     }
 
-    fun leaveNetworkedApp(userPrincipal: UserPrincipal) {
+    fun leaveIce(userPrincipal: UserPrincipal) {
         val newState = retrieve(userPrincipal.userId).copy(
-            networkedAppId = null,
+            iceId = null,
             networkedConnectionId = null,
+            iceConnectTimestamp = null,
         )
         hackerStateRepo.save(newState)
     }
@@ -161,8 +172,9 @@ class HackerStateEntityService(
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.OFFLINE,
-            networkedAppId = null,
+            iceId = null,
             networkedConnectionId = null,
+            iceConnectTimestamp = null,
         )
     }
 
@@ -179,8 +191,12 @@ class HackerStateEntityService(
     }
 
 
-    fun findHackersINetworkedApp(runId: String, networkedAppId: String): List<HackerState> {
-        return hackerStateRepo.findByRunIdAndNetworkedAppId(runId, networkedAppId)
+    fun findByRunIdAndIceId(runId: String, iceId: String): List<HackerState> {
+        return hackerStateRepo.findByRunIdAndIceId(runId, iceId)
+    }
+
+    fun findByIceId(iceId: String): List<HackerState> {
+        return hackerStateRepo.findByIceId(iceId)
     }
 
 

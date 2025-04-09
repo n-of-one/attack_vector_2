@@ -8,6 +8,7 @@ import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.enums.IceStrength
+import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 import kotlin.system.measureTimeMillis
@@ -90,7 +91,7 @@ class WordSearchService(
             configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
         )
         connectionService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, enterWordSearch)
-        runService.enterNetworkedApp(iceId)
+        runService.enterIce(iceId)
     }
 
     @Suppress("unused")
@@ -118,7 +119,7 @@ class WordSearchService(
         connectionService.toIce(iceStatus.id, ServerActions.SERVER_WORD_SEARCH_UPDATED, updateMessage)
 
         if (hacked) {
-            hackedUtil.iceHacked(iceId, iceStatus.layerId, 70)
+            hackedUtil.iceHacked(iceId, iceStatus.layerId, 70, IceHackState.HACKED)
         }
     }
 

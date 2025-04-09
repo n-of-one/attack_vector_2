@@ -17,6 +17,7 @@ import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.enums.IceStrength
 import org.n1.av2.site.entity.enums.LayerType
+import org.n1.av2.statistics.IceHackState
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
@@ -75,9 +76,12 @@ class AuthAppService(
         val quickPlaying: Boolean,
     )
 
+    fun findByIceId(iceId: String): IcePasswordStatus {
+        return icePasswordStatusRepo.findById(iceId).getOrElse { error("Ice not found for id: ${iceId}") }
+    }
 
     fun enter(iceId: String) {
-        val iceStatus = icePasswordStatusRepo.findById(iceId).getOrElse { error("Ice not found for id: ${iceId}") }
+        val iceStatus = findByIceId(iceId)
 
         val layer = findLayer(iceStatus)
         val type = iceId.determineIceType()
@@ -89,7 +93,7 @@ class AuthAppService(
         connectionService.reply(ServerActions.SERVER_AUTH_ENTER, iceEnter)
 
         if (currentUser.userEntity.type == UserType.HACKER) {
-            runService.enterNetworkedApp(iceId)
+            runService.enterIce(iceId)
         }
     }
 
@@ -144,7 +148,7 @@ class AuthAppService(
             resolveDuplicate(icePasswordStatus, password, layer)
         }
         else if (checkPassword(password, layer, icePasswordStatus.id)) {
-            hackedUtil.iceHacked(iceId, icePasswordStatus.layerId, 70)
+            hackedUtil.iceHacked(iceId, icePasswordStatus.layerId, 70, IceHackState.USED_PASSCODE)
             redirectToNextLayer(layer)
         }
         else {

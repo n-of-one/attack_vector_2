@@ -7,26 +7,30 @@ import org.n1.av2.platform.engine.SystemTaskRunner
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.statistics.IceHackState
+import org.n1.av2.statistics.IceStatisticsService
 import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Service
 
 
-@org.springframework.stereotype.Service
+@Service
 class HackedUtil(
     private val nodeEntityService: NodeEntityService,
     private val connectionService: ConnectionService,
     private val systemTaskRunner: SystemTaskRunner,
+    private val iceStatisticsService: IceStatisticsService,
     @Lazy private val runService: RunService,
 ) {
 
     data class IceHackedUpdate(val layerId: String, val nodeId: String)
     data class NodeHacked(val nodeId: String, val delay: Int)
 
-    fun iceHacked(iceId: String, layerId: String, delayTicks: Int) {
+    fun iceHacked(iceId: String, layerId: String, delayTicks: Int, iceHackState: IceHackState) {
         val node = nodeEntityService.findByLayerId(layerId)
-        iceHacked(iceId, layerId, node, delayTicks)
+        iceHacked(iceId, layerId, node, delayTicks, iceHackState)
     }
 
-    fun iceHacked(iceId: String, layerId: String, node: Node, delayTicks: Int) {
+    fun iceHacked(iceId: String, layerId: String, node: Node, delayTicks: Int, iceHackState: IceHackState) {
         setIceLayerAsHacked(node, layerId)
         nodeEntityService.save(node)
 
@@ -43,6 +47,8 @@ class HackedUtil(
                 runService.updateNodeStatusToHacked(node)
             }
         }
+
+        iceStatisticsService.finishHackingIce(iceId, iceHackState)
     }
 
     private fun setIceLayerAsHacked(node: Node, layerId: String) {

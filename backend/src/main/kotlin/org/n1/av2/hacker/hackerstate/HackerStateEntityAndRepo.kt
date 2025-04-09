@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import java.time.ZonedDateTime
 
 
 enum class HackerActivity(val inRun: Boolean) {
@@ -23,8 +24,9 @@ data class HackerState(
     val currentNodeId: String?,
     val previousNodeId: String?,
     val activity: HackerActivity,
-    val networkedAppId: String?,
+    val iceId: String?,
     val networkedConnectionId: String?,
+    val iceConnectTimestamp: ZonedDateTime?,
     ) {
 
     fun toRunState(): HackerStateRunning {
@@ -33,12 +35,12 @@ data class HackerState(
             runId ?: error("runId null for ${userId}"),
             siteId ?: error("siteId null for ${userId}"),
             currentNodeId ?: error("currentNodeId null for ${userId}"),
-            previousNodeId, networkedAppId, networkedConnectionId
+            previousNodeId, iceId, networkedConnectionId, iceConnectTimestamp
         )
     }
 }
 
-/** Convenience class that mimicks HackerState but enforces non-null state of all fields that are used in a run */
+/** Convenience class that mimics HackerState but enforces non-null state of all fields that are used in a run */
 class HackerStateRunning(
     val userId: String,
     val connectionId: String,
@@ -46,12 +48,13 @@ class HackerStateRunning(
     val siteId: String,
     val currentNodeId: String,
     val previousNodeId: String?,
-    val networkedAppId: String?,
-    val networkedConnectionId: String?) {
+    val iceId: String?,
+    val networkedConnectionId: String?,
+    val iceConnectTimestamp: ZonedDateTime?,) {
     fun toState(): HackerState {
         return HackerState(
             userId, connectionId, runId, siteId, currentNodeId, previousNodeId,
-            HackerActivity.INSIDE, networkedAppId, networkedConnectionId
+            HackerActivity.INSIDE, iceId, networkedConnectionId, iceConnectTimestamp
         )
     }
 }
@@ -60,5 +63,6 @@ class HackerStateRunning(
 interface HackerStateRepo : CrudRepository<HackerState, String> {
     fun findByRunId(runId: String):List<HackerState>
     fun findBySiteId(siteId: String):List<HackerState>
-    fun findByRunIdAndNetworkedAppId(runId: String, networkedAppId: String): List<HackerState>
+    fun findByIceId(iceId: String): List<HackerState>
+    fun findByRunIdAndIceId(runId: String, networkedAppId: String): List<HackerState>
 }

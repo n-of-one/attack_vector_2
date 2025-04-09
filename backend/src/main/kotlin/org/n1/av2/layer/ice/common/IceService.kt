@@ -132,4 +132,9 @@ class IceService(
     fun formalNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE"
     fun helpfulNameFor(layerType: LayerType): String = "${themeService.themeName(layerType)} ICE (${themeService.iceSimpleName(layerType)})"
 
+    fun findLayerIdForIceId(iceId: String): String {
+        val icePasswordStatus = authAppService.findByIceId(iceId)
+        return icePasswordStatus.layerId
+    }
+
 }

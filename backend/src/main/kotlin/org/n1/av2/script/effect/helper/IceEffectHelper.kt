@@ -11,6 +11,7 @@ import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.TerminalState
 import org.n1.av2.site.entity.enums.LayerType
+import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import java.time.Duration
 import kotlin.reflect.KClass
@@ -76,7 +77,7 @@ class IceEffectHelper(
     private fun startHackedIce(layer: IceLayer, siteId: String) {
         val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
         val iceHackedAnimationSeconds = 5
-        hackedUtil.iceHacked(iceId, layer.id, SECONDS_IN_TICKS * iceHackedAnimationSeconds)
+        hackedUtil.iceHacked(iceId, layer.id, SECONDS_IN_TICKS * iceHackedAnimationSeconds, IceHackState.USED_SCRIPT)
 
         userTaskRunner.queue("complete auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(iceHackedAnimationSeconds.toLong())) {
             connectionService.replyTerminalReceive("ICE hack complete.")
