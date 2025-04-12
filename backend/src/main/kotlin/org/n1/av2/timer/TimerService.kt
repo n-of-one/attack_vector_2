@@ -1,6 +1,8 @@
 package org.n1.av2.timer
 
 import mu.KotlinLogging
+import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
@@ -9,6 +11,7 @@ import org.n1.av2.platform.connection.ServerActions.SERVER_TERMINAL_RECEIVE
 import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.SystemTaskRunner
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.run.terminal.TERMINAL_MAIN
@@ -21,6 +24,7 @@ import java.time.Duration
 import java.time.ZonedDateTime
 
 
+@Suppress("unused")
 class TimerInfo(val timerId: String, val finishAt: ZonedDateTime, val type: TimerEffect, val target: String, val effectDescription: String)
 
 @Service
@@ -31,6 +35,8 @@ class TimerService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val timeService: TimeService,
     private val systemTaskRunner: SystemTaskRunner,
+    private val hackerEntityService: HackerEntityService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     private val MINIMUM_TIMER_DURATION = Duration.ofSeconds(10)
@@ -124,23 +130,18 @@ class TimerService(
     }
 
     private fun calculateStealthAdjustment(stealthApplies: Boolean, effectiveDuration: Duration): Duration {
-        if (!stealthApplies) {
+        if (!stealthApplies) return Duration.ZERO
+
+
+        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
+        val stealthSkill = hacker.skillAsIntOrNull(HackerSkillType.STEALTH) ?: 0
+        if (stealthSkill == 0) {
             return Duration.ZERO
-        } else {
-            return Duration.ZERO
-            // Code commented out awaiting the Stealth skill to be used.
         }
-
-
-        //        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
-//        val stealthSkill = hacker.skillAsIntOrNull(HackerSkillType.STEALTH) ?: 0
-//        if (stealthSkill == 0) {
-//          return Duration.ZERO
-//        }
-//        val stealthFactor = (stealthSkill.toDouble() / 100.0)
-//        val tripwireMillis = effectiveDuration.toMillis()
-//        val stealthMillis = (tripwireMillis * stealthFactor).toLong()
-//        return Duration.ofMillis(stealthMillis)
+        val stealthFactor = (stealthSkill.toDouble() / 100.0)
+        val tripwireMillis = effectiveDuration.toMillis()
+        val stealthMillis = (tripwireMillis * stealthFactor).toLong()
+        return Duration.ofMillis(stealthMillis)
     }
 
 

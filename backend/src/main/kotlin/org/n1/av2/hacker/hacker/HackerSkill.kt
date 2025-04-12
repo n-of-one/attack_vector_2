@@ -23,7 +23,7 @@ enum class HackerSkillType(
     SCAN(),
     SEARCH_SITE(),
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
-//    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay, ) // Await confirmation from the organisers who use AV that this is a skill they want
+    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay, ) // Await confirmation from the organisers who use AV that this is a skill they want
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }
@@ -45,24 +45,24 @@ fun ramSkillRemoval(userId: String, context: ApplicationContext) {
     context.getBean(RamService::class.java).alterRamSize(userId, 0)
 }
 
-//
-//val stealthValidation = { toValidate: String ->
-//    val value = stealthToFunctional(toValidate)
-//    val percentage = value.toIntOrNull()
-//    when (percentage) {
-//        null -> "Stealth skill requires a percentage value"
-//        0 -> "Stealth skill of 0% has no effect, this means the time-out is increased by 0%, meaning it stays the same."
-//        !in -100..1000 -> "Stealth value must be between -100 and 1000 (%)."
-//        else -> null
-//    }
-//}
-//val stealthToDisplay = { toNormalize: String ->
-//    val percentage = toNormalize.toInt()
-//    val prefix = if (percentage >= 0) "+" else ""
-//
-//    "${prefix}${percentage}%"
-//}
-//
-//val stealthToFunctional = { input: String ->
-//    input.removeSuffix("%").removePrefix("+")
-//}
+
+val stealthValidation = { toValidate: String ->
+    val value = stealthToFunctional(toValidate)
+    val percentage = value.toIntOrNull()
+    when (percentage) {
+        null -> "Stealth skill requires a percentage value"
+        0 -> "Stealth skill of 0% has no effect, this means the time-out is increased by 0%, meaning it stays the same."
+        !in -100..1000 -> "Stealth value must be between -100 and 1000 (%)."
+        else -> null
+    }
+}
+val stealthToDisplay = { toNormalize: String ->
+    val percentage = toNormalize.toInt()
+    val prefix = if (percentage >= 0) "+" else ""
+
+    "${prefix}${percentage}%"
+}
+
+val stealthToFunctional = { input: String ->
+    input.removeSuffix("%").removePrefix("+")
+}

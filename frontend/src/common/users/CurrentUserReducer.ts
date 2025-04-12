@@ -36,7 +36,7 @@ export enum HackerSkillType {
     SEARCH_SITE = "SEARCH_SITE",
     SCAN = "SCAN",
     CREATE_SITE = "CREATE_SITE",
-    // STEALTH = "STEALTH", // Await confirmation from the organisers who use the game that this is a skill they want.
+    STEALTH = "STEALTH",
     SCRIPT_RAM = "SCRIPT_RAM",
 }
 

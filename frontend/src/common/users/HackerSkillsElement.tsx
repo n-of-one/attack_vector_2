@@ -17,9 +17,10 @@ export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
                             infoText="The hacker can use the scan command."/>
         <HackerSkillElement user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}
                             infoText="The hacker can create their own sites."/>
-        {/*<HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}/>*/}
         <HackerSkillElement user={user} skillType={HackerSkillType.SCRIPT_RAM} skillName="Scripts (RAM)" readonly={readonlySkills} hasValue={true}
                             infoText="The hacker can run scripts. Without this skill the hacker cannot interact with scripts in any way. The value is the amount of RAM available for scripts."/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}
+                            infoText="The hacker can will increase tripwire timer durations by this percentage (or decrease them if the percentage is negative)."/>
     </>
 }
 
