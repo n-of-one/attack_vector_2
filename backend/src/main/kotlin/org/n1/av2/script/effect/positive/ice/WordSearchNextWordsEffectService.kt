@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive.ice
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceStatusRepo
 import org.n1.av2.platform.connection.ConnectionService
@@ -31,7 +31,7 @@ class WordSearchNextWordsEffectService(
 
     override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateIntegerGreaterThanZero(effect)
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         return iceEffectHelper.runForSpecificIceType(LayerType.WORD_SEARCH_ICE, argumentTokens, hackerState) { layer: IceLayer ->
             ScriptExecution {
                 val iceStatus = wordSearchIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")

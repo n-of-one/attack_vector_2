@@ -1,5 +1,6 @@
-package org.n1.av2.run.terminal
+package org.n1.av2.run.terminal.generic
 
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.larp.frontier.LOLA_USER_NAME
 import org.n1.av2.larp.frontier.LolaService
 import org.n1.av2.platform.config.ConfigItem
@@ -18,16 +19,16 @@ class SocialTerminalService(
     private val lolaService: LolaService,
 ) {
 
-    fun processShare(runId: String, tokens: List<String>) {
-        if (tokens.size == 1) {
+    fun processShare(arguments: List<String>, hackerState: HackerStateRunning) {
+        if (arguments.isEmpty()) {
             connectionService.replyTerminalReceive("Missing one more more user names. For example /share [info]<username1> <username2>[/].")
             return
         }
 
-        val userNames = tokens.drop(1).map { it.replace(",", "") }
+        val userNames = arguments.flatMap { it.split(",") }.map { it.trim() }. filter { it != "" }
 
         userNames.forEach { userName ->
-            shareWithUser(userName, runId)
+            shareWithUser(userName, hackerState.runId)
         }
 
     }

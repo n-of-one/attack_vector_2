@@ -12,11 +12,11 @@ class TerminalController(
 ) {
 
 
-    data class TerminalCommand(val runId: String, val command: String)
+    data class TerminalCommand(val command: String)
 
     @MessageMapping("/terminal/main")
     fun terminalMain(terminalCommand: TerminalCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask("/terminal/main", userPrincipal) { terminalService.processCommand(terminalCommand.runId, terminalCommand.command) }
+        userTaskRunner.runTask("/terminal/main", userPrincipal) { terminalService.processCommand(terminalCommand.command) }
     }
 
 }

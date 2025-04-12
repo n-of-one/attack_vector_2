@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
@@ -28,7 +28,7 @@ class InteractWithScriptLayerEffectService(
 
     override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateNonEmptyText(effect)
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         val runOnLayerResult = scriptEffectHelper.runOnLayer(argumentTokens, hackerState)
         runOnLayerResult.errorExecution?.let { return it }
         val layer = checkNotNull(runOnLayerResult.layer)

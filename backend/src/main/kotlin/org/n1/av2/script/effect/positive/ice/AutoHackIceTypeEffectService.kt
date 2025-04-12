@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive.ice
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
@@ -39,7 +39,7 @@ class AutoHackIceTypeEffectService(
         }
     }
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         val iceType = LayerType.valueOf(effect.value!!)
         return iceEffectHelper.autoHackSpecificIceType(iceType, argumentTokens, hackerState)
     }

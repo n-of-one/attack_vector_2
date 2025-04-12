@@ -1,7 +1,7 @@
 package org.n1.av2.script.effect.helper
 
-import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateRepo
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.run.scanning.BlockedPathException
@@ -30,7 +30,7 @@ class JumpEffectHelper(
     private val hackerStateRepo: HackerStateRepo,
 ) {
 
-    fun jump(effect: ScriptEffect, siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerState, targetDescription: String): ScriptExecution {
+    fun jump(effect: ScriptEffect, siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {
         val blockedType = JumpBlockedType.valueOf(effect.value!!)
         return when (blockedType) {
             JumpBlockedType.IGNORE_ICE -> jumpIgnoringIce(currentNodeId, targetNodeId, hackerState, targetDescription)
@@ -38,13 +38,11 @@ class JumpEffectHelper(
         }
     }
 
-    private fun jumpIgnoringIce(currentNodeId: String, targetNodeId: String, hackerState: HackerState, targetDescription: String): ScriptExecution {
+    private fun jumpIgnoringIce(currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {
         if (targetNodeId == currentNodeId) return ScriptExecution("Cannot jump to the current node.")
 
-        val siteId = hackerState.siteId!!
-        val nodes = nodeEntityService.findBySiteId(siteId)
-
-        val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(siteId, currentNodeId, nodes)
+        val nodes = nodeEntityService.findBySiteId(hackerState.siteId)
+        val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(hackerState.siteId, currentNodeId, nodes)
         val startTraverseNode = traverseNodesById[currentNodeId] ?: error("currentNodeId node not found in traverse nodes.")
         val targetTraverseNode = traverseNodesById[targetNodeId] ?: error("targetNodeId not found in traverse nodes.")
 
@@ -53,13 +51,12 @@ class JumpEffectHelper(
         return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceive("Jumping to ${targetDescription}.")
             setPreviousNode(hackerState, path)
-            commandMoveService.moveArrive(targetNodeId, currentUserService.userId, hackerState.runId!!)
+            commandMoveService.moveArrive(targetNodeId, currentUserService.userId, hackerState.runId)
         }
     }
 
-
-    private fun setPreviousNode(hackerState: HackerState, path: List<String>) {
-        val newPosition = hackerState.copy(
+    private fun setPreviousNode(hackerState: HackerStateRunning, path: List<String>) {
+        val newPosition = hackerState.toState().copy(
             currentNodeId = determinePreviousNode(path),
         )
         hackerStateRepo.save(newPosition)
@@ -72,7 +69,7 @@ class JumpEffectHelper(
         return path[path.size - 2] // take the previous node in the path
     }
 
-    private fun jumpBlockedByIce(siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerState, targetDescription: String): ScriptExecution {
+    private fun jumpBlockedByIce(siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {
         if (targetNodeId == currentNodeId) return ScriptExecution("Cannot jump to the current node.")
 
         val nodes: List<Node> = nodeEntityService.findBySiteId(siteId)
@@ -94,14 +91,14 @@ class JumpEffectHelper(
             connectionService.replyTerminalReceiveAndLocked(true, "Jumping to ${targetDescription}.")
 
             setPreviousNodeToPreviousInPath(path, hackerState)
-            commandMoveService.moveArrive(targetNodeId, currentUserService.userId, hackerState.runId!!)
+            commandMoveService.moveArrive(targetNodeId, currentUserService.userId, hackerState.runId)
         }
     }
 
-    private fun setPreviousNodeToPreviousInPath(path: List<String>, hackerState: HackerState) {
+    private fun setPreviousNodeToPreviousInPath(path: List<String>, hackerState: HackerStateRunning) {
         val lastIndex = path.lastIndex
         val previousNodeId: String = path[lastIndex - 1]
-        val newPosition = hackerState.copy(
+        val newPosition = hackerState.toState().copy(
             currentNodeId = previousNodeId,
         )
         hackerStateRepo.save(newPosition)

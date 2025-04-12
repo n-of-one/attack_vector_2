@@ -1,7 +1,9 @@
-package org.n1.av2.run.terminal
+package org.n1.av2.run.terminal.generic
 
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.hackerstate.HackerActivity
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
@@ -17,10 +19,10 @@ class CommandHelpService(
     private val hackerEntityService: HackerEntityService,
 ) {
 
-    fun processHelp(inside: Boolean, tokens: List<String>) {
+    fun processHelp(arguments: List<String>, hackerState: HackerStateRunning) {
         val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        if (tokens.size == 1 || tokens[1] != "shortcuts") {
-            if (inside) {
+        if (arguments.isEmpty() || arguments[0] != "shortcuts") {
+            if (hackerState.activity == HackerActivity.INSIDE) {
                 processHelpInside(hacker)
             } else {
                 processHelpOutside(hacker)

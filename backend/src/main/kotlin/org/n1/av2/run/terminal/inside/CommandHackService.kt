@@ -19,10 +19,9 @@ import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.text.TextLayerService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
-import org.n1.av2.platform.config.ConfigItem
-import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.run.terminal.generic.DevCommandHelper
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.statistics.IceHackState
@@ -39,45 +38,45 @@ class CommandHackService(
     private val commandServiceUtil: CommandServiceUtil,
     private val iceService: IceService,
     private val keystoreLayerService: KeystoreLayerService,
-    private val configService: ConfigService,
     private val hackedUtil: HackedUtil,
     private val coreLayerService: CoreLayerService,
     private val scriptInteractionLayerService: ScriptInteractionLayerService,
+    private val insideTerminalHelper: InsideTerminalHelper,
+    private val devCommandHelper: DevCommandHelper,
 ) {
 
-    fun processHackCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        process(runId, tokens, state, "hack", ::handleHack)
+    fun processHackCommand(arguments: List<String>, hackerState: HackerStateRunning) {
+        process(arguments, hackerState, "hack", ::handleHack)
     }
 
+    fun processQuickHack(arguments: List<String>, hackerState: HackerStateRunning) {
+        if (!devCommandHelper.checkDevModeEnabled()) return
+        process(arguments, hackerState, "hack", ::handleQuickHack)
+    }
 
-    fun processQuickHack(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        if (!configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
-            connectionService.replyTerminalReceive("QuickHack is disabled.")
-            return
+    fun processPasswordCommand(arguments: List<String>, hackerState: HackerStateRunning) {
+        process(arguments, hackerState, "password ", ::handlePassword)
+    }
+
+    private fun process(arguments: List<String>, hackerState: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
+        if (!insideTerminalHelper.verifyInside(hackerState)) return
+        requireNotNull(hackerState.currentNodeId)
+
+        if (arguments.isEmpty()) {
+            return connectionService.replyTerminalReceive("Missing [primary]<layer>[/]      -- for example: [b]${commandName}[primary] 1")
         }
-        process(runId, tokens, state, "hack", ::handleQuickHack)
-    }
 
-    fun processPasswordCommand(runId: String, tokens: List<String>, state: HackerStateRunning) {
-        process(runId, tokens, state, "password ", ::handlePassword)
-    }
+        val node = nodeEntityService.getById(hackerState.currentNodeId)
 
-    private fun process(runId: String, tokens: List<String>, state: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
-        if (tokens.size == 1) {
-            return connectionService.replyTerminalReceive("Missing [primary]<layer>[/]        -- for example: [b]${commandName}[primary] 1")
-        }
+        val level = arguments.first().toIntOrNull() ?: return reportLayerUnknown(node, arguments.first())
+        if (level < 0 || level >= node.layers.size) return reportLayerUnknown(node, arguments.first())
 
-        val node = nodeEntityService.getById(state.currentNodeId)
-
-        val level = tokens[1].toIntOrNull() ?: return reportLayerUnknown(node, tokens[1])
-        if (level < 0 || level >= node.layers.size) return reportLayerUnknown(node, tokens[1])
-
-        val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, runId)
+        val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, hackerState.runId)
         if (blockingIceLayer != null && blockingIceLayer.level > level) return reportBlockingIce(blockingIceLayer)
 
         val layer = node.layers.find { it.level == level }!!
 
-        commandFunction(node, layer, runId)
+        commandFunction(node, layer, hackerState.runId)
     }
 
 

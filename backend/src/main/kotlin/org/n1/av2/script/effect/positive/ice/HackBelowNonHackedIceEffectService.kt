@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive.ice
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.platform.connection.ConnectionService
@@ -32,7 +32,7 @@ class HackBelowNonHackedIceEffectService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         val runOnLayerResult = scriptEffectHelper.runOnLayer(argumentTokens, hackerState)
         runOnLayerResult.errorExecution?.let { return it }
         val layer = checkNotNull(runOnLayerResult.layer)
@@ -42,7 +42,7 @@ class HackBelowNonHackedIceEffectService(
 
         return ScriptExecution {
             connectionService.replyTerminalReceive("Executing hack through ICE.", "")
-            commandHackService.handleHack(node, layer, hackerState.runId!!)
+            commandHackService.handleHack(node, layer, hackerState.runId)
         }
     }
 

@@ -42,8 +42,7 @@ export const RunHome = () => {
     })
     const terminal = useSelector((state: HackerRootState) => state.terminal)
     const submit = () => {
-        const payload = {command: terminal.input};
-        webSocketConnection.sendObjectWithRunId("/terminal/main", payload);
+        webSocketConnection.sendObjectWithRunId("/terminal/main", {command: terminal.input});
 
         dispatch({type: TERMINAL_SUBMIT, key: ENTER_KEY, command: terminal.input, terminalId: terminal.id});
     }

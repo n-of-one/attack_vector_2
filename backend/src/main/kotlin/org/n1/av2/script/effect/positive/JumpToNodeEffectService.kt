@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.helper.JumpBlockedType
@@ -34,11 +34,11 @@ class JumpToNodeEffectService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         scriptEffectHelper.checkInNode(hackerState)?.let { return ScriptExecution(it) }
         val targetNetworkId = argumentTokens.firstOrNull() ?: return ScriptExecution("Provide the [ok]network id[/] of the node to jump to.")
-        val targetNode = nodeEntityService.findByNetworkId(hackerState.siteId!!, targetNetworkId)
-        nodeAccessHelper.checkNodeRevealed(targetNode, targetNetworkId, hackerState.runId!!)?.let { return ScriptExecution(it) }
+        val targetNode = nodeEntityService.findByNetworkId(hackerState.siteId, targetNetworkId)
+        nodeAccessHelper.checkNodeRevealed(targetNode, targetNetworkId, hackerState.runId)?.let { return ScriptExecution(it) }
 
         val currentNodeId = hackerState.currentNodeId ?: error("Current node ID not set.")
 

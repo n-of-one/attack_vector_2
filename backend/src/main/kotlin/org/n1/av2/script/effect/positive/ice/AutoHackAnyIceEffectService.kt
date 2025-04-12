@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive.ice
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
@@ -27,7 +27,7 @@ class AutoHackAnyIceEffectService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         return iceEffectHelper.runForIceType(IceLayer::class, "ICE layers", argumentTokens, hackerState) { layer: IceLayer ->
             iceEffectHelper.autoHack(layer, hackerState)
         }

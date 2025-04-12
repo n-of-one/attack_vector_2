@@ -72,7 +72,7 @@ class HackerStateEntityService(
         hackerStateRepo.save(newState)
     }
 
-    fun startedRun(userId: String, runId: String): HackerStateRunning {
+    fun startedRun(userId: String, runId: String): String {
         val run = runEntityService.getByRunId(runId)
         val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
         val nodes = nodeEntityService.findBySiteId(run.siteId)
@@ -86,7 +86,7 @@ class HackerStateEntityService(
         )
         hackerStateRepo.save(newState)
 
-        return newState.toRunState()
+        return startNode.id
     }
 
     fun arriveAt(state: HackerStateRunning, nodeId: String) {

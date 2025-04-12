@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.script.effect.TerminalState.UNLOCK_AFTER_SCRIPT
 import org.n1.av2.script.type.ScriptEffect
@@ -24,7 +24,7 @@ interface ScriptEffectInterface {
     val gmDescription: String
     fun playerDescription(effect: ScriptEffect): String
     fun validate(effect: ScriptEffect): String?
-    fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution
+    fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution
 
     companion object {
 

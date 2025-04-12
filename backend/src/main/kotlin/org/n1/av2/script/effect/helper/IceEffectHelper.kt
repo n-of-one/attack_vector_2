@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.helper
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
@@ -28,7 +28,7 @@ class IceEffectHelper(
     fun runForSpecificIceType(
         layerType: LayerType,
         argumentTokens: List<String>,
-        hackerState: HackerState,
+        hackerState: HackerStateRunning,
         executionForIceLayer: (IceLayer) -> ScriptExecution
     ): ScriptExecution {
         val klass = iceService.klassFor(layerType)
@@ -40,7 +40,7 @@ class IceEffectHelper(
         klass: KClass<out IceLayer>,
         layerDescription: String,
         argumentTokens: List<String>,
-        hackerState: HackerState,
+        hackerState: HackerStateRunning,
         executionForIceLayer: (IceLayer) -> ScriptExecution,
     ): ScriptExecution {
         val runOnLayerResult = scriptEffectHelper.runOnLayer(argumentTokens, hackerState)
@@ -54,7 +54,7 @@ class IceEffectHelper(
         return executionForIceLayer(layer)
     }
 
-    fun autoHackSpecificIceType(layerType: LayerType, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    fun autoHackSpecificIceType(layerType: LayerType, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         val klass = iceService.klassFor(layerType)
         val layerDescription = iceService.formalNameFor(layerType)
         return runForIceType(klass, layerDescription, argumentTokens, hackerState) { layer: IceLayer ->
@@ -62,11 +62,11 @@ class IceEffectHelper(
         }
     }
 
-    fun autoHack(layer: IceLayer, hackerState: HackerState): ScriptExecution {
+    fun autoHack(layer: IceLayer, hackerState: HackerStateRunning): ScriptExecution {
         if (layer.hacked) return ScriptExecution("This ICE has already been hacked.")
         return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceiveAndLocked(true, "Hacking ICE...")
-            val siteId = hackerState.siteId!!
+            val siteId = hackerState.siteId
             userTaskRunner.queue("start auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {
                 startHackedIce(layer, siteId)
             }

@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.negative
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.script.effect.ScriptEffectInterface
@@ -33,11 +33,11 @@ class SpeedUpResetTimerEffectService(
 
     override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateDuration(effect)
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         scriptEffectHelper.checkAtNonShutdownSite(hackerState)?.let { return ScriptExecution(it) }
 
         return ScriptExecution {
-            timerService.speedUpScriptResetTimer(effect.value!!.toDuration(), hackerState.siteId!!)
+            timerService.speedUpScriptResetTimer(effect.value!!.toDuration(), hackerState.siteId)
         }
     }
 }

@@ -11,7 +11,7 @@ import org.n1.av2.run.entity.Run
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.runlink.RunLinkService
 import org.n1.av2.run.scanning.NodeScanType.OUTSIDE_SCAN
-import org.n1.av2.run.terminal.outside.CANNOT_SCAN_DURING_SITE_RESET
+import org.n1.av2.run.terminal.outside.CONNECTION_REFUSED_DURING_SITE_RESET
 import org.n1.av2.run.timings.TimingsService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
@@ -39,7 +39,7 @@ class InitiateScanService(
     fun scanIgnoringIceAtTargetNode(run: Run, startNode: Node?, targetNode: Node) {
         val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
         if (siteProperties.shutdownEnd != null) {
-            connectionService.replyTerminalReceive(CANNOT_SCAN_DURING_SITE_RESET)
+            connectionService.replyTerminalReceive(CONNECTION_REFUSED_DURING_SITE_RESET)
             return
         }
 
@@ -59,7 +59,7 @@ class InitiateScanService(
     fun scanFromOutside(run: Run, startNode: Node) {
         val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
         if (siteProperties.shutdownEnd != null) {
-            connectionService.replyTerminalReceive(CANNOT_SCAN_DURING_SITE_RESET)
+            connectionService.replyTerminalReceive(CONNECTION_REFUSED_DURING_SITE_RESET)
             connectionService.replyTerminalSetLocked(false)
             return
         }

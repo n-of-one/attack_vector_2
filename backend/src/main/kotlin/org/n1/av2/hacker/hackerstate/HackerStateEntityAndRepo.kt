@@ -27,15 +27,16 @@ data class HackerState(
     val iceId: String?,
     val networkedConnectionId: String?,
     val iceConnectTimestamp: ZonedDateTime?,
-    ) {
+) {
 
     fun toRunState(): HackerStateRunning {
         return HackerStateRunning(
             userId, connectionId,
             runId ?: error("runId null for ${userId}"),
             siteId ?: error("siteId null for ${userId}"),
-            currentNodeId ?: error("currentNodeId null for ${userId}"),
-            previousNodeId, iceId, networkedConnectionId, iceConnectTimestamp
+            currentNodeId,
+            previousNodeId, activity, iceId, networkedConnectionId, iceConnectTimestamp,
+
         )
     }
 }
@@ -46,23 +47,25 @@ class HackerStateRunning(
     val connectionId: String,
     val runId: String,
     val siteId: String,
-    val currentNodeId: String,
+    val currentNodeId: String?,
     val previousNodeId: String?,
+    val activity: HackerActivity,
     val iceId: String?,
     val networkedConnectionId: String?,
-    val iceConnectTimestamp: ZonedDateTime?,) {
+    val iceConnectTimestamp: ZonedDateTime?,
+) {
     fun toState(): HackerState {
         return HackerState(
             userId, connectionId, runId, siteId, currentNodeId, previousNodeId,
-            HackerActivity.INSIDE, iceId, networkedConnectionId, iceConnectTimestamp
+            activity, iceId, networkedConnectionId, iceConnectTimestamp
         )
     }
 }
 
 @Repository
 interface HackerStateRepo : CrudRepository<HackerState, String> {
-    fun findByRunId(runId: String):List<HackerState>
-    fun findBySiteId(siteId: String):List<HackerState>
+    fun findByRunId(runId: String): List<HackerState>
+    fun findBySiteId(siteId: String): List<HackerState>
     fun findByIceId(iceId: String): List<HackerState>
     fun findByRunIdAndIceId(runId: String, networkedAppId: String): List<HackerState>
 }
