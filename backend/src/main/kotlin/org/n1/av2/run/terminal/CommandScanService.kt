@@ -1,8 +1,8 @@
 package org.n1.av2.run.terminal
 
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
@@ -52,7 +52,7 @@ class CommandScanService(
 
     private fun checkHasScanSkill(): Boolean {
         val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCAN)
+        val hasScanSkill = hacker.hasSkill(SkillType.SCAN)
 
         if (!hasScanSkill) {
             connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)

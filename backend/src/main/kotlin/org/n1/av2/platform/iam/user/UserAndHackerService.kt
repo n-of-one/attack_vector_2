@@ -4,9 +4,9 @@ import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkill
-import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
+import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
@@ -79,7 +79,7 @@ class UserAndHackerService(
         val hackerUserId: String,
         val icon: HackerIcon,
         val characterName: String,
-        val skills: List<HackerSkill>,
+        val skills: List<Skill>,
     )
 
     class UiUserDetails(
@@ -123,11 +123,11 @@ class UserAndHackerService(
         )
     }
 
-    fun editSkillEnabled(userId: String, type: HackerSkillType, add: Boolean) {
+    fun editSkillEnabled(userId: String, type: SkillType, add: Boolean) {
         val (user, hacker) = retrieveUserAndHacker(userId)
 
-        val newSkills: List<HackerSkill> = if (add) {
-            hacker.skills + HackerSkill(type)
+        val newSkills: List<Skill> = if (add) {
+            hacker.skills + Skill(type)
         } else {
             hacker.skills.filterNot { it.type == type }
         }
@@ -142,7 +142,7 @@ class UserAndHackerService(
 
     }
 
-    fun editSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
+    fun editSkillValue(userId: String, type: SkillType, valueInput: String) {
         validateSkillValue(userId, type, valueInput)
 
         val value = type.toFunctionalValue(valueInput)
@@ -155,7 +155,7 @@ class UserAndHackerService(
         type.processUpdate(userId, value, applicationContext)
     }
 
-    private fun validateSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
+    private fun validateSkillValue(userId: String, type: SkillType, valueInput: String) {
         val validationFunction = type.validate ?: return // no validation function
         val errorMessage = validationFunction(valueInput) ?: return // no error
 
@@ -172,7 +172,7 @@ class UserAndHackerService(
 
     private fun updateSkillsAndNotifyFrontend(
         hacker: Hacker,
-        newSkills: List<HackerSkill>,
+        newSkills: List<Skill>,
         user: UserEntity
     ) {
         val updatedHacker = hacker.copy(skills = newSkills)
@@ -280,7 +280,7 @@ class UserAndHackerService(
         return user
     }
 
-    fun defaultSkills(): List<HackerSkill> {
+    fun defaultSkills(): List<Skill> {
         val template = userEntityService.getByName(TEMPLATE_USER_NAME)
         return hackerEntityService.findForUser(template).skills
     }

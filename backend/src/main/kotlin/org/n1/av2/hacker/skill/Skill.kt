@@ -1,17 +1,17 @@
-package org.n1.av2.hacker.hacker
+package org.n1.av2.hacker.skill
 
 import org.n1.av2.script.ram.RamService
 import org.springframework.context.ApplicationContext
 
-data class HackerSkill(
-    val type: HackerSkillType,
+data class Skill(
+    val type: SkillType,
     val value: String?
 ) {
-    constructor(type: HackerSkillType) : this(type, type.defaultValue)
+    constructor(type: SkillType) : this(type, type.defaultValue)
 }
 
 
-enum class HackerSkillType(
+enum class SkillType(
     val defaultValue: String? = null,
     val validate: ((String) -> String?)? = null,
     val toFunctionalValue: (String) -> String = noOpNormalization,

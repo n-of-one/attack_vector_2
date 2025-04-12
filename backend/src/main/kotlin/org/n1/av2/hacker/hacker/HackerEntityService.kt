@@ -1,5 +1,6 @@
 package org.n1.av2.hacker.hacker
 
+import org.n1.av2.hacker.skill.Skill
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserType
@@ -14,7 +15,7 @@ class HackerEntityService(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-    fun createHacker(user: UserEntity, icon: HackerIcon, characterName: String, skills: List<HackerSkill>) {
+    fun createHacker(user: UserEntity, icon: HackerIcon, characterName: String, skills: List<Skill>) {
         val hackerId = deriveFromUserId(user)
         val hacker = Hacker(hackerId, user.id, icon, characterName, skills)
         hackerRepo.save(hacker)

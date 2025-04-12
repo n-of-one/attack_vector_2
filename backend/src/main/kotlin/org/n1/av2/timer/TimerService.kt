@@ -2,7 +2,7 @@ package org.n1.av2.timer
 
 import mu.KotlinLogging
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
@@ -134,7 +134,7 @@ class TimerService(
 
 
         val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
-        val stealthSkill = hacker.skillAsIntOrNull(HackerSkillType.STEALTH) ?: 0
+        val stealthSkill = hacker.skillAsIntOrNull(SkillType.STEALTH) ?: 0
         if (stealthSkill == 0) {
             return Duration.ZERO
         }

@@ -1,6 +1,6 @@
 package org.n1.av2.gm
 
-import org.n1.av2.hacker.hacker.HackerSkillType
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.UserAndHackerService
@@ -38,13 +38,13 @@ class UserWsController(
         userTaskRunner.runTask("/user/edit", userPrincipal) { userAndHackerService.edit(input.userId, input.field, input.value) }
     }
 
-    class UserEditSkillEnabled(val userId: String, val type: HackerSkillType, val enabled: Boolean)
+    class UserEditSkillEnabled(val userId: String, val type: SkillType, val enabled: Boolean)
     @MessageMapping("/user/editSkillEnabled")
     fun editSkillEnabled(input: UserEditSkillEnabled, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/user/editSkillEnabled", userPrincipal) { userAndHackerService.editSkillEnabled(input.userId, input.type, input.enabled) }
     }
 
-    class UserEditSkillValue(val userId: String, val type: HackerSkillType, val value: String)
+    class UserEditSkillValue(val userId: String, val type: SkillType, val value: String)
     @MessageMapping("/user/editSkillValue")
     fun editSkillValue(input: UserEditSkillValue, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/user/editSkillValue", userPrincipal) { userAndHackerService.editSkillValue(input.userId, input.type, input.value) }

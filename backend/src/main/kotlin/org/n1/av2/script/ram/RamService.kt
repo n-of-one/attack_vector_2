@@ -3,7 +3,7 @@ package org.n1.av2.script.ram
 import mu.KotlinLogging
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionType
@@ -150,9 +150,9 @@ class RamService(
         }
 
         val hacker: Hacker = hackerEntityService.findForUserId(userId)
-        val skillValue = hacker.skillAsIntOrNull(HackerSkillType.SCRIPT_RAM)
+        val skillValue = hacker.skillAsIntOrNull(SkillType.SCRIPT_RAM)
         val size = skillValue ?: 0
-        val enabled = hacker.skillAsIntOrNull(HackerSkillType.SCRIPT_RAM) != null
+        val enabled = hacker.skillAsIntOrNull(SkillType.SCRIPT_RAM) != null
         return createRam(userId, size, enabled)
     }
 

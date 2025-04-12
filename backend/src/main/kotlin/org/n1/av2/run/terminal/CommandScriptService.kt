@@ -1,8 +1,8 @@
 package org.n1.av2.run.terminal
 
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
@@ -59,7 +59,7 @@ class CommandScriptService(
 
     private fun checkHasScriptsSkill(): Boolean {
         val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCRIPT_RAM)
+        val hasScanSkill = hacker.hasSkill(SkillType.SCRIPT_RAM)
 
         if (!hasScanSkill) {
             connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)

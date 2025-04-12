@@ -2,7 +2,7 @@ package org.n1.av2.run.terminal
 
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
@@ -38,7 +38,7 @@ class CommandHelpService(
             "There are only a few commands you can use when outside:",
             ""
         )
-        if (hacker.hasSkill(HackerSkillType.SCAN)) {
+        if (hacker.hasSkill(SkillType.SCAN)) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
                 "Scan the site to reveal nodes. Does not scan beyond ICE nodes.",
@@ -88,7 +88,7 @@ class CommandHelpService(
             ""
         )
 
-        if (hacker.hasSkill(HackerSkillType.SCAN)) {
+        if (hacker.hasSkill(SkillType.SCAN)) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
                 "Scan to reveal new nodes once ICE has been hacked.",
@@ -123,7 +123,7 @@ class CommandHelpService(
         )
 
     private fun showRunScriptHelp(hacker: Hacker) {
-        if (hacker.hasSkill(HackerSkillType.SCRIPT_RAM)) {
+        if (hacker.hasSkill(SkillType.SCRIPT_RAM)) {
             connectionService.replyTerminalReceive(
                 "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
                 "Run a script that you have loaded in memory.",
@@ -133,7 +133,7 @@ class CommandHelpService(
     }
 
     private fun showDownloadScriptHelp(hacker: Hacker) {
-        if (configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN) && hacker.hasSkill(HackerSkillType.SCRIPT_RAM)) {
+        if (configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN) && hacker.hasSkill(SkillType.SCRIPT_RAM)) {
             connectionService.replyTerminalReceive(
                 "[b]/download-script[/] [primary]<script code>[/] - download a script.",
                 "You can download a script from another hacker who has offered it, or you can buy it from someone.",

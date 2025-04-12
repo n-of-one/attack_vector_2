@@ -1,9 +1,9 @@
 package org.n1.av2.integration.service
 
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkill
-import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
-import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
+import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillType.SCAN
+import org.n1.av2.hacker.skill.SkillType.SEARCH_SITE
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
@@ -16,7 +16,7 @@ class TestUserService(
     private val hackerEntityService: HackerEntityService,
 ) {
 
-    private val defaultSkills = listOf(HackerSkill(SCAN), HackerSkill(SEARCH_SITE))
+    private val defaultSkills = listOf(Skill(SCAN), Skill(SEARCH_SITE))
 
     fun createHackerForTest(name: String, type: UserType = UserType.HACKER): UserEntity {
         val existingUser = userEntityService.findByNameIgnoreCase(name)

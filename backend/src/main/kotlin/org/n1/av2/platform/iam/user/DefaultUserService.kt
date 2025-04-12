@@ -1,9 +1,9 @@
 package org.n1.av2.platform.iam.user
 
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkill
-import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
-import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
+import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillType.SCAN
+import org.n1.av2.hacker.skill.SkillType.SEARCH_SITE
 import org.n1.av2.platform.db.DbSchemaVersioning
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
@@ -20,7 +20,7 @@ class DefaultUserService(
         createMandatoryUsers()
     }
 
-    val defaultSkills = listOf(HackerSkill(SEARCH_SITE), HackerSkill(SCAN))
+    val defaultSkills = listOf(Skill(SEARCH_SITE), Skill(SCAN))
 
     fun createMandatoryUsers() {
         createDefaultUser("system", UserType.SYSTEM, UserTag.MANDATORY)
