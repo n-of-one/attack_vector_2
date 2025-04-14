@@ -375,11 +375,11 @@ class RunCanvas {
     }
 
 
-    moveStart({userId, nodeId, timings}: MoveStartAction) {
+    moveStart({userId, nodeId, timings, bypassingIceAtStartNode}: MoveStartAction) {
         if (!this.active) return
 
         const nodeDisplay = this.nodeDisplays.get(nodeId)
-        this.hackerDisplays.get(userId).moveStart(nodeDisplay, timings)
+        this.hackerDisplays.get(userId).moveStart(nodeDisplay, bypassingIceAtStartNode, timings)
     }
 
     moveArrive({userId, nodeId, timings}: MoveArriveAction) {

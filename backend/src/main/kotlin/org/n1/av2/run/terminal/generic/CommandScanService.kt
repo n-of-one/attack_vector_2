@@ -1,4 +1,4 @@
-package org.n1.av2.run.terminal.outside
+package org.n1.av2.run.terminal.generic
 
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
@@ -9,7 +9,7 @@ import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
 import org.n1.av2.run.terminal.MISSING_SKILL_RESPONSE
-import org.n1.av2.run.terminal.generic.DevCommandHelper
+import org.n1.av2.run.terminal.outside.OutsideTerminalHelper
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service

@@ -2,7 +2,7 @@ import {fabric} from "fabric"
 import {animate, calcLine, easeInOutSine, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
 import {Schedule} from "../../util/Schedule"
 import {
-    COLOR_HACKER_LINE,
+    COLOR_HACKER_LINE, COLOR_HACKER_LINE_BYPASSING, COLOR_PATROLLER_LINE,
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
     IMAGE_SIZE,
@@ -176,7 +176,7 @@ export class HackerDisplay implements Display {
             textAlign: "center", // "center", "right" or "justify".
             opacity: 0,
             selectable: false,
-            hoverCursor: "default",
+            hoverCursor: "default"
         })
         const lineData = calcLine(this, this.siteStartNodeDisplay)
         this.startLineIcon = new fabric.Line(
@@ -214,7 +214,7 @@ export class HackerDisplay implements Display {
             if (this.currentNodeDisplay) {
                 this.currentNodeDisplay.unregisterHacker(this)
             }
-            this.gfx.fadeOut(DISAPPEAR_TIME, this.hackerIdentifierIcon )
+            this.gfx.fadeOut(DISAPPEAR_TIME, this.hackerIdentifierIcon)
             this.gfx.fadeOut(DISAPPEAR_TIME, this.startLineIcon)
             this.gfx.fadeOut(DISAPPEAR_TIME, this.labelIcon)
 
@@ -266,19 +266,19 @@ export class HackerDisplay implements Display {
 
         this.schedule.run(timings.main, () => {
             if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, timings.main - 50, this.you, easeOutSine)
+            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, false, timings.main - 50, this.you, easeOutSine)
         })
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 100)
     }
 
-    moveStart(nodeDisplay: NodeDisplay, timings: Timings) {
+    moveStart(nodeDisplay: NodeDisplay, bypassingIceAtStartNode: boolean, timings: Timings) {
         this.targetNodeDisplay = nodeDisplay
 
         this.schedule.run(timings.main, () => {
             if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, timings.main + 10, this.you)
+            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, bypassingIceAtStartNode, timings.main + 10, this.you)
         })
 
     }
@@ -340,13 +340,17 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
     }
 
-    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, durationTicks: number, you: boolean, ease: IUtilAminEaseFunction= easeInOutSine): ConnectionVisual {
+    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, bypassingIceAtStartNode: boolean,
+                        durationTicks: number, you: boolean, ease: IUtilAminEaseFunction = easeInOutSine): ConnectionVisual {
         const lineData: LinePositions = calcLine(fromNodeDisplay, toNodeDisplay, 0)
         const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
 
-        const opacity = (you) ? 1: 0.5
+        const opacity = (you) ? 1 : 0.5
 
-        const lineElement = new ConnectionVisual(lineStart, COLOR_HACKER_LINE, this.canvas, {opacity: opacity})
+        const color = bypassingIceAtStartNode ? COLOR_HACKER_LINE_BYPASSING : COLOR_HACKER_LINE
+        console.log(opacity)
+
+        const lineElement = new ConnectionVisual(lineStart, color, this.canvas, {opacity: opacity}, bypassingIceAtStartNode)
         lineElement.extendTo(lineData, durationTicks, ease)
 
         return lineElement
@@ -377,7 +381,9 @@ export class HackerDisplay implements Display {
     disconnect() {
         const ticks = 20
 
-        if (this.moveLineElement) {this.moveLineElement.disappear(ticks)}
+        if (this.moveLineElement) {
+            this.moveLineElement.disappear(ticks)
+        }
         this.gfx.fadeOutAndRemove(ticks, this.hackerIcon!)
         this.gfx.fade(ticks, IDENTIFIER_OPACITY_SCANNING, this.hackerIdentifierIcon)
         this.gfx.fade(ticks, LINE_OPACITY_SCANNING, this.labelIcon)

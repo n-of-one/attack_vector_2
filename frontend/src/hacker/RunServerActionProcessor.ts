@@ -98,6 +98,7 @@ export interface StartRun {
 export interface MoveStartAction {
     userId: string,
     nodeId: string,
+    bypassingIceAtStartNode: boolean,
     timings: Timings
 }
 

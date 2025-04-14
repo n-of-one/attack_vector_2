@@ -21,6 +21,8 @@ export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
                             infoText="The hacker can run scripts. Without this skill the hacker cannot interact with scripts in any way. The value is the amount of RAM available for scripts."/>
         <HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}
                             infoText="The hacker can will increase tripwire timer durations by this percentage (or decrease them if the percentage is negative)."/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.BYPASS} skillName="Bypass" readonly={readonlySkills} hasValue={false}
+                            infoText="The hacker can ignore the ICE in the start node to move further into the site."/>
     </>
 }
 

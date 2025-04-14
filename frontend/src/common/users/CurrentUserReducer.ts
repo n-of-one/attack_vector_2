@@ -38,6 +38,7 @@ export enum HackerSkillType {
     CREATE_SITE = "CREATE_SITE",
     STEALTH = "STEALTH",
     SCRIPT_RAM = "SCRIPT_RAM",
+    BYPASS = "BYPASS"
 }
 
 export interface HackerSkill {

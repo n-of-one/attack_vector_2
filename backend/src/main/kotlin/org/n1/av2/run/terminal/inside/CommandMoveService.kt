@@ -1,7 +1,9 @@
 package org.n1.av2.run.terminal.inside
 
+import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
@@ -9,6 +11,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.isOneOf
 import org.n1.av2.run.entity.NodeScanStatus.*
 import org.n1.av2.run.entity.RunEntityService
@@ -37,6 +40,8 @@ class CommandMoveService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
+    private val currentUserService: CurrentUserService,
+    private val hackerEntityService: HackerEntityService,
 ) {
 
     fun processCommand(arguments: List<String>, hackerState: HackerStateRunning) {
@@ -49,129 +54,154 @@ class CommandMoveService(
         val networkId = arguments.first()
         val toNode = nodeEntityService.findByNetworkId(hackerState.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
-        if (checkMovePrerequisites(toNode, hackerState, networkId)) {
-            handleMove(toNode, hackerState)
-        }
-    }
+        if (!checkMovePrerequisites(toNode, hackerState, networkId)) return
 
-    private fun checkMovePrerequisites(toNode: Node, hackerState: HackerStateRunning, networkId: String): Boolean {
-        if (toNode.id == hackerState.currentNodeId) return reportAtTargetNode(networkId)
-
-        if (hackerState.previousNodeId == toNode.id) return true /// can always go back to previous node, regardless of ice
-
-        val scan = runEntityService.getByRunId(hackerState.runId)
-        if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status.isOneOf(UNDISCOVERED_0, UNCONNECTABLE_1)) {
-            reportNodeNotFound(networkId)
-            return false
-        }
         requireNotNull(hackerState.currentNodeId)
-        connectionEntityService.findConnection(hackerState.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
-        val fromNode = nodeEntityService.getById(hackerState.currentNodeId)
-        if (hasActiveIce(fromNode)) return reportProtected()
-
-        return true
-    }
-
-    private fun reportAtTargetNode(networkId: String): Boolean {
-        connectionService.replyTerminalReceive("[error]error[/] already at [ok]${networkId}[/].")
-        return false
-    }
-
-    fun reportNodeNotFound(networkId: String) {
-        connectionService.replyTerminalReceive("[error]error[/] node [ok]${networkId}[/] not found.")
-    }
-
-    fun reportNoPath(networkId: String): Boolean {
-        connectionService.replyTerminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
-        return false
-    }
-
-    private fun hasActiveIce(node: Node): Boolean {
-        return node.layers.any { it is IceLayer && !it.hacked }
-
-    }
-
-    private fun reportProtected(): Boolean {
-        connectionService.replyTerminalReceive("[warn b]blocked[/] ICE in current node is blocking your move.")
-        return false
-    }
-
-    private fun handleMove(toNode: Node, hackerState: HackerStateRunning) {
-        connectionService.replyTerminalSetLocked(true)
-
-        @Suppress("unused")
-        class StartMove(val userId: String, val nodeId: String, val timings: Timings)
-        connectionService.toRun(hackerState.runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(hackerState.userId, toNode.id, timingsService.MOVE_START))
-
-        userTaskRunner.queueInTicksForSite("move-arrive", hackerState.siteId, timingsService.MOVE_START.totalTicks) { moveArrive(toNode.id, hackerState.userId, hackerState.runId) }
-    }
-
-    @ScheduledTask
-    fun moveArrive(nodeId: String, userId: String, runId: String) {
-        val hackerState = hackerStateEntityService.retrieve(userId)
-        if (hackerState.runId == null || hackerState.runId != runId) return // hacker has left the original run
-        val runState = hackerState.toRunState()
-        val run = runEntityService.getByRunId(runId)
-        if (sitePropertiesEntityService.getBySiteId(run.siteId).shutdownEnd != null) {
-            // site has shut down, abort moving
-            connectionService.replyTerminalSetLocked(false)
-            return
-        }
-
-        val nodeStatus = run.nodeScanById[nodeId]!!.status
-
-        if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
-            arriveComplete(nodeId, userId, runId)
+        val currentNode = nodeEntityService.getById(hackerState.currentNodeId)
+        if ( hasActiveIce(currentNode)) {
+            if (!bypassingIceAtStartNode(currentNode, hackerState)) {
+                reportProtected()
+                return
+            } else {
+                connectionService.replyTerminalReceive("[i]Bypassing[/] ICE at ${currentNode.networkId}")
+                handleMove(toNode, hackerState, true)
+            }
         } else {
-            connectionService.toRun(
-                runId,
-                ServerActions.SERVER_HACKER_SCANS_NODE,
-                "userId" to userId,
-                "nodeId" to nodeId,
-                "timings" to timingsService.INSIDE_SCAN
-            )
-
-            userTaskRunner.queueInTicksForSite("internal-scan", runState.siteId, timingsService.INSIDE_SCAN.totalTicks) {
-                scanService.hackerArrivedNodeScan(nodeId, runId)
-                arriveComplete(nodeId, userId, runId)
-            }
+            handleMove(toNode, hackerState, false)
         }
     }
 
-    private fun arriveComplete(nodeId: String, userId: String, runId: String) {
-        val state = hackerStateEntityService.retrieve(userId).toRunState()
-        hackerStateEntityService.arriveAt(state, nodeId)
-        triggerLayersAtArrive(state.siteId, nodeId, runId)
 
-        connectionService.toRun(
-            runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE,
-            "nodeId" to nodeId, "userId" to userId, "timings" to timingsService.MOVE_ARRIVE
+private fun checkMovePrerequisites(toNode: Node, hackerState: HackerStateRunning, networkId: String): Boolean {
+    if (toNode.id == hackerState.currentNodeId) return reportAtTargetNode(networkId)
+
+    if (hackerState.previousNodeId == toNode.id) return true /// can always go back to previous node, regardless of ice
+
+    val scan = runEntityService.getByRunId(hackerState.runId)
+    if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status.isOneOf(UNDISCOVERED_0, UNCONNECTABLE_1)) {
+        reportNodeNotFound(networkId)
+        return false
+    }
+    requireNotNull(hackerState.currentNodeId)
+    connectionEntityService.findConnection(hackerState.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
+
+    return true
+}
+
+private fun reportAtTargetNode(networkId: String): Boolean {
+    connectionService.replyTerminalReceive("[error]error[/] already at [ok]${networkId}[/].")
+    return false
+}
+
+fun reportNodeNotFound(networkId: String) {
+    connectionService.replyTerminalReceive("[error]error[/] node [ok]${networkId}[/] not found.")
+}
+
+fun reportNoPath(networkId: String): Boolean {
+    connectionService.replyTerminalReceive("[error]error[/] no path from current node to [ok]${networkId}[/].")
+    return false
+}
+
+private fun hasActiveIce(currentNode: Node) = currentNode.layers.any { it is IceLayer && !it.hacked }
+
+private fun bypassingIceAtStartNode(currentNode: Node, hackerState: HackerStateRunning): Boolean {
+    val hacker = hackerEntityService.findForUserId(currentUserService.userId)
+    if (!hacker.hasSkill(SkillType.BYPASS)) return false
+
+    val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId)
+    val atStartNode = (siteProperties.startNodeNetworkId == currentNode.networkId)
+
+    return atStartNode
+}
+
+private fun reportProtected(): Boolean {
+    connectionService.replyTerminalReceive("[warn b]blocked[/] ICE in current node is blocking your move.")
+    return false
+}
+
+private fun handleMove(toNode: Node, hackerState: HackerStateRunning, bypassingIceAtStartNode: Boolean) {
+    connectionService.replyTerminalSetLocked(true)
+
+    @Suppress("unused")
+    class StartMove(val userId: String, val nodeId: String, val bypassingIceAtStartNode: Boolean, val timings: Timings)
+    connectionService.toRun(hackerState.runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(hackerState.userId, toNode.id,
+        bypassingIceAtStartNode, timingsService.MOVE_START))
+
+    userTaskRunner.queueInTicksForSite("move-arrive", hackerState.siteId, timingsService.MOVE_START.totalTicks) {
+        moveArrive(
+            toNode.id,
+            hackerState.userId,
+            hackerState.runId
         )
+    }
+}
+
+@ScheduledTask
+fun moveArrive(nodeId: String, userId: String, runId: String) {
+    val hackerState = hackerStateEntityService.retrieve(userId)
+    if (hackerState.runId == null || hackerState.runId != runId) return // hacker has left the original run
+    val runState = hackerState.toRunState()
+    val run = runEntityService.getByRunId(runId)
+    if (sitePropertiesEntityService.getBySiteId(run.siteId).shutdownEnd != null) {
+        // site has shut down, abort moving
         connectionService.replyTerminalSetLocked(false)
+        return
     }
 
-    private fun triggerLayersAtArrive(siteId: String, nodeId: String, runId: String) {
-        val node = nodeEntityService.getById(nodeId)
-        node.layers.forEach { layer ->
-            when (layer) {
-                is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, runId)
-                else -> {} // do nothing
-            }
+    val nodeStatus = run.nodeScanById[nodeId]!!.status
+
+    if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
+        arriveComplete(nodeId, userId, runId)
+    } else {
+        connectionService.toRun(
+            runId,
+            ServerActions.SERVER_HACKER_SCANS_NODE,
+            "userId" to userId,
+            "nodeId" to nodeId,
+            "timings" to timingsService.INSIDE_SCAN
+        )
+
+        userTaskRunner.queueInTicksForSite("internal-scan", runState.siteId, timingsService.INSIDE_SCAN.totalTicks) {
+            scanService.hackerArrivedNodeScan(nodeId, runId)
+            arriveComplete(nodeId, userId, runId)
         }
     }
+}
 
-    fun processQuickMove(arguments: List<String>, hackerState: HackerStateRunning) {
-        if (!devCommandHelper.checkDevModeEnabled()) return
-        if (!insideTerminalHelper.verifyInside(hackerState)) return
+private fun arriveComplete(nodeId: String, userId: String, runId: String) {
+    val state = hackerStateEntityService.retrieve(userId).toRunState()
+    hackerStateEntityService.arriveAt(state, nodeId)
+    triggerLayersAtArrive(state.siteId, nodeId, runId)
 
-        if (arguments.isEmpty()) {
-            connectionService.replyTerminalReceive("Missing [ok]<network id>[/], for example: [b]mv[ok] 01[/].")
-            return
+    connectionService.toRun(
+        runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE,
+        "nodeId" to nodeId, "userId" to userId, "timings" to timingsService.MOVE_ARRIVE
+    )
+    connectionService.replyTerminalSetLocked(false)
+}
+
+private fun triggerLayersAtArrive(siteId: String, nodeId: String, runId: String) {
+    val node = nodeEntityService.getById(nodeId)
+    node.layers.forEach { layer ->
+        when (layer) {
+            is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, runId)
+            else -> {} // do nothing
         }
-        val networkId = arguments.first()
-        val toNode = nodeEntityService.findByNetworkId(hackerState.siteId, networkId) ?: return reportNodeNotFound(networkId)
-
-        moveArrive(toNode.id, hackerState.userId, hackerState.runId)
     }
+}
+
+fun processQuickMove(arguments: List<String>, hackerState: HackerStateRunning) {
+    if (!devCommandHelper.checkDevModeEnabled()) return
+    if (!insideTerminalHelper.verifyInside(hackerState)) return
+
+    if (arguments.isEmpty()) {
+        connectionService.replyTerminalReceive("Missing [ok]<network id>[/], for example: [b]mv[ok] 01[/].")
+        return
+    }
+    val networkId = arguments.first()
+    val toNode = nodeEntityService.findByNetworkId(hackerState.siteId, networkId) ?: return reportNodeNotFound(networkId)
+
+    moveArrive(toNode.id, hackerState.userId, hackerState.runId)
+}
 
 }

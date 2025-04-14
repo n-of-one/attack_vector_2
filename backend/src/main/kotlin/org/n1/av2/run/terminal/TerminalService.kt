@@ -4,12 +4,8 @@ import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.run.terminal.generic.CommandHelpService
-import org.n1.av2.run.terminal.generic.CommandScriptService
-import org.n1.av2.run.terminal.generic.DevCommandHelper
-import org.n1.av2.run.terminal.generic.SocialTerminalService
+import org.n1.av2.run.terminal.generic.*
 import org.n1.av2.run.terminal.inside.*
-import org.n1.av2.run.terminal.outside.CommandScanService
 import org.n1.av2.run.terminal.outside.CommandStartAttackService
 import org.springframework.stereotype.Service
 

@@ -19,11 +19,12 @@ enum class SkillType(
     val processUpdate: (userId: String, value: String?, context: ApplicationContext) -> Unit = noUpdateAction,
     val processSkillRemoval: (userId: String, context: ApplicationContext) -> Unit = noRemovalAction,
 ) {
+    BYPASS(),
     CREATE_SITE(),
     SCAN(),
     SEARCH_SITE(),
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
-    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay, ) // Await confirmation from the organisers who use AV that this is a skill they want
+    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay) // Await confirmation from the organisers who use AV that this is a skill they want
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }

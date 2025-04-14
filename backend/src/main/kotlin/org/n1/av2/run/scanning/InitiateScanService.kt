@@ -1,5 +1,7 @@
 package org.n1.av2.run.scanning
 
+import org.n1.av2.hacker.skill.SkillService
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.connection.ServerActions.SERVER_PROBE_LAUNCH
@@ -34,6 +36,7 @@ class InitiateScanService(
     private val scanService: ScanService,
     private val timingsService: TimingsService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val skillService: SkillService,
 ) {
 
     fun scanIgnoringIceAtTargetNode(run: Run, startNode: Node?, targetNode: Node) {
@@ -113,8 +116,17 @@ class InitiateScanService(
             "timings" to timingsService.INSIDE_SCAN
         )
         userTaskRunner.queueInTicksForSite("internalscan-complete", run.siteId, timingsService.INSIDE_SCAN.totalTicks) {
-            scanService.areaScan(run, targetNode, nodes, false)
+            val ignoreIce = ignoreIceAtStartNode(run, targetNode)
+            scanService.areaScan(run, targetNode, nodes, ignoreIce)
         }
+    }
+
+    private fun ignoreIceAtStartNode(run: Run, targetNode: Node): Boolean {
+        if (!skillService.currentUserHasSkill(SkillType.BYPASS)) return false
+
+        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        val atStartNode = (siteProperties.startNodeNetworkId == targetNode.networkId)
+        return atStartNode
     }
 
     fun quickScan(run: Run) {
