@@ -5,13 +5,31 @@ import org.n1.av2.site.entity.enums.LayerType
 import org.n1.av2.site.entity.enums.LayerType.TANGLE_ICE
 import org.n1.av2.site.entity.enums.LayerType.WORD_SEARCH_ICE
 import org.springframework.context.ApplicationContext
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
+import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.repository.MongoRepository
+import org.springframework.stereotype.Repository
 
+typealias SkillId = String
+
+@Document
 data class Skill(
+    @Id val id: SkillId,
+    @Indexed val userId: String,
     val type: SkillType,
-    val value: String?
+    val value: String?,
+    val usedOnSiteIds: List<String>
 ) {
-    constructor(type: SkillType) : this(type, type.defaultValue)
+    constructor(id: SkillId, userId: String, type: SkillType) : this(id, userId, type, type.defaultValue, emptyList())
 }
+
+@Repository
+interface SkillRepo : MongoRepository<Skill, SkillId> {
+    fun findByUserId(userId: String): List<Skill>
+}
+
+fun List<Skill>.containsType(type: SkillType) = this.any { it.type == type }
 
 
 enum class SkillType(
@@ -28,7 +46,7 @@ enum class SkillType(
     SEARCH_SITE(),
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
     STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay),
-    WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()},${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes)
+    WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()}, ${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes)
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }

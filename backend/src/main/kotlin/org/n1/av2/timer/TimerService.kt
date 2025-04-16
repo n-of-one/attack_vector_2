@@ -1,7 +1,7 @@
 package org.n1.av2.timer
 
 import mu.KotlinLogging
-import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
@@ -35,8 +35,8 @@ class TimerService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val timeService: TimeService,
     private val systemTaskRunner: SystemTaskRunner,
-    private val hackerEntityService: HackerEntityService,
     private val currentUserService: CurrentUserService,
+    private val skillService: SkillService,
 ) {
 
     private val MINIMUM_TIMER_DURATION = Duration.ofSeconds(10)
@@ -103,10 +103,10 @@ class TimerService(
         reportAdjustment("Decreased site alertness", "Increased site alertness", durations.alertnessAdjustment)
     }
 
-    private fun reportAdjustment(sourcePostive: String, sourceNegative: String, adjustment: Duration) {
+    private fun reportAdjustment(sourcePositive: String, sourceNegative: String, adjustment: Duration) {
         if (adjustment != Duration.ZERO) {
             val message = if (adjustment.isPositive)
-                "${sourcePostive} increased the duration by ${adjustment.toHumanTime()}."
+                "${sourcePositive} increased the duration by ${adjustment.toHumanTime()}."
             else
                 "${sourceNegative} decreased the duration by ${adjustment.multipliedBy(-1).toHumanTime()}."
             connectionService.replyTerminalReceive(message)
@@ -125,20 +125,17 @@ class TimerService(
         // Always give the hackers a little bit of time, basically to increase the period of dread when the realize they messed up.
         val cappedDuration = if (effectiveDuration < MINIMUM_TIMER_DURATION) MINIMUM_TIMER_DURATION else effectiveDuration
 
-
         return Durations(cappedDuration, stealthAdjustment, alertnessAdjustment)
     }
 
     private fun calculateStealthAdjustment(stealthApplies: Boolean, effectiveDuration: Duration): Duration {
         if (!stealthApplies) return Duration.ZERO
 
-
-        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
-        val stealthSkill = hacker.skillAsIntOrNull(SkillType.STEALTH) ?: 0
-        if (stealthSkill == 0) {
+        val stealthSkillValue = skillService.skillAsIntOrNull(currentUserService.userId, SkillType.STEALTH) ?: 0
+        if (stealthSkillValue == 0) {
             return Duration.ZERO
         }
-        val stealthFactor = (stealthSkill.toDouble() / 100.0)
+        val stealthFactor = (stealthSkillValue.toDouble() / 100.0)
         val tripwireMillis = effectiveDuration.toMillis()
         val stealthMillis = (tripwireMillis * stealthFactor).toLong()
         return Duration.ofMillis(stealthMillis)

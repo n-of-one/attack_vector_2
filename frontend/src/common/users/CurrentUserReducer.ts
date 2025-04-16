@@ -1,6 +1,7 @@
 import {AnyAction} from "redux";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigState} from "../../admin/config/ConfigReducer";
+import {HackerSkill, HackerSkillType} from "./HackerSkills";
 
 export const SERVER_RECEIVE_CURRENT_USER = "SERVER_RECEIVE_CURRENT_USER"
 
@@ -25,26 +26,6 @@ export interface User {
     name: string,
     type: UserType,
     hacker?: Hacker,
-}
-
-export const hasSkill = ( user: User, requested: HackerSkillType): boolean => {
-    const skills = user.hacker?.skills || []
-    return skills.some((hackerSKill) => hackerSKill.type === requested)
-}
-
-export enum HackerSkillType {
-    SEARCH_SITE = "SEARCH_SITE",
-    SCAN = "SCAN",
-    CREATE_SITE = "CREATE_SITE",
-    STEALTH = "STEALTH",
-    SCRIPT_RAM = "SCRIPT_RAM",
-    BYPASS = "BYPASS",
-    WEAKEN = "WEAKEN"
-}
-
-export interface HackerSkill {
-    type: HackerSkillType,
-    value?: string,
 }
 
 export interface Hacker {
@@ -72,4 +53,9 @@ export const currentUserReducer = (state: User = defaultUser, action: AnyAction)
         case SERVER_RECEIVE_CURRENT_USER : return action.data
         default: return state
     }
+}
+
+export const hasSkill = (user: User, requested: HackerSkillType): boolean => {
+    const skills = user.hacker?.skills || []
+    return skills.some((hackerSKill) => hackerSKill.type === requested)
 }

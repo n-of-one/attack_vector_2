@@ -1,7 +1,7 @@
 package org.n1.av2.platform.iam.user
 
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType.SCAN
 import org.n1.av2.hacker.skill.SkillType.SEARCH_SITE
 import org.n1.av2.platform.db.DbSchemaVersioning
@@ -13,14 +13,13 @@ import org.springframework.stereotype.Service
 class DefaultUserService(
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
+    private val skillService: SkillService,
 ) {
     /** Important to be after the ContextRefreshedEvent to give [DbSchemaVersioning] a chance to run first */
     @EventListener(ApplicationStartedEvent::class)
     fun onApplicationEvent() {
         createMandatoryUsers()
     }
-
-    val defaultSkills = listOf(Skill(SEARCH_SITE), Skill(SCAN))
 
     fun createMandatoryUsers() {
         createDefaultUser("system", UserType.SYSTEM, UserTag.MANDATORY)
@@ -47,8 +46,10 @@ class DefaultUserService(
 
         val user = userEntityService.findByNameIgnoreCase(name) ?: error("Failed to find user that was just created: $name")
 
-        hackerEntityService.createHacker(user, icon, name, defaultSkills)
+        hackerEntityService.createHacker(user, icon, name)
+
+        skillService.addSkillsForUser(user, listOf(SEARCH_SITE, SCAN))
+
         return user
     }
-
 }

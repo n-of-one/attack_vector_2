@@ -1,8 +1,7 @@
 package org.n1.av2.script.ram
 
 import mu.KotlinLogging
-import org.n1.av2.hacker.hacker.Hacker
-import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
@@ -41,12 +40,12 @@ class RamServiceInitializer(
 @Service
 class RamService(
     private val ramRepository: RamRepository,
-    private val hackerEntityService: HackerEntityService,
     private val timeService: TimeService,
     private val userTaskRunner: UserTaskRunner,
     private val userEntityService: UserEntityService,
     private val configService: ConfigService,
     private val currentUserService: CurrentUserService,
+    private val skillService: SkillService,
 ) {
 
     lateinit var scriptService: ScriptService
@@ -149,10 +148,9 @@ class RamService(
             return ram
         }
 
-        val hacker: Hacker = hackerEntityService.findForUserId(userId)
-        val skillValue = hacker.skillAsIntOrNull(SkillType.SCRIPT_RAM)
+        val skillValue = skillService.skillAsIntOrNull(userId, SkillType.SCRIPT_RAM)
         val size = skillValue ?: 0
-        val enabled = hacker.skillAsIntOrNull(SkillType.SCRIPT_RAM) != null
+        val enabled = skillValue != null
         return createRam(userId, size, enabled)
     }
 

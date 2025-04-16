@@ -1,10 +1,9 @@
 package org.n1.av2.run.terminal.inside
 
-import org.n1.av2.hacker.hacker.Hacker
-import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
-import org.n1.av2.hacker.skill.SkillUseService
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.platform.connection.ConnectionService
@@ -16,27 +15,27 @@ import org.springframework.stereotype.Service
 @Service
 class CommandWeakenService(
     private val connectionService: ConnectionService,
-    private val skillUseService: SkillUseService,
     private val iceService: IceService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val nodeEntityService: NodeEntityService,
-    private val hackerEntityService:  HackerEntityService,
+    private val skillService: SkillService,
 ) {
 
     fun processWeaken(arguments: List<String>, hackerState: HackerStateRunning) {
-        val hacker = hackerEntityService.findForUserId(hackerState.userId)
+        val skills = skillService.findSkillsForUser(hackerState.userId)
 
-        val layer = checkPrerequisites(arguments, hackerState, hacker) ?: return
-        if (!canUseSkillAgain(hackerState, hacker)) return
+        val (layer, skill) = checkPrerequisites(arguments, hackerState, skills) ?: return
 
-        weaken(layer, hackerState, hacker)
+        weaken(layer, hackerState, skill)
     }
 
-    fun checkPrerequisites(arguments: List<String>, hackerState: HackerStateRunning, hacker: Hacker) : IceLayer?{
+    fun checkPrerequisites(arguments: List<String>, hackerState: HackerStateRunning, skills: List<Skill>): Pair<IceLayer, Skill>? {
         if (!insideTerminalHelper.verifyInside(hackerState)) return null
         requireNotNull(hackerState.currentNodeId)
 
-        if (!hacker.hasSkill(SkillType.WEAKEN)) {
+        val weakenSkills = skills.filter { it.type == SkillType.WEAKEN }
+
+        if (weakenSkills.isEmpty()) {
             connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
             return null
         }
@@ -55,31 +54,38 @@ class CommandWeakenService(
             return null
         }
 
-        if (!hacker.skillContainingValue(SkillType.WEAKEN, layer.type.toString().substringBefore("_ICE"))) {
+        val skill = checkSkill(weakenSkills, hackerState, layer) ?: return null
+
+        return layer to skill
+    }
+
+    private fun checkSkill(weakenSkills: List<Skill>, hackerState: HackerStateRunning, layer: IceLayer): Skill? {
+
+        val weakenSkillsThatWorkOnThisIce = weakenSkills.filter { it.value?.uppercase()?.contains(layer.type.toString().substringBefore("_ICE")) == true }
+
+        if (weakenSkillsThatWorkOnThisIce.isEmpty()) {
             connectionService.replyTerminalReceive("Weaken not compatible with ICE type. [mute](Skill does not support this)")
             return null
         }
 
-        return layer
-    }
-
-    private fun canUseSkillAgain(hackerState: HackerStateRunning, hacker: Hacker): Boolean {
-        if (!skillUseService.canUseSkillOnSite(hacker, SkillType.WEAKEN, hackerState.siteId)) {
+        val availableWeakenSkills = weakenSkillsThatWorkOnThisIce.filter { skill -> !skill.usedOnSiteIds.contains(hackerState.siteId) }
+        if (availableWeakenSkills.isEmpty()) {
             connectionService.replyTerminalReceive("Tamper attempt blocked. [mute](Skill already used on this site)")
-            return false
+            return null
         }
-        return true
+
+        val sortedSkills = availableWeakenSkills.sortedBy { it.value?.split(",")?.size } // skills that support the least types of ice used up first
+        return sortedSkills.first()
     }
 
-    private fun weaken(layer: IceLayer, hackerState: HackerStateRunning, hacker: Hacker) {
+    private fun weaken(layer: IceLayer, hackerState: HackerStateRunning, skill: Skill) {
         val newStrength = IceStrength.forValue(layer.strength.value - 1)
         val newIceLayer = iceService.createIceLayer(layer, layer.type, newStrength, layer.name)
 
         val node = nodeEntityService.findByLayerId(layer.id)
         iceService.changeIce(node, layer, newIceLayer)
+        skillService.useSkillOnSite(skill.id, hackerState.siteId)
 
         connectionService.replyTerminalReceive("ICE weakened. New strength: [info]${newStrength.description}")
-
-        skillUseService.skillUsed(hacker, SkillType.WEAKEN, hackerState.siteId)
     }
 }

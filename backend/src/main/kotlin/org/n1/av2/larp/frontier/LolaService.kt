@@ -8,11 +8,7 @@ import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.db.DbSchemaVersioning
-import org.n1.av2.platform.iam.user.HackerIcon
-import org.n1.av2.platform.iam.user.UserEntity
-import org.n1.av2.platform.iam.user.UserEntityService
-import org.n1.av2.platform.iam.user.UserTag
-import org.n1.av2.platform.iam.user.UserType
+import org.n1.av2.platform.iam.user.*
 import org.n1.av2.run.RunService
 import org.n1.av2.run.runlink.RunLinkService
 import org.springframework.boot.context.event.ApplicationStartedEvent
@@ -60,7 +56,7 @@ class LolaService(
     fun createLolaUser() {
         if (userEntityService.findByNameIgnoreCase(LOLA_USER_NAME) != null) return
         val lolaUser = userEntityService.createUser(LOLA_USER_NAME, UserType.HACKER, null, UserTag.EXTERNAL_SYSTEM)
-        hackerEntityService.createHacker(lolaUser, HackerIcon.BRAIN, LOLA_USER_NAME, emptyList())
+        hackerEntityService.createHacker(lolaUser, HackerIcon.BRAIN, LOLA_USER_NAME)
     }
 
     class SpeakResponse(val success: Boolean, val message: String)

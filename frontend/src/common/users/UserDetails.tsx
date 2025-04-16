@@ -166,7 +166,7 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
     return <>
         <hr/>
         <div className="d-flex flex-row-reverse">
-            <button className="btn btn-info button-text" onClick={deleteFunction}>Delete</button>
+            <button className="btn btn-info button-text" onClick={deleteFunction}>Delete user</button>
         </div>
     </>
 }

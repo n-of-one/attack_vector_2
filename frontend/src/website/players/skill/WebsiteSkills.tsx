@@ -91,10 +91,9 @@ export const WebsiteSkills = () => {
                         Default hacker skill: <strong>no</strong><br/>
                         This skill allows the hacker reduce the strength of a single layer of ICE. The strength is reduced by one step, for example Very Strong
                         becomes Strong.<br/><br/>
-                        This skill works on one or more types of ICE (specified when setting up the skill).<br/><br/>
-                        This skill works once per site. After a site shutdown (reset), the skill will work again.<br/><br/>
-                        You can have this skill more than once. Where each instance defines what types of ICE it affects, and each instance can be used once
-                        per site.
+                        This skill works on one or more types of ICE, specified when setting up the skill.<br/><br/>
+                        You can have this skill more than once. Where each instance defines what types of ICE it affects. Each instance can be used once
+                        per site. After a site is reset, the skill (instances) can be used again on this site.
                     </p>
 
                 </div>

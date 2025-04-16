@@ -1,101 +1,124 @@
-import {HackerSkillType, User} from "./CurrentUserReducer";
+import {User} from "./CurrentUserReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {TextSaveInput} from "../component/TextSaveInput";
 import React from "react";
 import {InfoBadge} from "../component/ToolTip";
+import {SilentLink} from "../component/SilentLink";
+import {ActionButton} from "../component/ActionButton";
+import {HackerSkill, HackerSkillType, skillCanHaveMultipleInstances, skillHasValue, skillInfoText, skillName} from "./HackerSkills";
 
-interface Props {
-    user: User,
-    readonlySkills: boolean,
-}
+export const HackerSkillsElement = ({user, readonlySkills}: { user: User, readonlySkills: boolean }) => {
+    if (!user.hacker) {
+        return <></>
+    }
 
-export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
+    const sortedSkills = [...user.hacker.skills].sort((a: HackerSkill, b: HackerSkill) => skillName[a.type].localeCompare(skillName[b.type]))
+
     return <>
-        <HackerSkillElement user={user} skillType={HackerSkillType.SEARCH_SITE} skillName="Search site" readonly={readonlySkills} hasValue={false}
-                            infoText="The hacker can search for sites and start a hacking run. Without this skill, the hacker always needs another hacker find the site and invite them to the run."/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.SCAN} skillName="Scan" readonly={readonlySkills} hasValue={false}
-                            infoText="The hacker can use the scan command."/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.CREATE_SITE} skillName="Create site" readonly={readonlySkills} hasValue={false}
-                            infoText="The hacker can create their own sites."/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.SCRIPT_RAM} skillName="Scripts (RAM)" readonly={readonlySkills} hasValue={true}
-                            infoText="The hacker can run scripts. Without this skill the hacker cannot interact with scripts in any way. The value is the amount of RAM available for scripts."/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.STEALTH} skillName="Stealth" readonly={readonlySkills} hasValue={true}
-                            infoText="The hacker can will increase tripwire timer durations by this percentage (or decrease them if the percentage is negative)."/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.BYPASS} skillName="Bypass" readonly={readonlySkills} hasValue={false}
-                            infoText="The hacker can ignore the ICE in the start node to move further into the site."/>
-        <HackerSkillElement user={user} skillType={HackerSkillType.WEAKEN} skillName="Weaken" readonly={readonlySkills} hasValue={true}
-                            infoText="The hacker can reduce the strength of one ICE layer per site. The value defines which ICE types can be affected.
-                            Options are: netwalk, password, sweeper, tangle, tar, word_search. Separate options with a comma (,)"/>
+        {sortedSkills.map((skill) => {
+            return <HackerSkillElement skill={skill} readonly={readonlySkills}/>
+        })}
+        <HackerAddSkillElement user={user} readonlySkills={readonlySkills} skills={sortedSkills}/>
     </>
 }
 
-
-interface UserSkillProps {
-    user: User,
-    skillType: HackerSkillType,
-    skillName: string,
+interface HackerSkillElementProps {
+    skill: HackerSkill,
     readonly: boolean,
-    hasValue: boolean,
-    infoText: string,
 }
 
-const HackerSkillElement = (props: UserSkillProps) => {
-    const {user, skillType, skillName, readonly, hasValue, infoText} = props
-    if (!user.hacker) {
-        return <></>
-    }// no hacker data
+const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
 
-    const skill = user.hacker.skills.find(skill => skill.type === skillType)
-    const hasSkill = skill !== undefined
+    const hasValue = skillHasValue[skill.type]
+    const infoText = skillInfoText[skill.type]
+    const name = skillName[skill.type]
 
     if (readonly) {
-        if (!skill) {
-            return <></>
-        }
         const valueDisplay = hasValue ? ` : ${skill.value}` : ""
         return <ul>
-            <li className="text-muted"><InfoBadge infoText={infoText}/> {skillName}{valueDisplay}</li>
+            <li className="text-muted"><InfoBadge infoText={infoText}/> {name}{valueDisplay}</li>
         </ul>
     }
 
-    const saveSkillValue = (value: string) => {
-        const message = {userId: user.id, type: skillType, value}
-        webSocketConnection.send("/user/editSkillValue", message)
-    }
-    const skillValueDisplay = hasSkill ? (skill.value ? skill.value : "") : ""
-    const skillValueElement = hasSkill && hasValue ? <SkillValue currentValue={skillValueDisplay} save={saveSkillValue}/> : <></>
+    const skillValueElement = hasValue ? <SkillValueElement skill={skill}/> : <></>
 
+    return <>
+        <div className="row">
+            <div className={"col-lg-4"}>
+                <SkillDeleteElement skill={skill}/> &nbsp;
+                <InfoBadge infoText={infoText}/> {name}
+            </div>
 
-    const saveSkillEnabled = (enable: boolean) => {
-        const message = {userId: user.id, type: skillType, enabled: enable}
-        webSocketConnection.send("/user/editSkillEnabled", message)
-    }
-
-    return <div className="row form-group">
-        <div className={`col-lg-1`}/>
-        <label htmlFor={skillName} className="col-lg-3 control-label text-muted"><InfoBadge infoText={infoText}/> {skillName}</label>
-        <div className={`col-lg-1`}>
-            <input id={skillName} type="checkbox" checked={hasSkill} className="checkbox-inline" onClick={(event: any) => {
-                saveSkillEnabled(!hasSkill)
-                event.preventDefault()
-                return false;
-            }} disabled={readonly}/>
+            {skillValueElement}
+            <br/>
+            <br/>
         </div>
-        {skillValueElement}
-        <br/>
-        <br/>
-    </div>
+    </>
 }
 
-interface SkillValueProps {
-    currentValue: string,
-    save: (value: string) => void,
+const SkillDeleteElement = ({skill}: { skill: HackerSkill }) => {
+    const action = () => {
+        webSocketConnection.send("/user/skill/delete", {skillId: skill.id})
+    }
+    return <SilentLink onClick={action} title="Delete"><span className="glyphicon glyphicon-trash"/></SilentLink>
 }
 
-const SkillValue = ({currentValue, save}: SkillValueProps) => {
-    return <div className={`col-lg-7`}>
+const SkillValueElement = ({skill}: { skill: HackerSkill }) => {
+    const save = (value: string) => {
+        const message = {skillId: skill.id, value}
+        webSocketConnection.send("/user/skill/edit", message)
+    }
+
+    const skillValueDisplay = skill.value ? skill.value : ""
+    return <div className={"col-lg-7"} style={{height: "30px"}}>
             <span style={{position: "relative", top: "-10px"}}>
-            <TextSaveInput className="form-control" value={currentValue} save={save}/>
+            <TextSaveInput className="form-control" value={skillValueDisplay} save={save} style={{height: "28px"}}/>
                 </span>
     </div>
+}
+
+
+const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, readonlySkills: boolean, skills: HackerSkill[] }) => {
+    const [chosenSkillOption, setChosenSkillOption] = React.useState<string>("")
+
+    if (readonlySkills) return <></>
+
+    return <>
+        <hr/>
+        <div className="row form-group text">
+
+            <label htmlFor="addEffect" className="col-lg-3 control-label text-muted">Add skill:</label>
+            <div className="col-lg-7">
+                <select className="form-control" value={chosenSkillOption}
+                        onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                            setChosenSkillOption(event.target.value)
+                        }}>
+                    <option value=""></option>
+                    <SkillOption type={HackerSkillType.SEARCH_SITE} name={"Search Site - allow searching sites"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.SCAN} name={"Scan - allow scan command"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.CREATE_SITE} name={"Create site - allow creating sites"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.SCRIPT_RAM} name={"Script RAM - allow usage of scripts"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.STEALTH} name={"Stealth - increase tripwire timers"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.BYPASS} name={"Bypass - ignore ICE in first node"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.WEAKEN} name={"Weaken - reduce ICE strength"} skills={skills}/>
+                </select>
+            </div>
+            <div className="col-lg-1">
+                <ActionButton text="Add" onClick={() => {
+                    const message = {userId: user.id, type: chosenSkillOption}
+                    webSocketConnection.send("/user/skill/add", message)
+                    setChosenSkillOption("")
+                }}/>
+            </div>
+        </div>
+    </>
+}
+
+const SkillOption = ({type, skills, name}: { type: HackerSkillType, skills: HackerSkill[], name: string }) => {
+    const alreadyPresent = skills.find((skill: HackerSkill) => {
+        return skill.type === type
+    })
+    if (alreadyPresent && !skillCanHaveMultipleInstances[type]) return <></>
+
+    return <option value={type}>{name}</option>
 }
