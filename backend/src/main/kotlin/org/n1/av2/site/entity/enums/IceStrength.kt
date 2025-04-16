@@ -6,5 +6,11 @@ enum class IceStrength(val description: String, val value: Int) {
     AVERAGE("Average", 3),
     STRONG("Strong", 4),
     VERY_STRONG("Very strong", 5),
-    ONYX("Onyx", 6),
+    ONYX("Onyx", 6);
+
+    companion object {
+        fun forValue(value: Int): IceStrength {
+            return entries.find {it.value == value} ?: error("No IceStrength exists for value: $value")
+        }
+    }
 }

@@ -13,7 +13,7 @@ const val TERMINAL_MAIN = "main"
 
 const val UNKNOWN_COMMAND_RESPONSE = "Unknown command, try [b]help[/]."
 
-const val MISSING_SKILL_RESPONSE = "Command not installed (missing skill)"
+const val MISSING_SKILL_RESPONSE = "Command not installed. [mute](Missing skill)"
 
 @Service
 class TerminalService(
@@ -31,6 +31,8 @@ class TerminalService(
     private val commandMoveService: CommandMoveService,
     private val commandViewService: CommandViewService,
     private val commandDebugService: CommandDebugService,
+
+    private val commandWeakenService: CommandWeakenService,
 
     private val commandDisconnectService: CommandDisconnectService,
 
@@ -69,6 +71,8 @@ class TerminalService(
             "/share" -> socialTerminalService.processShare(arguments, hackerState)
             "/download-script" -> commandScriptService.processDownloadScript(arguments)
             "help" -> commandHelpService.processHelp(arguments, hackerState)
+
+            "weaken" -> commandWeakenService.processWeaken(arguments, hackerState)
 
             "qs" -> commandScanService.processQuickScan(hackerState)
             "qa" ->commandStartAttackService.startQuickAttack(hackerState)

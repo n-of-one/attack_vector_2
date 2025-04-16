@@ -2,6 +2,7 @@ package org.n1.av2.site
 
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
+import org.n1.av2.hacker.skill.SkillUseService
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
@@ -50,6 +51,7 @@ class SiteResetService(
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val hackerStateEntityService: HackerStateEntityService,
     private val iceStatisticsService: IceStatisticsService,
+    private val skillUseService: SkillUseService,
 ) {
 
     lateinit var runService: RunService
@@ -83,6 +85,8 @@ class SiteResetService(
         runService.updateRunLinksForResetSite(siteId)
 
         iceStatisticsService.siteReset(siteId)
+
+        skillUseService.resetSite(siteId)
 
         val hackerStates = hackerStateEntityService.findAllHackersInSite(siteId)
         connectionService.toSite(

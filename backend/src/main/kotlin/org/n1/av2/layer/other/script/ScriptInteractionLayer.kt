@@ -8,19 +8,22 @@ import org.n1.av2.site.entity.enums.LayerType
 
 class ScriptInteractionLayer(
     id: String,
-    type: LayerType,
+    @Suppress("unused") type: LayerType, // exists for consistency and to allow creation from db
     level: Int,
     name: String,
     note: String,
     var interactionKey: String,
     var message: String,
-) : Layer(id, type, level, name, note) {
+) : Layer(id, LayerType.SCRIPT_INTERACTION, level, name, note) {
+
+    constructor(id: String, level: Int, name: String, note: String, interactionKey: String, message: String) :
+        this(id, LayerType.SCRIPT_INTERACTION, level, name, note, interactionKey, message)
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.SCRIPT_INTERACTION, level, defaultName, "", "","")
+        this(id, LayerType.SCRIPT_INTERACTION, level, defaultName, "", "", "")
 
     constructor(id: String, toClone: ScriptInteractionLayer) :
-            this(id, LayerType.SCRIPT_INTERACTION, toClone.level, toClone.name, toClone.note, toClone.interactionKey, toClone.message)
+        this(id, LayerType.SCRIPT_INTERACTION, toClone.level, toClone.name, toClone.note, toClone.interactionKey, toClone.message)
 
 
     @Suppress("unused")
@@ -34,11 +37,11 @@ class ScriptInteractionLayer(
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
-        return  listOf(::validateText, ::validateMessage )
+        return listOf(::validateText, ::validateMessage)
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
-        when(key) {
+        when (key) {
             "INTERACTION_KEY" -> interactionKey = value
             "MESSAGE" -> message = value
             else -> return super.updateInternal(key, value)

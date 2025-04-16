@@ -70,14 +70,33 @@ export const WebsiteSkills = () => {
                         More details can be found <a href="players-scripts">here</a>.
                     </p>
 
-                    {/*<h5 className="muted">Stealth</h5>*/}
-                    {/*<p className="text">*/}
-                    {/*    Default hacker skill: <strong>no</strong><br/>*/}
-                    {/*    This skill increases the time for a site to shutdown when the hacker triggers a tripwire. A stealth value of +30% means that the*/}
-                    {/*    total time to shutdown is increased by 30%. For example from 10 minutes to 13 minutes, giving the hackers more time.<br/><br/>*/}
-                    {/*    This skill can also be applied negatively, to decrease the time to shutdown. A stealth value of -30% would decrease the time from 10 minutes to 7 minutes.*/}
-                    {/*</p>*/}
-                    {/*<br/>*/}
+                    <h5 className="muted">Stealth</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill increases the time for a site to shutdown when the hacker triggers a tripwire. A stealth value of +30% means that the
+                        total time before shutdown is increased by 30%. For example from 10 minutes to 13 minutes.<br/><br/>
+                        This skill can also be applied negatively, to decrease the time. A stealth value of -30% will decrease the time from 10 minutes to 7
+                        minutes.
+                    </p>
+
+                    <h5 className="muted">Bypass</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill allows the hacker to ignore ICE in the first node of a site with respect to moving beyond this ICE. This also allows the
+                        hacker to perform a scan inside the node to reveal the site beyond this node. Normally the ICE blocks revealing the rest of the site.
+                    </p>
+
+                    <h5 className="muted">Weaken</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill allows the hacker reduce the strength of a single layer of ICE. The strength is reduced by one step, for example Very Strong
+                        becomes Strong.<br/><br/>
+                        This skill works on one or more types of ICE (specified when setting up the skill).<br/><br/>
+                        This skill works once per site. After a site shutdown (reset), the skill will work again.<br/><br/>
+                        You can have this skill more than once. Where each instance defines what types of ICE it affects, and each instance can be used once
+                        per site.
+                    </p>
+
                 </div>
             </div>
         </div>

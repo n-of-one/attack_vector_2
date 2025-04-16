@@ -9,9 +9,9 @@ class SkillService(
     private val currentUserService: CurrentUserService,
     private val hackerEntityService: HackerEntityService,
 ) {
-
     fun currentUserHasSkill(type: SkillType): Boolean {
         val hacker = hackerEntityService.findForUserId(currentUserService.userId)
         return hacker.hasSkill(type)
     }
+
 }

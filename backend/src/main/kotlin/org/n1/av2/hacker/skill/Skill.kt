@@ -1,6 +1,9 @@
 package org.n1.av2.hacker.skill
 
 import org.n1.av2.script.ram.RamService
+import org.n1.av2.site.entity.enums.LayerType
+import org.n1.av2.site.entity.enums.LayerType.TANGLE_ICE
+import org.n1.av2.site.entity.enums.LayerType.WORD_SEARCH_ICE
 import org.springframework.context.ApplicationContext
 
 data class Skill(
@@ -24,7 +27,8 @@ enum class SkillType(
     SCAN(),
     SEARCH_SITE(),
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
-    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay) // Await confirmation from the organisers who use AV that this is a skill they want
+    STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay),
+    WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()},${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes)
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }
@@ -46,7 +50,6 @@ fun ramSkillRemoval(userId: String, context: ApplicationContext) {
     context.getBean(RamService::class.java).alterRamSize(userId, 0)
 }
 
-
 val stealthValidation = { toValidate: String ->
     val value = stealthToFunctional(toValidate)
     val percentage = value.toIntOrNull()
@@ -67,3 +70,25 @@ val stealthToDisplay = { toNormalize: String ->
 val stealthToFunctional = { input: String ->
     input.removeSuffix("%").removePrefix("+")
 }
+
+fun validateIceTypes(input: String): String? {
+    val parts = input.split(",").map { it.trim() }
+    if (parts.first().trim().isEmpty()) return "Must provide the type of ICE this skill works on. $iceOptionsErrorMessage"
+
+    parts.forEach { part ->
+        val toMatch = if (!part.endsWith("_ICE")) "${part}_ICE" else part
+        val layerType = LayerType.valueOfOrNull(toMatch.uppercase())
+
+        if (layerType?.ice != true) return "Invalid value: ${part}. $iceOptionsErrorMessage"
+    }
+    return null
+}
+
+private val iceOptionsErrorMessage = "Options are: ${iceOptions()}. Separate options with a comma (,)"
+
+private fun iceOptions() = LayerType.entries
+    .filter { it.ice }
+    .map { it.toString().substringBefore("_ICE").lowercase() }
+    .sorted()
+    .joinToString(", ")
+

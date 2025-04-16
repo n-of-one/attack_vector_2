@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 class CommandViewService(
     private val connectionService: ConnectionService,
     private val nodeEntityService: NodeEntityService,
-    private val commandServiceUtil: CommandServiceUtil,
     private val insideTerminalHelper: InsideTerminalHelper,
 ) {
 
@@ -20,7 +19,7 @@ class CommandViewService(
         requireNotNull(hackerState.currentNodeId)
         val node = nodeEntityService.getById(hackerState.currentNodeId)
 
-        val blockingIceLevel = commandServiceUtil.findBlockingIceLayer(node, hackerState.runId)?.level ?: -1
+        val blockingIceLevel = insideTerminalHelper.findBlockingIceLayer(node, hackerState.runId)?.level ?: -1
 
         val lines = ArrayList<String>()
 

@@ -22,7 +22,6 @@ import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.run.terminal.generic.DevCommandHelper
-import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
@@ -35,7 +34,6 @@ class CommandHackService(
     private val textLayerService: TextLayerService,
     private val statusLightLayerService: StatusLightLayerService,
     private val tripwireLayerService: TripwireLayerService,
-    private val commandServiceUtil: CommandServiceUtil,
     private val iceService: IceService,
     private val keystoreLayerService: KeystoreLayerService,
     private val hackedUtil: HackedUtil,
@@ -58,37 +56,27 @@ class CommandHackService(
         process(arguments, hackerState, "password ", ::handlePassword)
     }
 
-    private fun process(arguments: List<String>, hackerState: HackerStateRunning, commandName: String, commandFunction: (node: Node, layer: Layer, runId: String) -> Unit) {
+    private fun process(arguments: List<String>, hackerState: HackerStateRunning, commandName: String, commandFunction: (layer: Layer, hackerState: HackerStateRunning) -> Unit) {
         if (!insideTerminalHelper.verifyInside(hackerState)) return
-        requireNotNull(hackerState.currentNodeId)
-
         if (arguments.isEmpty()) {
-            return connectionService.replyTerminalReceive("Missing [primary]<layer>[/]      -- for example: [b]${commandName}[primary] 1")
+            connectionService.replyTerminalReceive("Missing [primary]<layer>[/]      -- for example: [b]${commandName}[primary] 1")
+            return
         }
+        val layer = insideTerminalHelper.verifyCanAccessLayer(arguments.first(), hackerState, commandName) ?: return
 
-        val node = nodeEntityService.getById(hackerState.currentNodeId)
-
-        val level = arguments.first().toIntOrNull() ?: return reportLayerUnknown(node, arguments.first())
-        if (level < 0 || level >= node.layers.size) return reportLayerUnknown(node, arguments.first())
-
-        val blockingIceLayer = commandServiceUtil.findBlockingIceLayer(node, hackerState.runId)
-        if (blockingIceLayer != null && blockingIceLayer.level > level) return reportBlockingIce(blockingIceLayer)
-
-        val layer = node.layers.find { it.level == level }!!
-
-        commandFunction(node, layer, hackerState.runId)
+        commandFunction(layer, hackerState)
     }
 
 
     @Suppress("unused")
-    fun handleHack(node: Node, layer: Layer, runId: String) {
+    fun handleHack(layer: Layer, hackerState: HackerStateRunning) {
         when (layer) {
             is OsLayer -> osLayerService.hack(layer)
             is TextLayer -> textLayerService.hack(layer)
             is IceLayer -> hackIce(layer)
             is StatusLightLayer -> statusLightLayerService.hack(layer)
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
-            is CoreLayer -> coreLayerService.hack(layer, runId)
+            is CoreLayer -> coreLayerService.hack(layer, hackerState.runId)
             is TripwireLayer -> tripwireLayerService.hack(layer)
             is ScriptInteractionLayer -> scriptInteractionLayerService.hack()
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
@@ -108,7 +96,7 @@ class CommandHackService(
     }
 
     @Suppress("unused")
-    private fun handlePassword(node: Node, layer: Layer, runId: String) {
+    private fun handlePassword(layer: Layer, hackerState: HackerStateRunning) {
         if (layer !is IceLayer) {
             connectionService.replyTerminalReceive("[info]not supported[/] - Only ICE can be given a password.")
             return
@@ -120,29 +108,19 @@ class CommandHackService(
     }
 
     @Suppress("unused")
-    private fun handleQuickHack(node: Node, layer: Layer, runId: String) {
+    private fun handleQuickHack(layer: Layer, hackerState: HackerStateRunning) {
         if (layer !is IceLayer ) {
             connectionService.replyTerminalReceive("[info]not supported[/] - Only ICE can be quick hacked.")
             return
         }
         val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
+
+        requireNotNull(hackerState.currentNodeId)
+        val node = nodeEntityService.getById(hackerState.currentNodeId)
+
         hackedUtil.iceHacked(iceId, layer.id, node, 0, IceHackState.USED_DEV_MODE)
         connectionService.replyTerminalReceive("Quick hacked ${layer.level}.")
     }
 
-    private fun reportLayerUnknown(node: Node, layerInput: String) {
-        val layerCount = node.layers.size
-        if (layerCount == 1) {
-            connectionService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not found.",
-                "This node has only one layer, the only valid option is: [b]hack [primary]0[/].")
-        } else {
-            connectionService.replyTerminalReceive("[error]layer error[/] - Layer number [primary]${layerInput}[/] not found.",
-                "This node has ${layerCount} layers, so use a number between [primary]0[/] and [primary]${layerCount - 1}[/].",
-                "Use [b]view[/] to see the layers and their numbers.")
-        }
-    }
 
-    private fun reportBlockingIce(blockingIceLayer: Layer) {
-        connectionService.replyTerminalReceive("[warn b]blocked[/] - ICE (${blockingIceLayer.name}) blocks hacking. Hack the ICE first: [b]hack[/] [primary]${blockingIceLayer.level}")
-    }
 }

@@ -42,7 +42,7 @@ class HackBelowNonHackedIceEffectService(
 
         return ScriptExecution {
             connectionService.replyTerminalReceive("Executing hack through ICE.", "")
-            commandHackService.handleHack(node, layer, hackerState.runId)
+            commandHackService.handleHack(layer, hackerState)
         }
     }
 

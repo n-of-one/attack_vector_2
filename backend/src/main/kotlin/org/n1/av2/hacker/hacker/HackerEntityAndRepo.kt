@@ -25,8 +25,14 @@ data class Hacker(
         return value
     }
 
-}
+    fun skillContainingValue(type: SkillType, value: String): Boolean {
+        val matchingSkills = skills.filter { it.type == type }
+        if  (matchingSkills.isEmpty()) return false
 
+        return matchingSkills.any { it.value?.contains(value) == true }
+    }
+
+}
 
 
 interface HackerRepo : CrudRepository<Hacker, String> {

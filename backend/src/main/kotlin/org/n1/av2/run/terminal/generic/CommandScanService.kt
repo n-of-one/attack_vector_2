@@ -1,11 +1,10 @@
 package org.n1.av2.run.terminal.generic
 
-import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
 import org.n1.av2.run.terminal.MISSING_SKILL_RESPONSE
@@ -21,10 +20,9 @@ class CommandScanService(
     private val nodeEntityService: NodeEntityService,
     private val initiateScanService: InitiateScanService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
-    private val currentUser: CurrentUserService,
     private val devCommandHelper: DevCommandHelper,
-    private val hackerEntityService: HackerEntityService,
     private val outsideTerminalHelper: OutsideTerminalHelper,
+    private val skillService: SkillService,
 ) {
 
     fun processScan(arguments: List<String>, hackerState: HackerStateRunning) {
@@ -63,9 +61,7 @@ class CommandScanService(
     }
 
     private fun checkHasScanSkill(): Boolean {
-        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSkill(SkillType.SCAN)
-
+        val hasScanSkill = skillService.currentUserHasSkill(SkillType.SCAN)
         if (!hasScanSkill) {
             connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
             return false

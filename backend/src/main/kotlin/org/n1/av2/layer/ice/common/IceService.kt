@@ -18,7 +18,9 @@ import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.ThemeService
+import org.n1.av2.site.entity.enums.IceStrength
 import org.n1.av2.site.entity.enums.LayerType
+import org.n1.av2.site.entity.enums.LayerType.*
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
@@ -102,6 +104,7 @@ class IceService(
     }
 
     class LayerUpdatedData(val nodeId: String, val layer: Layer)
+
     fun informFrontendOfLayerChanged(node: Node, updatedLayer: Layer) {
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, LayerUpdatedData(node.id, updatedLayer))
     }
@@ -120,12 +123,12 @@ class IceService(
     }
 
     fun klassFor(layerType: LayerType): KClass<out IceLayer> = when (layerType) {
-        LayerType.TANGLE_ICE -> TangleIceLayer::class
-        LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer::class
-        LayerType.NETWALK_ICE -> NetwalkIceLayer::class
-        LayerType.TAR_ICE -> TarIceLayer::class
-        LayerType.PASSWORD_ICE -> PasswordIceLayer::class
-        LayerType.SWEEPER_ICE -> SweeperIceLayer::class
+        TANGLE_ICE -> TangleIceLayer::class
+        WORD_SEARCH_ICE -> WordSearchIceLayer::class
+        NETWALK_ICE -> NetwalkIceLayer::class
+        TAR_ICE -> TarIceLayer::class
+        PASSWORD_ICE -> PasswordIceLayer::class
+        SWEEPER_ICE -> SweeperIceLayer::class
         else -> error("Unsupported ice layer type: $layerType")
     }
 
@@ -135,6 +138,28 @@ class IceService(
     fun findLayerIdForIceId(iceId: String): String {
         val icePasswordStatus = authAppService.findByIceId(iceId)
         return icePasswordStatus.layerId
+    }
+
+    fun changeIce(node: Node, originalIceLayer: IceLayer, newIceLayer: IceLayer) {
+        resetIceForLayer(originalIceLayer)
+        node.layers[originalIceLayer.level] = newIceLayer
+        nodeEntityService.save(node)
+        findOrCreateIceForLayerAndIceStatus(newIceLayer)
+        informFrontendOfLayerChanged(node, newIceLayer)
+    }
+
+    fun createIceLayer(layer: IceLayer, newType: LayerType, newStrength: IceStrength, newName: String): IceLayer {
+        val originalLayer = layer.original ?: layer
+
+        return when (newType) {
+            WORD_SEARCH_ICE -> WordSearchIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
+            TANGLE_ICE -> TangleIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
+            NETWALK_ICE -> NetwalkIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
+            SWEEPER_ICE -> SweeperIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
+            TAR_ICE -> TarIceLayer(layer.id, layer.level, newName, layer.note, newStrength, originalLayer)
+
+            else -> error("Unsupported ice type: $newType")
+        }
     }
 
 }

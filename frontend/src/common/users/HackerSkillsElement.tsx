@@ -23,6 +23,9 @@ export const HackerSkillsElement = ({user, readonlySkills}: Props) => {
                             infoText="The hacker can will increase tripwire timer durations by this percentage (or decrease them if the percentage is negative)."/>
         <HackerSkillElement user={user} skillType={HackerSkillType.BYPASS} skillName="Bypass" readonly={readonlySkills} hasValue={false}
                             infoText="The hacker can ignore the ICE in the start node to move further into the site."/>
+        <HackerSkillElement user={user} skillType={HackerSkillType.WEAKEN} skillName="Weaken" readonly={readonlySkills} hasValue={true}
+                            infoText="The hacker can reduce the strength of one ICE layer per site. The value defines which ICE types can be affected.
+                            Options are: netwalk, password, sweeper, tangle, tar, word_search. Separate options with a comma (,)"/>
     </>
 }
 
@@ -90,7 +93,7 @@ interface SkillValueProps {
 }
 
 const SkillValue = ({currentValue, save}: SkillValueProps) => {
-    return <div className={`col-lg-2`}>
+    return <div className={`col-lg-7`}>
             <span style={{position: "relative", top: "-10px"}}>
             <TextSaveInput className="form-control" value={currentValue} save={save}/>
                 </span>

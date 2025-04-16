@@ -18,8 +18,11 @@ enum class LayerType(
     TANGLE_ICE(true),
     NETWALK_ICE(true),
     TAR_ICE(true),
-    SWEEPER_ICE(true)
+    SWEEPER_ICE(true);
 
-
-
+    companion object {
+        fun valueOfOrNull(value: String): LayerType? {
+            return entries.firstOrNull { it.name == value }
+        }
+    }
 }
