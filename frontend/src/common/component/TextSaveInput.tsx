@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {CSSProperties, useState} from 'react';
 import {ENTER_KEY} from "../util/KeyCodes";
 import {parseTextToTerminalLine} from "../terminal/TerminalLineParser";
 import {TerminalLineData} from "../terminal/TerminalReducer";
@@ -23,7 +23,8 @@ interface Props {
     rows?: number,
     readonly?: boolean,
     terminalPrefix?: string,
-    maxLength?: number
+    maxLength?: number,
+    style?: CSSProperties,
 }
 
 enum State {
@@ -156,6 +157,7 @@ export const TextSaveInput = (props: Props) => {
                            onBlur={handleBlur}
                            disabled={readonly}
                            maxLength={props.maxLength}
+                           style={props.style}
                     />
                 {icon}
                 </span>

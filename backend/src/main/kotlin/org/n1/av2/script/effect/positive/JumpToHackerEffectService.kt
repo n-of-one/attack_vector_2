@@ -3,8 +3,9 @@ package org.n1.av2.script.effect.positive
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateRepo
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.platform.iam.user.UserEntityService
-import org.n1.av2.run.terminal.SocialTerminalService
+import org.n1.av2.run.terminal.generic.SocialTerminalService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
 import org.n1.av2.script.effect.helper.JumpBlockedType
@@ -35,7 +36,7 @@ class JumpToHackerEffectService(
 
     override fun validate(effect: ScriptEffect) = JumpEffectHelper.validateJumpBlockedType(effect)
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         scriptEffectHelper.checkInNode(hackerState)?.let { return ScriptExecution(it) }
         val userName = argumentTokens.firstOrNull() ?: return ScriptExecution("Provide the [info]<username>[/] of the hacker to phase to.")
 
@@ -51,7 +52,7 @@ class JumpToHackerEffectService(
         val currentNodeId = hackerState.currentNodeId ?: error("Current node ID not found.")
         val targetNodeId = targetHackerRunState.currentNodeId ?: error("Target node ID not found.")
 
-        return jumpEffectHelper.jump(effect, hackerState.siteId!!, currentNodeId, targetNodeId, hackerState, userName)
+        return jumpEffectHelper.jump(effect, hackerState.siteId, currentNodeId, targetNodeId, hackerState, userName)
 
     }
 }

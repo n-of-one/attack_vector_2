@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.negative
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
@@ -31,11 +31,11 @@ class DecreaseFutureTimersEffectService(
 
     override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateDuration(effect)
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         scriptEffectHelper.checkAtNonShutdownSite(hackerState)?.let { return ScriptExecution(it) }
 
         return ScriptExecution {
-            val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId!!)
+            val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId)
 
             val scriptDurationChange = effect.value!!.toDuration()
             val currentAlertnessAdjustment: Duration = siteProperties.alertnessTimerAdjustment ?: Duration.ZERO

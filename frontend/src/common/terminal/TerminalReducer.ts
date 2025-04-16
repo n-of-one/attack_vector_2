@@ -33,7 +33,6 @@ export enum TerminalBlockType {
     IMAGE
 }
 
-export const EMPTY_LINE = {type: TerminalBlockType.EMPTY_LINE, text: "", size: 0, key: -1, className: ""}
 
 export interface TerminalLineBlock {
     type: TerminalBlockType

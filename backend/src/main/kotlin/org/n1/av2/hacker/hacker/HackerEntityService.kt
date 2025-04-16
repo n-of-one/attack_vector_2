@@ -14,9 +14,9 @@ class HackerEntityService(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-    fun createHacker(user: UserEntity, icon: HackerIcon, characterName: String, skills: List<HackerSkill>) {
+    fun createHacker(user: UserEntity, icon: HackerIcon, characterName: String) {
         val hackerId = deriveFromUserId(user)
-        val hacker = Hacker(hackerId, user.id, icon, characterName, skills)
+        val hacker = Hacker(hackerId, user.id, icon, characterName)
         hackerRepo.save(hacker)
 
         val event = HackerCreatedEvent(hacker, user)

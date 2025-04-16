@@ -11,21 +11,7 @@ data class Hacker(
     val hackerUserId: String,
     val icon: HackerIcon,
     val characterName: String,
-    val skills: List<HackerSkill>
-) {
-    fun hasSkill(requestType: HackerSkillType): Boolean {
-        return skills.any { it.type == requestType }
-    }
-
-    fun skillAsIntOrNull(requestType: HackerSkillType): Int? {
-        val skill = skills.find { it.type == requestType }
-        val value = skill?.value?.toIntOrNull()
-        return value
-    }
-
-}
-
-
+)
 
 interface HackerRepo : CrudRepository<Hacker, String> {
     fun findByHackerUserId(hackerUserId: String): Hacker?

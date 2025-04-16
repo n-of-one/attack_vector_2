@@ -12,8 +12,8 @@ export const createNotification = (title: string | undefined, message: string, d
 
             return (<span onClick={dismissMethod} style={{cursor: "pointer"}}>
                 <span>
-                    <span className="text" style={{color: "white", fontSize: "16px"}}>{text}</span>&nbsp;
-                    { dismiss ? <span className="text">[close]</span> : <></>}
+                    <div className="text" style={{color: "white", fontSize: "16px"}}>{text}</div>&nbsp;
+                    { dismiss ? <div className="text">[close]</div> : <></>}
                 </span>
             </span>)
         },
@@ -21,6 +21,7 @@ export const createNotification = (title: string | undefined, message: string, d
             duration: duration,
             position: location,
             style: {
+                display: "table",
                 borderRadius: '5px',
                 background: '#333',
                 color: '#fff',

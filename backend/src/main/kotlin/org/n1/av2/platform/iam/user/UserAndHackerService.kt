@@ -4,14 +4,13 @@ import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkill
-import org.n1.av2.hacker.hacker.HackerSkillType
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
+import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
-import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,7 +21,7 @@ class UserAndHackerService(
     private val connectionService: ConnectionService,
     private val runLinkEntityService: RunLinkEntityService,
     private val currentUserService: CurrentUserService,
-    private val applicationContext: ApplicationContext,
+    private val skillService: SkillService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -44,7 +43,7 @@ class UserAndHackerService(
         val tag: UserTag,
     )
 
-    fun overview() {
+    fun sendUsersOverview() {
         val allUsers = userEntityService.findAll()
         val allHackers = hackerEntityService.findAll()
 
@@ -57,6 +56,7 @@ class UserAndHackerService(
         }
         connectionService.reply(ServerActions.SERVER_RECEIVE_USERS_OVERVIEW, message)
     }
+
     private fun determineUserType(user: UserEntity): UIUserType {
         return when (user.type) {
             UserType.HACKER -> UIUserType.HACKER
@@ -69,8 +69,8 @@ class UserAndHackerService(
 
     fun createFromUserManagementScreen(name: String, externalId: String? = null) {
         val user = userEntityService.createUser(name, UserType.HACKER, externalId)
-        hackerEntityService.createHacker(user, HackerIcon.KOALA, "anonymous", defaultSkills())
-        overview()
+        createHackerWithDefaultSkill(user, HackerIcon.KOALA)
+        sendUsersOverview()
         sendDetailsOfSpecificUser(user.id)
     }
 
@@ -79,7 +79,7 @@ class UserAndHackerService(
         val hackerUserId: String,
         val icon: HackerIcon,
         val characterName: String,
-        val skills: List<HackerSkill>,
+        val skills: List<Skill>,
     )
 
     class UiUserDetails(
@@ -109,7 +109,8 @@ class UserAndHackerService(
 
     fun createHackerForSkillDisplay(user: UserEntity): UiHacker? {
         val hacker = if (user.type == UserType.HACKER) hackerEntityService.findForUser(user) else return null
-        val skillsWithDisplayValues = hacker.skills.map { skill ->
+        val skills = skillService.findSkillsForUser(user.id)
+        val skillsWithDisplayValues = skills.map { skill ->
             if (skill.value != null)
                 skill.copy(value = skill.type.toDisplayValue(skill.value))
             else
@@ -121,64 +122,6 @@ class UserAndHackerService(
             characterName = hacker.characterName,
             skills = skillsWithDisplayValues,
         )
-    }
-
-    fun editSkillEnabled(userId: String, type: HackerSkillType, add: Boolean) {
-        val (user, hacker) = retrieveUserAndHacker(userId)
-
-        val newSkills: List<HackerSkill> = if (add) {
-            hacker.skills + HackerSkill(type)
-        } else {
-            hacker.skills.filterNot { it.type == type }
-        }
-
-        updateSkillsAndNotifyFrontend(hacker, newSkills, user)
-        if (add) {
-            type.processUpdate(userId, type.defaultValue, applicationContext)
-        }
-        else {
-            type.processSkillRemoval(userId, applicationContext)
-        }
-
-    }
-
-    fun editSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
-        validateSkillValue(userId, type, valueInput)
-
-        val value = type.toFunctionalValue(valueInput)
-        val (user, hacker) = retrieveUserAndHacker(userId)
-        val skill = hacker.skills.find { it.type == type } ?: error("Skill not found: $type")
-        val updatedSkill = skill.copy(value = value)
-        val newSkills = hacker.skills.map { if (it.type == type) updatedSkill else it }
-
-        updateSkillsAndNotifyFrontend(hacker, newSkills, user)
-        type.processUpdate(userId, value, applicationContext)
-    }
-
-    private fun validateSkillValue(userId: String, type: HackerSkillType, valueInput: String) {
-        val validationFunction = type.validate ?: return // no validation function
-        val errorMessage = validationFunction(valueInput) ?: return // no error
-
-        sendDetailsOfSpecificUser(userId)
-        throw ValidationException(errorMessage)
-    }
-
-    private fun retrieveUserAndHacker(userId: String): Pair<UserEntity, Hacker> {
-        val user = userEntityService.getById(userId)
-        if (user.type != UserType.HACKER) throw ValidationException("Only hackers can have skills")
-        val hacker = hackerEntityService.findForUser(user)
-        return Pair(user, hacker)
-    }
-
-    private fun updateSkillsAndNotifyFrontend(
-        hacker: Hacker,
-        newSkills: List<HackerSkill>,
-        user: UserEntity
-    ) {
-        val updatedHacker = hacker.copy(skills = newSkills)
-        hackerEntityService.save(updatedHacker)
-
-        sendDetailsOfSpecificUser(user.id)
     }
 
 
@@ -193,7 +136,7 @@ class UserAndHackerService(
         }
 
         sendDetailsOfSpecificUser(user.id)
-        overview()
+        sendUsersOverview()
     }
 
     private fun editUserAttribute(user: UserEntity, field: String, value: String) {
@@ -247,7 +190,10 @@ class UserAndHackerService(
         val newType = UserType.valueOf(newTypeName)
 
         if (newType == UserType.HACKER) {
-            hackerEntityService.findForUserOrNull(user) ?: hackerEntityService.createHacker(user, HackerIcon.BEAR, "unknown", defaultSkills())
+            val existingHacker = hackerEntityService.findForUserOrNull(user)
+            if (existingHacker == null) {
+                createHackerWithDefaultSkill(user, HackerIcon.BEAR)
+            }
         }
         return user.copy(type = newType)
     }
@@ -259,7 +205,7 @@ class UserAndHackerService(
 
         runLinkEntityService.deleteAllForUser(userId)
         userEntityService.delete(userId)
-        overview()
+        sendUsersOverview()
         connectionService.replyNeutral("${user.name} deleted")
     }
 
@@ -271,17 +217,13 @@ class UserAndHackerService(
 
         val name = userEntityService.findFreeUserName("user")
         val user = userEntityService.createUser(name, UserType.HACKER, externalId)
-        hackerEntityService.createHacker(
-            user,
-            HackerIcon.FROG,
-            "not set",
-            defaultSkills()
-        )
+        createHackerWithDefaultSkill(user, HackerIcon.FROG)
+
         return user
     }
 
-    fun defaultSkills(): List<HackerSkill> {
-        val template = userEntityService.getByName(TEMPLATE_USER_NAME)
-        return hackerEntityService.findForUser(template).skills
+    fun createHackerWithDefaultSkill(user: UserEntity, icon: HackerIcon) {
+        hackerEntityService.createHacker(user, icon, "not set")
+        skillService.createDefaultSkills(user.id)
     }
-}
+    }

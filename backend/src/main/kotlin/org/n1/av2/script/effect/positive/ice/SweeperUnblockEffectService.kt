@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive.ice
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.sweeper.SweeperIceStatusRepo
 import org.n1.av2.layer.ice.sweeper.SweeperService
@@ -36,7 +36,7 @@ class SweeperUnblockEffectService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         return iceEffectHelper.runForSpecificIceType(LayerType.SWEEPER_ICE, argumentTokens, hackerState) { layer: IceLayer ->
             ScriptExecution {
                 val iceStatus = sweeperIceStatusRepo.findByLayerId(layer.id) ?: error("Failed to instantiate ICE for: ${layer.id}")

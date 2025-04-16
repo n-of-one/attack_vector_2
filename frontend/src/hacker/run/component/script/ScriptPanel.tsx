@@ -9,7 +9,8 @@ import {RamBar} from "../../../scripts/RamDisplay";
 import {Ram} from "../../../../common/script/ScriptStatusReducer";
 import {formatTimeInterval} from "../../../../common/util/Util";
 import {ConfigItem, getConfigAsBoolean} from "../../../../admin/config/ConfigReducer";
-import {HackerSkillType, hasSkill} from "../../../../common/users/CurrentUserReducer";
+import {hasSkill} from "../../../../common/users/CurrentUserReducer";
+import {HackerSkillType} from "../../../../common/users/HackerSkills";
 
 export const ScriptPanel = () => {
     const [expanded, setExpanded] = React.useState(false)

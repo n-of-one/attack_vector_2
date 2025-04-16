@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
@@ -37,7 +37,7 @@ class DelayTripwireCountdownEffectService(
 
     override fun validate(effect: ScriptEffect) = ScriptEffectInterface.validateDuration(effect)
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         scriptEffectHelper.checkInNode(hackerState)?.let { return ScriptExecution(it) }
 
         val node = nodeEntityService.getById(hackerState.currentNodeId!!)
@@ -53,7 +53,7 @@ class DelayTripwireCountdownEffectService(
 
         return ScriptExecution {
             tripwireLayers.forEach { layer ->
-                timerService.delayTripwireTimer(layer, effect.value!!.toDuration(), hackerState.siteId!!)
+                timerService.delayTripwireTimer(layer, effect.value!!.toDuration(), hackerState.siteId)
             }
         }
     }

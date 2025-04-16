@@ -1,10 +1,36 @@
+# Release notes AV 2.8.0 (16 Apr 2025)
+
+## Features
+- New skills: Bypass, Stealth and Weaken.
+
+### Bypass
+This skill allows the hacker to ignore ICE in the first node of a site with respect to moving beyond this ICE. This also
+allows the hacker to perform a scan inside the node to reveal the site beyond this node. Normally the ICE blocks 
+revealing the rest of the site.
+
+### Stealth
+This skill increases the time for a site to shut down when the hacker triggers a tripwire. A stealth value of +30% means
+that the total time before shutdown is increased by 30%. For example from 10 minutes to 13 minutes. This skill can also
+be applied negatively, to decrease the time. A stealth value of -30% will decrease the time from 10 minutes to 7 minutes.
+
+### Weaken
+This skill allows the hacker reduce the strength of a single layer of ICE. The strength is reduced by one step, for 
+example Very Strong becomes Strong. This skill works on one or more types of ICE, specified when setting up the skill. 
+You can have this skill more than once. Where each instance defines what types of ICE it affects. Each instance can be 
+used once per site. After a site is reset, the skill (instances) can be used again on this site.
+
+## Changes
+- The screen for managing skills has changed to allow adding multiple instances of the weaken skill
+
+
 # Release notes AV 2.7.1 (09 Apr 2025)
 
 ## Changes
 - You can no longer choose the number of clusters for Tangle ICE. This is now always based on the ICE strength
 
 
-Fixing the number of clusters makes the difficulty consistent, and prevents GMs from accidentally creating ICE that is _way_ harder than intended.
+Fixing the number of clusters makes the difficulty consistent, and prevents GMs from accidentally creating ICE that is 
+_way_ harder than intended.
 It also simplifies gathering statistics for Tangle ICE.
 
 Number of clusters:

@@ -1,6 +1,6 @@
 package org.n1.av2.script.effect.positive.ice
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
@@ -53,7 +53,7 @@ class AutoHackSpecificIceLayerEffectService(
         return "layer id not found. Please copy/paste the layer ID of a layer from the site editor. It should look like: node-1234-5678:layer-1234 ."
     }
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         val runOnLayerResult = scriptEffectHelper.runOnLayer(argumentTokens, hackerState)
         runOnLayerResult.errorExecution?.let { return it }
 

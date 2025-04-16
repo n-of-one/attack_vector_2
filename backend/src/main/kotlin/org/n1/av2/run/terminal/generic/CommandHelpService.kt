@@ -1,36 +1,40 @@
-package org.n1.av2.run.terminal
+package org.n1.av2.run.terminal.generic
 
-import org.n1.av2.hacker.hacker.Hacker
-import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
-import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.hacker.hackerstate.HackerActivity
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.Skill
+import org.n1.av2.hacker.skill.SkillService
+import org.n1.av2.hacker.skill.SkillType.SCAN
+import org.n1.av2.hacker.skill.SkillType.SCRIPT_RAM
+import org.n1.av2.hacker.skill.containsType
+import org.n1.av2.platform.config.ConfigItem.DEV_HACKER_USE_DEV_COMMANDS
+import org.n1.av2.platform.config.ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.iam.user.CurrentUserService
 import org.springframework.stereotype.Service
 
 @Service
 class CommandHelpService(
     private val connectionService: ConnectionService,
     private val configService: ConfigService,
-    private val currentUser: CurrentUserService,
-    private val hackerEntityService: HackerEntityService,
-) {
+    private val skillService: SkillService,
+    ) {
 
-    fun processHelp(inside: Boolean, tokens: List<String>) {
-        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        if (tokens.size == 1 || tokens[1] != "shortcuts") {
-            if (inside) {
-                processHelpInside(hacker)
+    fun processHelp(arguments: List<String>, hackerState: HackerStateRunning) {
+        val skills = skillService.findSkillsForUser(hackerState.userId)
+
+        if (arguments.isEmpty() || arguments[0] != "shortcuts") {
+            if (hackerState.activity == HackerActivity.INSIDE) {
+                processHelpInside(skills)
             } else {
-                processHelpOutside(hacker)
+                processHelpOutside(skills)
             }
         } else {
             processHelpKeys()
         }
     }
 
-    private fun processHelpOutside(hacker: Hacker) {
+    private fun processHelpOutside(skills: List<Skill>) {
         connectionService.replyTerminalReceive(
             "You are outside of the site.",
             "Here you can examine the site before entering to plan your attack. Click on a node in the map to see what layers it contains.",
@@ -38,7 +42,7 @@ class CommandHelpService(
             "There are only a few commands you can use when outside:",
             ""
         )
-        if (hacker.hasSkill(HackerSkillType.SCAN)) {
+        if (skills.containsType(SCAN)) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
                 "Scan the site to reveal nodes. Does not scan beyond ICE nodes.",
@@ -52,11 +56,11 @@ class CommandHelpService(
             "Enter the site and start the attack..",
             "",
         )
-        showRunScriptHelp(hacker)
+        showRunScriptHelp(skills)
         showShareHelp()
-        showDownloadScriptHelp(hacker)
+        showDownloadScriptHelp(skills)
 
-        if (configService.getAsBoolean(ConfigItem.DEV_HACKER_USE_DEV_COMMANDS)) {
+        if (configService.getAsBoolean(DEV_HACKER_USE_DEV_COMMANDS)) {
             connectionService.replyTerminalReceive(
                 "",
                 "[i]Available only during development and testing:[/]",
@@ -67,7 +71,7 @@ class CommandHelpService(
         }
     }
 
-    private fun processHelpInside(hacker: Hacker) {
+    private fun processHelpInside(skills: List<Skill>) {
         connectionService.replyTerminalReceive(
             "You are inside the site.",
             "",
@@ -88,14 +92,14 @@ class CommandHelpService(
             ""
         )
 
-        if (hacker.hasSkill(HackerSkillType.SCAN)) {
+        if (skills.containsType(SCAN)) {
             connectionService.replyTerminalReceive(
                 "[b]scan[/]",
                 "Scan to reveal new nodes once ICE has been hacked.",
                 "",
             )
         }
-        showRunScriptHelp(hacker)
+        showRunScriptHelp(skills)
         connectionService.replyTerminalReceive(
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
@@ -105,7 +109,7 @@ class CommandHelpService(
             "",
         )
         showShareHelp()
-        showDownloadScriptHelp(hacker)
+        showDownloadScriptHelp(skills)
 
         connectionService.replyTerminalReceive(
             "For information on shortcuts, type: [b]help[/] [b]shortcuts[/]",
@@ -122,8 +126,8 @@ class CommandHelpService(
             "",
         )
 
-    private fun showRunScriptHelp(hacker: Hacker) {
-        if (hacker.hasSkill(HackerSkillType.SCRIPT_RAM)) {
+    private fun showRunScriptHelp(skills: List<Skill>) {
+        if (skills.containsType(SCRIPT_RAM)) {
             connectionService.replyTerminalReceive(
                 "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
                 "Run a script that you have loaded in memory.",
@@ -132,8 +136,8 @@ class CommandHelpService(
         }
     }
 
-    private fun showDownloadScriptHelp(hacker: Hacker) {
-        if (configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN) && hacker.hasSkill(HackerSkillType.SCRIPT_RAM)) {
+    private fun showDownloadScriptHelp(skills: List<Skill>) {
+        if (configService.getAsBoolean(HACKER_SCRIPT_LOAD_DURING_RUN) && skills.containsType(SCRIPT_RAM)) {
             connectionService.replyTerminalReceive(
                 "[b]/download-script[/] [primary]<script code>[/] - download a script.",
                 "You can download a script from another hacker who has offered it, or you can buy it from someone.",

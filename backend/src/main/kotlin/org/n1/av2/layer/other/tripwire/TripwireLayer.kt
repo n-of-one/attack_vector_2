@@ -14,29 +14,31 @@ val MINIMUM_SHUTDOWN: Duration = Duration.ofMinutes(1)
 
 class TripwireLayer(
     id: String,
-    type: LayerType,
+    @Suppress("unused") type: LayerType, // exists for consistency and to allow creation from db
     level: Int,
     name: String,
     note: String,
     var countdown: String, // shutdown activates after a duration of $countdown
     var shutdown: String, // shut down lasts for a duration of $shutdown
     var coreLayerId: String? = null,
+) : Layer(id, LayerType.TRIPWIRE, level, name, note) {
 
-    ) : Layer(id, type, level, name, note) {
+    constructor (id: String, level: Int, name: String, note: String, countdown: String, shutdown: String, coreLayerId: String?) :
+        this(id, LayerType.TRIPWIRE, level, name, note, countdown, shutdown, coreLayerId)
 
     constructor(id: String, level: Int, defaultName: String) :
-            this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00", null)
+        this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00", null)
 
     constructor(id: String, toClone: TripwireLayer) :
-            this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown, toClone.coreLayerId)
+        this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown, toClone.coreLayerId)
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     private fun validateCountdown(siteRep: SiteRep) {
         val errorText = this.countdown.validateDuration()
         if (errorText != null) throw SiteValidationException("countdown $errorText")
     }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     private fun validateShutdown(siteRep: SiteRep) {
         val errorText = this.shutdown.validateDuration()
         if (errorText != null) throw SiteValidationException("countdown $shutdown")
@@ -55,11 +57,11 @@ class TripwireLayer(
     }
 
     override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
-        return  listOf(::validateCountdown, ::validateShutdown, ::validateCoreLayerId )
+        return listOf(::validateCountdown, ::validateShutdown, ::validateCoreLayerId)
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
-        when(key) {
+        when (key) {
             "COUNTDOWN" -> this.countdown = value
             "SHUTDOWN" -> this.shutdown = value
             "CORE_LAYER_ID" -> this.coreLayerId = value

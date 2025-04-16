@@ -1,12 +1,12 @@
-package org.n1.av2.run.terminal
+package org.n1.av2.run.terminal.generic
 
-import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkillType
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.SkillService
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.run.terminal.MISSING_SKILL_RESPONSE
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
@@ -24,44 +24,41 @@ class CommandScriptService(
     private val scriptTypeService: ScriptTypeService,
     private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val ramService: RamService,
-    private val hackerEntityService: HackerEntityService,
-    private val currentUser: CurrentUserService,
+    private val skillService: SkillService,
     private val configService: ConfigService,
 ) {
 
-    fun processDownloadScript(tokens: List<String>) {
+    fun processDownloadScript(arguments: List<String>) {
         if (!configService.getAsBoolean(ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN)) {
-            connectionService.replyTerminalReceive(UNKNOWN_COMMAND_RESPONSE)
+            connectionService.replyTerminalReceive("Downloading scripts during a run is not supported.")
             return
         }
         if (!checkHasScriptsSkill()) return
 
-        if (tokens.size == 1) {
+        if (arguments.isEmpty()) {
             connectionService.replyTerminalReceive("Missing [primary]<script code>[/] for example /download-script [primary]1234-abcd[/].")
             return
         }
-        val scriptCode = tokens[1]
+        val scriptCode = arguments.first()
         scriptService.downloadScript(scriptCode, true)
     }
 
-    fun processRunScript(tokens: List<String>, hackerSate: HackerState) {
+    fun processRunScript(arguments: List<String>, hackerState: HackerStateRunning) {
         if (!checkHasScriptsSkill()) return
 
-        if (tokens.size < 2) {
+        if (arguments.isEmpty()) {
             connectionService.replyTerminalReceive("[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd")
             return
         }
-        val scriptCode = tokens[1]
+        val scriptCode = arguments.first()
         val script = scriptService.validateScriptRunnable(scriptCode) ?: return
 
-        runScript(script, tokens.drop(2), hackerSate)
+        runScript(script, arguments.drop(1), hackerState)
     }
 
     private fun checkHasScriptsSkill(): Boolean {
-        val hacker = hackerEntityService.findForUser(currentUser.userEntity)
-        val hasScanSkill = hacker.hasSkill(HackerSkillType.SCRIPT_RAM)
-
-        if (!hasScanSkill) {
+        val hasScriptSkill = skillService.currentUserHasSkill(SkillType.SCRIPT_RAM)
+        if (!hasScriptSkill) {
             connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
             return false
         }
@@ -69,10 +66,10 @@ class CommandScriptService(
     }
 
 
-    fun runScript(script: Script, argumentTokens: List<String>, hackerSate: HackerState) {
+    fun runScript(script: Script, scriptArguments: List<String>, hackerState: HackerStateRunning) {
         val type = scriptTypeService.getById(script.typeId)
 
-        val executions: List<ScriptExecution> = prepareExecutions(type, argumentTokens, hackerSate)
+        val executions: List<ScriptExecution> = prepareExecutions(type, scriptArguments, hackerState)
         if (processErrors(executions)) return
 
         if (executions.isEmpty()) {
@@ -87,14 +84,14 @@ class CommandScriptService(
             }
         }
 
-        ramService.useScript(hackerSate.userId, type.size)
+        ramService.useScript(hackerState.userId, type.size)
         scriptService.markAsUsedAndNotify(script)
     }
 
-    private fun prepareExecutions(type: ScriptType, argumentTokens: List<String>, hackerSate: HackerState): List<ScriptExecution> {
+    private fun prepareExecutions(type: ScriptType, argumentTokens: List<String>, hackerState: HackerStateRunning): List<ScriptExecution> {
         return type.effects.map { effect ->
             val effectService = scriptEffectTypeLookup.getForType(effect.type)
-            effectService.prepareExecution(effect, argumentTokens, hackerSate)
+            effectService.prepareExecution(effect, argumentTokens, hackerState)
         }
     }
 

@@ -9,7 +9,7 @@ export class ConnectionVisual {
     line: fabric.Line
 
 
-    constructor(lineData: LinePositions, color: string, canvas: Canvas, styling: any = {}) {
+    constructor(lineData: LinePositions, color: string, canvas: Canvas, styling: any = {}, bringToFront: boolean = false) {
         this.canvas = canvas;
 
         this.line = new fabric.Line(
@@ -27,6 +27,7 @@ export class ConnectionVisual {
         delay(() => {
             this.line.selectable = false
         })
+        if (bringToFront) { this.line.bringToFront()}
     }
 
     getIcon(): fabric.Line {

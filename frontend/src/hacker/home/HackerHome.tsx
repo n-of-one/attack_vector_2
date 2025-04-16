@@ -6,7 +6,8 @@ import {HackerRootState} from "../HackerRootReducer";
 import {RunInfo} from "./HackerRunsReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
-import {HackerSkillType, hasSkill, User} from "../../common/users/CurrentUserReducer";
+import {hasSkill, User} from "../../common/users/CurrentUserReducer";
+import {HackerSkillType} from "../../common/users/HackerSkills";
 
 /* eslint jsx-a11y/accessible-emoji: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 0*/

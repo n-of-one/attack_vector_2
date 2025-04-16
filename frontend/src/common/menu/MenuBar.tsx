@@ -4,8 +4,9 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {HackerRootState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_GM, ROLE_HACKER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
-import {HackerSkillType, hasSkill} from "../users/CurrentUserReducer";
+import {hasSkill} from "../users/CurrentUserReducer";
 import {Page} from "./pageReducer";
+import {HackerSkillType} from "../users/HackerSkills";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 

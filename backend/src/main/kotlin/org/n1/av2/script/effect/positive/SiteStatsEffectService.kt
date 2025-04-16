@@ -1,12 +1,11 @@
 package org.n1.av2.script.effect.positive
 
-import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.script.effect.ScriptEffectInterface
 import org.n1.av2.script.effect.ScriptExecution
-import org.n1.av2.script.effect.helper.ScriptEffectHelper
 import org.n1.av2.script.type.ScriptEffect
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
@@ -23,7 +22,6 @@ class SiteStatsEffectService(
     private val nodeEntityService: NodeEntityService,
     private val connectionService: ConnectionService,
     private val themeService: ThemeService,
-    private val scriptEffectHelper: ScriptEffectHelper,
     ) : ScriptEffectInterface {
 
     override val name = "Site stats"
@@ -34,13 +32,11 @@ class SiteStatsEffectService(
 
     override fun validate(effect: ScriptEffect) = null
 
-    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerState): ScriptExecution {
-        scriptEffectHelper.checkInRun(hackerState)?.let { return ScriptExecution(it) }
-
+    override fun prepareExecution(effect: ScriptEffect, argumentTokens: List<String>, hackerState: HackerStateRunning): ScriptExecution {
         return ScriptExecution {
             connectionService.replyTerminalReceive("", "Site stats", "----------")
 
-            val nodes = nodeEntityService.findBySiteId(hackerState.siteId!!)
+            val nodes = nodeEntityService.findBySiteId(hackerState.siteId)
             connectionService.replyTerminalReceive("Nodes: ${nodes.size}", "")
 
             reportCountOf(nodes, LayerType.CORE, "", 23)

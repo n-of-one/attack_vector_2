@@ -159,7 +159,7 @@ class ImportService(
 
         return when (layerType) {
             LayerType.OS -> mapLayerOs(input, id, level, name, note)
-            LayerType.TEXT -> TextLayer(type = LayerType.TEXT, id = id, level = level, name = name, note = note, text = input.get("text").asText())
+            LayerType.TEXT -> TextLayer(id = id, level = level, name = name, note = note, text = input.get("text").asText())
             LayerType.CORE -> mapLayerCore(input, id, level, name, note)
             LayerType.KEYSTORE -> mapLayerKeystore(input, id, level, name, note)
             LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
@@ -177,7 +177,6 @@ class ImportService(
 
     private fun mapLayerCore(input: JsonNode, id: String, level: Int, name: String, note: String): CoreLayer {
         return CoreLayer(
-            type = LayerType.CORE,
             id = id,
             level = level,
             name = name,
@@ -189,12 +188,11 @@ class ImportService(
     private fun mapLayerOs(input: JsonNode, id: String, level: Int, name: String, note: String): OsLayer {
         val nodeName = input.get("nodeName").asText()
         val layerId = fixOsLayerId(id)
-        return OsLayer(type = LayerType.OS, id = layerId, level = level, name = name, note = note, nodeName = nodeName)
+        return OsLayer(id = layerId, level = level, name = name, note = note, nodeName = nodeName)
     }
 
     private fun mapLayerKeystore(input: JsonNode, id: String, level: Int, name: String, note: String): KeyStoreLayer {
         return KeyStoreLayer(
-            type = LayerType.KEYSTORE,
             id = id,
             level = level,
             name = name,
@@ -225,7 +223,6 @@ class ImportService(
 
     private fun mapLayerTripWire(input: JsonNode, id: String, level: Int, name: String, note: String): TripwireLayer {
         return TripwireLayer(
-            type = LayerType.TRIPWIRE,
             id = id, level = level, name = name, note = note,
             countdown = input.get("countdown").asText(),
             shutdown = input.get("shutdown").asText(),
@@ -235,7 +232,6 @@ class ImportService(
 
     private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {
         return ScriptInteractionLayer(
-            type = LayerType.SCRIPT_INTERACTION,
             id = id, level = level, name = name, note = note,
             interactionKey =  input.get("interactionKey").asText(),
             message = input.get("message").asText(),
@@ -246,12 +242,12 @@ class ImportService(
         val strength = IceStrength.valueOf(input.get("strength").asText())
 
         return when (layerType) {
-            LayerType.NETWALK_ICE -> NetwalkIceLayer(id, LayerType.NETWALK_ICE, level, name, note, strength, false)
-            LayerType.TANGLE_ICE -> mapTangleIce(input, id, level, name, note, strength)
-            LayerType.TAR_ICE -> TarIceLayer(id, LayerType.TAR_ICE, level, name, note, strength, false)
-            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, LayerType.WORD_SEARCH_ICE, level, name, note, strength, false)
+            LayerType.NETWALK_ICE -> NetwalkIceLayer(id, level, name, note, strength, false, null)
+            LayerType.TANGLE_ICE ->TangleIceLayer(id, level, name, note, strength, false, null)
+            LayerType.TAR_ICE -> TarIceLayer(id, level, name, note, strength, false)
+            LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, level, name, note, strength, false, null)
             LayerType.PASSWORD_ICE -> mapPasswordIce(input, id, level, name, note, strength)
-            LayerType.SWEEPER_ICE -> SweeperIceLayer(id, LayerType.SWEEPER_ICE, level, name, note, strength, false)
+            LayerType.SWEEPER_ICE -> SweeperIceLayer(id, level, name, note, strength, false, null)
             else -> error("Unsupported ice layer type: $layerType")
         }
     }
@@ -259,11 +255,7 @@ class ImportService(
     private fun mapPasswordIce(input: JsonNode, id: String, level: Int, name: String, note: String, strength: IceStrength): PasswordIceLayer {
         val password = input.get("password").asText()
         val hint = input.get("hint").asText()
-        return PasswordIceLayer(id, LayerType.PASSWORD_ICE, level, name, note, strength, false, password, hint)
-    }
-
-    private fun mapTangleIce(input: JsonNode, id: String, level: Int, name: String, note: String, strength: IceStrength): TangleIceLayer {
-        return TangleIceLayer(id, LayerType.TANGLE_ICE, level, name, note, strength, false)
+        return PasswordIceLayer(id, level, name, note, strength, false, password, hint)
     }
 
     private fun importConnections(root: JsonNode): List<Connection> {

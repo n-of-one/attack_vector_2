@@ -7,18 +7,21 @@ import org.n1.av2.site.entity.enums.LayerType
 
 class OsLayer(
     id: String,
-    type: LayerType,
+    @Suppress("unused") type: LayerType, // exists for consistency and to allow creation from db
     level: Int,
     name: String,
     note: String,
     var nodeName: String
-) : Layer(id, type, level, name, note) {
+) : Layer(id, LayerType.OS, level, name, note) {
+
+    constructor(id: String, level: Int, name: String, note: String, nodeName: String) :
+        this(id, LayerType.OS, level, name, note, nodeName)
 
     constructor(id: String, defaultName: String) :
-            this(id, LayerType.OS, 0, defaultName, "", "")
+        this(id, LayerType.OS, 0, defaultName, "", "")
 
     constructor(id: String, toClone: OsLayer) :
-            this(id, LayerType.OS, toClone.level, toClone.name, toClone.note, toClone.nodeName)
+        this(id, LayerType.OS, toClone.level, toClone.name, toClone.note, toClone.nodeName)
 
     private fun validateNetworkId(siteRep: SiteRep) {
 
@@ -34,7 +37,7 @@ class OsLayer(
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
-        when(key) {
+        when (key) {
             "NODE_NAME" -> nodeName = value
             else -> return super.updateInternal(key, value)
         }

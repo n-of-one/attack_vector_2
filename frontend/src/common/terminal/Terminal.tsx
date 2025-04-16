@@ -9,7 +9,8 @@ const renderRenderingLine = (terminalState: TerminalState) => {
     if (!terminalState.renderingLine) {
         return <div/>
     }
-    return <TerminalLine line={terminalState.renderingLine} lastBlockIndex={terminalState.renderingLineBlockIndex} characterIndex={terminalState.renderingBlockInsideIndex}/>
+    return <TerminalLine line={terminalState.renderingLine} lastBlockIndex={terminalState.renderingLineBlockIndex}
+                         characterIndex={terminalState.renderingBlockInsideIndex}/>
 }
 
 
@@ -37,12 +38,12 @@ export const Terminal = ({terminalState, height, submit}: Props) => {
         return <div className="terminalPanel terminal_scrollbar" style={{height: height}}>
             {terminalState.renderedLines.map((line, index) => <TerminalLine line={line} key={line.key}/>)}
             {renderRenderingLine(terminalState)}
-            <TerminalInput terminalState={terminalState} />
+            <TerminalInput terminalState={terminalState}/>
             <div ref={bottomRef}/>
         </div>;
     } else {
         return <div className="terminalPanel" style={{height: height}}>
-            <TerminalInput terminalState={terminalState} />
+            <TerminalInput terminalState={terminalState}/>
         </div>;
     }
 

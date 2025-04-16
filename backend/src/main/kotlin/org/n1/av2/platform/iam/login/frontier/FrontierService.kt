@@ -1,10 +1,9 @@
 package org.n1.av2.platform.iam.login.frontier
 
 import org.n1.av2.hacker.hacker.HackerEntityService
-import org.n1.av2.hacker.hacker.HackerSkill
-import org.n1.av2.hacker.hacker.HackerSkillType.CREATE_SITE
-import org.n1.av2.hacker.hacker.HackerSkillType.SCAN
-import org.n1.av2.hacker.hacker.HackerSkillType.SEARCH_SITE
+import org.n1.av2.hacker.skill.SkillService
+import org.n1.av2.hacker.skill.SkillType
+import org.n1.av2.hacker.skill.SkillType.*
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
@@ -42,11 +41,8 @@ class FrontierService(
     private val orthankService: OrthankService,
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
+    private val skillService: SkillService,
 ) {
-
-
-    private val LEVEL_1_SKILLS = listOf(HackerSkill(SCAN), HackerSkill(SEARCH_SITE) )
-    private val LEVEL_3_SKILLS = LEVEL_1_SKILLS + HackerSkill(CREATE_SITE)
 
     fun frontierLogin(frontierInfo: FrontierUserAndCharacterInfo): UserEntity {
         val user = getOrCreateHackerUser(frontierInfo)
@@ -68,7 +64,7 @@ class FrontierService(
 
         val name = userEntityService.findFreeUserName(hackerInfo.characterName!!)
         val user = userEntityService.createUser(name, UserType.HACKER, hackerInfo.frontierExternalReference)
-        hackerEntityService.createHacker(user, HackerIcon.FROG, hackerInfo.characterName, emptyList<HackerSkill>())
+        hackerEntityService.createHacker(user, HackerIcon.FROG, hackerInfo.characterName)
 
         return user
     }
@@ -77,26 +73,27 @@ class FrontierService(
         if (frontierInfo.isGm) return
 
         val hacker = hackerEntityService.findForUser(user)
-        val skills = determineFrontierCharacterSkills(frontierInfo)
 
         val updatedHacker = hacker.copy(
             characterName = frontierInfo.characterName!!,
-            skills = skills,
         )
         hackerEntityService.save(updatedHacker)
+
+        val skillTypes = determineFrontierCharacterSkills(frontierInfo)
+        skillService.addSkillsForUser(user, skillTypes)
     }
 
-    private fun determineFrontierCharacterSkills(frontierInfo: FrontierUserAndCharacterInfo): List<HackerSkill> {
+    private fun determineFrontierCharacterSkills(frontierInfo: FrontierUserAndCharacterInfo): List<SkillType> {
         val v3Skills = orthankService.getPlayerSkills(frontierInfo.characterId!!)
         val hackerLevel = v3Skills.hacker
 
-        if ( hackerLevel == 0) {
+        if (hackerLevel == 0) {
             return emptyList() // not a hacker, does not get skills
         }
         if (hackerLevel == 1 || hackerLevel == 2) {
-            return LEVEL_1_SKILLS
+            return listOf(SEARCH_SITE, SCAN)
         }
-        return LEVEL_3_SKILLS
+        return listOf(SEARCH_SITE, SCAN, CREATE_SITE)
     }
 
 }

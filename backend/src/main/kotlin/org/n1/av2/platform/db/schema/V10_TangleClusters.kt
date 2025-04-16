@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 /**
  * V10
  *
- * Make tangle
+ * Removed clusters from Tangle ICE layers and statistics.
  */
 @Component
 class V10_TangleClusters(
