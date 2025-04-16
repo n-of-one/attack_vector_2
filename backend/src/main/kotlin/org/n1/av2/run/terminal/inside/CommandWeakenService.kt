@@ -22,28 +22,41 @@ class CommandWeakenService(
 ) {
 
     fun processWeaken(arguments: List<String>, hackerState: HackerStateRunning) {
+        if (!insideTerminalHelper.verifyInside(hackerState)) return
+        requireNotNull(hackerState.currentNodeId)
         val skills = skillService.findSkillsForUser(hackerState.userId)
+        val weakenSkills = skills.filter { it.type == SkillType.WEAKEN }
+
+        if (weakenSkills.isEmpty()) {
+            connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
+            return
+        }
+
+        if (arguments.isEmpty()) {
+            processWeakenStatus(weakenSkills, hackerState)
+            return
+        }
 
         val (layer, skill) = checkPrerequisites(arguments, hackerState, skills) ?: return
 
         weaken(layer, hackerState, skill)
     }
 
-    fun checkPrerequisites(arguments: List<String>, hackerState: HackerStateRunning, skills: List<Skill>): Pair<IceLayer, Skill>? {
-        if (!insideTerminalHelper.verifyInside(hackerState)) return null
-        requireNotNull(hackerState.currentNodeId)
-
-        val weakenSkills = skills.filter { it.type == SkillType.WEAKEN }
-
-        if (weakenSkills.isEmpty()) {
-            connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
-            return null
+    fun processWeakenStatus(weakenSkills: List<Skill>, hackerState: HackerStateRunning) {
+        connectionService.replyTerminalReceive("Overview of uses of weaken:")
+        weakenSkills.forEach { skill ->
+            val usedOnThisSite = skill.usedOnSiteIds.contains(hackerState.siteId)
+            val siteText = if (usedOnThisSite) "[warn]already used on this site" else "[ok]can be used on this site"
+            connectionService.replyTerminalReceive("- ${skill.value} - $siteText")
         }
+    }
 
-        if (arguments.isEmpty()) {
-            connectionService.replyTerminalReceive("Missing [primary]<layer>[/]      -- for example: [b]weaken [primary] 1")
-            return null
-        }
+
+    fun checkPrerequisites(
+        arguments: List<String>,
+        hackerState: HackerStateRunning,
+        weakenSkills: List<Skill>
+    ): Pair<IceLayer, Skill>? {
         val layer = insideTerminalHelper.verifyCanAccessLayer(arguments.first(), hackerState, "weaken") ?: return null
         if (layer !is IceLayer) {
             connectionService.replyTerminalReceive("Layer [primary]${layer.level}[/] is not an ICE layer.")
@@ -61,20 +74,24 @@ class CommandWeakenService(
 
     private fun checkSkill(weakenSkills: List<Skill>, hackerState: HackerStateRunning, layer: IceLayer): Skill? {
 
-        val weakenSkillsThatWorkOnThisIce = weakenSkills.filter { it.value?.uppercase()?.contains(layer.type.toString().substringBefore("_ICE")) == true }
+        val weakenSkillsThatWorkOnThisIce = weakenSkills.filter {
+            it.value?.uppercase()?.contains(layer.type.toString().substringBefore("_ICE")) == true
+        }
 
         if (weakenSkillsThatWorkOnThisIce.isEmpty()) {
             connectionService.replyTerminalReceive("Weaken not compatible with ICE type. [mute](Skill does not support this)")
             return null
         }
 
-        val availableWeakenSkills = weakenSkillsThatWorkOnThisIce.filter { skill -> !skill.usedOnSiteIds.contains(hackerState.siteId) }
+        val availableWeakenSkills =
+            weakenSkillsThatWorkOnThisIce.filter { skill -> !skill.usedOnSiteIds.contains(hackerState.siteId) }
         if (availableWeakenSkills.isEmpty()) {
             connectionService.replyTerminalReceive("Tamper attempt blocked. [mute](Skill already used on this site)")
             return null
         }
 
-        val sortedSkills = availableWeakenSkills.sortedBy { it.value?.split(",")?.size } // skills that support the least types of ice used up first
+        val sortedSkills =
+            availableWeakenSkills.sortedBy { it.value?.split(",")?.size } // skills that support the least types of ice used up first
         return sortedSkills.first()
     }
 

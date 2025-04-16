@@ -4,8 +4,7 @@ import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.Skill
 import org.n1.av2.hacker.skill.SkillService
-import org.n1.av2.hacker.skill.SkillType.SCAN
-import org.n1.av2.hacker.skill.SkillType.SCRIPT_RAM
+import org.n1.av2.hacker.skill.SkillType.*
 import org.n1.av2.hacker.skill.containsType
 import org.n1.av2.platform.config.ConfigItem.DEV_HACKER_USE_DEV_COMMANDS
 import org.n1.av2.platform.config.ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN
@@ -100,6 +99,7 @@ class CommandHelpService(
             )
         }
         showRunScriptHelp(skills)
+        showWeakenHelp(skills)
         connectionService.replyTerminalReceive(
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
@@ -129,9 +129,22 @@ class CommandHelpService(
     private fun showRunScriptHelp(skills: List<Skill>) {
         if (skills.containsType(SCRIPT_RAM)) {
             connectionService.replyTerminalReceive(
-                "[b]run[/] [primary]<script code>[/]      -- for example: [b]run[primary] 1234-abcd",
+                "[b]run[/] [primary]<script code>[/]      -- for example: [b]run [primary]1234-abcd",
                 "Run a script that you have loaded in memory.",
                 "",
+            )
+        }
+    }
+
+    private fun showWeakenHelp(skills: List<Skill>) {
+        if (skills.containsType(WEAKEN)) {
+            connectionService.replyTerminalReceive(
+                "[b]weaken[/] [primary]<layer>[/]      -- for example: [b]weaken [primary]1",
+                "Reduce the strength of the ICE layer.",
+                "",
+                "[b]weaken",
+                "Show how many uses of weaken you have left.",
+                ""
             )
         }
     }
