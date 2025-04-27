@@ -1,4 +1,10 @@
-# Release notes AV 2.8.0 (16 Apr 2025)
+# Release notes AV 2.10.0 (27 Apr 2025)
+
+## Features
+- Tripwires can now be linked to a core in another site. Hacking the tripwire layer will reveal that site's name.
+
+
+# Release notes AV 2.9.0 (16 Apr 2025)
 
 ## Features
 - New skills: Bypass, Stealth and Weaken.
