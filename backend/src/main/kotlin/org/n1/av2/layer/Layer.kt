@@ -20,7 +20,7 @@ open class Layer(
             this(id, type, level, defaultName, "")
 
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     private fun validateName(validationContext: ValidationContext) {
         if (this.name.isEmpty()) throw SiteValidationException("Service name cannot be empty.")
     }

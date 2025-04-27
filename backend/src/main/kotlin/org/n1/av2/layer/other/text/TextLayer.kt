@@ -24,6 +24,7 @@ class TextLayer(
         this(id, LayerType.TEXT, toClone.level, toClone.name, toClone.note, toClone.text)
 
 
+    @Suppress("unused")
     private fun validateText(validationContext: ValidationContext) {
         if (this.text.isEmpty()) throw SiteValidationException("Hacked text cannot be empty.")
     }

@@ -135,6 +135,7 @@ class EditorService(
     }
 
     fun sendAllCores() {
+        @Suppress("unused")
         class CoreInfo(val layerId: String, val level: Int, val name: String, val networkId: String, val siteId: String)
 
         val allCores: Map<Node, List<CoreLayer>> = nodeEntityService.findAllCores()

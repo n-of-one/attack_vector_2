@@ -53,6 +53,7 @@ class TripwireLayer(
         }
     }
 
+    @Suppress("unused")
     private fun validateCoreSiteId(validationContext: ValidationContext) {
         if (this.coreSiteId == null) return
         validationContext.sitePropertiesRepo.findBySiteId(this.coreSiteId!!)
