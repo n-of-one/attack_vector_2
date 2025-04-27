@@ -16,10 +16,10 @@ class EditorWsController(
         userTaskRunner.runTask("/editor/open", userPrincipal) { editorService.open(siteName) }
     }
 
-    @MessageMapping("/editor/siteFull")
+    @MessageMapping("/editor/enter")
     fun siteFull(siteId: String, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(siteId, userPrincipal)
-        userTaskRunner.runTask("/editor/siteFull", userPrincipal) { editorService.sendSiteFull(siteId) }
+        userTaskRunner.runTask("/editor/enter", userPrincipal) { editorService.enter(siteId) }
     }
 
     @MessageMapping("/editor/addNode")

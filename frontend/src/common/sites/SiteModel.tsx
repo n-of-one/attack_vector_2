@@ -35,6 +35,7 @@ export interface LayerDetails {
     shutdown?: string                 // Layer Trip wire
     countdown?: string                // Layer Trip wire
     coreLayerId?: string              // Layer Trip wire
+    coreSiteId?: string             // Layer Trip wire
 
     strength? : "VERY_WEAK" | "WEAK" | "AVERAGE" | "STRONG" | "VERY_STRONG" | "ONYX"
     password? : string  // Password Ice layer

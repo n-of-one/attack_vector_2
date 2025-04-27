@@ -51,6 +51,6 @@ class StartResetTimerEffectService(
 
         val shutdownDuration = Duration.ofMinutes(2)
 
-        timerService.startShutdownTimer(siteId, null, effect.value!!.toDuration(), false, shutdownDuration, "Script", TimerLabel.SCRIPT_SITE_SHUTDOWN)
+        timerService.startShutdownTimer(siteId, siteId, null, effect.value!!.toDuration(), false, shutdownDuration, "Script", TimerLabel.SCRIPT_SITE_SHUTDOWN)
     }
 }

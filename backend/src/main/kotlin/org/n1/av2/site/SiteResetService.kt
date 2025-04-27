@@ -60,7 +60,7 @@ class SiteResetService(
     fun refreshSite(siteId: String) {
         resetSite(siteId, Duration.ZERO)
         shutdownFinished(siteId)
-        timerService.removeTimersForSite(siteId)
+        timerService.removeTimersForTargetSite(siteId)
     }
 
     @CalledBySystem
@@ -80,7 +80,7 @@ class SiteResetService(
         }
         iceService.resetIceForSite(siteId)
 
-        timerService.removeTimersForSite(siteId)
+        timerService.removeTimersForTargetSite(siteId)
 
         runService.updateRunLinksForResetSite(siteId)
 

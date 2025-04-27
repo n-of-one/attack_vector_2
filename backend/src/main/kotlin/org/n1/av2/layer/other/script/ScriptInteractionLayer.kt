@@ -1,8 +1,8 @@
 package org.n1.av2.layer.other.script
 
-import org.n1.av2.editor.SiteRep
 import org.n1.av2.editor.SiteStateMessageType
 import org.n1.av2.editor.SiteValidationException
+import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.site.entity.enums.LayerType
 
@@ -27,16 +27,16 @@ class ScriptInteractionLayer(
 
 
     @Suppress("unused")
-    private fun validateText(siteRep: SiteRep) {
+    private fun validateText(validationContext: ValidationContext) {
         if (this.interactionKey.isEmpty()) throw SiteValidationException("The interaction key cannot be empty.")
     }
 
     @Suppress("unused")
-    private fun validateMessage(siteRep: SiteRep) {
+    private fun validateMessage(validationContext: ValidationContext) {
         if (this.message.isEmpty()) throw SiteValidationException("With an empty message, this layer does not do anything.", SiteStateMessageType.INFO)
     }
 
-    override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+    override fun validationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
         return listOf(::validateText, ::validateMessage)
     }
 

@@ -1,12 +1,11 @@
 import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
-import {LayerType} from "../../../../../../../../common/enums/LayerTypes";
 
 export type DropdownOption = {
     value: string,
     text: string,
 }
 
-interface FilterInput {
+export interface FilterInput {
     networkId: string,
     layer: LayerDetails
 }
@@ -14,17 +13,13 @@ interface FilterInput {
 type FilterFunction = (filterInput: FilterInput) => boolean
 
 const filterIce: FilterFunction = (filterInput: FilterInput) => filterInput.layer.ice
-const filterCore = (filterInput: FilterInput) => filterInput.layer.type === LayerType.CORE
 
 export const iceLayerOptions = (nodes: Array<NodeI>): DropdownOption[] => {
     return layerOptions(nodes, filterIce, "Choose Ice")
 }
 
-export const coreLayerOptions = (nodes: Array<NodeI>): DropdownOption[] => {
-    return layerOptions(nodes, filterCore, "Choose Core")
-}
 
-const layerOptions = (nodes: Array<NodeI>, filterFunction: FilterFunction, defaultText: string): DropdownOption[] => {
+export const layerOptions = (nodes: Array<NodeI>, filterFunction: FilterFunction, defaultText: string): DropdownOption[] => {
     const iceLayers = nodes
         .map(node => {
             return node.layers.map((layer: LayerDetails) => { return {networkId: node.networkId, layer: layer}})

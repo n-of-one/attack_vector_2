@@ -4,6 +4,7 @@ import org.n1.av2.layer.Layer
 import org.n1.av2.layer.app.status_light.StatusLightField.*
 import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightService
+import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
@@ -11,6 +12,7 @@ import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.ConnectionEntityService
+import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 
@@ -26,7 +28,9 @@ class EditorService(
 ) {
 
     fun validateAccessToSiteByName(siteName: String, userPrincipal: UserPrincipal) {
-        if (userPrincipal.userEntity.type == UserType.GM) { return } // GM can edit any site
+        if (userPrincipal.userEntity.type == UserType.GM) {
+            return
+        } // GM can edit any site
         val siteProperties = sitePropertiesEntityService.findByName(siteName) ?: return // new site
         if (siteProperties.ownerUserId != userPrincipal.userEntity.id) {
             connectionService.replyError("Site already exists")
@@ -35,7 +39,9 @@ class EditorService(
     }
 
     fun validateAccessToSiteById(siteId: String, userPrincipal: UserPrincipal) {
-        if (userPrincipal.userEntity.type == UserType.GM) { return } // GM can edit any site
+        if (userPrincipal.userEntity.type == UserType.GM) {
+            return
+        } // GM can edit any site
 
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         if (siteProperties.ownerUserId != userPrincipal.userEntity.id) {
@@ -51,7 +57,6 @@ class EditorService(
             return
         }
         val siteId = siteService.createSite(name)
-        siteService.sendSitesList()
         connectionService.reply(ServerActions.SERVER_OPEN_EDITOR, "id" to siteId)
     }
 
@@ -118,9 +123,38 @@ class EditorService(
         connectionService.toSite(command.siteId, ServerActions.SERVER_MOVE_NODE, response)
     }
 
+    fun enter(siteId: String) {
+        sendSiteFull(siteId)
+        siteService.sendSitesList()
+        sendAllCores() // used to configure tripwires with remote cores
+    }
+
     fun sendSiteFull(siteId: String) {
         val toSend = siteService.getSiteFull(siteId)
         connectionService.toSite(siteId, ServerActions.SERVER_SITE_FULL, toSend)
+    }
+
+    fun sendAllCores() {
+        class CoreInfo(val layerId: String, val level: Int, val name: String, val networkId: String, val siteId: String)
+
+        val allCores: Map<Node, List<CoreLayer>> = nodeEntityService.findAllCores()
+
+        val allCoreInfos: List<CoreInfo> = allCores.map { entry: Map.Entry<Node, List<CoreLayer>> ->
+            val node = entry.key
+            val coreLayers = entry.value
+
+            coreLayers.map { layer ->
+                CoreInfo(
+                    layerId = layer.id,
+                    level = layer.level,
+                    name = layer.name,
+                    networkId = node.networkId,
+                    siteId = node.siteId,
+                )
+            }
+        }.flatten()
+
+        connectionService.reply(ServerActions.SERVER_ALL_CORE_INFO, allCoreInfos)
     }
 
     fun deleteNode(siteId: String, nodeId: String) {
@@ -140,6 +174,7 @@ class EditorService(
         nodeEntityService.center(siteId, properties.startNodeNetworkId)
         sendSiteFull(siteId)
     }
+
     data class ServerUpdateNetworkId(val nodeId: String, val networkId: String)
 
     fun editNetworkId(command: EditNetworkIdCommand) {

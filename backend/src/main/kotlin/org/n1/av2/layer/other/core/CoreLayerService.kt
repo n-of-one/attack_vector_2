@@ -1,14 +1,14 @@
 package org.n1.av2.layer.other.core
 
-import org.n1.av2.timer.Timer
-import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.platform.engine.TaskEngine
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.scanning.InitiateScanService
 import org.n1.av2.site.entity.NodeEntityService
+import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.timer.Timer
+import org.n1.av2.timer.TimerEntityService
+import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,55 +18,52 @@ class CoreLayerService(
     private val runEntityService: RunEntityService,
     private val nodeEntityService: NodeEntityService,
     private val timerEntityService: TimerEntityService,
-    private val taskEngine: TaskEngine,
+    private val timerService: TimerService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
 ) {
 
     fun hack(layer: CoreLayer, runId: String) {
-        var hackingDetails = ""
+        var hackingDetails = listOf("Hacked: [pri]${layer.level}[/] ${layer.name}").toMutableList()
         if (layer.revealNetwork) {
             val run = runEntityService.getByRunId(runId)
             initiateScanService.quickScan(run)
-            hackingDetails += " revealed network"
+            hackingDetails.add("- revealed network")
         }
 
         val timers = stopTimers(runId, layer)
-        if (timers.isNotEmpty()) {
-            hackingDetails += " stopped timer"
+        timers.forEach { timer ->
+            if (timer.targetSiteId == timer.siteId) {
+                hackingDetails.add("- stopped timer for this site")
+            } else {
+                val siteProperties = sitePropertiesEntityService.getBySiteId(timer.targetSiteId)
+                hackingDetails.add( "- stopped timer for remote site: [info]${siteProperties.name}")
+            }
         }
 
         if (hackingDetails.isEmpty()) {
-            hackingDetails = " no effect"
+            hackingDetails.add("- no effect")
         }
 
-        connectionService.replyTerminalReceive("Hacked: [pri]${layer.level}[/] ${layer.name},$hackingDetails")
+        connectionService.replyTerminalReceive(hackingDetails)
     }
 
     private fun stopTimers(runId: String, layer: CoreLayer): List<Timer> {
         val run = runEntityService.getByRunId(runId)
-        val tripwires = nodeEntityService.findBySiteId(run.siteId)
-            .flatMap { node ->
-                node.layers
-                    .filterIsInstance<TripwireLayer>()
-                    .filter { tripwireLayer -> tripwireLayer.coreLayerId == layer.id }
-            }
 
-        val timers:List<Timer> = tripwires.mapNotNull { tripwireLayer ->
-            val timer = timerEntityService.findByLayer(tripwireLayer.id)
-            if ( timer == null) {
-                null
-            }
-            else {
-                timerEntityService.deleteById(timer.id)
+        val timersOfSite = timerEntityService.findBySiteId(run.siteId)
+        val timers = timersOfSite.mapNotNull { timer ->
+            val tripwires: List<TripwireLayer> = nodeEntityService.findBySiteId(timer.targetSiteId)
+                .flatMap { node ->
+                    node.layers
+                        .filterIsInstance<TripwireLayer>()
+                        .filter { tripwireLayer -> tripwireLayer.coreLayerId == layer.id }
+                }
 
-                val identifiers = mapOf("layerId" to tripwireLayer.id)
-                taskEngine.removeAll(identifiers)
+            val tripwireLayer = tripwires.firstOrNull() ?: return@mapNotNull null // this timer is not reset by this core
+            timerService.stopTripwireTimer(timer, tripwireLayer)
 
-                connectionService.toSite(run.siteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)
-                timer
-            }
+            timer
         }
-
         return timers
     }
-
 }

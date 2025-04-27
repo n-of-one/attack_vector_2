@@ -6,6 +6,7 @@ import {NodeI} from "../../common/sites/SiteModel";
 import {MoveNodeI} from "../reducer/EditorNodesReducer";
 
 export const SERVER_SITE_FULL  = "SERVER_SITE_FULL"
+export const SERVER_ALL_CORE_INFO = "SERVER_ALL_CORE_INFO"
 export const SERVER_UPDATE_SITE_DATA = "SERVER_UPDATE_SITE_DATA"
 export const SERVER_ADD_NODE = "SERVER_ADD_NODE"
 export const SERVER_MOVE_NODE = "SERVER_MOVE_NODE"

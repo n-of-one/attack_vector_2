@@ -7,6 +7,7 @@ export class LayerTripwire extends Layer {
     countdown: string
     shutdown: string
     coreLayerId: string
+    coreSiteId?: string
 
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
@@ -14,6 +15,7 @@ export class LayerTripwire extends Layer {
         this.countdown = layer.countdown!
         this.shutdown = layer.shutdown!
         this.coreLayerId = layer.coreLayerId!
+        this.coreSiteId = layer.coreSiteId
     }
 
     saveCountdown(value: string) {
@@ -26,5 +28,9 @@ export class LayerTripwire extends Layer {
 
     saveCoreLayerId(value: string) {
         super._save("CORE_LAYER_ID", value )
+    }
+
+    saveCoreSiteId(value: string) {
+        super._save("CORE_SITE_ID", value)
     }
 }

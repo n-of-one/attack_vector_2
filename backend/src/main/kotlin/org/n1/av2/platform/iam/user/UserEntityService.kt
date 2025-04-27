@@ -93,4 +93,9 @@ class UserEntityService(
         return user?.name ?: "<Deleted>" // if the user is deleted, then we sometimes still need a name.
     }
 
+    fun isGmOrSystem(userId: String): Boolean {
+        val user = getById(userId)
+        return (user.type == UserType.GM || user.type == UserType.SYSTEM)
+    }
+
 }

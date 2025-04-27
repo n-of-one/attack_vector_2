@@ -77,7 +77,7 @@ class CommandHackService(
             is StatusLightLayer -> statusLightLayerService.hack(layer)
             is KeyStoreLayer -> keystoreLayerService.hack(layer)
             is CoreLayer -> coreLayerService.hack(layer, hackerState.runId)
-            is TripwireLayer -> tripwireLayerService.hack(layer)
+            is TripwireLayer -> tripwireLayerService.hack(layer, hackerState)
             is ScriptInteractionLayer -> scriptInteractionLayerService.hack()
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }

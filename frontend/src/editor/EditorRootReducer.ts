@@ -8,6 +8,8 @@ import {siteStateDefault, SiteStateI, siteStateReducer} from "./reducer/SiteStat
 import {AnyAction} from "redux"
 import {editorNodesReducer} from "./reducer/EditorNodesReducer";
 import {NodeI} from "../common/sites/SiteModel";
+import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
+import {allCoresReducer, CoreInfo} from "./reducer/AllCoresReducer";
 
 export interface EditorState {
     siteProperties: SiteProperties,
@@ -18,6 +20,9 @@ export interface EditorState {
     currentNodeId: string | null,
     currentLayerId: string | null,
     state : SiteStateI,
+    sites: Array<SiteInfo>,
+    allCores: CoreInfo[],
+
 }
 
 export const editorRootDefaultState: EditorState = {
@@ -28,7 +33,9 @@ export const editorRootDefaultState: EditorState = {
     connections: [],
     currentNodeId: null,
     currentLayerId: null,
-    state : siteStateDefault
+    state: siteStateDefault,
+    sites: [],
+    allCores: [],
 }
 
 export const editorRootReducer = (state:EditorState, action: AnyAction): EditorState => {
@@ -41,6 +48,8 @@ export const editorRootReducer = (state:EditorState, action: AnyAction): EditorS
         connections: connectionsReducer(state.connections, action),
         currentNodeId: currentNodeIdReducer(state.currentNodeId, action),
         currentLayerId: currentLayerIdReducer(state.currentLayerId, action, state.currentNodeId, nodes),
-        state: siteStateReducer(state.state, action)
+        state: siteStateReducer(state.state, action),
+        sites: sitesReducer(state.sites, action),
+        allCores: allCoresReducer(state.allCores, action),
     }
 }

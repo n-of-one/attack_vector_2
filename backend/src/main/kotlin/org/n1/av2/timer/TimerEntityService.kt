@@ -29,8 +29,8 @@ class TimerEntityService(
             layerId = layerId,
             userId = userId,
             finishAt = finishAt,
-            siteId = siteId,
-            targetSiteId = targetSiteId,
+            siteId = siteId, // site that 'runs' the timer, meaning that it can be stopped from that site
+            targetSiteId = targetSiteId, // site that is targeted by the effect of the timer
             effect = effect,
             effectDuration = effectDuration,
             label = label,
@@ -43,8 +43,8 @@ class TimerEntityService(
         repository.deleteById(timerId)
     }
 
-    fun deleteBySiteId(siteId: String): List<Timer> {
-        val timers = repository.findBySiteId(siteId)
+    fun deleteByTargetSiteId(siteId: String): List<Timer> {
+        val timers = repository.findByTargetSiteId(siteId)
         timers.forEach { repository.delete(it) }
         return timers
     }
@@ -63,5 +63,10 @@ class TimerEntityService(
     fun findByTargetSiteId(siteId: String): List<Timer> {
         return repository.findByTargetSiteId(siteId)
     }
+
+    fun findBySiteId(siteId: String): List<Timer> {
+        return repository.findBySiteId(siteId)
+    }
+
 
 }

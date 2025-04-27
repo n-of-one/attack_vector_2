@@ -50,7 +50,7 @@ export class EditorRoot extends Component<Props> {
 
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + props.siteId)
-            webSocketConnection.send("/editor/siteFull", props.siteId)
+            webSocketConnection.sendWhenReady("/editor/enter", props.siteId)
         }, SERVER_SITE_FULL)
 
     }

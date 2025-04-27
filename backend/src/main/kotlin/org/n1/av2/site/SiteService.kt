@@ -30,7 +30,7 @@ class SiteService(
 ) {
 
 
-    data class SiteListItem(val id: String, val name: String, val hackable: Boolean, val purpose: String, val ok: Boolean, val mine: Boolean, val ownerName: String)
+    data class SiteListItem(val id: String, val name: String, val hackable: Boolean, val purpose: String, val ok: Boolean, val mine: Boolean, val ownerName: String, val gmSite: Boolean)
 
     fun sendSitesList() {
         val gm = currentUserService.userEntity.type == UserType.GM
@@ -48,7 +48,8 @@ class SiteService(
                     purpose = it.purpose,
                     ok = it.siteStructureOk,
                     mine = mine,
-                    ownerName = owner
+                    ownerName = owner,
+                    gmSite = userEntityService.isGmOrSystem(it.ownerUserId)
                 )
             }
         connectionService.toUser(currentUserService.userId, actionType = ServerActions.SERVER_SITES_LIST, list)

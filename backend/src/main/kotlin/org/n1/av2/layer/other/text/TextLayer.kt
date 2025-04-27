@@ -1,7 +1,7 @@
 package org.n1.av2.layer.other.text
 
-import org.n1.av2.editor.SiteRep
 import org.n1.av2.editor.SiteValidationException
+import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.site.entity.enums.LayerType
 
@@ -24,11 +24,11 @@ class TextLayer(
         this(id, LayerType.TEXT, toClone.level, toClone.name, toClone.note, toClone.text)
 
 
-    private fun validateText(siteRep: SiteRep) {
+    private fun validateText(validationContext: ValidationContext) {
         if (this.text.isEmpty()) throw SiteValidationException("Hacked text cannot be empty.")
     }
 
-    override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+    override fun validationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
         return listOf(::validateText)
     }
 

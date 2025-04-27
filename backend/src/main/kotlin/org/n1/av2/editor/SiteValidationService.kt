@@ -6,20 +6,19 @@ import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.run.scanning.TraverseNode
 import org.n1.av2.run.scanning.TraverseNodeService
-import org.n1.av2.site.entity.Node
-import org.n1.av2.site.entity.NodeEntityService
-import org.n1.av2.site.entity.SiteProperties
-import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.site.entity.*
 import org.springframework.stereotype.Service
 
 @Service
 class SiteValidationService(
-    val connectionService: ConnectionService,
-    val sitePropertiesEntityService: SitePropertiesEntityService,
-    val nodeEntityService: NodeEntityService,
-    val siteEditorStateEntityService: SiteEditorStateEntityService,
-    val currentUserService: CurrentUserService,
-    val traverseNodeService: TraverseNodeService,
+    private val connectionService: ConnectionService,
+    private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val nodeEntityService: NodeEntityService,
+    private val siteEditorStateEntityService: SiteEditorStateEntityService,
+    private val currentUserService: CurrentUserService,
+    private val traverseNodeService: TraverseNodeService,
+    private val sitePropertiesRepo: SitePropertiesRepo,
+    private val nodeRepo: NodeRepo,
 ) {
 
     fun validate(siteId: String): List<SiteStateMessage> {
@@ -70,14 +69,14 @@ class SiteValidationService(
     private fun validateNodes(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         if (nodes.isEmpty()) return
 
-        val siteRep = SiteRep(nodes[0], nodes, siteProperties)
+        val validationContext = ValidationContext(nodes[0], nodes, siteProperties, sitePropertiesRepo, nodeRepo)
 
         val networkIds = HashSet<String>()
 
-        siteRep.nodes.forEach { node ->
-            siteRep.node = node
+        validationContext.nodes.forEach { node ->
+            validationContext.node = node
             validateNetworkId(node, networkIds, messages)
-            validateServices(node, siteRep, messages)
+            validateServices(node, validationContext, messages)
         }
     }
 
@@ -92,11 +91,11 @@ class SiteValidationService(
         }
     }
 
-    private fun validateServices(node: Node, siteRep: SiteRep, messages: MutableList<SiteStateMessage>) {
+    private fun validateServices(node: Node, validationContext: ValidationContext, messages: MutableList<SiteStateMessage>) {
         node.layers.forEach { service ->
             service.allValidationMethods().forEach { validateMethod ->
                 try {
-                    validateMethod(siteRep)
+                    validateMethod(validationContext)
                 } catch (exception: SiteValidationException) {
                     val message = SiteStateMessage(exception.type, exception.message!!, node.id, service.id)
                     messages.add(message)

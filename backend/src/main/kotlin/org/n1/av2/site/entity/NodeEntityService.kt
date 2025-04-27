@@ -51,13 +51,14 @@ class NodeEntityService(
         val y = capY(command.y)
 
         val node = Node(
-                id = id,
-                siteId = siteId,
-                type = command.type,
-                x = x,
-                y = y,
-                layers = layers,
-                networkId = networkId)
+            id = id,
+            siteId = siteId,
+            type = command.type,
+            x = x,
+            y = y,
+            layers = layers,
+            networkId = networkId
+        )
         nodeRepo.save(node)
         return node
     }
@@ -74,7 +75,7 @@ class NodeEntityService(
 
     fun createLayerId(node: Node): String {
         val findExisting = fun(candidate: String): String? {
-            return node.layers.find{ it.id == candidate }?.id
+            return node.layers.find { it.id == candidate }?.id
         }
         return createLayerId(node, findExisting)
     }
@@ -118,8 +119,8 @@ class NodeEntityService(
         val nodes = findBySiteId(siteId)
         nodes.forEach { node ->
 
-            val xOffset = (CANVAS_WIDTH /2) % 40
-            val yOffset = (CANVAS_HEIGHT /2) % 40
+            val xOffset = (CANVAS_WIDTH / 2) % 40
+            val yOffset = (CANVAS_HEIGHT / 2) % 40
 
             val x = capX(40 * ((node.x - xOffset + 20) / 40) + xOffset)
             val y = capY(40 * ((node.y - yOffset + 20) / 40) + yOffset)
@@ -177,10 +178,8 @@ class NodeEntityService(
     }
 
     fun findByLayerId(layerId: String): Node {
-        val layerIdParts= layerId.split(":")
-        if (layerIdParts.size != 2) error("Invalid layer id: ${layerId}")
-
-        return findById(layerIdParts[0])
+        val nodeId = deriveNodeIdFromLayerId(layerId)
+        return findById(nodeId)
     }
 
     fun findLayer(layerId: String): Layer {
@@ -216,7 +215,7 @@ class NodeEntityService(
             LayerType.SWEEPER_ICE -> SweeperIceLayer(layerId, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
             LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
-            LayerType.LOCK -> createStatusLightLayer(layerId, LayerType.LOCK, level, defaultName,  "locked", "unlocked")
+            LayerType.LOCK -> createStatusLightLayer(layerId, LayerType.LOCK, level, defaultName, "locked", "unlocked")
             LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)
             LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
             LayerType.CORE -> CoreLayer(layerId, level, defaultName)
@@ -224,8 +223,15 @@ class NodeEntityService(
         }
     }
 
-    private fun createStatusLightLayer(layerId: String, type: LayerType, level: Int, defaultName: String, textForRed: String, textForGreen: String): StatusLightLayer {
-        return  StatusLightLayer(layerId, type, level, defaultName, null, textForRed, textForGreen)
+    private fun createStatusLightLayer(
+        layerId: String,
+        type: LayerType,
+        level: Int,
+        defaultName: String,
+        textForRed: String,
+        textForGreen: String
+    ): StatusLightLayer {
+        return StatusLightLayer(layerId, type, level, defaultName, null, textForRed, textForGreen)
     }
 
     data class LayersUpdated(val node: Node, val layerId: String?)
@@ -261,4 +267,21 @@ class NodeEntityService(
         nodeRepo.findBySiteId(siteId).forEach { nodeRepo.delete(it) }
     }
 
+    fun findAllCores(): Map<Node, List<CoreLayer>> {
+        return nodeRepo.findAll()
+            .filter {
+                it.layers.any { it.type == LayerType.CORE }
+            }.associate { node ->
+                val coreLayers = node.layers.filterIsInstance<CoreLayer>()
+                node to coreLayers
+            }
+    }
+
+    companion object {
+        fun deriveNodeIdFromLayerId(layerId: String): String {
+            val layerIdParts = layerId.split(":")
+            if (layerIdParts.size != 2) error("Invalid layer id: ${layerId}")
+            return layerIdParts[0]
+        }
+    }
 }

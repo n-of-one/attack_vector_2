@@ -271,7 +271,7 @@ class RunService(
 
 
     fun deleteRuns(siteId: String): Int {
-        timerEntityService.deleteBySiteId(siteId)
+        timerEntityService.deleteByTargetSiteId(siteId)
         taskEngine.removeAll(mapOf("siteId" to siteId))
 
 

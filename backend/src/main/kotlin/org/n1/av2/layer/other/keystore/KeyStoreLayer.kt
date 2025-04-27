@@ -1,7 +1,7 @@
 package org.n1.av2.layer.other.keystore
 
-import org.n1.av2.editor.SiteRep
 import org.n1.av2.editor.SiteValidationException
+import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.site.entity.enums.LayerType
 import org.n1.av2.site.entity.findLayerById
@@ -24,12 +24,12 @@ class KeyStoreLayer(
     constructor(id: String, toClone: KeyStoreLayer) :
         this(id, LayerType.KEYSTORE, toClone.level, toClone.name, toClone.note, toClone.iceLayerId)
 
-    private fun validateText(siteRep: SiteRep) {
+    private fun validateText(validationContext: ValidationContext) {
         if (this.iceLayerId == null) throw SiteValidationException("Choose ICE that keystore provides password for.")
-        findLayerById(this.iceLayerId!!, siteRep.nodes) ?: throw SiteValidationException("Choose ICE that keystore provides password for.")
+        findLayerById(this.iceLayerId!!, validationContext.nodes) ?: throw SiteValidationException("Choose ICE that keystore provides password for.")
     }
 
-    override fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+    override fun validationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
         return listOf(::validateText)
     }
 

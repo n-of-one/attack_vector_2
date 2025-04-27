@@ -1,7 +1,7 @@
 package org.n1.av2.layer
 
-import org.n1.av2.editor.SiteRep
 import org.n1.av2.editor.SiteValidationException
+import org.n1.av2.editor.ValidationContext
 import org.n1.av2.site.entity.enums.LayerType
 
 
@@ -21,15 +21,15 @@ open class Layer(
 
 
     @Suppress("UNUSED_PARAMETER")
-    private fun validateName(siteRep: SiteRep) {
+    private fun validateName(validationContext: ValidationContext) {
         if (this.name.isEmpty()) throw SiteValidationException("Service name cannot be empty.")
     }
 
-    open fun validationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+    open fun validationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
         return emptyList()
     }
 
-    fun allValidationMethods(): Collection<(siteRep: SiteRep) -> Unit> {
+    fun allValidationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
         val methods = validationMethods().toMutableList()
         methods.add(::validateName)
         return methods

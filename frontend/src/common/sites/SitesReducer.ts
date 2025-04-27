@@ -10,6 +10,7 @@ export interface SiteInfo {
     hackable: boolean,
     ok: boolean,
     mine: boolean,
+    gmSite: boolean,
 }
 
 export const sitesReducer = (state: Array<SiteInfo> = [], action: AnyAction) => {

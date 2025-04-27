@@ -18,7 +18,8 @@ enum class ServerActions {
     SERVER_ADD_NODE,
     SERVER_ADD_CONNECTION,
     SERVER_MOVE_NODE,
-    SERVER_SITE_FULL,
+    SERVER_SITE_FULL,               // Send to editor
+    SERVER_ALL_CORE_INFO,           // Send all core layers to editor for tripwire layers with remote core
     SERVER_UPDATE_SITE_DATA,        // Send update of SiteProperties
 
     SERVER_UPDATE_NETWORK_ID,
