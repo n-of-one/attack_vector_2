@@ -165,7 +165,7 @@ class IceStatisticsService(
         val sweeperResets = statistic.sweeperResets?.toString() ?: ""
         val sweeperLockouts = statistic.sweeperLockouts?.toString() ?: ""
 
-        return "${iceType};${statistic.strength.toString().lowercase()};" +
+        return "${iceType};${statistic.strength.description} ${statistic.strength.description};" +
             "${statistic.state.toString().lowercase()};${statistic.hackTimeFromStartSeconds};${statistic.totalHackerSeconds};" +
             "${statistic.participants.size};${participants};${hackerConnectDurationSeconds};" +
             "${statistic.siteName}:${statistic.nodeNetworkId}:${statistic.layerLevel};" +
