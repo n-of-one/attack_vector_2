@@ -45,12 +45,14 @@ class SweeperService(
 
 
     fun findOrCreateIceStatus(layer: SweeperIceLayer): SweeperIceStatus {
-        return sweeperIceStatusRepo.findByLayerId(layer.id) ?: createIce(layer.id, layer.strength)
+        return sweeperIceStatusRepo.findByLayerId(layer.id) ?: run {
+            val id = createId("sweeper", sweeperIceStatusRepo::findById)
+            createIce(id, layer.id, layer.strength)
+        }
     }
 
-    fun createIce(layerId: String, strength: IceStrength): SweeperIceStatus {
-        val id = createId("sweeper", sweeperIceStatusRepo::findById)
-        val iceStatus = sweeperCreator.createSweeper(id, layerId, strength)
+    fun createIce(iceId: String, layerId: String, strength: IceStrength): SweeperIceStatus {
+        val iceStatus = sweeperCreator.createSweeper(iceId, layerId, strength)
 
         sweeperIceStatusRepo.save(iceStatus)
         return iceStatus
@@ -235,7 +237,7 @@ class SweeperService(
         if (sweeper.hacked) return // cannot reset a solved sweeper
 
         sweeperIceStatusRepo.delete(sweeper)
-        val newSweeper = createIce(sweeper.layerId, sweeper.strength)
+        val newSweeper = createIce(sweeper.id, sweeper.layerId, sweeper.strength)
 
         iceStatisticsService.sweeperReset(iceId)
 

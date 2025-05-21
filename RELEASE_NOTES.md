@@ -1,3 +1,15 @@
+# Release notes AV 2.10.1 (21 May 2025)
+
+## Bug fixes
+
+- Resetting Minesweeper ICE no longer causes duplicate key errors.
+
+
+
+## Features
+- Tripwires can now be linked to a core in another site. Hacking the tripwire layer will reveal that site's name.
+
+
 # Release notes AV 2.10.0 (27 Apr 2025)
 
 ## Features
