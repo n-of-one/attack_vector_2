@@ -101,6 +101,8 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
                     <SkillOption type={HackerSkillType.STEALTH} name={"Stealth - increase tripwire timers"} skills={skills}/>
                     <SkillOption type={HackerSkillType.BYPASS} name={"Bypass - ignore ICE in first node"} skills={skills}/>
                     <SkillOption type={HackerSkillType.WEAKEN} name={"Weaken - reduce ICE strength"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.UNDO_TRIPWIRE} name={"Undo tripwire - undo tripping tripwires"} skills={skills}/>
+
                 </select>
             </div>
             <div className="col-lg-1">

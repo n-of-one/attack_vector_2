@@ -12,6 +12,10 @@ fun pluralS(number: Int): String {
     return pluralS(number.toLong())
 }
 
+fun pluralS(list: List<Any>): String {
+    return pluralS(list.size)
+}
+
 fun pluralS(number: Long): String {
     return when(number) {
         0L -> "s"

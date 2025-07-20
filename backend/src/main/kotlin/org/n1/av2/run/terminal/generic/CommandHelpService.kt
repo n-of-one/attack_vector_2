@@ -100,6 +100,7 @@ class CommandHelpService(
         }
         showRunScriptHelp(skills)
         showWeakenHelp(skills)
+        showUndoTripwireHelp(skills)
         connectionService.replyTerminalReceive(
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
@@ -145,6 +146,17 @@ class CommandHelpService(
                 "[b]weaken",
                 "Show how many uses of weaken you have left.",
                 ""
+            )
+        }
+    }
+
+    private fun showUndoTripwireHelp(skills: List<Skill>) {
+        if (skills.containsType(UNDO_TRIPWIRE)) {
+            connectionService.replyTerminalReceive(
+                "[b]glitch[/]",
+                "Move back to the previous node and cancel all timers you started by entering the current node. " +
+                "Does not work if you did not start any timers in the current node.",
+                "",
             )
         }
     }

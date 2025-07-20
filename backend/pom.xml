@@ -24,7 +24,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<java.version>21</java.version>
-		<kotlin.version>2.0.21</kotlin.version>
+		<kotlin.version>2.1.21</kotlin.version>
+        <kotlin-api.version>2.1</kotlin-api.version>
 		<kotlinx-coroutines-core.version>1.9.0</kotlinx-coroutines-core.version>
 		<kotlin-logging>3.0.5</kotlin-logging>
 		<logback-classic>1.5.12</logback-classic>
@@ -171,10 +172,11 @@
 				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<version>${kotlin.version}</version>
-				<configuration>
+                <configuration>
 					<compilerPlugins>
 						<plugin>spring</plugin>
 					</compilerPlugins>
+                    <apiVersion>${kotlin-api.version}</apiVersion>
 					<jvmTarget>${java.version}</jvmTarget>
 				</configuration>
 				<executions>

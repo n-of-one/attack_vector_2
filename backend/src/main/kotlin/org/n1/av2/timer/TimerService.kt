@@ -52,7 +52,7 @@ class TimerService(
                 TimerEffect.SHUTDOWN_FINISH -> {
                     val durationLeft = Duration.between(timeService.now(), timer.finishAt)
                     if (durationLeft.isPositive) {
-                        scheduleShutdownFinish(timer.targetSiteId, durationLeft, timer.finishAt)
+                        scheduleShutdownFinish(timer.targetSiteId, durationLeft, timer.finishAt, null)
                         logger.info("Recreated timer for shutdown-end for ${timer.siteId}, ending in ${durationLeft.toHumanTime()}")
                     } else {
                         shutdownFinished(timer.targetSiteId, timer.id)
@@ -89,7 +89,7 @@ class TimerService(
         val durations = calculateEffectiveDuration(baseTimerDuration, stealthApplies, timerSiteId)
         val shutdownAt = timeService.now().plus(durations.effective)
 
-        val timer = timerEntityService.create(layer?.id, null, shutdownAt, timerSiteId, targetSiteId, TimerEffect.SHUTDOWN_START, shutdownDuration, timerLabel)
+        val timer = timerEntityService.create(layer?.id, currentUserService.userId, shutdownAt, timerSiteId, targetSiteId, TimerEffect.SHUTDOWN_START, shutdownDuration, timerLabel)
 
         informClientsOfTimer(ServerActions.SERVER_START_TIMER, timer)
 
@@ -167,14 +167,14 @@ class TimerService(
         siteResetService.resetSite(siteId, shutdownDuration)
 
         val shutdownEndTime = timeService.now().plus(shutdownDuration)
-        val shutdownFinishTimer = scheduleShutdownFinish(siteId, shutdownDuration, shutdownEndTime)
+        val shutdownFinishTimer = scheduleShutdownFinish(siteId, shutdownDuration, shutdownEndTime, timer.userId ?: currentUserService.userId)
 
         connectionService.toSite(siteId, ServerActions.SERVER_START_TIMER, toTimerInfo(shutdownFinishTimer, siteId))
         siteResetService.shutdownSite(siteId, shutdownEndTime)
     }
 
-    private fun scheduleShutdownFinish(siteId: String, shutdownDuration: Duration, shutdownEndTime: ZonedDateTime): Timer {
-        val shutdownFinishTimer = timerEntityService.create(null, null, shutdownEndTime, siteId, siteId, TimerEffect.SHUTDOWN_FINISH, Duration.ZERO)
+    private fun scheduleShutdownFinish(siteId: String, shutdownDuration: Duration, shutdownEndTime: ZonedDateTime, timerUserId: String?): Timer {
+        val shutdownFinishTimer = timerEntityService.create(null, timerUserId, shutdownEndTime, siteId, siteId, TimerEffect.SHUTDOWN_FINISH, Duration.ZERO)
         val identifiers = mapOf("siteId" to siteId)
         systemTaskRunner.queueInSeconds("site shutdown end", identifiers, shutdownDuration.seconds) {
             shutdownFinished(siteId, shutdownFinishTimer.id)
@@ -283,7 +283,6 @@ class TimerService(
 
         informClientsOfTimerRemoved(timer)
     }
-
 
     private fun informClientsOfTimerRemoved(timer: Timer) {
         connectionService.toSite(timer.targetSiteId, ServerActions.SERVER_COMPLETE_TIMER, "timerId" to timer.id)

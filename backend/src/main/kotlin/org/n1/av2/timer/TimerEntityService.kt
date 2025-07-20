@@ -68,5 +68,4 @@ class TimerEntityService(
         return repository.findBySiteId(siteId)
     }
 
-
 }

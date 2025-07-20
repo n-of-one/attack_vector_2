@@ -33,6 +33,7 @@ class TerminalService(
     private val commandDebugService: CommandDebugService,
 
     private val commandWeakenService: CommandWeakenService,
+    private val commandUndoTripwireService: CommandUndoTripwireService,
 
     private val commandDisconnectService: CommandDisconnectService,
 
@@ -73,6 +74,7 @@ class TerminalService(
             "help" -> commandHelpService.processHelp(arguments, hackerState)
 
             "weaken" -> commandWeakenService.processWeaken(arguments, hackerState)
+            "glitch" -> commandUndoTripwireService.processCommand(arguments, hackerState)
 
             "qs" -> commandScanService.processQuickScan(hackerState)
             "qa" ->commandStartAttackService.startQuickAttack(hackerState)
