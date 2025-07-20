@@ -66,7 +66,7 @@ class SyntaxHighlightingService(
         syntaxInside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
 
         syntaxInside["weaken"] = Syntax("t_b", "t_primary")
-        syntaxInside["glitch"] = Syntax("t_b")
+        syntaxInside["rollback"] = Syntax("t_b")
         syntaxInside["jump"] = Syntax(listOf("t_b", "t_b t_info"))
     }
 

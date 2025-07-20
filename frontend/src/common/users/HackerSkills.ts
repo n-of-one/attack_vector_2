@@ -24,7 +24,7 @@ export const skillName: Record<HackerSkillType, string> = {
     [HackerSkillType.STEALTH]: "Stealth",
     [HackerSkillType.BYPASS]: "Bypass",
     [HackerSkillType.WEAKEN]: "Weaken",
-    [HackerSkillType.UNDO_TRIPWIRE]: "Glitch",
+    [HackerSkillType.UNDO_TRIPWIRE]: "Rollback",
     [HackerSkillType.JUMP_TO_HACKER]: "Jump",
 }
 export const skillHasValue: Record<HackerSkillType, boolean> = {
@@ -50,7 +50,7 @@ export const skillInfoText: Record<HackerSkillType, string> = {
     [HackerSkillType.BYPASS]: "The hacker can ignore the ICE in the start node to move further into the site.",
     [HackerSkillType.WEAKEN]: "The hacker can reduce the strength of an ICE layer. The value defines which ICE types can be affected. Each instance " +
     "of this skill can be used once per site. Multiple instances of this skill are possible.",
-    [HackerSkillType.UNDO_TRIPWIRE]: "The hacker can back away from a node they just moved into (moving back to the node they came from)," +
+    [HackerSkillType.UNDO_TRIPWIRE]: "The hacker can back away from a node they just moved into (moving to the node they came from)," +
     " undoing tripping any tripwire they just tripped.",
     [HackerSkillType.JUMP_TO_HACKER]: "The hacker can jump to a node where another hacker is present. Not blocked by ICE along the way.",
 }

@@ -156,7 +156,7 @@ class CommandHelpService(
     private fun showUndoTripwireHelp(skills: List<Skill>) {
         if (skills.containsType(UNDO_TRIPWIRE)) {
             connectionService.replyTerminalReceive(
-                "[b]glitch[/]",
+                "[b]rollback[/]",
                 "Move back to the previous node and cancel all timers you started by entering the current node. " +
                 "Does not work if you did not start any timers in the current node.",
                 "",

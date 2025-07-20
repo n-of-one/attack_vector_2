@@ -78,7 +78,7 @@ class TerminalService(
             "help" -> commandHelpService.processHelp(arguments, hackerState)
 
             "weaken" -> commandWeakenService.processWeaken(arguments, hackerState)
-            "glitch" -> commandUndoTripwireService.processCommand(arguments, hackerState)
+            "rollback" -> commandUndoTripwireService.processCommand(hackerState)
             "jump" -> commandJumpToHackerService.processCommand(arguments, hackerState)
 
 

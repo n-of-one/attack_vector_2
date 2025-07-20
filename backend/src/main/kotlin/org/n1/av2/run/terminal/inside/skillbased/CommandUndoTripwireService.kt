@@ -25,7 +25,7 @@ class CommandUndoTripwireService(
     private val commandMoveService: CommandMoveService
 ) {
 
-    fun processCommand(arguments: List<String>, hackerState: HackerStateRunning) {
+    fun processCommand(hackerState: HackerStateRunning) {
         if (!skillService.currentUserHasSkill(SkillType.UNDO_TRIPWIRE)) {
             connectionService.replyTerminalReceive(MISSING_SKILL_RESPONSE)
             return

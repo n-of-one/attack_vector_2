@@ -76,10 +76,10 @@ export const WebsiteSkills = () => {
                         This skill allows the hacker to use the "jump" command to jump to another hacker's node. This is not blocked by ICE along the way.
                     </p>
 
-                    <h5 className="muted">Glitch</h5>
+                    <h5 className="muted">Rollback</h5>
                     <p className="text">
                         Default hacker skill: <strong>no</strong><br/>
-                        This skill allows the hacker to use the "glitch" command to move back from a node they just entered to the node they came from.
+                        This skill allows the hacker to use the "rollback" command to move back from a node they just entered to the node they came from.
                         This will cancel any timers started by entering the node.
                     </p>
 
