@@ -1,4 +1,4 @@
-package org.n1.av2.run.terminal.inside
+package org.n1.av2.run.terminal.inside.skillbased
 
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.Skill
@@ -8,6 +8,7 @@ import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.run.terminal.MISSING_SKILL_RESPONSE
+import org.n1.av2.run.terminal.inside.InsideTerminalHelper
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.enums.IceStrength
 import org.springframework.stereotype.Service
@@ -96,7 +97,7 @@ class CommandWeakenService(
     }
 
     private fun weaken(layer: IceLayer, hackerState: HackerStateRunning, skill: Skill) {
-        val newStrength = IceStrength.forValue(layer.strength.value - 1)
+        val newStrength = IceStrength.Companion.forValue(layer.strength.value - 1)
         val newIceLayer = iceService.createIceLayer(layer, layer.type, newStrength, layer.name)
 
         val node = nodeEntityService.findByLayerId(layer.id)

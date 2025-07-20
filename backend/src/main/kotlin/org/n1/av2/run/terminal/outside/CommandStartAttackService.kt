@@ -70,7 +70,7 @@ class CommandStartAttackService(
 
     @ScheduledTask
     fun startAttackArrive(userId: String, runId: String) {
-        val hackerState = hackerStateEntityService.retrieve(userId)
+        val hackerState = hackerStateEntityService.retrieveForUserId(userId)
         if (hackerState.runId == null) {
             return // left hack during the attack sequence
         }

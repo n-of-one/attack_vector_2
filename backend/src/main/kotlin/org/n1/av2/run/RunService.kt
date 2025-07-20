@@ -139,7 +139,7 @@ class RunService(
     }
 
     private fun getPresenceInRun(runId: String): List<HackerPresence> {
-        val hackersInRun = hackerStateEntityService.getHackersInRun(runId)
+        val hackersInRun = hackerStateEntityService.findAllHackersInRun(runId)
 
         return hackersInRun.map { state -> toPresence(state) }
     }

@@ -1,4 +1,4 @@
-package org.n1.av2.run.terminal.inside
+package org.n1.av2.run.terminal.inside.skillbased
 
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.SkillService
@@ -7,11 +7,12 @@ import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.util.pluralS
 import org.n1.av2.run.terminal.MISSING_SKILL_RESPONSE
+import org.n1.av2.run.terminal.inside.CommandMoveService
+import org.n1.av2.run.terminal.inside.InsideTerminalHelper
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.timer.TimerService
 import org.springframework.stereotype.Service
-
 
 @Service
 class CommandUndoTripwireService(
@@ -33,7 +34,7 @@ class CommandUndoTripwireService(
         if (!insideTerminalHelper.verifyInside(hackerState)) return
         requireNotNull(hackerState.currentNodeId)
         if (hackerState.previousNodeId == null || hackerState.previousNodeId == hackerState.currentNodeId) {
-            connectionService.replyTerminalReceive("[error]No nodes to go back to.[/]")
+            connectionService.replyTerminalReceive("[error]No node to go back to.[/]")
             return
         }
 

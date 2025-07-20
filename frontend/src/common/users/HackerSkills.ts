@@ -7,6 +7,7 @@ export enum HackerSkillType {
     BYPASS = "BYPASS",
     WEAKEN = "WEAKEN",
     UNDO_TRIPWIRE = "UNDO_TRIPWIRE",
+    JUMP_TO_HACKER= "JUMP_TO_HACKER",
 }
 
 export interface HackerSkill {
@@ -23,7 +24,8 @@ export const skillName: Record<HackerSkillType, string> = {
     [HackerSkillType.STEALTH]: "Stealth",
     [HackerSkillType.BYPASS]: "Bypass",
     [HackerSkillType.WEAKEN]: "Weaken",
-    [HackerSkillType.UNDO_TRIPWIRE]: "Undo tripwire",
+    [HackerSkillType.UNDO_TRIPWIRE]: "Glitch",
+    [HackerSkillType.JUMP_TO_HACKER]: "Jump",
 }
 export const skillHasValue: Record<HackerSkillType, boolean> = {
     [HackerSkillType.SEARCH_SITE]: false,
@@ -34,6 +36,7 @@ export const skillHasValue: Record<HackerSkillType, boolean> = {
     [HackerSkillType.BYPASS]: false,
     [HackerSkillType.WEAKEN]: true,
     [HackerSkillType.UNDO_TRIPWIRE]: false,
+    [HackerSkillType.JUMP_TO_HACKER]: false,
 }
 
 export const skillInfoText: Record<HackerSkillType, string> = {
@@ -49,6 +52,7 @@ export const skillInfoText: Record<HackerSkillType, string> = {
     "of this skill can be used once per site. Multiple instances of this skill are possible.",
     [HackerSkillType.UNDO_TRIPWIRE]: "The hacker can back away from a node they just moved into (moving back to the node they came from)," +
     " undoing tripping any tripwire they just tripped.",
+    [HackerSkillType.JUMP_TO_HACKER]: "The hacker can jump to a node where another hacker is present. Not blocked by ICE along the way.",
 }
 export const skillCanHaveMultipleInstances: Record<HackerSkillType, boolean> = {
     [HackerSkillType.SEARCH_SITE]: false,
@@ -59,4 +63,5 @@ export const skillCanHaveMultipleInstances: Record<HackerSkillType, boolean> = {
     [HackerSkillType.BYPASS]: false,
     [HackerSkillType.WEAKEN]: true,
     [HackerSkillType.UNDO_TRIPWIRE]: false,
+    [HackerSkillType.JUMP_TO_HACKER]: false,
 }

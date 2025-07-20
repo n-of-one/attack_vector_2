@@ -1,9 +1,14 @@
+# Release notes AV 2.11.0 (20 July 2025)
+
+## Features
+- Add skill: glitch. Allows hacker to undo their last move if that triggered a tripwire.
+- Add skill: jump. Allows hacker to jump to the node of another hacker, ignoring ICE.
+
+
 # Release notes AV 2.10.1 (21 May 2025)
 
 ## Bug fixes
-
 - Resetting Minesweeper ICE no longer causes duplicate key errors.
-
 
 
 ## Features

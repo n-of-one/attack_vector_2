@@ -6,6 +6,9 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.run.terminal.generic.*
 import org.n1.av2.run.terminal.inside.*
+import org.n1.av2.run.terminal.inside.skillbased.CommandJumpToHackerService
+import org.n1.av2.run.terminal.inside.skillbased.CommandUndoTripwireService
+import org.n1.av2.run.terminal.inside.skillbased.CommandWeakenService
 import org.n1.av2.run.terminal.outside.CommandStartAttackService
 import org.springframework.stereotype.Service
 
@@ -34,6 +37,7 @@ class TerminalService(
 
     private val commandWeakenService: CommandWeakenService,
     private val commandUndoTripwireService: CommandUndoTripwireService,
+    private val commandJumpToHackerService: CommandJumpToHackerService,
 
     private val commandDisconnectService: CommandDisconnectService,
 
@@ -75,6 +79,8 @@ class TerminalService(
 
             "weaken" -> commandWeakenService.processWeaken(arguments, hackerState)
             "glitch" -> commandUndoTripwireService.processCommand(arguments, hackerState)
+            "jump" -> commandJumpToHackerService.processCommand(arguments, hackerState)
+
 
             "qs" -> commandScanService.processQuickScan(hackerState)
             "qa" ->commandStartAttackService.startQuickAttack(hackerState)

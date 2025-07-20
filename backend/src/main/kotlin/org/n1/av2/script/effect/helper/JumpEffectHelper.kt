@@ -41,32 +41,18 @@ class JumpEffectHelper(
     private fun jumpIgnoringIce(currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {
         if (targetNodeId == currentNodeId) return ScriptExecution("Cannot jump to the current node.")
 
-        val nodes = nodeEntityService.findBySiteId(hackerState.siteId)
-        val traverseNodesById = traverseNodeService.createTraverseNodesWithDistance(hackerState.siteId, currentNodeId, nodes)
-        val startTraverseNode = traverseNodesById[currentNodeId] ?: error("currentNodeId node not found in traverse nodes.")
-        val targetTraverseNode = traverseNodesById[targetNodeId] ?: error("targetNodeId not found in traverse nodes.")
-
-        val path = TraverseNode.createPath(startTraverseNode, targetTraverseNode, true)
-
         return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceive("Jumping to ${targetDescription}.")
-            setPreviousNode(hackerState, path)
+            setPreviousNode(hackerState, targetNodeId)
             commandMoveService.moveArrive(targetNodeId, currentUserService.userId, hackerState.runId)
         }
     }
 
-    private fun setPreviousNode(hackerState: HackerStateRunning, path: List<String>) {
+    private fun setPreviousNode(hackerState: HackerStateRunning, targetNodeId: String) {
         val newPosition = hackerState.toState().copy(
-            currentNodeId = determinePreviousNode(path),
+            currentNodeId = targetNodeId
         )
         hackerStateRepo.save(newPosition)
-    }
-
-    private fun determinePreviousNode(path: List<String>): String {
-        if (path.size <= 2) {
-            return path.first() // you were adjacent to target, take your starting positions
-        }
-        return path[path.size - 2] // take the previous node in the path
     }
 
     private fun jumpBlockedByIce(siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {

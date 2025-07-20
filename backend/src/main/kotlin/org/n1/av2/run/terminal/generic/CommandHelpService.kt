@@ -98,9 +98,12 @@ class CommandHelpService(
                 "",
             )
         }
+
         showRunScriptHelp(skills)
         showWeakenHelp(skills)
         showUndoTripwireHelp(skills)
+        showJumpToHackerHelp(skills)
+
         connectionService.replyTerminalReceive(
             "[b]password[/] [primary]<layer>[/]      -- for example: [b]password[primary] 1",
             "Opens the password interface for ICE, to provide a password.",
@@ -156,6 +159,16 @@ class CommandHelpService(
                 "[b]glitch[/]",
                 "Move back to the previous node and cancel all timers you started by entering the current node. " +
                 "Does not work if you did not start any timers in the current node.",
+                "",
+            )
+        }
+    }
+
+    private fun showJumpToHackerHelp(skills: List<Skill>) {
+        if (skills.containsType(JUMP_TO_HACKER)) {
+            connectionService.replyTerminalReceive(
+                "[b]jump[/] [info]<user name> -- for example: [b]jump [info]angler",
+                "Jump to the node of another hacker. Ice does not block this movement.",
                 "",
             )
         }

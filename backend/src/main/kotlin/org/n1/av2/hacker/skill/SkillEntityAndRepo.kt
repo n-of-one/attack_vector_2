@@ -47,7 +47,8 @@ enum class SkillType(
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
     STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay),
     WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()}, ${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes),
-    UNDO_TRIPWIRE()
+    UNDO_TRIPWIRE(),
+    JUMP_TO_HACKER(),
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }

@@ -16,7 +16,7 @@ export const WebsiteSkills = () => {
 
             <div className="row">
                 <div className="col-12">
-                    <h3 className="muted">Skills</h3>
+                    <h2 className="muted">Skills</h2>
                     <p className="text">
                         <br/>
                         Skills are abilities that hackers can have that help them in the game. They are optional, not needed for Attack Vector, but could be
@@ -29,7 +29,7 @@ export const WebsiteSkills = () => {
                         "Template". When a new hacker is created, it will receive the same skills as the template user.<br/>
                     </p>
 
-                    <h3 className="muted">List of skills</h3><br/>
+                    <h3 className="muted">Common skills</h3><br/>
 
                     <h5 className="muted">Scan</h5>
                     <p className="text">
@@ -61,6 +61,28 @@ export const WebsiteSkills = () => {
                         When a hacker has this skill, they will see a menu item "sites" that allows them to manage their sites.
                     </p>
 
+                    <h3 className="muted">Specialized skills</h3>
+
+                    <h5 className="muted">Bypass</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill allows the hacker to ignore ICE in the first node of a site with respect to moving beyond this ICE. This also allows the
+                        hacker to perform a scan inside the node to reveal the site beyond this node. Normally the ICE blocks revealing the rest of the site.
+                    </p>
+
+                    <h5 className="muted">Jump</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill allows the hacker to use the "jump" command to jump to another hacker's node. This is not blocked by ICE along the way.
+                    </p>
+
+                    <h5 className="muted">Glitch</h5>
+                    <p className="text">
+                        Default hacker skill: <strong>no</strong><br/>
+                        This skill allows the hacker to use the "glitch" command to move back from a node they just entered to the node they came from.
+                        This will cancel any timers started by entering the node.
+                    </p>
+
                     <h5 className="muted">Scripts RAM</h5>
                     <p className="text">
                         Default hacker skill: <strong>no</strong><br/>
@@ -79,18 +101,11 @@ export const WebsiteSkills = () => {
                         minutes.
                     </p>
 
-                    <h5 className="muted">Bypass</h5>
-                    <p className="text">
-                        Default hacker skill: <strong>no</strong><br/>
-                        This skill allows the hacker to ignore ICE in the first node of a site with respect to moving beyond this ICE. This also allows the
-                        hacker to perform a scan inside the node to reveal the site beyond this node. Normally the ICE blocks revealing the rest of the site.
-                    </p>
-
                     <h5 className="muted">Weaken</h5>
                     <p className="text">
                         Default hacker skill: <strong>no</strong><br/>
-                        This skill allows the hacker reduce the strength of a single layer of ICE. The strength is reduced by one step, for example Very Strong
-                        becomes Strong.<br/><br/>
+                        This skill allows the hacker use the "weaken" command. This reduces the strength of a single layer of ICE.
+                        The strength is reduced by one step, for example Very Strong becomes Strong.<br/><br/>
                         This skill works on one or more types of ICE, specified when setting up the skill.<br/><br/>
                         You can have this skill more than once. Where each instance defines what types of ICE it affects. Each instance can be used once
                         per site. After a site is reset, the skill (instances) can be used again on this site.

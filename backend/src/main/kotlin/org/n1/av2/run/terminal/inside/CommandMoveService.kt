@@ -141,7 +141,7 @@ class CommandMoveService(
 
     @ScheduledTask
     fun moveArrive(nodeId: String, userId: String, runId: String) {
-        val hackerState = hackerStateEntityService.retrieve(userId)
+        val hackerState = hackerStateEntityService.retrieveForUserId(userId)
         if (hackerState.runId == null || hackerState.runId != runId) return // hacker has left the original run
         val runState = hackerState.toRunState()
         val run = runEntityService.getByRunId(runId)
@@ -172,7 +172,7 @@ class CommandMoveService(
     }
 
     private fun arriveComplete(nodeId: String, userId: String, runId: String) {
-        val state = hackerStateEntityService.retrieve(userId).toRunState()
+        val state = hackerStateEntityService.retrieveForUserId(userId).toRunState()
         hackerStateEntityService.arriveAt(state, nodeId)
         triggerLayersAtArrive(state.siteId, nodeId, runId)
 

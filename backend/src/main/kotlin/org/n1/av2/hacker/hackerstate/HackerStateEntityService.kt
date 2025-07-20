@@ -79,7 +79,7 @@ class HackerStateEntityService(
         val startNode = nodes.find { it.networkId == siteProperties.startNodeNetworkId }!!
 
 
-        val oldState = retrieve(userId)
+        val oldState = retrieveForUserId(userId)
         val newState = oldState.copy(
             activity = HackerActivity.INSIDE,
             currentNodeId = startNode.id,
@@ -98,7 +98,7 @@ class HackerStateEntityService(
     }
 
     fun setConnectionForNetworkedApp(userPrincipal: UserPrincipal) {
-        val newState = retrieve(userPrincipal.userId).copy(
+        val newState = retrieveForUserId(userPrincipal.userId).copy(
             networkedConnectionId = userPrincipal.connectionId,
         )
         hackerStateRepo.save(newState)
@@ -107,7 +107,7 @@ class HackerStateEntityService(
     fun enterIce(iceId: String) {
         val userPrincipal = SecurityContextHolder.getContext().authentication as UserPrincipal
 
-        val newState = retrieve(userPrincipal.userId).copy(
+        val newState = retrieveForUserId(userPrincipal.userId).copy(
             iceId = iceId,
             iceConnectTimestamp = timeService.now()
         )
@@ -156,7 +156,7 @@ class HackerStateEntityService(
     }
 
     fun leaveIce(userPrincipal: UserPrincipal) {
-        val newState = retrieve(userPrincipal.userId).copy(
+        val newState = retrieveForUserId(userPrincipal.userId).copy(
             iceId = null,
             networkedConnectionId = null,
             iceConnectTimestamp = null,
@@ -168,7 +168,8 @@ class HackerStateEntityService(
         return HackerState(
             userId = userId,
             connectionId = connectionId,
-            runId = null, siteId = null,
+            runId = null,
+            siteId = null,
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.OFFLINE,
@@ -178,18 +179,16 @@ class HackerStateEntityService(
         )
     }
 
-
     fun retrieveForCurrentUser(): HackerState {
         if (currentUserService.userId == SYSTEM_USER.id) {
             error("Trying to perform action for current user assuming it is a player, but current user SYSTEM for a system event")
         }
-        return retrieve(currentUserService.userId)
+        return retrieveForUserId(currentUserService.userId)
     }
 
-    fun retrieve(userId: String): HackerState {
+    fun retrieveForUserId(userId: String): HackerState {
         return hackerStateRepo.findById(userId).getOrNull() ?: createLoggedOutState(userId, "no-connection")
     }
-
 
     fun findByRunIdAndIceId(runId: String, iceId: String): List<HackerState> {
         return hackerStateRepo.findByRunIdAndIceId(runId, iceId)
@@ -198,12 +197,6 @@ class HackerStateEntityService(
     fun findByIceId(iceId: String): List<HackerState> {
         return hackerStateRepo.findByIceId(iceId)
     }
-
-
-    fun getHackersInRun(runId: String): List<HackerState> {
-        return hackerStateRepo.findByRunId(runId)
-    }
-
 
     fun findAllHackersInRun(runId: String): List<HackerState> {
         return hackerStateRepo.findByRunId(runId)

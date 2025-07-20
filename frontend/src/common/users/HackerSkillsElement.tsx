@@ -94,14 +94,15 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
                             setChosenSkillOption(event.target.value)
                         }}>
                     <option value=""></option>
-                    <SkillOption type={HackerSkillType.SEARCH_SITE} name={"Search Site - allow searching sites"} skills={skills}/>
-                    <SkillOption type={HackerSkillType.SCAN} name={"Scan - allow scan command"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.BYPASS} name={"Bypass - ignore ICE in first node"} skills={skills}/>
                     <SkillOption type={HackerSkillType.CREATE_SITE} name={"Create site - allow creating sites"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.UNDO_TRIPWIRE} name={"Glitch - undo tripping tripwires"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.JUMP_TO_HACKER} name={"Jump - jump to another hacker"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.SCAN} name={"Scan - allow scan command"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.SEARCH_SITE} name={"Search Site - allow searching sites"} skills={skills}/>
                     <SkillOption type={HackerSkillType.SCRIPT_RAM} name={"Script RAM - allow usage of scripts"} skills={skills}/>
                     <SkillOption type={HackerSkillType.STEALTH} name={"Stealth - increase tripwire timers"} skills={skills}/>
-                    <SkillOption type={HackerSkillType.BYPASS} name={"Bypass - ignore ICE in first node"} skills={skills}/>
                     <SkillOption type={HackerSkillType.WEAKEN} name={"Weaken - reduce ICE strength"} skills={skills}/>
-                    <SkillOption type={HackerSkillType.UNDO_TRIPWIRE} name={"Undo tripwire - undo tripping tripwires"} skills={skills}/>
 
                 </select>
             </div>

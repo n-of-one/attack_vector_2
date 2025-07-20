@@ -24,10 +24,10 @@ import org.springframework.stereotype.Service
  * The css for this is located in terminal.css
  */
 
-data class Syntax(val main: List<String>, val rest: String) {
+data class Syntax(val main: List<String>, val rest: String = "t_error t_s") {
 
-    constructor(first: String) : this(listOf<String>(first), "t_error t_s")
-    constructor(first: String, second: String) : this(listOf<String>(first, second), "t_error t_s")
+    constructor(first: String) : this(listOf<String>(first))
+    constructor(first: String, second: String) : this(listOf<String>(first, second))
 
 }
 
@@ -64,6 +64,10 @@ class SyntaxHighlightingService(
         syntaxInside["hack"] = Syntax("t_b", "t_primary")
         syntaxInside["password"] = Syntax("t_b", "t_primary")
         syntaxInside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
+
+        syntaxInside["weaken"] = Syntax("t_b", "t_primary")
+        syntaxInside["glitch"] = Syntax("t_b")
+        syntaxInside["jump"] = Syntax(listOf("t_b", "t_b t_info"))
     }
 
 

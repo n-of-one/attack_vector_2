@@ -37,7 +37,7 @@ class LolaService(
     }
 
     fun share(lolaUser: UserEntity, runId: String) {
-        val lolaHackerState = hackerStateEntityService.retrieve(lolaUser.id)
+        val lolaHackerState = hackerStateEntityService.retrieveForUserId(lolaUser.id)
         if (lolaHackerState.activity == HackerActivity.OFFLINE) {
             connectionService.replyTerminalReceive("[info]${lolaUser.name}[/] is not connected to the network.")
             return
@@ -63,7 +63,7 @@ class LolaService(
     fun speak(text: String): SpeakResponse {
         val lolaUser = userEntityService.getByName(LOLA_USER_NAME)
 
-        val lolaHackerState = hackerStateEntityService.retrieve(lolaUser.id)
+        val lolaHackerState = hackerStateEntityService.retrieveForUserId(lolaUser.id)
         if (lolaHackerState.activity == HackerActivity.OFFLINE) {
             return SpeakResponse(false, "${lolaUser.name} is not connected to the network.")
         }

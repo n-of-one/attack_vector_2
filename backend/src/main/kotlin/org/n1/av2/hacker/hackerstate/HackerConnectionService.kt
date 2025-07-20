@@ -32,7 +32,7 @@ class HackerConnectionService(
     lateinit var runService: RunService
 
     fun browserConnectHackerMain(userPrincipal: UserPrincipal) {
-        val hackerState = hackerStateEntityService.retrieve(userPrincipal.userId)
+        val hackerState = hackerStateEntityService.retrieveForUserId(userPrincipal.userId)
         if (hackerState.activity.inRun) {
             runService.leaveSite(hackerState, false)
         }
@@ -59,7 +59,7 @@ class HackerConnectionService(
     }
 
     fun browserDisconnectHackerMain(userPrincipal: UserPrincipal) {
-        val hackerState = hackerStateEntityService.retrieve(userPrincipal.userId)
+        val hackerState = hackerStateEntityService.retrieveForUserId(userPrincipal.userId)
 
         if (hackerState.connectionId != userPrincipal.connectionId) {
             return // don't change the active session over another session disconnecting
@@ -73,7 +73,7 @@ class HackerConnectionService(
     }
 
     fun browserDisconnectHackerApp(userPrincipal: UserPrincipal) {
-        val hackerState = hackerStateEntityService.retrieve(userPrincipal.userId)
+        val hackerState = hackerStateEntityService.retrieveForUserId(userPrincipal.userId)
 
         if (hackerState.networkedConnectionId != userPrincipal.connectionId) {
             return // don't change the active session over another session disconnecting
