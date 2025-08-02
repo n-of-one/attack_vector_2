@@ -1,5 +1,6 @@
 package org.n1.av2.script
 
+import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -10,6 +11,7 @@ import org.n1.av2.script.common.toUiEffectDescriptions
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.ram.RamEntity
 import org.n1.av2.script.type.ScriptType
+import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -20,6 +22,7 @@ class ScriptStatusNotifier(
     private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val timeService: TimeService,
     private val currentUserService: CurrentUserService,
+    private val hackerEntityService: HackerEntityService,
 ) {
 
     @Suppress("unused")
@@ -51,7 +54,7 @@ class ScriptStatusNotifier(
     )
 
     fun sendScriptStatusOfCurrentUser(scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity) {
-        val status = createUiScriptStatus(scriptsAndTypes, ram)
+        val status = createUiScriptStatus(scriptsAndTypes, ram,)
         connectionService.toUser (currentUserService.userId, ServerActions.SERVER_RECEIVE_SCRIPT_STATUS, status)
     }
 
@@ -63,11 +66,10 @@ class ScriptStatusNotifier(
         }
     }
 
-
     fun createUiScriptStatus(scriptsAndTypes: List<Pair<Script, ScriptType>>, ram: RamEntity): UIScriptStatus {
         return UIScriptStatus(
             scriptsAndTypes.map { toUiScript(it) },
-            UiRam(ram.enabled, ram.size, ram.loaded, ram.refreshing, ram.free, ram.nextRefresh, ram.lockedUntil)
+            UiRam(ram.enabled, ram.size, ram.loaded, ram.refreshing, ram.free, ram.nextRefresh, ram.lockedUntil),
         )
     }
 

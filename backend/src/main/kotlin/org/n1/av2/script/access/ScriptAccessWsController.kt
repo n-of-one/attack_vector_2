@@ -38,7 +38,7 @@ class ScriptAccessWsController(
         }
     }
 
-    class EditScriptAccessCommand(val id: ScriptAccessId, val receiveForFree: Int, val price: BigDecimal?)
+    class EditScriptAccessCommand(val id: ScriptAccessId, val receiveForFree: Int, val price: Int?)
 
     @MessageMapping("/gm/scriptAccess/edit")
     fun editScriptAccess(command: EditScriptAccessCommand, userPrincipal: UserPrincipal) {

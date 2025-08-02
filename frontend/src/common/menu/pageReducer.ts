@@ -8,6 +8,7 @@ export enum Page {
     SITES = "SITES",
     RUN = "RUN",
     HACKER_SCRIPTS = "HACKER_SCRIPTS",
+    SCRIPTS_MARKET = "SCRIPTS_MARKET",
     ME = "ME",
     ICE = "ICE",
     ICE_AUTH = "ICE_AUTH",
@@ -20,6 +21,7 @@ export enum Page {
     GM_SCRIPTS_HOME = "GM_SCRIPTS_HOME",
     SCRIPT_TYPE_MANAGEMENT = "SCRIPT_TYPE_MANAGEMENT",
     SCRIPT_MANAGEMENT = "SCRIPT_MANAGEMENT",
+    SCRIPT_INCOME_CONFIGURATION = "SCRIPT_INCOME_CONFIGURATION",
     SCRIPT_ACCESS_MANAGEMENT = "SCRIPT_ACCESS_MANAGEMENT",
 
 // Display this page when another tab was opened for the same hacker / app connection.

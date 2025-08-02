@@ -41,9 +41,12 @@ export const MenuBar = () => {
 
     const hackersCanCreateSites = hasSkill(currentUser, HackerSkillType.CREATE_SITE)
     const hackerHasScriptsSkill = hasSkill(currentUser, HackerSkillType.SCRIPT_RAM)
+    const hackerHasScriptsCreditsSkill = hasSkill(currentUser, HackerSkillType.SCRIPT_CREDITS)
+
 
     const hackerSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
     const hackerScripts = hackerHasScriptsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
+    const hackerMarket = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
 
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{
@@ -60,7 +63,8 @@ export const MenuBar = () => {
                                 <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
                                 {hackerSites}
                                 {hackerScripts}
-                                <MenuItem requriesRole="ROLE_HACKER" targetPage={Page.HACKER_HOME} label="Home"/>
+                                {hackerMarket}
+                                <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>
                                 <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={Page.SITES} label="Sites"/>

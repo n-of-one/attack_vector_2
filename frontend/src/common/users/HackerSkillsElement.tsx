@@ -44,7 +44,7 @@ const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
 
     return <>
         <div className="row">
-            <div className={"col-lg-4"}>
+            <div className={"col-lg-5"}>
                 <SkillDeleteElement skill={skill}/> &nbsp;
                 <InfoBadge infoText={infoText}/> {name}
             </div>
@@ -70,7 +70,7 @@ const SkillValueElement = ({skill}: { skill: HackerSkill }) => {
     }
 
     const skillValueDisplay = skill.value ? skill.value : ""
-    return <div className={"col-lg-7"} style={{height: "30px"}}>
+    return <div className={"col-lg-6"} style={{height: "30px"}}>
             <span style={{position: "relative", top: "-10px"}}>
             <TextSaveInput className="form-control" value={skillValueDisplay} save={save} style={{height: "28px"}}/>
                 </span>
@@ -87,8 +87,8 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
         <hr/>
         <div className="row form-group text">
 
-            <label htmlFor="addEffect" className="col-lg-3 control-label text-muted">Add skill:</label>
-            <div className="col-lg-7">
+            <label htmlFor="addEffect" className="col-lg-2 control-label text-muted">Add skill:</label>
+            <div className="col-lg-8">
                 <select className="form-control" value={chosenSkillOption}
                         onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                             setChosenSkillOption(event.target.value)
@@ -100,6 +100,7 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
                     <SkillOption type={HackerSkillType.JUMP_TO_HACKER} name={"Jump - jump to another hacker"} skills={skills}/>
                     <SkillOption type={HackerSkillType.SCAN} name={"Scan - allow scan command"} skills={skills}/>
                     <SkillOption type={HackerSkillType.SEARCH_SITE} name={"Search Site - allow searching sites"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.SCRIPT_CREDITS} name={"Script credits - allow selling of data and buying scripts"} skills={skills}/>
                     <SkillOption type={HackerSkillType.SCRIPT_RAM} name={"Script RAM - allow usage of scripts"} skills={skills}/>
                     <SkillOption type={HackerSkillType.STEALTH} name={"Stealth - increase tripwire timers"} skills={skills}/>
                     <SkillOption type={HackerSkillType.WEAKEN} name={"Weaken - reduce ICE strength"} skills={skills}/>

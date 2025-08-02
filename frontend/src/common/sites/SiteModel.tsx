@@ -57,6 +57,9 @@ export interface LayerDetails {
 
     interactionKey?: string      // Script Interaction layer
     message?: string             // Script Interaction layer
+
+    amount?: number              // Script Credits layer
+    stolen?: boolean        // Script Credits layer
 }
 
 export interface NodeI {

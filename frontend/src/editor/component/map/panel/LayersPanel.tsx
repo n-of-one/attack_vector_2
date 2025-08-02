@@ -5,7 +5,9 @@ import {
     KEYSTORE,
     LOCK,
     NETWALK_ICE,
-    PASSWORD_ICE, SCRIPT_INTERACTION,
+    PASSWORD_ICE,
+    SCRIPT_CREDITS,
+    SCRIPT_INTERACTION,
     STATUS_LIGHT,
     SWEEPER_ICE,
     TANGLE_ICE,
@@ -51,6 +53,7 @@ export const LayersPanel = () => {
                     {regular(TRIPWIRE, "white")}
                     {regular(CORE, "white")}
                     {regular(SCRIPT_INTERACTION, "white")}
+                    {regular(SCRIPT_CREDITS, "white")}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>

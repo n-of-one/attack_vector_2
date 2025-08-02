@@ -2,11 +2,17 @@ package org.n1.av2.script
 
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
+import org.n1.av2.hacker.hacker.HackerEntityService
+import org.n1.av2.hacker.skill.SkillService
+import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
+import org.n1.av2.platform.iam.user.UserAndHackerService
+import org.n1.av2.platform.iam.user.UserEntityService
+import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createIdGeneric
@@ -28,6 +34,10 @@ class ScriptService(
     private val scriptTypeService: ScriptTypeService,
     private val ramService: RamService,
     private val scriptStatusNotifier: ScriptStatusNotifier,
+    private val skillService: SkillService,
+    private val hackerEntityService: HackerEntityService,
+    private val userAndHackerService: UserAndHackerService,
+    private val userEntityService: UserEntityService
 ) {
     fun getScriptById(scriptId: ScriptId): Script {
         return scriptRepository.findById(scriptId).orElseThrow { error("Script not found with id: $scriptId") }
@@ -323,8 +333,57 @@ class ScriptService(
     }
 
     private fun reply(userId: String, message: String, toTerminal: Boolean) {
-        if (toTerminal) connectionService.toUser( userId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf(message)))
+        if (toTerminal) connectionService.toUser(userId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf(message)))
         else connectionService.toUser(userId, ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, "", message))
+    }
+
+    fun buy(scriptAccessId: String) {
+        val scriptAccess = scriptAccessService.getById(scriptAccessId)
+
+        if (scriptAccess.price == null) {
+            error("Script access does not have a price.")
+        }
+        if (!skillService.currentUserHasSkill(SkillType.SCRIPT_CREDITS)) {
+            error("You do not have the required skill to buy scripts.")
+        }
+
+        val hacker = hackerEntityService.findForUser(currentUserService.userEntity)
+        if (scriptAccess.price > hacker.scriptCredits) {
+            error("Not enough money to buy this script.")
+            return
+        }
+
+        addScript(scriptAccess.typeId, currentUserService.userId)
+        hackerEntityService.addScriptCredits(hacker.hackerUserId, -scriptAccess.price)
+        sendScriptStatusToCurrentUser()
+        userAndHackerService.sendDetailsOfCurrentUser()
+    }
+
+    fun transferScriptCredits(receiver: String, amount: Int) {
+        if (amount <= 0) error("Amount must be greater than 0.")
+
+        val receiverUser = userEntityService.findByNameIgnoreCase(receiver)
+        if (receiverUser == null || receiverUser.type != UserType.HACKER) {
+            error("Hacker not found: $receiver")
+        }
+        val sender = hackerEntityService.findForUser(currentUserService.userEntity)
+        if (sender.scriptCredits < amount) {
+            error("Balance too low.")
+        }
+
+        if (!skillService.userHasSkill(receiverUser.id, SkillType.SCRIPT_CREDITS)) {
+            error("${receiverUser.name} does not have the skill to receive credits.")
+        }
+        val receiver = hackerEntityService.findForUser(receiverUser)
+
+        hackerEntityService.addScriptCredits(sender.hackerUserId, -amount)
+        hackerEntityService.addScriptCredits(receiver.hackerUserId, +amount)
+
+        userAndHackerService.sendDetailsOfCurrentUser()
+        userAndHackerService.sendDetailsOfSpecificUserOnlyToThatUser(receiverUser.id)
+
+        connectionService.replyNeutral("Transfer completed.")
+        connectionService.toUser(receiverUser.id, ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, "", "You received $amount \uD83D\uDDF2 from ${currentUserService.userEntity.name}"))
     }
 
 }

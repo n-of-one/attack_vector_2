@@ -5,20 +5,17 @@ import {SilentLink} from "../../common/component/SilentLink";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {ScriptAccess} from "../../gm/scripts/access/ScriptAccessReducer";
 import {InfoBadge} from "../../common/component/ToolTip";
-import {ScriptsTable} from "../run/component/script/ScriptPanel";
-import {Script, ScriptEffectDisplay, ScriptState} from "../../common/script/ScriptModel";
-import {Hr} from "../../common/component/dataTable/Hr";
-import {RamDisplay} from "./RamDisplay";
+import {ScriptEffectDisplay} from "../../common/script/ScriptModel";
 import {TextInput} from "../../common/component/TextInput";
+import {HackerScriptsPanel} from "./HackerScriptsPanel";
+import {Page} from "../../common/menu/pageReducer";
+import {HackerSkillType} from "../../common/users/HackerSkills";
+import {hasSkill} from "../../common/users/CurrentUserReducer";
+import {NavigateButton} from "../../common/component/NavigateButton";
 
 
 export const HackerScriptsHome = () => {
-    const scriptStatus = useSelector((state: HackerRootState) => state.scriptStatus)
-    const scripts = scriptStatus?.scripts || []
-    const ram = scriptStatus?.ram || null
     const accesses = useSelector((state: HackerRootState) => state.scriptAccess)
-
-    const hr = <Hr/>
 
     return (
         <div className="row content">
@@ -28,47 +25,42 @@ export const HackerScriptsHome = () => {
                 <br/>
                 <strong>🜁 Verdant OS 🜃</strong><br/>
                 <br/>
+                <h3 className="text-info">Scripts</h3>
+                <br/>
                 Scripts exploit security flaws. Those flaws will be patched automatically by security systems after use,
                 so all script can only be used once. The flaws are also patched daily at 06:00, so scripts can only be used on the day they are created.<br/>
-                <br/>
-                <hr/>
-                <RamDisplay size={509}/>
-                <hr/>
+                <MarketSection/>
                 <DownloadScript/>
                 <FreeReceive accesses={accesses}/>
             </div>
             <div className="col-lg-7">
                 <div className="rightPanel">
-                    <div className="row text">
-                        <div className="col-lg-6">
-                            <strong>Scripts</strong>
-                        </div>
-                        <div className="col-lg-6">
-                            <DeleteUsedAndExpired scripts={scripts}/>
-                        </div>
-                    </div>
-                    <br/>
-                    <ScriptsTable scripts={scripts} hr={hr} ram={ram} showLoadButton={true}/>
-                    <br/>
-
+                    <HackerScriptsPanel/>
                 </div>
-
             </div>
         </div>
     )
 }
 
-const DeleteUsedAndExpired = ({scripts}: { scripts: Script[] }) => {
-    const userOrExpired = scripts.filter(script => script.state === ScriptState.USED || script.state === ScriptState.EXPIRED)
-    if (userOrExpired.length === 0) {
+const MarketSection = () => {
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+    const credits = useSelector((state: HackerRootState) => state.currentUser.hacker?.scriptCredits) || 0
+
+    if (!hasSkill(currentUser, HackerSkillType.SCRIPT_CREDITS)) {
         return <></>
     }
-    const cleanup = () => {
-        webSocketConnection.send("/hacker/script/cleanup", null)
-    }
-    return <SilentLink onClick={cleanup}>
-        <div className="btn btn-info" style={{fontSize: "12px"}}>Delete used and expired</div>
-    </SilentLink>
+
+    return <>
+        <hr/>
+        <div className="row">
+            <div className="col-lg-7 text">
+                Script credit balance: <span className="text-info">{credits} <span className="glyphicon glyphicon-flash"/></span>
+            </div>
+            <div className="col-lg-5 text">
+                <NavigateButton label="Market" page={Page.SCRIPTS_MARKET}/>
+            </div>
+        </div>
+    </>
 }
 
 
@@ -136,14 +128,17 @@ const downloadScript = (code: string) => {
 }
 
 const DownloadScript = () => {
-    return <TextInput placeholder="1234-abcd"
-                      buttonLabel="Download"
-                      buttonClass="btn-info"
-                      save={(code) => downloadScript(code)}
-                      clearAfterSubmit={true}
-                      autofocus={true}
-                      size={3}
-                      label="Download script from external source"
-                      labelColumns={4}
-    />
+    return <>
+        <hr/>
+        <TextInput placeholder="1234-abcd"
+                   buttonLabel="Download"
+                   buttonClass="btn-info"
+                   save={(code) => downloadScript(code)}
+                   clearAfterSubmit={true}
+                   autofocus={true}
+                   size={3}
+                   label="Download script from external source"
+                   labelColumns={4}
+        />
+    </>
 }

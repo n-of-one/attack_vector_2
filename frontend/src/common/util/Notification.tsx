@@ -35,6 +35,10 @@ export const createNotification = (title: string | undefined, message: string, d
 
 export type NotificationType = "ok" | "neutral" | "error" | "fatal"
 
+export const notifySimple = (message: string) => {
+    createNotification(undefined, message, 8000)
+}
+
 export const notify = ({type, message, title}: { type: NotificationType, title?: string, message: string }) => {
 
 

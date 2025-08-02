@@ -20,6 +20,7 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
@@ -166,6 +167,7 @@ class ImportService(
             LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
             LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
+            LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
             LayerType.NETWALK_ICE,
             LayerType.TANGLE_ICE,
             LayerType.TAR_ICE,
@@ -235,6 +237,14 @@ class ImportService(
             id = id, level = level, name = name, note = note,
             interactionKey =  input.get("interactionKey").asText(),
             message = input.get("message").asText(),
+        )
+    }
+
+    private fun mapLayerScriptCredits(input: JsonNode, id: String, level: Int, name: String, note: String, ): ScriptCreditsLayer {
+        return ScriptCreditsLayer(
+            id = id, level = level, name = name, note = note,
+            amount = input.get("amount").asInt(),
+            stolen = input.get("stolen").asBoolean(),
         )
     }
 

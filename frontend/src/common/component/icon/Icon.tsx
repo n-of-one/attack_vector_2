@@ -10,7 +10,9 @@ import {
     NETWALK_ICE,
     OS,
     PASSWORD_ICE,
-    SCAN_BLOCK, SCRIPT_INTERACTION,
+    SCAN_BLOCK,
+    SCRIPT_CREDITS,
+    SCRIPT_INTERACTION,
     STATUS_LIGHT,
     SWEEPER_ICE,
     TANGLE_ICE,
@@ -72,6 +74,7 @@ const iconFamily = (type: string) => {
         case TRIPWIRE:
         case STATUS_LIGHT:
         case CORE:
+        case SCRIPT_CREDITS:
             return "svg"
         default: throw new Error("Unknown icon family for type: " + type)
     }

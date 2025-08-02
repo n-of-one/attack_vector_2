@@ -12,6 +12,7 @@ enum class LayerType(
     STATUS_LIGHT,
     CORE,
     SCRIPT_INTERACTION,
+    SCRIPT_CREDITS,
 
     WORD_SEARCH_ICE(true),
     PASSWORD_ICE(true),

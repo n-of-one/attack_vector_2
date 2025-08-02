@@ -3,8 +3,7 @@ import {navigateTo} from "../../common/menu/MenuItem";
 import {Page} from "../../common/menu/pageReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {ActionButton} from "../../common/component/ActionButton";
-import {Icon} from "../../common/component/icon/Icon";
-import {GLYPHICON_EXPAND, GLYPHICON_FLASH, GLYPHICON_LOGIN} from "../../common/component/icon/Glyphicon";
+import {ButtonGlyphicon} from "../../common/component/icon/Glyphicon";
 import {GmRootState} from "../GmRootReducer";
 import {ScriptStatistics} from "./ScriptStatisticsReducer";
 import {DataTable} from "../../common/component/dataTable/DataTable";
@@ -35,27 +34,35 @@ export const GmScriptHome = () => {
                     <br/>
                     <br/>
                     <ActionButton onClick={() => {
-                        navigateTo(Page.SCRIPT_MANAGEMENT, Page.SCRIPT_TYPE_MANAGEMENT, null, dispatch)
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_TYPE_MANAGEMENT, null, dispatch)
                     }}>
-                        <><Icon type={GLYPHICON_FLASH} size="12px" height="12px"/> Script types</>
+                        <><ButtonGlyphicon type="glyphicon-flash"/> Script types</>
                     </ActionButton>
                     &nbsp;Manage the scripts that exist in your game.<br/>
                     <br/>
                     <br/>
                     <ActionButton onClick={() => {
-                        navigateTo(Page.SCRIPT_MANAGEMENT, Page.SCRIPT_ACCESS_MANAGEMENT, null, dispatch)
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_ACCESS_MANAGEMENT, null, dispatch)
                     }}>
-                        <><Icon type={GLYPHICON_LOGIN} size="12px" height="12px"/> Script access</>
+                        <><ButtonGlyphicon type="glyphicon-log-in"/> Script access</>
                     </ActionButton>
                     &nbsp;Manage the scripts that hackers have access to (without GM intervention)<br/>
                     <br/>
                     <br/>
                     <ActionButton onClick={() => {
-                        navigateTo(Page.SCRIPT_MANAGEMENT, Page.SCRIPT_MANAGEMENT, null, dispatch)
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_MANAGEMENT, null, dispatch)
                     }}>
-                        <><Icon type={GLYPHICON_EXPAND} size="12px" height="12px"/> Current scripts</>
+                        <><ButtonGlyphicon type="glyphicon-expand"/> Current scripts</>
                     </ActionButton>
-                    &nbsp; Directly manage the scripts hackers currently have.
+                    &nbsp; Directly manage the scripts hackers currently have.<br/>
+                    <br/>
+                    <br/>
+                    <ActionButton onClick={() => {
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_INCOME_CONFIGURATION, null, dispatch)
+                    }}>
+                        <><ButtonGlyphicon type="glyphicon-calendar"/> Script income</>
+                    </ActionButton>
+                    &nbsp; Configure on which days the hackers receive script credits income.
                 </div>
 
 
@@ -67,28 +74,27 @@ export const GmScriptHome = () => {
             </div>
         </div>
     )
-
 }
 
 
 const ScriptStatisticsPanel = () => {
     useEffect(() => {
         webSocketConnection.send("/gm/script/getStatistics", null)
-    },[])
+    }, [])
 
     const statisticsList = useSelector((state: GmRootState) => state.scriptsManagement.statistics)
     const sortedList = [...statisticsList].sort(sortStatistics)
 
 
     const rows = sortedList.map((line: ScriptStatistics, index: number) => {
-            return (<div className="row text">
-                    <div className="col-lg-2">{line.name}</div>
-                    <div className="col-lg-2"><DarkZero value={line.owned}/></div>
-                    <div className="col-lg-2"><DarkZero value={line.loaded}/></div>
-                    <div className="col-lg-4"><DarkZero value={line.freeReceive}/></div>
-                </div>
-            )
-        })
+        return (<div className="row text">
+                <div className="col-lg-2">{line.name}</div>
+                <div className="col-lg-2"><DarkZero value={line.owned}/></div>
+                <div className="col-lg-2"><DarkZero value={line.loaded}/></div>
+                <div className="col-lg-4"><DarkZero value={line.freeReceive}/></div>
+            </div>
+        )
+    })
     const texts = sortedList.map(line => `${line.name}~${line.owned}~${line.loaded}~${line.freeReceive}`)
     const hr = <Hr height={4} marginTop={2}/>
 
@@ -105,12 +111,12 @@ const ScriptStatisticsPanel = () => {
 }
 
 const sortStatistics = (a: ScriptStatistics, b: ScriptStatistics) => {
-    if (a.owned > 0 && b.owned === 0 ) return -1
-    if (a.owned === 0 && b.owned > 0 ) return 1
+    if (a.owned > 0 && b.owned === 0) return -1
+    if (a.owned === 0 && b.owned > 0) return 1
     return a.name.localeCompare(b.name)
 }
 
-const DarkZero = ({value, text}: {value: number, text?: string}) => {
+const DarkZero = ({value, text}: { value: number, text?: string }) => {
     const displayText = text ? text : value
     if (value === 0) return <span className="dark">{displayText}</span>
     return <>{displayText}</>

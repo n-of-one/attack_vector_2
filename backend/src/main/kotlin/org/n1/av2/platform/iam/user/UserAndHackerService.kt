@@ -10,6 +10,7 @@ import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
+import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.runlink.RunLinkEntityService
 import org.springframework.stereotype.Service
 
@@ -22,6 +23,7 @@ class UserAndHackerService(
     private val runLinkEntityService: RunLinkEntityService,
     private val currentUserService: CurrentUserService,
     private val skillService: SkillService,
+    private val timeService: TimeService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -80,6 +82,8 @@ class UserAndHackerService(
         val icon: HackerIcon,
         val characterName: String,
         val skills: List<Skill>,
+        val scriptCredits: Int,
+        val incomeAvailable: Boolean,
     )
 
     class UiUserDetails(
@@ -97,6 +101,11 @@ class UserAndHackerService(
     fun sendDetailsOfSpecificUser(userId: String) {
         val uiUserDetails = getDetailsOfSpecificUser(userId)
         connectionService.reply(ServerActions.SERVER_RECEIVE_EDIT_USER, uiUserDetails)
+        connectionService.toUser(userId, ServerActions.SERVER_RECEIVE_CURRENT_USER, uiUserDetails)
+    }
+
+    fun sendDetailsOfSpecificUserOnlyToThatUser(userId: String) {
+        val uiUserDetails = getDetailsOfSpecificUser(userId)
         connectionService.toUser(userId, ServerActions.SERVER_RECEIVE_CURRENT_USER, uiUserDetails)
     }
 
@@ -121,6 +130,8 @@ class UserAndHackerService(
             icon = hacker.icon,
             characterName = hacker.characterName,
             skills = skillsWithDisplayValues,
+            scriptCredits = hacker.scriptCredits,
+            incomeAvailable = timeService.isPastReset(hacker.lastReceivedScriptCreditsIncome)
         )
     }
 
@@ -132,6 +143,7 @@ class UserAndHackerService(
             "type" -> editUserAttribute(user, "type", value)
             "characterName" -> editHackerAttribute(user, "characterName", value)
             "hackerIcon" -> editHackerAttribute(user, "hackerIcon", value)
+            "scriptCredits"-> editHackerAttribute(user, "scriptCredits", value)
             else -> error("Unknown user property: $field")
         }
 
@@ -159,6 +171,10 @@ class UserAndHackerService(
         val editedHacker: Hacker = when (field) {
             "characterName" -> hacker.copy(characterName = value)
             "hackerIcon" -> hacker.copy(icon = HackerIcon.valueOf(value))
+            "scriptCredits" -> {
+                val credits = value.toIntOrNull() ?: error("Invalid script credits value: $value")
+                hacker.copy(scriptCredits = credits)
+            }
             else -> error("Unknown user property: $field")
         }
         validate(user.id, editedHacker)

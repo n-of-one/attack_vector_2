@@ -16,7 +16,7 @@ data class ScriptAccess(
     val ownerUserId: String,
     val typeId: String,
     val receiveForFree: Int,
-    val price: BigDecimal?,
+    val price: Int?,
     val lastUsed: ZonedDateTime,
 )
 

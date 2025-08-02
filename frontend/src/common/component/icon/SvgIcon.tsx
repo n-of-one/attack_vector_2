@@ -1,5 +1,5 @@
 import React from "react"
-import {CORE, LOCK, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
+import {CORE, LOCK, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
 
 interface Props {
     type?: string,
@@ -18,6 +18,8 @@ const determinePath = (type: string| undefined) => {
         case STATUS_LIGHT: return "/img/editor/tabler/9080499_bulb.svg"
         case TRIPWIRE: return "/img/editor/tabler/9080987_history_history.svg"
         case CORE: return "/img/editor/tabler/9080715_cpu.svg"
+        case SCRIPT_CREDITS:
+            return "/img/editor/tabler/9080253_bolt.svg"
         default: return "unknown-type svg:" + type
     }
 }

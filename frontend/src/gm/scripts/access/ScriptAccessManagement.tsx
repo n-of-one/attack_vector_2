@@ -114,8 +114,8 @@ export const AccessOfUser = ({user}: { user: User }) => {
                 <div className="col-lg-2">Receive&nbsp;<InfoBadge infoText="The number of scripts the hacker will receive for free." placement="top"/>
                 </div>
                 <div className="col-lg-2"/>
-                {/*<div className="col-lg-2">Price&nbsp;<InfoBadge*/}
-                {/*    infoText="The price this hacker can buy the script for. If empty, the hacker cannot buy this script." placement="top"/></div>*/}
+                <div className="col-lg-2">Price&nbsp;<InfoBadge
+                    infoText="The price this hacker can buy the script for on the market. If empty, the hacker cannot buy this script." placement="top"/></div>
                 <div className="col-lg-1">Action</div>
             </div>
             <br/>
@@ -153,16 +153,16 @@ const ScriptAccessElement = ({access}: { access: ScriptAccess }) => {
                            readonly={false}/>
         </div>
         <div className="col-lg-2"/>
-        {/*<div className="col-lg-2">*/}
-        {/*    <TextSaveInput id={access.id} className="form-control"*/}
-        {/*                   placeholder="" value={access.price === null ? "" : access.price}*/}
-        {/*                   save={(priceInput) => {*/}
-        {/*                       const price = isNaN(parseFloat(priceInput)) ? null : parseFloat(priceInput)*/}
-        {/*                       const accessCopy = {...access, price}*/}
-        {/*                       save(accessCopy)*/}
-        {/*                   }}*/}
-        {/*                   readonly={false}/>*/}
-        {/*</div>*/}
+        <div className="col-lg-2">
+            <TextSaveInput id={access.id} className="form-control"
+                           placeholder="" value={access.price === null ? "" : access.price}
+                           save={(priceInput) => {
+                               const price = isNaN(parseFloat(priceInput)) ? null : parseFloat(priceInput)
+                               const accessCopy = {...access, price}
+                               save(accessCopy)
+                           }}
+                           readonly={false}/>
+        </div>
         <div className="col-lg-1" style={{paddingTop: "9px"}}>
             <SilentLink onClick={deleteAccess} title="Remove script">
                 <span className="glyphicon glyphicon-trash"/>

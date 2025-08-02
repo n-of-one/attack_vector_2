@@ -13,6 +13,7 @@ export enum LayerType {
     TRIPWIRE = "TRIPWIRE",
     CORE = "CORE",
     SCRIPT_INTERACTION = "SCRIPT_INTERACTION",
+    SCRIPT_CREDITS = "SCRIPT_CREDITS",
 }
 
 export const OS = "OS"
@@ -38,7 +39,7 @@ export const KEYSTORE = "KEYSTORE"
 export const TRIPWIRE = "TRIPWIRE"
 
 export const SCRIPT_INTERACTION = LayerType.SCRIPT_INTERACTION.toString()
-
+export const SCRIPT_CREDITS = LayerType.SCRIPT_CREDITS.toString()
 
 
 export const layerTypeFromIceId = (iceId: string): LayerType | null => {

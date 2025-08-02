@@ -12,6 +12,7 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
@@ -220,6 +221,7 @@ class NodeEntityService(
             LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
             LayerType.CORE -> CoreLayer(layerId, level, defaultName)
             LayerType.SCRIPT_INTERACTION -> ScriptInteractionLayer(layerId, level, defaultName)
+            LayerType.SCRIPT_CREDITS -> ScriptCreditsLayer(layerId, level, defaultName)
         }
     }
 

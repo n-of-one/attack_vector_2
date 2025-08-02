@@ -49,6 +49,7 @@ class ScriptWsController(
         }
     }
 
+    // Functions for the hacker
 
     @MessageMapping("/hacker/script/cleanup")
     fun cleanup(userPrincipal: UserPrincipal) {
@@ -70,6 +71,25 @@ class ScriptWsController(
             scriptService.downloadScript(scriptId, false)
         }
     }
+
+    @MessageMapping("/hacker/script/buy")
+    fun buy(scriptAccessId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/hacker/script/buy", userPrincipal) {
+            scriptService.buy(scriptAccessId)
+        }
+    }
+
+    class TransferScriptCreditsCommand(val receiver: String, val amount: Int)
+
+    @MessageMapping("/hacker/scriptCredits/transfer")
+    fun transferScriptCredits(command: TransferScriptCreditsCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/hacker/scriptCredits/transfer", userPrincipal) {
+            scriptService.transferScriptCredits(command.receiver, command.amount)
+        }
+    }
+
+
+    // Functions that can be used by both GM and Hacker
 
     @MessageMapping("/script/delete")
     fun delete(scriptId: ScriptId, userPrincipal: UserPrincipal) {

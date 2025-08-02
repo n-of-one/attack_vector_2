@@ -16,7 +16,7 @@ data class ScriptType(
     val category: String,
     val size: Int,
     val effects: List<ScriptEffect>,
-    val defaultPrice: BigDecimal?,
+    val defaultPrice: Int?,
 )
 
 data class ScriptEffect(

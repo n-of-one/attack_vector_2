@@ -112,6 +112,15 @@ const HackerDetails = ({user}: { user: User }) => {
             </div>
         </div>
 
+        <UserAttribute
+            user={user}
+            label="Script credits" id="scriptCredits" size={4}
+            value={user.hacker?.scriptCredits}
+            attributeSaveName="scriptCredits"
+            readonly={!isUserManager}
+        />
+
+
         {showSkills ? <>
             <hr/>
             <div className="text">Skills</div>

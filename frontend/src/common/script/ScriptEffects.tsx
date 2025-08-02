@@ -1,14 +1,14 @@
-import {Script} from "./ScriptModel";
+import {ScriptEffectDisplay} from "./ScriptModel";
 import {InfoBadge} from "../component/ToolTip";
 import React from "react";
 
 interface Props {
-    script: Script
+    effects: ScriptEffectDisplay[]
 }
 
-export const ScriptEffects = ({script}: Props) => {
+export const ScriptEffects = ({effects}: Props) => {
     return (<> {
-        script.effects.map((effectDisplay, index) => {
+        effects.map((effectDisplay, index) => {
             return (<span key={index}>
                         <InfoBadge infoText={effectDisplay.description}
                                    badgeText={effectDisplay.label}/>

@@ -73,5 +73,6 @@ const ZEROES = "00000000000000000000000000000000000000";
 export const zeroPad = (numberValue: number, totalPositions: number) => {
     const numberPositions = (numberValue === 0) ? 1 : 1 + Math.floor(Math.log10(numberValue));
 
-    return ZEROES.substr(0, (totalPositions - numberPositions)) + numberValue;
+    return ZEROES.substring(0, (totalPositions - numberPositions)) + numberValue;
 };
+

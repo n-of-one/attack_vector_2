@@ -42,7 +42,7 @@ export const ScriptLine = ({script, useCase, minimize, ram, showLoadButton}: Pro
                     &nbsp;<ScriptActionDelete script={script}/>&nbsp;
 
                 </div>
-                <div className="col-lg-2"><ScriptEffects script={script}/></div>
+                <div className="col-lg-2"><ScriptEffects effects={script.effects}/></div>
             </div>
         </>
     )

@@ -42,19 +42,22 @@ enum class SkillType(
 ) {
     BYPASS(),
     CREATE_SITE(),
+    JUMP_TO_HACKER(),
     SCAN(),
     SEARCH_SITE(),
+    SCRIPT_CREDITS("0", ::validatePositiveNumber),
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
     STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay),
-    WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()}, ${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes),
     UNDO_TRIPWIRE(),
-    JUMP_TO_HACKER(),
+    WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()}, ${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes),
 }
 
 val noOpNormalization = { toNormalize: String -> toNormalize }
 val displayAsIs = { toDisplay: String -> toDisplay }
 val noUpdateAction = { _: String, _: String?, _: ApplicationContext -> }
 val noRemovalAction = { _: String, _: ApplicationContext -> }
+
+
 
 fun validatePositiveNumber(input: String): String? {
     val value = input.toIntOrNull() ?: return "must be a whole number"

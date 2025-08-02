@@ -30,9 +30,13 @@ class SkillService(
         return skillRepo.findById(skillId).orElse(null) ?: error("Skill with id $skillId not found")
     }
 
-    fun currentUserHasSkill(type: SkillType): Boolean {
-        val skills = skillRepo.findByUserId(currentUserService.userId)
+    fun userHasSkill(userId: String, type: SkillType): Boolean {
+        val skills = skillRepo.findByUserId(userId)
         return skills.any { it.type == type }
+    }
+
+    fun currentUserHasSkill(type: SkillType): Boolean {
+        return userHasSkill(currentUserService.userId, type)
     }
 
     fun findSkillsForUser(userId: String): List<Skill> {
@@ -49,7 +53,7 @@ class SkillService(
         val id = createId("skill", skillRepo::findById)
         val skill = Skill(id, userId, type)
         skillRepo.save(skill)
-
+        skill.type.processUpdate(skill.userId, skill.type.defaultValue, applicationContext)
         userAndHackerService.sendDetailsOfSpecificUser(userId)
     }
 

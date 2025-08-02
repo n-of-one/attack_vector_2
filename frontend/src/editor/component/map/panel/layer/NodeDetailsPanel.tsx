@@ -18,6 +18,7 @@ import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
 import {LayerCorePanel} from "./type/panel/app/LayerCorePanel";
 import {LayerScriptInteractionPanel} from "./type/panel/app/LayerScriptInteraction";
 import {LayerDetails, NodeI} from "../../../../../common/sites/SiteModel";
+import {LayerScriptCreditsPanel} from "./type/panel/app/LayerScriptCreditsPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -55,7 +56,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerCorePanel node={node} layer={layer}/>
         case LayerType.SCRIPT_INTERACTION:
             return <LayerScriptInteractionPanel node={node} layer={layer}/>
-
+        case LayerType.SCRIPT_CREDITS:
+            return <LayerScriptCreditsPanel node={node} layer={layer}/>
 
         default:
             return <div className="text">NodeDetailsPanel: ERROR: layer type unknown: {layer.type} for {layer.id}</div>

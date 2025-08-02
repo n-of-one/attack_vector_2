@@ -11,6 +11,7 @@ import {SitesPage} from "../common/sites/SitesPage";
 import {UserType} from "../common/users/CurrentUserReducer";
 import {Page} from "../common/menu/pageReducer";
 import {HackerScriptsHome} from "./scripts/HackerScriptsHome";
+import {ScriptMarket} from "./scripts/ScriptMarket";
 
 const dismissScanInfo = (infoNodeId: string | null, event: any) => {
     if (!infoNodeId) return
@@ -35,6 +36,8 @@ const renderCurrentPage = (currentPage: Page) => {
             return <SitesPage/>
         case Page.HACKER_SCRIPTS:
             return <HackerScriptsHome />
+        case Page.SCRIPTS_MARKET:
+            return <ScriptMarket/>
         case Page.ME:
             return <Me/>
         default:

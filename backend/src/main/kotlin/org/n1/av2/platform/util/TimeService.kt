@@ -42,7 +42,8 @@ class TimeService(
             .withMinute(0)
             .withSecond(0)
 
-    fun isPastReset(lastUsed: ZonedDateTime): Boolean {
+    fun isPastReset(lastUsed: ZonedDateTime?): Boolean {
+        if (lastUsed == null) return true
         val resetMoment = if (now() > scriptResetMoment()) scriptResetMoment() else scriptResetMoment().minusDays(1)
 
         return lastUsed < resetMoment

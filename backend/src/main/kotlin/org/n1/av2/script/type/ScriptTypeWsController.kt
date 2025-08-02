@@ -34,7 +34,7 @@ class ScriptTypeWsController(
         }
     }
 
-    class EditCommand(val scriptTypeId: ScriptTypeId, val name: String, val category: String, val gmNote: String, val size: Int, val defaultPrice: BigDecimal?)
+    class EditCommand(val scriptTypeId: ScriptTypeId, val name: String, val category: String, val gmNote: String, val size: Int, val defaultPrice: Int?)
     @MessageMapping("/gm/scriptType/edit")
     fun editScriptType(command: EditCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/gm/scriptType/edit", userPrincipal) {

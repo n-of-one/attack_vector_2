@@ -21,7 +21,7 @@ export const LayerCorePanel = ({node, layer}: Props) => {
 
     return (
         <LayerPanel typeDisplay="Core" layerObject={core}>
-            <AttributeDropdown key={key("status")} label="Network"
+            <AttributeDropdown key={key("revealNetwork")} label="Network"
                                value={"" + core.revealNetwork}
                                options={[{value: "false", text: "Don't reveal network"},
                                     {value: "true", text: "Reveal network"}]}

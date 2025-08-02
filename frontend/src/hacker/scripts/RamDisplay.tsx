@@ -12,7 +12,7 @@ export const RamDisplay = ({size}: {size: number}) => {
 
     const refreshText = ram.nextRefreshSecondsLeft === null ? "" : `(next available: ${formatTimeInterval(ram.nextRefreshSecondsLeft)})`
 
-    return <div>
+    return <div className="text">
         <div className="row">
             <div className="col-lg-1">
                 RAM
@@ -31,6 +31,14 @@ export const RamDisplay = ({size}: {size: number}) => {
 }
 
 export const RamBar = ({ram, size}: { ram: Ram, size: number }) => {
+    if (ram.size === 0) {
+        return <div className="progress-stacked">
+            <div className="progress" role="progressbar" aria-label="Segment one" aria-valuenow={100} aria-valuemin={0} aria-valuemax={100}
+                 style={{"width": "100%"}}>
+                <div className="progress-bar bg-light-subtle dark">not installed</div>
+            </div>
+        </div>
+    }
 
     const loadedPercentage = (ram.loaded / ram.size) * 100
     const refreshingPercentage = (ram.refreshing / ram.size) * 100

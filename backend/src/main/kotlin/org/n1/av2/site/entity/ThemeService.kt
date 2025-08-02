@@ -13,6 +13,7 @@ class ThemeService {
         LayerType.TRIPWIRE -> "Tripwire"
         LayerType.CORE -> "Core"
         LayerType.SCRIPT_INTERACTION -> "Process"
+        LayerType.SCRIPT_CREDITS -> "Database"
 
         LayerType.STATUS_LIGHT -> "Status Light"
         LayerType.LOCK -> "Lock"

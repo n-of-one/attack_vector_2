@@ -14,10 +14,10 @@ export interface AdminRootState extends GmRootState {
 export const adminRootReducer = combineReducers({
     // from GenericUserRootState
     currentUser: currentUserReducer,
+    currentPage: pageReducer,
     config: configReducer,
 
     // from GmRootState
-    currentPage: pageReducer,
     users: usersReducer,
     sites: sitesReducer,
     scriptsManagement: scriptManagementReducer,

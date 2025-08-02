@@ -13,6 +13,8 @@ import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreLayerService
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.os.OsLayerService
+import org.n1.av2.layer.other.script.ScriptCreditsLayer
+import org.n1.av2.layer.other.script.ScriptCreditsLayerService
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayerService
 import org.n1.av2.layer.other.text.TextLayer
@@ -39,6 +41,7 @@ class CommandHackService(
     private val hackedUtil: HackedUtil,
     private val coreLayerService: CoreLayerService,
     private val scriptInteractionLayerService: ScriptInteractionLayerService,
+    private val scriptCreditsLayerService: ScriptCreditsLayerService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
 ) {
@@ -79,6 +82,7 @@ class CommandHackService(
             is CoreLayer -> coreLayerService.hack(layer, hackerState.runId)
             is TripwireLayer -> tripwireLayerService.hack(layer, hackerState)
             is ScriptInteractionLayer -> scriptInteractionLayerService.hack()
+            is ScriptCreditsLayer -> scriptCreditsLayerService.hack(layer, hackerState)
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }
     }

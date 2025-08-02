@@ -1,4 +1,4 @@
-import {Page, pageReducer} from "../common/menu/pageReducer";
+import {pageReducer} from "../common/menu/pageReducer";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {combineReducers} from "redux";
 import {editUserDataReducer, UserOverview, userOverviewReducer} from "../common/users/EditUserDataReducer";
@@ -44,7 +44,6 @@ export const scriptManagementReducer = combineReducers({
 
 
 export interface GmRootState extends GenericUserRootState {
-    currentPage: Page,
     users: Users,
     sites: Array<SiteInfo>,
     scriptsManagement: ScriptManagement,
@@ -53,10 +52,10 @@ export interface GmRootState extends GenericUserRootState {
 export const gmRootReducer = combineReducers({
     // from GenericUserRootState
     currentUser: currentUserReducer,
+    currentPage: pageReducer,
     config: configReducer,
 
     // from GmRootState
-    currentPage: pageReducer,
     users: usersReducer,
     sites: sitesReducer,
     scriptsManagement: scriptManagementReducer,

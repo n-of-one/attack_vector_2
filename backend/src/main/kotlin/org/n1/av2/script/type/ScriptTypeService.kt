@@ -57,7 +57,7 @@ class ScriptTypeService(
         val gmNote: String,
         val category: String,
         val size: Int,
-        val defaultPrice: BigDecimal?,
+        val defaultPrice: Int?,
         val effects: List<ScriptTypeEffectUi>
     )
 
@@ -112,7 +112,7 @@ class ScriptTypeService(
         checkScriptNameLength(name)
     }
 
-    fun edit(scriptTypeId: ScriptTypeId, name: String, category: String, gmNote: String, size: Int, defaultPrice: BigDecimal?) {
+    fun edit(scriptTypeId: ScriptTypeId, name: String, category: String, gmNote: String, size: Int, defaultPrice: Int?) {
         checkScriptNameLength(name)
 
         val scriptType = getById(scriptTypeId)
@@ -126,7 +126,7 @@ class ScriptTypeService(
             },
             defaultPrice = when {
                 defaultPrice == null -> null
-                defaultPrice <= BigDecimal.ZERO -> null
+                defaultPrice <= 0 -> null
                 else -> defaultPrice
             },
             gmNote = gmNote,

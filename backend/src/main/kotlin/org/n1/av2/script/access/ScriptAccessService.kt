@@ -52,7 +52,7 @@ class ScriptAccessService(
         val id: ScriptAccessId,
         val type: ScriptTypeUi,
         val receiveForFree: Int,
-        val price: BigDecimal?,
+        val price: Int?,
         val used: Boolean,
     )
 
@@ -125,17 +125,17 @@ class ScriptAccessService(
         }
     }
 
-    fun editAccess(accessId: ScriptAccessId, receiveForFree: Int, priceInput: BigDecimal?) {
+    fun editAccess(accessId: ScriptAccessId, receiveForFree: Int, priceInput: Int?) {
         validateCanManageAccess()
         val access = scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
 
-        if (priceInput != null && priceInput < BigDecimal.ZERO) {
+        if (priceInput != null && priceInput < 0) {
             connectionService.replyError("Price cannot be negative.")
             sendScriptAccess(access.ownerUserId)
             return
         }
 
-        val price = if (priceInput == BigDecimal.ZERO) null else priceInput
+        val price = if (priceInput == 0) null else priceInput
 
         val editedAccess = access.copy(receiveForFree = receiveForFree, price = price)
         scriptAccessRepository.save(editedAccess)
@@ -155,4 +155,7 @@ class ScriptAccessService(
         return scriptAccessRepository.findByTypeId(typeId)
     }
 
+    fun getById(id: ScriptAccessId): ScriptAccess {
+        return scriptAccessRepository.findById(id).orElseThrow { error("Script access not found with id: $id") }
+    }
 }

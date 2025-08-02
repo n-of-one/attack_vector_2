@@ -69,11 +69,11 @@ interface ScriptMinimizeButtonProps {
 }
 
 const ScriptPanelExpandedHead = ({minimize, onlyShowLoaded, setOnlyShowLoaded, ram}: ScriptMinimizeButtonProps) => {
-
     const refreshText = ram.nextRefreshSecondsLeft === null ? "" : `(${formatTimeInterval(ram.nextRefreshSecondsLeft)})`
 
     return <>
         <div className="row text">
+            <ScriptCredits/>
             <div className="col-lg-3">
                 <div className="form-check form-switch">
                     <input className="form-check-input" type="checkbox" role="switch"
@@ -98,7 +98,22 @@ const ScriptPanelExpandedHead = ({minimize, onlyShowLoaded, setOnlyShowLoaded, r
             </div>
         </div>
     </>
+}
 
+const ScriptCredits = () => {
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+    const credits = useSelector((state: HackerRootState) => state.currentUser.hacker?.scriptCredits) || 0
+
+    if (!hasSkill(currentUser, HackerSkillType.SCRIPT_CREDITS)) {
+        return <></>
+    }
+
+    return <div className="row text">
+        <div className="col-lg-3">
+            Script credits: <span className="text-info">{credits} <span className="glyphicon glyphicon-flash"/></span><br/>
+            <br/>
+        </div>
+    </div>
 }
 
 interface ScriptsTableProps {
