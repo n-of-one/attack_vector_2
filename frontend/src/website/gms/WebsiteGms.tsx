@@ -1,9 +1,9 @@
-/* eslint-disable react/jsx-no-target-blank */
 import React from "react";
 import {Banner} from "../../login/Banner";
 import {SilentLink} from "../../common/component/SilentLink";
 import {WebsiteImage} from "../WebsiteImage";
 
+/* eslint-disable react/jsx-no-target-blank */
 
 export const WebsiteGms = () => {
 

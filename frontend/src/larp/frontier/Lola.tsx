@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Cookies from "js-cookie";
 
+/* eslint jsx-a11y/anchor-is-valid: 0*/
 
 interface LolaSpeakResult {
     success: boolean
@@ -138,13 +139,11 @@ export const Lola = (): React.JSX.Element => {
                 return <>
                     <div className="row text">
                         <div className="col col-lg-12">
-                            <a href="#"
-                               onClick={event => {
+                            <a onClick={event => {
                                    deleteStored(event, index)
                                }}><span className="glyphicon glyphicon-trash"/></a>&nbsp;
 
-                            <a href="#"
-                               onClick={loadStored}
+                            <a onClick={loadStored}
                             >{text}</a>
                         </div>
                     </div>

@@ -7,7 +7,7 @@ import {EditorState} from "../../../../../../../EditorRootReducer";
 import {editorCanvas} from "../../../../../canvas/EditorCanvas";
 import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
 import {LayerKeyStore} from "../../../../../../../../common/model/layer/LayerKeystore";
-import {iceLayerOptions} from "./LayerUtil";
+import {iceLayerOptions} from "./LayerUtils";
 
 
 interface Props {
