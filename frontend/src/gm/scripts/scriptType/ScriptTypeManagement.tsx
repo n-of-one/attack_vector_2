@@ -70,11 +70,6 @@ const ChooseOrCreateScriptType = () => {
     </>)
 }
 
-const numericInputDefault0 = (value: string) => {
-    if (/^\d+$/.test(value)) return value
-    return "0"
-}
-
 const numericInputDefault1 = (value: string) => {
     if (/^\d+$/.test(value)) return value
     return "1"

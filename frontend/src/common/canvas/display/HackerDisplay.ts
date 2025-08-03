@@ -2,7 +2,8 @@ import {fabric} from "fabric"
 import {animate, calcLine, easeInOutSine, easeOutSine, getHtmlImage, LinePositions} from "../CanvasUtils"
 import {Schedule} from "../../util/Schedule"
 import {
-    COLOR_HACKER_LINE, COLOR_HACKER_LINE_BYPASSING, COLOR_PATROLLER_LINE,
+    COLOR_HACKER_LINE,
+    COLOR_HACKER_LINE_BYPASSING,
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
     IMAGE_SIZE,

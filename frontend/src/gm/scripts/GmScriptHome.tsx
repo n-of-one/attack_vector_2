@@ -58,7 +58,7 @@ export const GmScriptHome = () => {
                     <br/>
                     <br/>
                     <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_INCOME_CONFIGURATION, null, dispatch)
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_INCOME_DATES, null, dispatch)
                     }}>
                         <><ButtonGlyphicon type="glyphicon-calendar"/> Script income</>
                     </ActionButton>

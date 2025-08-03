@@ -13,8 +13,6 @@ export const TangleIceHome = () => {
 
     const classHidden = ice.uiState === HIDDEN ? " hidden_alpha" : ""
 
-    const showClusters = ice.clusters > 1
-
     return (
         <div className="row icePanelRow">
             <div className="col-lg-12">

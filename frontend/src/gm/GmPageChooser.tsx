@@ -13,7 +13,7 @@ import {GmScriptHome} from "./scripts/GmScriptHome";
 import {ScriptTypeManagement} from "./scripts/scriptType/ScriptTypeManagement";
 import {CurrentScriptManagement} from "./scripts/currentScripts/CurrentScriptManagement";
 import {GmStatisticsHome} from "./statistics/GmStatisticsHome";
-import {ScriptIncomeConfig} from "./scripts/incomeConfig/ScriptIncomeConfig";
+import {ScriptIncomeDates} from "./scripts/incomeConfig/ScriptIncomeDates";
 
 
 const renderCurrentPage = (currentPage: Page) => {
@@ -30,8 +30,8 @@ const renderCurrentPage = (currentPage: Page) => {
             return <CurrentScriptManagement/>
         case Page.SCRIPT_ACCESS_MANAGEMENT:
             return <ScriptAccessManagement/>
-        case Page.SCRIPT_INCOME_CONFIGURATION:
-            return <ScriptIncomeConfig/>
+        case Page.SCRIPT_INCOME_DATES:
+            return <ScriptIncomeDates/>
         case Page.TASKS:
             return <TaskMonitorHome/>
         case Page.STATISTICS:

@@ -7,7 +7,6 @@ import {initRunServerActions} from "./RunServerActionProcessor";
 import {terminalManager} from "../common/terminal/TerminalManager";
 import {initGenericServerActions} from "../common/server/GenericServerActionProcessor";
 import {Page} from "../common/menu/pageReducer";
-import {Script, ScriptState} from "../common/script/ScriptModel";
 import {RequiresRole} from "../common/user/RequiresRole";
 import {Provider} from "react-redux";
 import {HackerPageChooser} from "./HackerPageChooser";
