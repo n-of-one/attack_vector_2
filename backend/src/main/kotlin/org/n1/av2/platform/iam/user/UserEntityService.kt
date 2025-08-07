@@ -79,7 +79,7 @@ class UserEntityService(
 
     fun findFreeUserName(input: String): String {
         val normalizedInput = input.replace(" ", "_")
-        if (findByNameIgnoreCase(normalizedInput) == null) return input
+        if (findByNameIgnoreCase(normalizedInput) == null) return normalizedInput
 
         for (i in 1..100) {
             val name = "$normalizedInput$i"
