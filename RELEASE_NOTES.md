@@ -1,3 +1,9 @@
+# Release notes AV 2.11.1 (22 August 2025)
+
+## Bugfixes
+- Moving back to a previous node is no longer blocked by ICE in the current node.
+
+
 # Release notes AV 2.11.0 (20 July 2025)
 
 ## Features
