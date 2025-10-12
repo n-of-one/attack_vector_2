@@ -12,6 +12,7 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
@@ -128,7 +129,8 @@ class SiteCloneService(
             is WordSearchIceLayer -> WordSearchIceLayer(id, sourceLayer)
             is SweeperIceLayer -> SweeperIceLayer(id, sourceLayer)
             is ScriptInteractionLayer -> ScriptInteractionLayer(id, sourceLayer)
-            else -> throw IllegalArgumentException("Unknown layer type: ${sourceLayer::class.simpleName}")
+            is ScriptCreditsLayer -> ScriptCreditsLayer(id, sourceLayer)
+            else -> throw IllegalArgumentException("Unknown source layer $sourceLayer")
         }
     }
 

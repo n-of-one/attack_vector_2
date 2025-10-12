@@ -39,12 +39,37 @@ val SYSTEM_USER = UserEntity(
     id = "user-system",
     externalId = "user-system",
     name = "system",
-    type = UserType.NOT_LOGGED_IN,
+    type = UserType.SYSTEM,
 )
 
 val NOT_LOGGED_IN_USER = UserEntity(
     id = "user-not-logged-in",
     externalId = "user-not-logged-in",
     name = "notLoggedIn",
-    type = UserType.NOT_LOGGED_IN,
+    type = UserType.SYSTEM,
 )
+
+// This user is the sender when hackers receive (daily) script income
+val SCRIPT_INCOME_USER = UserEntity(
+    id = "script-income",
+    externalId = "script-income",
+    name = "(script income)",
+    type = UserType.SYSTEM,
+)
+
+// This user is the sender when hackers receive script income
+val DATA_FENCE_USER = UserEntity(
+    id = "data-fence",
+    externalId = "data-fence",
+    name = "(data-fence)",
+    type = UserType.SYSTEM,
+)
+
+// This user is the receiver when hackers purchase script from the market
+val SCRIPT_MARKET_USER = UserEntity(
+    id = "script-market",
+    externalId = "script-market",
+    name = "(script market)",
+    type = UserType.SYSTEM,
+)
+

@@ -3,7 +3,7 @@ import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {CLOSE_USER_EDIT, UserOverview} from "../../../common/users/EditUserDataReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {GmRootState} from "../../GmRootReducer";
-import {ScriptType} from "../scriptType/ScriptTypeReducer";
+import {ScriptType} from "../../../common/script/type/ScriptTypeReducer";
 import {ScriptTypesTable} from "../scriptType/ScriptTypeManagement";
 import {UserOverviewTable} from "../../../common/users/UserManagement";
 import {User} from "../../../common/users/CurrentUserReducer";

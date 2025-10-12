@@ -9,6 +9,7 @@ export enum Page {
     RUN = "RUN",
     HACKER_SCRIPTS = "HACKER_SCRIPTS",
     SCRIPTS_MARKET = "SCRIPTS_MARKET",
+    SCRIPTS_CREDITS = "SCRIPTS_CREDITS",
     ME = "ME",
     ICE = "ICE",
     ICE_AUTH = "ICE_AUTH",

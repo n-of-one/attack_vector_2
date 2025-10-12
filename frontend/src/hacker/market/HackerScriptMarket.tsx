@@ -3,19 +3,15 @@ import {useSelector} from "react-redux";
 import {HackerRootState} from "../HackerRootReducer";
 import {SilentLink} from "../../common/component/SilentLink";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {ScriptAccess} from "../../gm/scripts/access/ScriptAccessReducer";
+import {ScriptAccess} from "../../common/script/access/ScriptAccessReducer";
 import {Hr} from "../../common/component/dataTable/Hr";
 import {DataTable} from "../../common/component/dataTable/DataTable";
-import {ScriptEffects} from "../../common/script/ScriptEffects";
-import {HackerScriptsPanel} from "./HackerScriptsPanel";
-import {TwoTextInput} from "../../common/component/TwoTextInput";
-import {notifySimple} from "../../common/util/Notification";
+import {ScriptEffects} from "../../common/script/type/ScriptEffects";
+import {HackerScriptsPanel} from "../scripts/HackerScriptsPanel";
 import {Pad} from "../../common/component/Pad";
-import {ActionButton} from "../../common/component/ActionButton";
-import {HackerSkillType} from "../../common/users/HackerSkills";
 
 
-export const ScriptMarket = () => {
+export const HackerScriptMarket = () => {
 
     return (
         <div className="row content">
@@ -27,9 +23,6 @@ export const ScriptMarket = () => {
                 <br/>
                 <h3 className="text-info">Script Market</h3>
                 <br/>
-                <CreditsAndIncome/>
-                <CollectIncome/>
-                <TransferCredits/>
                 <hr/>
                 <MarketScriptsList/>
             </div>
@@ -63,7 +56,8 @@ export const MarketScriptsList = () => {
 
 
     return <>
-        Scripts available on the market. <span className="dark">Scripts will only work on the day they are bought.</span><br/>
+        Scripts available on the market.<br/>
+        <br/><span className="dark">These scripts will expire the same as other hacker scripts. Buy them if you want to use them today.</span><br/>
         <br/>
         <br/>
         <DataTable rows={rows} rowTexts={rowTexts} pageSize={35} hr={<Hr/>}>
@@ -115,64 +109,6 @@ const ActionBuyScript = ({scriptAccess, creditsAvailable}: { scriptAccess: Scrip
     </SilentLink>
 }
 
-const CreditsAndIncome = () => {
-    const credits = useSelector((state: HackerRootState) => state.currentUser.hacker?.scriptCredits) || 0
-    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
-
-    const skills = currentUser.hacker?.skills || []
-    const scriptCreditsSkill = skills.find((hackerSKill) => hackerSKill.type === HackerSkillType.SCRIPT_CREDITS)
-    if (scriptCreditsSkill === undefined) {
-        return <></>
-    }
-    const income = parseInt(scriptCreditsSkill.value || "0")
-
-    return <>
-        <div className="row">
-            <div className="col-lg-6">
-                Script credit balance: <span className="text-info">{credits} <span className="glyphicon glyphicon-flash"/></span>
-            </div>
-            <div className="col-lg-6">
-                Income <span className="text-info">{income} <span className="glyphicon glyphicon-flash"/></span>
-            </div>
-        </div>
-        <br/>
-    </>
-}
-
-const CollectIncome = () => {
-    const incomeAvailable = useSelector((state: HackerRootState) => state.currentUser.hacker?.incomeAvailable)
-
-    if (!incomeAvailable) {
-        return <></>
-    }
-    const collectIncome = () => {
-        webSocketConnection.send("/hacker/scriptCredits/collect", null)
-    }
-    return <>
-        <ActionButton onClick={collectIncome} text="Collect income"/><br/><br/>
-    </>
-}
-
-const TransferCredits = () => {
-    const transfer = (amount: string, receiver: string) => {
-        if (!receiver || !amount) {
-            return
-        }
-        if (!isWholePositiveNumber(amount)) {
-            notifySimple("Please enter a positive whole number for the amount.")
-        }
-        webSocketConnection.send("/hacker/scriptCredits/transfer", {receiver, amount})
-    }
-    return <>
-        <TwoTextInput label="Transfer credits" save={transfer} clearAfterSubmit={false} buttonLabel="Transfer" buttonClass="btn btn-info"
-                      placeholder1="amount" placeholder2="reciever" autofocus={false} size={3} labelColumns={3}/>
-    </>
-}
-
-const isWholePositiveNumber = (amount: string): boolean => {
-    const parsed = parseInt(amount)
-    return !isNaN(parsed) && parsed > 0 && parsed.toString() === amount
-}
 
 const pricePadding = (price: number | null): number => {
     return Math.floor(Math.log10(price!!));

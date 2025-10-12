@@ -10,8 +10,9 @@ import {currentUserReducer, GenericUserRootState} from "../common/users/CurrentU
 import {hackerRunsReducer, RunInfo} from "./home/HackerRunsReducer";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {configReducer} from "../admin/config/ConfigReducer";
-import {ScriptAccess, scriptAccessReducer} from "../gm/scripts/access/ScriptAccessReducer";
+import {ScriptAccess, scriptAccessReducer} from "../common/script/access/ScriptAccessReducer";
 import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
+import {CreditTransaction, creditTransactionReducer} from "../common/script/creditsTransaction/CreditTransactionReducer";
 
 export interface HackerRootState extends GenericUserRootState {
     run: RunState,
@@ -24,6 +25,7 @@ export interface HackerRootState extends GenericUserRootState {
     users: Users,
     scriptAccess: ScriptAccess[],
     scriptStatus: ScriptStatus|null,
+    creditTransactions: CreditTransaction[] | null,
 }
 
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true, readOnly: false})
@@ -45,4 +47,5 @@ export const hackerRootReducer = combineReducers({
     users: usersReducer,
     scriptAccess: scriptAccessReducer,
     scriptStatus: scriptStatusReducer,
+    creditTransactions: creditTransactionReducer
 })

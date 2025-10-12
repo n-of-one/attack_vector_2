@@ -5,12 +5,9 @@ import org.n1.av2.platform.config.StaticConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
-import java.time.Clock
-import java.time.Duration
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 import java.time.format.DateTimeFormatter
-import java.util.LinkedList
+import java.util.*
 
 @Configuration
 class clockConfiguration(val staticConfig: StaticConfig) {
@@ -25,28 +22,37 @@ class clockConfiguration(val staticConfig: StaticConfig) {
 @Service
 class TimeService(
     val clock: Clock
-    ) {
-    private val dateTimeFOrmat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+) {
+    val longAgo: ZonedDateTime = ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
+
+    private val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    private val resetTime = LocalTime.of(6, 0)
 
 
     fun now(): ZonedDateTime {
         return ZonedDateTime.now(clock)
     }
+    fun scriptResetMomentToday(): ZonedDateTime = now()
+        .withHour(resetTime.hour)
+        .withMinute(resetTime.minute)
+        .withSecond(resetTime.second)
+        .withNano(resetTime.nano)
 
-    fun longAgo(): ZonedDateTime {
-        return ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
-    }
-
-    private fun scriptResetMoment() = now()
-            .withHour(6)
-            .withMinute(0)
-            .withSecond(0)
-
+    /**
+     * Is the moment the script has been last used, after the last reset moment?
+     * A script that has been used today at 5:00 is "past reset" if now is today 10:00, because the reset moment was today at 6:00 today.
+     * But it would not be "past reset" if now is today at 5:30, because reset will still be another 30 minutes.
+     */
     fun isPastReset(lastUsed: ZonedDateTime?): Boolean {
         if (lastUsed == null) return true
-        val resetMoment = if (now() > scriptResetMoment()) scriptResetMoment() else scriptResetMoment().minusDays(1)
+        val todayResetMoment = scriptResetMomentToday()
+        val resetMoment = if (now() > todayResetMoment) todayResetMoment else todayResetMoment.minusDays(1)
 
         return lastUsed < resetMoment
+    }
+
+    fun atResetMoment(localDate: LocalDate): ZonedDateTime {
+        return ZonedDateTime.of(localDate.year, localDate.monthValue, localDate.dayOfMonth, 6, 0, 0, 0, clock.zone)
     }
 
     fun formatDuration(duration: Duration): String {
@@ -54,7 +60,18 @@ class TimeService(
     }
 
     fun formatDateTime(zonedDateTime: ZonedDateTime): String {
-        return zonedDateTime.format(dateTimeFOrmat)
+        return zonedDateTime.format(dateTimeFormat)
+    }
+
+    /**
+     * Before 6 the current payout date is yesterday, after 6 it is today.
+     */
+    fun currentPayoutDate(): LocalDate {
+        return if (now().toLocalTime().isBefore(resetTime)) {
+            now().toLocalDate().minusDays(1)
+        } else {
+            now().toLocalDate()
+        }
     }
 
 }
@@ -91,7 +108,7 @@ fun String.validateDuration(): String? {
     val minutes = normalizedParts[1].toLongOrNull() ?: return duration_error
     val seconds = normalizedParts[2].toLongOrNull() ?: return duration_error
 
-    if (hours < 0 || minutes < 0 || seconds <0) {
+    if (hours < 0 || minutes < 0 || seconds < 0) {
         return "duration must be positive."
     }
 

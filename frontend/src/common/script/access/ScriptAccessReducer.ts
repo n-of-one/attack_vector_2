@@ -1,5 +1,5 @@
 import {AnyAction} from "redux";
-import {ScriptEffectDisplay} from "../../../common/script/ScriptModel";
+import {ScriptEffectDisplay} from "../ScriptModel";
 
 const SERVER_RECEIVE_SCRIPT_ACCESS = "SERVER_RECEIVE_SCRIPT_ACCESS"
 

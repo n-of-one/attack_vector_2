@@ -3,7 +3,7 @@ import {useSelector} from "react-redux";
 import {HackerRootState} from "../HackerRootReducer";
 import {SilentLink} from "../../common/component/SilentLink";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
-import {ScriptAccess} from "../../gm/scripts/access/ScriptAccessReducer";
+import {ScriptAccess} from "../../common/script/access/ScriptAccessReducer";
 import {InfoBadge} from "../../common/component/ToolTip";
 import {ScriptEffectDisplay} from "../../common/script/ScriptModel";
 import {TextInput} from "../../common/component/TextInput";

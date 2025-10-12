@@ -52,10 +52,4 @@ class HackerEntityService(
         hackerRepo.save(hacker)
     }
 
-    fun addScriptCredits(userId: String, toAdd: Int) {
-        val hacker = findForUserId(userId)
-        val updatedHacker = hacker.copy(scriptCredits = hacker.scriptCredits + toAdd)
-        hackerRepo.save(updatedHacker)
-    }
-
 }

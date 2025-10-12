@@ -1,5 +1,5 @@
-import {ScriptEffectDisplay} from "./ScriptModel";
-import {InfoBadge} from "../component/ToolTip";
+import {ScriptEffectDisplay} from "../ScriptModel";
+import {InfoBadge} from "../../component/ToolTip";
 import React from "react";
 
 interface Props {

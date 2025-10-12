@@ -7,7 +7,7 @@ import org.n1.av2.site.entity.enums.LayerType
 
 enum class IceLayerFields { STRENGTH }
 
-open class IceLayer(
+abstract class IceLayer(
     id: String,
     type: LayerType,
     level: Int,

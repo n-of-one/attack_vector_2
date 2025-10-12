@@ -6,6 +6,7 @@ import {GmRootState, scriptManagementReducer, usersReducer} from "../gm/GmRootRe
 import {Task, tasksReducer} from "../gm/taskmonitor/TaskReducer";
 import {sitesReducer} from "../common/sites/SitesReducer";
 import {scriptStatusReducer} from "../common/script/ScriptStatusReducer";
+import {incomeDateReducer} from "../gm/scripts/income/IncomeDateReducer";
 
 export interface AdminRootState extends GmRootState {
     tasks: Task[]
@@ -22,6 +23,7 @@ export const adminRootReducer = combineReducers({
     sites: sitesReducer,
     scriptsManagement: scriptManagementReducer,
     scriptStatus: scriptStatusReducer,
+    incomeDates: incomeDateReducer,
 
     // from AdminRootState
     tasks: tasksReducer,

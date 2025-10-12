@@ -1,11 +1,12 @@
 package org.n1.av2.layer.other.script
 
-import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.iam.user.DATA_FENCE_USER
 import org.n1.av2.platform.iam.user.UserAndHackerService
+import org.n1.av2.script.credittransaction.CreditTransactionService
 import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
 
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service
 class ScriptCreditsLayerService(
     private val connectionService: ConnectionService,
     private val nodeEntityService: NodeEntityService,
-    private val hackerEntityService: HackerEntityService,
     private val skillService: SkillService,
     private val userAndHackerService: UserAndHackerService,
+    private val creditTransactionService: CreditTransactionService,
 ) {
 
     fun hack(layer: ScriptCreditsLayer, hackerState: HackerStateRunning) {
@@ -40,7 +41,8 @@ class ScriptCreditsLayerService(
         connectionService.replyTerminalReceive("Clearing data from layer...")
         connectionService.replyTerminalReceive("Done.")
 
-        hackerEntityService.addScriptCredits(hackerState.userId, layer.amount)
+        creditTransactionService.transferCredits(hackerState.userId, DATA_FENCE_USER.id, layer.amount, "Data sale")
+        creditTransactionService.sendTransactionsForUser(hackerState.userId)
         userAndHackerService.sendDetailsOfCurrentUser()
 
         val node = nodeEntityService.findByLayerId(layer.id)

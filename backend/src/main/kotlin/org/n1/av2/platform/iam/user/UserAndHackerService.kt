@@ -5,14 +5,14 @@ import jakarta.validation.Validator
 import org.n1.av2.hacker.hacker.Hacker
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
-import org.n1.av2.hacker.skill.Skill
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
-import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.script.income.ScriptIncomeService
 import org.springframework.stereotype.Service
+
 
 @Service
 class UserAndHackerService(
@@ -23,27 +23,10 @@ class UserAndHackerService(
     private val runLinkEntityService: RunLinkEntityService,
     private val currentUserService: CurrentUserService,
     private val skillService: SkillService,
-    private val timeService: TimeService,
+    private val scriptIncomeService: ScriptIncomeService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
-
-    enum class UIUserType {
-        HACKER,
-        GM,
-        ADMIN,
-        SYSTEM,
-    }
-
-    @Suppress("unused")
-    class UserOverview(
-        val id: String,
-        val name: String,
-        val characterName: String? = null,
-        val hacker: Boolean,
-        val type: UIUserType,
-        val tag: UserTag,
-    )
 
     fun sendUsersOverview() {
         val allUsers = userEntityService.findAll()
@@ -76,22 +59,6 @@ class UserAndHackerService(
         sendDetailsOfSpecificUser(user.id)
     }
 
-    @Suppress("unused")
-    class UiHacker(
-        val hackerUserId: String,
-        val icon: HackerIcon,
-        val characterName: String,
-        val skills: List<Skill>,
-        val scriptCredits: Int,
-        val incomeAvailable: Boolean,
-    )
-
-    class UiUserDetails(
-        val id: String,
-        val name: String,
-        val type: UserType,
-        val hacker: UiHacker?,
-    )
 
     fun sendDetailsOfCurrentUser() {
         val uiUserDetails = getDetailsOfSpecificUser(currentUserService.userId)
@@ -131,7 +98,7 @@ class UserAndHackerService(
             characterName = hacker.characterName,
             skills = skillsWithDisplayValues,
             scriptCredits = hacker.scriptCredits,
-            incomeAvailable = timeService.isPastReset(hacker.lastReceivedScriptCreditsIncome)
+            scriptIncomeCollectionStatus = scriptIncomeService.scriptIncomeCollectionStatus(hacker.hackerUserId)
         )
     }
 
@@ -143,7 +110,7 @@ class UserAndHackerService(
             "type" -> editUserAttribute(user, "type", value)
             "characterName" -> editHackerAttribute(user, "characterName", value)
             "hackerIcon" -> editHackerAttribute(user, "hackerIcon", value)
-            "scriptCredits"-> editHackerAttribute(user, "scriptCredits", value)
+            "scriptCredits" -> editHackerAttribute(user, "scriptCredits", value)
             else -> error("Unknown user property: $field")
         }
 
@@ -175,6 +142,7 @@ class UserAndHackerService(
                 val credits = value.toIntOrNull() ?: error("Invalid script credits value: $value")
                 hacker.copy(scriptCredits = credits)
             }
+
             else -> error("Unknown user property: $field")
         }
         validate(user.id, editedHacker)
@@ -242,4 +210,4 @@ class UserAndHackerService(
         hackerEntityService.createHacker(user, icon, "not set")
         skillService.createDefaultSkills(user.id)
     }
-    }
+}

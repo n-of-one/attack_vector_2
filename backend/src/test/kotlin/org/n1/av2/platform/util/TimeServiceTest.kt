@@ -51,8 +51,29 @@ class TimeServiceTest {
         assertThat(result).isTrue
     }
 
+    @Test
+    fun `isCurrentPayoutDate today at 7_00`() {
+        val timeService = timeServiceWithTime(TODAY, 7)
+        val result = timeService.currentPayoutDate()
+        assertThat(result).isEqualTo(TODAY.toLocalDate())
+    }
+
+    @Test
+    fun `isCurrentPayoutDate today at 5_00`() {
+        val timeService = timeServiceWithTime(TODAY, 5)
+        val result = timeService.currentPayoutDate()
+        assertThat(result).isEqualTo(TODAY.toLocalDate().minusDays(1))
+    }
+
+    @Test
+    fun `isCurrentPayoutDate tomorrow at 5_00`() {
+        val timeService = timeServiceWithTime(TODAY.plusDays(1), 5)
+        val result = timeService.currentPayoutDate()
+        assertThat(result).isEqualTo(TODAY.toLocalDate())
+    }
+
     private fun timeServiceWithTime(day: ZonedDateTime, hour: Int): TimeService {
-        val fixedTime = Clock.fixed(TODAY.withHour(hour).toInstant(), UTC)
+        val fixedTime = Clock.fixed(day.withHour(hour).toInstant(), UTC)
         return TimeService(fixedTime)
     }
 

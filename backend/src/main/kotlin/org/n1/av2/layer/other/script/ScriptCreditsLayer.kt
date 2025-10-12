@@ -1,6 +1,5 @@
 package org.n1.av2.layer.other.script
 
-import org.n1.av2.editor.SiteStateMessageType
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer

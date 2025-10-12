@@ -34,7 +34,14 @@ export interface Hacker {
     icon: HackerIcon,
     skills: HackerSkill[],
     scriptCredits: number,
-    incomeAvailable: boolean,
+    scriptIncomeCollectionStatus: ScriptIncomeCollectionStatus,
+}
+
+export enum ScriptIncomeCollectionStatus {
+    HACKER_HAS_NO_INCOME = "HACKER_HAS_NO_INCOME",
+    TODAY_IS_NOT_AN_INCOME_DATE = "TODAY_IS_NOT_AN_INCOME_DATE",
+    AVAILABLE = "AVAILABLE",
+    COLLECTED = "COLLECTED",
 }
 
 export interface GenericUserRootState {

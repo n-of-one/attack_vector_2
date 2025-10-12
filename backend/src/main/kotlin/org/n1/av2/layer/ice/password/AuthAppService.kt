@@ -60,7 +60,7 @@ class AuthAppService(
 
 
     private fun createStatus(iceId: String, layer: Layer): IcePasswordStatus {
-        val icePasswordStatus = IcePasswordStatus(iceId, layer.id, LinkedList(), 0, time.longAgo())
+        val icePasswordStatus = IcePasswordStatus(iceId, layer.id, LinkedList(), 0, time.longAgo)
         icePasswordStatusRepo.save(icePasswordStatus)
         return icePasswordStatus
     }

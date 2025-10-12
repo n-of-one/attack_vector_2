@@ -47,6 +47,7 @@ export const MenuBar = () => {
     const hackerSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
     const hackerScripts = hackerHasScriptsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
     const hackerMarket = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
+    const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
 
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{
@@ -64,6 +65,7 @@ export const MenuBar = () => {
                                 {hackerSites}
                                 {hackerScripts}
                                 {hackerMarket}
+                                {hackerCredits}
                                 <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
                                 {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>

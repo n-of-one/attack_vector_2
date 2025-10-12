@@ -233,7 +233,7 @@ class TimerService(
 
     fun alterTimerTask(timer: Timer, layer: TripwireLayer?, delta: Duration, siteId: String) {
         val taskIdentifiers = createTimerIdentifiers(siteId, layer?.id)
-        val taskInfo = systemTaskRunner.removeTask(taskIdentifiers)
+        val taskInfo = systemTaskRunner.removeTaskWithExactIdentifiers(taskIdentifiers)
 
         val newCountdownSeconds = taskInfo.inSeconds + delta.toSeconds() + 1 // +1 to compensate for the time it takes to queue the task
         systemTaskRunner.queueInSeconds(taskInfo.description, taskIdentifiers, newCountdownSeconds) { shutdownStart(siteId, timer, timer.effectDuration) }

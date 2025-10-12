@@ -8,7 +8,7 @@ import org.n1.av2.site.entity.enums.LayerType
 const val NAME = "name"
 const val NOTE = "note"
 
-open class Layer(
+abstract class Layer(
     val id: String,
     val type: LayerType,
     var level: Int,

@@ -6,7 +6,7 @@ import {SilentLink} from "../../../common/component/SilentLink";
 import {ActionButton} from "../../../common/component/ActionButton";
 import {FormTextInputRow} from "../../../common/component/FormTextInputRow";
 import {TextInput} from "../../../common/component/TextInput";
-import {CLOSE_SCRIPT_TYPE, EDIT_SCRIPT_TYPE, Effect, EffectType, ScriptType} from "./ScriptTypeReducer";
+import {CLOSE_SCRIPT_TYPE, EDIT_SCRIPT_TYPE, Effect, EffectType, ScriptType} from "../../../common/script/type/ScriptTypeReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {GmRootState} from "../../GmRootReducer";
 import {CloseButton} from "../../../common/component/CloseButton";

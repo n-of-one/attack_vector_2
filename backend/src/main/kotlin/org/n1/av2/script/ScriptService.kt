@@ -8,16 +8,13 @@ import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.platform.iam.user.CurrentUserService
-import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
-import org.n1.av2.platform.iam.user.UserAndHackerService
-import org.n1.av2.platform.iam.user.UserEntityService
-import org.n1.av2.platform.iam.user.UserType
+import org.n1.av2.platform.iam.user.*
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createIdGeneric
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.credittransaction.CreditTransactionService
 import org.n1.av2.script.ram.RamService
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeId
@@ -37,7 +34,8 @@ class ScriptService(
     private val skillService: SkillService,
     private val hackerEntityService: HackerEntityService,
     private val userAndHackerService: UserAndHackerService,
-    private val userEntityService: UserEntityService
+    private val userEntityService: UserEntityService,
+    private val creditTransactionService: CreditTransactionService,
 ) {
     fun getScriptById(scriptId: ScriptId): Script {
         return scriptRepository.findById(scriptId).orElseThrow { error("Script not found with id: $scriptId") }
@@ -353,8 +351,12 @@ class ScriptService(
             return
         }
 
+        val scriptType = scriptTypeService.getById(scriptAccess.typeId)
+
         addScript(scriptAccess.typeId, currentUserService.userId)
-        hackerEntityService.addScriptCredits(hacker.hackerUserId, -scriptAccess.price)
+        creditTransactionService.transferCredits(hacker.hackerUserId, SCRIPT_MARKET_USER.id,  scriptAccess.price, "Purchase script: ${scriptType.name}")
+        creditTransactionService.sendTransactionsForUser(hacker.hackerUserId)
+
         sendScriptStatusToCurrentUser()
         userAndHackerService.sendDetailsOfCurrentUser()
     }
@@ -376,8 +378,9 @@ class ScriptService(
         }
         val receiver = hackerEntityService.findForUser(receiverUser)
 
-        hackerEntityService.addScriptCredits(sender.hackerUserId, -amount)
-        hackerEntityService.addScriptCredits(receiver.hackerUserId, +amount)
+        creditTransactionService.transferCredits(sender.hackerUserId, receiver.hackerUserId, amount, "Manual transfer")
+        creditTransactionService.sendTransactionsForUser(sender.hackerUserId)
+        creditTransactionService.sendTransactionsForUser(receiver.hackerUserId, receiver.hackerUserId)
 
         userAndHackerService.sendDetailsOfCurrentUser()
         userAndHackerService.sendDetailsOfSpecificUserOnlyToThatUser(receiverUser.id)

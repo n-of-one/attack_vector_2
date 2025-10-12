@@ -55,10 +55,6 @@ class UserTaskRunner(
         taskEngine.queueInMillis(description, identifiers, due, userPrincipal, action)
     }
 
-    fun removeTask(identifiers: Map<String, String>): TaskInfo {
-        return taskEngine.removeSpecific(identifiers)
-    }
-
     /// run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
     @Deprecated(
         message = ">> Do not use run, Use runTask() instead",
@@ -92,8 +88,8 @@ class SystemTaskRunner(
         taskEngine.queueInMillis(description, identifiers, due, UserPrincipal.system(), action)
     }
 
-    fun removeTask(identifiers: Map<String, String>): TaskInfo {
-        return taskEngine.removeSpecific(identifiers)
+    fun removeTaskWithExactIdentifiers(identifiers: Map<String, String>): TaskInfo {
+        return taskEngine.removeTaskWithExactIdentifiers(identifiers)
     }
 
     // run is ambiguous with Kotlin's extension function: run. So we implement it ourselves to prevent bugs
@@ -221,7 +217,7 @@ class TaskEngine(
         connectionService.toUser(userPrincipal.name, ServerActions.SERVER_TASKS, tasks)
     }
 
-    fun removeSpecific(identifiers: Map<String, String>): TaskInfo {
+    fun removeTaskWithExactIdentifiers(identifiers: Map<String, String>): TaskInfo {
         return timedTaskRunner.removeSpecific(identifiers)
     }
 

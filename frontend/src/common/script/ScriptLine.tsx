@@ -3,7 +3,7 @@ import {webSocketConnection} from "../server/WebSocketConnection";
 import {SilentLink} from "../component/SilentLink";
 import React from "react";
 import {createNotification, notify} from "../util/Notification";
-import {ScriptEffects} from "./ScriptEffects";
+import {ScriptEffects} from "./type/ScriptEffects";
 import {Ram} from "./ScriptStatusReducer";
 import {serverTime} from "../server/ServerTime";
 import {formatTimeInterval} from "../util/Util";

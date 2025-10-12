@@ -1,11 +1,9 @@
 package org.n1.av2.script.access
 
-import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
-import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 typealias ScriptAccessId = String

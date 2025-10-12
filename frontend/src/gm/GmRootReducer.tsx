@@ -4,10 +4,11 @@ import {combineReducers} from "redux";
 import {editUserDataReducer, UserOverview, userOverviewReducer} from "../common/users/EditUserDataReducer";
 import {currentUserReducer, GenericUserRootState, User} from "../common/users/CurrentUserReducer";
 import {configReducer} from "../admin/config/ConfigReducer";
-import {editScriptTypeReducer, ScriptType, scriptTypesReducer} from "./scripts/scriptType/ScriptTypeReducer";
-import {ScriptAccess, scriptAccessReducer} from "./scripts/access/ScriptAccessReducer";
+import {editScriptTypeReducer, ScriptType, scriptTypesReducer} from "../common/script/type/ScriptTypeReducer";
+import {ScriptAccess, scriptAccessReducer} from "../common/script/access/ScriptAccessReducer";
 import {ScriptStatistics, scriptStatisticsReducer} from "./scripts/ScriptStatisticsReducer";
 import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
+import {IncomeDate, incomeDateReducer} from "./scripts/income/IncomeDateReducer";
 
 
 export interface EditUser {
@@ -48,7 +49,9 @@ export interface GmRootState extends GenericUserRootState {
     sites: Array<SiteInfo>,
     scriptsManagement: ScriptManagement,
     scriptStatus: ScriptStatus | null,
+    incomeDates: IncomeDate[],
 }
+
 export const gmRootReducer = combineReducers({
     // from GenericUserRootState
     currentUser: currentUserReducer,
@@ -60,4 +63,5 @@ export const gmRootReducer = combineReducers({
     sites: sitesReducer,
     scriptsManagement: scriptManagementReducer,
     scriptStatus: scriptStatusReducer,
+    incomeDates: incomeDateReducer,
 })

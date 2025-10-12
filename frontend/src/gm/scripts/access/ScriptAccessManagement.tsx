@@ -10,8 +10,8 @@ import {InfoBadge} from "../../../common/component/ToolTip";
 import {CLOSE_USER_EDIT, UserOverview} from "../../../common/users/EditUserDataReducer";
 import {UserOverviewTable} from "../../../common/users/UserManagement";
 import {ScriptTypesTable} from "../scriptType/ScriptTypeManagement";
-import {ScriptType} from "../scriptType/ScriptTypeReducer";
-import {ScriptAccess} from "./ScriptAccessReducer";
+import {ScriptType} from "../../../common/script/type/ScriptTypeReducer";
+import {ScriptAccess} from "../../../common/script/access/ScriptAccessReducer";
 
 
 export const ScriptAccessManagement = () => {

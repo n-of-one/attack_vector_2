@@ -12,6 +12,13 @@ class UserEntityService(
     private val userEntityRepo: UserEntityRepo,
 ) {
 
+    private val systemUsers = mapOf(
+        SYSTEM_USER.id to SYSTEM_USER,
+        SCRIPT_INCOME_USER.id to SCRIPT_INCOME_USER,
+        DATA_FENCE_USER.id to DATA_FENCE_USER,
+        SCRIPT_MARKET_USER.id to SCRIPT_MARKET_USER,
+    )
+
     fun findByNameIgnoreCase(userName: String): UserEntity? {
         return userEntityRepo.findByNameIgnoreCase(userName)
     }
@@ -29,7 +36,7 @@ class UserEntityService(
     }
 
     fun getById(userId: String): UserEntity {
-        return userEntityRepo.findById(userId).orElseGet { error("${userId} not found") }
+        return systemUsers[userId] ?: userEntityRepo.findById(userId).orElseGet { error("${userId} not found") }
     }
 
     fun getByIdOrNull(userId: String): UserEntity? {
@@ -71,7 +78,7 @@ class UserEntityService(
             name = userName,
             type = type,
             externalId = externalId,
-            tag  = role,
+            tag = role,
         )
         save(user)
         return user
