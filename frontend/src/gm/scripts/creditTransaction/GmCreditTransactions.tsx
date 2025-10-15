@@ -4,12 +4,13 @@ import {CLOSE_USER_EDIT, UserOverview} from "../../../common/users/EditUserDataR
 import {useDispatch, useSelector} from "react-redux";
 import {GmRootState} from "../../GmRootReducer";
 import {UserOverviewTable} from "../../../common/users/UserManagement";
-import {ScriptsTransactionsTable} from "../../../common/script/creditsTransaction/CreditTransactions";
+import {ScriptsTransactionsTable} from "../../../common/script/credits/CreditTransactions";
 import {CloseButton} from "../../../common/component/CloseButton";
 import {User} from "../../../common/users/CurrentUserReducer";
 import {notifySimple} from "../../../common/util/Notification";
 import {TwoTextInput} from "../../../common/component/TwoTextInput";
 import {CreditsIcon} from "../../../common/component/icon/CreditsIcon";
+import {CurrentCredits} from "../../../common/script/credits/CurrentCredits";
 
 export const GmCreditTransactions = () => {
 
@@ -62,6 +63,7 @@ const HackerCreditsElement = ({user}: { user: User }) => {
             <h5 className="text-muted">Credits and transaction history of <span className="text_gold">{user.name}</span></h5>
             <h5><CloseButton closeAction={close}/></h5>
         </div>
+        <hr/>
         <CurrentCredits user={user}/>
         <hr/>
         <AdjustCredits user={user}/>
@@ -71,13 +73,6 @@ const HackerCreditsElement = ({user}: { user: User }) => {
     </>
 }
 
-const CurrentCredits = ({user}: { user: User }) => {
-
-    return <>
-        <hr/>
-        Script credit balance: <span className="text-info">{user.hacker?.scriptCredits}<CreditsIcon/></span>
-    </>
-}
 
 const TransactionsOfUser = ({user}: { user: User }) => {
 

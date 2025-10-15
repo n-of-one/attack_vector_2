@@ -13,6 +13,7 @@ import {HackerSkillType} from "../../common/users/HackerSkills";
 import {hasSkill} from "../../common/users/CurrentUserReducer";
 import {NavigateButton} from "../../common/component/NavigateButton";
 import {CreditsIcon} from "../../common/component/icon/CreditsIcon";
+import {DataTable} from "../../common/component/dataTable/DataTable";
 
 
 export const HackerScriptsHome = () => {
@@ -76,37 +77,22 @@ const FreeReceive = ({accesses}: { accesses: ScriptAccess[] }) => {
     if (accessWithFreeReceive.length === 0) {
         return <></>
     }
+
+    const rows = accessWithFreeReceive.map(access => <ScriptAccessLine access={access} />)
+    const rowTexts =  accessWithFreeReceive.map(access => `${access.type.name}~${access.used ? 'Received today' : 'Available'}`)
+
+    const hr = <hr style={{margin: "2px 0 2px 0", color: "#555", borderTop: "1px dashed"}}/>
+
     return (<>
             <hr/>
             You have access to the following scripts for free:<br/><br/>
-            <div className="row">
-                <div className="col-lg-offset-2 col-lg-4">Script</div>
-                <div className="col-lg-4">Effects</div>
-                <div className="col-lg-2">Status</div>
-            </div>
-            <hr style={{margin: "4px 0 4px 0", color: "#555", borderTop: "1px dashed"}}/>
-            {
-                accessWithFreeReceive.map((access: ScriptAccess) => {
-
-                    return (
-                        <div className="row" key={access.id}>
-                            <div className="col-lg-offset-2 col-lg-4">{access.receiveForFree}x {access.type.name}</div>
-                            <div className="col-lg-4">{
-                                access.type.effects.map((effect: ScriptEffectDisplay, index: number) => {
-                                    return (<span key={index}>
-                                        <InfoBadge infoText={effect.description} key={index}
-                                                   badgeText={effect.label}/>
-                                        &nbsp;</span>)
-                                })
-                            }
-                            </div>
-                            <div className="col-lg-2"><ScriptAccessStatus access={access}/></div>
-                            <hr style={{margin: "4px 0 4px 0", color: "#555", borderTop: "1px dashed"}}/>
-                        </div>)
-                })
-            }
-            <br/>
-            <br/>
+            <DataTable rows={rows} rowTexts={rowTexts} pageSize={18} hr={hr}>
+                <div className="row">
+                    <div className="col-lg-offset-2 col-lg-4">Script</div>
+                    <div className="col-lg-4">Effects</div>
+                    <div className="col-lg-2">Status</div>
+                </div>
+            </DataTable>
             <br/>
             <SilentLink onClick={retrieve}>
                 <div className="btn btn-info" style={{fontSize: "12px"}}>Retrieve scripts</div>
@@ -114,6 +100,23 @@ const FreeReceive = ({accesses}: { accesses: ScriptAccess[] }) => {
             <br/>
         </>
     )
+}
+
+const ScriptAccessLine = ({access}: { access: ScriptAccess }) => {
+    return (
+        <div className="row" key={access.id}>
+            <div className="col-lg-offset-2 col-lg-4">{access.receiveForFree}x {access.type.name}</div>
+            <div className="col-lg-4">{
+                access.type.effects.map((effect: ScriptEffectDisplay, index: number) => {
+                    return (<span key={index}>
+                                        <InfoBadge infoText={effect.description} key={index}
+                                                   badgeText={effect.label}/>
+                        &nbsp;</span>)
+                })
+            }
+            </div>
+            <div className="col-lg-2"><ScriptAccessStatus access={access}/></div>
+        </div>)
 }
 
 const ScriptAccessStatus = ({access}: { access: ScriptAccess }) => {

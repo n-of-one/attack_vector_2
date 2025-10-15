@@ -7,7 +7,7 @@ import {Task, tasksReducer} from "../gm/taskmonitor/TaskReducer";
 import {sitesReducer} from "../common/sites/SitesReducer";
 import {scriptStatusReducer} from "../common/script/ScriptStatusReducer";
 import {incomeDateReducer} from "../gm/scripts/income/IncomeDateReducer";
-import {creditTransactionReducer} from "../common/script/creditsTransaction/CreditTransactionReducer";
+import {creditTransactionReducer} from "../common/script/credits/CreditTransactionReducer";
 
 export interface AdminRootState extends GmRootState {
     tasks: Task[]

@@ -9,7 +9,7 @@ import {ScriptAccess, scriptAccessReducer} from "../common/script/access/ScriptA
 import {ScriptStatistics, scriptStatisticsReducer} from "./scripts/ScriptStatisticsReducer";
 import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
 import {IncomeDate, incomeDateReducer} from "./scripts/income/IncomeDateReducer";
-import {CreditTransaction, creditTransactionReducer} from "../common/script/creditsTransaction/CreditTransactionReducer";
+import {CreditTransaction, creditTransactionReducer} from "../common/script/credits/CreditTransactionReducer";
 
 
 export interface EditUser {

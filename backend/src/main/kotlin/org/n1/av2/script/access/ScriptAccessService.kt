@@ -81,6 +81,7 @@ class ScriptAccessService(
                 used = !timeService.isPastReset(scriptAccess.lastUsed)
             )
         }
+
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_ACCESS, scriptAccessUis)
     }
 

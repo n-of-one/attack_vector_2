@@ -10,9 +10,11 @@ import {ScriptEffects} from "../../common/script/type/ScriptEffects";
 import {HackerScriptsPanel} from "../scripts/HackerScriptsPanel";
 import {Pad} from "../../common/component/Pad";
 import {CreditsIcon} from "../../common/component/icon/CreditsIcon";
+import {CurrentCredits} from "../../common/script/credits/CurrentCredits";
 
 
 export const HackerScriptMarket = () => {
+    const user = useSelector((state: HackerRootState) => state.currentUser)
 
     return (
         <div className="row content">
@@ -23,7 +25,8 @@ export const HackerScriptMarket = () => {
                 <strong>🜁 Verdant OS 🜃</strong><br/>
                 <br/>
                 <h3 className="text-info">Script Market</h3>
-                <br/>
+                <hr/>
+                <CurrentCredits user={user}/>
                 <hr/>
                 <MarketScriptsList/>
             </div>
@@ -42,7 +45,7 @@ export const MarketScriptsList = () => {
     const credits = useSelector((state: HackerRootState) => state.currentUser.hacker?.scriptCredits) || 0
 
     if (accesses.length === 0) {
-        return <div className="text">No scripts available in the market.</div>
+        return <div className="text">No scripts available in the market</div>
     }
 
     const maxPricePadding = accesses.reduce((max, access) => {
@@ -57,11 +60,11 @@ export const MarketScriptsList = () => {
 
 
     return <>
-        Scripts available on the market.<br/>
+        <h4 className="text-muted">Scripts available on the market.</h4>
         <br/><span className="dark">These scripts will expire the same as other hacker scripts. Buy them if you want to use them today.</span><br/>
         <br/>
         <br/>
-        <DataTable rows={rows} rowTexts={rowTexts} pageSize={35} hr={<Hr/>}>
+        <DataTable rows={rows} rowTexts={rowTexts} pageSize={24} hr={<Hr/>}>
             <div className="row text strong">
                 <div className="col-lg-4">Name</div>
                 <div className="col-lg-2">RAM</div>

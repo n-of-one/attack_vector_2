@@ -12,7 +12,7 @@ import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {configReducer} from "../admin/config/ConfigReducer";
 import {ScriptAccess, scriptAccessReducer} from "../common/script/access/ScriptAccessReducer";
 import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
-import {CreditTransaction, creditTransactionReducer} from "../common/script/creditsTransaction/CreditTransactionReducer";
+import {CreditTransaction, creditTransactionReducer} from "../common/script/credits/CreditTransactionReducer";
 
 export interface HackerRootState extends GenericUserRootState {
     run: RunState,

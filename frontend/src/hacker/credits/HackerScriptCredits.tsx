@@ -8,9 +8,9 @@ import {ActionButton} from "../../common/component/ActionButton";
 import {notifySimple} from "../../common/util/Notification";
 import {TwoTextInput} from "../../common/component/TwoTextInput";
 import {InfoBadge} from "../../common/component/ToolTip";
-import {ScriptsTransactionsTable} from "../../common/script/creditsTransaction/CreditTransactions";
+import {ScriptsTransactionsTable} from "../../common/script/credits/CreditTransactions";
 import {CreditsIcon} from "../../common/component/icon/CreditsIcon";
-import {CreditTransaction} from "../../common/script/creditsTransaction/CreditTransactionReducer";
+import {CreditTransaction} from "../../common/script/credits/CreditTransactionReducer";
 
 export const HackerScriptCredits = () => {
 
