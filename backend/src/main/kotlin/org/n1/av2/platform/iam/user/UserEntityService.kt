@@ -17,6 +17,7 @@ class UserEntityService(
         SCRIPT_INCOME_USER.id to SCRIPT_INCOME_USER,
         DATA_FENCE_USER.id to DATA_FENCE_USER,
         SCRIPT_MARKET_USER.id to SCRIPT_MARKET_USER,
+        GM_ADJUST_CREDITS_USER.id to GM_ADJUST_CREDITS_USER,
     )
 
     fun findByNameIgnoreCase(userName: String): UserEntity? {

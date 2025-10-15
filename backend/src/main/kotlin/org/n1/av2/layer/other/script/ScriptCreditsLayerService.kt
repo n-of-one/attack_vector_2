@@ -41,7 +41,7 @@ class ScriptCreditsLayerService(
         connectionService.replyTerminalReceive("Clearing data from layer...")
         connectionService.replyTerminalReceive("Done.")
 
-        creditTransactionService.transferCredits(hackerState.userId, DATA_FENCE_USER.id, layer.amount, "Data sale")
+        creditTransactionService.transferCredits(DATA_FENCE_USER.id, hackerState.userId, layer.amount, "Data sale")
         creditTransactionService.sendTransactionsForUser(hackerState.userId)
         userAndHackerService.sendDetailsOfCurrentUser()
 

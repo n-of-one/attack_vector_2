@@ -3,6 +3,8 @@ package org.n1.av2.script.credittransaction
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions.SERVER_RECEIVE_CREDITS_TRANSACTIONS
+import org.n1.av2.platform.iam.user.GM_ADJUST_CREDITS_USER
+import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.util.TimeService
@@ -17,6 +19,7 @@ class CreditTransactionService(
     private val connectionService: ConnectionService,
     private val hackerEntityService: HackerEntityService,
     private val userEntityService: UserEntityService,
+    private val userAndHackerService: UserAndHackerService,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
@@ -86,5 +89,16 @@ class CreditTransactionService(
         creditTransactionRepo.save(transaction)
 
         logger.info("Transfer $amount ⚡ from ${fromUser.name} to ${toUser.name}. Description: $description")
+    }
+
+    fun gmAdjust(userId: String, amount: Int, description: String) {
+        if (amount > 0) {
+            transferCredits(GM_ADJUST_CREDITS_USER.id, userId, amount, description)
+        }
+        else {
+            transferCredits(userId, GM_ADJUST_CREDITS_USER.id, -amount, description)
+        }
+        sendTransactionsForUser(userId)
+        userAndHackerService.sendDetailsOfSpecificUser(userId)
     }
 }

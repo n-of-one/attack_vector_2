@@ -10,7 +10,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
-import org.n1.av2.script.income.ScriptIncomeService
+import org.n1.av2.script.income.ScriptIncomeEntityService
 import org.springframework.stereotype.Service
 
 
@@ -23,7 +23,7 @@ class UserAndHackerService(
     private val runLinkEntityService: RunLinkEntityService,
     private val currentUserService: CurrentUserService,
     private val skillService: SkillService,
-    private val scriptIncomeService: ScriptIncomeService,
+    private val scriptIncomeEntityService: ScriptIncomeEntityService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -98,7 +98,7 @@ class UserAndHackerService(
             characterName = hacker.characterName,
             skills = skillsWithDisplayValues,
             scriptCredits = hacker.scriptCredits,
-            scriptIncomeCollectionStatus = scriptIncomeService.scriptIncomeCollectionStatus(hacker.hackerUserId)
+            scriptIncomeCollectionStatus = scriptIncomeEntityService.scriptIncomeCollectionStatus(hacker.hackerUserId)
         )
     }
 

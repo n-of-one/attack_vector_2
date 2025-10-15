@@ -73,3 +73,10 @@ val SCRIPT_MARKET_USER = UserEntity(
     type = UserType.SYSTEM,
 )
 
+// This user is the sender/receiver when GMs adjust user script credits
+val GM_ADJUST_CREDITS_USER = UserEntity(
+    id = "gm-adjust-credits",
+    externalId = "gm-adjust-credits",
+    name = "(system)",
+    type = UserType.SYSTEM,
+)

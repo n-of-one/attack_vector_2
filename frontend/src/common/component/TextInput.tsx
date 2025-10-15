@@ -13,6 +13,7 @@ interface Props {
     size?: number
     label?: string
     labelColumns?: number
+    type?: string
 }
 
 export const TextInput = (props: Props) => {
@@ -42,12 +43,13 @@ export const TextInput = (props: Props) => {
     }
 
     const label = (props.label && props.labelColumns) ? <div className={`col-lg-${props.labelColumns}`}>{props.label}</div> : <></>
+    const inputType = props.type || "text"
 
     return (
         <div className="row">
             {label}
             <div className={`col-lg-${size}`} style={{fontSize: "12px"}}>
-                <input type="text" className="form-control"
+                <input type={inputType} className="form-control"
                        placeholder={props.placeholder}
                        value={text}
                        onChange={(event) => handleChange(event)}

@@ -5,7 +5,13 @@ import {formatTimestamp} from "../../util/TimeUtil";
 import {Hr} from "../../component/dataTable/Hr";
 import {CreditsIcon} from "../../component/icon/CreditsIcon";
 
-export const ScriptsTransactionsTable = ({transactions, viewForUserName}: { transactions: CreditTransaction[], viewForUserName: string }) => {
+interface Props {
+    transactions: CreditTransaction[],
+    viewForUserName: string,
+    pageSize?: number
+}
+
+export const ScriptsTransactionsTable = ({transactions, viewForUserName, pageSize}: Props) => {
     if (transactions.length === 0) {
         return <div className="text">No transactions found.</div>
     }
@@ -19,11 +25,13 @@ export const ScriptsTransactionsTable = ({transactions, viewForUserName}: { tran
         `${formatTimestamp(new Date(transaction.timestamp))}~${transaction.amount}~${transaction.fromUserName}~${transaction.toUserName}~${transaction.description}`
     )
 
-    return <DataTable rows={rows} rowTexts={rowTexts} pageSize={35} hr={<Hr/>}>
+    const pageSizeValue = pageSize || 35
+
+    return <DataTable rows={rows} rowTexts={rowTexts} pageSize={pageSizeValue} hr={<Hr/>}>
         <div className="row text strong">
             <div className="col-lg-3">Timestamp</div>
             <div className="col-lg-2 text-end">Amount</div>
-            <div className="col-lg-3">Other</div>
+            <div className="col-lg-3">Sender/Receiver</div>
             <div className="col-lg-4">Description</div>
         </div>
     </DataTable>

@@ -6,7 +6,6 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions.SERVER_RECEIVE_INCOME_DATES
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.SCRIPT_INCOME_USER
-import org.n1.av2.platform.iam.user.ScriptIncomeCollectionStatus
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
@@ -25,19 +24,6 @@ class ScriptIncomeService(
     private val creditTransactionService: CreditTransactionService,
     ) {
 
-    fun scriptIncomeCollectionStatus(userId: String): ScriptIncomeCollectionStatus {
-        val incomeSkill =
-            hackerSkillRepo.findByUserId(userId).find { it.type == SkillType.SCRIPT_CREDITS } ?: return ScriptIncomeCollectionStatus.HACKER_HAS_NO_INCOME
-        val incomeValue = incomeSkill.value?.toIntOrNull() ?: 0
-        if (incomeValue == 0) return ScriptIncomeCollectionStatus.HACKER_HAS_NO_INCOME
-
-        val allIncomeDates = scriptIncomeDateRepository.findAll()
-        val incomeDateToday = allIncomeDates.find { timeService.currentPayoutDate() == it.date} ?: return ScriptIncomeCollectionStatus.TODAY_IS_NOT_AN_INCOME_DATE
-
-        if (incomeDateToday.collectedByUserIds.contains(userId)) return ScriptIncomeCollectionStatus.COLLECTED
-
-        return ScriptIncomeCollectionStatus.AVAILABLE
-    }
 
     fun collect() {
         val allIncomeDates = scriptIncomeDateRepository.findAll()

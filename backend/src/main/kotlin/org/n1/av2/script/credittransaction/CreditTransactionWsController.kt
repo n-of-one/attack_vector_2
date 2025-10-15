@@ -29,14 +29,15 @@ class CreditTransactionWsController(
         }
     }
 
-//    @MessageMapping("/gm/creditTransaction/revert")
-//    fun revertTransaction(transactionId: String, userPrincipal: UserPrincipal) {
-//        userTaskRunner.runTask("/gm/creditTransaction/revert", userPrincipal) {
-//            if (userPrincipal.userEntity.type != UserType.GM) {
-//                throw IllegalArgumentException("You are not a GM")
-//            }
-//            creditTransactionService.revert(transactionId)
-//        }
-//    }
+    data class GmAdjustCreditsCommand(val userId: String, val amount: Int, val description: String)
+    @MessageMapping("/gm/scriptCredits/adjust")
+    fun gmAdjustCredits(command: GmAdjustCreditsCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/scriptCredits/adjust", userPrincipal) {
+            if (userPrincipal.userEntity.type != UserType.GM) {
+                throw IllegalArgumentException("You are not a GM")
+            }
+            creditTransactionService.gmAdjust(command.userId, command.amount, command.description)
+        }
+    }
 
 }
