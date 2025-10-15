@@ -1,3 +1,18 @@
+# Release notes AV 2.12.0 (15 October 2025)
+
+## Features
+- Script credits, script market and daily income
+
+Hacker can have the skill to collect script credits. These can be used to buy scripts from the market.
+
+GMs can populate the market by making scripts available to hackers at a specific price.
+
+Hackers can receive credits in two ways:
+- A new layer is added that contains data that can be stolen and sold for script credits.
+- The hacker can be awarded a 'daily' income of script credtits as part of their skill.
+
+
+
 # Release notes AV 2.11.0 (20 July 2025)
 
 ## Features
