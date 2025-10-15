@@ -46,7 +46,8 @@ export const MenuBar = () => {
 
     const hackerSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
     const hackerScripts = hackerHasScriptsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
-    const hackerMarket = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
+    const hackerMarket = hackerHasScriptsSkill && hackerHasScriptsCreditsSkill ?
+        <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
     const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
 
     return (
