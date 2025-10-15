@@ -9,6 +9,7 @@ import {DataTable} from "../../common/component/dataTable/DataTable";
 import {ScriptEffects} from "../../common/script/type/ScriptEffects";
 import {HackerScriptsPanel} from "../scripts/HackerScriptsPanel";
 import {Pad} from "../../common/component/Pad";
+import {CreditsIcon} from "../../common/component/icon/CreditsIcon";
 
 
 export const HackerScriptMarket = () => {
@@ -88,7 +89,7 @@ const MarketScriptLine = ({scriptAccess, creditsAvailable, maxPricePadding}: Mar
                 <div className="col-lg-4">{scriptAccess.type.name}</div>
                 <div className="col-lg-2">{scriptAccess.type.size}</div>
                 <div className="col-lg-2"><ScriptEffects effects={scriptAccess.type.effects}/></div>
-                <div className="col-lg-2"><Pad length={padding}/>{scriptAccess.price} <span className="glyphicon glyphicon-flash"/></div>
+                <div className="col-lg-2"><Pad length={padding}/>{scriptAccess.price}<CreditsIcon/></div>
                 <div className="col-lg-2 noSelect">
                     <ActionBuyScript scriptAccess={scriptAccess} creditsAvailable={creditsAvailable}/>
                 </div>

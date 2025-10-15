@@ -3,21 +3,9 @@ import React from "react";
 import {CreditTransaction} from "./CreditTransactionReducer";
 import {formatTimestamp} from "../../util/TimeUtil";
 import {Hr} from "../../component/dataTable/Hr";
+import {CreditsIcon} from "../../component/icon/CreditsIcon";
 
-
-export const CreditTransactions = ({transactions, viewForUserName}: { transactions: CreditTransaction[], viewForUserName: string }) => {
-    return <>
-        <h4>
-            Transactions
-        </h4>
-        <hr/>
-        <div>
-            <ScriptsTransactionsTable transactions={transactions} viewForUserName={viewForUserName}/>
-        </div>
-    </>
-}
-
-const ScriptsTransactionsTable = ({transactions, viewForUserName}: { transactions: CreditTransaction[], viewForUserName: string }) => {
+export const ScriptsTransactionsTable = ({transactions, viewForUserName}: { transactions: CreditTransaction[], viewForUserName: string }) => {
     if (transactions.length === 0) {
         return <div className="text">No transactions found.</div>
     }
@@ -33,9 +21,9 @@ const ScriptsTransactionsTable = ({transactions, viewForUserName}: { transaction
 
     return <DataTable rows={rows} rowTexts={rowTexts} pageSize={35} hr={<Hr/>}>
         <div className="row text strong">
-            <div className="col-lg-2">Timestamp</div>
-            <div className="col-lg-1 text-end">Amount</div>
-            <div className="col-lg-2">Other</div>
+            <div className="col-lg-3">Timestamp</div>
+            <div className="col-lg-2 text-end">Amount</div>
+            <div className="col-lg-3">Other</div>
             <div className="col-lg-4">Description</div>
         </div>
     </DataTable>
@@ -57,9 +45,9 @@ const TransactionLine = ({transaction, viewForUserName}: { transaction: CreditTr
     const otherUserStyle = otherUserIsSystem ? " dark" : ""
 
     return <div className="row text">
-        <div className="col-lg-2">{formatTimestamp(new Date(transaction.timestamp))}</div>
-        <div className="col-lg-1 text-end">{sign + transaction.amount} ⚡</div>
-        <div className={`col-lg-2 ${otherUserStyle}`}>{otherUserName}</div>
+        <div className="col-lg-3">{formatTimestamp(new Date(transaction.timestamp))}</div>
+        <div className="col-lg-2 text-end">{sign + transaction.amount}<CreditsIcon/></div>
+        <div className={`col-lg-3 ${otherUserStyle}`}>{otherUserName}</div>
         <div className="col-lg-4">{transaction.description}</div>
     </div>
 }

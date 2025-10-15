@@ -12,6 +12,7 @@ import {Page} from "../../common/menu/pageReducer";
 import {HackerSkillType} from "../../common/users/HackerSkills";
 import {hasSkill} from "../../common/users/CurrentUserReducer";
 import {NavigateButton} from "../../common/component/NavigateButton";
+import {CreditsIcon} from "../../common/component/icon/CreditsIcon";
 
 
 export const HackerScriptsHome = () => {
@@ -54,7 +55,7 @@ const MarketSection = () => {
         <hr/>
         <div className="row">
             <div className="col-lg-7 text">
-                Script credit balance: <span className="text-info">{credits} <span className="glyphicon glyphicon-flash"/></span>
+                Script credit balance: <span className="text-info">{credits}<CreditsIcon/></span>
             </div>
             <div className="col-lg-5 text">
                 <NavigateButton label="Market" page={Page.SCRIPTS_MARKET}/>

@@ -8,7 +8,9 @@ import {ActionButton} from "../../common/component/ActionButton";
 import {notifySimple} from "../../common/util/Notification";
 import {TwoTextInput} from "../../common/component/TwoTextInput";
 import {InfoBadge} from "../../common/component/ToolTip";
-import {CreditTransactions} from "../../common/script/creditsTransaction/CreditTransactions";
+import {ScriptsTransactionsTable} from "../../common/script/creditsTransaction/CreditTransactions";
+import {CreditsIcon} from "../../common/component/icon/CreditsIcon";
+import {CreditTransaction} from "../../common/script/creditsTransaction/CreditTransactionReducer";
 
 export const HackerScriptCredits = () => {
 
@@ -48,7 +50,7 @@ const CreditsAndIncome = () => {
     const credits = useSelector((state: HackerRootState) => state.currentUser.hacker?.scriptCredits) || 0
 
     return <>
-                Script credit balance: <span className="text-info">{credits} <span className="glyphicon glyphicon-flash"/></span>
+        Script credit balance: <span className="text-info">{credits}<CreditsIcon/></span>
         <br/>
         <hr/>
     </>
@@ -74,7 +76,7 @@ const ScriptIncome = () => {
     }
     const collectionLink = (incomeStatus === ScriptIncomeCollectionStatus.AVAILABLE) ?
         <><br/><br/><ActionButton onClick={collectIncome} text="Collect income"/></> : <></>
-    const incomeInfo = <>Income <span className="text-info">{income} <span className="glyphicon glyphicon-flash"/></span></>
+    const incomeInfo = <>Income <span className="text-info">{income}<CreditsIcon/></span></>
 
     return <>
         {incomeInfo} <IncomeStatusElement incomeStatus={incomeStatus}/> {collectionLink}
@@ -83,15 +85,19 @@ const ScriptIncome = () => {
     </>
 }
 
-const IncomeStatusElement = ({incomeStatus} : {incomeStatus: ScriptIncomeCollectionStatus}) => {
+const IncomeStatusElement = ({incomeStatus}: { incomeStatus: ScriptIncomeCollectionStatus }) => {
     switch (incomeStatus) {
-        case ScriptIncomeCollectionStatus.AVAILABLE: return <span className="badge bg-primary">Available</span>
-        case ScriptIncomeCollectionStatus.TODAY_IS_NOT_AN_INCOME_DATE: return <>
-            <span className="badge bg-secondary">Today is not an income date</span> &nbsp;
-            <InfoBadge infoText="If you think that you should be getting income today, please contact a GM" />
-        </>
-        case ScriptIncomeCollectionStatus.COLLECTED: return <span className="badge bg-success">Collected</span>
-        default:  return <span>You have no script income</span>
+        case ScriptIncomeCollectionStatus.AVAILABLE:
+            return <span className="badge bg-primary">Available</span>
+        case ScriptIncomeCollectionStatus.TODAY_IS_NOT_AN_INCOME_DATE:
+            return <>
+                <span className="badge bg-secondary">Today is not an income date</span> &nbsp;
+                <InfoBadge infoText="If you think that you should be getting income today, please contact a GM"/>
+            </>
+        case ScriptIncomeCollectionStatus.COLLECTED:
+            return <span className="badge bg-success">Collected</span>
+        default:
+            return <span>You have no script income</span>
     }
 }
 
@@ -107,7 +113,8 @@ const TransferCredits = () => {
     }
     return <>
         <TwoTextInput label="Transfer credits" save={transfer} clearAfterSubmit={false} buttonLabel="Transfer" buttonClass="btn btn-info"
-                      placeholder1="amount" placeholder2="reciever" autofocus={false} size={3} labelColumns={3}/>
+                      placeholder1="amount" placeholder2="reciever" autofocus={false} size={3} labelColumns={3}
+                      type1="number"/>
     </>
 }
 
@@ -116,3 +123,14 @@ const isWholePositiveNumber = (amount: string): boolean => {
     return !isNaN(parsed) && parsed > 0 && parsed.toString() === amount
 }
 
+export const CreditTransactions = ({transactions, viewForUserName}: { transactions: CreditTransaction[], viewForUserName: string }) => {
+    return <>
+        <h4>
+            Transactions
+        </h4>
+        <hr/>
+        <div>
+            <ScriptsTransactionsTable transactions={transactions} viewForUserName={viewForUserName}/>
+        </div>
+    </>
+}

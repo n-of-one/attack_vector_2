@@ -25,7 +25,7 @@ export interface HackerRootState extends GenericUserRootState {
     users: Users,
     scriptAccess: ScriptAccess[],
     scriptStatus: ScriptStatus|null,
-    creditTransactions: CreditTransaction[] | null,
+    creditTransactions: CreditTransaction[],
 }
 
 const mainTerminalReducer = createTerminalReducer(MAIN_TERMINAL_ID, {autoScroll: true, blockedWhileRendering: true, readOnly: false})

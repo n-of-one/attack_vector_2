@@ -62,7 +62,15 @@ export const GmScriptHome = () => {
                     }}>
                         <><ButtonGlyphicon type="glyphicon-calendar"/> Script income</>
                     </ActionButton>
-                    &nbsp; Configure on which days the hackers receive script credits income.
+                    &nbsp; Configure on which days the hackers receive script credits income.<br/>
+                    <br/>
+                    <br/>
+                    <ActionButton onClick={() => {
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.GM_CREDIT_TRANSACTIONS, null, dispatch)
+                    }}>
+                        <><ButtonGlyphicon type="glyphicon-calendar"/> Hacker credit transactions</>
+                    </ActionButton>
+                    &nbsp; Show the credit transactions of a specific hacker.<br/>
                 </div>
 
 

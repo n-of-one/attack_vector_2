@@ -9,6 +9,7 @@ import {ScriptAccess, scriptAccessReducer} from "../common/script/access/ScriptA
 import {ScriptStatistics, scriptStatisticsReducer} from "./scripts/ScriptStatisticsReducer";
 import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
 import {IncomeDate, incomeDateReducer} from "./scripts/income/IncomeDateReducer";
+import {CreditTransaction, creditTransactionReducer} from "../common/script/creditsTransaction/CreditTransactionReducer";
 
 
 export interface EditUser {
@@ -50,6 +51,7 @@ export interface GmRootState extends GenericUserRootState {
     scriptsManagement: ScriptManagement,
     scriptStatus: ScriptStatus | null,
     incomeDates: IncomeDate[],
+    creditTransactions: CreditTransaction[],
 }
 
 export const gmRootReducer = combineReducers({
@@ -64,4 +66,5 @@ export const gmRootReducer = combineReducers({
     scriptsManagement: scriptManagementReducer,
     scriptStatus: scriptStatusReducer,
     incomeDates: incomeDateReducer,
+    creditTransactions: creditTransactionReducer,
 })

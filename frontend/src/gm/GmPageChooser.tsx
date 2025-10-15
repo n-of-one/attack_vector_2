@@ -14,6 +14,7 @@ import {ScriptTypeManagement} from "./scripts/scriptType/ScriptTypeManagement";
 import {CurrentScriptManagement} from "./scripts/currentScripts/CurrentScriptManagement";
 import {GmStatisticsHome} from "./statistics/GmStatisticsHome";
 import {ScriptIncome} from "./scripts/income/ScriptIncome";
+import {GmCreditTransactions} from "./scripts/creditTransaction/GmCreditTransactions";
 
 
 const renderCurrentPage = (currentPage: Page) => {
@@ -36,6 +37,8 @@ const renderCurrentPage = (currentPage: Page) => {
             return <TaskMonitorHome/>
         case Page.STATISTICS:
             return <GmStatisticsHome/>
+        case Page.GM_CREDIT_TRANSACTIONS:
+            return <GmCreditTransactions/>
         default:
             return <SitesPage/>
     }

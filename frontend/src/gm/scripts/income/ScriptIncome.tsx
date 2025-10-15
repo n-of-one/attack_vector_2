@@ -23,7 +23,7 @@ export const ScriptIncome = () => {
             <div className="col-lg-5">
                 <div className="text">
                     <h3 className="text-info">Script income dates </h3><br/>
-                    Hackers that have a daily script credits income, can collect it during the days of the Larp. Here you define the
+                    Hackers that have a daily script credits income can collect it during the days of the Larp. Here you define the
                     days hackers can collect income (i.e. the days of your larp).<br/>
                     <br/>
                     Income dates start at 06:00 at the specified date, and end at 06:00 the next day.

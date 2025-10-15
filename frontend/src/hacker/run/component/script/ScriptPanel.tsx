@@ -11,6 +11,7 @@ import {formatTimeInterval} from "../../../../common/util/Util";
 import {ConfigItem, getConfigAsBoolean} from "../../../../admin/config/ConfigReducer";
 import {hasSkill} from "../../../../common/users/CurrentUserReducer";
 import {HackerSkillType} from "../../../../common/users/HackerSkills";
+import {CreditsIcon} from "../../../../common/component/icon/CreditsIcon";
 
 export const ScriptPanel = () => {
     const [expanded, setExpanded] = React.useState(false)
@@ -109,8 +110,8 @@ const ScriptCredits = () => {
     }
 
     return <div className="row text">
-        <div className="col-lg-3">
-            Script credits: <span className="text-info">{credits} <span className="glyphicon glyphicon-flash"/></span><br/>
+        <div className="col-lg-12">
+            Script credits: <span className="text-info">{credits}<CreditsIcon/></span><br/>
             <br/>
         </div>
     </div>

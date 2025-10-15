@@ -22,7 +22,7 @@ const logout = (event: any) => {
 const scanItem = (currentPage: string, runName: string | null) => {
     if (currentPage === Page.RUN && runName) {
         return (
-            <MenuItem requriesRole="ROLE_HACKER" targetPage={Page.RUN} label={"> " + runName}/>
+            <MenuItem requriesRole="ROLE_HACKER" targetPage={Page.RUN} label={`> ${runName} <`}/>
         )
     } else {
         return <span/>
@@ -62,12 +62,12 @@ export const MenuBar = () => {
                         <div className="d-flex justify-content-between">
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
+                                {scanItem(currentPage, siteName)}
+                                <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
                                 {hackerSites}
                                 {hackerScripts}
                                 {hackerMarket}
                                 {hackerCredits}
-                                <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
-                                {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>
                                 <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={Page.SITES} label="Sites"/>
                                 <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={Page.USERS} label="Users"/>

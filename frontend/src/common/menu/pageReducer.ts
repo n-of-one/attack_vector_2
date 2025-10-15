@@ -24,6 +24,7 @@ export enum Page {
     SCRIPT_MANAGEMENT = "SCRIPT_MANAGEMENT",
     SCRIPT_INCOME_DATES = "SCRIPT_INCOME_DATES",
     SCRIPT_ACCESS_MANAGEMENT = "SCRIPT_ACCESS_MANAGEMENT",
+    GM_CREDIT_TRANSACTIONS = "GM_CREDIT_TRANSACTIONS",
 
 // Display this page when another tab was opened for the same hacker / app connection.
     FORCE_DISCONNECT = "FORCE_DISCONNECT",
