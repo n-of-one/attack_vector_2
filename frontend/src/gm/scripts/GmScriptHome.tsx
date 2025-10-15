@@ -36,7 +36,7 @@ export const GmScriptHome = () => {
                     <ActionButton onClick={() => {
                         navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_TYPE_MANAGEMENT, null, dispatch)
                     }}>
-                        <><ButtonGlyphicon type="glyphicon-flash"/> Script types</>
+                        <><ButtonGlyphicon type="glyphicon-list"/> Script types</>
                     </ActionButton>
                     &nbsp;Manage the scripts that exist in your game.<br/>
                     <br/>
@@ -58,19 +58,19 @@ export const GmScriptHome = () => {
                     <br/>
                     <br/>
                     <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_INCOME_DATES, null, dispatch)
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.GM_HACKER_CREDITS, null, dispatch)
                     }}>
-                        <><ButtonGlyphicon type="glyphicon-calendar"/> Script income</>
+                        <><ButtonGlyphicon type="glyphicon-flash"/> Hacker credits</>
                     </ActionButton>
-                    &nbsp; Configure on which days the hackers receive script credits income.<br/>
+                    &nbsp; View and manage hacker script credits.<br/>
                     <br/>
                     <br/>
                     <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.GM_CREDIT_TRANSACTIONS, null, dispatch)
+                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_INCOME_DATES, null, dispatch)
                     }}>
-                        <><ButtonGlyphicon type="glyphicon-calendar"/> Hacker credit transactions</>
+                        <><ButtonGlyphicon type="glyphicon-calendar"/> Script income dates</>
                     </ActionButton>
-                    &nbsp; Show the credit transactions of a specific hacker.<br/>
+                    &nbsp; Configure on which days the hackers receive script credits income.<br/>
                 </div>
 
 

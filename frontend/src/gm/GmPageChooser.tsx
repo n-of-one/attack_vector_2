@@ -14,7 +14,7 @@ import {ScriptTypeManagement} from "./scripts/scriptType/ScriptTypeManagement";
 import {CurrentScriptManagement} from "./scripts/currentScripts/CurrentScriptManagement";
 import {GmStatisticsHome} from "./statistics/GmStatisticsHome";
 import {ScriptIncome} from "./scripts/income/ScriptIncome";
-import {GmCreditTransactions} from "./scripts/creditTransaction/GmCreditTransactions";
+import {ManageHackerCredits} from "./scripts/manageHackerCredits/ManageHackerCredits";
 
 
 const renderCurrentPage = (currentPage: Page) => {
@@ -37,8 +37,8 @@ const renderCurrentPage = (currentPage: Page) => {
             return <TaskMonitorHome/>
         case Page.STATISTICS:
             return <GmStatisticsHome/>
-        case Page.GM_CREDIT_TRANSACTIONS:
-            return <GmCreditTransactions/>
+        case Page.GM_HACKER_CREDITS:
+            return <ManageHackerCredits/>
         default:
             return <SitesPage/>
     }

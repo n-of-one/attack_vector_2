@@ -10,6 +10,7 @@ import {editorNodesReducer} from "./reducer/EditorNodesReducer";
 import {NodeI} from "../common/sites/SiteModel";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {allCoresReducer, CoreInfo} from "./reducer/AllCoresReducer";
+import {currentUserReducer, User} from "../common/users/CurrentUserReducer";
 
 export interface EditorState {
     siteProperties: SiteProperties,
@@ -22,10 +23,10 @@ export interface EditorState {
     state : SiteStateI,
     sites: Array<SiteInfo>,
     allCores: CoreInfo[],
-
+    currentUser: User,
 }
 
-export const editorRootDefaultState: EditorState = {
+export const editorRootDefaultState = {
     siteProperties: { ...sitePropertiesDefault},
     dragAndDrop: defaultDragAndDropState,
     theme: "frontier",
@@ -51,5 +52,6 @@ export const editorRootReducer = (state:EditorState, action: AnyAction): EditorS
         state: siteStateReducer(state.state, action),
         sites: sitesReducer(state.sites, action),
         allCores: allCoresReducer(state.allCores, action),
+        currentUser: currentUserReducer(state.currentUser, action),
     }
 }

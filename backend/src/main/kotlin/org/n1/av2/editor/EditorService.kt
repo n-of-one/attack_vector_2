@@ -8,6 +8,8 @@ import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.SiteService
@@ -15,6 +17,7 @@ import org.n1.av2.site.entity.ConnectionEntityService
 import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
+import org.n1.av2.site.entity.enums.LayerType
 
 @org.springframework.stereotype.Service
 class EditorService(
@@ -25,6 +28,8 @@ class EditorService(
     private val siteValidationService: SiteValidationService,
     private val connectionService: ConnectionService,
     private val statusLightService: StatusLightService,
+    private val userAndHackerService: UserAndHackerService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     fun validateAccessToSiteByName(siteName: String, userPrincipal: UserPrincipal) {
@@ -125,6 +130,7 @@ class EditorService(
 
     fun enter(siteId: String) {
         sendSiteFull(siteId)
+        userAndHackerService.sendDetailsOfCurrentUser()
         siteService.sendSitesList()
         sendAllCores() // used to configure tripwires with remote cores
     }
@@ -220,12 +226,18 @@ class EditorService(
     data class LayerAdded(val nodeId: String, val layer: Layer)
 
     fun addLayer(command: AddLayerCommand): Layer {
+        validateUserCanAddLayer(command.layerType)
+
         val layer = nodeEntityService.addLayer(command)
         val message = LayerAdded(command.nodeId, layer)
 
         connectionService.toSite(command.siteId, ServerActions.SERVER_ADD_LAYER, message)
         siteValidationService.validate(command.siteId)
         return layer
+    }
+
+    private fun validateUserCanAddLayer(layerType: LayerType) {
+        if (layerType.gmOnly && currentUserService.userEntity.type == UserType.HACKER) error("Cannot add this type of layer.")
     }
 
     fun removeLayer(command: RemoveLayerCommand) {

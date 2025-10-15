@@ -24,7 +24,7 @@ export const LayerScriptCreditsPanel = ({node, layer}: Props) => {
         {value: "true", text: "Credits have been stolen."}]
 
     return (
-        <LayerPanel typeDisplay="Script Credits" layerObject={scriptCredits}>
+        <LayerPanel typeDisplay="Credits source" layerObject={scriptCredits}>
             <TextAttribute key={key("value")} size="small" label="Value" value={scriptCredits.amount} save={value => scriptCredits.saveAmount(value)}
                            help="The amount of credits the data is worth. This is the amount of credits the hacker will receive when they hack this layer."
                            placeholder="10"/>

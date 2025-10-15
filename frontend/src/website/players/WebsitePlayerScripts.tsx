@@ -77,6 +77,16 @@ export const WebsitePlayerScripts = () => {
                         the top-right corner of your map. If you don’t see this icon, you don't have the Scripts skill, have no RAM and cannot run any scripts.
                         <br/>
                     </p>
+
+                    <h5 className="muted">Scripts credits</h5>
+                    <p className="text">
+                        Scripts credits (<span className="glyphicon glyphicon-flash"/>) allow hackers to buy scripts from the black market.<br/>
+                        <br/>
+                        If you have the Script Credits skill, you can earn script credits by looking for data layers that contain data you can sell.
+                        Alternatively, you can earn a passive income of script credits that you can collect daily (on the days of the larp). How to get this
+                        income will depend on the larp you are playing..<br/>
+                    </p>
+
                 </div>
             </div>
         </div>

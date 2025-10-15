@@ -42,6 +42,13 @@ export const WebsiteGms = () => {
                         <br/>
                         See this video for an explanation of how to manage scripts: <a href="https://youtu.be/3BBU9aGHK6U" target="_blank">Youtube</a>.<br/><br/>
                     </p>
+                    <h5 className="muted">Script credits</h5>
+                    <p className="text">
+                        If you are using scripts, optionally hackers can earn script credits (<span className="glyphicon glyphicon-flash"/>) to allow them to buy scripts from the market<br/>
+                        <br/>
+                        Turn on this feature by giving hackers the 'script credits' skill. As part of this skill you can give them a daily income or leave this at 0.<br/>
+                        <br/> The other way for hackers to earn script credits is by hacking a layer of the type 'Credit Source'. These contains data the hackers sell for credits when they hack them.<br/>
+                    </p>
 
                     <h3 className="muted">Interaction with the real world</h3>
                     <h5 className="muted">Password ICE</h5>

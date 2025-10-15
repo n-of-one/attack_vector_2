@@ -9,10 +9,9 @@ import {CloseButton} from "../../../common/component/CloseButton";
 import {User} from "../../../common/users/CurrentUserReducer";
 import {notifySimple} from "../../../common/util/Notification";
 import {TwoTextInput} from "../../../common/component/TwoTextInput";
-import {CreditsIcon} from "../../../common/component/icon/CreditsIcon";
 import {CurrentCredits} from "../../../common/script/credits/CurrentCredits";
 
-export const GmCreditTransactions = () => {
+export const ManageHackerCredits = () => {
 
     useEffect(() => {
         webSocketConnection.send("/user/overview", "")
@@ -39,7 +38,7 @@ export const GmCreditTransactions = () => {
             </div>
             <div className="col-lg-5">
                 <div>
-                    <h3 className="text-info">Manage credits of hacker</h3>
+                    <h3 className="text-info">Manage credits of hackers</h3>
                 </div>
                 {hackerCreditsElement}
             </div>

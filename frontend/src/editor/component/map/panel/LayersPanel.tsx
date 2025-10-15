@@ -20,11 +20,15 @@ import {EditorState} from "../../../EditorRootReducer"
 import {editorSiteId} from "../../../EditorRoot";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {Icon} from "../../../../common/component/icon/Icon";
+import {UserType} from "../../../../common/users/CurrentUserReducer";
 
 
 export const LayersPanel = () => {
 
     const currentNodeId = useSelector((state: EditorState) => state.currentNodeId)
+    const currentUser = useSelector((state: EditorState) => state.currentUser)
+
+    if (currentUser.type === UserType.NO_DATA) return <></>
 
     const add = (type: string, implemented?: boolean) => {
         if (implemented && currentNodeId != null) {
@@ -43,6 +47,12 @@ export const LayersPanel = () => {
         )
     }
 
+    const notForHackers = (type: string, color: string) => {
+        if (currentUser.type === UserType.HACKER) return <></>
+        return regular(type, color)
+
+    }
+
     return (
         <div className="row" style={{marginTop: "4px"}}>
             <div className="col-lg-12 darkWell">
@@ -53,7 +63,7 @@ export const LayersPanel = () => {
                     {regular(TRIPWIRE, "white")}
                     {regular(CORE, "white")}
                     {regular(SCRIPT_INTERACTION, "white")}
-                    {regular(SCRIPT_CREDITS, "white")}
+                    {notForHackers(SCRIPT_CREDITS, "white")}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>
