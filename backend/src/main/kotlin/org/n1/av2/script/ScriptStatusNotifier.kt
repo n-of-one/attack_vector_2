@@ -1,6 +1,5 @@
 package org.n1.av2.script
 
-import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -11,7 +10,6 @@ import org.n1.av2.script.common.toUiEffectDescriptions
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.ram.RamEntity
 import org.n1.av2.script.type.ScriptType
-import org.n1.av2.site.entity.NodeEntityService
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -22,7 +20,6 @@ class ScriptStatusNotifier(
     private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val timeService: TimeService,
     private val currentUserService: CurrentUserService,
-    private val hackerEntityService: HackerEntityService,
 ) {
 
     @Suppress("unused")

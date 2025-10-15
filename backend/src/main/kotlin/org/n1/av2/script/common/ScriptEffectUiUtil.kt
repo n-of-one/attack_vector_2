@@ -1,7 +1,7 @@
 package org.n1.av2.script.common
 
-import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.effect.ScriptEffectType
+import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.n1.av2.script.type.ScriptType
 
 

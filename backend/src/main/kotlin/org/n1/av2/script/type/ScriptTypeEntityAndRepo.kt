@@ -4,7 +4,6 @@ import org.n1.av2.script.effect.ScriptEffectType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.CrudRepository
-import java.math.BigDecimal
 
 typealias ScriptTypeId = String
 

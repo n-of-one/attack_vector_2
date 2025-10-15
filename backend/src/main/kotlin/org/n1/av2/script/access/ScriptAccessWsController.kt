@@ -5,7 +5,6 @@ import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.UserAndHackerService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
-import java.math.BigDecimal
 
 @Controller
 class ScriptAccessWsController(

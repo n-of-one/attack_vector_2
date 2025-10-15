@@ -9,7 +9,6 @@ import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.effect.ScriptEffectType
 import org.n1.av2.script.effect.ScriptEffectTypeLookup
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 import javax.annotation.PostConstruct
 import kotlin.jvm.optionals.getOrElse
 
