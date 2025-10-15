@@ -4,13 +4,17 @@
 - Script credits, script market and daily income
 
 Hacker can have the skill to collect script credits. These can be used to buy scripts from the market.
-
 GMs can populate the market by making scripts available to hackers at a specific price.
 
 Hackers can receive credits in two ways:
-- A new layer is added that contains data that can be stolen and sold for script credits.
-- The hacker can be awarded a 'daily' income of script credtits as part of their skill.
+- A new layer is added (Credits Source) that contains data that can be stolen and sold for script credits.
+- The hacker can be awarded a 'daily' income of script credits as part of their skill.
 
+
+# Release notes AV 2.11.1 (22 August 2025)
+
+## Bugfixes
+- Moving back to a previous node is no longer blocked by ICE in the current node.
 
 
 # Release notes AV 2.11.0 (20 July 2025)

@@ -52,6 +52,12 @@ class CommandMoveService(
         val networkId = arguments.first()
         val toNode = nodeEntityService.findByNetworkId(hackerState.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
+        if (hackerState.previousNodeId == toNode.id) {
+            // can always go back to previous node, regardless of ice
+            handleMove(toNode, hackerState, false)
+            return
+        }
+
         if (!checkMovePrerequisites(toNode, hackerState, networkId)) return
 
         requireNotNull(hackerState.currentNodeId)
@@ -72,8 +78,6 @@ class CommandMoveService(
 
     private fun checkMovePrerequisites(toNode: Node, hackerState: HackerStateRunning, networkId: String): Boolean {
         if (toNode.id == hackerState.currentNodeId) return reportAtTargetNode(networkId)
-
-        if (hackerState.previousNodeId == toNode.id) return true /// can always go back to previous node, regardless of ice
 
         val scan = runEntityService.getByRunId(hackerState.runId)
         if (scan.nodeScanById[toNode.id] == null || scan.nodeScanById[toNode.id]!!.status.isOneOf(UNDISCOVERED_0, UNCONNECTABLE_1)) {

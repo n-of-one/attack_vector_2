@@ -86,12 +86,12 @@ class UserEntityService(
     }
 
     fun findFreeUserName(input: String): String {
-        if (findByNameIgnoreCase(input) == null) return input
+        val normalizedInput = input.replace(" ", "_")
+        if (findByNameIgnoreCase(normalizedInput) == null) return normalizedInput
 
         for (i in 1..100) {
-            val name = "$input$i"
+            val name = "$normalizedInput$i"
             if (findByNameIgnoreCase(name) == null) return name
-
         }
         error("Failed to logon, failed to create user account. No free user name found")
     }
