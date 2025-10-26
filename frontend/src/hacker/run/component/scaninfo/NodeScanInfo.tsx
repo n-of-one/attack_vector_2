@@ -65,6 +65,7 @@ export const NodeScanInfo = () => {
                                 Scan info on <span className="networkId">{networkId}</span><Pad length={10} textValue={networkId}/>
                                 <span className="text-muted">scan progress: {statusText(status)}</span><br/>
                                 <br/>
+                                <NodeNameElement node={node} status={status}/>
                                 <NodeScanInfoByStatus node={node} status={status}/>
                             </div>
 
@@ -77,4 +78,18 @@ export const NodeScanInfo = () => {
             </div>
         </div>
     )
+}
+
+const NodeNameElement = ({node, status}: { node: NodeI, status: NodeScanStatus}) => {
+    if (status !== NodeScanStatus.ICE_PROTECTED_3 && status !== NodeScanStatus.FULLY_SCANNED_4) {
+        return <></>
+    }
+
+    const nodeName = node.layers[0].nodeName
+    if (!nodeName || nodeName.trim() === "") {
+        return <></>
+    }
+    return <>
+        Node name: <span className="strong">{node!.layers[0].nodeName}</span><br/><br/>
+    </>
 }

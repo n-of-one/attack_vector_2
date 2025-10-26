@@ -92,7 +92,7 @@ export const DevLogin = () => {
                 </div>
             </form>
             <br/>
-            {["hacker", "Stalker", "Paradox"].map(renderName)}
+            {["hacker", "Stalker", "Paradox", "Angler"].map(renderName)}
             <br/>
             {["gm"].map(renderName)}
             <br/>

@@ -13,6 +13,8 @@ const renderLayer = (layer: LayerDetails) => {
         case LayerType.KEYSTORE:
         case LayerType.LOCK:
         case LayerType.STATUS_LIGHT:
+        case LayerType.SCRIPT_INTERACTION:
+        case LayerType.SCRIPT_CREDITS:
             return <></>
         case LayerType.TRIPWIRE:
             return <ScanInfoTripwire layer={layer}/>
@@ -31,7 +33,7 @@ const renderLayer = (layer: LayerDetails) => {
         case LayerType.SWEEPER_ICE:
             return <ScanInfoIce layer={layer} iceDescription="minesweeper"/>
         default:
-            return <><span className="text-danger"> Unknown layer": {layer.type}</span></>
+            return <><span className="text-danger"> Unknown layer</span></>
     }
 }
 

@@ -21,3 +21,9 @@ yarn-error.log*
 
 backend/target
 backend/.idea/
+
+/test/node_modules/
+/test/test-results/
+/test/playwright-report/
+/test/blob-report/
+/test/playwright/
