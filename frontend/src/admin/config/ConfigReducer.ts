@@ -22,6 +22,7 @@ export enum ConfigItem {
     DEV_HACKER_RESET_SITE = "DEV_HACKER_RESET_SITE",
     DEV_HACKER_USE_DEV_COMMANDS = "DEV_HACKER_USE_DEV_COMMANDS",
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS = "DEV_SIMULATE_NON_LOCALHOST_DELAY_MS",
+    DEV_TESTING_MODE = "DEV_TESTING_MODE",
     DEV_QUICK_PLAYING = "DEV_QUICK_PLAYING",
 
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN = "LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN",
@@ -47,6 +48,7 @@ export const ConfigItemCategories = {
     DEV_HACKER_RESET_SITE: "4. Development",
     DEV_HACKER_USE_DEV_COMMANDS: "4. Development",
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "4. Development",
+    DEV_TESTING_MODE: "4. Development",
     DEV_QUICK_PLAYING: "4. Development",
 
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "5. Larp specific - Frontier",
@@ -73,6 +75,7 @@ export const ConfigItemNames = {
     DEV_HACKER_USE_DEV_COMMANDS: "Hackers can use dev commands",
     DEV_HACKER_RESET_SITE: "Hackers can reset sites",
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "Simulate non-localhost",
+    DEV_TESTING_MODE: "Testing mode",
     DEV_QUICK_PLAYING: "ICE quick playing",
 
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "LOLA enabled",

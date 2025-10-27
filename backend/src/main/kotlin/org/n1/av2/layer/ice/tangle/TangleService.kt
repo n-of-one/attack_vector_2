@@ -46,9 +46,10 @@ class TangleService(
     }
 
     fun createTangleIce(layer: TangleIceLayer): TangleIceStatus {
-        val creation = TangleCreator().create(layer.strength)
+        val testingMode = configService.getAsBoolean(ConfigItem.DEV_TESTING_MODE)
+        val creation = TangleCreator(testingMode).create(layer.strength)
 
-        val id = createId("tangle", tangleIceStatusRepo::findById)
+         val id = createId("tangle", tangleIceStatusRepo::findById)
         val iceTangleStatus = TangleIceStatus(
             id = id,
             layerId = layer.id,

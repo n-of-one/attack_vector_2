@@ -1,13 +1,6 @@
 import {expect, Page, test} from '@playwright/test'
 import {AvPage} from "./testframework/AvPage"
 
-// test.use({
-//     viewport: {
-//         height: 945,
-//         width: 1920
-//     }
-// })
-
 test('1.0 - Prepare', async ({page}: { page: Page }) => {
     test.setTimeout(10_000);
 

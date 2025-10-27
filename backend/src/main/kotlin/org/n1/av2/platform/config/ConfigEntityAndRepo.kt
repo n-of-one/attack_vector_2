@@ -27,9 +27,10 @@ enum class ConfigItem(
     LOGIN_GOOGLE_CLIENT_ID(""),
 
     DEV_HACKER_RESET_SITE("false", ::validBoolean),
-    DEV_QUICK_PLAYING("false", ::validBoolean),
     DEV_HACKER_USE_DEV_COMMANDS("false", ::validBoolean),
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS("0", ::validDelay),
+    DEV_TESTING_MODE("false", ::validBoolean),
+    DEV_QUICK_PLAYING("false", ::validBoolean),
 
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN(""),
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED("false", ::validBoolean),

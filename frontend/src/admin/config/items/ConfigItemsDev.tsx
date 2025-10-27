@@ -34,6 +34,20 @@ export const ConfigItemHackerResetSite = (props: { value: string }) => {
     )
 }
 
+export const ConfigItemTestingMode = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Development: testing mode" value={props.value} item={ConfigItem.DEV_TESTING_MODE}/>
+            <small className="form-text text-muted">Enable testing mode, make ICE puzzles predictable<br/><br/>
+                Default: false<br/>
+                General advice: leave this to false.<br/><br/>
+                Setting this to true change the behavior to help with automatic testing. ICE puzzles will no longer be random, so they are predictable to solve
+                by automated testing scripts.
+            </small>
+        </>
+    )
+}
+
 export const ConfigItemQuickPlaying = (props: { value: string }) => {
     return (
         <>
@@ -47,6 +61,7 @@ export const ConfigItemQuickPlaying = (props: { value: string }) => {
         </>
     )
 }
+
 
 export const ConfigItemDevSimulateNonLocalHost = (props: { value: string }) => {
     return (

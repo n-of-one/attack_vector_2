@@ -5,7 +5,8 @@ import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {
     ConfigItemHackerDeleteRunLinks,
     ConfigItemHackerEditCharacterName,
-    ConfigItemHackerEditUserName, ConfigItemHackerScriptLoadDuringRun,
+    ConfigItemHackerEditUserName,
+    ConfigItemHackerScriptLoadDuringRun,
     ConfigItemHackerScriptLockoutDuration,
     ConfigItemHackerScriptRamRefreshDuration,
     ConfigItemHackerShowSKills,
@@ -14,7 +15,13 @@ import {
 import {ConfigEntry, ConfigItem, ConfigItemCategories, ConfigItemNames, SELECT_CONFIG} from "./ConfigReducer";
 import {SilentLink} from "../../common/component/SilentLink";
 import {ConfigItemLoginGoogleClientId, ConfigItemLoginPassword, ConfigItemLoginPath} from "./items/ConfigItemsLogin";
-import {ConfigItemDevSimulateNonLocalHost, ConfigItemHackerResetSite, ConfigItemHackerUseDevCommands, ConfigItemQuickPlaying} from "./items/ConfigItemsDev";
+import {
+    ConfigItemDevSimulateNonLocalHost,
+    ConfigItemHackerResetSite,
+    ConfigItemHackerUseDevCommands,
+    ConfigItemQuickPlaying,
+    ConfigItemTestingMode
+} from "./items/ConfigItemsDev";
 import {ConfigItemLarpFrontierLolaEnabled, ConfigItemLarpFrontierOrthankToken, ConfigItemLarpName} from "./items/ConfigItemsLarp";
 
 
@@ -121,6 +128,8 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemDevSimulateNonLocalHost value={props.value}/>
         case ConfigItem.DEV_HACKER_RESET_SITE:
             return <ConfigItemHackerResetSite value={props.value}/>
+        case ConfigItem.DEV_TESTING_MODE:
+            return <ConfigItemTestingMode value={props.value}/>
         case ConfigItem.DEV_QUICK_PLAYING:
             return <ConfigItemQuickPlaying value={props.value}/>
         case ConfigItem.DEV_HACKER_USE_DEV_COMMANDS:

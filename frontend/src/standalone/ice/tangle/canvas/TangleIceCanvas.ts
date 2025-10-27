@@ -44,9 +44,22 @@ class TangleIceCanvas {
         canvas.on('selection:cleared', () => {
             this.canvasSelectionCleared();
         });
-        canvas.on('mouse:up', () => {
+        canvas.on('mouse:up', (event: fabric.IEvent<MouseEvent>) => {
             this.canvasSelectionCleared();
+            const x = event.e.pageX
+            const y = event.e.pageY
+            console.log("await icePage.mouse.move(" + x + "," + y + ")")
+            console.log("await icePage.mouse.up()")
+            console.log("await ice.wait(1.0)")
         });
+
+        this.canvas.on('mouse:down', (event: fabric.IEvent<MouseEvent>) => {
+            const x = event.e.pageX
+            const y = event.e.pageY
+            console.log("await icePage.mouse.move(" + x + "," + y + ")")
+            console.log("await icePage.mouse.down()")
+        })
+
         canvas.on('object:moving', (event) => {
             this.canvasObjectMoved(event);
         });

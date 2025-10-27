@@ -1,5 +1,5 @@
-import {expect, Page} from "@playwright/test";
-import {PageAssertionsToHaveScreenshotOptions} from "playwright/types/test";
+import {expect, Page} from "@playwright/test"
+import {PageAssertionsToHaveScreenshotOptions} from "playwright/types/test"
 
 
 export class AvPage {
@@ -12,34 +12,55 @@ export class AvPage {
     }
 
     constructor(page: Page) {
-        this.page = page;
+        this.page = page
     }
 
     async loginUsingLink(username: string,) {
-        await this.page.goto('http://localhost:3000/redirectToLogin');
-        await this.page.getByRole('link', {name: username}).click();
-        await expect(this.page.getByText(`{${username}}`)).toBeVisible();
+        await this.page.goto('http://localhost:3000/redirectToLogin')
+        await this.page.getByRole('link', {name: username}).click()
+        await expect(this.page.getByText(`{${username}}`)).toBeVisible()
     }
 
     async loginByTyping(username: string) {
-        await this.page.goto('http://localhost:3000/redirectToLogin');
-        await this.page.locator('#handle').click();
-        await this.page.locator('#handle').fill(username);
-        await this.page.locator('#handle').press('Enter');
-        await expect(this.page.getByText(`{${username}}`)).toBeVisible();
+        await this.page.goto('http://localhost:3000/redirectToLogin')
+        await this.page.locator('#handle').click()
+        await this.page.locator('#handle').fill(username)
+        await this.page.locator('#handle').press('Enter')
+        await expect(this.page.getByText(`{${username}}`)).toBeVisible()
     }
 
+    async loginOrCreateUserAndLogin(username: string) {
+        await this.page.goto('http://localhost:3000/redirectToLogin')
+        await this.page.locator('#handle').click()
+        await this.page.locator('#handle').fill(username)
+        await this.page.locator('#handle').press('Enter')
+        const userDoesNotExist = await this.page.getByText('Username not found').isVisible()
+
+        if (userDoesNotExist) {
+            await this.loginUsingLink("gm")
+            await this.page.getByText('Users').click()
+            await this.page.getByRole('textbox', { name: 'User name' }).fill('tangle')
+            await this.page.getByRole('button', { name: 'Create' }).click()
+            await this.page.getByRole('link', { name: 'ꕻ Logout' }).click()
+            await this.loginByTyping(username)
+        }
+        else {
+            await expect(this.page.getByText(`{${username}}`)).toBeVisible()
+        }
+    }
+
+
     async startNewRun(siteName: string) {
-        await this.page.getByRole('textbox', {name: 'Site name'}).click();
-        await this.page.getByRole('textbox', {name: 'Site name'}).fill(siteName);
-        await this.page.getByRole('textbox', {name: 'Site name'}).press('Enter');
-        await expect(this.page.getByText("Site:")).toContainText(siteName);
+        await this.page.getByRole('textbox', {name: 'Site name'}).click()
+        await this.page.getByRole('textbox', {name: 'Site name'}).fill(siteName)
+        await this.page.getByRole('textbox', {name: 'Site name'}).press('Enter')
+        await expect(this.page.getByText("Site:")).toContainText(siteName)
         await this.waitForPrompt()
     }
 
     async joinExistingRun(siteName: string) {
-        await this.page.getByText(siteName).click();
-        await expect(this.page.getByText("Site:")).toContainText(siteName);
+        await this.page.getByText(siteName).click()
+        await expect(this.page.getByText("Site:")).toContainText(siteName)
         await this.waitForPrompt()
     }
 
@@ -51,7 +72,7 @@ export class AvPage {
     }
 
     async expectTerminalText(expected: string | string[], timeoutSeconds?: number) {
-        const options = timeoutSeconds ? {timeout: timeoutSeconds * 1000} : undefined;
+        const options = timeoutSeconds ? {timeout: timeoutSeconds * 1000} : undefined
 
         if (expected instanceof Array) {
             for (const text of expected) {

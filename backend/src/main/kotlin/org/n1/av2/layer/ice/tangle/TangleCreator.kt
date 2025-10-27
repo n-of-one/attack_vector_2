@@ -59,12 +59,13 @@ class TLine(val slope: Float, val yOffset: Float, val intersections: MutableList
 }
 
 
-private var random = Random
 
 class TangleCreation(val points: MutableList<TanglePoint>, val lines: List<TangleLine>)
 
 
-class TangleCreator {
+class TangleCreator(testingMode: Boolean) {
+
+    private val random = if (testingMode) Random(0L) else Random
 
     fun create(strength: IceStrength): TangleCreation {
         val clusters = clusterCount(strength)
@@ -86,7 +87,7 @@ class TangleCreator {
 //      For debugging: layout the original points
 //        val tanglePoints = layout(idPoints)
 
-        points.shuffle()
+        points.shuffle(random)
         val tanglePoints = layoutAsCircle(points)
 
         println("tangle points: ${tanglePoints.size} for strength: $strength")
