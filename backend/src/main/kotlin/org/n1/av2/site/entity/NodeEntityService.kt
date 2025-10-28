@@ -279,6 +279,27 @@ class NodeEntityService(
             }
     }
 
+    fun findAllCores(siteId: String): List<CoreLayer> {
+        return nodeRepo.findBySiteId(siteId)
+            .filter {
+                it.layers.any { it.type == LayerType.CORE }
+            }.map { node ->
+                node.layers.filterIsInstance<CoreLayer>()
+            }.flatten()
+    }
+
+
+    fun findAllTripwiresWithCore(coreLayerId: String): List<Node> {
+        return nodeRepo.findAll()
+            .filter { node ->
+                val tripwireLayers =
+                    node.layers
+                        .filterIsInstance<TripwireLayer>()
+                        .filter { tripwireLayer: TripwireLayer -> tripwireLayer.coreLayerId == coreLayerId }
+                tripwireLayers.isNotEmpty()
+            }
+    }
+
     companion object {
         fun deriveNodeIdFromLayerId(layerId: String): String {
             val layerIdParts = layerId.split(":")

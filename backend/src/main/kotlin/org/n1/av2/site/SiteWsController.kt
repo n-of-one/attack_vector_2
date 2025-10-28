@@ -2,9 +2,11 @@ package org.n1.av2.site
 
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.inputvalidation.ValidSiteId
+import org.n1.av2.platform.util.ServerFatal
 import org.n1.av2.run.RunService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
@@ -50,6 +52,12 @@ class SiteWsController(
     fun deleteSite(@ValidSiteId siteId: String, principal: UserPrincipal) {
         userTaskRunner.runTask("/site/delete", principal) {
             siteService.checkIfAllowedToDelete(siteId, principal)
+            connectionService.toSite(
+                siteId,
+                ServerActions.SERVER_ERROR,
+                ServerFatal(false, "Site removed by ${principal.userEntity.name}, please close browser window.")
+            )
+
             runService.deleteRuns(siteId)
             siteService.removeSite(siteId)
         }

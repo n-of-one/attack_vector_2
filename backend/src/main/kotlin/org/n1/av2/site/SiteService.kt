@@ -5,13 +5,16 @@ import org.n1.av2.editor.SiteEditorStateEntityService
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.editor.SiteValidationService
 import org.n1.av2.layer.ice.common.IceService
+import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
+import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.ServerFatal
+import org.n1.av2.platform.util.pluralS
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.enums.NodeType
 import org.springframework.stereotype.Service
@@ -54,6 +57,32 @@ class SiteService(
             }
         connectionService.toUser(currentUserService.userId, actionType = ServerActions.SERVER_SITES_LIST, list)
     }
+
+    @Suppress("unused")
+    class CoreInfo(val layerId: String, val level: Int, val name: String, val networkId: String, val siteId: String)
+
+    fun sendAllCores() {
+
+        val allCores: Map<Node, List<CoreLayer>> = nodeEntityService.findAllCores()
+
+        val allCoreInfos: List<CoreInfo> = allCores.map { entry: Map.Entry<Node, List<CoreLayer>> ->
+            val node = entry.key
+            val coreLayers = entry.value
+
+            coreLayers.map { layer ->
+                CoreInfo(
+                    layerId = layer.id,
+                    level = layer.level,
+                    name = layer.name,
+                    networkId = node.networkId,
+                    siteId = node.siteId,
+                )
+            }
+        }.flatten()
+
+        connectionService.reply(ServerActions.SERVER_ALL_CORE_INFO, allCoreInfos)
+    }
+
 
     private fun lookupUserName(ownerUserId: String, userNamesById: HashMap<String, String>): String {
         if (userNamesById.containsKey(ownerUserId)) {
@@ -108,6 +137,17 @@ class SiteService(
     }
 
     fun checkIfAllowedToDelete(siteId: String, userPrincipal: UserPrincipal) {
+        checkDeleteSiteRole(siteId, userPrincipal)
+
+        // Cannot remove site that has a core that is linked to tripwires
+        val coreLayers = nodeEntityService.findAllCores(siteId)
+        coreLayers.forEach { coreLayer ->
+            val coreUsage = verifyRemoveCoreLayer(coreLayer.id) ?: return@forEach
+            throw ValidationException("Cannot delete site. It contains nodes with cores that are configured to reset tripwires in other sites: $coreUsage. Remove the link from the tripwire(s) to the core(s) on this site first.")
+        }
+    }
+
+    private fun checkDeleteSiteRole(siteId: String, userPrincipal: UserPrincipal) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
         if (userPrincipal.userEntity.type == UserType.GM) {
             return
@@ -115,11 +155,6 @@ class SiteService(
         if (properties.ownerUserId != userPrincipal.userId) {
             throw IllegalStateException("You cannot delete sites of other users.")
         }
-        connectionService.toSite(
-            siteId,
-            ServerActions.SERVER_ERROR,
-            ServerFatal(false, "Site removed by ${userPrincipal.userEntity.name}, please close browser window.")
-        )
     }
 
     fun findNeighboringNodeIds(node: Node): List<String> {
@@ -139,4 +174,28 @@ class SiteService(
         sitePropertiesEntityService.save(newSiteProperties)
         sendSitesList()
     }
+
+    fun verifyRemoveLayer(layerId: String) {
+        val layer = nodeEntityService.findLayer(layerId)
+        if (layer !is CoreLayer ) {
+            return
+        }
+
+        val coreUsage = verifyRemoveCoreLayer(layerId) ?: return
+        throw ValidationException("Cannot delete this core. It is used to reset tripewire(s) in: $coreUsage. Remove the link from the tripwire(s) to this core first.")
+    }
+
+    fun verifyRemoveCoreLayer(layerId: String): String? {
+        val nodesWithCore = nodeEntityService.findAllTripwiresWithCore(layerId)
+
+        if (nodesWithCore.isEmpty()) return null
+
+        return nodesWithCore
+            .distinct()
+            .joinToString(", ") { node ->
+                val siteName = sitePropertiesEntityService.getBySiteId(node.siteId).name
+                "site:$siteName-node:${node.networkId}" }
+    }
+
+
 }

@@ -1,3 +1,19 @@
+# Release notes AV 2.12.1 (28 October 2025)
+
+Fixed some problems with tripwires and cores, and added some usability features to help work with
+multiple sites when connecting tripwires from one site to cores from another site.
+
+## Features
+- Allow editing multiple sites at the same time (multiple browser tabs open)
+- Show site name in browser tab when editing site
+
+## Bugfixes
+- Edit site: can link a tripwire to a core that was just added to the site
+- Edit site: prevent removal of core that is linked to a tripwire in another site
+- Delete site is prevented if there are still tripwires from other sites that link to
+cores in the site to be deleted.
+
+
 # Release notes AV 2.12.0 (15 October 2025)
 
 ## Features
