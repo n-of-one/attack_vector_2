@@ -31,7 +31,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name.startsWith('v') && github.ref_name[1:] || github.ref_name }}
+          name: ${{ github.ref_name.startsWith('v') && github.ref_name.replace('v', '') || github.ref_name }}
           files: backend/target/app.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
