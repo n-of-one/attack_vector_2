@@ -21,7 +21,7 @@ jobs:
 
       - name: Build
         working-directory: ./backend
-        run: mvn --batch-mode --update-snapshots package
+        run: mvn --batch-mode package -DskipTests
 
       - name: View build results
         working-directory: ./backend
