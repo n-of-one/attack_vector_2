@@ -1,4 +1,4 @@
-name: Build & release jar file when v* tag is pushed
+name: Build and release
 
 on:
   push:
