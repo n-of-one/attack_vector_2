@@ -27,11 +27,18 @@ jobs:
         working-directory: ./backend
         run: ls -als target/
 
-      - name: Upload JAR to GitHub Release
+      - name: Remove leading v from tag to create release name
+        id: release_name
+        run: |
+          # strip leading 'v' if present
+          NAME=${GITHUB_REF_NAME#v}
+          echo "release_name=$NAME" >> $GITHUB_ENV
+
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name.startsWith('v') && github.ref_name.replace('v', '') || github.ref_name }}
+          name: ${{ env.release_name }}
           files: backend/target/app.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
