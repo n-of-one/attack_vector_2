@@ -62,4 +62,12 @@ class SiteWsController(
             siteService.removeSite(siteId)
         }
     }
+
+    @MessageMapping("/site/makeCopy")
+    fun copySite(@ValidSiteId siteId: String, principal: UserPrincipal) {
+        userTaskRunner.runTask("/site/makeCopy", principal) {
+            siteService.checkSiteOwnership(siteId, principal)
+            siteService.copySite(siteId)
+        }
+    }
 }

@@ -220,7 +220,7 @@ class EditorService(
     }
 
     fun removeLayer(command: RemoveLayerCommand) {
-        siteService.verifyRemoveLayer(command.layerId)
+        siteService.verifyRemoveLayer(command.siteId, command.layerId)
         val message = nodeEntityService.removeLayer(command)
 
         if (message != null) {

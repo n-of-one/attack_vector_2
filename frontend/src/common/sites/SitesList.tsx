@@ -37,6 +37,12 @@ export const SiteList = (props: Props) => {
         window.open(toServerUrl(`/api/export/site/${siteId}`))
     }
 
+    const copy = (siteId: string, name: string) => {
+        if (window.confirm(`Confirm that you want to make a copy of ${name}?`)) {
+            webSocketConnection.send("/site/makeCopy", siteId)
+        }
+    }
+
     const updateSiteHackable = (siteId: string, hackable: boolean) => {
         webSocketConnection.send("/site/updateHackable", {siteId: siteId, hackable: hackable})
     }
@@ -88,6 +94,12 @@ export const SiteList = (props: Props) => {
                                     download(site.id);
                                 }} title="Download">
                                     <span className="glyphicon glyphicon-download"/>
+                                </SilentLink>
+                                &nbsp;
+                                <SilentLink onClick={() => {
+                                    copy(site.id, site.name);
+                                }} title="Make a copy">
+                                    <span className="glyphicon glyphicon-paste"/>
                                 </SilentLink>
                                 &nbsp;
                                 &nbsp;
