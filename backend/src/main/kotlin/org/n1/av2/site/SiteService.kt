@@ -229,13 +229,15 @@ class SiteService(
 
     private fun makeSiteCopyName(sourceName: String): String {
         val suffix = sourceName.substringAfterLast("-", "")
-        if (suffix.isEmpty() || suffix.toIntOrNull() == null) {
-            return "$sourceName-2"
+        val baseName = if (suffix.isEmpty() || suffix.toIntOrNull() == null) sourceName else sourceName.substringBeforeLast("-")
+
+        for (index in 2..1000) {
+            val attempt = "$baseName-$index"
+            val existing = sitePropertiesEntityService.findByName(attempt)
+            if (existing == null) {
+                return attempt
+            }
         }
-        val baseName = sourceName.substringBeforeLast("-")
-        val newNumber = suffix.toInt() + 1
-        return "$baseName-$newNumber"
+        error("No free site name found within 1000 attempts" )
     }
-
-
 }
