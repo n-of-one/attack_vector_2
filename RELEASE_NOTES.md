@@ -1,4 +1,4 @@
-# Release notes AV 2.15.0 (23 November 2025)
+# Release notes AV 2.14.0 (23 November 2025)
 
 ## Features
 - Add copy button to create a copy of a site
