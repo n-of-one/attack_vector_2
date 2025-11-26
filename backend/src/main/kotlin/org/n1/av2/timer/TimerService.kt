@@ -117,9 +117,9 @@ class TimerService(
     private fun reportAdjustment(sourcePositive: String, sourceNegative: String, adjustment: Duration) {
         if (adjustment != Duration.ZERO) {
             val message = if (adjustment.isPositive)
-                "${sourcePositive} increased the duration by ${adjustment.toHumanTime()}."
+                "> ${sourcePositive} increased the duration by ${adjustment.toHumanTime()}."
             else
-                "${sourceNegative} decreased the duration by ${adjustment.multipliedBy(-1).toHumanTime()}."
+                "> ${sourceNegative} decreased the duration by ${adjustment.multipliedBy(-1).toHumanTime()}."
             connectionService.replyTerminalReceive(message)
         }
     }

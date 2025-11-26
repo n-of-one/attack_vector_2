@@ -5,6 +5,7 @@ import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.ice.common.IceLayer
+import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
@@ -178,13 +179,19 @@ class CommandMoveService(
     private fun arriveComplete(nodeId: String, userId: String, runId: String) {
         val state = hackerStateEntityService.retrieveForUserId(userId).toRunState()
         hackerStateEntityService.arriveAt(state, nodeId)
+
+        val node = nodeEntityService.getById(nodeId)
+        val nodeName = (node.layers[0] as OsLayer).nodeName
+        val nodeNameText = if (nodeName.isNotBlank()) "[/]: $nodeName" else ""
+        connectionService.replyTerminalReceive("Entered node [ok]${node.networkId}$nodeNameText")
+
         triggerLayersAtArrive(state.siteId, nodeId, runId)
 
         connectionService.toRun(
             runId, ServerActions.SERVER_HACKER_MOVE_ARRIVE,
             "nodeId" to nodeId, "userId" to userId, "timings" to timingsService.MOVE_ARRIVE
         )
-        connectionService.replyTerminalSetLocked(false)
+
     }
 
     private fun triggerLayersAtArrive(siteId: String, nodeId: String, runId: String) {

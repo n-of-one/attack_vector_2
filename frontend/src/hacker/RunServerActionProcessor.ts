@@ -92,7 +92,7 @@ export interface ProbeAction {
 export interface StartRun {
     userId: string,
     quick: boolean,
-    timings: Timings
+    timings: Timings,
 }
 
 export interface MoveStartAction {
@@ -215,6 +215,11 @@ export const initRunServerActions = (store: Store) => {
 
             hackerSchedule = new Schedule(null)
 
+            // const site = (store.getState() as HackerRootState).run.site
+            // const startNode = site.nodes.find(n => n.id === site.startNodeId)
+            // const startNodeName = (startNode != null) ? startNode.layers[0].nodeName || "" : ""
+            // const startNodeText = (startNodeName) ? `: ${startNodeName}` : ""
+
             if (data.quick) {
                 echo(0, "[info]Persona established, hack started.")
                 echo(0, "")
@@ -231,13 +236,13 @@ export const initRunServerActions = (store: Store) => {
                 echo(30, "  - [ok]ok[/] Network origin obfuscated ")
                 echo(20, "- Persona creation [info]complete")
                 echo(0, "")
-                echo(20, "Entering node")
                 echo(0, "Connection established.")
                 echo(0, "")
             }
 
         }
     })
+
 
     interface DisconnectAction { userId: string }
     webSocketConnection.addAction(SERVER_HACKER_DC, (action: DisconnectAction ) => {

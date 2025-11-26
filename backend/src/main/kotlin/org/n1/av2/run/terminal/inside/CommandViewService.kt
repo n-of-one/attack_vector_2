@@ -2,6 +2,7 @@ package org.n1.av2.run.terminal.inside
 
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
+import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.site.entity.NodeEntityService
@@ -23,6 +24,11 @@ class CommandViewService(
 
         val lines = ArrayList<String>()
 
+        val nodeName = (node.layers[0] as OsLayer).nodeName
+        if (nodeName.isNotBlank()) {
+            lines.add("Node name: $nodeName")
+            lines.add("")
+        }
 
         lines.add("Node service layers:")
         node.layers.forEach { layer ->

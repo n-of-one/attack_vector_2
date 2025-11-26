@@ -1,3 +1,17 @@
+# Release notes AV 2.15.0 (??)
+
+## Features
+- Node names
+
+
+Node names:
+You can give a node a name via the OS layer of the node. Using this you can give additional information or context to the hackers about this node or this part of the site.
+
+To convey the node name, extra text is now shown when a hacker moves into a node: `Entered node <node-id>: <node-name>`
+
+Node names can be left empty.
+
+
 # Release notes AV 2.14.0 (23 November 2025)
 
 ## Features
@@ -64,10 +78,6 @@ Hackers can receive credits in two ways:
 
 ## Bug fixes
 - Resetting Minesweeper ICE no longer causes duplicate key errors.
-
-
-## Features
-- Tripwires can now be linked to a core in another site. Hacking the tripwire layer will reveal that site's name.
 
 
 # Release notes AV 2.10.0 (27 Apr 2025)
