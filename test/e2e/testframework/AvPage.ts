@@ -7,7 +7,7 @@ export class AvPage {
 
     screenshotOptions: PageAssertionsToHaveScreenshotOptions = {
         clip: {
-            x: 652, y: 24, width: 1256, height: 850 // canvas area
+            x: 646, y: 0, width: 1264, height: 905 // canvas area
         }
     }
 
