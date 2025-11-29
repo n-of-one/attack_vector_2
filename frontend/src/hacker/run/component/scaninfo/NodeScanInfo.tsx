@@ -90,6 +90,6 @@ const NodeNameElement = ({node, status}: { node: NodeI, status: NodeScanStatus})
         return <></>
     }
     return <>
-        Node name: <span className="strong">{node!.layers[0].nodeName}</span><br/><br/>
+        Name: <span className="strong">{node!.layers[0].nodeName}</span><br/><br/>
     </>
 }

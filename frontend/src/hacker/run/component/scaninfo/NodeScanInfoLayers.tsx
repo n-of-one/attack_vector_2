@@ -19,10 +19,6 @@ export const NodeScanInfoLayers = ({node, allLayersRevealed}: { node: NodeI, all
     const rendered = []
     const protectedLayer = findProtectedLayer(layers)
 
-    if (node.layers[0].nodeName) {
-        rendered.push(<span key="_name">Name: {node.layers[0].nodeName}<br/><br/></span>)
-    }
-
     rendered.push(<span key="_0">Level Layer<br/></span>)
 
     for (let i = 0; i < layers.length; i++) {
