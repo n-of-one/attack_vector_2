@@ -1,3 +1,53 @@
+# Release notes AV 2.15.0 (??)
+
+## Features
+- Node names
+
+
+Node names:
+You can give a node a name via the OS layer of the node. Using this you can give additional information or context to the hackers about this node or this part of the site.
+
+To convey the node name, extra text is now shown when a hacker moves into a node: `Entered node <node-id>: <node-name>`
+
+Node names can be left empty.
+
+
+# Release notes AV 2.14.0 (23 November 2025)
+
+## Features
+- Add copy button to create a copy of a site
+
+## Bugfixes
+- Previously you could not delete a site if it had a core layer. Now AV checks if there is a tripwire in another 
+site that points to the core layer in the site you are trying to delete. If not, you can delete the site.
+
+
+# Release notes AV 2.13.0 (29 October 2025)
+
+Work in progress on building releases via github actions
+
+The goal is to allow downloading the compiled version of AV directly from Github. This is a work in progress,
+but from now on compiled AV releases are published on GitHub: https://github.com/n-of-one/attack_vector_2/releases
+
+A script to upgrade to the latest release will follow later.
+
+
+# Release notes AV 2.12.1 (28 October 2025)
+
+Fixed some problems with tripwires and cores, and added some usability features to help work with
+multiple sites when connecting tripwires from one site to cores from another site.
+
+## Features
+- Allow editing multiple sites at the same time (multiple browser tabs open)
+- Show site name in browser tab when editing site
+
+## Bugfixes
+- Edit site: can link a tripwire to a core that was just added to the site
+- Edit site: prevent removal of core that is linked to a tripwire in another site
+- Delete site is prevented if there are still tripwires from other sites that link to
+cores in the site to be deleted.
+
+
 # Release notes AV 2.12.0 (15 October 2025)
 
 ## Features
@@ -28,10 +78,6 @@ Hackers can receive credits in two ways:
 
 ## Bug fixes
 - Resetting Minesweeper ICE no longer causes duplicate key errors.
-
-
-## Features
-- Tripwires can now be linked to a core in another site. Hacking the tripwire layer will reveal that site's name.
 
 
 # Release notes AV 2.10.0 (27 Apr 2025)

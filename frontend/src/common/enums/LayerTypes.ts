@@ -1,12 +1,6 @@
 export enum LayerType {
     OS = "OS",
     TEXT= "TEXT",
-    PASSWORD_ICE = "PASSWORD_ICE",
-    TANGLE_ICE = "TANGLE_ICE",
-    WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
-    NETWALK_ICE = "NETWALK_ICE",
-    TAR_ICE = "TAR_ICE",
-    SWEEPER_ICE = "SWEEPER_ICE",
     LOCK = "LOCK",
     STATUS_LIGHT = "STATUS_LIGHT",
     KEYSTORE = "KEYSTORE",
@@ -14,6 +8,22 @@ export enum LayerType {
     CORE = "CORE",
     SCRIPT_INTERACTION = "SCRIPT_INTERACTION",
     SCRIPT_CREDITS = "SCRIPT_CREDITS",
+
+    PASSWORD_ICE = "PASSWORD_ICE",
+    TANGLE_ICE = "TANGLE_ICE",
+    WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
+    NETWALK_ICE = "NETWALK_ICE",
+    TAR_ICE = "TAR_ICE",
+    SWEEPER_ICE = "SWEEPER_ICE",
+}
+
+export enum IceType {
+    PASSWORD_ICE = "PASSWORD_ICE",
+    TANGLE_ICE = "TANGLE_ICE",
+    WORD_SEARCH_ICE = "WORD_SEARCH_ICE",
+    NETWALK_ICE = "NETWALK_ICE",
+    TAR_ICE = "TAR_ICE",
+    SWEEPER_ICE = "SWEEPER_ICE",
 }
 
 export const OS = "OS"
@@ -54,3 +64,38 @@ export const layerTypeFromIceId = (iceId: string): LayerType | null => {
         default: return null
     }
 }
+export const iceThemeName = {
+    PASSWORD_ICE: "Rahasy",
+    TANGLE_ICE: "Gaanth",
+    NETWALK_ICE: "Sanrachana",
+    WORD_SEARCH_ICE: "Jaal",
+    TAR_ICE: "Tar",
+    SWEEPER_ICE: "Visphotak"
+}
+
+export const iceSimpleName = {
+    PASSWORD_ICE: "Password",
+    TANGLE_ICE: "Tangle",
+    NETWALK_ICE: "Netwalk",
+    WORD_SEARCH_ICE: "Word search",
+    TAR_ICE: "Tar",
+    SWEEPER_ICE: "Minesweeper"
+}
+
+export const iceDefaultOrder = {
+    WORD_SEARCH_ICE: 1,
+    TANGLE_ICE: 2,
+    NETWALK_ICE: 3,
+    SWEEPER_ICE: 4,
+    TAR_ICE: 5,
+    PASSWORD_ICE: 6,
+}
+
+export function iceTypeDefaultSorter(a: IceType, b: IceType) {
+    return iceDefaultOrder[a] - iceDefaultOrder[b]
+}
+// export function sortedIceTypes(iceTypes: IceType[]): IceType[] {
+//     const copy = [...iceTypes]
+//     copy.sort((a, b) => iceDefaultOrder[b] - iceDefaultOrder[a])
+//     return copy
+// }

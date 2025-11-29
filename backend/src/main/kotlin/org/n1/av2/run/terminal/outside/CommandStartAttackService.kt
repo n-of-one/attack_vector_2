@@ -56,7 +56,6 @@ class CommandStartAttackService(
         hackerStateEntityService.startAttack(userId, run)
 
         data class StartRun(val userId: String, val quick: Boolean, val timings: Timings)
-
         val timings = if (quick) timingsService.START_ATTACK_FAST else timingsService.START_ATTACK_SLOW
         val data = StartRun(userId, quick, timings)
         connectionService.replyTerminalSetLocked(true)

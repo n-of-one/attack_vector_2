@@ -26,8 +26,10 @@ class CommandViewService(
 
         val nodeName = (node.layers.first() as OsLayer).nodeName
         if (nodeName.isNotBlank()) {
-            lines.add("Node name: [b]${nodeName}[/]")
+            lines.add("Node name: $nodeName")
+            lines.add("")
         }
+
         lines.add("Node service layers:")
         node.layers.forEach { layer ->
             val blocked = (layer.level < blockingIceLevel)

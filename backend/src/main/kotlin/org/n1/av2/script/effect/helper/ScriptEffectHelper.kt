@@ -38,6 +38,7 @@ class ScriptEffectHelper(
         constructor(errorMessage: String) : this(null, null, ScriptExecution(errorMessage))
     }
 
+    /** Check if the script can be run on the specified layer */
     fun runOnLayer(argumentTokens: List<String>, hackerState: HackerStateRunning): RunOnLayerResult {
         checkInNode(hackerState)?.let { return RunOnLayerResult(it) }
         requireNotNull(hackerState.currentNodeId)

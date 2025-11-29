@@ -33,6 +33,7 @@ enum class ScriptEffectType(
     SHOW_MESSAGE(ShowMessageEffectService::class),
     INTERACT_WITH_SCRIPT_LAYER(InteractWithScriptLayerEffectService::class),
     AUTO_HACK_SPECIFIC_ICE_LAYER(AutoHackSpecificIceLayerEffectService::class),
+    AUTO_HACK_ICE_BY_STRENGTH(AutoHackIceByStrengthEffectService::class),
     ROTATE_ICE(RotateIceEffectService::class),
 
 }

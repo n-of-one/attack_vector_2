@@ -1,7 +1,7 @@
 import {AnyAction} from "redux";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {AuthEnter, SERVER_AUTH_ENTER} from "../AuthServerActionProcessor";
-import {IceType} from "../../../ice/common/IceModel";
+import {IceType} from "../../../../common/enums/LayerTypes";
 
 export interface AuthAppInfo {
     type?: IceType,

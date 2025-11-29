@@ -5,6 +5,7 @@ import {ScanInfoIce} from "./layer/ScanInfoIce"
 import {ScanInfoTripwire} from "./layer/ScanInfoTripwire";
 import {ScanInfoCore} from "./layer/ScanInfoCore";
 import {LayerDetails} from "../../../../common/sites/SiteModel";
+import {assertNever} from "../../../../common/util/Assert";
 
 const renderLayer = (layer: LayerDetails) => {
     switch (layer.type) {
@@ -21,19 +22,19 @@ const renderLayer = (layer: LayerDetails) => {
         case LayerType.CORE:
             return <ScanInfoCore layer={layer}/>
         case LayerType.PASSWORD_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="static password"/>
+            return <ScanInfoIce layer={layer} iceDescription="static password" showStrength={false}/>
         case LayerType.TANGLE_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="tangle"/>
+            return <ScanInfoIce layer={layer} iceDescription="tangle" showStrength={true}/>
         case LayerType.WORD_SEARCH_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="word search"/>
+            return <ScanInfoIce layer={layer} iceDescription="word search" showStrength={true}/>
         case LayerType.NETWALK_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="netwalk"/>
+            return <ScanInfoIce layer={layer} iceDescription="netwalk" showStrength={true}/>
         case LayerType.TAR_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="tar"/>
+            return <ScanInfoIce layer={layer} iceDescription="tar" showStrength={true}/>
         case LayerType.SWEEPER_ICE:
-            return <ScanInfoIce layer={layer} iceDescription="minesweeper"/>
+            return <ScanInfoIce layer={layer} iceDescription="minesweeper" showStrength={true}/>
         default:
-            return <><span className="text-danger"> Unknown layer</span></>
+            assertNever(layer.type)
     }
 }
 

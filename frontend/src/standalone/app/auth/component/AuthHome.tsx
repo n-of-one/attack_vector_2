@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {AuthAppRootState} from "../reducer/AuthRootReducer";
 import {Glyphicon} from "../../../../common/component/icon/Glyphicon";
-import {PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
+import {iceThemeName, PASSWORD_ICE} from "../../../../common/enums/LayerTypes";
 import {SUBMIT_PASSWORD, UI_STATE_LOCKED, UI_STATE_PASSWORD_CORRECT, UI_STATE_SUBMITTING, UI_STATE_UNLOCKED} from "../reducer/AuthUiReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {ice, layer} from "../../../StandaloneGlobals";
@@ -69,21 +69,13 @@ export const AuthHome = () => {
     )
 }
 
-const iceNames = {
-    PASSWORD_ICE: "Rahasy",
-    TANGLE_ICE: "Gaanth",
-    NETWALK_ICE: "Sanrachana",
-    WORD_SEARCH_ICE: "Jaal",
-    TAR_ICE: "Tar",
-}
-
 const IceBanner = () => {
     const type = useSelector((root: AuthAppRootState) => root.info.type)
     const [clickCount, setClickCount] = useState(0)
 
     if (!type) return <></>
 
-    const iceName = iceNames[type]
+    const iceName = iceThemeName[type]
     const clickIceName = () => {
         const newClickCount = clickCount + 1
         setClickCount(newClickCount)

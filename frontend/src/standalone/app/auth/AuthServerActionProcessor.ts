@@ -1,7 +1,7 @@
 import {IceStrength} from "../../../common/model/IceStrength";
-import {IceType} from "../../ice/common/IceModel";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {avEncodedUrl} from "../../../common/util/PathEncodeUtils";
+import {IceType} from "../../../common/enums/LayerTypes";
 
 export const SERVER_AUTH_ENTER = "SERVER_AUTH_ENTER"
 export const SERVER_AUTH_UPDATE = "SERVER_AUTH_UPDATE"

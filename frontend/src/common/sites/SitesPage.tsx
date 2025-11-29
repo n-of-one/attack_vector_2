@@ -4,7 +4,7 @@ import {TextInput} from "../component/TextInput"
 import {GmRootState} from "../../gm/GmRootReducer";
 import {webSocketConnection} from "../server/WebSocketConnection";
 import {toServerUrl} from "../util/DevEnvironment";
-import {SiteList} from "./SitesTable";
+import {SiteList} from "./SitesList";
 import {SiteInfo} from "./SitesReducer";
 import userAuthorizations, {ROLE_GM} from "../user/UserAuthorizations";
 

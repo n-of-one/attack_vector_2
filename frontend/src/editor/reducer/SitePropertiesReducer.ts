@@ -43,6 +43,9 @@ export const SitePropertiesReducer = (state: SiteProperties = sitePropertiesDefa
 const parseSiteProperties = (action: AnyAction): SiteProperties => {
     const siteProperties = action.data.siteProperties
     siteProperties.ownerName = action.data.ownerName
+
+    document.title = `${siteProperties.name}`
+
     return siteProperties
 }
 

@@ -11,6 +11,7 @@ import {SELECT_LAYER} from "../../../../../../../reducer/CurrentLayerIdReducer";
 import {SiteInfo} from "../../../../../../../../common/sites/SitesReducer";
 import userAuthorizations, {ROLE_GM} from "../../../../../../../../common/user/UserAuthorizations";
 import {CoreInfo} from "../../../../../../../reducer/AllCoresReducer";
+import {editorSiteId} from "../../../../../../../EditorRoot";
 
 interface Props {
     node: NodeI,
@@ -34,7 +35,9 @@ export const LayerTripwirePanel = ({node, layer}: Props) => {
         editorCanvas.selectNode(nodeId)
         dispatch({type: SELECT_LAYER, layerId: coreLayerId})
     }
-    const navigateIfCoreId = (coreLayerId) ? navigateToLayer : undefined
+    const coreLayer = allCores.find(coreInfo => coreInfo.layerId === coreLayerId)
+    const localCore = (coreLayerId && coreLayer && coreLayer.siteId === editorSiteId)
+    const navigateIfCoreId = (localCore) ? navigateToLayer : undefined
 
 
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
@@ -102,6 +105,12 @@ const createSiteOptions = (remoteSites: Array<SiteInfo>, currentSiteId: string, 
 
     const sitesWithCoreIds: string[] = determineSitesWithCoreIds(allCores)
     const remoteSitesWithCores = remoteSitesFiltered.filter((siteInfo: SiteInfo) => sitesWithCoreIds.includes(siteInfo.id))
+
+    const currentSiteInfo = remoteSites.find((siteInfo: SiteInfo) => siteInfo.id === currentSiteId)!!
+
+    if (!remoteSitesWithCores.includes(currentSiteInfo)) {
+        remoteSitesWithCores.push(currentSiteInfo)
+    }
 
     const remoteSitesSorted = sortRemoteSites(remoteSitesWithCores, currentSiteId)
 

@@ -51,7 +51,7 @@ class TripwireLayerService(
         val timerTargetSiteId = siteId
         val timerSiteId = if (remote) layer.coreSiteId!! else siteId
 
-        timerService.startShutdownTimer(timerSiteId, timerTargetSiteId, layer, baseDuration, true, shutdownDuration, "[pri]${layer.level}[/]", null)
+        timerService.startShutdownTimer(timerSiteId, timerTargetSiteId, layer, baseDuration, true, shutdownDuration, "Layer [pri]${layer.level}[/]", null)
         if (remote) {
             connectionService.replyTerminalReceive(" ...timer managed in remote site. Hack layer [pri]${layer.level}[/] to trace site name.")
         }

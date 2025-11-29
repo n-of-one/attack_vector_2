@@ -14,7 +14,6 @@ import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.ConnectionEntityService
-import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.n1.av2.site.entity.enums.LayerType
@@ -132,7 +131,7 @@ class EditorService(
         sendSiteFull(siteId)
         userAndHackerService.sendDetailsOfCurrentUser()
         siteService.sendSitesList()
-        sendAllCores() // used to configure tripwires with remote cores
+        siteService.sendAllCores() // used to configure tripwires with remote cores
     }
 
     fun sendSiteFull(siteId: String) {
@@ -140,29 +139,6 @@ class EditorService(
         connectionService.toSite(siteId, ServerActions.SERVER_SITE_FULL, toSend)
     }
 
-    fun sendAllCores() {
-        @Suppress("unused")
-        class CoreInfo(val layerId: String, val level: Int, val name: String, val networkId: String, val siteId: String)
-
-        val allCores: Map<Node, List<CoreLayer>> = nodeEntityService.findAllCores()
-
-        val allCoreInfos: List<CoreInfo> = allCores.map { entry: Map.Entry<Node, List<CoreLayer>> ->
-            val node = entry.key
-            val coreLayers = entry.value
-
-            coreLayers.map { layer ->
-                CoreInfo(
-                    layerId = layer.id,
-                    level = layer.level,
-                    name = layer.name,
-                    networkId = node.networkId,
-                    siteId = node.siteId,
-                )
-            }
-        }.flatten()
-
-        connectionService.reply(ServerActions.SERVER_ALL_CORE_INFO, allCoreInfos)
-    }
 
     fun deleteNode(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
@@ -233,6 +209,9 @@ class EditorService(
 
         connectionService.toSite(command.siteId, ServerActions.SERVER_ADD_LAYER, message)
         siteValidationService.validate(command.siteId)
+        if (layer is CoreLayer) {
+            siteService.sendAllCores()
+        }
         return layer
     }
 
@@ -241,6 +220,7 @@ class EditorService(
     }
 
     fun removeLayer(command: RemoveLayerCommand) {
+        siteService.verifyRemoveLayer(command.siteId, command.layerId)
         val message = nodeEntityService.removeLayer(command)
 
         if (message != null) {

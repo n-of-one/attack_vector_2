@@ -1,0 +1,44 @@
+name: Build and release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build
+        working-directory: ./backend
+        run: mvn --batch-mode package -DskipTests
+
+      - name: View build results
+        working-directory: ./backend
+        run: ls -als target/
+
+      - name: Remove leading v from tag to create release name
+        id: release_name
+        run: |
+          # strip leading 'v' if present
+          NAME=${GITHUB_REF_NAME#v}
+          echo "release_name=$NAME" >> $GITHUB_ENV
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ env.release_name }}
+          files: backend/target/app.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

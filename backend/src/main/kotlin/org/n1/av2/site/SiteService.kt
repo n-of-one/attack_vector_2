@@ -5,16 +5,26 @@ import org.n1.av2.editor.SiteEditorStateEntityService
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.editor.SiteValidationService
 import org.n1.av2.layer.ice.common.IceService
+import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
-import org.n1.av2.platform.util.ServerFatal
+import org.n1.av2.platform.inputvalidation.ValidationException
+import org.n1.av2.site.CoreLayerRemovalType.DELETE_SITE_REMOVAL
+import org.n1.av2.site.CoreLayerRemovalType.INTERNAL_REMOVAL
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.enums.NodeType
+import org.n1.av2.site.tutorial.SiteCloneService
 import org.springframework.stereotype.Service
+
+
+enum class CoreLayerRemovalType {
+    INTERNAL_REMOVAL,
+    DELETE_SITE_REMOVAL
+}
 
 @Service
 class SiteService(
@@ -27,10 +37,21 @@ class SiteService(
     private val currentUserService: CurrentUserService,
     private val userEntityService: UserEntityService,
     private val siteValidationService: SiteValidationService,
+    private val siteCloneService: SiteCloneService,
+    private val siteResetService: SiteResetService,
 ) {
 
 
-    data class SiteListItem(val id: String, val name: String, val hackable: Boolean, val purpose: String, val ok: Boolean, val mine: Boolean, val ownerName: String, val gmSite: Boolean)
+    data class SiteListItem(
+        val id: String,
+        val name: String,
+        val hackable: Boolean,
+        val purpose: String,
+        val ok: Boolean,
+        val mine: Boolean,
+        val ownerName: String,
+        val gmSite: Boolean
+    )
 
     fun sendSitesList() {
         val gm = currentUserService.userEntity.type == UserType.GM
@@ -54,6 +75,32 @@ class SiteService(
             }
         connectionService.toUser(currentUserService.userId, actionType = ServerActions.SERVER_SITES_LIST, list)
     }
+
+    @Suppress("unused")
+    class CoreInfo(val layerId: String, val level: Int, val name: String, val networkId: String, val siteId: String)
+
+    fun sendAllCores() {
+
+        val allCores: Map<Node, List<CoreLayer>> = nodeEntityService.findAllCores()
+
+        val allCoreInfos: List<CoreInfo> = allCores.map { entry: Map.Entry<Node, List<CoreLayer>> ->
+            val node = entry.key
+            val coreLayers = entry.value
+
+            coreLayers.map { layer ->
+                CoreInfo(
+                    layerId = layer.id,
+                    level = layer.level,
+                    name = layer.name,
+                    networkId = node.networkId,
+                    siteId = node.siteId,
+                )
+            }
+        }.flatten()
+
+        connectionService.reply(ServerActions.SERVER_ALL_CORE_INFO, allCoreInfos)
+    }
+
 
     private fun lookupUserName(ownerUserId: String, userNamesById: HashMap<String, String>): String {
         if (userNamesById.containsKey(ownerUserId)) {
@@ -108,18 +155,24 @@ class SiteService(
     }
 
     fun checkIfAllowedToDelete(siteId: String, userPrincipal: UserPrincipal) {
+        checkSiteOwnership(siteId, userPrincipal)
+
+        // Cannot remove site that has a core that is linked to tripwires
+        val coreLayers = nodeEntityService.findAllCores(siteId)
+        coreLayers.forEach { coreLayer ->
+            val coreUsage = verifyRemoveCoreLayer(siteId, coreLayer.id, DELETE_SITE_REMOVAL) ?: return@forEach
+            throw ValidationException("Cannot delete site. It contains nodes with cores that are configured to reset tripwires in other sites: $coreUsage. Remove the link from the tripwire(s) to the core(s) on this site first.")
+        }
+    }
+
+    fun checkSiteOwnership(siteId: String, userPrincipal: UserPrincipal) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
         if (userPrincipal.userEntity.type == UserType.GM) {
             return
         }
         if (properties.ownerUserId != userPrincipal.userId) {
-            throw IllegalStateException("You cannot delete sites of other users.")
+            throw IllegalStateException("You don't own this site.")
         }
-        connectionService.toSite(
-            siteId,
-            ServerActions.SERVER_ERROR,
-            ServerFatal(false, "Site removed by ${userPrincipal.userEntity.name}, please close browser window.")
-        )
     }
 
     fun findNeighboringNodeIds(node: Node): List<String> {
@@ -138,5 +191,53 @@ class SiteService(
         val newSiteProperties = siteProperties.copy(hackable = newHackableValue)
         sitePropertiesEntityService.save(newSiteProperties)
         sendSitesList()
+    }
+
+    fun verifyRemoveLayer(siteId: String, layerId: String) {
+        val layer = nodeEntityService.findLayer(layerId)
+        if (layer !is CoreLayer) {
+            return
+        }
+
+        val coreUsage = verifyRemoveCoreLayer(siteId, layerId, INTERNAL_REMOVAL) ?: return
+        throw ValidationException("Cannot delete this core. It is used to reset tripewire(s) in: $coreUsage. Remove the link from the tripwire(s) to this core first.")
+    }
+
+    fun verifyRemoveCoreLayer(siteId: String, layerId: String, type: CoreLayerRemovalType): String? {
+        val nodesWithTripwiresPointingToThisCore = nodeEntityService.findAllTripwiresWithCore(layerId)
+
+        if (nodesWithTripwiresPointingToThisCore.isEmpty()) return null
+        if (type == DELETE_SITE_REMOVAL && nodesWithTripwiresPointingToThisCore.all { node -> node.siteId == siteId }) return null
+
+        return nodesWithTripwiresPointingToThisCore
+            .distinct()
+            .joinToString(", ") { node ->
+                val siteName = sitePropertiesEntityService.getBySiteId(node.siteId).name
+                "site:$siteName-node:${node.networkId}"
+            }
+    }
+
+    fun copySite(sourceSiteId: String) {
+        val sourceSiteProperties = sitePropertiesEntityService.getBySiteId(sourceSiteId)
+        val targetSiteName = makeSiteCopyName(sourceSiteProperties.name)
+        val targetSiteId = siteCloneService.cloneSite(sourceSiteProperties, targetSiteName, currentUserService.userEntity)
+        siteResetService.refreshSite(targetSiteId)
+
+        sendSitesList()
+        connectionService.replyNeutral("Created site: $targetSiteName")
+    }
+
+    private fun makeSiteCopyName(sourceName: String): String {
+        val suffix = sourceName.substringAfterLast("-", "")
+        val baseName = if (suffix.isEmpty() || suffix.toIntOrNull() == null) sourceName else sourceName.substringBeforeLast("-")
+
+        for (index in 2..1000) {
+            val attempt = "$baseName-$index"
+            val existing = sitePropertiesEntityService.findByName(attempt)
+            if (existing == null) {
+                return attempt
+            }
+        }
+        error("No free site name found within 1000 attempts" )
     }
 }
