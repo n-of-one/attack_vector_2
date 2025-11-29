@@ -1,7 +1,6 @@
 import {InfoBadge} from "../../../common/component/ToolTip";
 import React from "react";
 import {webSocketConnection} from "../../../common/server/WebSocketConnection";
-import {TextSaveInput, TextSaveType} from "../../../common/component/TextSaveInput";
 import {SilentLink} from "../../../common/component/SilentLink";
 import {ActionButton} from "../../../common/component/ActionButton";
 import {FormTextInputRow} from "../../../common/component/FormTextInputRow";
@@ -12,8 +11,7 @@ import {GmRootState} from "../../GmRootReducer";
 import {CloseButton} from "../../../common/component/CloseButton";
 import {DataTable} from "../../../common/component/dataTable/DataTable";
 import {Hr} from "../../../common/component/dataTable/Hr";
-import {DropDownSaveInput} from "../../../common/component/DropDownSaveInput";
-import {LayerType} from "../../../common/enums/LayerTypes";
+import {EffectConfigurationLine} from "./ScriptEffectConfiguration";
 
 
 export const ScriptTypeManagement = () => {
@@ -46,6 +44,57 @@ export const ScriptTypeManagement = () => {
         </div>
     )
 }
+
+interface ScriptTypesListProps {
+    onSelect: (scriptType: ScriptType) => void
+}
+
+export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
+    const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
+
+    const scriptTypeRows = scriptTypes.map(type => <ScriptTypeRow type={type} onSelect={onSelect}/>)
+    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}~${type.defaultPrice}`)
+
+    const hr = <Hr height={6} marginTop={3} color="black"/>
+
+
+    return (<>
+        <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={34} hr={hr}>
+            <div className="row text">
+                <div className="col-lg-2 strong">Script type</div>
+                <div className="col-lg-2 strong">Effects</div>
+                <div className="col-lg-1 strong">Size</div>
+                <div className="col-lg-2 strong">Default price</div>
+                <div className="col-lg-2 strong">Category</div>
+            </div>
+
+        </DataTable>
+    </>)
+}
+
+const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptType: ScriptType) => void }) => {
+    return (
+        <div className="row text">
+            <div className="col-lg-2"><SilentLink onClick={() => {
+                onSelect(type)
+            }} text={type.name}/>
+            </div>
+            <div className="col-lg-2">{
+                type.effects.map((effect: Effect) => {
+                    const text: string = effect.type === EffectType.HIDDEN_EFFECTS ? "*" : effect.effectNumber.toString()
+                    return (<span key={effect.effectNumber}>
+                        <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
+                                   badgeText={text} badgeClass={effect.hidden ? 'bg-dark' : undefined}/>
+                        &nbsp;</span>)
+                })
+            }
+            </div>
+            <div className="col-lg-1">{type.size}</div>
+            <div className="col-lg-2">{type.defaultPrice}</div>
+            <div className="col-lg-2">{type.category}</div>
+        </div>)
+}
+
 
 const ChooseOrCreateScriptType = () => {
 
@@ -153,6 +202,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER}>Automatically hack a specific ICE layer</option>
                         <option value={EffectType.AUTO_HACK_ANY_ICE}>Automatically hack any ICE</option>
                         <option value={EffectType.AUTO_HACK_ICE_TYPE}>Automatically hack ICE of a specific type</option>
+                        <option value={EffectType.AUTO_HACK_ICE_BY_STRENGTH}>Automatically hack ICE with low enough strength</option>
                         <option value={EffectType.DELAY_TRIPWIRE_COUNTDOWN}>Delay tripwire countdown</option>
                         <option value={EffectType.HACK_BELOW_NON_HACKED_ICE}>Hack below non-hacked ICE</option>
                         <option value={EffectType.INTERACT_WITH_SCRIPT_LAYER}>Interact with script layer</option>
@@ -165,7 +215,6 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                         <option value={EffectType.SITE_STATS}>Site stats</option>
                         <option value={EffectType.TANGLE_REVEAL_CLUSTERS}>Tangle - reveal clusters</option>
                         <option value={EffectType.WORD_SEARCH_NEXT_WORDS}>Word search - show next words</option>
-
                     </select>
                 </div>
                 <div className="col-lg-1">
@@ -215,7 +264,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
 
 const EffectList = (props: { scriptType: ScriptType }) => {
     return <>
-        {props.scriptType.effects.map(effect => <EffectLine scriptType={props.scriptType} effect={effect} key={effect.effectNumber}/>)}
+        {props.scriptType.effects.map(effect => <EffectConfigurationLine scriptType={props.scriptType} effect={effect} key={effect.effectNumber}/>)}
         <div className="row text">
             <div className="col-lg-11">
                 <hr/>
@@ -224,193 +273,3 @@ const EffectList = (props: { scriptType: ScriptType }) => {
     </>
 }
 
-const EffectLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-
-    const deleteEffect = () => {
-        webSocketConnection.send("/gm/scriptType/deleteEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber})
-    }
-
-
-    return <>
-        <div className="row text">
-            <div className="col-lg-11">
-                <hr/>
-            </div>
-        </div>
-        <div className="row form-group text">
-            <div className="col-lg-1" style={{marginTop: "0", marginRight: "-30px"}}>
-                <InfoBadge infoText={effect.gmDescription} placement="top"/>
-            </div>
-
-            <div className={`col-lg-6`}>
-                {effect.name}
-            </div>
-            <EffectValue effect={effect} scriptType={scriptType}/>
-
-            <div className="col-lg-1" style={{paddingTop: "9px"}}>
-                <SilentLink onClick={deleteEffect} title="Remove effect">
-                    <span className="glyphicon glyphicon-trash"/>
-                </SilentLink>
-            </div>
-        </div>
-    </>
-
-}
-
-const EffectValue = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    switch (effect.type) {
-        case EffectType.JUMP_TO_HACKER:
-        case EffectType.JUMP_TO_NODE:
-            return <EffectValueJumpBlockedType effect={effect} scriptType={scriptType}/>
-
-        case EffectType.AUTO_HACK_SPECIFIC_ICE_LAYER:
-        case EffectType.DELAY_TRIPWIRE_COUNTDOWN:
-        case EffectType.DECREASE_FUTURE_TIMERS:
-        case EffectType.INTERACT_WITH_SCRIPT_LAYER:
-        case EffectType.SPEED_UP_RESET_TIMER:
-        case EffectType.START_RESET_TIMER:
-        case EffectType.WORD_SEARCH_NEXT_WORDS:
-            return <EffectValueText effect={effect} scriptType={scriptType}/>
-
-        case EffectType.AUTO_HACK_ICE_TYPE:
-            return <EffectValueIceType effect={effect} scriptType={scriptType}/>
-
-        case EffectType.AUTO_HACK_ANY_ICE:
-        case EffectType.HACK_BELOW_NON_HACKED_ICE:
-        case EffectType.HIDDEN_EFFECTS:
-        case EffectType.SCAN_ICE_NODE:
-        case EffectType.SWEEPER_UNBLOCK:
-        case EffectType.ROTATE_ICE:
-        case EffectType.SITE_STATS:
-        case EffectType.TANGLE_REVEAL_CLUSTERS:
-            return <div className="col-lg-4"/>
-
-        case EffectType.SHOW_MESSAGE:
-            return <EffectValueTerminalText effect={effect} scriptType={scriptType}/>
-
-        default:
-            return <div className="col-lg-4 text">Missing effect type, see: ScriptTypeManagement.tsx</div>
-    }
-}
-
-const EffectValueText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-4">
-        <TextSaveInput className="form-control"
-                       placeholder="" value={effect.value as string}
-                       save={(value) => {
-                           webSocketConnection.send("/gm/scriptType/editEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber, value})
-                       }}
-                       readonly={false}/>
-    </div>
-}
-
-
-const EffectValueJumpBlockedType = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-4">
-        <DropDownSaveInput className="form-control"
-                           selectedValue={effect.value as string}
-                           save={(value) => {
-                               webSocketConnection.send("/gm/scriptType/editEffect", {
-                                   "scriptTypeId": scriptType.id,
-                                   "effectNumber": effect.effectNumber,
-                                   value
-                               })
-                           }}
-                           readonly={false}>
-            <>
-                <option value="IGNORE_ICE">Ignoring ICE</option>
-                <option value="BLOCKED_BY_ICE">Blocked by ICE</option>
-            </>
-        </DropDownSaveInput>
-    </div>
-}
-
-const EffectValueIceType = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-4">
-        <DropDownSaveInput className="form-control"
-                           selectedValue={effect.value as string}
-                           save={(value) => {
-                               webSocketConnection.send("/gm/scriptType/editEffect", {
-                                   "scriptTypeId": scriptType.id,
-                                   "effectNumber": effect.effectNumber,
-                                   value
-                               })
-                           }}
-                           readonly={false}>
-            <>
-                <option value={LayerType.PASSWORD_ICE}>Password</option>
-                <option value={LayerType.TANGLE_ICE}>Tangle</option>
-                <option value={LayerType.WORD_SEARCH_ICE}>Word search</option>
-                <option value={LayerType.NETWALK_ICE}>Netwalk</option>
-                <option value={LayerType.TAR_ICE}>Tar</option>
-                <option value={LayerType.SWEEPER_ICE}>Minesweeper</option>
-            </>
-        </DropDownSaveInput>
-    </div>
-}
-
-const EffectValueTerminalText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
-    return <div className="col-lg-4">
-        <TextSaveInput className="form-control"
-                       placeholder="Text to be shown to hackers. Links to web pages or images can be added like this: [http://example.com]click here[/]"
-                       value={effect.value as string}
-                       save={(value) => {
-                           webSocketConnection.send("/gm/scriptType/editEffect", {"scriptTypeId": scriptType.id, "effectNumber": effect.effectNumber, value})
-                       }}
-                       readonly={false} rows={3}
-                       type={TextSaveType.TERMINAL_TEXTAREA}
-        />
-    </div>
-}
-
-
-interface ScriptTypesListProps {
-    onSelect: (scriptType: ScriptType) => void
-}
-
-export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
-    const scriptTypes = useSelector((state: GmRootState) => state.scriptsManagement.types)
-
-    const scriptTypeRows = scriptTypes.map(type => <ScriptTypeRow type={type} onSelect={onSelect}/>)
-    // const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}~${type.defaultPrice}`)
-    const scriptTypeTexts = scriptTypes.map(type => `${type.name}~${type.category}~${type.size}`)
-
-    const hr = <Hr height={6} marginTop={3} color="black"/>
-
-
-    return (<>
-        <DataTable rows={scriptTypeRows} rowTexts={scriptTypeTexts} pageSize={34} hr={hr}>
-            <div className="row text">
-                <div className="col-lg-2 strong">Script type</div>
-                <div className="col-lg-2 strong">Effects</div>
-                <div className="col-lg-1 strong">Size</div>
-                {/*<div className="col-lg-2 strong">Default price</div>*/}
-                <div className="col-lg-2 strong">Category</div>
-            </div>
-
-        </DataTable>
-    </>)
-}
-
-const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptType: ScriptType) => void }) => {
-    return (
-        <div className="row text">
-            <div className="col-lg-2"><SilentLink onClick={() => {
-                onSelect(type)
-            }} text={type.name}/>
-            </div>
-            <div className="col-lg-2">{
-                type.effects.map((effect: Effect) => {
-                    const text: string = effect.type === EffectType.HIDDEN_EFFECTS ? "*" : effect.effectNumber.toString()
-                    return (<span key={effect.effectNumber}>
-                        <InfoBadge infoText={effect.playerDescription} key={effect.effectNumber}
-                                   badgeText={text} badgeClass={effect.hidden ? 'bg-dark' : undefined}/>
-                        &nbsp;</span>)
-                })
-            }
-            </div>
-            <div className="col-lg-1">{type.size}</div>
-            {/*<div className="col-lg-2">{type.defaultPrice}</div>*/}
-            <div className="col-lg-2">{type.category}</div>
-        </div>)
-}

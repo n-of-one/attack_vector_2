@@ -7,7 +7,7 @@ interface Props {
     strength: IceStrength
 }
 
-const strengthDescription = (strength: IceStrength) => {
+export const strengthDescription = (strength: IceStrength) => {
     switch (strength) {
         case IceStrength.VERY_WEAK :
             return "Very weak"

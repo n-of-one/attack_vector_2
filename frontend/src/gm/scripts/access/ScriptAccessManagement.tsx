@@ -36,7 +36,7 @@ export const ScriptAccessManagement = () => {
         webSocketConnection.send("/gm/scriptAccess/add", {userId: user!!.id, typeId: type.id})
     }
 
-    const tableElement = user ? <ScriptTypesForAcess onSelect={addScriptAccess}/> : <UserOverviewTable users={hackers} selectUser={selectUser}/>
+    const tableElement = user ? <ScriptTypesForAccess onSelect={addScriptAccess}/> : <UserOverviewTable users={hackers} selectUser={selectUser}/>
 
     return (
         <div className="row">
@@ -57,7 +57,7 @@ export const ScriptAccessManagement = () => {
     )
 }
 
-const ScriptTypesForAcess = ({onSelect}: { onSelect: (type: ScriptType) => void }) => {
+const ScriptTypesForAccess = ({onSelect}: { onSelect: (type: ScriptType) => void }) => {
     return (<>
             <div className="row">
                 <div className="col-lg-12 text">
