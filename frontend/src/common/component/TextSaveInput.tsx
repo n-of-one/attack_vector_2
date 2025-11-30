@@ -25,6 +25,7 @@ interface Props {
     terminalPrefix?: string,
     maxLength?: number,
     style?: CSSProperties,
+    name?: string,
 }
 
 enum State {
@@ -140,6 +141,7 @@ export const TextSaveInput = (props: Props) => {
                           onBlur={handleBlur}
                           rows={rows}
                           disabled={readonly}
+                          name={props.name}
                 />
                 {icon}
                 {terminalPreview}
@@ -158,6 +160,7 @@ export const TextSaveInput = (props: Props) => {
                            disabled={readonly}
                            maxLength={props.maxLength}
                            style={props.style}
+                           name={props.name}
                     />
                 {icon}
                 </span>

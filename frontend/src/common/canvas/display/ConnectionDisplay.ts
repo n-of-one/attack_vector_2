@@ -5,6 +5,7 @@ import {Schedule} from "../../util/Schedule";
 import {Connection} from "../../../editor/reducer/ConnectionsReducer";
 import {NodeDisplay} from "./NodeDisplay";
 import {Display} from "./Display";
+import {APPEAR_ANIMATION_TICKS} from "./DisplayAnimationConstants";
 
 export class ConnectionDisplay implements Display {
 
@@ -54,7 +55,7 @@ export class ConnectionDisplay implements Display {
     appear() {
         if (!this.schedule) throw Error("schedule not initialized")
         this.schedule.run(3, () => {
-            animate(this.canvas, this.connectionIcon, "opacity", 0.5, 40);
+            animate(this.canvas, this.connectionIcon, "opacity", 0.5, APPEAR_ANIMATION_TICKS);
         });
     }
 

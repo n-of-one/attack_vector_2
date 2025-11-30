@@ -74,12 +74,12 @@ export const ScriptTypesTable = ({onSelect}: ScriptTypesListProps) => {
 
 const ScriptTypeRow = ({type, onSelect}: { type: ScriptType, onSelect: (scriptType: ScriptType) => void }) => {
     return (
-        <div className="row text">
+        <div className="row text" data-row="script">
             <div className="col-lg-2"><SilentLink onClick={() => {
                 onSelect(type)
             }} text={type.name}/>
             </div>
-            <div className="col-lg-2">{
+            <div className="col-lg-2" data-element="effect-descriptions">{
                 type.effects.map((effect: Effect) => {
                     const text: string = effect.type === EffectType.HIDDEN_EFFECTS ? "*" : effect.effectNumber.toString()
                     return (<span key={effect.effectNumber}>
@@ -109,7 +109,8 @@ const ChooseOrCreateScriptType = () => {
             <br/>
         </div>
         <div className="col-lg-8">
-            <TextInput placeholder="type name"
+            <TextInput name="create"
+                       placeholder="type name"
                        buttonLabel="Create"
                        buttonClass="btn-info"
                        save={add}
@@ -191,7 +192,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                 <div className="col-lg-2"><strong>Add effects</strong></div>
             </div>
             <br/>
-            <div className="row form-group text">
+            <div className="row form-group text" data-row="add-effect">
                 <label htmlFor="addEffect" className="col-lg-3 control-label text-muted">Useful effect:</label>
                 <div className="col-lg-7">
                     <select className="form-control" value={positiveEffect}
@@ -227,7 +228,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
                 </div>
             </div>
             <br/>
-            <div className="row form-group text">
+            <div className="row form-group text" data-row="add-effect">
                 <label htmlFor="addEffect" className="col-lg-3 control-label text-muted">Drawback effect:</label>
                 <div className="col-lg-7">
                     <select className="form-control" value={negativeEffect}

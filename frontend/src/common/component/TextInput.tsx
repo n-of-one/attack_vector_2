@@ -14,6 +14,7 @@ interface Props {
     label?: string
     labelColumns?: number
     type?: string
+    name?: string
 }
 
 export const TextInput = (props: Props) => {
@@ -55,6 +56,7 @@ export const TextInput = (props: Props) => {
                        onChange={(event) => handleChange(event)}
                        onKeyDown={(event) => handleKeyDown(event)}
                        autoFocus={autofocus}
+                       name={props.name}
                 />
             </div>
             <div className="col-lg-2">

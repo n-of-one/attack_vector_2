@@ -9,6 +9,7 @@ import {HackerDisplay} from "./HackerDisplay"
 import {delayTicks} from "../../util/Util";
 import {NodeI} from "../../sites/SiteModel";
 import {MoveNodeI} from "../../../editor/reducer/EditorNodesReducer";
+import {APPEAR_ANIMATION_TICKS, NODE_TRANSITION_TICKS} from "./DisplayAnimationConstants";
 
 const SCAN_OPACITY = 0.3
 const HACK_OPACITY = 1
@@ -168,7 +169,7 @@ export class NodeDisplay implements Display {
         if (!this.schedule) throw new Error("schedule not initialized")
 
         this.schedule.run(3, () => {
-            this.gfx.fade(40, this.determineNodeIconOpacity(), this.nodeIcon)
+            this.gfx.fade(APPEAR_ANIMATION_TICKS, this.determineNodeIconOpacity(), this.nodeIcon)
 
             if (this.nodeData.distance === 1) {
                 this.fadeInLabel()
@@ -186,8 +187,8 @@ export class NodeDisplay implements Display {
     }
 
     private fadeInLabel() {
-        this.gfx.fade(40, 1, this.labelIcon)
-        this.gfx.fade(40, 0.8, this.labelBackgroundIcon)
+        this.gfx.fade(APPEAR_ANIMATION_TICKS, 1, this.labelIcon)
+        this.gfx.fade(APPEAR_ANIMATION_TICKS, 0.8, this.labelBackgroundIcon)
     }
 
     transitionToInside(quick: boolean, canvasSelectedIcon: fabric.Image | null) {
@@ -200,14 +201,14 @@ export class NodeDisplay implements Display {
 
     transitionToOutside() {
         this.siteStatus = SiteStatus.OUTSIDE
-        this.gfx.fade(20, this.determineNodeIconOpacity(), this.nodeIcon)
+        this.gfx.fade(NODE_TRANSITION_TICKS, this.determineNodeIconOpacity(), this.nodeIcon)
     }
 
 
     crossFadeToNewIconStart(delay: number, canvasSelectedIcon: fabric.Image | null) {
         if (this.schedule == null) throw new Error("schedule not initialized")
 
-        const crossFadeTime = 20
+        const crossFadeTime = NODE_TRANSITION_TICKS
         this.schedule.run(delay, () => {
 
             this.crossFadeNodeIcon = this.nodeIcon
@@ -324,7 +325,7 @@ export class NodeDisplay implements Display {
     }
 
     hacked(canvasSelectedIcon: fabric.Image | null) {
-        this.crossFadeToNewIconStart(5, canvasSelectedIcon)
+        this.crossFadeToNewIconStart(NODE_TRANSITION_TICKS, canvasSelectedIcon)
     }
 
     terminate() {

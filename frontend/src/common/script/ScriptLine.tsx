@@ -30,7 +30,7 @@ export const ScriptLine = ({script, useCase, minimize, ram, showLoadButton}: Pro
     const actionGmLoad = forGm ? <ScriptActionGmLoad script={script} ram={ram}/> : <ScriptLoadAction script={script} ram={ram} showLoadButton={showLoadButton}/>
 
     return (<>
-            <div className="row text" style={{marginBottom: "2px"}}>
+            <div className="row text" style={{marginBottom: "2px"}} data-row="hacker-script">
                 <div className="col-lg-2 text-end"><CodeElement script={script} minimize={minimize}/></div>
                 <div className="col-lg-2">{truncateScriptName(script.name)}</div>
                 <div className="col-lg-1">{script.ram}</div>
@@ -58,14 +58,14 @@ const truncateScriptName = (name: string) => {
 const CodeElement = ({script, minimize}: { script: Script, minimize?: () => void
 }) => {
     if (script.state === ScriptState.EXPIRED || script.state === ScriptState.USED) {
-        return <span className="text" style={{color: "#666"}}>{script.code}</span>
+        return <span className="text" style={{color: "#666"}} data-element="code">{script.code}</span>
     }
 
     return (
         <SilentLink onClick={() => {
             copyScript(script.code)
             if (minimize) minimize()
-        }}><>{script.code}</>
+        }}><span data-element="code">{script.code}</span>
         </SilentLink>
     )}
 

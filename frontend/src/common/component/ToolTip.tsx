@@ -28,7 +28,6 @@ export const InfoBadge = (props: { infoText: string, placement?: Placement, badg
     const [id] = useState(new Date().getTime() + ":" + Math.random())
     return <ToolTip id={id} text={props.infoText} placement={props.placement}>
         <span className={`badge ${badgeClass} helpBadge`}>{badgeText}</span>
-        {/*<span className="badge bg-secondary helpBadge">{badgeText}</span>*/}
     </ToolTip>
 
 }

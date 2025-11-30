@@ -43,7 +43,7 @@ export class HackerDisplay implements Display {
     nodeDisplays: DisplayCollection<NodeDisplay>
 
     hackerData: HackerPresence
-    you: boolean
+    you: boolean // true if this is the display of the player
     siteStartNodeDisplay: NodeDisplay
     currentNodeDisplay: NodeDisplay | null = null
 

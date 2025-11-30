@@ -29,7 +29,7 @@ export const FormTextInputRow = (props: Props) => {
             <label htmlFor={id} className={`col-lg-${labelColumns} control-label text-muted`}>{infoBadge} {props.label}</label>
             <div className={`col-lg-${valueColumns}`}>
                 <TextSaveInput id={id} className="form-control" maxLength={props.maxLength}
-                               placeholder="" value={props.value}
+                               placeholder="" name={props.label} value={props.value}
                                save={props.save}/>
 
             </div>

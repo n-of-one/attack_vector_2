@@ -4,8 +4,9 @@ import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
-import org.n1.av2.platform.engine.SECONDS_IN_TICKS
 import org.n1.av2.platform.engine.ScheduledTask
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.script.effect.ScriptExecution
@@ -23,6 +24,7 @@ class IceEffectHelper(
     private val hackedUtil: HackedUtil,
     private val userTaskRunner: UserTaskRunner,
     private val iceService: IceService,
+    private val configService: ConfigService,
 ) {
 
     fun runForSpecificIceType(
@@ -67,21 +69,20 @@ class IceEffectHelper(
         return ScriptExecution(TerminalState.KEEP_LOCKED) {
             connectionService.replyTerminalReceiveAndLocked(true, "Hacking ICE...")
             val siteId = hackerState.siteId
-            userTaskRunner.queue("start auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(5)) {
-                startHackedIce(layer, siteId)
+            val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+
+            val duration = if (quickPlaying) Duration.ofMillis(50) else Duration.ofSeconds(5)
+
+            userTaskRunner.queue("complete auto hack", mapOf("siteId" to siteId), duration) {
+                iceHackedComplete(layer)
             }
         }
     }
 
     @ScheduledTask
-    private fun startHackedIce(layer: IceLayer, siteId: String) {
+    private fun iceHackedComplete(layer: IceLayer) {
         val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)
-        val iceHackedAnimationSeconds = 5
-        hackedUtil.iceHacked(iceId, layer.id, SECONDS_IN_TICKS * iceHackedAnimationSeconds, IceHackState.USED_SCRIPT)
-
-        userTaskRunner.queue("complete auto hack", mapOf("siteId" to siteId), Duration.ofSeconds(iceHackedAnimationSeconds.toLong())) {
-            connectionService.replyTerminalReceive("ICE hack complete.")
-            connectionService.replyTerminalSetLocked(false)
-        }
+        hackedUtil.iceHacked(iceId, layer.id, 0, IceHackState.USED_SCRIPT)
+        connectionService.replyTerminalReceive("ICE hack complete.")
     }
 }

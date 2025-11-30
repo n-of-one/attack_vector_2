@@ -1,9 +1,15 @@
 import Cookies from "js-cookie";
+import {developmentServer} from "./DevEnvironment";
 
 const minWidth = 1920
 const minHeight = 1080
 
 export const handleZoom = () => {
+
+    if (developmentServer) {
+        // don't zoom during development
+        return
+    }
 
     const zoomX = window.screen.width / minWidth
     const zoomY = window.screen.height / minHeight

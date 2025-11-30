@@ -96,7 +96,7 @@ export const ScriptsOfUser = ({user}: { user: User }) => {
 
         <div className="text">
             <div className="d-flex justify-content-between">
-                <h5 className="text-muted">Current cripts of: <span className="text_gold">{user.name}</span></h5>
+                <h5 className="text-muted">Current scripts of: <span className="text_gold">{user.name}</span></h5>
                 <h5><CloseButton closeAction={close}/></h5>
             </div>
             <br/>

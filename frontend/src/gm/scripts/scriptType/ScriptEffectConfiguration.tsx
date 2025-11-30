@@ -76,7 +76,7 @@ const EffectRowOneColumn = ({scriptType, effect, children}: { scriptType: Script
                 <hr/>
             </div>
         </div>
-        <div className="row form-group text">
+        <div className="row form-group text" data-row="script-effect-one-row">
             <div className="col-lg-1" style={{marginTop: "0", marginRight: "-30px"}}>
                 <InfoBadge infoText={effect.gmDescription} placement="top"/>
             </div>

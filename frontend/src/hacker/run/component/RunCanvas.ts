@@ -18,11 +18,11 @@ import {webSocketConnection} from "../../../common/server/WebSocketConnection";
 import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPatrollerDisplay";
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../reducer/InfoNodeIdReducer";
 import {LayerDetails, NodeI} from "../../../common/sites/SiteModel";
+import {APPEAR_ANIMATION_TICKS, NODE_TRANSITION_TICKS} from "../../../common/canvas/display/DisplayAnimationConstants";
 
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.
 let probeDisplayIdSequence = 0
-
 
 /// This class renders the sit map on the JFabric Canvas
 class RunCanvas {
@@ -171,7 +171,16 @@ class RunCanvas {
         this.startNodeDisplay = this.nodeDisplays.get(nodes[0].id)
         this.addHackersDisplays()
 
+        this.scheduleIconAnimationsFinishedEvent(APPEAR_ANIMATION_TICKS , "enterSiteAnimationsFinished")
         this.active = true
+    }
+
+    // Inform Playwright that the animations have finished
+    private scheduleIconAnimationsFinishedEvent(animationTicks: number, eventName: string) {
+        this.iconSchedule.wait(animationTicks + 1)
+        this.iconSchedule.run(0, () => {
+            window.dispatchEvent(new CustomEvent(eventName));
+        })
     }
 
     private sortAndAddHackers(hackers: HackerPresence[]) {
@@ -272,6 +281,8 @@ class RunCanvas {
                 }
             }
         })
+
+        this.scheduleIconAnimationsFinishedEvent(APPEAR_ANIMATION_TICKS, "scanAnimationsFinished")
     }
 
     findConnections(nodeId: string): string[] {
@@ -351,6 +362,9 @@ class RunCanvas {
             })
         }
         this.hackerDisplays.get(userId).startRun(quick, timings)
+
+        const waitTime = quick ? NODE_TRANSITION_TICKS : timings.main - 50
+        this.scheduleIconAnimationsFinishedEvent(waitTime , "startAttackAnimationsFinished")
     }
 
     // Called as a consequence of SERVER_HACKER_LEAVE_SCAN, which is a consequence of MenuItem calling: /run/leaveRun
@@ -402,6 +416,8 @@ class RunCanvas {
 
         this.nodeDataById[nodeId].hacked = true
         this.nodeDisplays.get(nodeId).hacked(this.selectedObject)
+
+        this.scheduleIconAnimationsFinishedEvent(NODE_TRANSITION_TICKS , "nodeHackedAnimationFinished")
     }
 
     stop() {

@@ -25,9 +25,9 @@ class AutoHackSpecificIceLayerEffectService(
 
 ) : ScriptEffectInterface {
 
-    override val name = "Automatically hack a specific layer of ICE"
+    override val name = "Automatically hack a specific ICE layer"
     override val defaultValue = "node-1234-5678:layer-1234"
-    override val gmDescription = "Automatically hack one specific layer of ICE in a specific site."
+    override val gmDescription = "Automatically hack one specific ICE layer in a specific site."
 
     override fun playerDescription(effect: ScriptEffect): String {
         return createPlayerDescription(effect) ?: "Script functionality is broken. Unable to execute script."
