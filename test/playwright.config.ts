@@ -13,17 +13,25 @@ import {defineConfig, devices} from '@playwright/test';
  */
 export default defineConfig({
     testDir: './e2e',
+
     /* Our tests in a single file depend on each other. */
     fullyParallel: false,
+
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
+
     /* Retry on CI only */
     retries: process.env.CI ? 2 : 0,
+
     /* Opt out of parallel tests on CI. */
     // workers: process.env.CI ? 1 : undefined,
     workers: 1, // Disable parallelism because tests use the same users and AV only allows a single user to be logged in once.
+
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: 'html',
+
+    globalSetup: 'e2e/0.1-global-setup.ts',
+
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         screenshot: 'only-on-failure',
