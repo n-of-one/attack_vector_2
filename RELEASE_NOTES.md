@@ -1,5 +1,12 @@
 # Release notes AV 2.15.0 (28 December 2025)
 
+## Features
+
+- Script effect: hack ICE by strength
+
+This script effect allows the creation of scripts that will automatically hack ICE that has a certain max strength.
+The strength is configurable as is which types of ICE it affects. This will never affect password ICE as that has no strength value.
+
 ## Bugfixes
 - Node names are now shown
 - Nodes sometimes did not show as hacked when all ICE was hacked
