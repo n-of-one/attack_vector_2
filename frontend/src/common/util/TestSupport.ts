@@ -26,7 +26,7 @@ export class TestSupport {
 
     scheduleEmitEvent(eventName: string, schedule: Schedule, ticks: number) {
         if (!this.enabled) {
-            throw new Error(`Testsupport is not enabled. Cannot schedule event: ${eventName}`)
+            return
         }
         if (!schedule.active) {
             this.log(`Cannot schedule event ${eventName} because the scheduler is not active`)
