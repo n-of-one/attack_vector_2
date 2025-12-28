@@ -4,6 +4,7 @@ import {LoginPage} from "./testframework/LoginPage";
 import {wait} from "./testframework/utils/testUtils";
 
 export default async function globalSetup() {
+    console.log("Start global setup")
     const browser = await chromium.launch()
     const page = await browser.newPage()
     const [login, admin] = [new LoginPage(page), new AdminPage(page)]
@@ -14,4 +15,5 @@ export default async function globalSetup() {
 
     await wait(page, 0.1, "don't close the page immediately to allow changes to be sent by browser")
     await browser.close()
+    console.log("Finish global setup")
 }

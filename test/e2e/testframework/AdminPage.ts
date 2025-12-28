@@ -9,7 +9,7 @@ export class AdminPage {
     }
 
     async setConfigItem(name: string, value: string) {
-        log(`DialSetting config item: ${name} to ${value}`)
+        log(`Setting config item: ${name} to ${value}`)
         await this.page.getByText(name).click();
         await this.page.locator('#configItemText').click();
         await this.page.locator('#configItemText').fill(value);

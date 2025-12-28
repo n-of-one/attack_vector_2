@@ -1,4 +1,6 @@
-import {expect, Page} from "@playwright/test"
+import {Page} from "@playwright/test"
+import {expect} from "./fixtures"
+
 import {AvPage} from "./AvPage";
 import {log, wait} from "./utils/testUtils";
 

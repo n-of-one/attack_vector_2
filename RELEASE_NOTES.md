@@ -1,15 +1,20 @@
-# Release notes AV 2.15.0 (??)
+# Release notes AV 2.15.0 (28 December 2025)
 
-## Features
-- Node names
+## Bugfixes
+- Node names are now shown
+- Nodes sometimes did not show as hacked when all ICE was hacked
 
+### Node names
+You could already give a node a name via the OS layer of the node, but this name was not shown anywhere.
 
-Node names:
-You can give a node a name via the OS layer of the node. Using this you can give additional information or context to the hackers about this node or this part of the site.
+The node name is now shown when a hacker moves into a node: `Entered node <node-id>: <node-name>`. 
+The node name is also shown when clicking on the node on the map. 
 
-To convey the node name, extra text is now shown when a hacker moves into a node: `Entered node <node-id>: <node-name>`
+Using this you can give additional information or context to the hackers about this node or this part of the site. 
+This is optional, node names are still empty by default.
 
-Node names can be left empty.
+## Technical changes
+- Automated tests added using the Playwright framework. See the /test folder.
 
 
 # Release notes AV 2.14.0 (23 November 2025)

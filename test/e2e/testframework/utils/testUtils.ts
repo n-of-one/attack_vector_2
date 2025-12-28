@@ -14,7 +14,7 @@ export function appLocator(page: Page) {
 }
 
 export function log(message: string) {
-    console.log(message)
+    console.log(`[playwright] ${message}`)
 }
 
 export async function  wait(page: Page, waitSeconds: number, reason: string) {
@@ -22,3 +22,12 @@ export async function  wait(page: Page, waitSeconds: number, reason: string) {
     await page.waitForTimeout(waitSeconds * 1000)
 }
 
+export function countOccurrences(haystack: string, needle: string):number {
+    let count = 0;
+    for (let pos = 0; ; ) {
+        const idx = haystack.indexOf(needle, pos)
+        if (idx === -1) return count
+        count++
+        pos = idx + needle.length
+    }
+}

@@ -1,4 +1,4 @@
-import {test} from '@playwright/test';
+import {test} from "./testframework/fixtures"
 import {TanglePage} from "./testframework/TanglePage";
 import {LoginPage} from "./testframework/LoginPage";
 import {HackerPage, START_ATTACK_QUICK} from "./testframework/HackerPage";

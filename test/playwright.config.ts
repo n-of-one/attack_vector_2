@@ -39,23 +39,25 @@ export default defineConfig({
         trace: 'on-first-retry',
     },
 
+    snapshotDir: `e2e/screenshots`,
+
     /* Configure projects for major browsers */
     projects: [
         {
             name: 'chromium',
             use: {
                 ...devices['Desktop Chrome'],
-                viewport: {width: 1920, height: 1080}
+                viewport: {width: 1920, height: 1080},
             },
         },
 
-        {
-            name: 'firefox',
-            use: {
-                ...devices['Desktop Firefox'],
-                viewport: {width: 1920, height: 1080}
-            },
-        },
+        // {
+        //     name: 'firefox',
+        //     use: {
+        //         ...devices['Desktop Firefox'],
+        //         viewport: {width: 1920, height: 1080}
+        //     },
+        // },
 
         // {
         //   name: 'webkit',

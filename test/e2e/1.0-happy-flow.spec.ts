@@ -1,10 +1,11 @@
-import {Page, test} from '@playwright/test'
+import {Page} from '@playwright/test'
+import {test} from "./testframework/fixtures"
 import {HackerPage, START_ATTACK_QUICK, START_ATTACK_REGULAR} from "./testframework/HackerPage";
 import {GmPage} from "./testframework/GmPage";
 import {wait} from "./testframework/utils/testUtils";
 import {LoginPage} from "./testframework/LoginPage";
 
-test('1.0 - Prepare', async ({page}: { page: Page }) => {
+test('1.0.0 - Prepare', async ({page}: { page: Page }) => {
     test.setTimeout(10_000);
 
     const [login, gm] = [new LoginPage(page), new GmPage(page)]
@@ -14,7 +15,7 @@ test('1.0 - Prepare', async ({page}: { page: Page }) => {
 })
 
 
-test('1.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
+test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
     test.setTimeout(70_000);
 
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
@@ -96,7 +97,7 @@ test('1.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
 })
 
 
-test('1.2 - Joining an existing run and checking services', async ({page}: { page: Page }) => {
+test('1.0.2 - Joining an existing run and checking services', async ({page}: { page: Page }) => {
     test.setTimeout(50_000);
 
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]

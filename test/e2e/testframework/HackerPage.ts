@@ -1,6 +1,7 @@
-import {expect, Page} from "@playwright/test";
+import {Page} from "@playwright/test";
+import {expect} from "./fixtures"
 import {PageAssertionsToHaveScreenshotOptions} from "playwright/types/test";
-import {appLocator, confirmDialog, log} from "./utils/testUtils";
+import {appLocator, confirmDialog, countOccurrences, log} from "./utils/testUtils";
 
 export const START_ATTACK_REGULAR = false
 export const START_ATTACK_QUICK = true
@@ -103,8 +104,8 @@ export class HackerPage {
     }
 
     async startAttack(quick: boolean, expectedTerminalLine: string = "Entered node") {
-        const command = quick? "qa" : "attack"
-        const expectedInTerminal = quick ? [ expectedTerminalLine, "Persona established, hack started"] : ["- Persona creation complete",
+        const command = quick ? "qa" : "attack"
+        const expectedInTerminal = quick ? [expectedTerminalLine, "Persona established, hack started"] : ["- Persona creation complete",
             "Connection established.", expectedTerminalLine]
         await this.typeCommand(command)
         await this.waitForStartAttackAnimationFinished()
@@ -112,24 +113,46 @@ export class HackerPage {
     }
 
     async waitForScanAnimationFinished() {
+        expect(true, `Waiting scan animation: scanAnimationsFinished`).toBeTruthy()
         await this.waitForEvent("scanAnimationsFinished")
     }
 
     async waitForNodeHackedAnimationFinished() {
+        expect(true, `Waiting node hacked animation: nodeHackedAnimationFinished`).toBeTruthy()
         await this.waitForEvent("nodeHackedAnimationFinished")
     }
 
     private async waitForEnterSiteAnimationFinished() {
+        expect(true, `Waiting enter site animation: enterSiteAnimationsFinished`).toBeTruthy()
         await this.waitForEvent("enterSiteAnimationsFinished")
     }
 
     private async waitForStartAttackAnimationFinished() {
+        expect(true, `Waiting start attack animation: startAttackAnimationsFinished`).toBeTruthy()
         await this.waitForEvent("startAttackAnimationsFinished")
     }
+
+    // private async waitForEvent(eventNameInPlayerWrightContext: string) {
+    //     log(`Waiting for browser to fire event: ${eventNameInPlayerWrightContext}`)
+    //     await this.page.evaluate(eventNameInBrowserContext => new Promise(resolve => {
+    //         window.addEventListener(eventNameInBrowserContext, resolve, {once: true});
+    //     }), eventNameInPlayerWrightContext);
+    // }
+
+
     private async waitForEvent(eventNameInPlayerWrightContext: string) {
-        await this.page.evaluate(eventNameInBrowserContext => new Promise(resolve => {
-            window.addEventListener(eventNameInBrowserContext, resolve, {once: true});
-        }), eventNameInPlayerWrightContext);
+        log(`Waiting for browser to fire event: ${eventNameInPlayerWrightContext}`)
+        await this.page.evaluate(eventNameInBrowserContext => {
+            return (globalThis as any).__testSupport.waitForEvent(eventNameInBrowserContext)
+        }, eventNameInPlayerWrightContext);
     }
 
+    async verifyScanInfo(expectedText: string, expectedTimes: number) {
+        const scanInfoText = (await this.page.locator("#scanInfo").allTextContents()).join("");
+        const foundTimes = countOccurrences(scanInfoText, expectedText)
+        if (foundTimes != expectedTimes) {
+            throw new Error(`In scan info the text "${expectedText}" was expected to be present ${expectedTimes} times, but found it '${foundTimes} times. 
+            Contents of the scan info box: ${scanInfoText}`);
+        }
+    }
 }

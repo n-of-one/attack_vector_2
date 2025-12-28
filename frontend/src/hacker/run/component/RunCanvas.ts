@@ -19,6 +19,7 @@ import {TracingPatrollerDisplay} from "../../../common/canvas/display/TracingPat
 import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../reducer/InfoNodeIdReducer";
 import {LayerDetails, NodeI} from "../../../common/sites/SiteModel";
 import {APPEAR_ANIMATION_TICKS, NODE_TRANSITION_TICKS} from "../../../common/canvas/display/DisplayAnimationConstants";
+import {testSupport} from "../../../common/util/TestSupport";
 
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.
@@ -78,6 +79,13 @@ class RunCanvas {
         this.canvas.on('selection:cleared', () => {
             this.canvasObjectDeSelected()
         })
+
+        this.canvas.on('mouse:down', (event: fabric.IEvent<MouseEvent>) => {
+            const x = event.e.pageX
+            const y = event.e.pageY
+            console.log("(" + x + "," + y + ")")
+        })
+
 
         this.iconSchedule = new Schedule(dispatch)
     }
@@ -171,16 +179,8 @@ class RunCanvas {
         this.startNodeDisplay = this.nodeDisplays.get(nodes[0].id)
         this.addHackersDisplays()
 
-        this.scheduleIconAnimationsFinishedEvent(APPEAR_ANIMATION_TICKS , "enterSiteAnimationsFinished")
+        testSupport.scheduleEmitEvent("enterSiteAnimationsFinished", this.iconSchedule, APPEAR_ANIMATION_TICKS)
         this.active = true
-    }
-
-    // Inform Playwright that the animations have finished
-    private scheduleIconAnimationsFinishedEvent(animationTicks: number, eventName: string) {
-        this.iconSchedule.wait(animationTicks + 1)
-        this.iconSchedule.run(0, () => {
-            window.dispatchEvent(new CustomEvent(eventName));
-        })
     }
 
     private sortAndAddHackers(hackers: HackerPresence[]) {
@@ -207,14 +207,14 @@ class RunCanvas {
 
 
     private addNodeDisplay(node: NodeI) {
-        const nodeSiteStatus = this.determineNodeSiteStatus(this.hacking, this.shutdown)
+        const nodeSiteStatus = this.determineNodeSiteStatus()
 
         const nodeDisplay = new NodeDisplay(this.canvas, this.iconSchedule, node, false, nodeSiteStatus)
         this.nodeDisplays.add(node.id, nodeDisplay)
         nodeDisplay.appear()
     }
 
-    private determineNodeSiteStatus(hacking: boolean, shutdown: boolean): SiteStatus {
+    private determineNodeSiteStatus(): SiteStatus {
         if (this.shutdown) return SiteStatus.SHUTDOWN
         return (this.hacking) ? SiteStatus.INSIDE : SiteStatus.OUTSIDE
     }
@@ -282,7 +282,7 @@ class RunCanvas {
             }
         })
 
-        this.scheduleIconAnimationsFinishedEvent(APPEAR_ANIMATION_TICKS, "scanAnimationsFinished")
+        testSupport.scheduleEmitEvent("scanAnimationsFinished", this.iconSchedule, APPEAR_ANIMATION_TICKS)
     }
 
     findConnections(nodeId: string): string[] {
@@ -364,7 +364,8 @@ class RunCanvas {
         this.hackerDisplays.get(userId).startRun(quick, timings)
 
         const waitTime = quick ? NODE_TRANSITION_TICKS : timings.main - 50
-        this.scheduleIconAnimationsFinishedEvent(waitTime , "startAttackAnimationsFinished")
+        testSupport.scheduleEmitEvent("startAttackAnimationsFinished", this.iconSchedule, waitTime)
+
     }
 
     // Called as a consequence of SERVER_HACKER_LEAVE_SCAN, which is a consequence of MenuItem calling: /run/leaveRun
@@ -417,7 +418,8 @@ class RunCanvas {
         this.nodeDataById[nodeId].hacked = true
         this.nodeDisplays.get(nodeId).hacked(this.selectedObject)
 
-        this.scheduleIconAnimationsFinishedEvent(NODE_TRANSITION_TICKS , "nodeHackedAnimationFinished")
+        testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", this.iconSchedule, NODE_TRANSITION_TICKS)
+
     }
 
     stop() {

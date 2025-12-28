@@ -1,5 +1,7 @@
 package org.n1.av2.site.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.site.entity.enums.NodeType
@@ -43,9 +45,10 @@ data class Node(
     @Transient
     val ice  = layers.any { it is IceLayer } // used in frontend as well
 
-    @Transient
-    val hacked = if (ice) true else layers.filterIsInstance<IceLayer>().all { it.hacked }
+    @get:JsonProperty("hacked")
+    val hacked: Boolean get() = if (!ice) true else layers.filterIsInstance<IceLayer>().all { it.hacked }
 
+    @JsonIgnore
     @Transient
     val unhackedIce = layers.filterIsInstance<IceLayer>().any { !it.hacked }
 

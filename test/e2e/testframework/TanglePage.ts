@@ -1,6 +1,7 @@
-import {expect, Page} from "@playwright/test"
-import {PageAssertionsToHaveScreenshotOptions} from "playwright/types/test"
+import {Page} from "@playwright/test"
+import {expect} from "./fixtures"
 
+import {PageAssertionsToHaveScreenshotOptions} from "playwright/types/test"
 
 export class TanglePage {
     page: Page
@@ -24,7 +25,7 @@ export class TanglePage {
     async moveTanglePoint(fromX: number, fromY: number, toX: number, toY: number) {
         this.log(`Move tangle points (${fromX}, ${fromY}) -> (${toX} ${toY})`)
         await this.page.mouse.move(fromX,fromY)
-        await this.page. mouse.down()
+        await this.page.mouse.down()
         await this.page.mouse.move(toX,toY, { steps: 2 })
         await this.page.mouse.up()
     }
