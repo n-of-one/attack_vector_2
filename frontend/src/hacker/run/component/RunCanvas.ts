@@ -80,11 +80,11 @@ class RunCanvas {
             this.canvasObjectDeSelected()
         })
 
-        this.canvas.on('mouse:down', (event: fabric.IEvent<MouseEvent>) => {
-            const x = event.e.pageX
-            const y = event.e.pageY
-            console.log("(" + x + "," + y + ")")
-        })
+        // this.canvas.on('mouse:down', (event: fabric.IEvent<MouseEvent>) => {
+        //     const x = event.e.pageX
+        //     const y = event.e.pageY
+        //     console.log("(" + x + "," + y + ")")
+        // })
 
 
         this.iconSchedule = new Schedule(dispatch)

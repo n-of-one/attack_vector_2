@@ -1,11 +1,14 @@
 package org.n1.av2.layer.ice.sweeper
 
 import org.n1.av2.site.entity.enums.IceStrength
+import kotlin.random.Random
 
 /**
  * @see SweeperIceStatus for the data model
  */
-class SweeperCreator {
+class SweeperCreator(testingMode: Boolean) {
+
+    private val random = if (testingMode) Random(0L) else Random
 
     fun createSweeper(iceId: String, layerId: String, iceStrength: IceStrength): SweeperIceStatus {
         (0..20).forEach { _ ->
@@ -46,12 +49,12 @@ class SweeperCreator {
 
     private fun createMap(iceStrength: IceStrength): SweeperMap {
         return when (iceStrength) {
-            IceStrength.VERY_WEAK -> SweeperMap(9, 9, 8)
-            IceStrength.WEAK -> SweeperMap(9, 9, 10) // Beginner
-            IceStrength.AVERAGE -> SweeperMap(16, 16, 40) // Intermediate
-            IceStrength.STRONG -> SweeperMap(22, 16, 60)
-            IceStrength.VERY_STRONG -> SweeperMap(30, 16, 100) // Expert
-            IceStrength.ONYX -> SweeperMap(32, 18, 120)
+            IceStrength.VERY_WEAK -> SweeperMap(9, 9, 8, this.random)
+            IceStrength.WEAK -> SweeperMap(9, 9, 10, this.random) // Beginner
+            IceStrength.AVERAGE -> SweeperMap(16, 16, 40, this.random) // Intermediate
+            IceStrength.STRONG -> SweeperMap(22, 16, 60, this.random)
+            IceStrength.VERY_STRONG -> SweeperMap(30, 16, 100, this.random) // Expert
+            IceStrength.ONYX -> SweeperMap(32, 18, 120, this.random)
         }
     }
 }
@@ -60,6 +63,7 @@ class SweeperMap(
     private val xSize: Int,
     private val ySize: Int,
     mineCount: Int,
+    val random: Random,
 ) {
 
     private val minePositions = generateMinePositions(mineCount)
@@ -74,8 +78,8 @@ class SweeperMap(
 
     private fun newMinePosition(): Pair<Int, Int> {
         while(true) {
-            val x = (0 until xSize).random()
-            val y = (0 until ySize).random()
+            val x = random.nextInt(xSize)
+            val y = random.nextInt(ySize)
 
             val xAtEdge = (x % (xSize-1) == 0)
             val yAtEdge = (y % (ySize-1) == 0)

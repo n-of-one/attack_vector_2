@@ -28,7 +28,7 @@ test('test', async ({page}) => {
 
     await test.step("Verify ICE state before hacking", async () => {
         await wait(page, 0.5, "Give ICE page some time to render")
-        // await hacker.wait(3.0, "Wait for ICE puzzle to fully render") //disable before re-making the screenshot
+        // await wait(3.0, "Wait for ICE puzzle to fully render") //disable before re-making the screenshot
         await tangle.checkNameAndScreenshot("2.1-tangle-before")
     })
 

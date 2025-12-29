@@ -35,7 +35,7 @@ export const SweeperHome = () => {
                         <ResetIce/>
                     </div>
                     <div className="col-lg-1">
-                        <h4 className="text-center text-success">Left:<br/><span className="text-info">{minesLeft}</span></h4>
+                        <h4 className="text-center text-success" data-testid="minesLeft">Left:<br/><span className="text-info">{minesLeft}</span></h4>
                     </div>
                     <div className="col-lg-6" style={{paddingTop: "4px"}}>
                         <DisplayTerminal/>

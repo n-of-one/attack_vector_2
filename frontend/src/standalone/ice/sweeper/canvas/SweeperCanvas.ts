@@ -63,6 +63,9 @@ class SweeperCanvas {
 
         this.canvas.on('mouse:down', (event: fabric.IEvent<MouseEvent>) => {
             this.mouseDown(event);
+                // const x = event.e.pageX
+                // const y = event.e.pageY
+                // console.log("(" + x + "," + y + ")")
         })
 
         data.cells.forEach((row: SweeperCellType[], y: number) => {

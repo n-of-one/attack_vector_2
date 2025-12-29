@@ -88,10 +88,10 @@ const enter =  (action: SweeperEnterFromServer): SweeperUiState => {
 
 const processModify = (state: SweeperUiState, data: SweeperModifyData) => {
     if (data.action === SweeperModifyAction.FLAG || data.action === SweeperModifyAction.EXPLODE) {
-        return { ...state, minesLeft: state.minesLeft! - 1}
+        return { ...state, minesLeft: data.minesLeft}
     }
     if (data.action === SweeperModifyAction.CLEAR) {
-        return { ...state, minesLeft: state.minesLeft! + 1}
+        return { ...state, minesLeft: data.minesLeft}
     }
     return state
 };

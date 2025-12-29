@@ -32,6 +32,7 @@ export enum SweeperModifyAction {
 export interface SweeperModifyData  {
     cells: string[],
     action: SweeperModifyAction,
+    minesLeft: number,
 }
 
 interface SweeperBlockUserData {

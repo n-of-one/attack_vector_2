@@ -31,7 +31,6 @@ class SweeperService(
     private val iceStatisticsService: IceStatisticsService,
 ) {
 
-    private val sweeperCreator = SweeperCreator()
 
     @Suppress("unused")
     class SweeperEnter(
@@ -52,6 +51,9 @@ class SweeperService(
     }
 
     fun createIce(iceId: String, layerId: String, strength: IceStrength): SweeperIceStatus {
+        val testingMode = configService.getAsBoolean(ConfigItem.DEV_TESTING_MODE)
+        val sweeperCreator = SweeperCreator(testingMode)
+
         val iceStatus = sweeperCreator.createSweeper(iceId, layerId, strength)
 
         sweeperIceStatusRepo.save(iceStatus)
@@ -100,7 +102,7 @@ class SweeperService(
     }
 
     @Suppress("unused")
-    private class SweeperModifyMessage(val cells: List<String>, val action: SweeperModifyAction)
+    private class SweeperModifyMessage(val cells: List<String>, val action: SweeperModifyAction, val minesLeft: Int)
 
     private fun modify(sweeper: SweeperIceStatus, x: Int, y: Int, action: SweeperModifyAction) {
         val newModifier: Char = when (action) {
@@ -111,7 +113,9 @@ class SweeperService(
 
         saveModification(sweeper, x, y, newModifier)
 
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), action))
+        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY,
+            SweeperModifyMessage(listOf("$x:$y"), action, minesLeft(sweeper))
+        )
     }
 
     private fun saveModification(sweeper: SweeperIceStatus, x: Int, y: Int, newModifier: Char) {
@@ -158,14 +162,18 @@ class SweeperService(
         sweeperIceStatusRepo.save(sweeperWithUserBlocked)
 
         connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_BLOCK_USER, SweeperBlockUserMessage(currentUser.userId, currentUser.userEntity.name))
-        connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE))
+        connectionService.toIce(sweeperStatus.id, ServerActions.SERVER_SWEEPER_MODIFY,
+            SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.EXPLODE, minesLeft(sweeperStatus))
+        )
 
         iceStatisticsService.sweeperLockout(iceId)
     }
 
     private fun revealSingle(sweeper: SweeperIceStatus, x: Int, y: Int) {
         saveModification(sweeper, x, y, REVEALED)
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.REVEAL))
+        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY,
+            SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.REVEAL, minesLeft(sweeper))
+        )
     }
 
     private fun revealArea(sweeper: SweeperIceStatus, x: Int, y: Int) {
@@ -179,7 +187,9 @@ class SweeperService(
         }
         sweeperIceStatusRepo.save(sweeper)
 
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY, SweeperModifyMessage(revealed.map { (x, y) -> "$x:$y"}, SweeperModifyAction.REVEAL))
+        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY,
+            SweeperModifyMessage(revealed.map { (x, y) -> "$x:$y"},SweeperModifyAction.REVEAL, minesLeft(sweeper))
+        )
     }
 
     private fun exploreAround(sweeper: SweeperIceStatus, x: Int, y: Int, explored: MutableSet<Pair<Int, Int>>): List<Pair<Int, Int>> {
