@@ -46,6 +46,10 @@
 .t_b { font-weight: bold; }
 .t_i { font-style: italic; }
 .t_s { text-decoration: line-through; }
+
+.t_u {
+    text-decoration: underline;
+}
 .t_us { text-decoration: underline line-through; }
 
 .terminal_scrollbar {
@@ -72,4 +76,5 @@
     background-color: #222;
     margin-bottom: 7px;
     padding: 3px 3px 8px 3px;
+    border-radius: 3px 3px 3px 3px;
 }

@@ -3,15 +3,15 @@ import {TextSaveInput, TextSaveType} from "../../../../../../common/component/Te
 import {OverlayTrigger, Tooltip} from "react-bootstrap"
 
 
-const renderInput = (value: string | number, readOnly: boolean, id?: string, type?: TextSaveType, save?: (value: string) => void, placeholder?: string, terminalPrefix?: string) => {
+const renderInput = (value: string | number, readOnly: boolean, id?: string, type?: TextSaveType, save?: (value: string) => void, placeholder?: string, sendEvent?: boolean) => {
     if (readOnly) {
         return (
             <span><input type="text" className="form-control input-sm" disabled={readOnly} value={value}/></span>
         )
     }
     return (
-        <TextSaveInput className="form-control input-sm" placeholder={placeholder} value={value} id={id} type={type}
-                       save={value => save!(value)} terminalPrefix={terminalPrefix}/>
+        <TextSaveInput className="form-control input-sm" placeholder={placeholder} value={value} id={id} type={type} sendEvent={sendEvent}
+                       save={value => save!(value)}/>
     )
 }
 
@@ -24,11 +24,11 @@ interface Props {
     placeholder?: string,
     help: string,
     id?: string,
-    type?: TextSaveType
-    terminalPrefix?: string
+    type?: TextSaveType,
+    sendEvent?: boolean
 }
 
-export const TextAttribute = ({label, size, readOnly, value, type, save, placeholder, help, id, terminalPrefix}: Props) => {
+export const TextAttribute = ({label, size, readOnly, value, type, save, placeholder, help, id, sendEvent}: Props) => {
     if (!readOnly) {
         readOnly = false
     }
@@ -38,7 +38,7 @@ export const TextAttribute = ({label, size, readOnly, value, type, save, placeho
         <div className="row form-group layerFieldRow">
             <div className="col-lg-3 layerLabel">{label}</div>
             <div className={colSize}>
-                {renderInput(value, readOnly, id, type, save, placeholder, terminalPrefix)}
+                {renderInput(value, readOnly, id, type, save, placeholder, sendEvent)}
             </div>
             <div className="col-lg-1 layerHelpColumn">
                 <OverlayTrigger
@@ -52,6 +52,7 @@ export const TextAttribute = ({label, size, readOnly, value, type, save, placeho
                 >
                     <span className="badge bg-secondary helpBadge">?</span>
                 </OverlayTrigger>
+
             </div>
         </div>
     )

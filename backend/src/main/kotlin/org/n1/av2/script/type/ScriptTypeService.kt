@@ -2,6 +2,7 @@ package org.n1.av2.script.type
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
@@ -31,6 +32,7 @@ class ScriptTypeService(
     private val scriptTypeRepository: ScriptTypeRepository,
     private val connectionService: ConnectionService,
     private val effectService: ScriptEffectTypeLookup,
+    private val currentUserService: CurrentUserService
 )  {
 
     lateinit var scriptService: ScriptService
@@ -85,8 +87,8 @@ class ScriptTypeService(
                 }
             )
         }
-        connectionService.reply(ServerActions.SERVER_SCRIPT_TYPES, uiScriptTypes)
 
+        connectionService.toUser(currentUserService.userId, ServerActions.SERVER_SCRIPT_TYPES, uiScriptTypes)
     }
 
     fun add(name: String) {

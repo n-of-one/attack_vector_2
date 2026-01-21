@@ -18,6 +18,7 @@ import {AdminRoot} from "./admin/AdminRoot";
 import {GoogleAuth} from "./login/GoogleAuth";
 import {DevLogin} from "./login/DevLogin";
 import {handleZoom} from "./common/util/ZoomUtil";
+import {EditorTextRoot} from "./editor-text/EditorTextRoot";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -58,6 +59,11 @@ const Editor = () => {
     const {siteId} = useParams()
     return (<EditorRoot siteId={siteId as string}/>)
 }
+const EditorText = () => {
+    const {path} = useParams()
+    return (<EditorTextRoot path={path as string}/>)
+}
+
 
 
 root.render(
@@ -76,6 +82,7 @@ root.render(
                 <Route path="/admin" element={<AdminRoot/>}/>
 
                 <Route path="/edit/:siteId" element={<Editor/>}/>
+                <Route path="/editText/:path" element={<EditorText/>}/>
 
                 <Route path="/x/:encodedParam" element={<Standalone/>}/>
                 <Route path="/o/:encodedParam" element={<Standalone/>}/>
