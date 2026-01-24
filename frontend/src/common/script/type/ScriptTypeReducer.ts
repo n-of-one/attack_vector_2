@@ -1,4 +1,5 @@
 import {AnyAction} from "redux";
+import {NAVIGATE_PAGE, Page} from "../../menu/pageReducer";
 
 export const SERVER_SCRIPT_TYPES = "SERVER_SCRIPT_TYPES"
 const SERVER_EDIT_SCRIPT_TYPE = "SERVER_EDIT_SCRIPT_TYPE"
@@ -74,14 +75,24 @@ const enrichTypesFromServer = (types: ScriptType[]): ScriptType[] => {
     })
 }
 
-export const editScriptTypeReducer = (state: String | null = null, action: AnyAction): String | null => {
+export const editScriptTypeReducer = (state: string | null = null, action: AnyAction): string | null => {
     switch (action.type) {
         case EDIT_SCRIPT_TYPE:
         case SERVER_EDIT_SCRIPT_TYPE:
             return action.data
         case CLOSE_SCRIPT_TYPE:
             return null
+        case NAVIGATE_PAGE:
+            return processPageNavigation(state, action.to)
         default:
             return state
     }
 }
+
+const processPageNavigation = (state: string | null, page: Page): string | null => {
+    if (page === Page.SCRIPT_TYPE_MANAGEMENT) {
+        return null
+    }
+    return state
+}
+

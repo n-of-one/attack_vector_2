@@ -35,7 +35,7 @@ export const usersReducer = combineReducers({
 
 export interface ScriptManagement {
     types: ScriptType[],
-    editTypeId: String | null,
+    editTypeId: string | null,
     statistics: ScriptStatistics[],
 }
 export const scriptManagementReducer = combineReducers({

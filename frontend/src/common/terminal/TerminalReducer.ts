@@ -86,7 +86,7 @@ export const terminalStateDefault: TerminalState = {
     autoScroll: false,      // scroll to bottom one new info.
     renderedLines: [],              // lines that are fully shown
 
-    renderingLine: null,    // String - part of the current rendering line that is being shown
+    renderingLine: null,    // string - part of the current rendering line that is being shown
     renderingLineBlockIndex: 0,
     renderingBlockInsideIndex: 0,
     unrenderedLines: [],
