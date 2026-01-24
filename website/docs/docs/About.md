@@ -42,33 +42,33 @@ Attack Vector 2 is built using many other open source projects, and public domai
 - Photo Attack Vector on Frontier 17 - Hephaestus Aperture [https://www.hephaestus-aperture.com](https://www.hephaestus-aperture.com/)
 
 ## Javascript libraries
-```
-bootstrapMIT https://github.com/twbs/bootstrap.git The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-fabric MIT https://github.com/fabricjs/fabric.js.git Juriy Zaytsev (kangax@gmail.com)
-js-cookieMIT https://github.com/js-cookie/js-cookie.gitKlaus Hartl
-license-checkerBSD-3-Clausehttps://github.com/davglass/license-checker.git Dav Glass (davglass@gmail.com)
-reactMIT https://github.com/facebook/react.git Facebook
-react-bootstrapMIT https://github.com/react-bootstrap/react-bootstrap.gitStephen J. Collings stevoland@gmail.com
-react-domMIT https://github.com/facebook/react.git Facebook
-react-hot-toastMIT https://github.com/timolins/react-hot-toast.git Timo Lins
-react-qr-codeMIT https://github.com/rosskhanas/react-qr-code.git Ross Khanas rtkhanas@gmail.com
-react-reduxMIT https://github.com/reduxjs/react-redux.gitDan Abramov (dan.abramov@me.com) (https://github.com/gaearon)
-react-router-dom MIT https://github.com/remix-run/react-router.git Remix Software (hello@remix.run)
-reduxMIT https://github.com/reduxjs/redux.gitDan Abramov
-typescript Apache-2.0https://github.com/Microsoft/TypeScript.git Microsoft Corp.
-webstomp-clientApache-2.0https://github.com/JSteunou/webstomp-client.git Jérôme Steunou
-@babel/plugin-proposal-private-property-in-objectMIT https://github.com/babel/babel.gitThe Babel Team (https://babel.dev/team)
-@react-oauth/googleMIT https://github.com/MomenSherif/react-oauth.gitMo'men Sherif momensherif.2019@gmail.com https://github.com/MomenSherif
-@reduxjs/toolkit MIT https://github.com/reduxjs/redux-toolkit.gitMark Erikson (mark@isquaredsoftware.com)
-@types/... MIT https://github.com/DefinitelyTyped/DefinitelyTyped.gitvarious
-react-scriptsMIT https://github.com/facebook/create-react-app.gitFacebook
-redux-devtools-extension MIT https://github.com/zalmoxisus/redux-devtools-extension.gitMihail Diordiev (zalmoxisus@gmail.com> (https://github.com/zalmoxisus)
-```
+<pre>
+bootstrap                                          MIT           https://github.com/twbs/bootstrap.git                       The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+fabric                                             MIT           https://github.com/fabricjs/fabric.js.git                   Juriy Zaytsev &lt;kangax@gmail.com>
+js-cookie                                          MIT           https://github.com/js-cookie/js-cookie.git                  Klaus Hartl
+license-checker                                    BSD-3-Clause  https://github.com/davglass/license-checker.git             Dav Glass &lt;davglass@gmail.com>
+react                                              MIT           https://github.com/facebook/react.git                       Facebook
+react-bootstrap                                    MIT           https://github.com/react-bootstrap/react-bootstrap.git      Stephen J. Collings stevoland@gmail.com
+react-dom                                          MIT           https://github.com/facebook/react.git                       Facebook
+react-hot-toast                                    MIT           https://github.com/timolins/react-hot-toast.git             Timo Lins
+react-qr-code                                      MIT           https://github.com/rosskhanas/react-qr-code.git             Ross Khanas rtkhanas@gmail.com
+react-redux                                        MIT           https://github.com/reduxjs/react-redux.git                  Dan Abramov &lt;dan.abramov@me.com> (https://github.com/gaearon)
+react-router-dom                                   MIT           https://github.com/remix-run/react-router.git               Remix Software &lt;hello@remix.run>
+redux                                              MIT           https://github.com/reduxjs/redux.git                        Dan Abramov
+typescript                                         Apache-2.0    https://github.com/Microsoft/TypeScript.git                 Microsoft Corp.
+webstomp-client                                    Apache-2.0    https://github.com/JSteunou/webstomp-client.git             Jérôme Steunou
+@babel/plugin-proposal-private-property-in-object  MIT           https://github.com/babel/babel.git                          The Babel Team (https://babel.dev/team)
+@react-oauth/google                                MIT           https://github.com/MomenSherif/react-oauth.git              Mo'men Sherif momensherif.2019@gmail.com https://github.com/MomenSherif
+@reduxjs/toolkit                                   MIT           https://github.com/reduxjs/redux-toolkit.git                Mark Erikson &lt;mark@isquaredsoftware.com>
+@types/...                                         MIT           https://github.com/DefinitelyTyped/DefinitelyTyped.git      various
+react-scripts                                      MIT           https://github.com/facebook/create-react-app.git            Facebook
+redux-devtools-extension                           MIT           https://github.com/zalmoxisus/redux-devtools-extension.git  Mihail Diordiev &lt;zalmoxisus@gmail.com> (https://github.com/zalmoxisus)
+</pre>
 ## Java libraries
-```
-kotlin Apache-2.0https://github.com/JetBrains/kotlinJetbrains
-springframeworkApache-2.0https://github.com/spring-projects VMware
-logbackLGPL 2.1https://github.com/qos-ch/logbackQOS.ch Sarl
-io.jsonwebtokenApache-2.0https://github.com/jwtk/jjwt Les Hazlewood
-kotlin-logging-jvm Apache-2.0https://github.com/oshai/kotlin-logging
-```
+<pre>
+kotlin                                             Apache-2.0    https://github.com/JetBrains/kotlin                          Jetbrains
+springframework                                    Apache-2.0    https://github.com/spring-projects                           VMware
+logback                                            LGPL 2.1      https://github.com/qos-ch/logback                            QOS.ch Sarl
+io.jsonwebtoken                                    Apache-2.0    https://github.com/jwtk/jjwt                                 Les Hazlewood
+kotlin-logging-jvm                                 Apache-2.0    https://github.com/oshai/kotlin-logging
+</pre>

@@ -1,12 +1,12 @@
 ---
-sidebar_position: 8
+sidebar_position: 3
 ---
 # Managing sites
 From the **Sites** page, you see a number of options next to a site:
 
 ![](../../assets/gm/sites/manage-site-options.png)
 
-Hover over the icons to see what they do.
+Hover over the icons to see what the action is.
 
 ## Actions
 
@@ -22,9 +22,9 @@ Hover over the icons to see what they do.
 Sites can be exported / downloaded as JSON files. These files can later be imported. The purpose of this is to have a backup of a site outside of Attack Vector. This can also be used to archive a site before deleting it.
 
 ## Editing JSON site files
-Don't do this.
+Don't. do. this.
 
-There are a lot of internal references inside the JSON file, so just changing a few IDs will probably cause a corrupted site to be created that will cause all kinds of errors in the future. It will be hard to remove a corrupt site from the system.
+There are a lot of internal references inside the JSON file, so just changing a few IDs will probably cause a corrupted site to be created that will cause all kinds of errors in the future. It will be hard to remove such a corrupt site from the system.
 
 
 
