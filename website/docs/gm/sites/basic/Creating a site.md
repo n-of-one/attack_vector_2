@@ -1,13 +1,13 @@
 ---
 sidebar_position: 1
 ---
-# Creating sites
+# Creating a site
 From the home page you can create a new site. This will open up a new browser tab with the visual editor.
 
-![](../../assets/gm/sites/create-site.png)
+![](../../../assets/gm/sites/create-site.png)
 
 ## Editor
-![](../../assets/gm/sites/site-editor.png)
+![](../../../assets/gm/sites/site-editor.png)
 
 In the editor you can:
 - Add nodes to the site
@@ -20,7 +20,7 @@ In the editor you can:
 ## Adding nodes
 Drag a node with the image you like to the map.
 
-![](../../assets/gm/sites/node-bar.png)
+![](../../../assets/gm/sites/node-bar.png)
 
 The node image has no effect on the game, other than to signal information to the player. You decide what each image means.
 
@@ -44,13 +44,13 @@ The "Center" button will move the entire site to the center of the map.
 
 ## Edit layers
 Click on a node to select it. This will show the current layer in the side frame:
-![](../../assets/gm/sites/node-layers-start.png)
+![](../../../assets/gm/sites/node-layers-start.png)
 
 A new node will always have an OS layer, which is represented by the house symbol.
 
-You can add new layers by clicking on the layers panel. Layers are described [here](../../player/Layers).
+You can add new layers by clicking on the layers panel. Layers are described [here](../../../player/Layers).
 
-![](../../assets/gm/sites/layers-panel.png)
+![](../../../assets/gm/sites/layers-panel.png)
 
 To learn what each layer symbol is, just click it to add it to a node. You can easily remove them by clicking the thrash icon.
 
@@ -66,6 +66,6 @@ The **owner** is the user that created it. For a GM this is not vitally importan
 The **start node** defines what is the node the players will connect to from the outside.
 
 ## Site status
-![](../../assets/gm/sites/site-status.png)
+![](../../../assets/gm/sites/site-status.png)
 
 Here you can see if there are any errors or warnings. A site that has errors cannot be hacked by players. Click on the blue arrow to jump to the problem.

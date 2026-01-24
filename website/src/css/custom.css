@@ -96,3 +96,4 @@
 .t_i { font-style: italic; }
 .t_s { text-decoration: line-through; }
 .t_u { text-decoration: underline; }
+.t_us { text-decoration: underline line-through; }

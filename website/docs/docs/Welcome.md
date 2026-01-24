@@ -7,7 +7,7 @@ sidebar_position: 1
 
 Attack Vector is an online system designed for Larps to make players feel like hackers in a sci-fi world.
 
-Players hack sites and break ICE (protection systems) by solving puzzle mini-games in order to uncover clues put there by the game masters or organizers. Emphasis is on the multiplayer aspect, players are stimulated to work as a team, not as individuals.
+Players hack sites and break ICE (protection systems) by solving puzzle mini-games in order to uncover clues put there by the game masters. Emphasis is on the multiplayer aspect, players are stimulated to work as a team, not as individuals.
 
 Players will need a laptop and a browser (Chrome, Firefox, Safari) to play the game. It will not work on a mobile phone.
 

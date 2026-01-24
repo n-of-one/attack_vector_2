@@ -87,8 +87,11 @@ The temporary password of the ICE will change if the site is reset.
 
 Rahasy or 'Password' ICE layers have a permanent password that does not change when the site is reset. This permanent password not stored in a keystore layer, but must be found somewhere else.
 
-## Switch
-Switches allow the hacker to flip a switch, changing something in the real world. For instance unlocking a door or turning off a machine.
+## Status light
+This layer type represent something in the real world that can be turned on and off, or locked and unlocked.
+
+By hacking this layer you can change the status of the thing, so unlocking the door, or disabling the security system.
+
 ```
 ⇋ view 
 Node service layers: 
@@ -98,7 +101,9 @@ Node service layers:
 ⇋ hack 1 
 Opened in new window.
 ```
-Hacking a switch opens a new browser tab that shows the switch and allows you to flip the switch.
+Hacking this layer opens a new browser tab that shows the switch and you to flip it..
+
+There *can* be something in the real world that shows the current state. This will be a phone or a laptop. The state shown on the phone or laptop is changed in real time when you flip the switch.
 
 ## Text
 This represent an application of the website. For example a database.

@@ -67,7 +67,8 @@ export const AttributeUrlWithQr = ({name, layerId, type, subType, description, r
 
 const createPath = (layerId: string, type: UrlType, subType?: string): string => {
     switch(type) {
-        case "ice": return `ice/${layerId}`
+        case "ice":
+            return `ice/${subType}/${layerId}`
         case "app": return `app/${subType}/${layerId}`
         case "widget": return `widget/${subType}/${layerId}`
         default: return `Unknown type: ${type}`

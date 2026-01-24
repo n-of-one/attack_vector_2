@@ -194,10 +194,13 @@ class RunService(
 
     fun enterIce(iceId: String) {
         hackerStateEntityService.enterIce(iceId)
-
-        val hackerState = hackerStateEntityService.retrieveForCurrentUser().toRunState()
-        updateIceHackers(hackerState.runId, iceId)
+        val hackerState =  hackerStateEntityService.retrieveForCurrentUser()
         statisticsService.hackerEnterIce(iceId, currentUserService.userEntity)
+
+        if (hackerState.runId != null) {
+            // Hacker is in a run, not hacking from a standalone URL.
+            updateIceHackers(hackerState.runId, iceId)
+        }
     }
 
     class IceHacker(val userId: String, val name: String, val icon: HackerIcon)

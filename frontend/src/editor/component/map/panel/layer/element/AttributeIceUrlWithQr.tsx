@@ -7,6 +7,7 @@ interface Props {
 
 export const AttributeIceUrlWithQr = ({layerId}: Props) => {
 
-    return <AttributeUrlWithQr name="Hacker URL" type="ice" layerId={layerId} description="Hacker link to ICE"/>
+    return <AttributeUrlWithQr name="Standalone URL" type="ice" subType="externalAccess" layerId={layerId}
+                               description="Link to ICE that can be accessed without hacking into the site."/>
 
 }

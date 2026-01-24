@@ -7,6 +7,9 @@ import React from "react";
 import {InfoBadge} from "../../../common/component/ToolTip";
 import {SilentLink} from "../../../common/component/SilentLink";
 import {HackIceByStrengthRows} from "./ScriptTypeManagementHackIceByStrength";
+import {avEncodedPath} from "../../../common/util/PathEncodeUtils";
+
+/* eslint react/jsx-no-target-blank  : 0*/
 
 export const EffectConfigurationLine = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
     switch (effect.type) {
@@ -212,6 +215,8 @@ export const EffectValueIceType = ({scriptType, effect}: { scriptType: ScriptTyp
 
 export const EffectValueTerminalText = ({scriptType, effect}: { scriptType: ScriptType, effect: Effect }) => {
 
+    const encodedPath = avEncodedPath(`EFFECT|${scriptType.id}|${effect.effectNumber}|${scriptType.name} effect ${effect.effectNumber}`)
+
     return <>
         <div className="row">
             <div className="col-lg-10 text">
@@ -233,7 +238,7 @@ export const EffectValueTerminalText = ({scriptType, effect}: { scriptType: Scri
         <div className="row">
             <div className="col-lg-10 text">
                 <br/>
-                <a href={`/editText/EFFECT|${scriptType.id}|${effect.effectNumber}|${scriptType.name} effect ${effect.effectNumber}`} target="_blank">(click to
+                <a href={`/editText/${encodedPath}`} target="_blank">(click to
                     edit with terminal preview)</a>
             </div>
         </div>

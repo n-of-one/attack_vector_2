@@ -19,6 +19,7 @@ import {GoogleAuth} from "./login/GoogleAuth";
 import {DevLogin} from "./login/DevLogin";
 import {handleZoom} from "./common/util/ZoomUtil";
 import {EditorTextRoot} from "./editor-text/EditorTextRoot";
+import {decodePath} from "./common/util/PathEncodeUtils";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -60,7 +61,9 @@ const Editor = () => {
     return (<EditorRoot siteId={siteId as string}/>)
 }
 const EditorText = () => {
-    const {path} = useParams()
+    const {encodedParam} = useParams() // encodedParam example: 'aWJnLGpqYmIlOWg6biA6OnJwKH91bHNlNXoqfSQia2xFUx9WV0BUCkocExoBGUgXAQ=='
+    const path = decodePath(encodedParam as string) // param example: 'app/statusLight-0b1b-45ba?hacking=true&level=1'
+
     return (<EditorTextRoot path={path as string}/>)
 }
 
@@ -82,7 +85,7 @@ root.render(
                 <Route path="/admin" element={<AdminRoot/>}/>
 
                 <Route path="/edit/:siteId" element={<Editor/>}/>
-                <Route path="/editText/:path" element={<EditorText/>}/>
+                <Route path="/editText/:encodedParam" element={<EditorText/>}/>
 
                 <Route path="/x/:encodedParam" element={<Standalone/>}/>
                 <Route path="/o/:encodedParam" element={<Standalone/>}/>

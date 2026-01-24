@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 # Ice difficulty
 How quickly your players will solve the ICE puzzles in your site is almost impossible to predict when you design your first sites.

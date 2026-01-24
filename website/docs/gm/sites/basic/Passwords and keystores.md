@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 # Passwords and keystores
 Another kind of puzzle you can add to a site is having the players find passwords.
@@ -31,7 +31,7 @@ Temporary passwords change every time the site is reset.
 ## Sample keystore setup
 A very simple setup using a keystore:
 
-![](../../assets/gm/sites/keystore-example.png)
+![](../../../assets/gm/sites/keystore-example.png)
 
 - Node 00 - entry
 - Node 01 - ICE 1
