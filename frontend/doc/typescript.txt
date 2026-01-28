@@ -1,0 +1,8 @@
+https://github.com/piotrwitek/react-redux-typescript-guide
+
+https://github.com/typescript-cheatsheets/react-typescript-cheatsheet
+
+
+
+https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
+

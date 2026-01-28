@@ -1,0 +1,12 @@
+export const FREE = "FREE"
+export const DISCOVERED = "DISCOVERED"
+export const PROTECTED = "PROTECTED"
+export const HACKED = "HACKED"
+
+export enum NodeScanStatus {
+    UNDISCOVERED_0 = "UNDISCOVERED_0",
+    UNCONNECTABLE_1 = "UNCONNECTABLE_1",
+    CONNECTABLE_2 = "CONNECTABLE_2",
+    ICE_PROTECTED_3 = "ICE_PROTECTED_3",
+    FULLY_SCANNED_4 = "FULLY_SCANNED_4",
+}

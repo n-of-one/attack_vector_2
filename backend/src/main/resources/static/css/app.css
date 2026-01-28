@@ -1,0 +1,90 @@
+.ice-input-disabled {
+    width: 187px;
+    /* height: 24px; */
+    border: #596166 1px solid;
+    border-radius: 4px 0px 0px 4px;
+    padding-top: 6px;
+    padding-left: 10px;
+    /* opacity: var(--bs-btn-disabled-opacity); */
+    margin-right: 1px;
+    top: 1px;
+    position: relative;
+}
+
+.ice-input-eye {
+    border-radius: 0px;
+    height: 36px;
+    top: 1px;
+}
+
+.ice-input-submit {
+    border-radius: 0px 3px 3px 0px;
+    height: 36px;
+    top: 1px;
+}
+
+
+.status-light {
+    border-radius: 15%;
+    height: 300px;
+    width: 300px;
+    display: inline-block;
+    margin: 20px;
+}
+.status-light-on {
+    background-color: #00ff00;
+    border: thick solid darkgreen;
+}
+
+.status-light-off {
+    background-color: #ff0000;
+    border: thick solid brown;
+}
+
+.status-light-unknown {
+    background-color: #444;
+    border: thick solid black;
+}
+
+.status-light-text-green {
+    color: black;
+}
+.status-light-text-red {
+    color: white;
+}
+
+
+/*.form-check-input:checked {*/
+/*    background-color: red;*/
+/*    border-color: pink;*/
+/*}*/
+
+.appSwitch .switch {
+    height: 30px;
+    width: 80px !important;
+}
+
+.switchLabel {
+    line-height: 35px;
+}
+
+.appSwitch .form-check-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+    background-color: red;
+    border-color: black;
+}
+.appSwitch .form-check-input:checked {
+    background-color: green;
+    border-color: black;
+}
+
+.appSwitch .form-check-input:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+    border-color: black;
+    outline: 0;
+    box-shadow: 0 0 0 0;
+}
+
+/*.form-switch .form-check-input:focus {*/
+/*    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='red'/%3e%3c/svg%3e");*/
+/*}*/

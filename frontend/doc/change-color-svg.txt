@@ -1,0 +1,11 @@
+https://stackoverflow.com/questions/22252472/how-can-i-change-the-color-of-an-svg-element
+
+Use the stored file to calculate the css filter needed to set the color.
+
+
+
+.filter-green{
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+}
+
+<img src="dotted-arrow.svg" class="filter-green"/>

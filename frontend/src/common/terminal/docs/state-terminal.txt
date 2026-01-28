@@ -1,0 +1,24 @@
+{
+    lines: [(line)]
+    readonly: false
+    prompt: "> "
+    input: "What is currently typed by the user",
+    receiveInput: (line)
+    receiveBuffer: [(line)]
+    receiveLineIndex: null | 0-len(lines)-1
+    receiving: true
+}
+
+line {
+    type: "text" | "richtext" | "..."
+    data: "this is regular text"
+    class: ["input", "warning"]    // this will result to the classNames "terminal_input terminal_warning" added to this line.
+}
+
+buffered line {
+    type: "text" | "rich text" | ...
+    data: "this is the text"
+    wait: millis to wait before rendering
+}
+
+

@@ -1,0 +1,72 @@
+------------------
+Mongodb help tekst
+
+
+
+-----------
+Mongodb 3.4
+
+
+------------------
+Using Robomongo to access the db and view/edit data, but do not use Robomongo to create users (known problem with authentication protocol vs jdbc drivers...)
+
+Connections for Robomong:
+As root:
+
+address: 192.168.99.100 : 27017
+Authentication: (none)
+
+
+As av2:
+
+address: 192.168.99.100 : 27017
+Authentication: db: admin, username: av2, password: av2
+
+
+
+------------------
+Connection the application using environment variables, because that's how its done in the free hosting at Heroku
+
+
+Environment variables for running on development machine: (where 192.168.99.100 is the ip address of the docker-machine)
+MONGODB_URI=mongodb://av2:av2@192.168.99.100/admin?authMechanism=SCRAM-SHA-1
+ENVIRONMENT=dev-ervi
+MONGODB_NAME=local
+
+
+Environment variables for running on development machine with mongo on localhost
+MONGODB_URI=mongodb://av2:av2@localhost/admin?authMechanism=SCRAM-SHA-1
+ENVIRONMENT=dev-ervi
+MONGODB_NAME=local
+
+
+
+
+
+---
+
+Creating a user: av2 with password av2:
+
+---
+- step 1. log into a running mongo docker with:
+
+docker exec -i -t mongo /bin/bash
+
+---
+- step 2. start mongo client with
+
+mongo
+
+---
+- step 3. create user
+
+use admin
+
+db.createUser( { user: "av2",
+                 pwd: "av2",
+                 roles: [ "readWrite"] },
+               { } )
+
+
+
+

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="3 seconds">
+    <contextName>${artifactId}</contextName>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+<!--                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger %m%n%rEx{full,-->
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger %m%n%rEx{full,
+                java.lang.reflect.Method,
+                jdk.internal.reflect,
+                org.apache.catalina,
+                org.eclipse.jetty,
+                org.springframework,
+                org.apache.tomcat,
+                org.apache.coyote,
+                javax.servlet,
+                javax.management.remote.rmi,
+                com.sun.jmx,
+                sun.reflect,
+                net.sf.cglib,
+                java.lang.Thread,
+                ByCGLIB,
+                java.util.concurrent.ThreadPoolExecutor
+                }
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <logger name="org.n1" level="DEBUG" />
+    <logger name="org.n1.av2.platform.iam.user.CurrentUserService" level="TRACE" />
+    <logger name="org.springframework" level="INFO" />
+    <logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="WARN" />
+    <logger name="org.apache.catalina.core" level="WARN" />
+    <logger name="org.mongodb.driver.client" level="WARN" />
+    <logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN" />
+    <logger name="org.hibernate.validator.internal.util.Version" level="WARN" />
+    <logger name="de.flapdoodle.embed.mongo.spring.autoconfigure" level="WARN" />
+    <logger name="de.flapdoodle.embed.mongo.client.ClientActions" level="WARN" />
+    <logger name="org.mongodb.driver.cluster" level="WARN" />
+
+
+
+
+    <logger name="org.springframework" level="WARN" />
+
+    <logger name="org.n1.av2.backend.web.html" level="WARN" />
+
+
+    <logger name="org" level="INFO" />
+    <logger name="com" level="WARN" />
+    <logger name="net" level="WARN" />
+</configuration>

@@ -1,0 +1,123 @@
+package org.n1.av2.script
+
+import org.n1.av2.platform.engine.UserTaskRunner
+import org.n1.av2.platform.iam.UserPrincipal
+import org.n1.av2.script.type.ScriptTypeId
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.stereotype.Controller
+
+@Controller
+class ScriptWsController(
+    private val userTaskRunner: UserTaskRunner,
+    private val scriptService: ScriptService,
+) {
+
+    class AddScriptCommand(val typeId: ScriptTypeId, val userId: String)
+
+    @MessageMapping("/gm/script/getStatistics")
+    fun getStatistics(userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/script/getStatistics", userPrincipal) {
+            scriptService.getStatistics()
+        }
+    }
+
+    @MessageMapping("/gm/script/getForUser")
+    fun getForUser(userId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/script/getForUser", userPrincipal) {
+            scriptService.sendScriptStatusForUser(userId)
+        }
+    }
+
+    @MessageMapping("/gm/script/add")
+    fun addScript(command: AddScriptCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/script/add", userPrincipal) {
+            scriptService.addScriptAndInformUser(command.typeId, command.userId)
+        }
+    }
+
+    @MessageMapping("/gm/script/load")
+    fun gmLoad(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/script/load", userPrincipal) {
+            scriptService.loadScript(scriptId, true)
+        }
+    }
+
+    @MessageMapping("/gm/script/unload")
+    fun gmUnload(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/script/unload", userPrincipal) {
+            scriptService.unloadScript(scriptId, true)
+        }
+    }
+
+    // Functions for the hacker
+
+    @MessageMapping("/hacker/script/cleanup")
+    fun cleanup(userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/hacker/script/cleanup", userPrincipal) {
+            scriptService.cleanup()
+        }
+    }
+
+    @MessageMapping("/hacker/script/freeReceive")
+    fun freeReceive(userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/hacker/script/freeReceive", userPrincipal) {
+            scriptService.addFreeReceiveScriptsForCurrentUser()
+        }
+    }
+
+    @MessageMapping("hacker/script/download")
+    fun download(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("hacker/script/download", userPrincipal) {
+            scriptService.downloadScript(scriptId, false)
+        }
+    }
+
+    @MessageMapping("/hacker/script/buy")
+    fun buy(scriptAccessId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/hacker/script/buy", userPrincipal) {
+            scriptService.buy(scriptAccessId)
+        }
+    }
+
+    class TransferScriptCreditsCommand(val receiver: String, val amount: Int)
+
+    @MessageMapping("/hacker/scriptCredits/transfer")
+    fun transferScriptCredits(command: TransferScriptCreditsCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/hacker/scriptCredits/transfer", userPrincipal) {
+            scriptService.transferScriptCredits(command.receiver, command.amount)
+        }
+    }
+
+
+    // Functions that can be used by both GM and Hacker
+
+    @MessageMapping("/script/delete")
+    fun delete(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/script/delete", userPrincipal) {
+            scriptService.deleteScript(scriptId)
+        }
+    }
+
+    @MessageMapping("/script/load")
+    fun load(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/script/load", userPrincipal) {
+            scriptService.loadScript(scriptId)
+        }
+    }
+
+    @MessageMapping("/script/unload")
+    fun unload(scriptId: ScriptId, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/script/unload", userPrincipal) {
+            scriptService.unloadScript(scriptId)
+        }
+    }
+
+    data class ScriptOfferCommand(val scriptId: ScriptId, val offer: Boolean)
+    @MessageMapping("/script/offer")
+    fun offer(command: ScriptOfferCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/script/offer", userPrincipal) {
+            scriptService.offer(command.scriptId, command.offer)
+        }
+    }
+
+}

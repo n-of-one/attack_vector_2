@@ -1,0 +1,36 @@
+The game has multiple (competing) design goals:
+
+- The main game interface (terminal, manage hacker stuff, hack) is meant to be run from a computer/laptop
+- Ice should be hackable from a phone (if feasable)
+
+Ice games run in a separate browser window, so the layout can be different from the main interface.
+
+
+The UI is designed to fit within a 1920x1080 resolution monitor running a default windows + chrome setup
+
+Windows: toolbar on the bottom, height 1
+Chrome: Not maximized, toolbar and button bar visible
+
+This gives us effectively 1920x937 pixels. Accounting for a scroll bar and rounding down, we are left with:
+
+Screen real estate: 1900x930.
+
+
+
+
+---
+For mobile:
+
+Screen size
+Getting a good screen size for a puzzle vitally important if you want to run the same puzzle on a phone as well as a computer.
+
+Phone resolutions differ a lot, but fortunately viewport resolutions are somewhat standardized to a 9:16 aspect ratio.
+In 2020 many devices support a viewport size of 360 x 640
+
+The screen is divided into a top section of 40 px high to display some name of the puzzle, as well as an optional button to request full screen on a mobile.
+This top section also holds navigation (i.e. exit puzzle)
+The rest of the screen is reserved for the puzzle canvas (pixijs).
+
+The generic size of the canvas is 360 x 600, but this is stretched to fill the remaining screen size.
+
+This generic size of 360 x 600 is what all puzzles are designed for.

@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "typescript",
+    "typescript/react",
+    "typescript/prettier-react"
+  ],
+  "plugins": [],
+  "env": {    
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn"
+    "prettier/prettier": [
+      "error",
+      {
+        "semi": false,
+        "tabWidth": 4,
+        "singleQuote": true
+      }
+    ]
+  }
+}

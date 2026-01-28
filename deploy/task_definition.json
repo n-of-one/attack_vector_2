@@ -1,0 +1,62 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "demo",
+      "image": "$AWS_ACCOUNT_ID.dkr.ecr.eu-west-1.amazonaws.com/av2:github-latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "av2-80-tcp",
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "MONGODB_NAME",
+          "value": "demo"
+        },
+        {
+          "name": "MONGODB_URI",
+          "value": "$MONGODB_URI"
+        },
+        {
+          "name": "ENVIRONMENT",
+          "value": "demo"
+        }
+      ],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/attack_vector",
+          "awslogs-region": "eu-west-1",
+          "awslogs-stream-prefix": "demo"
+        },
+        "secretOptions": []
+      }
+    }
+  ],
+  "family": "demo_minimal",
+  "executionRoleArn": "arn:aws:iam::$AWS_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "1024",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "tags": []
+}

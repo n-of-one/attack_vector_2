@@ -1,0 +1,10 @@
+The application setup at highest level:
+
+
+Root (index)
+    - contains Routing
+
+    - AppHome (home of the regular application)
+    - Editor (home of the editor)
+
+There are two separate redux stores: AppHome and Editor.

@@ -1,0 +1,26 @@
+{
+  "id": "GM login",
+  "title": "GM login",
+  "description": "How to log in as a game master depends on how login is set up in general. If Google login is used, your Google linked account could be set up as a GM account, and you can just log in with that.",
+  "source": "@site/docs/gm/GM login.md",
+  "sourceDirName": ".",
+  "slug": "/GM login",
+  "permalink": "/attack_vector_2/gm/GM login",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "gmSidebar",
+  "previous": {
+    "title": "GM Overview",
+    "permalink": "/attack_vector_2/gm/"
+  },
+  "next": {
+    "title": "Introduction",
+    "permalink": "/attack_vector_2/gm/sites/Introduction"
+  }
+}

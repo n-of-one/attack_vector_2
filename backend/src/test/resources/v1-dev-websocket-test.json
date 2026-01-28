@@ -1,0 +1,54 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2024-01-28 12:15:11"
+  },
+  "siteProperties" : {
+    "siteId" : "site-ab1a-4087",
+    "name" : "dev-websocket-test-1",
+    "description" : "",
+    "creator" : "Verik",
+    "startNodeNetworkId" : "00"
+  },
+  "nodes" : [ {
+    "id" : "node-f999-4e00",
+    "siteId" : "site-ab1a-4087",
+    "type" : "TRANSIT_4",
+    "x" : 320,
+    "y" : 400,
+    "layers" : [ {
+      "id" : "node-f999-4e00:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    } ],
+    "networkId" : "00",
+    "ice" : false,
+    "hacked" : true,
+    "unhackedIce" : false
+  }, {
+    "id" : "node-9587-40a6",
+    "siteId" : "site-ab1a-4087",
+    "type" : "TRANSIT_2",
+    "x" : 320,
+    "y" : 280,
+    "layers" : [ {
+      "id" : "node-9587-40a6:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    } ],
+    "networkId" : "01",
+    "ice" : false,
+    "hacked" : true,
+    "unhackedIce" : false
+  } ],
+  "connections" : [ {
+    "fromId" : "node-f999-4e00",
+    "toId" : "node-9587-40a6"
+  } ]
+}
