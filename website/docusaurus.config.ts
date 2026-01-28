@@ -15,17 +15,20 @@ const config: Config = {
     },
 
     // Set the production url of your site here
-    url: 'https://your-docusaurus-site.example.com',
+    url: 'https://n-of-one.github.io',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: '/',
+    baseUrl: '/attack_vector_2/',
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
     organizationName: 'n-of-one', // Usually your GitHub org/user name.
     projectName: 'attack_vector_2', // Usually your repo name.
 
+    trailingSlash: true,
+
     onBrokenLinks: 'throw',
+    onBrokenMarkdownLinks: 'warn',
 
     // Even if you don't use internationalization, you can use this field to set
     // useful metadata like html lang. For example, if your site is Chinese, you
@@ -50,7 +53,6 @@ const config: Config = {
     ],
 
     plugins: [
-        // Main docs (/docs)
         [
             '@docusaurus/plugin-content-docs',
             {
@@ -62,7 +64,6 @@ const config: Config = {
             },
         ],
 
-        // Player (/player)
         [
             '@docusaurus/plugin-content-docs',
             {
@@ -74,7 +75,6 @@ const config: Config = {
             },
         ],
 
-        // GM (/gm)
         [
             '@docusaurus/plugin-content-docs',
             {
@@ -86,7 +86,6 @@ const config: Config = {
             },
         ],
 
-        // Organizer (/organizer)
         [
             '@docusaurus/plugin-content-docs',
             {
@@ -98,7 +97,6 @@ const config: Config = {
             },
         ],
 
-        // Installation (/installation)
         [
             '@docusaurus/plugin-content-docs',
             {
@@ -110,17 +108,6 @@ const config: Config = {
             },
         ],
 
-        // // Design (/design)
-        // [
-        //     '@docusaurus/plugin-content-docs',
-        //     {
-        //         id: 'design',
-        //         path: 'docs/design',
-        //         routeBasePath: 'design',
-        //         sidebarPath: require.resolve('./docs/design/sidebars.ts'),
-        //         breadcrumbs: false,
-        //     },
-        // ],
     ],
 
     themeConfig: {
@@ -143,7 +130,6 @@ const config: Config = {
                 { to: '/gm', label: '⬣ GM', position: 'left' },
                 { to: '/organizer', label: '⛓ Organizer', position: 'left' },
                 { to: '/installation', label: '🛠 Installation', position: 'right' },
-                // { to: '/design', label: '⛶ Design', position: 'right' },
             ],
         },
         prism: {
