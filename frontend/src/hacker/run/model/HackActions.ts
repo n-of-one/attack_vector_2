@@ -1,1 +1,0 @@
-export const FINISH_HACKING_ICE = "FINISH_HACKING_ICE";

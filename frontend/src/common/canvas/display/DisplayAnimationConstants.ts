@@ -1,3 +1,0 @@
-export const APPEAR_ANIMATION_TICKS = 40
-
-export const NODE_TRANSITION_TICKS = 20
