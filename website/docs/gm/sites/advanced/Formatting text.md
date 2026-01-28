@@ -4,7 +4,7 @@ sidebar_position: 1
 # Formatting text
 Text that you prepare for your players will be displayed in their terminal. This can be plain text, but the terminal also supports formatting.
 
-This text is the text that you put in the layers [text](../../../player/Layers#text) and [script interaction](../../../player/Layers#script-interaction) as well as in the script effect [show message](../../scripts/Script%20effects#show-message).
+This text is the text that you put in the layers [text](/player/layers/Text) and [script interaction](/player/layers/Script%20interaction) as well as in the script effect [show message](/gm/scripts/Script%20effects#show-message).
 
 ## Formatting tags
 This text can be formatted with the following syntax:

@@ -6,7 +6,7 @@ This ICE has no minigame and it just takes time to (auto)hack.
 
 High level Tar ICE takes hours or even day to hack. So it will be clear to hackers that they need to find an alternative way to bypass this ICE. 
 
-See the hack timings [here](../../../player/ICE/Tar%20ICE#ice-strength). Any Tar ICE with a difficulty of Strong or higher is not meant to be hacked through normal means.
+See the hack timings [here](/player/ICE/Tar%20ICE#ice-strength). Any Tar ICE with a difficulty of Strong or higher is not meant to be hacked through normal means.
 
 ## Uses of Tar ICE
 

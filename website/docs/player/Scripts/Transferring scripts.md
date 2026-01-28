@@ -1,7 +1,6 @@
 ---
 sidebar_position: 5
 ---
-
 # Transferring scripts
 You can transfer your script to another player.
 

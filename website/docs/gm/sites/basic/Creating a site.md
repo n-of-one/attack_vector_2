@@ -48,7 +48,7 @@ Click on a node to select it. This will show the current layer in the side frame
 
 A new node will always have an OS layer, which is represented by the house symbol.
 
-You can add new layers by clicking on the layers panel. Layers are described [here](../../../player/Layers).
+You can add new layers by clicking on the layers panel. Layers are descri0bed [here](/player/layers/Layers%20overview).
 
 ![](../../../assets/gm/sites/layers-panel.png)
 

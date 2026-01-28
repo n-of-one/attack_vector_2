@@ -14,7 +14,7 @@ Development and Larp specific settings are not relevant for normal operation.
 
 ## Login
 ### Password
-The single password used for game masters and admins. This is used in the generic login screen, see [here](../gm/Gm%20Login).
+The single password used for game masters and admins. This is used in the generic login screen, see [here](/gm/GM%20login).
 
 Default: (empty)
 
@@ -28,9 +28,9 @@ Default: (empty)
 
 This is the (non secret) google client ID. If you want to use Google login, you must enter this value. It looks like this: `(numbers)-(letters).apps.googleusercontent.com`
 
-To create your Google client ID, follow the guide, see [here](Google%20authentication).
+To create your Google client ID, follow the guide, see [here](/installation/Google%20authentication).
 
-If you need to retrieve it again, find your Google client IDs in the list of "OAuth 2.0 Client IDs" on Google's Credentials page page: [link](https://console.cloud.google.com/auth/clients).
+If you need to retrieve it again, find your Google client IDs in the list of "OAuth 2.0 Client IDs" on Google's Credentials page page: [external link](https://console.cloud.google.com/auth/clients).
 
 ### Path
 The path used for login.

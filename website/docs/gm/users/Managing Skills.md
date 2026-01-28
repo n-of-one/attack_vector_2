@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 ---
-# Managing Skills
+# Managing skills
 For a list of all skill, see [here](Skills.md).
 
 ## Assigning skills to players

@@ -56,10 +56,10 @@ If you click on the **QR** button a popup will open with a QR code. You can scan
 
 This can be a convenient way to open the URL on the widget phone.
 
-You *can* access the switch via the switch URL optionally using a phone for this and using that QR code. This is intended for standalone use, more details [here](../standalone/Standalone%20apps).
+You *can* access the switch via the switch URL optionally using a phone for this and using that QR code. This is intended for standalone use, more details [here](/gm/standalone/Standalone%20apps).
 
 ## Direct access to the switch
-You can give players direct access to the switch by giving them the URL or the QR code. This works as described in the standalone section, see [here](../../standalone/Standalone%20apps).
+You can give players direct access to the switch by giving them the URL or the QR code. This works as described in the standalone section, see [here](/gm/standalone/Standalone%20apps).
 
 It's possible to combine the standalone aspect of switches with allowing hackers to reach it via the site.
 

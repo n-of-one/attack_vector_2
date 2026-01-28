@@ -28,7 +28,7 @@ When this is created, you will see a **Client ID** that looks something like thi
 
 `123456789012-abcdefghijklmnopqrstuvwxyz12345678.apps.googleusercontent.com`
 
-Enter this ID as the value for the configuration item: 'Google client id', see [here](Configuration#google-client-id).
+Enter this ID as the value for the configuration item: 'Google client id', see [here](/installation/Configuration#google-client-id).
 
 ## Testing
 See if you can log in with a browser that is accessing localhost. Once that works, you can switch to using your external URL.

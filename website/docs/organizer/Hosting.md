@@ -10,4 +10,4 @@ The simplest option is to just install it on a laptop or desktop.
 
 Another option is to host it on the cloud. It runs on an Amazon AWS t4g.micro, costing around 1 dollar-cent/euro-cent per hour. There are additional costs for having an IP address and having a domain name.
 
-For details on installation, see [here](../installation).
+For details on installation, see [here](/installation).

@@ -12,7 +12,7 @@ It was written and is maintained by Erik Visser. Development started in December
 
 # Privacy policy
 
-Link to the [Privacy policy](Privacy%20Policy).
+Link to the [Privacy policy](/docs/Privacy-policy).
 
 Attack Vector 2 is very privacy conscious and aims to not collect or store any personal information. To that end, no usernames, email addresses or passwords are stored. Login is done via an external system, such as your Larp's website or Google. When Google is used, only a one-way hash of the google-id is stored, not the email address, name or profile picture.
 

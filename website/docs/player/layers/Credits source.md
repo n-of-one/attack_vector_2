@@ -4,7 +4,7 @@ sidebar_position: 9
 # Credits source
 This represent an application that contains data that can be stolen and sold for script credits. Selling the data will be performed automatically when you hack this layer.
 
-You needs to have the **Script credits** skill to be able to steal the data, see [here](../skills/Scripts%20credits).
+You needs to have the **Script credits** skill to be able to steal the data, see [here](/player/skills/Scripts%20credits).
 
 ```
 ⇋ view 

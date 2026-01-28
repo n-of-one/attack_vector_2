@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 ---
-# GM Login
+# GM login
 How to log in as a game master depends on how login is set up in general. If Google login is used, your Google linked account could be set up as a GM account, and you can just log in with that.
 
 ## Generic login

@@ -5,7 +5,7 @@ sidebar_position: 2
 When you start a new hacking run, or join an existing one, you start outside of the site.
 
 ## Outside
-If you have the Scan skill (see [here](skills/Scan)), you can run the `scan` command. This will reveal the nodes of the site, up to and including any nodes containing ICE layers.
+If you have the Scan skill (see [here](/player/skills/Scan)), you can run the `scan` command. This will reveal the nodes of the site, up to and including any nodes containing ICE layers.
 
 Once the scan is complete, you can click on the map. This shows the layers that make up that node. This is useful for planning your hacking run.
 

@@ -58,7 +58,7 @@ Default hacker skill: **no**
 
 This skill allows the hacker to sell data for script credits, and use those to buy scripts. Optionally you can have an script credits income defined with this skill.
 
-More details can be found [here](../scripts/Managing%20script%20credits).
+More details can be found [here](/gm/scripts/Managing%20script%20credits).
 
 ### Scripts RAM
 
@@ -66,7 +66,7 @@ Default hacker skill: **no**
 
 This skill allows the hacker to load and execute scripts. The number value of this skill is the number of RAM blocks this player will have.
 
-More details can be found [here](../scripts/Role%20of%20scripts).
+More details can be found [here](/gm/scripts/Role%20of%20scripts).
 
 ### Stealth
 

@@ -1,7 +1,6 @@
 ---
 
 ---
-
 # Word search ICE
 This ICE is called Jaal in game. Jaal is a rough rendition of the Hindi word for `mesh` or `grid`.
 

@@ -6,7 +6,7 @@ It's possible to allow players to interact with Attack Vector without having to 
 
 This will allow the players to start hacking ICE directly, without the trouble of having to type in commands in a terminal.
 
-You can also use this to give them access to a switch that they can use to change the status of a status light. (Details [here](../basic/Switches)). The switch can optionally be protected by a password or an ICE puzzle.
+You can also use this to give them access to a switch that they can use to change the status of a status light. (Details [here](/gm/sites/basic/Status%20lights)). The switch can optionally be protected by a password or an ICE puzzle.
 
 Note that players will need to log into Attack Vector, so they will need to have an account.
 
@@ -71,7 +71,7 @@ If the players access the Switch standalone URL, they will be shown a variation 
 
 ![](../../assets/gm/standalone/passcode-ui.png)
 
-The difference is that this screen asks for a **passcode** that has the form `type/xx-xx-xx-xx/xx-xx-xx-xx/`. This is because only temporary passwords work on non-password ice. See [here](../basic/Passwords%20and%20keystores) for details on temporary passwords and keystores.
+The difference is that this screen asks for a **passcode** that has the form `type/xx-xx-xx-xx/xx-xx-xx-xx/`. This is because only temporary passwords work on non-password ice. See [here](/gm/sites/basic/Passwords%20and%20keystores) for details on temporary passwords and keystores.
 
 The players can access the normal ICE hacking puzzle screen by clicking 3 times on the word ICE.
 

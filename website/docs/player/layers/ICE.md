@@ -4,7 +4,7 @@ sidebar_position: 3
 # ICE
 ICE layers exist to secure underlying layers and prevent movement to other nodes.
 
-For more information about ICE, see [here](../ICE/ICE%20overview).
+For more information about ICE, see [here](/player/ICE/ICE%20overview).
 
 Hacking this layer opens a mini-game in a new browser tab.
 

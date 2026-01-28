@@ -2,7 +2,6 @@
 sidebar_position: 1
 slug: /
 ---
-
 # Overview
 As a player you, are a hacker infiltrating the computer systems of the game world.
 
@@ -50,7 +49,7 @@ This node contains 4 layers (0-3):
 - Layer 2 is an ICE layer that can be hacked by playing a minigame: word search.
 - Layers 1 and 0 are shielded by the ICE layer, so you cannot see what they are.
 
-More info: [Layers overview](layers/Layers%20overview.md)
+More info: [Layers overview](/player/layers/Layers%20overview)
 
 
 ## ICE
@@ -59,7 +58,7 @@ Some layers are ICE layers. These will block your progress through the site.
 To reach deeper into the site, you need to hack the ICE layers. Hacking an ICE layer starts a puzzle minigame.
 
 The following ICE layers exist, each with a corresponding minigame:
-- [Jaal (Word search)](ICE/Word%20Search%20ICE.md)
+- [Jaal (Word search)](/player/ICE/Word%20search%20ICE)
 - [Visphotak (Minesweeper)](ICE/Minesweeper%20ICE)
 - [Gaanth (Tangle)](ICE/Tangle%20ICE.md)
 - [Sanrachana (Netwalk)](ICE/Netwalk%20ICE.md)
@@ -71,19 +70,19 @@ Some layers will be 'tripwire' layers. Entering a node with a tripwire layer sta
 
 Tripwire timers can be reset by hacking the corresponding 'core' layer.
 
-For more details, see [here](layers/tripwire).
+For more details, see [here](layers/Tripwire).
 
 ## Terminal
 You hack a site by entering commands in the terminal. Only a few commands are required, such as `move` or `hack`. You can always use the command `help` to see the available commands.
 
-More info: [Terminal commands](Terminal%20commands)
+More info: [Terminal commands](/player/Terminal%20commands)
 
 ## Skills
-Skills allow some hackers to be better at hacking than others. More details can be found [here](gm/users/Skills.md).
+Skills allow some hackers to be better at hacking than others. More details can be found [here](/player/skills/Skills%20overview).
 
 Check with your organizers which skills are available.
 
 ## Scripts
-Scripts are one-time-use programs that assist you during hacking runs. More details can be found [here](Scripts/Scripts%20Overview).
+Scripts are one-time-use programs that assist you during hacking runs. More details can be found [here](/player/scripts/Scripts%20overview).
 
 Check with your organizers if scripts are used on your Larp.
