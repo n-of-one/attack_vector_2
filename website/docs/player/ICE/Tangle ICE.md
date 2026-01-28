@@ -2,13 +2,13 @@
 This ICE is called Gaanth in game. Gaanth is a rough rendition of the Hindi word for `knot`.
 
 ![Picture of a tangle ICE puzzle](../../assets/players/ice/tangle.png)  
-## Goal
-Tangle ICE asks players to untangle a mess of lines so that none are crossing. Drag the connection points around with your mouse.
 
-Thematically you are you are breaking a weak encryption scheme that is represented as tangled lines.
+You are you are breaking a weak encryption scheme that is represented as tangled lines.
 
-## Inspiration
-Inspired by [Simon Tatham's Untangle puzzle](https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/untangle.html).
+## Minigame
+Tangle ICE asks players to untangle a mess of lines so that none of them are crossing. Drag the connection points around with your mouse.
+
+This is a version of [Simon Tatham's Untangle puzzle](https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/untangle.html).
 
 ## ICE strength
 
@@ -37,4 +37,4 @@ Multiple hackers can work on the same puzzle at the same time. This introduces c
 
 In practice, it's only useful for one or two players to work on the same cluster at the same time. More players will just be in each other's way.
 
-So, if Tangle ICE has 2 or more clusters, then it becomes more useful for 3 or more players to cooperate to solve it.
+So, if Tangle ICE has 2 or more clusters, then it becomes more useful for multiple players to cooperate to solve it.

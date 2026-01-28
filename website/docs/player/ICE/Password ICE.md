@@ -3,7 +3,7 @@ This ICE is called Rahasy in game. Rahasya is the Hindi word for `mystery`.
 
 ![Picture of a password ICE puzzle](../../assets/players/ice/password.png)
 
-## Goal
+## Hacking
 Password ICE cannot be hacked via a mini-game. Instead, the hacker needs to know or guess the password. The password can either be found inside the site or in the game-world.
 
 Every time a wrong password is entered, the ICE prevents entering a new password for a certain amount of time. This time increases and caps out at 10 seconds.

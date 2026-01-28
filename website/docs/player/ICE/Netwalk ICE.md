@@ -2,13 +2,17 @@
 This ICE is called Sanrachana in game. Sanrachana is the Hindi word for `structure`.
 
 ![Picture of a netwalk ICE puzzle](../../assets/players/ice/netwalk.png)
-## Goal
+
+As a hacker you are reconfiguring a network that has been purposefully obfuscated to keep hackers out.
+
+## Minigame
 Netwalk ICE tasks players with connect all elements to the center. Click on an element to rotate it.
 
-Thematically you are reconfiguring a network that has been purposefully obfuscated to keep hackers out.
+Netwalk ICE of strength 'Very strong' or 'Onxy' uses wrapping. This means that the elements from the border rows connect to elements on the border of the opposite site. This is indicated by small green arrows.
 
-## Inspiration
-This ICE is inspired by [Simon Tatham's Net puzzle](https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/net.html).
+![](../../assets/players/ice/netwalk-wrapping.png)
+
+This ICE is a version of [Simon Tatham's Net puzzle](https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/net.html).
 
 ## ICE strength
 If the ICE strength is weak, then there are fewer elements.

@@ -1,8 +1,6 @@
 ---
 sidebar_position: 3
 ---
-
-
 # Terminal commands
 The main way of interacting with a site is by typing commands in the terminal.
 
@@ -39,7 +37,7 @@ If there is a tripwire in the node you are moving to, it will be triggered.
 ### Hack
 `hack` - hack a layer. For example: `hack 2`
 
-The effect will depend on the layer type. See: [Layers](Layers)
+The effect will depend on the layer type. See: [Layers overview](Layers%20overview.md)
 
 ### Open password UI
 `password` - open the password UI for an ICE layer. For example: `password 2`

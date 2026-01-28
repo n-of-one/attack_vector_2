@@ -3,12 +3,12 @@ This ICE is called tar ICE in game. It's named after the substance tar, that you
 
 ![Picture of tar ICE puzzle](../../assets/players/ice/tar.png)
 
-## Goal
+This ICE represents a password that has to be guessed by trying all possibilities (brute force). Every hacker contributes password attempts.
+
+## Minigame
 Tar ICE has no mini-game. It just takes a fixed number of seconds to hack this ICE, this is done automatically, the hacker does not need to do anything.
 
 If more hackers join, then they each contribute, reducing the time it takes to hack this ICE.
-
-Thematically this ICE represents a password that has to be guessed by trying all possibilities (brute force). Every hacker contributes password attempts.
 
 ## ICE strength
 The strength of the ICE determines how long it takes to be hacked.

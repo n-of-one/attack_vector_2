@@ -1,0 +1,2 @@
+# Rollback
+This skill allows you to use the `rollback` command to move back from a node you just entered. You will go back to the node you came from. This will cancel any timers started by entering the node.

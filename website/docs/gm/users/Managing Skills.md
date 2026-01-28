@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 # Managing Skills
-For a list of all skill, see [here](../../player/Skills.md).
+For a list of all skill, see [here](gm/users/Skills.md).
 
 ## Assigning skills to players
 You can assign skills for each player individually.

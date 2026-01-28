@@ -3,12 +3,12 @@ This ICE is called Visphotak in game. Vishpotak is a rough rendition of the Hind
 
 ![Picture of a minesweeper ICE puzzle](../../assets/players/ice/minesweeper.png)
 
-## Goal
-Minesweeper ICE is the classic minesweeper game ([wikipedia article](https://en.wikipedia.org/wiki/Minesweeper_\(video_game\))).
+As a hacker you are fixing corrupted memory of the ICE. Mines are represented as corrupt memory blocks. If you click on a corrupted memory block, you are blocked from making further moves. Your fellow hackers can still continue solving the puzzle.
 
-This version of minesweeper has guaranteed safe corners. You can always click these to get a start.
+## Minigame
+Minesweeper ICE is the classic minesweeper game ([wikipedia](https://en.wikipedia.org/wiki/Minesweeper_\(video_game\))).
 
-Thematically you are fixing corrupted memory of the ICE. Mines are represented as corrupt memory blocks. If you click on a corrupted memory block, you are blocked from making further moves. Your fellow hackers can still continue solving the puzzle.
+This version of minesweeper has guaranteed safe corners. You can always click these to get a good start.
 
 ## Resetting
 You can reset the puzzle at any time by pressing the Reset button. You will need to keep pressing the button for 8 seconds. 
