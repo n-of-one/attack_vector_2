@@ -3,15 +3,9 @@ slug: /
 sidebar_position: 1
 ---
 # For organizers
-Version 2 of Attack Vector is meant to be low effort for larp organizers to use.
-
-It's been developed for the Dutch Larp [Eos Frontier](https://eosfrontier.space/), but it can be used in any sci-fi event that favors player involvement over realism.
-
-![Picture of several hackers cooperating hacking a site using Attack Vector](../assets/organizers/av_on_frontier.png)
-_Players cooperating to solve a Netwalk ICE puzzle on Frontier 17. Photo courtesy of [Hephaestus Aperture](https://www.hephaestus-aperture.com/)._
+Version 2 of Attack Vector is meant to be low effort for larp organizers to use. It's been developed for the Dutch Larp [Eos Frontier](https://eosfrontier.space/), but it can be used in any sci-fi event that favors player involvement over realism.
 
 Attack Vector is [open source](https://github.com/n-of-one/attack_vector_2) under the MIT license, meaning you can use it in most ways you want, including commercially.
-
 
 ## Privacy
 Attack Vector aims to be as privacy friendly as possible. It does not use cookies to track users, it does not store any personal information other than the information stored in there by the game masters.

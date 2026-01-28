@@ -56,11 +56,9 @@ This skill allows the hacker to use the `rollback` command to move back from a n
 
 Default hacker skill: **no**
 
-This skill allows the hacker to sell data for script credits, and use those to buy scripts.
+This skill allows the hacker to sell data for script credits, and use those to buy scripts. Optionally you can have an script credits income defined with this skill.
 
-Optionally you can have an script credits income defined with this skill. For more details, see:
-- [Buying scripts](scripts/Buying%20scripts)
-- [Credits and income](scripts/Credits%20and%20income)
+More details can be found [here](../scripts/Managing%20script%20credits).
 
 ### Scripts RAM
 
@@ -68,7 +66,7 @@ Default hacker skill: **no**
 
 This skill allows the hacker to load and execute scripts. The number value of this skill is the number of RAM blocks this player will have.
 
-More details can be found [here](Scripts%20overview.md).
+More details can be found [here](../scripts/Role%20of%20scripts).
 
 ### Stealth
 
