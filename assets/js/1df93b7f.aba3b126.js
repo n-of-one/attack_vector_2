@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkmy_website=globalThis.webpackChunkmy_website||[]).push([[4583],{6866(e,t,c){c.r(t),c.d(t,{default:()=>u});var s=c(6540),a=c(6347);function u(){const e=(0,a.W6)();return(0,s.useEffect)(()=>{e.replace("/attack_vector_2/docs/")},[e]),null}}}]);
