@@ -19,15 +19,19 @@ export const LayerIceTarPanel = ({node, layer}: Props) => {
 
     const key = (param: string) => layer.id + ":" + param
 
+    const minutes1Hacker = Math.floor(ice.totalUnits / (15 * 60))
+    const minutes2Hackers = Math.floor(ice.totalUnits / (15 * 60 * 2))
+    const minutes5Hackers = Math.floor(ice.totalUnits / (15 * 60 * 5))
+
     return (
         <LayerPanel typeDisplay="ICE Tar" layerObject={ice}>
             <AttributeIceStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
             <AttributeIceUrlWithQr layerId={layer.id}/>
-            <TextAttribute label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = (10 + level) per second per hacker" readOnly={true}/>
+            <TextAttribute label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = 15 units per second per hacker" readOnly={true}/>
             <TextAttribute label="Total time" size="large" value="See question mark to the right"
-                           help={`It will take 1 lvl 1 hacker: ${ice.time1Level1Hacker} to hack.
-                        It will take 1 lvl 5 hacker: ${ice.time1Level5Hacker} to hack.
-                        It will take 5 lvl 10 hackers: ${ice.time5Level10Hackers} to hack.
+                           help={`It will take 1 hacker: ${minutes1Hacker} minutes to hack.
+                        It will take 2 hackers: ${minutes2Hackers} minutes to hack.
+                        It will take 5 hackers: ${minutes5Hackers} minutes to hack.
                         `} readOnly={true}/>
         </LayerPanel>
     )

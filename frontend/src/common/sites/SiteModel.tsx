@@ -42,9 +42,9 @@ export interface LayerDetails {
     hint?: string       // password Ice layer
 
     totalUnits?: number          // Tar Ice layer
-    time1Level1Hacker?: string   // Tar Ice layer
-    time1Level5Hacker?: string   // Tar Ice layer
-    time5Level10Hackers?: string // Tar Ice layer
+    time1Level1Hacker?: string   // Tar Ice layer, no longer used.
+    time1Level5Hacker?: string   // Tar Ice layer, no longer used.
+    time5Level10Hackers?: string // Tar Ice layer, no longer used.
 
     appId?: string               // Status Light layer
     status?: boolean             // Status Light layer

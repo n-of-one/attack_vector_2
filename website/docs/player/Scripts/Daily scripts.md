@@ -6,3 +6,4 @@ Depending on your Larp and your character, you could have one or more scripts th
 
 ![](../../assets/players/scripts/daily-scripts.png)
 
+Note that the day starts at 06:00 when all old scripts have become obsolete.

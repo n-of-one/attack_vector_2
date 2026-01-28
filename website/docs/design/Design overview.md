@@ -1,5 +1,0 @@
----
-slug: /
----
-# Design overview
-lorum

@@ -125,7 +125,7 @@ Database logs:
 
 *In this example the players learn that it was user x44 that deleted all database records.*
 
-## Script credits
+## Credits source
 This represent an application that contains data that can be stolen and sold for script credits. Your hacker needs to have the **Script credits** skill to be able to steal the data.
 
 ```

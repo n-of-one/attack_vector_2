@@ -2,12 +2,12 @@
 sidebar_position: 1
 ---
 # Role of scripts
-Scripts acts a consumables in other games, like potions. They are a one-off bonus that can be used once.
+Scripts acts as would consumables in other games, like potions. They are a one-off bonus that can be used once.
 
 Scripts are optional in Attack Vector. They are not needed to creating a fun challenge for players. Scripts give extra tools to players, who will have to choose when to use them. It can also be fun for players to have and use scripts, making them feel more powerful.
 
 ## Managing how many scripts players will have access to
-Scripts provide an additional design aspect to designing sites for the players. When designing a site, you as GM need to take into account what scripts the players will typically have access to.
+Scripts create additional design considerations when designing sites. When designing a site, you as GM need to take into account what scripts the players will have access to.
 
 As a GM you have some control over how many scripts players have. This comes in the following ways:
 - Defining what scripts exist in your game world

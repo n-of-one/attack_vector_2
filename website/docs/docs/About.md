@@ -19,7 +19,7 @@ Attack Vector 2 is very privacy conscious and aims to not collect or store any p
 
 # Open source
 
-Attack Vector 2 is open source and free to use. The source code is available at [https://github.com/n-of-one/attack_vector_2](https://github.com/n-of-one/attack_vector_2). If you want to know more, have found a [bug](https://github.com/n-of-one/attack_vector_2/issues), or want help to use it in your event, please visit the github page. See the [Organizer's section](Organizers/For%20organizers) for more details on how to run it.
+Attack Vector 2 is open source and free to use under the MIT license. The source code is available at [https://github.com/n-of-one/attack_vector_2](https://github.com/n-of-one/attack_vector_2). If you want to know more, have found a [bug](https://github.com/n-of-one/attack_vector_2/issues), or want help to use it in your event, please visit the Github page.
 
 # Attribution
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 ---
 # Tar ICE
 This ICE has no minigame and it just takes time to (auto)hack.

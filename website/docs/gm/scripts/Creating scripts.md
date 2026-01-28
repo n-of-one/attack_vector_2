@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Creating Scripts
 As a game master you will have to create the scripts that exist in your game world. There are no fixed or pre-defined scripts to start with.
 

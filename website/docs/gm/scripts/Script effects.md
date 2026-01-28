@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 # Script Effects
 This page lists all of the current effects that a script can have
 

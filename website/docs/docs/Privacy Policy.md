@@ -15,7 +15,7 @@ When using the website of the organizers, the identifier for your account is sto
 When using Google login, Google returns a unique account id, along with the user's email, name and profile picture. The account id and email address are used to create a unique user-id via a secure one-way hash. The name and profile picture are not stored or used anywhere.
 
 ## Names
-The only place there personal information might be used in Attack Vector is with names of players or organizers.
+The only place where personal information might be used in Attack Vector is with names of players or organizers.
 
 For players, the username should be a fictional name related to their character.
 

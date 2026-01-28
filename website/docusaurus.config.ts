@@ -110,17 +110,17 @@ const config: Config = {
             },
         ],
 
-        // Design (/design)
-        [
-            '@docusaurus/plugin-content-docs',
-            {
-                id: 'design',
-                path: 'docs/design',
-                routeBasePath: 'design',
-                sidebarPath: require.resolve('./docs/design/sidebars.ts'),
-                breadcrumbs: false,
-            },
-        ],
+        // // Design (/design)
+        // [
+        //     '@docusaurus/plugin-content-docs',
+        //     {
+        //         id: 'design',
+        //         path: 'docs/design',
+        //         routeBasePath: 'design',
+        //         sidebarPath: require.resolve('./docs/design/sidebars.ts'),
+        //         breadcrumbs: false,
+        //     },
+        // ],
     ],
 
     themeConfig: {
@@ -143,66 +143,8 @@ const config: Config = {
                 { to: '/gm', label: '⬣ GM', position: 'left' },
                 { to: '/organizer', label: '⛓ Organizer', position: 'left' },
                 { to: '/installation', label: '🛠 Installation', position: 'right' },
-                { to: '/design', label: '⛶ Design', position: 'right' },
+                // { to: '/design', label: '⛶ Design', position: 'right' },
             ],
-
-            // items: [
-            //     {
-            //         type: 'docSidebar',
-            //         sidebarId: 'docsSidebar',
-            //         position: 'left',
-            //         label: 'Docs',
-            //     },
-            //     {
-            //         type: 'docSidebar',
-            //         sidebarId: 'gmSidebar',
-            //         docsPluginId: 'gm',
-            //         position: 'left',
-            //         label: 'GM',
-            //     },
-            //     {
-            //         href: 'https://github.com/facebook/docusaurus',
-            //         label: 'GitHub',
-            //         position: 'right',
-            //     },
-            // ],
-        },
-        footer: {
-            style: 'dark',
-            links: [
-                {
-                    title: 'Docs',
-                    items: [
-                        {
-                            label: 'Welcome',
-                            to: '/',
-                        },
-                    ],
-                },
-                {
-                    title: 'Community',
-                    items: [
-                        {
-                            label: 'Discord',
-                            href: 'Organizers/For%20organizers#discord',
-                        },
-                    ],
-                },
-                {
-                    title: 'Github',
-                    items: [
-                        {
-                            label: 'Source',
-                            href: 'https://github.com/n-of-one/attack_vector_2',
-                        },
-                        {
-                            label: 'Issues',
-                            href: 'https://github.com/n-of-one/attack_vector_2/issues',
-                        },
-                    ],
-                },
-            ],
-            // copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
         },
         prism: {
             theme: prismThemes.github,
