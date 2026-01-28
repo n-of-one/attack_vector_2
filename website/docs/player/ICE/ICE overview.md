@@ -15,9 +15,9 @@ Hacking ICE consists of solving a puzzle minigame. You can do this alone or toge
 There are a number of different types of ICE each with a different puzzle minigame.
 
 | Name       | Puzzle minigame |                                         |
-| ---------- | --------------- | --------------------------------------- |
+| ---------- | --------------- |-----------------------------------------|
 | Gaanth     | Tangle          | [link](/player/ICE/Tangle%20ICE)        |
-| Jaal       | Word search     | [link](Word%20search%20ICE.md) |
+| Jaal       | Word search     | [link](/player/ICE/Word%20search%20ICE) |
 | Rahasy     | Password        | [link](/player/ICE/Password%20ICE)      |
 | Sanrachana | Netwalk         | [link](/player/ICE/Netwalk%20ICE)       |
 | Tar        | Tar             | [link](/player/ICE/Tar%20ICE)           |

@@ -48,11 +48,11 @@ The drawback effect: "Hidden Effect" is special. It does nothing on its own, but
 When adding multiple effects, each effect will be applied when the script is run, starting with the first (top most) effect and going down the list.
 
 ## Starting and speeding up reset timers
-One specific drawback is that of starting a reset timer ([see here](/gm/scripts/Script%20effects#Start%20reset%20timer)). When this effect is triggered, an unstoppable countdown will start that will reset the site once completed. So running this script will limit the time the players have left in this site.
+One specific drawback is that of starting a reset timer ([see here](/gm/scripts/Script%20effects#start-reset-timer)). When this effect is triggered, an unstoppable countdown will start that will reset the site once completed. So running this script will limit the time the players have left in this site.
 
 This can be used to create a powerful script that hacks ICE, at the price of reducing the time the players have left in the site. For example, you could set this timer at 10 minutes.
 
-In order to prevent players from just acquiring a lot of these scripts, and spamming them to hack all ICE in those 10 minutes, you can add a second drawback: Speed up reset timer ([see here](/gm/scripts/Script%20effects#Speed%20up%20reset%20timer)). This will speed up an existing timer -started by the previous effect- by x minutes. By also adding this to the same script, you can prevent players from being able to spam this script.
+In order to prevent players from just acquiring a lot of these scripts, and spamming them to hack all ICE in those 10 minutes, you can add a second drawback: Speed up reset timer ([see here](/gm/scripts/Script%20effects#speed-up-reset-timer)). This will speed up an existing timer -started by the previous effect- by x minutes. By also adding this to the same script, you can prevent players from being able to spam this script.
 
 But you do have to take care in which order you add these effects.
 

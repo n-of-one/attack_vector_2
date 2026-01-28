@@ -5,7 +5,7 @@ export default function Home() {
     const history = useHistory();
 
     useEffect(() => {
-        history.replace('/docs/');
+        history.replace('/attack_vector_2/docs/');
     }, [history]);
 
     return null;
