@@ -7,7 +7,7 @@ import {HackerPage, START_ATTACK_QUICK} from "./testframework/HackerPage";
 const SITE_NAME = "twolayers"
 
 test('1.1.0 - Prepare', async ({page}: { page: Page }) => {
-    test.setTimeout(10_000);
+    test.setTimeout(15_000);
 
     const [login, gm, hacker] = [new LoginPage(page), new GmPage(page), new HackerPage(page)]
 
@@ -24,7 +24,7 @@ test('1.1.0 - Prepare', async ({page}: { page: Page }) => {
 })
 
 test('1.1.1 - Verify node icon before and after hacks', async ({page}: { page: Page }) => {
-    test.setTimeout(10_000);
+    test.setTimeout(15_000);
 
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 

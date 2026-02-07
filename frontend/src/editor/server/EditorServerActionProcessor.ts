@@ -4,8 +4,9 @@ import {editorCanvas, LoadSiteData} from "../component/map/canvas/EditorCanvas"
 import {Connection} from "../reducer/ConnectionsReducer"
 import {NodeI} from "../../common/sites/SiteModel";
 import {MoveNodeI} from "../reducer/EditorNodesReducer";
+import {SiteProperties} from "../reducer/SitePropertiesReducer";
 
-export const SERVER_SITE_FULL  = "SERVER_SITE_FULL"
+export const SERVER_SITE_FULL = "SERVER_SITE_FULL"
 export const SERVER_ALL_CORE_INFO = "SERVER_ALL_CORE_INFO"
 export const SERVER_UPDATE_SITE_DATA = "SERVER_UPDATE_SITE_DATA"
 export const SERVER_ADD_NODE = "SERVER_ADD_NODE"
@@ -21,6 +22,10 @@ export const initEditorServerActions = () => {
 
     webSocketConnection.addAction(SERVER_SITE_FULL, (data: LoadSiteData) => {
         editorCanvas.loadSite(data)
+    })
+
+    webSocketConnection.addAction(SERVER_UPDATE_SITE_DATA, (data: SiteProperties) => {
+        editorCanvas.updateNodesLocked(data.nodesLocked)
     })
 
     webSocketConnection.addAction(SERVER_ADD_NODE, (data: NodeI) => {

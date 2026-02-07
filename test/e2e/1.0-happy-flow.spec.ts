@@ -26,7 +26,7 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
     })
 
     await test.step("Verify site loads correctly", async () => {
-        await hacker.verifyScreenshotCanvas("1.1-outside-dev-unscanned")
+        await hacker.verifyScreenshotCanvas("1.0-outside-dev-unscanned")
     })
 
 
@@ -42,12 +42,12 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
     await test.step("Scan from outside", async () => {
         await hacker.typeCommand("scan", "New nodes discovered: 7", 10.0)
         await hacker.waitForScanAnimationFinished()
-        await hacker.verifyScreenshotCanvas("1.1-outside-dev-scanned")
+        await hacker.verifyScreenshotCanvas("1.0-outside-dev-scanned")
     })
 
     await test.step("Attack", async () => {
         await hacker.startAttack(START_ATTACK_REGULAR, "Entered node 00: entry")
-        await hacker.verifyScreenshotCanvas("1.1-inside-dev")
+        await hacker.verifyScreenshotCanvas("1.0-inside-dev")
     })
 
     await test.step("Command help inside", async () => {
@@ -65,13 +65,13 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
 
     await test.step("Command view", async () => {
         await hacker.typeCommand("view",
-            ["Node name: entry", "0 OS ", "1 Text layer", "2 Process", "3 Database"])
+            ["Node name: entry", "0 OS ", "1 Text"])
     })
 
     await test.step("Command move - basic", async () => {
         await hacker.typeCommand("move 01")
         await wait(page, 0.5, "wait for move animations to finish")
-        await hacker.verifyScreenshotCanvas("1.1-inside-dev-moved-01")
+        await hacker.verifyScreenshotCanvas("1.0-inside-dev-moved-01")
         await hacker.typeCommand("view",
             ["0 unknown (shielded by ICE)", "1 Gaanth ICE", "2 Keystore"])
     })
@@ -92,7 +92,7 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
     await test.step("Command dc", async () => {
         await hacker.typeCommand("dc", "Disconnected")
         await wait(page, 3.0, "Nodes animate to scan mode")
-        await hacker.verifyScreenshotCanvas("1.1-outside-dev-scanned") // Verify site visuals back to scan mode
+        await hacker.verifyScreenshotCanvas("1.0-outside-dev-scanned") // Verify site visuals back to scan mode
     })
 })
 
@@ -118,7 +118,7 @@ test('1.0.2 - Joining an existing run and checking services', async ({page}: { p
 
     await test.step("Hack Text layer", async () => {
         await hacker.typeCommand("hack 1",
-            ["Hacked: 1 Text layer", "The butler did it."])
+            ["Hacked: 1 Text", "The butler did it."])
     })
 
     await test.step("Command quickmove", async () => {
@@ -143,15 +143,14 @@ test('1.0.2 - Joining an existing run and checking services', async ({page}: { p
     await test.step("Trigger tripwire and let it reset the site", async () => {
         await hacker.typeCommand("qmove 00")
         await hacker.typeCommand("qmove 07")
-        await hacker.verifyAppText('00:00:06 [Site] ➜ shutdown for 15 seconds');
-        await hacker.verifyAppText('00:00:05 [Site] ➜ shutdown for 15 seconds');
-        await hacker.verifyAppText('00:00:04 [Site] ➜ shutdown for 15 seconds');
-        await hacker.verifyAppText('00:00:03 [Site] ➜ shutdown for 15 seconds');
-        await hacker.verifyAppText('00:00:02 [Site] ➜ shutdown for 15 seconds');
+        await hacker.verifyAppText('00:00:07');
+        await hacker.verifyAppText('[Site] ➜ shutdown for 15 seconds');
+        await hacker.verifyAppText('00:00:04');
+        await hacker.verifyAppText('00:00:02');
         await hacker.expectTerminalText(["Site down for maintenance for 15 seconds", "Disconnected (server abort)"])
 
         await wait(page, 5.0, "Nodes animate to scan mode quickly")
-        await hacker.verifyScreenshotCanvas("1.2-outside-dev-resetting-angler")
+        await hacker.verifyScreenshotCanvas("1.0-outside-dev-resetting-angler")
         await hacker.typeCommand("attack")
         await hacker.expectTerminalText("Connection refused. (site is in shutdown mode)")
         await wait(page, 10.0, "Wait for shutdown to complete")

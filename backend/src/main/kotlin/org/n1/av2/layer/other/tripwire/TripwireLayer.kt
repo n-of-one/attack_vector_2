@@ -6,13 +6,12 @@ import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.util.toDuration
+import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.site.entity.NodeEntityService.Companion.deriveNodeIdFromLayerId
 import org.n1.av2.site.entity.enums.LayerType
 import java.time.Duration
 import kotlin.jvm.optionals.getOrElse
-
-val MINIMUM_SHUTDOWN: Duration = Duration.ofMinutes(1)
 
 class TripwireLayer(
     id: String,
@@ -48,8 +47,8 @@ class TripwireLayer(
 
         val duration = this.shutdown.toDuration()
 
-        if (duration < MINIMUM_SHUTDOWN) {
-            throw SiteValidationException("Shutdown must be at least 01:00 (1 minute).")
+        if (duration < validationContext.minimumShutdownDuration) {
+            throw SiteValidationException("Shutdown must be at least ${validationContext.minimumShutdownDuration.toHumanTime()}.")
         }
     }
 

@@ -18,7 +18,7 @@ import {ConfigItemLoginGoogleClientId, ConfigItemLoginPassword, ConfigItemLoginP
 import {
     ConfigItemDevSimulateNonLocalHost,
     ConfigItemHackerResetSite,
-    ConfigItemHackerUseDevCommands,
+    ConfigItemHackerUseDevCommands, ConfigItemMinimumShutdownDuration,
     ConfigItemQuickPlaying,
     ConfigItemTestingMode
 } from "./items/ConfigItemsDev";
@@ -128,12 +128,14 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemDevSimulateNonLocalHost value={props.value}/>
         case ConfigItem.DEV_HACKER_RESET_SITE:
             return <ConfigItemHackerResetSite value={props.value}/>
+        case ConfigItem.DEV_MINIMUM_SHUTDOWN_DURATION:
+            return <ConfigItemMinimumShutdownDuration value={props.value}/>
         case ConfigItem.DEV_TESTING_MODE:
             return <ConfigItemTestingMode value={props.value}/>
-        case ConfigItem.DEV_QUICK_PLAYING:
-            return <ConfigItemQuickPlaying value={props.value}/>
         case ConfigItem.DEV_HACKER_USE_DEV_COMMANDS:
             return <ConfigItemHackerUseDevCommands value={props.value}/>
+        case ConfigItem.DEV_QUICK_PLAYING:
+            return <ConfigItemQuickPlaying value={props.value}/>
 
         case ConfigItem.LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN:
             return <ConfigItemLarpFrontierOrthankToken value={props.value}/>

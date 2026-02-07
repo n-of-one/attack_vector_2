@@ -1,5 +1,7 @@
 package org.n1.av2.editor
 
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -19,6 +21,7 @@ class SiteValidationService(
     private val traverseNodeService: TraverseNodeService,
     private val sitePropertiesRepo: SitePropertiesRepo,
     private val nodeRepo: NodeRepo,
+    private val configService: ConfigService,
 ) {
 
     fun validate(siteId: String): List<SiteStateMessage> {
@@ -69,7 +72,8 @@ class SiteValidationService(
     private fun validateNodes(siteProperties: SiteProperties, nodes: List<Node>, messages: MutableList<SiteStateMessage>) {
         if (nodes.isEmpty()) return
 
-        val validationContext = ValidationContext(nodes[0], nodes, siteProperties, sitePropertiesRepo, nodeRepo)
+        val minimumShutdownDuration = configService.getAsDuration(ConfigItem.DEV_MINIMUM_SHUTDOWN_DURATION)
+        val validationContext = ValidationContext(nodes[0], nodes, siteProperties, sitePropertiesRepo, nodeRepo, minimumShutdownDuration)
 
         val networkIds = HashSet<String>()
 

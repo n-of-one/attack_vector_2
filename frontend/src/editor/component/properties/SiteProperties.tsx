@@ -3,6 +3,7 @@ import {useSelector} from "react-redux"
 import {TextSaveInput} from "../../../common/component/TextSaveInput"
 import {EditorState} from "../../EditorRootReducer"
 import {sendSitePropertyChanged} from "../../server/EditorServerClient"
+import {CheckboxSaveInput} from "../../../common/component/CheckBoxSaveInput";
 
 
 export const SiteProperties = () => {
@@ -47,6 +48,12 @@ export const SiteProperties = () => {
                                 <TextSaveInput id="start_node" className="form-control" placeholder="Network Id"
                                                value={siteProperties.startNodeNetworkId}
                                                save={(value: string) => save("startNode", value)}/>
+                            </div>
+                    </div>
+                    <div className="row form-group">
+                            <label htmlFor="nodesLocked" className="col-lg-5 control-label text-muted">Lock nodes</label>
+                            <div className="col-lg-1">
+                                <CheckboxSaveInput id="nodesLocked" className="form-control form-check-input" checked={siteProperties.nodesLocked} save={(value: boolean) => save("nodesLocked", value)} />
                             </div>
                     </div>
                </div>

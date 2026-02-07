@@ -28,6 +28,7 @@ enum class ConfigItem(
 
     DEV_HACKER_RESET_SITE("false", ::validBoolean),
     DEV_HACKER_USE_DEV_COMMANDS("false", ::validBoolean),
+    DEV_MINIMUM_SHUTDOWN_DURATION("00:01:00", ::validDuration),
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS("0", ::validDelay),
     DEV_TESTING_MODE("false", ::validBoolean),
     DEV_QUICK_PLAYING("false", ::validBoolean),

@@ -19,7 +19,7 @@ import kotlin.system.measureTimeMillis
 
 const val TICK_MILLIS = 50
 const val SECOND_MILLIS = 1000
-const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS
+const val SECONDS_IN_TICKS = SECOND_MILLIS / TICK_MILLIS // 20 ticks in a second
 
 private class Task(val action: () -> Unit, val userPrincipal: UserPrincipal, val description: String)
 

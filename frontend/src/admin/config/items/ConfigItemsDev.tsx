@@ -17,6 +17,23 @@ export const ConfigItemHackerUseDevCommands = (props: { value: string }) => {
     )
 }
 
+
+export const ConfigItemMinimumShutdownDuration = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Development: minimum shutdown duration" value={props.value} item={ConfigItem.DEV_MINIMUM_SHUTDOWN_DURATION}/>
+            <small className="form-text text-muted">What is the minimum shutdown duration for a site?<br/><br/>
+                Default: 00:01:00 (1 minute)<br/>
+                General advice: leave this to the default.<br/><br/>
+                When a site shuts down, the UI needs to animate the shutdown, changing how each node appears. When the shutdown ends the nodes animate again to
+                show that the site is available. If the shutdown time is too short, these animations will overlap causing graphical glitches.<br/><br/>
+                In addition: a site shutdown will give the players a break from their hacking run, so it is recommended to set the value to a much higher value
+                anyway (10 minutes or more).<br/><br/>
+                This value is can be set to a very low value during development and automated testing.
+            </small>
+        </>
+    )
+}
 export const ConfigItemHackerResetSite = (props: { value: string }) => {
     return (
         <>

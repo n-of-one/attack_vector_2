@@ -1,7 +1,7 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2024-11-24 12:34:49"
+    "exportTimeStamp" : "2026-02-07 15:12:41"
   },
   "siteProperties" : {
     "siteId" : "site-593b-4ba3",
@@ -22,19 +22,18 @@
       "level" : 0,
       "name" : "OS",
       "note" : "",
-      "nodeName" : ""
+      "nodeName" : "entry"
     }, {
       "id" : "node-7e39-411b:layer-8f63",
       "type" : "TEXT",
       "level" : 1,
-      "name" : "Database",
+      "name" : "Text",
       "note" : "",
-      "text" : "No data of value found."
+      "text" : "The butler did it."
     } ],
     "networkId" : "00",
     "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
+    "hacked" : true
   }, {
     "id" : "node-349f-464f",
     "siteId" : "site-593b-4ba3",
@@ -56,7 +55,7 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
-      "clusters" : 1,
+      "original" : null,
       "ice" : true
     }, {
       "id" : "node-349f-464f:layer-a09e",
@@ -68,8 +67,7 @@
     } ],
     "networkId" : "01",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-7439-4cc0",
     "siteId" : "site-593b-4ba3",
@@ -91,12 +89,12 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "ice" : true
     } ],
     "networkId" : "02",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-6b4c-454d",
     "siteId" : "site-593b-4ba3",
@@ -118,12 +116,12 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "ice" : true
     } ],
     "networkId" : "03",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-c421-4498",
     "siteId" : "site-593b-4ba3",
@@ -144,8 +142,9 @@
       "name" : "Tar",
       "note" : "",
       "strength" : "VERY_WEAK",
-      "hacked" : false,
-      "totalUnits" : 54000,
+      "hacked" : true,
+      "original" : null,
+      "totalUnits" : 9000,
       "time1Level1Hacker" : "1h 21m 49s",
       "time1Level5Hacker" : "1h 0m 0s",
       "time5Level10Hackers" : "9m 0s",
@@ -153,8 +152,7 @@
     } ],
     "networkId" : "04",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : true
   }, {
     "id" : "node-ed0f-4b7d",
     "siteId" : "site-593b-4ba3",
@@ -176,12 +174,12 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "ice" : true
     } ],
     "networkId" : "05",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-83ef-4cef",
     "siteId" : "site-593b-4ba3",
@@ -203,14 +201,14 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "password" : "Swordfish",
       "hint" : "",
       "ice" : true
     } ],
     "networkId" : "06",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-aedd-4f5e",
     "siteId" : "site-593b-4ba3",
@@ -230,9 +228,10 @@
       "level" : 1,
       "name" : "Tripwire",
       "note" : "",
-      "countdown" : "15:00",
-      "shutdown" : "01:00",
-      "coreLayerId" : "node-aedd-4f5e:layer-e94e"
+      "countdown" : "00:10",
+      "shutdown" : "00:15",
+      "coreLayerId" : "node-aedd-4f5e:layer-e94e",
+      "coreSiteId" : null
     }, {
       "id" : "node-aedd-4f5e:layer-e94e",
       "type" : "CORE",
@@ -243,8 +242,7 @@
     } ],
     "networkId" : "07",
     "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
+    "hacked" : true
   } ],
   "connections" : [ {
     "fromId" : "node-7e39-411b",
@@ -267,5 +265,8 @@
   }, {
     "fromId" : "node-aedd-4f5e",
     "toId" : "node-7e39-411b"
+  }, {
+    "fromId" : "node-349f-464f",
+    "toId" : "node-7439-4cc0"
   } ]
 }

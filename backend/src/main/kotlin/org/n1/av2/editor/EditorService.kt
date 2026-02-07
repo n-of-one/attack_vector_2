@@ -110,6 +110,7 @@ class EditorService(
                 "plot" -> properties.purpose = value
                 "startNode" -> properties.startNodeNetworkId = value
                 "hackable" -> properties.hackable = value.toBoolean()
+                "nodesLocked" -> properties.nodesLocked = value.toBoolean()
                 else -> throw IllegalArgumentException("Site field ${command.field} unknown.")
             }
 

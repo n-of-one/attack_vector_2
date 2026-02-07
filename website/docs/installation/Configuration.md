@@ -152,7 +152,7 @@ Having a hacker be able to reset a site is mostly useful during development, whe
 
 This is also used for attackvector.nl where there is only the tutorial, and this way the players can replay the tutorial.
 
-### hackers can use dev commands
+### Hackers can use dev commands
 Can hackers use commands that are only intended for developers?
 
 Default: false
@@ -160,6 +160,19 @@ Default: false
 General advice: leave this to false.
 
 There are a number of terminal commands that are very overpowered, and not intended to be part of the game. They are used to make it quicker to test during development. These commands include: quickscan (qs), quickattack (qa), quickhack, qmove, sweeperunblock.
+
+### Minimum shutdown duration
+What is the minimum shutdown duration for a site?
+
+Default: 00:01:00 (1 minute)
+
+General advice: leave this to the default.
+
+When a site shuts down, the UI needs to animate the shutdown, changing how each node appears. When the shutdown ends the nodes animate again to show that the site is available. If the shutdown time is too short, these animations will overlap causing graphical glitches.
+
+In addition: a site shutdown will give the players a break from their hacking run, so it is recommended to set the value to a much higher value anyway (10 minutes or more).
+
+This value is can be set to a very low value during development and automated testing.
 
 ### ICE quick playing
 Skip most of the flavour text when accessing ICE.

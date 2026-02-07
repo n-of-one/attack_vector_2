@@ -99,15 +99,15 @@ class WebsiteScraper {
 
         println("Documentation structure order:")
         sortedPages.forEachIndexed { i, p ->
-            println(p.path)
+            println("${i} - ${p.path}")
         }
         println("\n------------------\n")
 
-        sortedPages.forEach { p ->
-            println("File: ${p.title}\n")
-            println(p.text)
-            println("\n---------\n")
-        }
+//        sortedPages.forEach { p ->
+//            println("File: ${p.title}\n")
+//            println(p.text)
+//            println("\n---------\n")
+//        }
     }
 
     // Order the directories in this order: docs, player, gm, organizer, installation

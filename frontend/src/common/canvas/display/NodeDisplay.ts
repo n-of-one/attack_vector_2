@@ -366,4 +366,14 @@ export class NodeDisplay implements Display {
         })
     }
 
+    setLocked(locked: boolean) {
+        this.movable = locked
+        const cursor = this.movable ? "pointer" : "move"
+        this.nodeIcon.set({
+            lockMovementX: locked,
+            lockMovementY: locked,
+            hoverCursor: cursor,
+        })
+    }
+
 }
