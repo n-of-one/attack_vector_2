@@ -23,10 +23,11 @@ export const LayerIceTarPanel = ({node, layer}: Props) => {
     const minutes2Hackers = Math.floor(ice.totalUnits / (15 * 60 * 2))
     const minutes5Hackers = Math.floor(ice.totalUnits / (15 * 60 * 5))
 
+    const fileName = `node-${node.networkId}-layer-${layer.level}-tar`
     return (
         <LayerPanel typeDisplay="ICE Tar" layerObject={ice}>
             <AttributeIceStrength key={key("strength")} value={ice.strength} save={(value: string) => ice.saveStrength(value)}/>
-            <AttributeIceUrlWithQr layerId={layer.id}/>
+            <AttributeIceUrlWithQr layerId={layer.id} fileName={fileName}/>
             <TextAttribute label="Units" size="small" value={ice.totalUnits} help="Total units to hack. Speed = 15 units per second per hacker" readOnly={true}/>
             <TextAttribute label="Total time" size="large" value="See question mark to the right"
                            help={`It will take 1 hacker: ${minutes1Hacker} minutes to hack.

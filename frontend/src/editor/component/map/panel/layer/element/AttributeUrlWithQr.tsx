@@ -1,7 +1,7 @@
 import toast, {Toast} from "react-hot-toast";
-import QRCode from "react-qr-code";
 import React from "react";
 import {avEncodedUrl} from "../../../../../../common/util/PathEncodeUtils";
+import {QrDownload} from "./QrDownload";
 
 type UrlType = "ice" | "app" | "widget"
 
@@ -11,10 +11,11 @@ interface Props {
     subType?: string,
     layerId: string,
     description: string,
-    requireLogin?: boolean
+    requireLogin?: boolean,
+    fileName: string
 }
 
-export const AttributeUrlWithQr = ({name, layerId, type, subType, description, requireLogin = true}: Props) => {
+export const AttributeUrlWithQr = ({name, layerId, type, subType, description, requireLogin = true, fileName}: Props) => {
 
     const path = createPath(layerId, type, subType)
     const url = avEncodedUrl(path, requireLogin)
@@ -30,7 +31,7 @@ export const AttributeUrlWithQr = ({name, layerId, type, subType, description, r
                         <div>&nbsp;</div>
                         <div>{url}</div>
                         <div onClick={dismissMethod}><br/>
-                            <QRCode size={256} value={url} viewBox="0 0 256 256"/>
+                            <QrDownload fileName={fileName} value={url}/>
                             <div>&nbsp;</div>
                             <div>Click to close</div>
                         </div>
