@@ -112,6 +112,7 @@ class ImportService(
             startNodeNetworkId = input["startNodeNetworkId"].asText(),
             hackable = false,
             shutdownEnd = null,
+            nodesLocked = input["nodesLocked"]?.asBoolean() == true,
         )
 
         sitePropertiesEntityService.save(siteProperties)

@@ -28,6 +28,7 @@ class V2SiteProperties(
     val description: String,
     val purpose: String,
     val startNodeNetworkId: String,
+    val nodesLocked: Boolean,
 )
 
 @Service
@@ -55,6 +56,7 @@ class V2Exporter(
             description = properties.description,
             purpose = properties.purpose,
             startNodeNetworkId = properties.startNodeNetworkId,
+            nodesLocked = properties.nodesLocked,
         )
     }
 
