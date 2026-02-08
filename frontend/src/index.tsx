@@ -11,8 +11,6 @@ import {Privacy} from "./Privacy";
 import {HackerRoot} from "./hacker/HackerRoot";
 import {GmRoot} from "./gm/GmRoot";
 import {Standalone} from "./standalone/Standalone";
-import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
-import {WebsiteRouting} from "./website/WebsiteRouting";
 import {Lola} from "./larp/frontier/Lola";
 import {AdminRoot} from "./admin/AdminRoot";
 import {GoogleAuth} from "./login/GoogleAuth";
@@ -67,15 +65,11 @@ const EditorText = () => {
     return (<EditorTextRoot path={path as string}/>)
 }
 
-
-
 root.render(
     <>
         <BrowserRouter>
             <Routes>
                 {/* Website and public pages */}
-                <Route path="/website" element={<WebsiteLandingPage/>}/>
-                <Route path="/website/:path" element={<WebsiteRouting/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/privacy" element={<Privacy/>}/>
 

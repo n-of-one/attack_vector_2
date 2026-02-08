@@ -54,8 +54,6 @@ class HtmlController(
 
         "/about",
         "/privacy",
-        "/website",
-        "/website/{page}",
         "/larp/**"
     )
     fun default(): String {
