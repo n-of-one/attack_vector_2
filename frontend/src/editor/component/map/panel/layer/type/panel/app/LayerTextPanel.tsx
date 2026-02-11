@@ -34,7 +34,7 @@ export const LayerTextPanel = ({node, layer}: Props) => {
                            type={TextSaveType.TEXTAREA} sendEvent={true}
             />
             <TextEditorLink node={node} layer={layer} keyText="TEXT" size="large" label=""/>
-            <AttributeTerminalPreview prefix={hackedText} width="594px"/>
+            <AttributeTerminalPreview prefix={hackedText} width="616px"/>
         </LayerPanel>
     )
 }

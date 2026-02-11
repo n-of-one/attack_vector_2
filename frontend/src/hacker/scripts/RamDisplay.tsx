@@ -32,7 +32,7 @@ export const RamDisplay = ({size}: {size: number}) => {
 
 export const RamBar = ({ram, size}: { ram: Ram, size: number }) => {
     if (ram.size === 0) {
-        return <div className="progress-stacked">
+        return <div className="progress-stacked" style={{width: size}}>
             <div className="progress" role="progressbar" aria-label="Segment one" aria-valuenow={100} aria-valuemin={0} aria-valuemax={100}
                  style={{"width": "100%"}}>
                 <div className="progress-bar bg-light-subtle dark">not installed</div>
@@ -50,7 +50,7 @@ export const RamBar = ({ram, size}: { ram: Ram, size: number }) => {
 
 
 
-    return <div className="progress-stacked">
+    return <div className="progress-stacked" style={{width: size}}>
         <div className="progress" role="progressbar" aria-label="Segment one" aria-valuenow={loadedPercentage} aria-valuemin={0} aria-valuemax={100}
              style={{"width": `${loadedPercentage}%`}}>
             <div className="progress-bar bg-info">{textLoaded}</div>

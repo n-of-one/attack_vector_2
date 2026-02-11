@@ -35,7 +35,7 @@ export class StatusLightRoot extends Component<Props> {
             webSocketConnection.sendObject("/app/statusLight/enter", {layerId: layer.id})
         });
 
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 14})
     }
 
     render() {

@@ -12,7 +12,6 @@ import {Hr} from "../../common/component/dataTable/Hr";
 
 
 export const GmScriptHome = () => {
-    const dispatch = useDispatch()
     // fetch the types, they are useful in all sub-pages
     useEffect(() => {
             webSocketConnection.send("/gm/scriptType/getAll", null)
@@ -33,46 +32,20 @@ export const GmScriptHome = () => {
                     <br/>
                     <br/>
                     <br/>
-                    <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_TYPE_MANAGEMENT, null, dispatch)
-                    }}>
-                        <><ButtonGlyphicon type="glyphicon-list"/> Script types</>
-                    </ActionButton>
-                    &nbsp;Manage the scripts that exist in your game.<br/>
-                    <br/>
-                    <br/>
-                    <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_ACCESS_MANAGEMENT, null, dispatch)
-                    }}>
-                        <><ButtonGlyphicon type="glyphicon-log-in"/> Script access</>
-                    </ActionButton>
-                    &nbsp;Manage the scripts that hackers have access to (without GM intervention)<br/>
-                    <br/>
-                    <br/>
-                    <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_MANAGEMENT, null, dispatch)
-                    }}>
-                        <><ButtonGlyphicon type="glyphicon-expand"/> Current scripts</>
-                    </ActionButton>
-                    &nbsp; Directly manage the scripts hackers currently have.<br/>
-                    <br/>
-                    <br/>
-                    <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.GM_HACKER_CREDITS, null, dispatch)
-                    }}>
-                        <><ButtonGlyphicon type="glyphicon-flash"/> Hacker credits</>
-                    </ActionButton>
-                    &nbsp; View and manage hacker script credits.<br/>
-                    <br/>
-                    <br/>
-                    <ActionButton onClick={() => {
-                        navigateTo(Page.GM_SCRIPTS_HOME, Page.SCRIPT_INCOME_DATES, null, dispatch)
-                    }}>
-                        <><ButtonGlyphicon type="glyphicon-calendar"/> Script income dates</>
-                    </ActionButton>
-                    &nbsp; Configure on which days the hackers receive script credits income.<br/>
                 </div>
-
+                <ScriptAction label="Script types" glyphicon="list" page={Page.SCRIPT_TYPE_MANAGEMENT} text="Manage the scripts that exist in your game." />
+                <br/>
+                <br/>
+                <ScriptAction label="Script access" glyphicon="log-in" page={Page.SCRIPT_ACCESS_MANAGEMENT} text="Manage the scripts that hackers have access to." />
+                <br/>
+                <br/>
+                <ScriptAction label="Current scripts" glyphicon="expand" page={Page.SCRIPT_MANAGEMENT} text="Directly manage the scripts hackers currently have." />
+                <br/>
+                <br/>
+                <ScriptAction label="Hacker credits" glyphicon="flash" page={Page.GM_HACKER_CREDITS} text="View and manage hacker script credits." />
+                <br/>
+                <br/>
+                <ScriptAction label="Script income dates" glyphicon="calendar" page={Page.SCRIPT_INCOME_DATES} text="Configure on which days the hackers receive credits income." />
 
             </div>
             <div className="col-lg-6 rightPane rightPane">
@@ -82,6 +55,21 @@ export const GmScriptHome = () => {
             </div>
         </div>
     )
+}
+
+const ScriptAction = ({label, text, page, glyphicon}: { label: string, text: string, page: Page, glyphicon: string }) => {
+    const dispatch = useDispatch()
+    return <div className="row">
+        <div className="col-lg-4 text">
+            <ActionButton onClick={() => {
+                navigateTo(Page.GM_SCRIPTS_HOME, page, null, dispatch)
+            }}>
+                <><ButtonGlyphicon type={`glyphicon-${glyphicon}`} />{` ${label}`}</>
+            </ActionButton>
+        </div>
+        <div className="col-lg-8 text">{text}</div>
+    </div>
+
 }
 
 

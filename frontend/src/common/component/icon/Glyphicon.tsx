@@ -70,5 +70,5 @@ export const glyphiconFromType = (type: string) => {
 }
 
 export const ButtonGlyphicon = ({type}: { type: string }) => {
-    return <span className={`glyphicon ${type}`} style={{"fontSize": 12, height: 12}}/>
+    return <span className={`glyphicon ${type} text-size`} />
 }

@@ -6,7 +6,6 @@ import {useSelector} from "react-redux";
 
 
 interface Props {
-    width: string
     prefix?: string
 }
 
@@ -19,19 +18,19 @@ export const TerminalPreview = (props: Props) => {
     const terminalText = (props.prefix ? props.prefix : "") + text
     return <div className="row">
         <div className="col-12">
-            <TerminalPreviewContent text={terminalText} width={props.width}/>
+            <TerminalPreviewContent text={terminalText}/>
         </div>
     </div>
 }
 
 
-const TerminalPreviewContent = ({text, width}: { text: string, width: string }) => {
+const TerminalPreviewContent = ({text}: { text: string }) => {
     const lines = text.split("\n")
     const terminalLines = lines.map((line: string) => parseTextToTerminalLine(line))
     return <div>
         <div className="layerLabel" style={{textAlign: "left", paddingTop: 0}}>Preview</div>
-        <div className="terminalPreview" style={{width: width}}>
-            <div className="terminalPanel" style={{width: width}}>
+        <div className="terminalPreview" >
+            <div className="terminalPanel" style={{paddingLeft: "0px", paddingRight: "0px", width: "616px", fontSize: "14px" }}>
                 {terminalLines.map((line: TerminalLineData) => <TerminalLine line={line} key={line.key}/>)}
             </div>
         </div>

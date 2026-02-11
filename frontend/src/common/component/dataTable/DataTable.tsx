@@ -1,4 +1,5 @@
 import React from "react";
+import {getCurrentFontSize} from "../../util/FontSizeListener";
 
 interface DataTableProps {
     rows: React.JSX.Element[],
@@ -6,6 +7,14 @@ interface DataTableProps {
     pageSize: number,
     children: React.JSX.Element
     hr?: React.JSX.Element
+}
+
+const fontAdjustPageSize = (pageSize: number) => {
+    const fontSize = getCurrentFontSize()
+    const rowSize12px = 19
+    const height = pageSize * rowSize12px
+    const rowsSizeForFont = fontSize + 7
+    return Math.floor(height / rowsSizeForFont)
 }
 
 export const DataTable = ({rows, rowTexts, pageSize, children, hr}: DataTableProps) => {
@@ -21,7 +30,8 @@ export const DataTable = ({rows, rowTexts, pageSize, children, hr}: DataTablePro
         })
         .filter((element) => element !== null) as React.JSX.Element[]
 
-    const {pagedRows, page, totalPages} = determinePagingInfo(filteredRows, pageSelection, pageSize)
+    const fontSizeAdjustedPageSize = fontAdjustPageSize(pageSize)
+    const {pagedRows, page, totalPages} = determinePagingInfo(filteredRows, pageSelection, fontSizeAdjustedPageSize)
 
 
     return <>
@@ -34,7 +44,7 @@ export const DataTable = ({rows, rowTexts, pageSize, children, hr}: DataTablePro
             </div>
             <div className="col-lg-3">
             </div>
-            <PageButtons totalPages={totalPages} page={page} rowCount={rows.length} pageSize={pageSize} setPageSelection={setPageSelection}/>
+            <PageButtons totalPages={totalPages} page={page} rowCount={rows.length} pageSize={fontSizeAdjustedPageSize} setPageSelection={setPageSelection}/>
         </div>
         <br/>
         {children}

@@ -25,6 +25,10 @@ export class EditorTextRoot extends Component<Props> {
         super(props)
         document.body.style.backgroundColor = "#333"
         document.body.style.fontSize = "14px"
+        document.documentElement.style.setProperty( "--app-font-size", `14px`);
+        document.documentElement.style.setProperty( "--app-line-height", `16px`);
+
+
 
         const parts = props.path.split("|")
 

@@ -42,7 +42,7 @@ export class TarRoot extends Component<Props> {
 
         tarManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 12})
         initTarServerActions(this.store)
     }
 

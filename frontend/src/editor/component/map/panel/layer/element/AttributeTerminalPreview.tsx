@@ -9,7 +9,7 @@ interface Props {
 export const AttributeTerminalPreview = (props: Props) => {
     return <div className="row">
         <div className="col-12">
-            <TerminalPreview prefix={props.prefix} width={props.width}/>
+            <TerminalPreview prefix={props.prefix} />
         </div>
     </div>
 }

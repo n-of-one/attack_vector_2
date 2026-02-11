@@ -11,6 +11,8 @@ import {currentUser} from "../user/CurrentUser";
 import {HackerIcon} from "./HackerIcon";
 import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/config/ConfigReducer";
 import {HackerSkillsElement} from "./HackerSkillsElement";
+import {InfoBadge} from "../component/ToolTip";
+import {HackerImage} from "../component/HackerImage";
 
 const save = (userId: string, field: string, value: string) => {
     const message = {userId: userId, field, value}
@@ -19,9 +21,10 @@ const save = (userId: string, field: string, value: string) => {
 
 interface Props {
     user: User,
+    me: boolean
 }
 
-export const UserDetails = ({user}: Props) => {
+export const UserDetails = ({user, me}: Props) => {
 
     const isUserManager = userAuthorizations.hasRole(ROLE_USER_MANAGER)
     const allowChangeRole = isUserManager
@@ -38,6 +41,8 @@ export const UserDetails = ({user}: Props) => {
     const showHackerDetails = (user.type === UserType.HACKER)
     const closeButton = isUserManager ? <div className="d-flex flex-row justify-content-end"><CloseButton closeAction={closeUserEdit}/></div> : <></>
 
+    const fontSizeInfoBadge = me ? <InfoBadge placement="bottom" infoText="You can also change the font size by pressing shift + page-up or shift + page-down." /> : <></>
+
     return <>
         {closeButton}
 
@@ -50,7 +55,6 @@ export const UserDetails = ({user}: Props) => {
             attributeSaveName="name"
             readonly={readonlyUserName}
         />
-
         <div className="row form-group">
             <label htmlFor="type" className="col-lg-4 control-label text-muted">Type</label>
             <div className="col-lg-4">
@@ -59,6 +63,23 @@ export const UserDetails = ({user}: Props) => {
                                    save={(value: string) => save(user.id, "type", value)}
                                    readonly={!allowChangeRole}>
                     <RoleOptions userType={user.type}/>
+                </DropDownSaveInput>
+            </div>
+        </div>
+        <div className="row form-group">
+            <label htmlFor="type" className="col-lg-4 control-label text-muted">Font size&nbsp;
+                {fontSizeInfoBadge}
+            </label>
+            <div className="col-lg-4">
+                <DropDownSaveInput id="type" className="form-control"
+                                   selectedValue={user.preferences.fontSize.toString()}
+                                   save={(value: string) => save(user.id, "fontSize", value)}
+                                   readonly={false}>
+                    <>
+                        <option key="12" value="12">12 px</option>
+                        <option key="13" value="13">13 px</option>
+                        <option key="14" value="14">14 px</option>
+                    </>
                 </DropDownSaveInput>
             </div>
         </div>
@@ -110,7 +131,11 @@ const HackerDetails = ({user}: { user: User }) => {
                     </>
                 </DropDownSaveInput>
             </div>
+            <div className="col-lg-2">
+                <HackerImage type={user.hacker!!.icon} you={true} onLoad={() => {}} size={40} />
+            </div>
         </div>
+
 
         <UserAttribute
             user={user}
@@ -175,7 +200,7 @@ const deleteUserButton = (user: User, closeUserEdit: () => void) => {
     return <>
         <hr/>
         <div className="d-flex flex-row-reverse">
-            <button className="btn btn-info button-text" onClick={deleteFunction}>Delete user</button>
+            <button className="btn btn-info text-size" onClick={deleteFunction}>Delete user</button>
         </div>
     </>
 }

@@ -20,7 +20,7 @@ export class AdminRoot extends Component<Props> {
     constructor(props: Props) {
         super(props)
 
-        initGenericServerActions()
+        initGenericServerActions({fontSize: "dynamic"})
 
         this.adminStore = configureStore({
             reducer: adminRootReducer as Reducer<AdminRootState>

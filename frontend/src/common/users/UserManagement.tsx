@@ -37,13 +37,13 @@ export const UserManagementAuthorized = () => {
 
     return (
         <div className="row">
-            <div className="col-lg-2">
+            <div className="col-lg-1">
             </div>
-            <div className="col-lg-4">
+            <div className="col-lg-5">
                 <div className="text">
                     <h3 className="text-info">User management</h3><br/>
                     {CreateUser(user)}
-                    {user !== null ? <UserDetails user={user}/> : <></>}
+                    {user !== null ? <UserDetails user={user} me={false}/> : <></>}
                 </div>
 
             </div>

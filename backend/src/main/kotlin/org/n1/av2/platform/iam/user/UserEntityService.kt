@@ -80,6 +80,7 @@ class UserEntityService(
             type = type,
             externalId = externalId,
             tag = role,
+            preferences = UserPreferences(13)
         )
         save(user)
         return user

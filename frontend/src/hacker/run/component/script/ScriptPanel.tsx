@@ -75,7 +75,7 @@ const ScriptPanelExpandedHead = ({minimize, onlyShowLoaded, setOnlyShowLoaded, r
     return <>
         <div className="row text">
             <ScriptCredits/>
-            <div className="col-lg-3">
+            <div className="col-lg-4">
                 <div className="form-check form-switch">
                     <input className="form-check-input" type="checkbox" role="switch"
                            style={{lineHeight: "16px", marginTop: "2px"}}
@@ -85,11 +85,11 @@ const ScriptPanelExpandedHead = ({minimize, onlyShowLoaded, setOnlyShowLoaded, r
                     <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Only show loaded</label>
                 </div>
             </div>
-            <div className="col-lg-1" style={{"textAlign": "right", "paddingRight": 0}}>
-                RAM
-            </div>
             <div className="col-lg-6">
-                <RamBar ram={ram} size={368}/>
+                <div className="d-flex justify-content-between">
+                    <div>RAM&nbsp;</div>
+                    <RamBar ram={ram} size={368} />
+                </div>
             </div>
             <div className="col-lg-2" style={{paddingLeft: 0}}>{refreshText}</div>
         </div>
@@ -142,7 +142,7 @@ export const ScriptsTable = ({scripts, hr, minimize, ram, showLoadButton}: Scrip
     const rowTexts = sortedScripts.map((script: Script) => `${script.code}~${script.name}~${script.state}`)
 
 
-    return <DataTable rows={rows} rowTexts={rowTexts} pageSize={35} hr={hr}>
+    return <DataTable rows={rows} rowTexts={rowTexts} pageSize={26} hr={hr}>
         <div className="row text strong">
             <div className="col-lg-2 text-end">Code</div>
             <div className="col-lg-2">Name</div>

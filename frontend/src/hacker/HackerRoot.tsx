@@ -28,7 +28,7 @@ export class HackerRoot extends Component {
             devTools: isDevelopmentServer
         })
 
-        initGenericServerActions()
+        initGenericServerActions({fontSize: "dynamic"})
         initRunServerActions(this.store)
 
         webSocketConnection.create(WS_HACKER_MAIN, this.store, () => {
@@ -36,7 +36,6 @@ export class HackerRoot extends Component {
         });
 
         terminalManager.init(this.store)
-
     }
 
 
@@ -50,3 +49,4 @@ export class HackerRoot extends Component {
         )
     }
 }
+

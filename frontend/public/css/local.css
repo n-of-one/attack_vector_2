@@ -1,9 +1,32 @@
+:root {
+    --app-font-size: 13px;
+    --app-line-height: 15px;
+}
+
 body {
     background-color: #222222;
     font-family: 'SpaceMono', 'EmojiSymbols', monospace;
     font-variant-ligatures: none !important;
     font-feature-settings: "liga" 0 !important;
 
+}
+
+
+.text {
+    color: #aaa;
+    font-size: var(--app-font-size);
+    line-height: var(--app-line-height);
+    font-variant-ligatures: none;
+}
+
+.button-text {
+    color: #fff;
+    font-size: var(--app-font-size);
+    line-height: var(--app-line-height);
+}
+
+.text-size {
+    font-size: var(--app-font-size);
 }
 
 .navbar {
@@ -119,17 +142,6 @@ select {
 
 }
 
-.text {
-    color: #aaa;
-    font-size: 12px;
-    line-height: 14px;
-    font-variant-ligatures: none;
-}
-
-.textSize {
-    font-size: 12px;
-}
-
 .dark {
     color: #777;
 !important;
@@ -164,13 +176,6 @@ select {
 .scriptUnusable {
     text-decoration: line-through wavy #aaa 1px;
 }
-
-.button-text {
-    color: #fff;
-    font-size: 12px;
-    line-height: 14px;
-}
-
 
 .errorPage {
     padding: 20px 20px 20px 20px

@@ -108,7 +108,7 @@ const ChooseOrCreateScriptType = () => {
             Create new script type<br/>
             <br/>
         </div>
-        <div className="col-lg-8">
+        <div className="col-lg-8 text-size">
             <TextInput name="create"
                        placeholder="type name"
                        buttonLabel="Create"
@@ -255,7 +255,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             <div className="row">
                 <div className="col-lg-11 text ">
                     <hr/>
-                    <div className="btn btn-info textSize" onClick={deleteType}>Delete type</div>
+                    <div className="btn btn-info text-size" onClick={deleteType}>Delete type</div>
                 </div>
             </div>
 

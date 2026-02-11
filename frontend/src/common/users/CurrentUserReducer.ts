@@ -26,7 +26,12 @@ export interface User {
     id: string,
     name: string,
     type: UserType,
+    preferences: UserPreferences,
     hacker?: Hacker,
+}
+
+export interface UserPreferences {
+    fontSize: number,
 }
 
 export interface Hacker {
@@ -55,6 +60,7 @@ const defaultUser = {
     name: "",
     email: "",
     type: UserType.NO_DATA,
+    preferences: {fontSize: 12},
     hacker: undefined,
     gmNote: "",
 }

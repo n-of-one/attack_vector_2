@@ -80,7 +80,7 @@ class UserAndHackerService(
         val user = userEntityService.getById(userId)
         val hacker = createHackerForSkillDisplay(user)
 
-        return UiUserDetails(user.id, user.name, user.type, hacker)
+        return UiUserDetails(user.id, user.name, user.type, user.preferences, hacker)
     }
 
     fun createHackerForSkillDisplay(user: UserEntity): UiHacker? {
@@ -108,6 +108,7 @@ class UserAndHackerService(
         when (field) {
             "name" -> editUserAttribute(user, "name", value)
             "type" -> editUserAttribute(user, "type", value)
+            "fontSize" -> editUserAttribute(user, "fontSize", value)
             "characterName" -> editHackerAttribute(user, "characterName", value)
             "hackerIcon" -> editHackerAttribute(user, "hackerIcon", value)
             "scriptCredits" -> editHackerAttribute(user, "scriptCredits", value)
@@ -119,6 +120,13 @@ class UserAndHackerService(
     }
 
     private fun editUserAttribute(user: UserEntity, field: String, value: String) {
+        if (field == "fontSize") {
+            // You can always change the font size, even for non-changeable users.
+            val editedUser = changeFontSize(user, value)
+            userEntityService.save(editedUser)
+            return
+        }
+
         if (!user.tag.changeable) {
             sendDetailsOfSpecificUser(user.id) // restore correct value in UI
             throw ValidationException("Cannot change ${user.name} because it is ${user.tag.description}.")
@@ -180,6 +188,11 @@ class UserAndHackerService(
             }
         }
         return user.copy(type = newType)
+    }
+
+    private fun changeFontSize(user: UserEntity, newFontSize: String): UserEntity {
+        val size = newFontSize.toInt()
+        return user.copy(preferences = user.preferences.copy(fontSize = size))
     }
 
     fun delete(userId: String) {

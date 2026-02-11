@@ -67,7 +67,7 @@ export const EditLayerHome = () => {
                 <div className="col-lg-2">
                 </div>
                 <div className="col-lg-6">
-                    <TerminalPreview width="594px"/>
+                    <TerminalPreview />
                 </div>
             </div>
         </div>

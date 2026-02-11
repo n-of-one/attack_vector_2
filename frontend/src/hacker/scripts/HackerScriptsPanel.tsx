@@ -40,6 +40,6 @@ const DeleteUsedAndExpired = ({scripts}: { scripts: Script[] }) => {
         webSocketConnection.send("/hacker/script/cleanup", null)
     }
     return <SilentLink onClick={cleanup}>
-        <div className="btn btn-info" style={{fontSize: "12px"}}>Delete used and expired</div>
+        <div className="btn btn-info text-size">Delete used and expired</div>
     </SilentLink>
 }

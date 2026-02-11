@@ -28,7 +28,7 @@ export const GmStatisticsHome = () => {
                     You can figure out the average hack time for each type of ICE for each strength in those programs.<br/>
                     <br/>
                     <br/>
-                    <Button className="btn btn-info" onClick={exportStatistics}>Export statistics</Button><br/>
+                    <Button className="btn btn-info text-size" onClick={exportStatistics}>Export statistics</Button><br/>
                     <br/>
                 </div>
 

@@ -21,7 +21,7 @@ export const TextInput = (props: Props) => {
 
     const [text, setText] = useState("");
 
-    const totalButtonClass = "btn " + props.buttonClass;
+    const totalButtonClass = "text-size btn " + props.buttonClass;
     const size = props.size || 6;
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +49,7 @@ export const TextInput = (props: Props) => {
     return (
         <div className="row">
             {label}
-            <div className={`col-lg-${size}`} style={{fontSize: "12px"}}>
+            <div className={`col-lg-${size} text-input`}>
                 <input type={inputType} className="form-control"
                        placeholder={props.placeholder}
                        value={text}
@@ -60,7 +60,7 @@ export const TextInput = (props: Props) => {
                 />
             </div>
             <div className="col-lg-2">
-                <button type="button" className={totalButtonClass} style={{fontSize: "12px"}}
+                <button type="button" className={totalButtonClass}
                         onClick={() => submit()}>{props.buttonLabel}</button>
             </div>
         </div>

@@ -158,10 +158,10 @@ export const ConfigItemText = (props: { name: string, value: string, item: strin
 
     return (
         <>
-            <div className="form-group">
+            <div className="form-group text-size">
                 <label htmlFor="exampleInputEmail1" className="text-white">{props.name}</label><br/><br/>
                 <input type="text" className="form-control" id="configItemText" value={currentValue} onChange={(event) => setCurrentValue(event.target.value)}/><br/>
-                <button type="button" className="btn btn-primary btn-sm" onClick={save}>Save</button>
+                <button type="button" className="btn btn-primary btn-sm text-size" onClick={save}>Save</button>
             </div>
             <br/>
             <hr className="thin-hr"/>
