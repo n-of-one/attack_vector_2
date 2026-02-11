@@ -48,9 +48,7 @@ export const Banner = ({hiddenAdminLogin = false, image = false}: Props) => {
                         &nbsp;#|    #|    #|      #|      #|    #|  #|        #|  #|          #|  #|    #|        #|          #|      #|    #|  #|            <i onClick={adminLogin}>  #|</i><br/>
                         &nbsp;#|    #|      #|#|    #|#|    #|#|#|    #|#|#|  #|    #|          #|        #|#|#|    #|#|#|      #|#|    #|#|    #|            <i onClick={adminLogin}>#|#|#|#|</i><br/>
                         <br/>
-                        <span className="text dark ">&nbsp;Version: <SilentLink href="https://github.com/n-of-one/attack_vector_2/blob/main/RELEASE_NOTES.md"
-                                                                                newTab={true}>{version}</SilentLink></span>&nbsp;(<SilentLink
-                        href="/attack_vector_2/docs/index.html" newTab={true}><>docs</></SilentLink>)<br/>
+                        <span className="text dark ">&nbsp;Version: <SilentLink href="https://github.com/n-of-one/attack_vector_2/blob/main/RELEASE_NOTES.md" newTab={true}>{version}</SilentLink></span>&nbsp;(<SilentLink href="/attack_vector_2/docs/index.html" newTab={true}><>docs</></SilentLink>)<br/>
                     </pre>
                     <br/>
                 </div>
