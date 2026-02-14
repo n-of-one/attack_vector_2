@@ -1,41 +1,28 @@
-# Website
+# Readme
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+The documentatino for Attack Vector is made with Docusaurus. 
 
-## Installation
-
-```bash
-yarn
-```
 
 ## Local Development
 
-```bash
-yarn start
+```
+npm run start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-## Build
+## Deployment to Github pages
 
-```bash
-yarn build
+```
+GIT_USER=n-of-one
+npm run deploy
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+## Packaging as part of a release
 
-## Deployment
+First deploy the site to Gitub pages as described above. This will verify that the
+documentation is correct. Github pages has more strict requirements for the
+files and links than docusaurus when running development locally.
 
-Using SSH:
+Packaging of the site is done when running the frontend script 'build'.
 
-```bash
-USE_SSH=true yarn deploy
-```
 
-Not using SSH:
-
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.

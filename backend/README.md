@@ -44,3 +44,7 @@ Step 2. create user
                    pwd: "attackvector2",
                    roles: [ "readWrite"] },
                  { } )`
+
+
+### Generate license file for backend:
+`mvn license:add-third-party`

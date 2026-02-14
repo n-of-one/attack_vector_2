@@ -1,3 +1,60 @@
+# Release notes AV 2.16.0 (14 Februari 2026)
+
+## Features
+
+- Documentation overhaul
+- Adjustable font-size
+- Show hacker icon when choosing it
+- Lock nodes option
+- QR code download
+- Full-screen text editor
+- Show correct times for hacking Tar ICE
+- Force delete script types that are in use
+
+
+### Documentation overhaul
+Documentation has been vastly expanded and restructured as a documentation site. In general there is a lot more documentation.
+
+For players there is more explanation on how the game works, and what all layers and skills do. There is more explanation on the types of ICE and the various difficulty.
+
+For game masters there is now much more info on building sites, how layers work, and also a section on advanced site design. Scripts are also explained in much more detail.
+
+For installation there is more information on how to set up Google authentication 
+
+The documentation for the latest version of Attack Vector is hosted on Github pages: https://n-of-one.github.io/attack_vector_2/docs/ .
+
+
+### Adjustable font-size
+You can now change your font size. Options are 12px, 13px and 14px. The default size for new users is 13px, but existing users will keep their current size of 12px.  You can change font-size at any time with shift + page-up / page-down.
+
+### Show hacker icon when choosing it
+In the user details page, you can now see the hacker icon that you have chosen.
+
+### Lock nodes option
+When editing a site, there is now an option to lock the nodes. When nodes are locked, they cannot be moved. This is useful to prevent accidental moving of nodes.
+
+### QR code download
+Some layers can be accessed directly, without having to start a hacking run. QR codes are an option for this.
+
+QR codes now can be downloaded as PNG or SVG images or can be copied to the clipboard.
+
+### Full-screen text editor
+For text layers, if you have a large amount of text to show, the current editor is too small. An option is added to open a full-screen editor. This is especially useful if you are using the text node to show formatted text.
+
+The terminal preview will assume a font size of 14px, to make sure that formatted output renders correctly for all users.
+
+### Show correct times for hacking Tar ICE
+The tooltips and information now show the correct time that players will take to hack Tar ICE.
+
+### Force delete script types that are in use
+You can now force delete script types that are in use. The warning message will tell you which users still have access to this script type.
+
+
+## Bugfixes
+
+- Fix hacking standalone ICE
+
+
 # Release notes AV 2.15.0 (28 December 2025)
 
 ## Features
