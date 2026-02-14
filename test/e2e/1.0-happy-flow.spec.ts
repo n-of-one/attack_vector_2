@@ -20,12 +20,13 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
 
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 
-    await test.step("Log in a hacker and start run", async () => {
+    await test.step("Log in a hacker and set font size", async () => {
         await login.loginUsingLink("hacker")
-        await hacker.startNewRun("dev")
+        await hacker.setFontSize(13)
     })
 
-    await test.step("Verify site loads correctly", async () => {
+    await test.step("Start run and verify site loads correctly", async () => {
+        await hacker.startNewRun("dev")
         await hacker.verifyScreenshotCanvas("1.0-outside-dev-unscanned")
     })
 
@@ -104,6 +105,7 @@ test('1.0.2 - Joining an existing run and checking services', async ({page}: { p
 
     await test.step("Join dev as angler via shared run link", async () => {
         await login.loginByTyping("angler")
+        await hacker.setFontSize(12)
         await hacker.joinExistingRun("dev")
     })
 

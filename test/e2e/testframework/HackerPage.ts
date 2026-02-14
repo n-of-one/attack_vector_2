@@ -23,6 +23,7 @@ export class HackerPage {
     async startNewRun(siteName: string) {
         log(`Start new run for: ${siteName}`)
 
+        await this.page.getByText('Home').click();
         const siteNameLocator = this.page.getByRole('textbox', {name: 'Site name'})
 
         await siteNameLocator.click()
@@ -35,6 +36,7 @@ export class HackerPage {
 
     async joinExistingRun(siteName: string) {
         log(`Join existing run: ${siteName}`)
+        await this.page.getByText('Home').click();
         await this.page.getByText(siteName).click()
         await expect(this.page.getByText("Site:"), `Verify page to contain ${siteName}`).toContainText(siteName)
         await this.waitForEnterSiteAnimationFinished()
@@ -154,5 +156,11 @@ export class HackerPage {
             throw new Error(`In scan info the text "${expectedText}" was expected to be present ${expectedTimes} times, but found it '${foundTimes} times. 
             Contents of the scan info box: ${scanInfoText}`);
         }
+    }
+
+    async setFontSize(size: number) {
+        log(`Setting font size to: ${size} px`)
+        await this.page.getByText('{').click();
+        await this.page.getByLabel('Font size ?').selectOption(size.toString());
     }
 }

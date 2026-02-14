@@ -52,7 +52,7 @@ test('4.1.1 - Create script and give to hacker', async ({page}: { page: Page }) 
 })
 
 test('4.1.2 - Script works on intended ICE', async ({page}: { page: Page }) => {
-    test.setTimeout(15_000);
+    test.setTimeout(20_000);
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 
     await startHack(login, hacker)

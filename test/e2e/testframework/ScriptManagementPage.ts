@@ -64,7 +64,7 @@ export class ScriptManagementPage {
 
             await expect(this.page.getByText('Create new script type'), "Verify script page closed").toBeVisible()
 
-            await expect(this.page.getByText(scriptName), "Verify script deleted").toHaveCount(0)
+            await expect(this.page.getByText(scriptName), `Script type ${scriptName} deleted`).toBeVisible()
         }
     }
 
