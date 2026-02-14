@@ -67,11 +67,11 @@ export const UserDetails = ({user, me}: Props) => {
             </div>
         </div>
         <div className="row form-group">
-            <label htmlFor="type" className="col-lg-4 control-label text-muted">Font size&nbsp;
+            <label htmlFor="font-size" className="col-lg-4 control-label text-muted">Font size&nbsp;
                 {fontSizeInfoBadge}
             </label>
             <div className="col-lg-4">
-                <DropDownSaveInput id="type" className="form-control"
+                <DropDownSaveInput id="font-size" className="form-control"
                                    selectedValue={user.preferences.fontSize.toString()}
                                    save={(value: string) => save(user.id, "fontSize", value)}
                                    readonly={false}>

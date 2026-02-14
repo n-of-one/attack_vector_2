@@ -41,6 +41,7 @@ enum class ServerActions {
     SERVER_SCRIPT_STATISTICS,       // Send the script statistics to the client
     SERVER_SCRIPT_TYPES,            // Send all script types to the client
     SERVER_EDIT_SCRIPT_TYPE,        // Send to the client that this script type is being edited
+    SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED, // Send to the client whether the force delete option should be enabled in the UI for scripts
 
     SERVER_RECEIVE_SCRIPT_ACCESS,   // Send all script accesses of a user to the client
 

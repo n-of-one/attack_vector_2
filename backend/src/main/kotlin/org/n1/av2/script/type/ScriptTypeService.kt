@@ -2,7 +2,9 @@ package org.n1.av2.script.type
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.connection.ServerActions.SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED
 import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.script.Script
 import org.n1.av2.script.ScriptService
@@ -17,7 +19,8 @@ import kotlin.jvm.optionals.getOrElse
 class ScriptTypeServiceInit(
     private val ScriptTypeService: ScriptTypeService,
     private val ScriptService: ScriptService,
-    private val scriptAccessService: ScriptAccessService) {
+    private val scriptAccessService: ScriptAccessService,
+) {
 
     @PostConstruct
     fun postConstruct() {
@@ -32,7 +35,8 @@ class ScriptTypeService(
     private val scriptTypeRepository: ScriptTypeRepository,
     private val connectionService: ConnectionService,
     private val effectService: ScriptEffectTypeLookup,
-    private val currentUserService: CurrentUserService
+    private val currentUserService: CurrentUserService,
+    private val userEntityService: UserEntityService,
 )  {
 
     lateinit var scriptService: ScriptService
@@ -199,25 +203,48 @@ class ScriptTypeService(
         return scriptTypeRepository.findAll().toList()
     }
 
-    fun delete(scriptTypeId: ScriptTypeId) {
+    fun delete(scriptTypeId: ScriptTypeId, force: Boolean) {
         val scriptType = getById(scriptTypeId)
         val existingScripts: List<Script> = scriptService.findByTypeId(scriptTypeId )
         val usableExistingScripts = existingScripts.filter { scriptService.usable(it)}
 
-        if (usableExistingScripts.isNotEmpty()) {
-            error("Cannot delete ${scriptType.name} because there are still ${usableExistingScripts.size} scripts of this type.")
+        val ownershipError = if (usableExistingScripts.isNotEmpty()) {
+            val instances = usableExistingScripts.map {
+                userEntityService.getUserName(it.ownerUserId)
+            }.toSet().joinToString(", ")
+            "Cannot delete ${scriptType.name} because there are still ${usableExistingScripts.size} scripts of this type, owned by: ${instances}."
         }
+        else null
 
         val accesses = scriptAccessService.findByTypeId(scriptTypeId)
-        if (accesses.isNotEmpty()) {
-            error("Cannot delete ${scriptType.name} because there are still ${accesses.size} access entries for this type.")
+        val accessError = if (accesses.isNotEmpty()) {
+            val instances = accesses.map {
+                userEntityService.getUserName(it.ownerUserId)
+            }.toSet().joinToString(", ")
+            "Cannot delete ${scriptType.name} because there are still ${accesses.size} access entries for this type, owned by: ${instances}."
+
+        }
+        else null
+
+        if (!force && (ownershipError != null || accessError != null)) {
+            ownershipError?.let { connectionService.replyError(it) }
+            accessError?.let { connectionService.replyError(it) }
+            connectionService.reply(SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED, "enabled" to true)
+            error("Delete again (force) to remove these dependencies.")
         }
 
-        val unusableScripts = existingScripts - usableExistingScripts
-        unusableScripts.forEach { script: Script -> scriptService.deleteScript(script.id) }
+        if (existingScripts.isNotEmpty()) {
+            scriptService.deleteByTypeId(scriptTypeId)
+        }
+        if (accesses.isNotEmpty()) {
+            scriptAccessService.deleteByTypeId(scriptTypeId)
+        }
 
+        connectionService.reply(SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED, "enabled" to false)
         scriptTypeRepository.deleteById(scriptTypeId)
         sendScriptTypes()
+
+        connectionService.replyNeutral("Script type ${scriptType.name} deleted.")
     }
 
 }

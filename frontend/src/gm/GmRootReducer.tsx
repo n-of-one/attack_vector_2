@@ -10,6 +10,7 @@ import {ScriptStatistics, scriptStatisticsReducer} from "./scripts/ScriptStatist
 import {ScriptStatus, scriptStatusReducer} from "../common/script/ScriptStatusReducer";
 import {IncomeDate, incomeDateReducer} from "./scripts/income/IncomeDateReducer";
 import {CreditTransaction, creditTransactionReducer} from "../common/script/credits/CreditTransactionReducer";
+import {ScriptUI, scriptUiReducer} from "./scripts/scriptUiReducer";
 
 
 export interface EditUser {
@@ -37,11 +38,13 @@ export interface ScriptManagement {
     types: ScriptType[],
     editTypeId: string | null,
     statistics: ScriptStatistics[],
+    ui: ScriptUI,
 }
 export const scriptManagementReducer = combineReducers({
     types: scriptTypesReducer,
     editTypeId: editScriptTypeReducer,
     statistics: scriptStatisticsReducer,
+    ui: scriptUiReducer,
 })
 
 

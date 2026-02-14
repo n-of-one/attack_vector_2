@@ -26,10 +26,11 @@ class ScriptTypeWsController(
         }
     }
 
+    data class DeleteScriptTypeCommand(val scriptTypeId: ScriptTypeId, val force: Boolean)
     @MessageMapping("/gm/scriptType/delete")
-    fun deleteScriptType(scriptTypeId: ScriptTypeId, userPrincipal: UserPrincipal) {
+    fun deleteScriptType(command: DeleteScriptTypeCommand, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/gm/scriptType/delete", userPrincipal) {
-            scriptTypeService.delete(scriptTypeId)
+            scriptTypeService.delete(command.scriptTypeId, command.force)
         }
     }
 

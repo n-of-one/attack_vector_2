@@ -133,6 +133,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     const close = () => {
         dispatch({type: CLOSE_SCRIPT_TYPE})
     }
+
     const [positiveEffect, setPositiveEffect] = React.useState<string>("")
     const [negativeEffect, setNegativeEffect] = React.useState<string>("")
 
@@ -155,10 +156,6 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
     const addEffect = (effectType: EffectType) => {
         const command = {scriptTypeId: scriptType.id, effectType}
         webSocketConnection.send("/gm/scriptType/addEffect", command)
-    }
-
-    const deleteType = () => {
-        webSocketConnection.send("/gm/scriptType/delete", scriptType.id)
     }
 
     return (<>
@@ -255,7 +252,7 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             <div className="row">
                 <div className="col-lg-11 text ">
                     <hr/>
-                    <div className="btn btn-info text-size" onClick={deleteType}>Delete type</div>
+                    <DeleteScriptButton scriptType={scriptType}/>
                 </div>
             </div>
 
@@ -274,3 +271,16 @@ const EffectList = (props: { scriptType: ScriptType }) => {
     </>
 }
 
+const DeleteScriptButton = ({scriptType}: { scriptType: ScriptType }) => {
+
+    const forceDeleteEnabled = useSelector((state: GmRootState) => state.scriptsManagement.ui.forceDeleteEnabled)
+
+    const deleteType = () => {
+        webSocketConnection.send("/gm/scriptType/delete", { scriptTypeId: scriptType.id, force: forceDeleteEnabled })
+    }
+
+    const deleteText = forceDeleteEnabled ? "Delete type (force)" : "Delete type"
+    const deleteClass = forceDeleteEnabled ? "btn-danger" : "btn-info"
+
+    return <div className={`btn ${deleteClass} text-size`} onClick={deleteType}>{deleteText}</div>
+}

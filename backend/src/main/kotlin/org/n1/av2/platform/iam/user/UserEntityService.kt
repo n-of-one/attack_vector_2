@@ -103,7 +103,7 @@ class UserEntityService(
     }
 
     fun isGmOrSystem(userId: String): Boolean {
-        val user = getById(userId)
+        val user = getByIdOrNull(userId) ?: return false
         return (user.type == UserType.GM || user.type == UserType.SYSTEM)
     }
 

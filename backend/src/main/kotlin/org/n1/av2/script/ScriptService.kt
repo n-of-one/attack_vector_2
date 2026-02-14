@@ -389,4 +389,17 @@ class ScriptService(
         connectionService.toUser(receiverUser.id, ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, "", "You received $amount \uD83D\uDDF2 from ${currentUserService.userEntity.name}"))
     }
 
+    fun deleteByTypeId(scriptTypeId: ScriptTypeId) {
+        val scripts = scriptRepository.findByTypeId(scriptTypeId)
+        scripts.forEach { script ->
+            if (script.state == ScriptState.LOADED) {
+                unloadScript(script.id, true)
+            }
+            scriptRepository.delete(script)
+            userEntityService.getByIdOrNull(script.ownerUserId)?.let { ownerUser ->
+                sendScriptStatusForUser(ownerUser.id)
+            }
+        }
+    }
+
 }

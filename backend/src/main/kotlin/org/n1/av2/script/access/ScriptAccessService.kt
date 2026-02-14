@@ -158,4 +158,9 @@ class ScriptAccessService(
     fun getById(id: ScriptAccessId): ScriptAccess {
         return scriptAccessRepository.findById(id).orElseThrow { error("Script access not found with id: $id") }
     }
+
+    fun deleteByTypeId(scriptTypeId: ScriptTypeId) {
+        val accesses = findByTypeId(scriptTypeId)
+        scriptAccessRepository.deleteAll(accesses)
+    }
 }
