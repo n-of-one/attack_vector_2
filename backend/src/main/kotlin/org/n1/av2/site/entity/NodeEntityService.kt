@@ -14,6 +14,7 @@ import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
+import org.n1.av2.layer.other.shutdownAccelerator.ShutdownAcceleratorLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.util.createId
@@ -219,6 +220,7 @@ class NodeEntityService(
             LayerType.LOCK -> createStatusLightLayer(layerId, LayerType.LOCK, level, defaultName, "locked", "unlocked")
             LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)
             LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
+            LayerType.SHUTDOWN_ACCELERATOR -> ShutdownAcceleratorLayer(layerId, level, defaultName)
             LayerType.CORE -> CoreLayer(layerId, level, defaultName)
             LayerType.SCRIPT_INTERACTION -> ScriptInteractionLayer(layerId, level, defaultName)
             LayerType.SCRIPT_CREDITS -> ScriptCreditsLayer(layerId, level, defaultName)

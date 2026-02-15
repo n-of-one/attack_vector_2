@@ -41,7 +41,7 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
     })
 
     await test.step("Scan from outside", async () => {
-        await hacker.typeCommand("scan", "New nodes discovered: 7", 10.0)
+        await hacker.typeCommand("scan", "New nodes discovered: 9", 10.0)
         await hacker.waitForScanAnimationFinished()
         await hacker.verifyScreenshotCanvas("1.0-outside-dev-scanned")
     })

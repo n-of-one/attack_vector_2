@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 # Keystore
 This layer contains a temporary password of a specific ICE layer. Hacking this layer will reveal the password, but not what ICE it is for.

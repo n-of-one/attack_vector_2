@@ -2,6 +2,7 @@ import {NAVIGATE_PAGE} from "../../common/menu/pageReducer";
 import {CLOSE_SCRIPT_TYPE} from "../../common/script/type/ScriptTypeReducer";
 
 const SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED = "SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED"
+
 export const SELECT_USER_TO_COPY_FROM = "SELECT_USER_TO_COPY_FROM"
 
 export interface ScriptUI {

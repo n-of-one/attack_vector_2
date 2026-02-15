@@ -1,14 +1,15 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2026-02-07 15:12:41"
+    "exportTimeStamp" : "2026-02-15 21:01:14"
   },
   "siteProperties" : {
     "siteId" : "site-593b-4ba3",
     "name" : "dev",
     "description" : "Site created to help with development. Containing all layers",
     "purpose" : "Development",
-    "startNodeNetworkId" : "00"
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : false
   },
   "nodes" : [ {
     "id" : "node-7e39-411b",
@@ -142,7 +143,7 @@
       "name" : "Tar",
       "note" : "",
       "strength" : "VERY_WEAK",
-      "hacked" : true,
+      "hacked" : false,
       "original" : null,
       "totalUnits" : 9000,
       "time1Level1Hacker" : "1h 21m 49s",
@@ -152,7 +153,7 @@
     } ],
     "networkId" : "04",
     "ice" : true,
-    "hacked" : true
+    "hacked" : false
   }, {
     "id" : "node-ed0f-4b7d",
     "siteId" : "site-593b-4ba3",
@@ -243,6 +244,57 @@
     "networkId" : "07",
     "ice" : false,
     "hacked" : true
+  }, {
+    "id" : "node-d843-4a08",
+    "siteId" : "site-593b-4ba3",
+    "type" : "TRANSIT_1",
+    "x" : 785,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-d843-4a08:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-d843-4a08:layer-048d",
+      "type" : "TRIPWIRE",
+      "level" : 1,
+      "name" : "Tripwire",
+      "note" : "",
+      "countdown" : "55:00",
+      "shutdown" : "00:15",
+      "coreLayerId" : null,
+      "coreSiteId" : null
+    } ],
+    "networkId" : "08",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-3218-4c57",
+    "siteId" : "site-593b-4ba3",
+    "type" : "PASSCODE_STORE",
+    "x" : 905,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-3218-4c57:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-3218-4c57:layer-bf90",
+      "type" : "SHUTDOWN_ACCELERATOR",
+      "level" : 1,
+      "name" : "Shutdown amplifier",
+      "note" : "",
+      "increase" : "1:00"
+    } ],
+    "networkId" : "09",
+    "ice" : false,
+    "hacked" : true
   } ],
   "connections" : [ {
     "fromId" : "node-7e39-411b",
@@ -268,5 +320,11 @@
   }, {
     "fromId" : "node-349f-464f",
     "toId" : "node-7439-4cc0"
+  }, {
+    "fromId" : "node-7e39-411b",
+    "toId" : "node-d843-4a08"
+  }, {
+    "fromId" : "node-3218-4c57",
+    "toId" : "node-d843-4a08"
   } ]
 }

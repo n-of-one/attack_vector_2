@@ -1,8 +1,8 @@
-import {Page} from "@playwright/test"
+import {Locator, Page} from "@playwright/test"
 import {expect} from "./fixtures"
 
 import {AvPage} from "./AvPage";
-import {log, wait} from "./utils/testUtils";
+import {closeAllPopups, log, wait} from "./utils/testUtils";
 
 
 export class ScriptManagementPage {
@@ -15,12 +15,10 @@ export class ScriptManagementPage {
     }
 
     async deleteExistingScriptIfItExists(scriptName: string) {
-        await this.navigateToCurrentScriptsOf('hacker')
-        await this.deleteAllScriptsFromHackerWithName(scriptName)
-
         await this.navigateToScriptTypeManagement()
-        await this.deleteScriptIfItExists(scriptName)
+        await this.deleteScriptTypeIfItExists(scriptName)
     }
+
 
     async navigateToCurrentScriptsOf(hackerName: string) {
         log(`Navigate to current scripts of ${hackerName}`)
@@ -36,12 +34,26 @@ export class ScriptManagementPage {
     async deleteAllScriptsFromHackerWithName(scriptName: string) {
         log(`Delete scripts with name ${scriptName} for this hacker`)
         const rows = this.page.locator('[data-row="hacker-script"]', {hasText: scriptName})
-        while (await rows.count() > 0) {
-            const rowToDelete = rows.first()
+        await this.deleteScriptRows(rows)
+    }
+
+    async deleteAllScriptsFromHacker() {
+        log(`Delete scripts of this hacker`)
+
+        await this.navigateToCurrentScriptsOf('hacker')
+
+        const rows = this.page.locator('[data-row="hacker-script"]')
+        await this.deleteScriptRows(rows)
+    }
+
+    private async deleteScriptRows(locator: Locator) {
+        while (await locator.count() > 0) {
+            const rowToDelete = locator.first()
             const scriptCode = await rowToDelete.locator('[data-element="code"]').innerText();
             await rowToDelete.getByTitle('delete').click()
-            await expect(rows.locator('[data-element="code"]', {hasText: scriptCode})).toHaveCount(0)
+            await expect(locator.locator('[data-element="code"]', {hasText: scriptCode})).toHaveCount(0)
         }
+
     }
 
     async navigateToScriptTypeManagement() {
@@ -52,20 +64,47 @@ export class ScriptManagementPage {
         await expect(this.page.getByText('Category'), "Verify script types loaded by checking header rows scripts table").toBeVisible()
     }
 
-    async deleteScriptIfItExists(scriptName: string) {
-        log(`Delete existing script if it exists: ${scriptName}`)
+    async deleteScriptTypeIfItExists(scriptName: string) {
+        log(`Delete existing script type if it exists: ${scriptName}`)
         const existingScript = this.page.getByText(scriptName)
         const exists = await existingScript.isVisible()
 
         if (exists) {
-            await this.page.getByText(scriptName).click();
-            await this.verifyShowingScriptDetails(scriptName)
-            await this.page.getByText('Delete type').click();
-
-            await expect(this.page.getByText('Create new script type'), "Verify script page closed").toBeVisible()
-
-            await expect(this.page.getByText(scriptName), `Script type ${scriptName} deleted`).toBeVisible()
+            await this.deleteScript(scriptName);
         }
+    }
+
+    private async deleteScript(scriptName: string) {
+        await this.page.getByText(scriptName).click()
+        await this.verifyShowingScriptDetails(scriptName)
+        await this.page.getByText('Delete type').click()
+
+        const deleteSuccess = await this.getResultOfDeletingScript(scriptName)
+
+        if (!deleteSuccess) {
+            log(`Force deleting script type: ${scriptName}`)
+            await this.page.locator(".btn", {hasText: "Delete type (force)"}).click()
+            await closeAllPopups(this.page)
+        }
+
+        await expect(this.page.getByText('Create new script type'), "Verify script page closed").toBeVisible()
+        await expect(this.page.getByText(scriptName), `Script type ${scriptName} deleted`).toBeVisible()
+        await closeAllPopups(this.page)
+    }
+
+    private async getResultOfDeletingScript(scriptTypeName: string) {
+        let scriptTypeDeleted: boolean
+        let deleteForceButton: boolean
+
+        do {
+            scriptTypeDeleted = await this.page.locator("#app", {hasText: `Script type ${scriptTypeName} deleted`}).count() > 0;
+            deleteForceButton = await this.page.locator(".btn", {hasText: "Delete type (force)"}).count() > 0;
+            await wait(this.page, 0.1, "await delete processing")
+        }
+        while (!deleteForceButton && !scriptTypeDeleted)
+        return scriptTypeDeleted;
+
+
     }
 
     private async verifyShowingScriptDetails(scriptName: string) {
@@ -81,10 +120,18 @@ export class ScriptManagementPage {
         await this.verifyShowingScriptDetails(scriptName)
     }
 
-    async addUsefulEffect(effectName: string, value?: string) {
+    async addUsefulEffect(effectKey: string, effectName: string, value?: string) {
+        await this.addEffect(effectKey, effectName, "Useful effect", value)
+    }
+
+    async addDrawbackEffect(effectKey: string, effectName: string, value?: string) {
+        await this.addEffect(effectKey, effectName, "Drawback effect", value)
+    }
+
+    async addEffect(effectKey: string, effectName: string, type: string, value?: string) {
         log(`Adding use effect: ${effectName}`)
-        const usefulEffectRow = this.page.locator('[data-row="add-effect"]', {hasText: "Useful effect"})
-        await usefulEffectRow.getByRole('combobox').selectOption('AUTO_HACK_SPECIFIC_ICE_LAYER')
+        const usefulEffectRow = this.page.locator('[data-row="add-effect"]', {hasText: type})
+        await usefulEffectRow.getByRole('combobox').selectOption(effectKey)
         await usefulEffectRow.locator('a').click()
 
         if (value) {

@@ -1,3 +1,24 @@
+# Release notes AV 2.17.0 (14 Februari 2026)
+
+## Features
+
+- Shutdown accelerator layer added
+- Script management improvements
+
+### Shutdown accelerator layer added
+This new layer reduces the time left on running timers (started by tripwires or scripts) when a hacker enters a node that contains it. This allows for new puzzle design in sites.
+
+### Script management improvements
+- Script access of template user is applied to new users
+- Ability to copy script access from one user to another user
+- Default price for scripts added
+
+
+## Bugfixes
+- Deleting a user now also deletes their scripts and script access.
+- Fix importing sites with tripwires without an attached core
+
+
 # Release notes AV 2.16.0 (14 Februari 2026)
 
 ## Features

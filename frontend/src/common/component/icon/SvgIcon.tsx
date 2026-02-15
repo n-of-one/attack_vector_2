@@ -2,9 +2,9 @@ import React from "react"
 import {CORE, LOCK, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
 import { ReactComponent as CopyIcon } from "./svgIcons/9080754_copy.svg";
 import { ReactComponent as PasteIcon } from "./svgIcons/9080712_plus_clipboard.svg";
+
 export const COPY_ICON = "COPY_ICON"
 export const PASTE_ICON = "PASTE_ICON"
-
 
 interface Props {
     type?: string,

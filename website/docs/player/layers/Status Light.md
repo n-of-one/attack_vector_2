@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 ---
 # Status light
 This layer type represent something in the real world that can be turned on and off, or locked and unlocked.

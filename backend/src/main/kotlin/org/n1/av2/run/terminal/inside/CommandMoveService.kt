@@ -6,6 +6,8 @@ import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.shutdownAccelerator.ShutdownAcceleratorLayer
+import org.n1.av2.layer.other.shutdownAccelerator.ShutdownAcceleratorService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
@@ -33,6 +35,7 @@ class CommandMoveService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runEntityService: RunEntityService,
     private val tripwireLayerService: TripwireLayerService,
+    private val shutdownAcceleratorService: ShutdownAcceleratorService,
     private val scanService: ScanService,
     private val userTaskRunner: UserTaskRunner,
     private val connectionService: ConnectionService,
@@ -199,6 +202,7 @@ class CommandMoveService(
         node.layers.forEach { layer ->
             when (layer) {
                 is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, runId)
+                is ShutdownAcceleratorLayer -> shutdownAcceleratorService.hackerArrivesNode(siteId, layer, nodeId, runId)
                 else -> {} // do nothing
             }
         }

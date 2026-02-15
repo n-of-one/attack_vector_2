@@ -15,7 +15,7 @@ import {ScriptAccess} from "../../../common/script/access/ScriptAccessReducer";
 import {COPY_ICON, PASTE_ICON} from "../../../common/component/icon/SvgIcon";
 import {Icon} from "../../../common/component/icon/Icon";
 import {SELECT_USER_TO_COPY_FROM} from "../scriptUiReducer";
-import {notifyQuick, notifySimple} from "../../../common/util/Notification";
+import {notifyQuick} from "../../../common/util/Notification";
 
 
 export const ScriptAccessManagement = () => {

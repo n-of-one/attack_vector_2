@@ -22,6 +22,7 @@ import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
+import org.n1.av2.layer.other.shutdownAccelerator.ShutdownAcceleratorLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
@@ -36,6 +37,11 @@ import org.n1.av2.site.entity.enums.LayerType
 import org.n1.av2.site.entity.enums.NodeType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+
+
+fun JsonNode.asTextOrNull(): String? {
+    return if (this.isNull) null else this.asText()
+}
 
 
 @Service
@@ -167,6 +173,7 @@ class ImportService(
             LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
             LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
+            LayerType.SHUTDOWN_ACCELERATOR -> mapShutdownAcceleratorLayer(input, id, level, name, note)
             LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
             LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
             LayerType.NETWALK_ICE,
@@ -229,8 +236,16 @@ class ImportService(
             id = id, level = level, name = name, note = note,
             countdown = input.get("countdown").asText(),
             shutdown = input.get("shutdown").asText(),
-            coreLayerId = input.get("coreLayerId").asText(),
+            coreLayerId = input.get("coreLayerId").asTextOrNull(),
+            coreSiteId = input.get("coreSiteId").asTextOrNull(),
         )
+    }
+
+    private fun mapShutdownAcceleratorLayer(input: JsonNode, id: String, level: Int, name: String, note: String): ShutdownAcceleratorLayer {
+         return ShutdownAcceleratorLayer(
+             id = id, level = level, name = name, note = note,
+             increase = input.get("increase").asText(),
+         )
     }
 
     private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {

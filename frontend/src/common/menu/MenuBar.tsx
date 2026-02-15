@@ -91,6 +91,7 @@ export const MenuBar = () => {
     )
 }
 
+/* eslint react/jsx-no-target-blank  : 0*/
 const Title = () => {
 
     const currentUser = useSelector((state: HackerRootState) => state.currentUser)

@@ -13,6 +13,7 @@ enum class LayerType(
     TEXT,
     KEYSTORE,
     TRIPWIRE,
+    SHUTDOWN_ACCELERATOR,
     LOCK,
     STATUS_LIGHT,
     CORE,

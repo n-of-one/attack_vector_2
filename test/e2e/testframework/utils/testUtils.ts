@@ -31,3 +31,16 @@ export function countOccurrences(haystack: string, needle: string):number {
         pos = idx + needle.length
     }
 }
+
+export async function closeAllPopups(page: Page) {
+    const popups = page.getByTestId("closeNotification");
+
+    while (await popups.count() > 0) {
+        const handle = await popups.first().elementHandle();
+        if (!handle) break;
+
+        await handle.click();
+
+        await handle.waitForElementState('hidden');
+    }
+}

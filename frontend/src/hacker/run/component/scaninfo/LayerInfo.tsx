@@ -2,7 +2,7 @@ import React from 'react'
 import {LayerType} from "../../../../common/enums/LayerTypes"
 import {Pad} from "../../../../common/component/Pad"
 import {ScanInfoIce} from "./layer/ScanInfoIce"
-import {ScanInfoTripwire} from "./layer/ScanInfoTripwire";
+import {ScanInfoShutdownAccelerator, ScanInfoTripwire} from "./layer/ScanInfoTripwire";
 import {ScanInfoCore} from "./layer/ScanInfoCore";
 import {LayerDetails} from "../../../../common/sites/SiteModel";
 import {assertNever} from "../../../../common/util/Assert";
@@ -19,6 +19,8 @@ const renderLayer = (layer: LayerDetails) => {
             return <></>
         case LayerType.TRIPWIRE:
             return <ScanInfoTripwire layer={layer}/>
+        case LayerType.SHUTDOWN_ACCELERATOR:
+            return <ScanInfoShutdownAccelerator layer={layer}/>
         case LayerType.CORE:
             return <ScanInfoCore layer={layer}/>
         case LayerType.PASSWORD_ICE:
