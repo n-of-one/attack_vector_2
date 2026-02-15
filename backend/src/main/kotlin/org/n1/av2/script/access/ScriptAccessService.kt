@@ -2,9 +2,7 @@ package org.n1.av2.script.access
 
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
-import org.n1.av2.platform.iam.user.CurrentUserService
-import org.n1.av2.platform.iam.user.ROLE_USER_MANAGER
-import org.n1.av2.platform.iam.user.UserAndHackerService
+import org.n1.av2.platform.iam.user.*
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
@@ -38,6 +36,7 @@ class ScriptAccessService(
     private val scriptTypeService: ScriptTypeService,
     private val scriptEffectTypeLookup: ScriptEffectTypeLookup,
     private val timeService: TimeService,
+    private val userEntityService: UserEntityService,
 ) {
 
     lateinit var userAndHackerService: UserAndHackerService
@@ -85,7 +84,7 @@ class ScriptAccessService(
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_ACCESS, scriptAccessUis)
     }
 
-    fun addScriptAccess(typeId: String, userId: String) {
+    fun addScriptAccess(typeId: String, userId: String, receiveForFree: Int = 0, price: Int? = null) {
         validateCanManageAccess()
         validateDoesNotAlreadyHaveAccess(userId, typeId)
         val id = createId("access", scriptAccessRepository::findById)
@@ -95,8 +94,8 @@ class ScriptAccessService(
             id = id,
             ownerUserId = userId,
             typeId = typeId,
-            receiveForFree = 0,
-            price = type.defaultPrice,
+            receiveForFree = receiveForFree,
+            price = price ?: type.defaultPrice,
             lastUsed = timeService.longAgo,
         )
         scriptAccessRepository.save(scriptAccess)
@@ -106,7 +105,9 @@ class ScriptAccessService(
     private fun validateDoesNotAlreadyHaveAccess(userId: String, typeId: String) {
         val accesses = scriptAccessRepository.findByOwnerUserId(userId)
         if (accesses.any { it.typeId == typeId }) {
-            throw ValidationException("User already has access to this script.")
+            val user = userEntityService.getById(userId)
+            val scriptType = scriptTypeService.getById(typeId)
+            throw ValidationException("${user.name} already has access to ${scriptType.name}.")
         }
     }
 
@@ -162,5 +163,31 @@ class ScriptAccessService(
     fun deleteByTypeId(scriptTypeId: ScriptTypeId) {
         val accesses = findByTypeId(scriptTypeId)
         scriptAccessRepository.deleteAll(accesses)
+    }
+
+    fun copyScriptAccess(fromUserId: String, toUserId: String) {
+
+        val existingAccess = scriptAccessRepository.findByOwnerUserId(toUserId)
+
+        val from = userEntityService.getById(fromUserId)
+        val to = userEntityService.getById(toUserId)
+        copyScriptAccess(from, to)
+
+        if (existingAccess.isNotEmpty()) {
+            connectionService.replyError("${to.name} already has some script access, nothing was overwritten.")
+        }
+        connectionService.replyNeutral("Copied script access from ${from.name} to ${to.name}.")
+    }
+
+
+    fun copyScriptAccess(from: UserEntity, to: UserEntity) {
+        findScriptAccessForUser(from.id).forEach { access ->
+            try {
+                addScriptAccess(access.typeId, to.id, access.receiveForFree, access.price)
+            }
+            catch (validationException: ValidationException) {
+                connectionService.replyError(validationException.message!!)
+            }
+        }
     }
 }

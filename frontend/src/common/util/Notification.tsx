@@ -39,6 +39,10 @@ export const notifySimple = (message: string) => {
     createNotification(undefined, message, 8000)
 }
 
+export const notifyQuick = (message: string) => {
+    createNotification(undefined, message, 2000, "top-right", false)
+}
+
 export const notify = ({type, message, title}: { type: NotificationType, title?: string, message: string }) => {
 
 

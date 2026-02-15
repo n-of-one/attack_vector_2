@@ -1,6 +1,6 @@
 import React from "react"
 import {Glyphicon} from "./Glyphicon";
-import {SvgIcon} from "./SvgIcon";
+import {COPY_ICON, PASTE_ICON, SvgIcon} from "./SvgIcon";
 import {
     CODE,
     CORE,
@@ -49,7 +49,7 @@ export const Icon = ({type, display, color, svgColor, size, height}: Props) => {
 }
 
 const iconFamily = (type: string) => {
-    if (type.startsWith("GLYPHICON")) {
+    if (type.toLowerCase().startsWith("glyphicon")) {
         return "glyphicon"
     }
 
@@ -75,6 +75,8 @@ const iconFamily = (type: string) => {
         case STATUS_LIGHT:
         case CORE:
         case SCRIPT_CREDITS:
+        case COPY_ICON:
+        case PASTE_ICON:
             return "svg"
         default: throw new Error("Unknown icon family for type: " + type)
     }

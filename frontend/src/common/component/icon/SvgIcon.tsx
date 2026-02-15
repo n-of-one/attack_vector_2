@@ -1,5 +1,10 @@
 import React from "react"
 import {CORE, LOCK, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
+import { ReactComponent as CopyIcon } from "./svgIcons/9080754_copy.svg";
+import { ReactComponent as PasteIcon } from "./svgIcons/9080712_plus_clipboard.svg";
+export const COPY_ICON = "COPY_ICON"
+export const PASTE_ICON = "PASTE_ICON"
+
 
 interface Props {
     type?: string,
@@ -7,6 +12,13 @@ interface Props {
 }
 
 export const SvgIcon = (props: Props) => {
+    if (props.type === COPY_ICON) {
+        return <CopyIcon width="18px" height="18px" />
+    }
+    if (props.type === PASTE_ICON) {
+        return <PasteIcon width="18px" height="18px" />
+    }
+
     const path = determinePath(props.type)
     const className = props.color ? "svg-color-" + props.color : ""
     return (<img src={path} className={className} width="22px" />)

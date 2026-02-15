@@ -10,6 +10,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.income.ScriptIncomeEntityService
 import org.springframework.stereotype.Service
 
@@ -24,6 +25,7 @@ class UserAndHackerService(
     private val currentUserService: CurrentUserService,
     private val skillService: SkillService,
     private val scriptIncomeEntityService: ScriptIncomeEntityService,
+    private val scriptAccessService: ScriptAccessService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -222,5 +224,8 @@ class UserAndHackerService(
     fun createHackerWithDefaultSkill(user: UserEntity, icon: HackerIcon) {
         hackerEntityService.createHacker(user, icon, "not set")
         skillService.createDefaultSkills(user.id)
+
+        val template = userEntityService.getByName(TEMPLATE_USER_NAME)
+        scriptAccessService.copyScriptAccess(template, user)
     }
 }
