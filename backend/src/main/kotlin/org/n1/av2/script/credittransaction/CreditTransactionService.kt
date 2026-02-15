@@ -9,8 +9,21 @@ import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.platform.util.createId
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
+
+@Configuration
+class CreditTransactionServiceInit(
+    private val userAndHackerService: UserAndHackerService,
+    private val creditTransactionService: CreditTransactionService,
+) {
+    @PostConstruct
+    fun postConstruct() {
+        creditTransactionService.userAndHackerService = userAndHackerService
+    }
+}
 
 @Service
 class CreditTransactionService(
@@ -19,10 +32,11 @@ class CreditTransactionService(
     private val connectionService: ConnectionService,
     private val hackerEntityService: HackerEntityService,
     private val userEntityService: UserEntityService,
-    private val userAndHackerService: UserAndHackerService,
 ) {
-
     private val logger = mu.KotlinLogging.logger {}
+
+    lateinit var userAndHackerService: UserAndHackerService
+
 
     data class UiCreditTransaction(
         val fromUserName: String,

@@ -19,7 +19,20 @@ import org.n1.av2.script.ram.RamService
 import org.n1.av2.script.type.ScriptType
 import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
+
+@Configuration
+class ScriptServiceInit(
+    private val userAndHackerService: UserAndHackerService,
+    private val scriptService: ScriptService,
+) {
+    @PostConstruct
+    fun postConstruct() {
+        scriptService.userAndHackerService = userAndHackerService
+    }
+}
 
 @Service
 class ScriptService(
@@ -33,10 +46,13 @@ class ScriptService(
     private val scriptStatusNotifier: ScriptStatusNotifier,
     private val skillService: SkillService,
     private val hackerEntityService: HackerEntityService,
-    private val userAndHackerService: UserAndHackerService,
     private val userEntityService: UserEntityService,
     private val creditTransactionService: CreditTransactionService,
 ) {
+
+    lateinit var userAndHackerService: UserAndHackerService
+
+
     fun getScriptById(scriptId: ScriptId): Script {
         return scriptRepository.findById(scriptId).orElseThrow { error("Script not found with id: $scriptId") }
     }
@@ -399,6 +415,16 @@ class ScriptService(
             userEntityService.getByIdOrNull(script.ownerUserId)?.let { ownerUser ->
                 sendScriptStatusForUser(ownerUser.id)
             }
+        }
+    }
+
+    fun deleteAllScriptsOfUser(userId: String) {
+        val scripts = scriptRepository.findByOwnerUserId(userId)
+        scripts.forEach { script ->
+            if (script.state == ScriptState.LOADED) {
+                unloadScript(script.id, true)
+            }
+            scriptRepository.delete(script)
         }
     }
 

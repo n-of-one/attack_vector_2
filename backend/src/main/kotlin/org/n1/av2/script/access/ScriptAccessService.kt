@@ -190,4 +190,10 @@ class ScriptAccessService(
             }
         }
     }
+
+    fun deleteAccessForUser(userId: String) {
+        findScriptAccessForUser(userId).forEach { access ->
+            deleteAccess(access.id)
+        }
+    }
 }

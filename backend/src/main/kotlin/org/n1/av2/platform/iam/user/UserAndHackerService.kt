@@ -10,6 +10,7 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.script.ScriptService
 import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.income.ScriptIncomeEntityService
 import org.springframework.stereotype.Service
@@ -26,6 +27,7 @@ class UserAndHackerService(
     private val skillService: SkillService,
     private val scriptIncomeEntityService: ScriptIncomeEntityService,
     private val scriptAccessService: ScriptAccessService,
+    private val scriptService: ScriptService,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -203,6 +205,8 @@ class UserAndHackerService(
         if (!user.tag.changeable) throw ValidationException("Cannot delete ${user.name} because it is ${user.tag.description}.")
 
         runLinkEntityService.deleteAllForUser(userId)
+        scriptService.deleteAllScriptsOfUser(userId)
+        scriptAccessService.deleteAccessForUser(userId)
         userEntityService.delete(userId)
         sendUsersOverview()
         connectionService.replyNeutral("${user.name} deleted")

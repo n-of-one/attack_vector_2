@@ -230,7 +230,8 @@ class ScriptTypeService(
             ownershipError?.let { connectionService.replyError(it) }
             accessError?.let { connectionService.replyError(it) }
             connectionService.reply(SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED, "enabled" to true)
-            error("Delete again (force) to remove these dependencies.")
+            connectionService.replyError("Delete again (force) to remove these dependencies.")
+            return
         }
 
         if (existingScripts.isNotEmpty()) {
