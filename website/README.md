@@ -13,7 +13,7 @@ npm run start
 ## Deployment to Github pages
 
 ```
-GIT_USER=n-of-one
+export GIT_USER=n-of-one
 npm run deploy
 ```
 
