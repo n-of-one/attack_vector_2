@@ -13,6 +13,7 @@ import org.n1.av2.run.runlink.RunLinkEntityService
 import org.n1.av2.script.ScriptService
 import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.income.ScriptIncomeEntityService
+import org.n1.av2.script.ram.RamRepository
 import org.springframework.stereotype.Service
 
 
@@ -28,6 +29,7 @@ class UserAndHackerService(
     private val scriptIncomeEntityService: ScriptIncomeEntityService,
     private val scriptAccessService: ScriptAccessService,
     private val scriptService: ScriptService,
+    private val ramEntityRepo: RamRepository,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -207,6 +209,7 @@ class UserAndHackerService(
         runLinkEntityService.deleteAllForUser(userId)
         scriptService.deleteAllScriptsOfUser(userId)
         scriptAccessService.deleteAccessForUser(userId)
+        ramEntityRepo.findByUserId(userId)?.let { ramEntityRepo.delete(it) }
         userEntityService.delete(userId)
         sendUsersOverview()
         connectionService.replyNeutral("${user.name} deleted")
