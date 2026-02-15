@@ -53,6 +53,7 @@ You can now force delete script types that are in use. The warning message will 
 ## Bugfixes
 
 - Fix hacking standalone ICE
+- Fix showing wrong amount of mines in minesweeper
 
 
 # Release notes AV 2.15.0 (28 December 2025)
