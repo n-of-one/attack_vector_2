@@ -1,4 +1,4 @@
-# Release notes AV 2.17.0 (14 Februari 2026)
+# Release notes AV 2.17.0 (15 Februari 2026)
 
 ## Features
 
