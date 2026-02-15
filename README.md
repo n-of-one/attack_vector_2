@@ -9,7 +9,7 @@
 
 ## More info
 
-The website for Attack Vector 2 is located here: https://attackvector.nl/website
+The website for Attack Vector 2 is located here: https://n-of-one.github.io/attack_vector_2/docs/
 
 ## Version 2
 
@@ -34,10 +34,12 @@ It's open source software with the MIT license which means you can use it for co
 
 ## Technical stuff
 
-The repo consists of two separate projects:
+The repo consists of four separate projects:
 
 - frontend: browers-UI (React/Redux)
 - backend: server (Spring boot/Kotlin)
+- website: website (Docusaurus)
+- tests: e2e tests (Playwright )
 
 As well as stuff like the installation files.
 

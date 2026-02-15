@@ -125,6 +125,11 @@ const numericInputDefault1 = (value: string) => {
     return "1"
 }
 
+const numericInputDefaultEmpty = (value: string) => {
+    if (/^\d+$/.test(value)) return value
+    return ""
+}
+
 const textInput = (value: string) => value
 
 const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
@@ -170,11 +175,11 @@ const ScriptTypeDetails = ({scriptType}: { scriptType: ScriptType }) => {
             <FormTextInputRow label="Size" value={scriptType.size.toString()} save={value => edit("size", value, numericInputDefault1)}
                               labelColumns={3} valueColumns={2}
                               toolTip="This is the amount of RAM the script will take up. Set to 0 if you are not using RAM."/>
-            {/*<FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""}*/}
-            {/*                  save={value => edit("defaultPrice", value, numericInputDefault0)}*/}
-            {/*                  labelColumns={3} valueColumns={2}*/}
-            {/*                  toolTip="This is the default price for hackers to buy this script. (currently not yet implemented). You can override*/}
-            {/*                  this for each individual hacker."/>*/}
+            <FormTextInputRow label="Default price" value={scriptType.defaultPrice?.toString() || ""}
+                              save={value => edit("defaultPrice", value, numericInputDefaultEmpty)}
+                              labelColumns={3} valueColumns={2}
+                              toolTip="This is the default price for hackers to buy this script. Empty means they cannot buy the script. You can override
+                              this for each individual hacker."/>
             <FormTextInputRow label="Note" value={scriptType.gmNote} save={value => edit("gmNote", value, textInput)} labelColumns={3} valueColumns={8}
                               toolTip="This note is for GM's only, it is not shown to the hackers. It can be used to keep track of why this script type exists."/>
             <br/>
