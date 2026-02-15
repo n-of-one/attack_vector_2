@@ -12,13 +12,38 @@ class HttpClient {
         props: Map<String, String>,
         cookies: Array<Cookie> = emptyArray()
     ): String {
+        return call("GET", urlString, props, cookies)
+    }
+
+
+    fun post(urlString: String, body: String, props: Map<String, String>, cookies: Array<Cookie> = emptyArray()): String {
+        return call("POST", urlString, props, cookies, body)
+    }
+
+
+    private fun call(
+        method: String,
+        urlString: String,
+        props: Map<String, String>,
+        cookies: Array<Cookie> = emptyArray(),
+        body: String? = null,
+    ): String {
         val url = URI(urlString).toURL()
         val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
         try {
-            conn.requestMethod = "GET"
+            conn.requestMethod = method
             conn.setRequestProperty("Accept", "application/json")
-            conn.setRequestProperty("Cookie", cookies.joinToString("; ") { "${it.name}=${it.value}" })
-            props.forEach { conn.setRequestProperty(it.key, it.value) }
+            if (cookies.isNotEmpty()) {
+                conn.setRequestProperty("Cookie", cookies.joinToString("; ") { "${it.name}=${it.value}" })
+            }
+            if (props.isNotEmpty()) {
+                props.forEach { conn.setRequestProperty(it.key, it.value) }
+            }
+
+            if (!body.isNullOrEmpty()) {
+                conn.doOutput = true
+                conn.getOutputStream().write(body.toByteArray())
+            }
 
             if (conn.responseCode != 200) {
                 error("Failed : HTTP Error code ${conn.getResponseCode()}")

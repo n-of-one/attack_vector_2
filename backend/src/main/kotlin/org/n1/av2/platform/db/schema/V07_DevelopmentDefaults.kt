@@ -79,7 +79,6 @@ class V07_DevelopmentDefaults(
         finally {
             currentUserService.remove()
         }
-
     }
 
 

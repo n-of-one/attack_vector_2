@@ -20,6 +20,7 @@ class LoginService(
     private val googleOauthService: GoogleOauthService,
     private val currentUserService: CurrentUserService,
     private val loginProtectionService: LoginProtectionService,
+    private val openIdConnectService: OpenIdConnectService
 ) {
 
     fun login(userName: String, password: String, ipAddress: String): List<Cookie> {
@@ -62,6 +63,14 @@ class LoginService(
         return getCookies(user)
     }
 
+    fun getOpenIdConnectLoginUrl(redirectUri: String): String {
+        return openIdConnectService.getLoginUrl(redirectUri)
+    }
+
+    fun openIdConnectLogin(code: String, redirectUri: String): List<Cookie> {
+        val user = openIdConnectService.login(code, redirectUri) ?: return emptyList()
+        return getCookies(user)
+    }
 
 
     fun getCookies(userEntity: UserEntity): List<Cookie> {

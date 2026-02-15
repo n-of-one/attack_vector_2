@@ -7,13 +7,11 @@ import jakarta.validation.Valid
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.authentication.expirationInS
+import org.n1.av2.platform.inputvalidation.LoginRedirectParam
 import org.n1.av2.platform.inputvalidation.SafeJwt
 import org.n1.av2.platform.inputvalidation.SafeString
 import org.n1.av2.platform.util.getIp
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class LoginRestController(
@@ -40,12 +38,14 @@ class LoginRestController(
     }
 
     class GoogleClientIdResponse(val clientId: String)
+
     @GetMapping("/openapi/google/clientId")
     fun googleClientId(): GoogleClientIdResponse {
         return GoogleClientIdResponse(configService.get(ConfigItem.LOGIN_GOOGLE_CLIENT_ID))
     }
 
     class GoogleJwtToken(@get:SafeJwt val jwt: String)
+
     @PostMapping("/openapi/login/google")
     fun googleAuthenticate(@RequestBody @Valid request: GoogleJwtToken, response: HttpServletResponse): LoginResponse {
         try {
@@ -57,6 +57,47 @@ class LoginRestController(
             logger.error("Google login failed", exception)
             return LoginResponse(false, exception.message)
         }
+    }
+
+    @GetMapping("/login-oidc")
+    fun openIdConnectAuthenticate(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        @LoginRedirectParam @RequestParam next: String?
+    ): String {
+        val redirectUri = buildOpenIdConnectCallbackUri(request, next)
+        response.sendRedirect(loginService.getOpenIdConnectLoginUrl(redirectUri))
+        return ""
+    }
+
+    @GetMapping("/openapi/login/oidc")
+    fun openIdConnectCallback(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        @RequestParam code: String,
+        @LoginRedirectParam @RequestParam next: String?
+    ): String {
+        val redirectUri = buildOpenIdConnectCallbackUri(request, next)
+        val loginCookies = loginService.openIdConnectLogin(code, redirectUri)
+        if (loginCookies.isEmpty()) {
+            response.sendRedirect(appendNext("/login-oidc", next))
+            return ""
+        }
+        response.addLoginCookies(loginCookies)
+        response.sendRedirect(next ?: "/")
+        return ""
+    }
+
+    private fun buildOpenIdConnectCallbackUri(request: HttpServletRequest, next: String?): String {
+        val redirectUri = request.scheme + "://" + request.serverName + ":" + request.serverPort + "/openapi/login/oidc"
+        return appendNext(redirectUri, next)
+    }
+
+    private fun appendNext(uri: String, next: String?): String {
+        if (next == null) {
+            return uri
+        }
+        return "$uri?next=$next"
     }
 
 }

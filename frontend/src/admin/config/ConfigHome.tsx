@@ -22,7 +22,13 @@ import {
     ConfigItemQuickPlaying,
     ConfigItemTestingMode
 } from "./items/ConfigItemsDev";
-import {ConfigItemLarpFrontierLolaEnabled, ConfigItemLarpFrontierOrthankToken, ConfigItemLarpName} from "./items/ConfigItemsLarp";
+import {
+    ConfigItemLarpFrontierLolaEnabled,
+    ConfigItemLarpFrontierOrthankToken,
+    ConfigItemLarpOpenIdConnectClientId,
+    ConfigItemLarpOpenIdConnectUrl,
+    ConfigItemLarpName
+} from "./items/ConfigItemsLarp";
 
 
 export const ConfigHome = () => {
@@ -139,6 +145,11 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemLarpFrontierOrthankToken value={props.value}/>
         case ConfigItem.LARP_SPECIFIC_FRONTIER_LOLA_ENABLED:
             return <ConfigItemLarpFrontierLolaEnabled value={props.value}/>
+
+        case ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_URL:
+            return <ConfigItemLarpOpenIdConnectUrl value={props.value}/>
+        case ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID:
+            return <ConfigItemLarpOpenIdConnectClientId value={props.value}/>
 
         default:
             return <h3 className="text-danger">Unknown config item: {props.item}</h3>

@@ -7,6 +7,7 @@ import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.validateDuration
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.util.*
 import javax.annotation.PostConstruct
 
 @Service
@@ -16,7 +17,7 @@ class ConfigService(
 ) {
     private val logger = mu.KotlinLogging.logger {}
 
-    val cache: MutableMap<ConfigItem, String> = HashMap()
+    val cache: MutableMap<ConfigItem, String> = EnumMap(ConfigItem::class.java)
 
     @PostConstruct
     fun logEnvironment() {
@@ -88,7 +89,7 @@ class ConfigService(
 
     fun getAsDuration(item: ConfigItem): Duration {
         val stringValue = get(item)
-        if (stringValue.validateDuration() != null ) error("Duration invalid for config item: $item")
+        if (stringValue.validateDuration() != null) error("Duration invalid for config item: $item")
         return stringValue.toDuration()
     }
 }
