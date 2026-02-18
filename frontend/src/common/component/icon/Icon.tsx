@@ -21,7 +21,7 @@ import {
     TRACE_LOG,
     TRACER,
     TRIPWIRE,
-    SHUTDOWN_ACCELERATOR,
+    TIMER_ADJUSTER,
     WORD_SEARCH_ICE
 } from "../../enums/LayerTypes";
 
@@ -70,7 +70,7 @@ const iconFamily = (type: string) => {
         case KEYSTORE:
         case SWEEPER_ICE:
         case SCRIPT_INTERACTION:
-        case SHUTDOWN_ACCELERATOR:
+        case TIMER_ADJUSTER:
             return "glyphicon"
         case LOCK:
         case TRIPWIRE:

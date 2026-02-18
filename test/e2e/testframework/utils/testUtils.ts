@@ -1,4 +1,7 @@
 import {expect, Page} from "@playwright/test";
+import {LoginPage} from "../LoginPage";
+import {HackerPage, START_ATTACK_QUICK} from "../HackerPage";
+import {test} from "../fixtures";
 
 export function confirmDialog(page: Page, expected: string) {
     page.once('dialog', dialog => {
@@ -43,4 +46,10 @@ export async function closeAllPopups(page: Page) {
 
         await handle.waitForElementState('hidden');
     }
+}
+
+export async function startQuickHack(login: LoginPage, hacker: HackerPage, siteName: string) {
+    await login.loginUsingLink("hacker")
+    await hacker.joinExistingRun(siteName)
+    await hacker.startAttack(START_ATTACK_QUICK)
 }

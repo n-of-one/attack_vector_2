@@ -1,3 +1,28 @@
+# Release notes AV 2.17.1 (18 Februari 2026)
+
+## Features
+- Shutdown accelerator layer -> Timer adjuster layer
+
+## Bugfixes
+- Importing sites was broken (again)
+
+
+### Shutdown accelerator layer -> Timer adjuster layer
+The Shutdown accelerator layer (introduced last release) has been reworked into the Timer adjuster layer, which is more flexible.
+
+This layer now allows to increase the countdown timer (helping the players) instead of decreasing it.
+
+This layer now allows you to choose how it works if multiple hackers enter a node with this layer. The options are:
+- only trigger once
+- trigger once per hacker
+- trigger on every hacker even if they entered the node before
+
+This layer no longer affects timers started by scripts.
+
+Existing Shutdown accelerator layers will be updated to the new type when you upgrade Attack Vector. Any layers named: "Shutdown accelerator" will be renamed to "Timer accelerator". Their behavior will be the same.
+
+
+
 # Release notes AV 2.17.0 (15 Februari 2026)
 
 ## Features

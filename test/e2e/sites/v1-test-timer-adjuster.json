@@ -1,0 +1,159 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-02-18 11:51:36"
+  },
+  "siteProperties" : {
+    "siteId" : "site-4751-4b94",
+    "name" : "test-timer-adjuster",
+    "description" : "",
+    "purpose" : "",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : true
+  },
+  "nodes" : [ {
+    "id" : "node-ca01-4e53",
+    "siteId" : "site-4751-4b94",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-ca01-4e53:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-ca01-4e53:layer-908f",
+      "type" : "TRIPWIRE",
+      "level" : 1,
+      "name" : "Tripwire",
+      "note" : "",
+      "countdown" : "50:00",
+      "shutdown" : "01:00",
+      "coreLayerId" : null,
+      "coreSiteId" : null
+    } ],
+    "networkId" : "00",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-147f-4628",
+    "siteId" : "site-4751-4b94",
+    "type" : "TRANSIT_1",
+    "x" : 505,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-147f-4628:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-147f-4628:layer-fdec",
+      "type" : "TIMER_ADJUSTER",
+      "level" : 1,
+      "name" : "Timer accelerator",
+      "note" : "",
+      "amount" : "1:00",
+      "adjustmentType" : "SPEED_UP",
+      "recurring" : "FIRST_ENTRY_ONLY"
+    } ],
+    "networkId" : "01",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-ef54-46f2",
+    "siteId" : "site-4751-4b94",
+    "type" : "TRANSIT_3",
+    "x" : 625,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-ef54-46f2:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-ef54-46f2:layer-481c",
+      "type" : "TIMER_ADJUSTER",
+      "level" : 1,
+      "name" : "Timer accelerator",
+      "note" : "",
+      "amount" : "1:00",
+      "adjustmentType" : "SPEED_UP",
+      "recurring" : "EVERY_ENTRY"
+    } ],
+    "networkId" : "02",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-082d-484b",
+    "siteId" : "site-4751-4b94",
+    "type" : "TRANSIT_4",
+    "x" : 745,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-082d-484b:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-082d-484b:layer-c3c3",
+      "type" : "TIMER_ADJUSTER",
+      "level" : 1,
+      "name" : "Timer accelerator",
+      "note" : "",
+      "amount" : "1:00",
+      "adjustmentType" : "SPEED_UP",
+      "recurring" : "EACH_HACKER_ONCE"
+    } ],
+    "networkId" : "03",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-93a3-426e",
+    "siteId" : "site-4751-4b94",
+    "type" : "RESOURCE_STORE",
+    "x" : 745,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-93a3-426e:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-93a3-426e:layer-3841",
+      "type" : "TIMER_ADJUSTER",
+      "level" : 1,
+      "name" : "Timer decelerator",
+      "note" : "",
+      "amount" : "5:00",
+      "adjustmentType" : "SLOW_DOWN",
+      "recurring" : "EVERY_ENTRY"
+    } ],
+    "networkId" : "04",
+    "ice" : false,
+    "hacked" : true
+  } ],
+  "connections" : [ {
+    "fromId" : "node-ca01-4e53",
+    "toId" : "node-147f-4628"
+  }, {
+    "fromId" : "node-ef54-46f2",
+    "toId" : "node-ca01-4e53"
+  }, {
+    "fromId" : "node-ca01-4e53",
+    "toId" : "node-082d-484b"
+  }, {
+    "fromId" : "node-ca01-4e53",
+    "toId" : "node-93a3-426e"
+  } ]
+}

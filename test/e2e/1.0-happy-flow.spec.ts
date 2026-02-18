@@ -101,64 +101,64 @@ test('1.0.1 - Fresh run and basic commands', async ({page}: { page: Page }) => {
 test('1.0.2 - Joining an existing run and checking services', async ({page}: { page: Page }) => {
     test.setTimeout(50_000);
 
-    const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
+    const [login, angler] = [new LoginPage(page), new HackerPage(page)]
 
     await test.step("Join dev as angler via shared run link", async () => {
         await login.loginByTyping("angler")
-        await hacker.setFontSize(12)
-        await hacker.joinExistingRun("dev")
+        await angler.setFontSize(12)
+        await angler.joinExistingRun("dev")
     })
 
     await test.step("Command: quick attack", async () => {
-        await hacker.startAttack(START_ATTACK_QUICK, "Entered node 00: entry" )
-        await hacker.typeCommand("view", "Node name: entry")
+        await angler.startAttack(START_ATTACK_QUICK, "Entered node 00: entry" )
+        await angler.typeCommand("view", "Node name: entry")
     })
 
     await test.step("Hack OS layer", async () => {
-        await hacker.typeCommand("hack 0", "Hacking OS reveals nothing new")
+        await angler.typeCommand("hack 0", "Hacking OS reveals nothing new")
     })
 
     await test.step("Hack Text layer", async () => {
-        await hacker.typeCommand("hack 1",
+        await angler.typeCommand("hack 1",
             ["Hacked: 1 Text", "The butler did it."])
     })
 
     await test.step("Command quickmove", async () => {
-        await hacker.typeCommand("qmove 01")
-        await hacker.typeCommand("view", "2 Keystore")
+        await angler.typeCommand("qmove 01")
+        await angler.typeCommand("view", "2 Keystore")
     })
 
     await test.step("Hack keystore", async () => {
-        await hacker.typeCommand("hack 2", "hacked. Password found: Gaanth/")
+        await angler.typeCommand("hack 2", "hacked. Password found: Gaanth/")
     })
 
     await test.step("Trigger & hack tripwire", async () => {
-        await hacker.typeCommand("qmove 07", "1 triggered site reset in 10 seconds")
-        await hacker.typeCommand("hack 1", "This tripwire is managed by core in node 07")
+        await angler.typeCommand("qmove 07", "1 triggered site reset in 10 seconds")
+        await angler.typeCommand("hack 1", "This tripwire is managed by core in node 07")
     })
 
     await test.step("Hack core", async () => {
-        await hacker.typeCommand("hack 2",
+        await angler.typeCommand("hack 2",
             ["Hacked: 2 Core", "- stopped timer for this site"])
     })
 
     await test.step("Trigger tripwire and let it reset the site", async () => {
-        await hacker.typeCommand("qmove 00")
-        await hacker.typeCommand("qmove 07")
-        await hacker.verifyAppText('00:00:07');
-        await hacker.verifyAppText('[Site] ➜ shutdown for 15 seconds');
-        await hacker.verifyAppText('00:00:04');
-        await hacker.verifyAppText('00:00:02');
-        await hacker.expectTerminalText(["Site down for maintenance for 15 seconds", "Disconnected (server abort)"])
+        await angler.typeCommand("qmove 00")
+        await angler.typeCommand("qmove 07")
+        await angler.verifyAppText('00:00:07');
+        await angler.verifyAppText('[Site] ➜ shutdown for 15 seconds');
+        await angler.verifyAppText('00:00:04');
+        await angler.verifyAppText('00:00:02');
+        await angler.expectTerminalText(["Site down for maintenance for 15 seconds", "Disconnected (server abort)"])
 
         await wait(page, 5.0, "Nodes animate to scan mode quickly")
-        await hacker.verifyScreenshotCanvas("1.0-outside-dev-resetting-angler")
-        await hacker.typeCommand("attack")
-        await hacker.expectTerminalText("Connection refused. (site is in shutdown mode)")
+        await angler.verifyScreenshotCanvas("1.0-outside-dev-resetting-angler")
+        await angler.typeCommand("attack")
+        await angler.expectTerminalText("Connection refused. (site is in shutdown mode)")
         await wait(page, 10.0, "Wait for shutdown to complete")
-        await hacker.expectTerminalText("Site connection available again")
+        await angler.expectTerminalText("Site connection available again")
     })
     await test.step("Attack site again", async () => {
-        await hacker.startAttack(START_ATTACK_QUICK)
+        await angler.startAttack(START_ATTACK_QUICK)
     })
 })

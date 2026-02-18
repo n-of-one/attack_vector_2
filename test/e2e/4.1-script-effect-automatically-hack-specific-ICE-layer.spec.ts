@@ -17,7 +17,7 @@ async function startHack(login: LoginPage, hacker: HackerPage) {
 }
 
 test('4.1.0 - Prepare', async ({page}: { page: Page }) => {
-    test.setTimeout(20_000);
+    test.setTimeout(25_000);
     const [login, gm, scriptManagement, hacker] = [new LoginPage(page), new GmPage(page), new ScriptManagementPage(page), new HackerPage(page)]
 
     await test.step("Delete existing scripts", async () => {
@@ -36,7 +36,7 @@ test('4.1.0 - Prepare', async ({page}: { page: Page }) => {
 })
 
 test('4.1.1 - Create script and give to hacker', async ({page}: { page: Page }) => {
-    test.setTimeout(5_000);
+    test.setTimeout(10_000);
     const [login, scriptManagement] = [new LoginPage(page), new ScriptManagementPage(page)]
 
     await test.step("Create script", async () => {

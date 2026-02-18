@@ -69,6 +69,12 @@ export class HackerPage {
         }
     }
 
+    async expectNotTerminalText(text: string) {
+        log(`Verify terminal does not contain text: ${text}`)
+        await expect(this.page.locator(".terminalPanel"), `Verify terminal text: ${text}`).not.toContainText(text)
+
+    }
+
     async verifyScreenshotCanvas(name: string) {
         log(`Verify screenshot: ${name}`)
         await expect(this.page).toHaveScreenshot(`${name}.png`, canvasScreenshotOptions)

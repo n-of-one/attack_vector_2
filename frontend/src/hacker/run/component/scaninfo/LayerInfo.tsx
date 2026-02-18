@@ -19,7 +19,7 @@ const renderLayer = (layer: LayerDetails) => {
             return <></>
         case LayerType.TRIPWIRE:
             return <ScanInfoTripwire layer={layer}/>
-        case LayerType.SHUTDOWN_ACCELERATOR:
+        case LayerType.TIMER_ADJUSTER:
             return <ScanInfoShutdownAccelerator layer={layer}/>
         case LayerType.CORE:
             return <ScanInfoCore layer={layer}/>

@@ -219,9 +219,7 @@ class TimerService(
         }
     }
 
-    fun delayTripwireTimer(layer: TripwireLayer, duration: Duration, siteId: String) {
-        val timer = timerEntityService.findByLayer(layer.id) ?: error("No active countdown timer found for tripwire-layer ${layer.id}")
-
+    fun delayTripwireTimer(timer: Timer, duration: Duration) {
         val updatedTimer = timer.copy(finishAt = timer.finishAt.plus(duration))
         timerEntityService.update(updatedTimer)
 

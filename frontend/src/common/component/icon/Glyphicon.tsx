@@ -12,7 +12,7 @@ import {
     SWEEPER_ICE,
     TANGLE_ICE,
     TAR_ICE,
-    TEXT, SHUTDOWN_ACCELERATOR,
+    TEXT, TIMER_ADJUSTER,
     TRACE_LOG,
     TRACER,
     WORD_SEARCH_ICE
@@ -63,7 +63,7 @@ export const glyphiconFromType = (type: string) => {
         case SCRIPT_INTERACTION: return "glyphicon-expand"
         case SCRIPT_CREDITS:
             return "glyphicon-inbox"
-        case SHUTDOWN_ACCELERATOR: return "glyphicon-forward"
+        case TIMER_ADJUSTER: return "glyphicon-forward"
         default:
             console.log("unknown type:" + type)
             return "glyphicon-thumbs-down"

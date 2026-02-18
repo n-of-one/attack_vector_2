@@ -12,7 +12,7 @@ import {
     SWEEPER_ICE,
     TANGLE_ICE,
     TAR_ICE,
-    TEXT, SHUTDOWN_ACCELERATOR,
+    TEXT, TIMER_ADJUSTER,
     TRIPWIRE,
     WORD_SEARCH_ICE
 } from "../../../../common/enums/LayerTypes"
@@ -61,7 +61,7 @@ export const LayersPanel = () => {
                     {regular(TEXT, "white")}
                     {regular(KEYSTORE, "white")}
                     {regular(TRIPWIRE, "white")}
-                    {regular(SHUTDOWN_ACCELERATOR, "white")}
+                    {regular(TIMER_ADJUSTER, "white")}
                     {regular(CORE, "white")}
                     {regular(SCRIPT_INTERACTION, "white")}
                     {notForHackers(SCRIPT_CREDITS, "white")}

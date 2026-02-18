@@ -79,20 +79,19 @@ export class ScriptManagementPage {
         await this.verifyShowingScriptDetails(scriptName)
         await this.page.getByText('Delete type').click()
 
-        const deleteSuccess = await this.getResultOfDeletingScript(scriptName)
+        const deleteSuccess = await this.wasScriptDeletionSuccessfulInOneGo(scriptName)
 
         if (!deleteSuccess) {
             log(`Force deleting script type: ${scriptName}`)
             await this.page.locator(".btn", {hasText: "Delete type (force)"}).click()
-            await closeAllPopups(this.page)
         }
 
         await expect(this.page.getByText('Create new script type'), "Verify script page closed").toBeVisible()
-        await expect(this.page.getByText(scriptName), `Script type ${scriptName} deleted`).toBeVisible()
+        await expect(this.page.getByText(`Script type ${scriptName} deleted`), "Verify script deletion confirmation popup").toBeVisible()
         await closeAllPopups(this.page)
     }
 
-    private async getResultOfDeletingScript(scriptTypeName: string) {
+    private async wasScriptDeletionSuccessfulInOneGo(scriptTypeName: string) {
         let scriptTypeDeleted: boolean
         let deleteForceButton: boolean
 
@@ -166,6 +165,8 @@ export class ScriptManagementPage {
             hasText: scriptName,
             has: this.page.getByTitle('Instant load in memory')
         })
+
+        await expect(rows, `Verify all script ${scriptName} added to hacker's scripts`).toHaveCount(count)
 
         while (await rows.count() > 0) {
             const rowsToLoad = rows.first()

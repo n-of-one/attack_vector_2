@@ -4,7 +4,6 @@ import org.n1.av2.editor.AddNode
 import org.n1.av2.editor.SiteEditorStateEntityService
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.editor.SiteValidationService
-import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
@@ -19,6 +18,7 @@ import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.enums.NodeType
 import org.n1.av2.site.tutorial.SiteCloneService
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 
 enum class CoreLayerRemovalType {
@@ -33,7 +33,6 @@ class SiteService(
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
-    private val iceService: IceService,
     private val currentUserService: CurrentUserService,
     private val userEntityService: UserEntityService,
     private val siteValidationService: SiteValidationService,
@@ -145,12 +144,12 @@ class SiteService(
     }
 
     fun removeSite(siteId: String) {
+        siteResetService.resetSite(siteId, Duration.parse("PT96H"))
+
         sitePropertiesEntityService.delete(siteId)
         nodeEntityService.deleteAllForSite(siteId)
         connectionEntityService.deleteAllForSite(siteId)
         siteEditorStateEntityService.delete(siteId)
-
-        iceService.resetIceForSite(siteId)
         sendSitesList()
     }
 
@@ -182,9 +181,9 @@ class SiteService(
         }
     }
 
-    fun updateHackable(siteId: String, newHackableValue: Boolean) {
+    fun updateHackable(siteId: String, newHackableValue: Boolean, validateFirst: Boolean = true) {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        if (!siteProperties.siteStructureOk && newHackableValue) {
+        if (!siteProperties.siteStructureOk && newHackableValue && validateFirst) {
             connectionService.replyNeutral("The site \"${siteProperties.name}\" has errors. Fix these before making it hackable.")
             return
         }

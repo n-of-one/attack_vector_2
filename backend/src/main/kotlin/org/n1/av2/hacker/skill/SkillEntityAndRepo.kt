@@ -21,7 +21,7 @@ data class Skill(
     val value: String?,
     val usedOnSiteIds: List<String>
 ) {
-    constructor(id: SkillId, userId: String, type: SkillType) : this(id, userId, type, type.defaultValue, emptyList())
+    constructor(id: SkillId, userId: String, type: SkillType, value: String?) : this(id, userId, type, value, emptyList())
 }
 
 @Repository

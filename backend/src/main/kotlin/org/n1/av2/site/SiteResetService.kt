@@ -7,6 +7,7 @@ import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreService
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
@@ -32,12 +33,14 @@ class InitSiteResetService(
     val siteResetService: SiteResetService,
     val runService: RunService,
     val timerService: TimerService,
+    val timerAdjusterService: TimerAdjusterService,
 ) {
 
     @PostConstruct
     fun postConstruct() {
         siteResetService.runService = runService
         siteResetService.timerService = timerService
+        siteResetService.timerAdjusterService = timerAdjusterService
     }
 }
 
@@ -56,6 +59,7 @@ class SiteResetService(
 
     lateinit var runService: RunService
     lateinit var timerService: TimerService
+    lateinit var timerAdjusterService: TimerAdjusterService
 
     fun refreshSite(siteId: String) {
         resetSite(siteId, Duration.ZERO)
@@ -81,6 +85,7 @@ class SiteResetService(
         iceService.resetIceForSite(siteId)
 
         timerService.removeTimersForTargetSite(siteId)
+        timerAdjusterService.siteReset(siteId)
 
         runService.updateRunLinksForResetSite(siteId)
 

@@ -18,7 +18,7 @@ import {LayerCorePanel} from "./type/panel/app/LayerCorePanel";
 import {LayerScriptInteractionPanel} from "./type/panel/app/LayerScriptInteraction";
 import {LayerDetails, NodeI} from "../../../../../common/sites/SiteModel";
 import {LayerScriptCreditsPanel} from "./type/panel/app/LayerScriptCreditsPanel";
-import {LayerShutdownAcceleratorPanel} from "./type/panel/app/LayerShutdownAcceleratorPanel";
+import {LayerTimerAdjusterPanel} from "./type/panel/app/LayerTimerAdjusterPanel";
 import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
@@ -53,8 +53,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerKeyStorePanel node={node} layer={layer}/>
         case LayerType.TRIPWIRE:
             return <LayerTripwirePanel node={node} layer={layer}/>
-        case LayerType.SHUTDOWN_ACCELERATOR:
-            return <LayerShutdownAcceleratorPanel node={node} layer={layer}/>
+        case LayerType.TIMER_ADJUSTER:
+            return <LayerTimerAdjusterPanel node={node} layer={layer}/>
         case LayerType.CORE:
             return <LayerCorePanel node={node} layer={layer}/>
         case LayerType.SCRIPT_INTERACTION:

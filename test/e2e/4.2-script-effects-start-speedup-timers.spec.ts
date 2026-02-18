@@ -8,17 +8,19 @@ import {GmPage} from "./testframework/GmPage";
 const RESET_SCRIPT_NAME = "starttimer"
 const SPEEDUP_SCRIPT_NAME = "speedup"
 
+const SITE_NAME = "dev"
+
 
 async function startHack(login: LoginPage, hacker: HackerPage) {
     await test.step("Setup", async () => {
         await login.loginUsingLink("hacker")
-        await hacker.joinExistingRun("dev")
+        await hacker.joinExistingRun(SITE_NAME)
         await hacker.startAttack(START_ATTACK_QUICK)
     })
 }
 
-test('4.1.0 - Prepare', async ({page}: { page: Page }) => {
-    test.setTimeout(20_000);
+test('4.2.0 - Prepare', async ({page}: { page: Page }) => {
+    test.setTimeout(25_000);
     const [login, gm, scriptManagement, hacker] = [new LoginPage(page), new GmPage(page), new ScriptManagementPage(page), new HackerPage(page)]
 
     await test.step("Delete existing scripts", async () => {
@@ -31,15 +33,15 @@ test('4.1.0 - Prepare', async ({page}: { page: Page }) => {
     })
 
     await test.step("Prepare run", async () => {
-        await gm.deleteAllRuns("dev")
+        await gm.deleteAllRuns(SITE_NAME)
         await login.loginUsingLink("hacker")
-        await hacker.startNewRun("dev")
+        await hacker.startNewRun(SITE_NAME)
         await hacker.typeCommand("qs")
         await hacker.waitForScanAnimationFinished()
     })
 })
 
-test('4.1.1 - Create scripts and give them to hacker', async ({page}: { page: Page }) => {
+test('4.2.1 - Create scripts and give them to hacker', async ({page}: { page: Page }) => {
     test.setTimeout(15_000);
     const [login, scriptManagement] = [new LoginPage(page), new ScriptManagementPage(page)]
 
@@ -65,8 +67,8 @@ test('4.1.1 - Create scripts and give them to hacker', async ({page}: { page: Pa
     })
 })
 
-test('4.1.2 - Script works as intended', async ({page}: { page: Page }) => {
-    test.setTimeout(20_000);
+test('4.2.2 - Script works as intended', async ({page}: { page: Page }) => {
+    test.setTimeout(25_000);
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 
     await startHack(login, hacker)
@@ -78,7 +80,7 @@ test('4.1.2 - Script works as intended', async ({page}: { page: Page }) => {
         const scriptCodeStartTimer = await hacker.getCodeForScript(RESET_SCRIPT_NAME)
         await hacker.typeCommand(`run ${scriptCodeStartTimer} 1`)
         await hacker.expectTerminalText("Script triggered site reset in 10 minutes")
-        await hacker.verifyAppText('00:09:5');
+        await hacker.verifyAppText('00:09:5')
 
     })
 
@@ -86,22 +88,30 @@ test('4.1.2 - Script works as intended', async ({page}: { page: Page }) => {
         await hacker.typeCommand(`run ${scriptCodeSpeedup}`)
 
         await hacker.expectTerminalText("Countdown accelerated by 1 minute")
-        await hacker.verifyAppText('00:08:5');
+        await hacker.verifyAppText('00:08:5')
     })
 
     await test.step("Trigger tripwire timer, verify that its a second timer", async () => {
         await hacker.typeCommand("move 08", "Layer 1 triggered site reset in 55 minutes.")
 
-        await hacker.verifyAppText('00:08:');
-        await hacker.verifyAppText('00:54:');
+        await hacker.verifyAppText('00:08:') // script timer
+        await hacker.verifyAppText('00:54:') // tripwire timer
     })
 
-    await test.step("Trigger accelerator layer, verify both timers affected", async () => {
+    await test.step("Trigger timer adjust layer, verify that only tripwire timers is affected", async () => {
         await hacker.typeCommand("move 09",
-            ["Shutdown amplifier accelerates existing shutdown timers.", "Countdown accelerated by 1 minute"])
+            ["Shutdown amplifier speeds up existing shutdown timers.", "Countdown accelerated by 1 minute"])
 
-        await hacker.verifyAppText('00:07:');
-        await hacker.verifyAppText('00:53:');
+        await hacker.verifyAppText('00:08:') // script timer, unaffected
+        await hacker.verifyAppText('00:53:') // tripwire timer, sped up by 1 minute
     })
 
+})
+
+test('4.2.3 - cleanup', async ({page}: { page: Page }) => {
+    await test.step("Reset site to remove timers", async () => {
+        const [login, gm] = [new LoginPage(page), new GmPage(page)]
+        await login.loginUsingLink("gm")
+        await gm.deleteAllRuns(SITE_NAME)
+    })
 })
