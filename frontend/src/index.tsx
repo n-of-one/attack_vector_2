@@ -11,13 +11,13 @@ import {Privacy} from "./Privacy";
 import {HackerRoot} from "./hacker/HackerRoot";
 import {GmRoot} from "./gm/GmRoot";
 import {Standalone} from "./standalone/Standalone";
-import {WebsiteLandingPage} from "./website/WebsiteLandingPage";
-import {WebsiteRouting} from "./website/WebsiteRouting";
 import {Lola} from "./larp/frontier/Lola";
 import {AdminRoot} from "./admin/AdminRoot";
 import {GoogleAuth} from "./login/GoogleAuth";
 import {DevLogin} from "./login/DevLogin";
 import {handleZoom} from "./common/util/ZoomUtil";
+import {EditorTextRoot} from "./editor-text/EditorTextRoot";
+import {decodePath} from "./common/util/PathEncodeUtils";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -58,15 +58,18 @@ const Editor = () => {
     const {siteId} = useParams()
     return (<EditorRoot siteId={siteId as string}/>)
 }
+const EditorText = () => {
+    const {encodedParam} = useParams() // encodedParam example: 'aWJnLGpqYmIlOWg6biA6OnJwKH91bHNlNXoqfSQia2xFUx9WV0BUCkocExoBGUgXAQ=='
+    const path = decodePath(encodedParam as string) // param example: 'app/statusLight-0b1b-45ba?hacking=true&level=1'
 
+    return (<EditorTextRoot path={path as string}/>)
+}
 
 root.render(
     <>
         <BrowserRouter>
             <Routes>
                 {/* Website and public pages */}
-                <Route path="/website" element={<WebsiteLandingPage/>}/>
-                <Route path="/website/:path" element={<WebsiteRouting/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/privacy" element={<Privacy/>}/>
 
@@ -76,6 +79,7 @@ root.render(
                 <Route path="/admin" element={<AdminRoot/>}/>
 
                 <Route path="/edit/:siteId" element={<Editor/>}/>
+                <Route path="/editText/:encodedParam" element={<EditorText/>}/>
 
                 <Route path="/x/:encodedParam" element={<Standalone/>}/>
                 <Route path="/o/:encodedParam" element={<Standalone/>}/>

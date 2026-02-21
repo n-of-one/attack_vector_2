@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {HackerRootState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_GM, ROLE_HACKER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
-import {hasSkill} from "../users/CurrentUserReducer";
+import {hasSkill, UserType} from "../users/CurrentUserReducer";
 import {Page} from "./pageReducer";
 import {HackerSkillType} from "../users/HackerSkills";
 
@@ -62,7 +62,7 @@ export const MenuBar = () => {
                     <div className="container-fluid">
                         <div className="d-flex justify-content-between">
                             <ul className="navbar-nav mr-auto">
-                                <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
+                                <Title/>
                                 {scanItem(currentPage, siteName)}
                                 <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
                                 {hackerSites}
@@ -89,4 +89,29 @@ export const MenuBar = () => {
             </div>
         </nav>
     )
+}
+
+/* eslint react/jsx-no-target-blank  : 0*/
+const Title = () => {
+
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+
+    const location = docsLocation(currentUser.type)
+
+    return <li className="nav-item">
+        <a className="nav-link" href={location} target="_blank">↼ Attack Vector ⇁</a>
+    </li>
+}
+
+const docsLocation = (userType: UserType) => {
+    switch (userType) {
+        case UserType.HACKER:
+            return "/attack_vector_2/player/index.html"
+        case UserType.GM:
+            return "/attack_vector_2/gm/index.html"
+        case UserType.ADMIN:
+            return "/attack_vector_2/installation/Configuration/index.html"
+        default:
+            return "/attack_vector_2/docs/index.html"
+    }
 }

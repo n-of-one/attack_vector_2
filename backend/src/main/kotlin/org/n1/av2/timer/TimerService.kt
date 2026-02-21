@@ -219,24 +219,25 @@ class TimerService(
         }
     }
 
-    fun delayTripwireTimer(layer: TripwireLayer, duration: Duration, siteId: String) {
-        val timer = timerEntityService.findByLayer(layer.id) ?: error("No active countdown timer found for tripwire-layer ${layer.id}")
-
+    fun delayTripwireTimer(timer: Timer, duration: Duration) {
         val updatedTimer = timer.copy(finishAt = timer.finishAt.plus(duration))
         timerEntityService.update(updatedTimer)
 
         connectionService.replyTerminalReceive("Tripwire countdown delayed by ${duration.toHumanTime()}")
         informClientsOfTimer(ServerActions.SERVER_CHANGE_TIMER, updatedTimer)
 
-        alterTimerTask(updatedTimer, layer, duration, siteId)
+        alterTimerTask(updatedTimer, duration)
     }
 
-    fun alterTimerTask(timer: Timer, layer: TripwireLayer?, delta: Duration, siteId: String) {
-        val taskIdentifiers = createTimerIdentifiers(siteId, layer?.id)
+    fun alterTimerTask(timer: Timer, delta: Duration,) {
+        val taskIdentifiers = when (timer.label ?: TimerLabel.TRIPWIRE_SITE_SHUTDOWN) {
+            TimerLabel.TRIPWIRE_SITE_SHUTDOWN -> createTimerIdentifiers(timer.siteId, timer.layerId)
+            TimerLabel.SCRIPT_SITE_SHUTDOWN -> createTimerIdentifiers(timer.siteId, null)
+        }
         val taskInfo = systemTaskRunner.removeTaskWithExactIdentifiers(taskIdentifiers)
 
         val newCountdownSeconds = taskInfo.inSeconds + delta.toSeconds() + 1 // +1 to compensate for the time it takes to queue the task
-        systemTaskRunner.queueInSeconds(taskInfo.description, taskIdentifiers, newCountdownSeconds) { shutdownStart(siteId, timer, timer.effectDuration) }
+        systemTaskRunner.queueInSeconds(taskInfo.description, taskIdentifiers, newCountdownSeconds) { shutdownStart(timer.siteId, timer, timer.effectDuration) }
     }
 
     fun speedUpScriptResetTimer(duration: Duration, siteId: String) {
@@ -250,10 +251,14 @@ class TimerService(
         }
 
         val timer = timers.first()
+        speedUpTimer(timer, duration)
+    }
+
+    fun speedUpTimer(timer: Timer, duration: Duration) {
         val adjustedFinishAt = timer.finishAt.minus(duration)
         if (adjustedFinishAt.isBefore(timeService.now())) {
-            systemTaskRunner.queueInSeconds("system shutdown", mapOf("siteId" to siteId), 1) {
-                shutdownStart(siteId, timer, timer.effectDuration)
+            systemTaskRunner.queueInSeconds("system shutdown", mapOf("siteId" to timer.siteId), 1) {
+                shutdownStart(timer.siteId, timer, timer.effectDuration)
             }
             return
         }
@@ -261,11 +266,10 @@ class TimerService(
         val updatedTimer = timer.copy(finishAt = adjustedFinishAt)
         timerEntityService.update(updatedTimer)
 
-        connectionService.replyTerminalReceive("System countdown sped up by ${duration.toHumanTime()}")
+        connectionService.replyTerminalReceive("Countdown accelerated by ${duration.toHumanTime()}")
         informClientsOfTimer(ServerActions.SERVER_CHANGE_TIMER, updatedTimer)
 
-
-        alterTimerTask(updatedTimer, null, duration.negated(), siteId)
+        alterTimerTask(updatedTimer, duration.negated())
     }
 
     private fun createTimerIdentifiers(siteId: String, layerId: String?): Map<String, String> {

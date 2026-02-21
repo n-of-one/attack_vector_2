@@ -46,13 +46,14 @@ class HtmlController(
         "/edit", "/edit/",
         "/edit/{siteId}",
 
+        "/editText", "/editText/",
+        "/editText/{path}",
+
         "/x/{reference}",
         "/o/{reference}",
 
         "/about",
         "/privacy",
-        "/website",
-        "/website/{page}",
         "/larp/**"
     )
     fun default(): String {

@@ -44,7 +44,7 @@ export class PasswordRoot extends Component<Props> {
 
         passwordIceManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 14})
         initPasswordIceServerActions()
     }
 

@@ -53,7 +53,8 @@ class DelayTripwireCountdownEffectService(
 
         return ScriptExecution {
             tripwireLayers.forEach { layer ->
-                timerService.delayTripwireTimer(layer, effect.value!!.toDuration(), hackerState.siteId)
+                val timer = timerEntityService.findByLayer(layer.id) ?: error("No active countdown timer found for tripwire-layer ${layer.id}")
+                timerService.delayTripwireTimer(timer, effect.value!!.toDuration())
             }
         }
     }

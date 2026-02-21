@@ -74,7 +74,7 @@ export const GoogleAuth = () => {
             <div className="row text">
                 <div className="d-flex justify-content-center">
                     <br/>
-                    <button className={"btn btn-primary button-text"} onClick={() => {
+                    <button className={"btn btn-primary text-size"} onClick={() => {
                         setState(LoginState.ACTIVE)
                     }}>Login with Google
                     </button>

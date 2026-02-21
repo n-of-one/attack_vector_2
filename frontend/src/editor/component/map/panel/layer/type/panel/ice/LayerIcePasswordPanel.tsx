@@ -21,6 +21,9 @@ export const LayerIcePasswordPanel = ({node, layer}: Props) => {
     // Unique key. See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
     const key = (param: string) => layer.id + ":" + param
 
+    const fileName = `node-${node.networkId}-layer-${layer.level}-password`
+
+
     return (
         <LayerPanel typeDisplay="ICE Password" layerObject={ice}>
             <TextAttribute key={key("pa")} size="large" label="Password" value={ice.password} save={value => ice.savePassword(value)}
@@ -28,7 +31,7 @@ export const LayerIcePasswordPanel = ({node, layer}: Props) => {
             <TextAttribute key={key("hi")} size="large" label="Hint" value={ice.hint} save={value => ice.saveHint(value)}
                            placeholder="Optional hint" help="This hint is shown when the password is entered incorrectly.
                               Can be used to help hackers."/>
-            <AttributeIceUrlWithQr layerId={layer.id}/>
+            <AttributeIceUrlWithQr layerId={layer.id} fileName={fileName}/>
         </LayerPanel>
     )
 }

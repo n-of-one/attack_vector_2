@@ -10,6 +10,7 @@ import {delayTicks} from "../../util/Util";
 import {NodeI} from "../../sites/SiteModel";
 import {MoveNodeI} from "../../../editor/reducer/EditorNodesReducer";
 import {APPEAR_ANIMATION_TICKS, NODE_TRANSITION_TICKS} from "./DisplayAnimationConstants";
+import {getCurrentFontSize} from "../../util/FontSizeListener";
 
 const SCAN_OPACITY = 0.3
 const HACK_OPACITY = 1
@@ -60,11 +61,11 @@ export class NodeDisplay implements Display {
             fill: "#5cb85c",    // color-ok
             // fill: "#8cad8c", // color-ok muted (more grey)
             fontFamily: "courier",
-            fontSize: 12,
+            fontSize: getCurrentFontSize(),
             fontStyle: "normal", // "", "normal", "italic" or "oblique".
             // fontWeight: 10,
             left: nodeData.x - 20,
-            top: nodeData.y + 35,
+            top: nodeData.y + 33,
             textAlign: "left", // "center", "right" or "justify".
             opacity: 0,
             hoverCursor: 'default',
@@ -363,6 +364,16 @@ export class NodeDisplay implements Display {
                 this.canvas.remove(this.crossFadeNodeIcon!)
                 this.crossFadeNodeIcon = null
             })
+        })
+    }
+
+    setLocked(locked: boolean) {
+        this.movable = locked
+        const cursor = this.movable ? "pointer" : "move"
+        this.nodeIcon.set({
+            lockMovementX: locked,
+            lockMovementY: locked,
+            hoverCursor: cursor,
         })
     }
 

@@ -1,14 +1,15 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2024-11-24 12:34:49"
+    "exportTimeStamp" : "2026-02-15 21:01:14"
   },
   "siteProperties" : {
     "siteId" : "site-593b-4ba3",
     "name" : "dev",
     "description" : "Site created to help with development. Containing all layers",
     "purpose" : "Development",
-    "startNodeNetworkId" : "00"
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : false
   },
   "nodes" : [ {
     "id" : "node-7e39-411b",
@@ -22,19 +23,18 @@
       "level" : 0,
       "name" : "OS",
       "note" : "",
-      "nodeName" : ""
+      "nodeName" : "entry"
     }, {
       "id" : "node-7e39-411b:layer-8f63",
       "type" : "TEXT",
       "level" : 1,
-      "name" : "Database",
+      "name" : "Text",
       "note" : "",
-      "text" : "No data of value found."
+      "text" : "The butler did it."
     } ],
     "networkId" : "00",
     "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
+    "hacked" : true
   }, {
     "id" : "node-349f-464f",
     "siteId" : "site-593b-4ba3",
@@ -56,7 +56,7 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
-      "clusters" : 1,
+      "original" : null,
       "ice" : true
     }, {
       "id" : "node-349f-464f:layer-a09e",
@@ -68,8 +68,7 @@
     } ],
     "networkId" : "01",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-7439-4cc0",
     "siteId" : "site-593b-4ba3",
@@ -91,12 +90,12 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "ice" : true
     } ],
     "networkId" : "02",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-6b4c-454d",
     "siteId" : "site-593b-4ba3",
@@ -118,12 +117,12 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "ice" : true
     } ],
     "networkId" : "03",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-c421-4498",
     "siteId" : "site-593b-4ba3",
@@ -145,7 +144,8 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
-      "totalUnits" : 54000,
+      "original" : null,
+      "totalUnits" : 9000,
       "time1Level1Hacker" : "1h 21m 49s",
       "time1Level5Hacker" : "1h 0m 0s",
       "time5Level10Hackers" : "9m 0s",
@@ -153,8 +153,7 @@
     } ],
     "networkId" : "04",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-ed0f-4b7d",
     "siteId" : "site-593b-4ba3",
@@ -176,12 +175,12 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "ice" : true
     } ],
     "networkId" : "05",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-83ef-4cef",
     "siteId" : "site-593b-4ba3",
@@ -203,14 +202,14 @@
       "note" : "",
       "strength" : "VERY_WEAK",
       "hacked" : false,
+      "original" : null,
       "password" : "Swordfish",
       "hint" : "",
       "ice" : true
     } ],
     "networkId" : "06",
     "ice" : true,
-    "hacked" : true,
-    "unhackedIce" : true
+    "hacked" : false
   }, {
     "id" : "node-aedd-4f5e",
     "siteId" : "site-593b-4ba3",
@@ -230,9 +229,10 @@
       "level" : 1,
       "name" : "Tripwire",
       "note" : "",
-      "countdown" : "15:00",
-      "shutdown" : "01:00",
-      "coreLayerId" : "node-aedd-4f5e:layer-e94e"
+      "countdown" : "00:10",
+      "shutdown" : "00:15",
+      "coreLayerId" : "node-aedd-4f5e:layer-e94e",
+      "coreSiteId" : null
     }, {
       "id" : "node-aedd-4f5e:layer-e94e",
       "type" : "CORE",
@@ -243,8 +243,58 @@
     } ],
     "networkId" : "07",
     "ice" : false,
-    "hacked" : true,
-    "unhackedIce" : false
+    "hacked" : true
+  }, {
+    "id" : "node-d843-4a08",
+    "siteId" : "site-593b-4ba3",
+    "type" : "TRANSIT_1",
+    "x" : 785,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-d843-4a08:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-d843-4a08:layer-048d",
+      "type" : "TRIPWIRE",
+      "level" : 1,
+      "name" : "Tripwire",
+      "note" : "",
+      "countdown" : "55:00",
+      "shutdown" : "00:15",
+      "coreLayerId" : null,
+      "coreSiteId" : null
+    } ],
+    "networkId" : "08",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-3218-4c57",
+    "siteId" : "site-593b-4ba3",
+    "type" : "PASSCODE_STORE",
+    "x" : 905,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-3218-4c57:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-3218-4c57:layer-bf90",
+      "type" : "SHUTDOWN_ACCELERATOR",
+      "level" : 1,
+      "name" : "Shutdown amplifier",
+      "note" : "",
+      "increase" : "1:00"
+    } ],
+    "networkId" : "09",
+    "ice" : false,
+    "hacked" : true
   } ],
   "connections" : [ {
     "fromId" : "node-7e39-411b",
@@ -267,5 +317,14 @@
   }, {
     "fromId" : "node-aedd-4f5e",
     "toId" : "node-7e39-411b"
+  }, {
+    "fromId" : "node-349f-464f",
+    "toId" : "node-7439-4cc0"
+  }, {
+    "fromId" : "node-7e39-411b",
+    "toId" : "node-d843-4a08"
+  }, {
+    "fromId" : "node-3218-4c57",
+    "toId" : "node-d843-4a08"
   } ]
 }

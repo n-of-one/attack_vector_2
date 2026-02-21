@@ -8,7 +8,7 @@ import java.time.Duration
 import java.time.ZonedDateTime
 
 enum class TimerEffect { SHUTDOWN_START, SHUTDOWN_FINISH }
-enum class TimerLabel { SCRIPT_SITE_SHUTDOWN }
+enum class TimerLabel { TRIPWIRE_SITE_SHUTDOWN, SCRIPT_SITE_SHUTDOWN }
 
 @Document
 data class Timer(
@@ -19,7 +19,7 @@ data class Timer(
     val userId: String?,
     val finishAt: ZonedDateTime,
     val effect: TimerEffect,
-    val label: TimerLabel? = null,
+    val label: TimerLabel? = TimerLabel.TRIPWIRE_SITE_SHUTDOWN,
     val effectDuration: Duration,
 )
 

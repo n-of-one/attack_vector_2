@@ -5,8 +5,8 @@ import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.frontend.model.ReduxEvent
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
-import org.n1.av2.platform.iam.user.SYSTEM_USER
 import org.n1.av2.platform.iam.user.UserEntity
+import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.SimpMessageSendingOperations
@@ -88,8 +88,8 @@ class ConnectionService(
     }
 
     fun reply(actionType: ServerActions, vararg data: Any) {
-        val user = (SecurityContextHolder.getContext().authentication.principal as UserEntity)
-        if (user.id == SYSTEM_USER.id) error("Cannot reply to system user")
+        val user = (SecurityContextHolder.getContext().authentication?.principal as UserEntity?)
+        if (user == null || user.type == UserType.SYSTEM || user.type == UserType.NOT_LOGGED_IN) return // don't reply if no user or system user
 
         val connection = SecurityContextHolder.getContext().authentication.name
 

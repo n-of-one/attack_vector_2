@@ -61,7 +61,7 @@ export const SitesPage = () => {
                     <div className="text">
                         <TextInput placeholder="Site name"
                                    buttonLabel="New"
-                                   buttonClass="btn-info"
+                                   buttonClass="btn-info text-size"
                                    save={(siteName: string) => edit(siteName)}
                                    clearAfterSubmit={true}
                                    size={8}
@@ -82,7 +82,7 @@ export const SitesPage = () => {
                                     <input className="form-control" type="file" id="formFile" onChange={selectFile}/>
                                 </div>
                                 <div className="col-lg-2">
-                                    <button className="btn btn-info" type="submit" style={{fontSize: "12px"}}>Upload</button>
+                                    <button className="btn btn-info text-size" type="submit" >Upload</button>
                                 </div>
                             </div>
                         </form>

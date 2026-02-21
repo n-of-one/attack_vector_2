@@ -29,7 +29,7 @@ export const Me = () => {
             <div className="col-lg-4">
                 <div className="text">
                     <br/>
-                    <UserDetails user={user}/>
+                    <UserDetails user={user} me={true}/>
                 </div>
             </div>
             <div className="col-lg-4">

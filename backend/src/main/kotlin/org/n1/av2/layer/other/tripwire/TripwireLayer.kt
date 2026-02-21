@@ -6,13 +6,12 @@ import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.util.toDuration
+import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.site.entity.NodeEntityService.Companion.deriveNodeIdFromLayerId
 import org.n1.av2.site.entity.enums.LayerType
 import java.time.Duration
 import kotlin.jvm.optionals.getOrElse
-
-val MINIMUM_SHUTDOWN: Duration = Duration.ofMinutes(1)
 
 class TripwireLayer(
     id: String,
@@ -26,14 +25,14 @@ class TripwireLayer(
     var coreSiteId: String? = null,
 ) : Layer(id, LayerType.TRIPWIRE, level, name, note) {
 
-    constructor (id: String, level: Int, name: String, note: String, countdown: String, shutdown: String, coreLayerId: String?) :
-        this(id, LayerType.TRIPWIRE, level, name, note, countdown, shutdown, coreLayerId)
+    constructor (id: String, level: Int, name: String, note: String, countdown: String, shutdown: String, coreLayerId: String?, coreSiteId: String?) :
+        this(id, LayerType.TRIPWIRE, level, name, note, countdown, shutdown, coreLayerId, coreSiteId)
 
     constructor(id: String, level: Int, defaultName: String) :
         this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00", null)
 
     constructor(id: String, toClone: TripwireLayer) :
-        this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown, toClone.coreLayerId)
+        this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown, toClone.coreLayerId, toClone.coreSiteId)
 
     @Suppress("unused")
     private fun validateCountdown(validationContext: ValidationContext) {
@@ -48,8 +47,8 @@ class TripwireLayer(
 
         val duration = this.shutdown.toDuration()
 
-        if (duration < MINIMUM_SHUTDOWN) {
-            throw SiteValidationException("Shutdown must be at least 01:00 (1 minute).")
+        if (duration < validationContext.minimumShutdownDuration) {
+            throw SiteValidationException("Shutdown must be at least ${validationContext.minimumShutdownDuration.toHumanTime()}.")
         }
     }
 

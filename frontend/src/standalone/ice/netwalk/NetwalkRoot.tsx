@@ -42,7 +42,7 @@ export class NetwalkRoot extends Component<Props> {
 
         netwalkManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 12})
         initNetwalkServerActions()
     }
 

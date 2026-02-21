@@ -89,7 +89,6 @@ const serverAddLayer = (data: {nodeId: string, layer: LayerDetails}, nodes: Arra
     const newNodeLayers = {layers: newLayers}
 
     return updateArrayById(newNodeLayers, nodes, data.nodeId)
-
 }
 
 const serverRemoveLayer = (node: NodeI, nodes: Array<NodeI>) => {

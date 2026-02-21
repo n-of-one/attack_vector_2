@@ -16,7 +16,7 @@ export const HackerSkillsElement = ({user, readonlySkills}: { user: User, readon
 
     return <>
         {sortedSkills.map((skill) => {
-            return <HackerSkillElement skill={skill} readonly={readonlySkills}/>
+            return <HackerSkillElement skill={skill} readonly={readonlySkills} key={skill.id}/>
         })}
         <HackerAddSkillElement user={user} readonlySkills={readonlySkills} skills={sortedSkills}/>
     </>

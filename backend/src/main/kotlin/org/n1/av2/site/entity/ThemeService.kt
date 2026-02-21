@@ -11,6 +11,7 @@ class ThemeService {
         LayerType.TEXT -> "Database"
         LayerType.KEYSTORE -> "Keystore"
         LayerType.TRIPWIRE -> "Tripwire"
+        LayerType.TIMER_ADJUSTER -> "Timer accelerator"
         LayerType.CORE -> "Core"
         LayerType.SCRIPT_INTERACTION -> "Process"
         LayerType.SCRIPT_CREDITS -> "Database"
@@ -22,7 +23,7 @@ class ThemeService {
         LayerType.TANGLE_ICE -> "Gaanth" // knot in Hindi
         LayerType.WORD_SEARCH_ICE -> "Jaal" // grid in Hindi
         LayerType.NETWALK_ICE -> "Sanrachana" // structure in Hindi
-        LayerType.TAR_ICE -> "Tar" // In Hindi this would be "taar" but in this case it's nice that it's clear in English
+        LayerType.TAR_ICE -> "Tar" // after the substance tar in English
         LayerType.SWEEPER_ICE -> "Visphotak" // explosive in Hindi
     }
 

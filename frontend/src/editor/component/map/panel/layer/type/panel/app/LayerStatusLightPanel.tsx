@@ -38,9 +38,11 @@ export const LayerStatusLightPanel = ({node, layer}: Props) => {
                            save={value => statusLight.saveTextForGreen(value)}
                            help="Shown in the switch to indicate what this position means"/>
 
-            <AttributeUrlWithQr name="Switch" type="app" subType="switch" layerId={statusLight.id} description="App for changing status"/>
+            <AttributeUrlWithQr name="Switch" type="app" subType="switch" layerId={statusLight.id} description="App for changing status"
+                                fileName={`node-${node.networkId}-level-${layer.level}-${layer.name}-switch`}/>
 
-            <AttributeUrlWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status" requireLogin={false}/>
+            <AttributeUrlWithQr name="Widget" type="widget" subType="statusLight" layerId={statusLight.id} description="Widget showing status"
+                                requireLogin={false} fileName={`node-${node.networkId}-level-${layer.level}-${layer.name}-widget`}/>
 
         </LayerPanel>
     )

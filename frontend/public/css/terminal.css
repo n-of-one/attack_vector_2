@@ -1,24 +1,18 @@
 .terminalPanel {
-    /*background-color: #222222;*/
     word-wrap: break-word;
+    font-size: var(--app-font-size);
+    line-height: var(--app-line-height);
+    padding-left: 12px;
+    padding-right: 12px;
+    width: 640px;
 }
 
 .terminalLine {
-    /*font-family: monospace;*/
-    /*font-family: FreeMono, monospace; this don't work on Android */
     color: #aaa;
-    /*background-color: #222222;*/
-    font-size: 12px;
-    line-height: 14px;
 }
 
 .terminalLink {
-    /*font-family: monospace;*/
-    /*font-family: FreeMono, monospace; this don't work on Android */
     color: #0dcaf0;
-    /*background-color: #222222;*/
-    font-size: 12px;
-    line-height: 14px;
 }
 
 .terminalInput {
@@ -46,6 +40,7 @@
 .t_b { font-weight: bold; }
 .t_i { font-style: italic; }
 .t_s { text-decoration: line-through; }
+.t_u { text-decoration: underline; }
 .t_us { text-decoration: underline line-through; }
 
 .terminal_scrollbar {
@@ -72,4 +67,5 @@
     background-color: #222;
     margin-bottom: 7px;
     padding: 3px 3px 8px 3px;
+    border-radius: 3px 3px 3px 3px;
 }

@@ -85,7 +85,7 @@ class EditorService(
     fun deleteConnections(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
         siteValidationService.validate(siteId)
-        sendSiteFull(siteId)
+        replySiteFull(siteId)
     }
 
     private fun deleteConnectionsInternal(nodeId: String) {
@@ -110,6 +110,7 @@ class EditorService(
                 "plot" -> properties.purpose = value
                 "startNode" -> properties.startNodeNetworkId = value
                 "hackable" -> properties.hackable = value.toBoolean()
+                "nodesLocked" -> properties.nodesLocked = value.toBoolean()
                 else -> throw IllegalArgumentException("Site field ${command.field} unknown.")
             }
 
@@ -128,15 +129,15 @@ class EditorService(
     }
 
     fun enter(siteId: String) {
-        sendSiteFull(siteId)
+        replySiteFull(siteId)
         userAndHackerService.sendDetailsOfCurrentUser()
         siteService.sendSitesList()
         siteService.sendAllCores() // used to configure tripwires with remote cores
     }
 
-    fun sendSiteFull(siteId: String) {
+    fun replySiteFull(siteId: String) {
         val toSend = siteService.getSiteFull(siteId)
-        connectionService.toSite(siteId, ServerActions.SERVER_SITE_FULL, toSend)
+        connectionService.reply(ServerActions.SERVER_SITE_FULL, toSend)
     }
 
 
@@ -144,18 +145,18 @@ class EditorService(
         deleteConnectionsInternal(nodeId)
         nodeEntityService.deleteNode(nodeId)
         siteValidationService.validate(siteId)
-        sendSiteFull(siteId)
+        replySiteFull(siteId)
     }
 
     fun snap(siteId: String) {
         nodeEntityService.snap(siteId)
-        sendSiteFull(siteId)
+        replySiteFull(siteId)
     }
 
     fun center(siteId: String) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
         nodeEntityService.center(siteId, properties.startNodeNetworkId)
-        sendSiteFull(siteId)
+        replySiteFull(siteId)
     }
 
     data class ServerUpdateNetworkId(val nodeId: String, val networkId: String)

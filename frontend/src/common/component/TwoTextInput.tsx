@@ -23,7 +23,7 @@ export const TwoTextInput = (props: Props) => {
     const [text1, setText1] = useState("");
     const [text2, setText2] = useState("");
 
-    const totalButtonClass = "btn " + props.buttonClass;
+    const totalButtonClass = "text-size btn " + props.buttonClass;
     const size = props.size || 6;
 
     const handleChange1 = (event: ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +57,7 @@ export const TwoTextInput = (props: Props) => {
     return (
         <div className="row">
             {label}
-            <div className={`col-lg-${size}`} style={{fontSize: "12px"}}>
+            <div className={`col-lg-${size} text-size`}>
                 <input type={type1Value} className="form-control"
                        placeholder={props.placeholder1}
                        value={text1}
@@ -66,7 +66,7 @@ export const TwoTextInput = (props: Props) => {
                        autoFocus={autofocus}
                 />
             </div>
-            <div className={`col-lg-${size}`} style={{fontSize: "12px"}}>
+            <div className={`col-lg-${size} text-size`}>
                 <input type={type2Value} className="form-control"
                        placeholder={props.placeholder2}
                        value={text2}
@@ -76,7 +76,7 @@ export const TwoTextInput = (props: Props) => {
                 />
             </div>
             <div className="col-lg-2">
-                <button type="button" className={totalButtonClass} style={{fontSize: "12px"}}
+                <button type="button" className={totalButtonClass}
                         onClick={() => submit()}>{props.buttonLabel}</button>
             </div>
         </div>

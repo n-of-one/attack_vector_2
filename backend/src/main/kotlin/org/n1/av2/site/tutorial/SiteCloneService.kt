@@ -15,6 +15,7 @@ import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.site.entity.*
@@ -122,6 +123,7 @@ class SiteCloneService(
             is KeyStoreLayer -> KeyStoreLayer(id, sourceLayer)
             is StatusLightLayer -> StatusLightLayer(id, sourceLayer)
             is TripwireLayer -> TripwireLayer(id, sourceLayer)
+            is TimerAdjusterLayer -> TimerAdjusterLayer(id, sourceLayer)
             is NetwalkIceLayer -> NetwalkIceLayer(id, sourceLayer)
             is PasswordIceLayer -> PasswordIceLayer(id, sourceLayer)
             is TangleIceLayer -> TangleIceLayer(id, sourceLayer)

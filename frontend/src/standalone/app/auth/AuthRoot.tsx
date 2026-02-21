@@ -42,7 +42,7 @@ export class AuthRoot extends Component<Props> {
         });
 
         terminalManager.init(this.store)
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 14})
         initAuthServerActions()
 
         document.body.style.backgroundColor = "#333";

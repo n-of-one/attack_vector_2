@@ -4,6 +4,9 @@ import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {LayerScriptInteraction} from "../../../../../../../../common/model/layer/LayerScriptInteraction";
+import {TextSaveType} from "../../../../../../../../common/component/TextSaveInput";
+import {TextEditorLink} from "../../../element/TextEditorLink";
+import {AttributeTerminalPreview} from "../../../element/AttributeTerminalPreview";
 
 interface Props {
     node: NodeI,
@@ -24,7 +27,11 @@ export const LayerScriptInteractionPanel = ({node, layer} : Props) => {
                            help="The interaction key defines which script effects can interact with this layer.
                            A script that has an effect with the same interaction key as this layer will interact with this layer" placeholder="SCRIPT_UNIQUE_KEY" />
             <TextAttribute key={key("nodeName")} size="large" label="message" value={scriptInteraction.message} save={value => scriptInteraction.saveMessage(value)}
-                           placeholder="Message" help="The message to display to the hacker if they run the appropriate script (with the correct interaction key) on this layer."/>
+                           placeholder="Message"
+                           help="The message to display to the hacker if they run the appropriate script (with the correct interaction key) on this layer."
+                           type={TextSaveType.TEXTAREA} sendEvent={true}/>
+            <TextEditorLink node={node} layer={layer} keyText="MESSAGE" size="large" label=""/>
+            <AttributeTerminalPreview width="594px"/>
         </LayerPanel>
     )
 }

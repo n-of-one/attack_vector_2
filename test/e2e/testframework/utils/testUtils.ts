@@ -1,4 +1,7 @@
 import {expect, Page} from "@playwright/test";
+import {LoginPage} from "../LoginPage";
+import {HackerPage, START_ATTACK_QUICK} from "../HackerPage";
+import {test} from "../fixtures";
 
 export function confirmDialog(page: Page, expected: string) {
     page.once('dialog', dialog => {
@@ -30,4 +33,23 @@ export function countOccurrences(haystack: string, needle: string):number {
         count++
         pos = idx + needle.length
     }
+}
+
+export async function closeAllPopups(page: Page) {
+    const popups = page.getByTestId("closeNotification");
+
+    while (await popups.count() > 0) {
+        const handle = await popups.first().elementHandle();
+        if (!handle) break;
+
+        await handle.click();
+
+        await handle.waitForElementState('hidden');
+    }
+}
+
+export async function startQuickHack(login: LoginPage, hacker: HackerPage, siteName: string) {
+    await login.loginUsingLink("hacker")
+    await hacker.joinExistingRun(siteName)
+    await hacker.startAttack(START_ATTACK_QUICK)
 }

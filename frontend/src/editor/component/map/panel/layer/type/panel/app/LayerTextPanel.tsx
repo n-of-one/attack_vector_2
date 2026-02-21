@@ -5,6 +5,8 @@ import {TextAttribute} from "../../../element/TextAttribute"
 import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {TextSaveType} from "../../../../../../../../common/component/TextSaveInput";
+import {AttributeTerminalPreview} from "../../../element/AttributeTerminalPreview";
+import {TextEditorLink} from "../../../element/TextEditorLink";
 
 interface Props {
     node: NodeI,
@@ -29,8 +31,10 @@ export const LayerTextPanel = ({node, layer}: Props) => {
                            placeholder="* Data found: ..." help="This is the text displayed when a player hacks this layer.
                               It can be used to provide data, or to simulate that some effect has taken place.
                               Links to web pages or images can be added like this: [http://example.com]click here[/]"
-                           type={TextSaveType.TERMINAL_TEXTAREA} terminalPrefix={hackedText}
+                           type={TextSaveType.TEXTAREA} sendEvent={true}
             />
+            <TextEditorLink node={node} layer={layer} keyText="TEXT" size="large" label=""/>
+            <AttributeTerminalPreview prefix={hackedText} width="616px"/>
         </LayerPanel>
     )
 }

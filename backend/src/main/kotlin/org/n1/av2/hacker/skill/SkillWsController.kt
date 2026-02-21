@@ -15,7 +15,7 @@ class SkillWsController(
     class AddSkillCommand(val userId: String, val type: SkillType)
     @MessageMapping("/user/skill/add")
     fun addSkill(command: AddSkillCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask("/user/skill/add", userPrincipal) { skillService.addSkill(command.userId, command.type) }
+        userTaskRunner.runTask("/user/skill/add", userPrincipal) { skillService.addSkillAndUpdateUi(command.userId, command.type) }
     }
 
     class EditSkillValueCommand(val skillId: SkillId, val value: String)

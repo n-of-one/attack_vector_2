@@ -13,7 +13,7 @@ export const createNotification = (title: string | undefined, message: string, d
             return (<span onClick={dismissMethod} style={{cursor: "pointer"}}>
                 <span>
                     <div className="text" style={{color: "white", fontSize: "16px"}}>{text}</div>&nbsp;
-                    { dismiss ? <div className="text">[close]</div> : <></>}
+                    { dismiss ? <div className="text" data-testid="closeNotification">[close]</div> : <></>}
                 </span>
             </span>)
         },
@@ -37,6 +37,10 @@ export type NotificationType = "ok" | "neutral" | "error" | "fatal"
 
 export const notifySimple = (message: string) => {
     createNotification(undefined, message, 8000)
+}
+
+export const notifyQuick = (message: string) => {
+    createNotification(undefined, message, 2000, "top-right", false)
 }
 
 export const notify = ({type, message, title}: { type: NotificationType, title?: string, message: string }) => {

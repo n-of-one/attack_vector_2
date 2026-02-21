@@ -23,6 +23,9 @@ import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
+import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentRecurring
+import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
@@ -36,6 +39,11 @@ import org.n1.av2.site.entity.enums.LayerType
 import org.n1.av2.site.entity.enums.NodeType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+
+
+fun JsonNode.getAsTextOrNull(field: String): String? {
+    return if (this.has(field) && !this.get(field).isNull) this.get(field).asText() else null
+}
 
 
 @Service
@@ -112,6 +120,7 @@ class ImportService(
             startNodeNetworkId = input["startNodeNetworkId"].asText(),
             hackable = false,
             shutdownEnd = null,
+            nodesLocked = input["nodesLocked"]?.asBoolean() == true,
         )
 
         sitePropertiesEntityService.save(siteProperties)
@@ -152,28 +161,37 @@ class ImportService(
 
     private fun mapV1Layer(input: JsonNode): Layer {
         val typeText = input["type"].asText()
-        val layerType = LayerType.valueOf(typeText)
         val id = input.get("id").asText()
         val level = input.get("level").asInt()
         val name = input.get("name").asText()
         val note = input.get("note").asText()
 
-        return when (layerType) {
-            LayerType.OS -> mapLayerOs(input, id, level, name, note)
-            LayerType.TEXT -> TextLayer(id = id, level = level, name = name, note = note, text = input.get("text").asText())
-            LayerType.CORE -> mapLayerCore(input, id, level, name, note)
-            LayerType.KEYSTORE -> mapLayerKeystore(input, id, level, name, note)
-            LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
-            LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
-            LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
-            LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
-            LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
-            LayerType.NETWALK_ICE,
-            LayerType.TANGLE_ICE,
-            LayerType.TAR_ICE,
-            LayerType.PASSWORD_ICE,
-            LayerType.WORD_SEARCH_ICE,
-            LayerType.SWEEPER_ICE -> mapIceLayer(input, layerType, id, level, name, note)
+        try {
+            val layerType = LayerType.valueOf(typeText)
+
+            return when (layerType) {
+                LayerType.OS -> mapLayerOs(input, id, level, name, note)
+                LayerType.TEXT -> TextLayer(id = id, level = level, name = name, note = note, text = input.get("text").asText())
+                LayerType.CORE -> mapLayerCore(input, id, level, name, note)
+                LayerType.KEYSTORE -> mapLayerKeystore(input, id, level, name, note)
+                LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
+                LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
+                LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
+                LayerType.TIMER_ADJUSTER -> mapTimerAdjusterLayer(input, id, level, name, note)
+                LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
+                LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
+                LayerType.NETWALK_ICE,
+                LayerType.TANGLE_ICE,
+                LayerType.TAR_ICE,
+                LayerType.PASSWORD_ICE,
+                LayerType.WORD_SEARCH_ICE,
+                LayerType.SWEEPER_ICE -> mapIceLayer(input, layerType, id, level, name, note)
+            }
+        } catch (_: IllegalArgumentException) {
+            if (typeText == "SHUTDOWN_ACCELERATOR") {
+                return mapTimerAdjusterLayer(input, id, level, name, note)
+            }
+            error("Unsupported layer type: $typeText")
         }
     }
 
@@ -228,19 +246,31 @@ class ImportService(
             id = id, level = level, name = name, note = note,
             countdown = input.get("countdown").asText(),
             shutdown = input.get("shutdown").asText(),
-            coreLayerId = input.get("coreLayerId").asText(),
+            coreLayerId = input.getAsTextOrNull("coreLayerId"),
+            coreSiteId = input.getAsTextOrNull("coreSiteId"),
+        )
+    }
+
+    private fun mapTimerAdjusterLayer(input: JsonNode, id: String, level: Int, name: String, note: String): TimerAdjusterLayer {
+        val amount = input.get("amount")?.asText() ?: input.get("increase").asText() // In initial version the field was called "increase"
+        val adjustmentType = if (input.has("adjustmentType")) { TimerAdjustmentType.valueOf(input.get("adjustmentType").asText()) } else { TimerAdjustmentType.SPEED_UP }
+        val recurring = if (input.has("recurring")) { TimerAdjustmentRecurring.valueOf(input.get("recurring").asText()) } else { TimerAdjustmentRecurring.EVERY_ENTRY }
+
+        return TimerAdjusterLayer(
+            id = id, level = level, name = name, note = note,
+            amount = amount, adjustmentType = adjustmentType, recurring = recurring,
         )
     }
 
     private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {
         return ScriptInteractionLayer(
             id = id, level = level, name = name, note = note,
-            interactionKey =  input.get("interactionKey").asText(),
+            interactionKey = input.get("interactionKey").asText(),
             message = input.get("message").asText(),
         )
     }
 
-    private fun mapLayerScriptCredits(input: JsonNode, id: String, level: Int, name: String, note: String, ): ScriptCreditsLayer {
+    private fun mapLayerScriptCredits(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptCreditsLayer {
         return ScriptCreditsLayer(
             id = id, level = level, name = name, note = note,
             amount = input.get("amount").asInt(),
@@ -253,7 +283,7 @@ class ImportService(
 
         return when (layerType) {
             LayerType.NETWALK_ICE -> NetwalkIceLayer(id, level, name, note, strength, false, null)
-            LayerType.TANGLE_ICE ->TangleIceLayer(id, level, name, note, strength, false, null)
+            LayerType.TANGLE_ICE -> TangleIceLayer(id, level, name, note, strength, false, null)
             LayerType.TAR_ICE -> TarIceLayer(id, level, name, note, strength, false)
             LayerType.WORD_SEARCH_ICE -> WordSearchIceLayer(id, level, name, note, strength, false, null)
             LayerType.PASSWORD_ICE -> mapPasswordIce(input, id, level, name, note, strength)

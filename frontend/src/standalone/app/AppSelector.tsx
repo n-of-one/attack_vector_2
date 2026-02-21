@@ -23,8 +23,10 @@ export const AppSelector = ({type, layerId}: Props) => {
 
     useEffect(() => {
         const fetchData = async () => {
+            console.log(`fetching: /api/app/${layerId}`)
             const response: Response = await fetch(`/api/app/${layerId}`)
             const text: string = await response.text()
+            console.log(`response: ${text}`)
             const responseObject = JSON.parse(text)
             setResponse(responseObject)
         }

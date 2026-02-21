@@ -10,7 +10,10 @@ import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.run.runlink.RunLinkEntityService
+import org.n1.av2.script.ScriptService
+import org.n1.av2.script.access.ScriptAccessService
 import org.n1.av2.script.income.ScriptIncomeEntityService
+import org.n1.av2.script.ram.RamRepository
 import org.springframework.stereotype.Service
 
 
@@ -24,6 +27,9 @@ class UserAndHackerService(
     private val currentUserService: CurrentUserService,
     private val skillService: SkillService,
     private val scriptIncomeEntityService: ScriptIncomeEntityService,
+    private val scriptAccessService: ScriptAccessService,
+    private val scriptService: ScriptService,
+    private val ramEntityRepo: RamRepository,
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
@@ -80,7 +86,7 @@ class UserAndHackerService(
         val user = userEntityService.getById(userId)
         val hacker = createHackerForSkillDisplay(user)
 
-        return UiUserDetails(user.id, user.name, user.type, hacker)
+        return UiUserDetails(user.id, user.name, user.type, user.preferences, hacker)
     }
 
     fun createHackerForSkillDisplay(user: UserEntity): UiHacker? {
@@ -108,6 +114,7 @@ class UserAndHackerService(
         when (field) {
             "name" -> editUserAttribute(user, "name", value)
             "type" -> editUserAttribute(user, "type", value)
+            "fontSize" -> editUserAttribute(user, "fontSize", value)
             "characterName" -> editHackerAttribute(user, "characterName", value)
             "hackerIcon" -> editHackerAttribute(user, "hackerIcon", value)
             "scriptCredits" -> editHackerAttribute(user, "scriptCredits", value)
@@ -119,6 +126,13 @@ class UserAndHackerService(
     }
 
     private fun editUserAttribute(user: UserEntity, field: String, value: String) {
+        if (field == "fontSize") {
+            // You can always change the font size, even for non-changeable users.
+            val editedUser = changeFontSize(user, value)
+            userEntityService.save(editedUser)
+            return
+        }
+
         if (!user.tag.changeable) {
             sendDetailsOfSpecificUser(user.id) // restore correct value in UI
             throw ValidationException("Cannot change ${user.name} because it is ${user.tag.description}.")
@@ -182,12 +196,20 @@ class UserAndHackerService(
         return user.copy(type = newType)
     }
 
+    private fun changeFontSize(user: UserEntity, newFontSize: String): UserEntity {
+        val size = newFontSize.toInt()
+        return user.copy(preferences = user.preferences.copy(fontSize = size))
+    }
+
     fun delete(userId: String) {
         if (hackerStateEntityService.isOnline(userId)) throw ValidationException("User is online and cannot be deleted.")
         val user = userEntityService.getById(userId)
         if (!user.tag.changeable) throw ValidationException("Cannot delete ${user.name} because it is ${user.tag.description}.")
 
         runLinkEntityService.deleteAllForUser(userId)
+        scriptService.deleteAllScriptsOfUser(userId)
+        scriptAccessService.deleteAccessForUser(userId)
+        ramEntityRepo.findByUserId(userId)?.let { ramEntityRepo.delete(it) }
         userEntityService.delete(userId)
         sendUsersOverview()
         connectionService.replyNeutral("${user.name} deleted")
@@ -209,5 +231,8 @@ class UserAndHackerService(
     fun createHackerWithDefaultSkill(user: UserEntity, icon: HackerIcon) {
         hackerEntityService.createHacker(user, icon, "not set")
         skillService.createDefaultSkills(user.id)
+
+        val template = userEntityService.getByName(TEMPLATE_USER_NAME)
+        scriptAccessService.copyScriptAccess(template, user)
     }
 }

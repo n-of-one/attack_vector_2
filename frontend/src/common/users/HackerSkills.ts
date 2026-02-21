@@ -12,7 +12,7 @@ export enum HackerSkillType {
 }
 
 export interface HackerSkill {
-    id: String,
+    id: string,
     type: HackerSkillType,
     value?: string,
 }

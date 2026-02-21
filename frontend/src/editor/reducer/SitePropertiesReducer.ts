@@ -10,6 +10,7 @@ export interface SiteProperties {
     ownerName: string,
     startNodeNetworkId: string
     hackable: boolean
+    nodesLocked: boolean
     shutdownEnd: string | null
     siteStructureOk: boolean
 }
@@ -23,6 +24,7 @@ export const sitePropertiesDefault: SiteProperties = {
     ownerName: "",
     startNodeNetworkId: "",
     hackable: false,
+    nodesLocked: false,
     shutdownEnd: null, // "2023-10-15T12:24:53.259+02:00"
     siteStructureOk: true
 }

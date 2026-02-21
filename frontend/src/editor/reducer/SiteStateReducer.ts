@@ -9,7 +9,7 @@ export enum SiteStateMessageType { ERROR = "ERROR", INFO = "INFO" }
 
 export interface SiteStateMessage {
     type: SiteStateMessageType,
-    text: String,
+    text: string,
     nodeId: string | null,
     layerId: string | null
 }

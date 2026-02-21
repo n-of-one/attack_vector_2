@@ -17,11 +17,12 @@ async function startHack(login: LoginPage, hacker: HackerPage) {
 }
 
 test('4.1.0 - Prepare', async ({page}: { page: Page }) => {
-    test.setTimeout(10_000);
+    test.setTimeout(25_000);
     const [login, gm, scriptManagement, hacker] = [new LoginPage(page), new GmPage(page), new ScriptManagementPage(page), new HackerPage(page)]
 
     await test.step("Delete existing scripts", async () => {
         await login.loginUsingLink("gm")
+        await scriptManagement.deleteAllScriptsFromHacker()
         await scriptManagement.deleteExistingScriptIfItExists(SCRIPT_NAME)
     })
 
@@ -35,13 +36,13 @@ test('4.1.0 - Prepare', async ({page}: { page: Page }) => {
 })
 
 test('4.1.1 - Create script and give to hacker', async ({page}: { page: Page }) => {
-    test.setTimeout(5_000);
+    test.setTimeout(10_000);
     const [login, scriptManagement] = [new LoginPage(page), new ScriptManagementPage(page)]
 
     await test.step("Create script", async () => {
         await login.loginUsingLink("gm")
         await scriptManagement.createScript(SCRIPT_NAME)
-        await scriptManagement.addUsefulEffect("Automatically hack a specific ICE layer", "node-c421-4498:layer-d20a")
+        await scriptManagement.addUsefulEffect("AUTO_HACK_SPECIFIC_ICE_LAYER", "Automatically hack a specific ICE layer", "node-c421-4498:layer-d20a")
         await scriptManagement.verifyHackerEffectDescription(SCRIPT_NAME, "Automatically hack layer 1 of node: 04 of site: dev")
     })
 
@@ -52,7 +53,7 @@ test('4.1.1 - Create script and give to hacker', async ({page}: { page: Page }) 
 })
 
 test('4.1.2 - Script works on intended ICE', async ({page}: { page: Page }) => {
-    test.setTimeout(15_000);
+    test.setTimeout(20_000);
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 
     await startHack(login, hacker)

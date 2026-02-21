@@ -8,7 +8,7 @@ export enum IncomeDateStatus {
 
 export interface IncomeDate {
     id: string,
-    date: Date,
+    date: string,
     status: IncomeDateStatus
     collectedByUserNames: string[]
 }
@@ -37,7 +37,7 @@ function parseIncomeDates(incomeDates: ServerIncomeDate[]): IncomeDate[] {
     return incomeDates.map((serverIncomeDate: ServerIncomeDate) => {
         return {
             ...serverIncomeDate,
-            date: new Date(serverIncomeDate.date)
+            date: new Date(serverIncomeDate.date).toString()
         }
     })
 }
