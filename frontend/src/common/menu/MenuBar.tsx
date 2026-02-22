@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {HackerRootState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_GM, ROLE_HACKER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
-import {hasSkill, UserType} from "../users/CurrentUserReducer";
+import {GenericUserRootState, hasSkill, UserType} from "../users/CurrentUserReducer";
 import {Page} from "./pageReducer";
 import {HackerSkillType} from "../users/HackerSkills";
 
@@ -31,7 +31,7 @@ const scanItem = (currentPage: string, runName: string | null) => {
 
 export const MenuBar = () => {
 
-    const userName = Cookies.get("userName")
+    const userName = useSelector((state: GenericUserRootState) => state.currentUser.name)
 
     const siteName = useSelector((state: HackerRootState) => (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "")
     const currentPage = useSelector((state: HackerRootState) => state.currentPage)
