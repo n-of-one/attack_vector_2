@@ -11,6 +11,7 @@ import {SweeperContainer} from "./component/SweeperContainer";
 import {sweeperIceManager} from "./SweeperIceManager";
 import {initSweeperServerActions} from "./SweeperServerActionProcessor";
 import {Page} from "../../../common/menu/pageReducer";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string
@@ -43,6 +44,7 @@ export class SweeperRoot extends Component<Props> {
         sweeperIceManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 12})
+        initGenericAppActions()
         initSweeperServerActions()
     }
 

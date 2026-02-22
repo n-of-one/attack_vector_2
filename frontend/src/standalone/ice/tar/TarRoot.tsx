@@ -11,6 +11,7 @@ import {initGenericServerActions} from "../../../common/server/GenericServerActi
 import {initTarServerActions} from "./TarServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
 import {Page} from "../../../common/menu/pageReducer";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string
@@ -43,6 +44,7 @@ export class TarRoot extends Component<Props> {
         tarManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 12})
+        initGenericAppActions()
         initTarServerActions(this.store)
     }
 

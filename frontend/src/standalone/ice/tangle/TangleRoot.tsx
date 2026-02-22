@@ -11,6 +11,7 @@ import {terminalManager} from "../../../common/terminal/TerminalManager";
 import {ice} from "../../StandaloneGlobals";
 import {Page} from "../../../common/menu/pageReducer";
 import {initTangleIceServerActions} from "./TangleServerActionProcessor";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string,
@@ -42,6 +43,7 @@ export class TangleRoot extends Component<Props> {
         tangleIceManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 12})
+        initGenericAppActions()
         initTangleIceServerActions()
     }
 

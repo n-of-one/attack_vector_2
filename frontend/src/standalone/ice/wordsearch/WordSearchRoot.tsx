@@ -11,6 +11,7 @@ import {wordSearchManager} from "./WordSearchManager";
 import {initWordSearchServerActions} from "./WordSearchServerActionProcessor";
 import {ice} from "../../StandaloneGlobals";
 import {Page} from "../../../common/menu/pageReducer";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string
@@ -42,6 +43,7 @@ export class WordSearchRoot extends Component<Props> {
         wordSearchManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 12})
+        initGenericAppActions()
         initWordSearchServerActions()
     }
 

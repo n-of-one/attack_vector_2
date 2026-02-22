@@ -162,6 +162,7 @@ class RunService(
         taskEngine.removeForUser(hackerState.userId)
 
         connectionService.toRun(hackerState.runId!!, ServerActions.SERVER_HACKER_DC, "userId" to hackerState.userId)
+        connectionService.toUser(hackerState.userId, ServerActions.SERVER_LEAVE_NODE) // closes any open ICE or app tabs.
         connectionService.toUser(
             hackerState.userId,
             ServerActions.SERVER_TERMINAL_RECEIVE,
@@ -187,6 +188,8 @@ class RunService(
         class HackerLeaveNotification(val userId: String)
         connectionService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
 
+        connectionService.toUser(hackerState.userId, ServerActions.SERVER_LEAVE_NODE) // closes any open ICE or app tabs.
+
         if (updateHackerState) {
             hackerStateEntityService.leaveSite(hackerState)
         }
@@ -208,8 +211,8 @@ class RunService(
     fun updateIceHackers(runId: String, iceId: String) {
         val usersInIce = hackerStateEntityService.findByRunIdAndIceId(runId, iceId)
 
-        val iceHackers = usersInIce.map { userIceHackingState ->
-            val user = userEntityService.getById(userIceHackingState.userId)
+        val iceHackers = usersInIce.map { userInIceHackerState ->
+            val user = userEntityService.getById(userInIceHackerState.userId)
             val hacker = hackerEntityService.findForUser(user)
             IceHacker(user.id, user.name, hacker.icon)
         }

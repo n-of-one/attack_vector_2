@@ -12,6 +12,7 @@ import {initGenericServerActions} from "../../../common/server/GenericServerActi
 import {ice} from "../../StandaloneGlobals";
 import {Page} from "../../../common/menu/pageReducer";
 import {initPasswordIceServerActions} from "./PasswordServerActionProcessor";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string,
@@ -45,6 +46,7 @@ export class PasswordRoot extends Component<Props> {
         passwordIceManager.init(this.store, props.externalHack)
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 14})
+        initGenericAppActions()
         initPasswordIceServerActions()
     }
 

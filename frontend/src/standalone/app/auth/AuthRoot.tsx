@@ -10,6 +10,7 @@ import {initAuthServerActions} from "./AuthServerActionProcessor";
 import {AuthContainer} from "./component/AuthContainer";
 import {ice, layer} from "../../StandaloneGlobals";
 import {Page} from "../../../common/menu/pageReducer";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string
@@ -43,6 +44,7 @@ export class AuthRoot extends Component<Props> {
 
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 14})
+        initGenericAppActions()
         initAuthServerActions()
 
         document.body.style.backgroundColor = "#333";

@@ -24,7 +24,7 @@ data class HackerState(
     val currentNodeId: String?,
     val previousNodeId: String?,
     val activity: HackerActivity,
-    val iceId: String?,
+    val iceId: String?, // the ICE a hacker is currently hacking
     val networkedConnectionId: String?,
     val iceConnectTimestamp: ZonedDateTime?,
 ) {

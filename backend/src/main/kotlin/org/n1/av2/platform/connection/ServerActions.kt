@@ -73,6 +73,7 @@ enum class ServerActions {
     SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
     SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.
     SERVER_HACKER_DC,                   // A hacker disconnects from the site but is still at the site
+    SERVER_LEAVE_NODE,                  // Sent to frontend to disconnect any apps the hacker is in (ICE, switch, auth, ...)
 
     SERVER_HACKER_START_ATTACK,         // A hacker starts the attack (connects to the entry site node)
     SERVER_HACKER_MOVE_START,           // step one of the move

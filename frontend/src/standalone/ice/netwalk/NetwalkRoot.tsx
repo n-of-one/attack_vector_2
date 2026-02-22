@@ -11,6 +11,7 @@ import {initNetwalkServerActions} from "./NetwalkServerActionProcessor";
 import {netwalkManager} from "./NetwalkManager";
 import {ice} from "../../StandaloneGlobals";
 import {Page} from "../../../common/menu/pageReducer";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     iceId: string
@@ -43,6 +44,7 @@ export class NetwalkRoot extends Component<Props> {
         netwalkManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
         initGenericServerActions({fontSize: 12})
+        initGenericAppActions()
         initNetwalkServerActions()
     }
 

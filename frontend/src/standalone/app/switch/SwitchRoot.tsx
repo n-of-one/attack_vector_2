@@ -7,6 +7,7 @@ import {initGenericServerActions} from "../../../common/server/GenericServerActi
 import {SwitchRootState, swithRootReducer} from "./SwitchReducers";
 import {Switch} from "./Switch";
 import {layer} from "../../StandaloneGlobals";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     layerId: string
@@ -36,6 +37,7 @@ export class SwitchRoot extends Component<Props> {
         });
 
         initGenericServerActions({fontSize: 14})
+        initGenericAppActions()
     }
 
     render() {

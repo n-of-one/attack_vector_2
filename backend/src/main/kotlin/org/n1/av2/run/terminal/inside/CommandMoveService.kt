@@ -159,6 +159,8 @@ class CommandMoveService(
             return
         }
 
+        connectionService.toUser(userId, ServerActions.SERVER_LEAVE_NODE)
+
         val nodeStatus = run.nodeScanById[nodeId]!!.status
 
         if (nodeStatus.isOneOf(FULLY_SCANNED_4, ICE_PROTECTED_3)) {
