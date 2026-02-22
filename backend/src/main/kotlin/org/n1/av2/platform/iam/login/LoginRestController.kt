@@ -63,7 +63,7 @@ class LoginRestController(
     fun openIdConnectAuthenticate(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        @LoginRedirectParam @RequestParam next: String?
+        @RequestParam next: String?
     ): String {
         val redirectUri = buildOpenIdConnectCallbackUri(request, next)
         response.sendRedirect(loginService.getOpenIdConnectLoginUrl(redirectUri))
@@ -75,7 +75,7 @@ class LoginRestController(
         request: HttpServletRequest,
         response: HttpServletResponse,
         @RequestParam code: String,
-        @LoginRedirectParam @RequestParam next: String?
+        @RequestParam next: String?
     ): String {
         val redirectUri = buildOpenIdConnectCallbackUri(request, next)
         val loginCookies = loginService.openIdConnectLogin(code, redirectUri)

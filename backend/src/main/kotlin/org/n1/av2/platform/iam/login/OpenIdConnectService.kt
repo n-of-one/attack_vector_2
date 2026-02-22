@@ -16,10 +16,13 @@ import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.util.HttpClient
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.util.UriComponentsBuilder
+import java.net.URLEncoder
 import java.util.*
 import java.util.stream.Collectors
+
 
 class OpenIdConnectUserInfos(
     val externalId: String,
@@ -74,40 +77,56 @@ class OpenIdConnectService(
 
     private fun getToken(baseUrl: String, clientId: String, code: String, redirectUri: String): OpenIdConnectTokens {
 
-        val encodedUrl = UriComponentsBuilder.newInstance()
-            .queryParam("grant_type", "authorization_code")
-            .queryParam("client_id", clientId)
-            .queryParam("redirect_uri", redirectUri)
-            .queryParam("code", code)
-            .build(true)
-            .toUriString().replaceFirst("?", "")
+        val encodedUrl = buildEncodedUrl(
+            mapOf(
+                "grant_type" to "authorization_code",
+                "client_id" to clientId,
+                "code" to code,
+                "redirect_uri" to redirectUri
+            )
+        )
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val result = HttpClient().post(
+        val response = HttpClient().post(
             "${baseUrl}/token",
             encodedUrl,
-            mapOf("content-type" to "application/x-www-form-urlencoded")
+            mapOf(
+                "Content-Type" to "application/x-www-form-urlencoded",
+                "Host" to "auth.localhost"
+            )
         )
-        val tokens = objectMapper.readValue(result, OpenIdConnectTokens::class.java)
-        return tokens
+        if (!response.isOk() || response.body.isEmpty() || response.body.contains("error")) {
+            error("Can't retrieve oidc tokens")
+        }
+        return objectMapper.readValue(response.body, OpenIdConnectTokens::class.java)
+    }
+
+    private fun buildEncodedUrl(params: Map<String, String>): String {
+        val sb = StringBuilder()
+        var first = true
+        params.forEach {
+            if (!first) sb.append("&") else first = false
+            sb.append(URLEncoder.encode(it.key, "UTF-8") + "=" + URLEncoder.encode(it.value, "UTF-8"))
+        }
+        return sb.toString()
     }
 
     /* terminating OIDC session after login to force re-login on new call of the login api*/
     private fun closeSession(baseUrl: String, clientId: String, refreshToken: String) {
-        val encodedUrl = UriComponentsBuilder.newInstance()
-            .queryParam("client_id", clientId)
-            .queryParam("refresh_token", refreshToken)
-            .build(true)
-            .toUriString().replaceFirst("?", "")
 
-        try {
-            HttpClient().post(
-                "${baseUrl}/logout",
-                encodedUrl,
-                mapOf("content-type" to "application/x-www-form-urlencoded")
+        val encodedUrl = buildEncodedUrl(
+            mapOf(
+                "client_id" to clientId,
+                "refresh_token" to refreshToken
             )
-        } catch (e: Exception) {
-            logger.error("Error when closing session", e)
-        }
+        )
+
+        HttpClient().post(
+            "${baseUrl}/logout",
+            encodedUrl,
+            mapOf("content-type" to "application/x-www-form-urlencoded")
+        )
     }
 
 

@@ -20,6 +20,7 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.util.stream.Collectors
 
 private val OPEN_PATHS = listOf(
     "/", "/index.html",
@@ -81,10 +82,24 @@ class WebSecurityConfig(
 
     @Bean
     fun customAccessDeniedHandler(): AccessDeniedHandler {
+        val paths = mutableListOf<String>()
+        paths.addAll(OPEN_PATHS)
+        paths.addAll(HACKER_PATHS)
+        paths.addAll(USER_PATHS)
+        paths.addAll(GM_PATHS)
+        paths.addAll(ADMIN_PATHS)
+
+        val pathsRegex = paths.stream().map { urlPattern -> urlPattern.replace("*" , "[^ ]*").toRegex() }.collect(Collectors.toList())
         return AccessDeniedHandler { request: HttpServletRequest, response: HttpServletResponse, _: AccessDeniedException? ->
             val path = request.requestURI
-            val redirectUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH) + "?next=$path"
-            response.sendRedirect(redirectUrl)
+            val isIncoming = pathsRegex.stream().anyMatch { regex -> regex.matches(path) }
+
+            // Only apply handler on incoming requests
+            // Needed for integration of open-id connect provider
+            if (isIncoming) {
+                val redirectUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH) + "?next=$path"
+                response.sendRedirect(redirectUrl)
+            }
         }
     }
 }

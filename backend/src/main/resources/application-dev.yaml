@@ -1,0 +1,3 @@
+server.port: 88
+
+http-client.log-request: true
