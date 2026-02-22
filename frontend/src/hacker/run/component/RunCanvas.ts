@@ -460,6 +460,7 @@ class RunCanvas {
 
     siteShutdownFinish() {
         this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
+            nodeDisplay.nodeData.hacked = false
             nodeDisplay.siteShutdownFinish()
         })
     }
