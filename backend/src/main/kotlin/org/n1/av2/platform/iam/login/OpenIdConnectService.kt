@@ -47,17 +47,16 @@ class OpenIdConnectService(
     private val hackerEntityService: HackerEntityService,
     private val skillService: SkillService,
 ) {
-    private val logger = mu.KotlinLogging.logger {}
     private val decoder = Base64.getUrlDecoder()
     private val objectMapper = jacksonObjectMapper()
 
     fun getLoginUrl(redirectUri: String): String {
-        val baseUrl = configService.get(ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_URL);
+        val baseUrl = configService.get(ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_URL)
         if (baseUrl.isBlank()) { //fallback to default login method if no URL has been set
             return "/login"
         }
 
-        val clientId = configService.get(ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID);
+        val clientId = configService.get(ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID)
         return "${baseUrl}/auth?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}"
     }
 

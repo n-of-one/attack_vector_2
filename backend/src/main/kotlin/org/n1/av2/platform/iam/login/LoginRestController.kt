@@ -7,7 +7,6 @@ import jakarta.validation.Valid
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.authentication.expirationInS
-import org.n1.av2.platform.inputvalidation.LoginRedirectParam
 import org.n1.av2.platform.inputvalidation.SafeJwt
 import org.n1.av2.platform.inputvalidation.SafeString
 import org.n1.av2.platform.util.getIp
