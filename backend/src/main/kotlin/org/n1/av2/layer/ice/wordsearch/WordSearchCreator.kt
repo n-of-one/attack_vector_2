@@ -50,9 +50,20 @@ class WordSearchCreator(private val strength: IceStrength) {
                     val solution = fitWord(word)
                     solutions.add(solution)
                 }
+            verifySolutionsHaveAtLeastOneUniquePosition(solutions)
             return WordSearchCreation(words, letterGrid, solutions, score)
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             return null // failed to create puzzle
+        }
+    }
+
+    private fun verifySolutionsHaveAtLeastOneUniquePosition(solutions: MutableList<List<String>>) {
+        solutions.forEach { solution ->
+            val otherLists = solutions.filter { it != solution }
+            val otherPositions = otherLists.flatten().toSet()
+            if (solution.all { it in otherPositions }) {
+                error("Solution does not have any unique position compared to other solutions")
+            }
         }
     }
 
@@ -187,7 +198,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 30
             IceStrength.VERY_STRONG -> 40
-            IceStrength.ONYX, -> 50
+            IceStrength.ONYX -> 50
         }
     }
 
@@ -198,7 +209,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 22
             IceStrength.VERY_STRONG -> 24
-            IceStrength.ONYX, -> 28
+            IceStrength.ONYX -> 28
         }
     }
 
