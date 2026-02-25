@@ -1,3 +1,17 @@
+# Release notes AV 2.18.0 (25 Februari 2026)
+
+## Features
+- Status lights can now have three or more options
+- Status ligth colors are now customizable
+
+## Bugfixes
+- Nodes that showed as hacked will show as not-hacked after site resets
+- ICE and other apps close when the hacker moves to another node
+- Prevent word search from making 100% overlapping words
+- Terminal syntax highlighting is correct after disconnecting
+- Username updates in the menu when user changes it, not requiring reload.
+
+
 # Release notes AV 2.17.1 (18 Februari 2026)
 
 ## Features
