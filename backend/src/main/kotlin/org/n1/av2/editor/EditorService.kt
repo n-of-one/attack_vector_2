@@ -1,8 +1,12 @@
 package org.n1.av2.editor
 
+import org.n1.av2.editor.EditorWsController.AddStatusLightOptionCommand
+import org.n1.av2.editor.EditorWsController.DeleteStatusLightOptionCommand
 import org.n1.av2.layer.Layer
-import org.n1.av2.layer.app.status_light.StatusLightField.*
+import org.n1.av2.layer.NAME
+import org.n1.av2.layer.NOTE
 import org.n1.av2.layer.app.status_light.StatusLightLayer
+import org.n1.av2.layer.app.status_light.StatusLightOption
 import org.n1.av2.layer.app.status_light.StatusLightService
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
@@ -182,6 +186,34 @@ class EditorService(
         siteValidationService.validate(command.siteId)
     }
 
+    fun addStatusLightOption(command: AddStatusLightOptionCommand) {
+        val node = nodeEntityService.getById(command.nodeId)
+        val layer = node.layers.find { it.id == command.layerId } ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
+        if (layer !is StatusLightLayer) error("Layer ${command.layerId} is not a StatusLightLayer")
+        layer.options.add(StatusLightOption(text = "", color = "grey"))
+        nodeEntityService.save(node)
+        sendLayerUpdateMessage(command.siteId, command.nodeId, layer)
+        statusLightService.sendUpdate(layer)
+    }
+
+    fun deleteStatusLightOption(command: DeleteStatusLightOptionCommand) {
+        val node = nodeEntityService.getById(command.nodeId)
+        val layer = node.layers.find { it.id == command.layerId } ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
+        if (layer !is StatusLightLayer) error("Layer ${command.layerId} is not a StatusLightLayer")
+
+        if (layer.options.size < 3) error("Cannot delete option. Status light must have at least 2 options.")
+
+        val newCurrentOption = if (layer.currentOption < command.optionIndex) layer.currentOption else layer.currentOption - 1
+
+        layer.options.removeAt(command.optionIndex)
+        layer.currentOption = newCurrentOption
+
+
+        nodeEntityService.save(node)
+        sendLayerUpdateMessage(command.siteId, command.nodeId, layer)
+        statusLightService.sendUpdate(layer)
+    }
+
     fun sendLayerUpdateMessage(siteId: String, nodeId: String, layer: Layer) {
         val message = ServerUpdateLayer(nodeId, layer.id, layer)
         connectionService.toSite(siteId, ServerActions.SERVER_UPDATE_LAYER, message)
@@ -189,13 +221,8 @@ class EditorService(
 
 
     private fun processUpdateToApp(layer: Layer, key: String) {
-        if (layer is StatusLightLayer) {
-            when (key) {
-                STATUS.name -> statusLightService.sendUpdate(layer)
-                TEXT_FOR_RED.name -> statusLightService.sendUpdate(layer)
-                TEXT_FOR_GREEN.name -> statusLightService.sendUpdate(layer)
-                else -> Unit
-            }
+        if (layer is StatusLightLayer && (key != NAME && key != NOTE)) {
+            statusLightService.sendUpdate(layer)
         }
     }
 

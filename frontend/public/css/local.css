@@ -83,6 +83,10 @@ select {
     font-variant-ligatures: none;
 }
 
+textarea {
+    font-variant-ligatures: none;
+}
+
 .unselectable {
     user-select: none;
 }

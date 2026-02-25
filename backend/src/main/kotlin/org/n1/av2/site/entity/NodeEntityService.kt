@@ -216,8 +216,8 @@ class NodeEntityService(
             LayerType.TAR_ICE -> TarIceLayer(layerId, level, defaultName)
             LayerType.SWEEPER_ICE -> SweeperIceLayer(layerId, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
-            LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "off", "on")
-            LayerType.LOCK -> createStatusLightLayer(layerId, LayerType.LOCK, level, defaultName, "locked", "unlocked")
+            LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "Status", "off", "on")
+            LayerType.LOCK -> createStatusLightLayer(layerId, LayerType.LOCK, level, defaultName, "Lock status", "locked", "unlocked")
             LayerType.KEYSTORE -> KeyStoreLayer(layerId, level, defaultName)
             LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
             LayerType.TIMER_ADJUSTER -> TimerAdjusterLayer(layerId, level, defaultName)
@@ -232,10 +232,11 @@ class NodeEntityService(
         type: LayerType,
         level: Int,
         defaultName: String,
-        textForRed: String,
-        textForGreen: String
+        switchLabel: String,
+        textForOption1: String,
+        textForOption2: String
     ): StatusLightLayer {
-        return StatusLightLayer(layerId, type, level, defaultName, null, textForRed, textForGreen)
+        return StatusLightLayer(layerId, type, level, defaultName, switchLabel, textForOption1, textForOption2)
     }
 
     data class LayersUpdated(val node: Node, val layerId: String?)

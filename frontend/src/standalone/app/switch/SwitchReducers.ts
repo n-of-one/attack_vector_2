@@ -1,18 +1,19 @@
 import {AnyAction, combineReducers} from "redux";
+import {StatusLightOption} from "../../widget/statusLight/StatusLightReducers";
 
 const SERVER_STATUS_LIGHT_UPDATE = "SERVER_STATUS_LIGHT_UPDATE"
 
 
 export interface SwitchState {
-    status: boolean | null,
-    textForRed: string,
-    textForGreen: string
+    switchLabel: string,
+    currentOption: number | null,
+    options: StatusLightOption[],
 }
 
 const defaultState = {
-    status: null,
-    textForRed: "",
-    textForGreen: "",
+    switchLabel: "",
+    currentOption: null,
+    options: [],
 }
 
 export const switchReducer = (state: SwitchState = defaultState, action: AnyAction): SwitchState => {
@@ -28,7 +29,7 @@ export interface SwitchRootState {
     switch: SwitchState,
 }
 
-export const swithRootReducer = combineReducers<SwitchRootState>({
+export const switchRootReducer = combineReducers<SwitchRootState>({
     switch: switchReducer
 })
 

@@ -10,6 +10,7 @@ import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.app.status_light.StatusLightLayer
+import org.n1.av2.layer.app.status_light.StatusLightOption
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.netwalk.NetwalkIceLayer
 import org.n1.av2.layer.ice.password.PasswordIceLayer
@@ -231,13 +232,33 @@ class ImportService(
 
     private fun mapLayerStatusLight(input: JsonNode, id: String, level: Int, name: String, note: String): StatusLightLayer {
         val type = LayerType.valueOf(input.get("type").asText())
+
+        if (input.has("status")) {
+            // V12 and earlier: 2-options switch
+            val status = input.get("status").asBoolean()
+            val textForRed = input.get("textForRed").asText()
+            val textForGreen = input.get("textForGreen").asText()
+            val switchLabel = "Switch"
+
+            val statusLight = StatusLightLayer(id, type, level, name, switchLabel, textForRed, textForGreen)
+            statusLight.currentOption = if (status) 1 else 0
+            return statusLight
+        }
+
+        val optionElement = input.get("options").asList()
+        val options = optionElement.map { optionNode ->
+            StatusLightOption(
+                text = optionNode.get("text").asText(),
+                color = optionNode.get("color").asText()
+            )
+        }.toMutableList()
+
         return StatusLightLayer(
             type = type,
             id = id, level = level, name = name, note = note,
-            appId = input.get("appId").asText(),
-            status = input.get("status").asBoolean(),
-            textForRed = input.get("textForRed").asText(),
-            textForGreen = input.get("textForGreen").asText(),
+            switchLabel = input.get("switchLabel").asText(),
+            currentOption = input.get("currentOption").asInt(),
+            options = options
         )
     }
 

@@ -1,6 +1,7 @@
 import {LayerType} from "../enums/LayerTypes";
 import {NodeScanStatus} from "../enums/NodeStatus";
 import {TimerAdjustmentRecurring, TimerAdjustmentType} from "../model/layer/LayerTimerAdjuster";
+import {StatusLightOption} from "../../standalone/widget/statusLight/StatusLightReducers";
 
 export const TRANSIT_1 = "transit_1"
 export const TRANSIT_2 = "transit_2"
@@ -51,10 +52,9 @@ export interface LayerDetails {
     time1Level5Hacker?: string   // Tar Ice layer, no longer used.
     time5Level10Hackers?: string // Tar Ice layer, no longer used.
 
-    appId?: string               // Status Light layer
-    status?: boolean             // Status Light layer
-    textForGreen?: string        // Status Light layer
-    textForRed?: string          // Status Light layer
+    switchLabel?: string            // Status Light layer
+    currentOption?: number         // Status Light layer
+    options?: StatusLightOption[]  // Status Light layer
 
     iceLayerId?: string          // Keystore layer
 
