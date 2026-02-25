@@ -35,7 +35,7 @@ Create a site that contains a status light layer.
 ```
 In the editor copy the Switch URL:
 
-![](../../assets/gm/sites/status-light-properties.png)
+![](../../assets/gm/sites/basic/status-light-properties-urls.png)
 
 Have the players find this URL in the game. When they access this URL, they go directly to the switch page. This page can be access with a mobile phone. So you can also use the QR code of the Switch URL instead.
 

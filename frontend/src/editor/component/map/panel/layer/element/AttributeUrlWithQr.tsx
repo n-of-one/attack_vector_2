@@ -27,8 +27,6 @@ export const AttributeUrlWithQr = ({name, layerId, type, subType, description, r
                     <div>
                         <div>{description}</div>
                         <div>&nbsp;</div>
-                        <div>Path: {path}</div>
-                        <div>&nbsp;</div>
                         <div>{url}</div>
                         <div onClick={dismissMethod}><br/>
                             <QrDownload fileName={fileName} value={url}/>
