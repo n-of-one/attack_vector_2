@@ -1,5 +1,6 @@
 package org.n1.av2.gm
 
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.UserAndHackerService
@@ -13,6 +14,7 @@ class GmWsController(
     private val siteService: SiteService,
     private val userTaskRunner: UserTaskRunner,
     private val userAndHackerService: UserAndHackerService,
+    private val configService: ConfigService,
 ) {
 
     @PreAuthorize("hasRole('ROLE_GM')")
@@ -20,7 +22,7 @@ class GmWsController(
     fun siteList(userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/gm/logon", userPrincipal) {
             siteService.sendSitesList()
-
+            configService.replyConfigValues()
             // This will trigger the rendering of the page, send last so that no page updates happen after.
             userAndHackerService.sendDetailsOfCurrentUser()
         }

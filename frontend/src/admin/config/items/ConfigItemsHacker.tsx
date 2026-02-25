@@ -142,3 +142,26 @@ export const ConfigItemHackerScriptLoadDuringRun = (props: { value: string }) =>
         </>
     )
 }
+
+export const ConfigItemHackerDefaultSpeed = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="Hacker: default speed" value={props.value} item={ConfigItem.HACKER_DEFAULT_SPEED}/>
+            <div className="form-text text-muted text-size">
+                Default: 4<br/><br/>
+                General advice: play around with this value to see what fits your larp.<br/><br/>
+                The speed of a hacker has the following impact:<br/>
+                <ul>
+                    <li>It is the number of characters shown in the terminal per 50 milliseconds. Higher values makes the text appear faster, making it more
+                        instant. Lower values make the text appear slower, giving a more old-school terminal vibe.
+                    </li>
+                    <li>It determines how fast hackers move.</li>
+                    <li>It determines how fast the start-attack action is.</li>
+                </ul>
+                If a hacker has the 'adjusted speed' skill, the value of that skills overrides this default.<br/><br/>
+            </div>
+            <br/>
+        </>
+    )
+}
+

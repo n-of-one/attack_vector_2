@@ -129,16 +129,18 @@ class CommandMoveService(
     private fun handleMove(toNode: Node, hackerState: HackerStateRunning, bypassingIceAtStartNode: Boolean) {
         connectionService.replyTerminalSetLocked(true)
 
+        val timings = timingsService.skillAndConfigAdjusted(timingsService.MOVE_START, hackerState.userId)
+
         @Suppress("unused")
         class StartMove(val userId: String, val nodeId: String, val bypassingIceAtStartNode: Boolean, val timings: Timings)
         connectionService.toRun(
             hackerState.runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(
                 hackerState.userId, toNode.id,
-                bypassingIceAtStartNode, timingsService.MOVE_START
+                bypassingIceAtStartNode, timings
             )
         )
 
-        userTaskRunner.queueInTicksForSite("move-arrive", hackerState.siteId, timingsService.MOVE_START.totalTicks) {
+        userTaskRunner.queueInTicksForSite("move-arrive", hackerState.siteId, timings.totalTicks) {
             moveArrive(
                 toNode.id,
                 hackerState.userId,

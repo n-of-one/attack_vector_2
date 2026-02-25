@@ -2,9 +2,11 @@ import {AnyAction} from "redux"
 import {BACKSPACE, DOWN, TAB, UP} from "../util/KeyCodes"
 import {SERVER_ERROR} from "../server/GenericServerActionProcessor"
 import {parseTextToTerminalLine} from "./TerminalLineParser";
+import {SERVER_RECEIVE_CURRENT_USER, skillValueAsIntOrNull, User} from "../users/CurrentUserReducer";
+import {HackerSkillType} from "../users/HackerSkills";
+import {ConfigEntry, ConfigItem, SERVER_RECEIVE_CONFIG} from "../../admin/config/ConfigReducer";
 
 const LINE_LIMIT = 100
-const TERMINAL_UPDATES_PER_TICK = 4
 
 export const SERVER_TERMINAL_SYNTAX_HIGHLIGHTING = "SERVER_TERMINAL_SYNTAX_HIGHLIGHTING"
 export const TERMINAL_KEY_PRESS = "TERMINAL_KEY_PRESS"
@@ -18,12 +20,10 @@ export const TERMINAL_LOCK = "TERMINAL_LOCK"
 export const TERMINAL_UNLOCK = "TERMINAL_UNLOCK"
 export const TERMINAL_REPLACE_LAST_LINE = "TERMINAL_REMOVE_LAST_LINE"
 
-
 export interface TerminalLineData {
     blocks: TerminalLineBlock[]
     key: number
 }
-
 
 export enum TerminalBlockType {
     TEXT,
@@ -32,7 +32,6 @@ export enum TerminalBlockType {
     EMPTY_LINE,
     IMAGE
 }
-
 
 export interface TerminalLineBlock {
     type: TerminalBlockType
@@ -43,7 +42,6 @@ export interface TerminalLineBlock {
     link?: string
     imageSource?: string
 }
-
 
 export interface Syntax {
     main: string[],
@@ -72,6 +70,8 @@ export interface TerminalState {
     syntaxHighlighting: SyntaxMap,
     history: string[]
     historyIndex: number
+
+    terminalUpdatesPerTick: number
 }
 
 export const terminalStateDefault: TerminalState = {
@@ -92,7 +92,9 @@ export const terminalStateDefault: TerminalState = {
     unrenderedLines: [],
     syntaxHighlighting: {},
     history: [],            // [ "move 00", "view", "hack 2" ]
-    historyIndex: 0         // which history item was last selected. When historyIndex == history then no history item is selected
+    historyIndex: 0,        // which history item was last selected. When historyIndex == history then no history item is selected
+
+    terminalUpdatesPerTick: 4 // default speed.
 }
 
 interface CreatTerminalConfig {
@@ -110,10 +112,17 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
     return (state: TerminalState | undefined = defaultState, action: AnyAction): TerminalState => {
         if (action.type === TICK) {
             let currentState = state
-            for (let i = 0; i < TERMINAL_UPDATES_PER_TICK; i++) {
+            for (let i = 0; i < state.terminalUpdatesPerTick; i++) {
                 currentState = processUpdate(currentState)
             }
             return currentState
+        }
+
+        if (action.type === SERVER_RECEIVE_CURRENT_USER) {
+            return processCurrentUser(state, action.data as User)
+        }
+        if (action.type === SERVER_RECEIVE_CONFIG) {
+            return processConfig(state, action.data as ConfigEntry[])
         }
 
         // terminalId from server actions is in data part
@@ -146,6 +155,7 @@ export const createTerminalReducer = (id: string, config: CreatTerminalConfig): 
                 return replaceLastLine(state, action.data)
             case SERVER_TERMINAL_UPDATE_PROMPT:
                 return updatePrompt(state, action.data)
+
             default:
                 return state
         }
@@ -333,4 +343,24 @@ interface TerminalUpdatePrompt {
 
 const updatePrompt = (terminal: TerminalState, data: TerminalUpdatePrompt) => {
     return {...terminal, prompt: data.prompt}
+}
+
+const processCurrentUser = (terminal: TerminalState, user: User): TerminalState => {
+    if (!user.hacker) {
+        return terminal
+    }
+    const terminalSpeed = skillValueAsIntOrNull(user, HackerSkillType.ADJUSTED_SPEED)
+    if (!terminalSpeed) {
+        return terminal
+    }
+
+    return {...terminal, terminalUpdatesPerTick: terminalSpeed}
+}
+
+const processConfig = (state: TerminalState, entries: ConfigEntry[]) => {
+    const configSpeed = entries.find(entry => entry.item === ConfigItem.HACKER_DEFAULT_SPEED)
+    if (!configSpeed) {
+        return state
+    }
+    return {...state, terminalUpdatesPerTick: parseInt(configSpeed.value)}
 }

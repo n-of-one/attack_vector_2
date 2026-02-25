@@ -21,6 +21,7 @@ enum class ConfigItem(
     HACKER_SCRIPT_RAM_REFRESH_DURATION("00:15:00", ::validDuration),
     HACKER_SCRIPT_LOCKOUT_DURATION("01:00:00", ::validDuration),
     HACKER_SCRIPT_LOAD_DURING_RUN("false", ::validBoolean),
+    HACKER_DEFAULT_SPEED("4", ::validHackerSpeed),
 
     LOGIN_PATH("/login", ::notEmpty, ::loginPathMessage),
     LOGIN_PASSWORD("", ::validPassword, ::loginPasswordMessage),
@@ -56,6 +57,16 @@ fun validBoolean(toValidate: String, configValues: Map<ConfigItem, String>) =
         "true", "false" -> null
         else -> "Value must be 'true' or 'false'"
     }
+
+@Suppress("unused")
+fun validHackerSpeed(toValidate: String, configValues: Map<ConfigItem, String>): String? {
+    val value = toValidate.toIntOrNull()
+    return when {
+        value == null -> "Value must be an whole number > 0."
+        value < 1 -> "Value must be 1 or higher."
+        else -> null
+    }
+}
 
 @Suppress("unused")
 fun validDelay(toValidate: String, configValues: Map<ConfigItem, String>): String? {

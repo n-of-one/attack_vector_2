@@ -363,7 +363,7 @@ class RunCanvas {
         }
         this.hackerDisplays.get(userId).startRun(quick, timings)
 
-        const waitTime = quick ? NODE_TRANSITION_TICKS : timings.main - 50
+        const waitTime = quick ? NODE_TRANSITION_TICKS : timings.move
         testSupport.scheduleEmitEvent("startAttackAnimationsFinished", this.iconSchedule, waitTime)
 
     }

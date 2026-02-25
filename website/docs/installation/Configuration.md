@@ -53,6 +53,20 @@ Default: unknown
 This is used in the file name of exports of sites.
 
 ## Hacker
+### Default speed
+Default: 4
+
+General advice: play around with this value to see what fits your larp.
+
+The speed of a hacker has the following impact:
+
+- It is the number of characters shown in the terminal per 50 milliseconds. Higher values makes the text appear faster, making it more instant. Lower values make the text appear slower, giving a more old-school terminal vibe.
+- It determines how fast hackers move.
+- It determines how fast the start-attack action is.
+
+If a hacker has the 'adjusted speed' skill (see [here](../../player/skills/Adjusted-speed)), the value of that skills overrides this default.
+
+
 ### Delete run links
 Allow the hacker to delete links to runs.
 

@@ -220,23 +220,27 @@ export const initRunServerActions = (store: Store) => {
             // const startNodeName = (startNode != null) ? startNode.layers[0].nodeName || "" : ""
             // const startNodeText = (startNodeName) ? `: ${startNodeName}` : ""
 
+            const speedSlow = data.timings["slow"]
+            const speedMedium = data.timings["medium"]
+            const speedFast = data.timings["fast"]
+
             if (data.quick) {
-                echo(0, "[info]Persona established, hack started.")
+                echo(10, "[info]Persona established, hack started.")
                 echo(0, "")
             }
             else {
-                echo(20, "")
-                echo(20, "Persona v2.3 booting")
-                echo(10, "- unique ID: " + personaId)
-                echo(10, "- Matching fingerprint with OS deamon")
-                echo(10, "  - [ok]ok[/] Suppressing persona signature")
-                echo(10, "  - [ok]ok[/] Connection bandwidth adjusted")
-                echo(10, "  - [ok]ok[/] Content masked.")
-                echo(30, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon")
-                echo(30, "  - [ok]ok[/] Network origin obfuscated ")
-                echo(20, "- Persona creation [info]complete")
+                echo(speedMedium, "")
+                echo(speedMedium, "Persona v2.3 booting")
+                echo(speedFast, "- unique ID: " + personaId)
+                echo(speedFast, "- Matching fingerprint with OS deamon")
+                echo(speedFast, "  - [ok]ok[/] Suppressing persona signature")
+                echo(speedFast, "  - [ok]ok[/] Connection bandwidth adjusted")
+                echo(speedFast, "  - [ok]ok[/] Content masked.")
+                echo(speedSlow, "  - [ok]ok[/] Operating speed reduced to mimic OS deamon")
+                echo(speedSlow, "  - [ok]ok[/] Network origin obfuscated ")
+                echo(speedMedium, "- Persona creation [info]complete")
                 echo(0, "")
-                echo(0, "Connection established.")
+                echo(speedFast, "Connection established.")
                 echo(0, "")
             }
 

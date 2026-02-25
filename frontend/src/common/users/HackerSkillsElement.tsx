@@ -6,16 +6,33 @@ import {InfoBadge} from "../component/ToolTip";
 import {SilentLink} from "../component/SilentLink";
 import {ActionButton} from "../component/ActionButton";
 import {HackerSkill, HackerSkillType, skillCanHaveMultipleInstances, skillHasValue, skillInfoText, skillName} from "./HackerSkills";
+import {useSelector} from "react-redux";
+import {ConfigItem, ConfigRootState, getConfigAsInt} from "../../admin/config/ConfigReducer";
 
+interface HackerSkillForDisplay {
+    id: string,
+    type: HackerSkillType,
+    value?: string,
+    tooltip: string,
+}
 export const HackerSkillsElement = ({user, readonlySkills}: { user: User, readonlySkills: boolean }) => {
+    const config = useSelector((rootState: ConfigRootState) => rootState.config)
     if (!user.hacker) {
         return <></>
     }
 
     const sortedSkills = [...user.hacker.skills].sort((a: HackerSkill, b: HackerSkill) => skillName[a.type].localeCompare(skillName[b.type]))
+    const enrichedSkills = sortedSkills.map((skill: HackerSkill) => {
+        if (skill.type !== HackerSkillType.ADJUSTED_SPEED) {
+            return {...skill, tooltip: skillInfoText[skill.type]}
+        }
+        const defaultSpeed = getConfigAsInt(ConfigItem.HACKER_DEFAULT_SPEED, config)
+        const tooltip = skillInfoText[skill.type].replace("[DEFAULT_SPEED]", defaultSpeed.toString())
+        return {...skill, tooltip}
+    })
 
     return <>
-        {sortedSkills.map((skill) => {
+        {enrichedSkills.map((skill) => {
             return <HackerSkillElement skill={skill} readonly={readonlySkills} key={skill.id}/>
         })}
         <HackerAddSkillElement user={user} readonlySkills={readonlySkills} skills={sortedSkills}/>
@@ -23,14 +40,14 @@ export const HackerSkillsElement = ({user, readonlySkills}: { user: User, readon
 }
 
 interface HackerSkillElementProps {
-    skill: HackerSkill,
+    skill: HackerSkillForDisplay,
     readonly: boolean,
 }
 
 const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
 
     const hasValue = skillHasValue[skill.type]
-    const infoText = skillInfoText[skill.type]
+    const infoText = skill.tooltip
     const name = skillName[skill.type]
 
     if (readonly) {
@@ -94,6 +111,7 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
                             setChosenSkillOption(event.target.value)
                         }}>
                     <option value=""></option>
+                    <SkillOption type={HackerSkillType.ADJUSTED_SPEED} name={"Adjusted speed - adjust hacker speed"} skills={skills}/>
                     <SkillOption type={HackerSkillType.BYPASS} name={"Bypass - ignore ICE in first node"} skills={skills}/>
                     <SkillOption type={HackerSkillType.CREATE_SITE} name={"Create site - allow creating sites"} skills={skills}/>
                     <SkillOption type={HackerSkillType.UNDO_TRIPWIRE} name={"Glitch - undo tripping tripwires"} skills={skills}/>

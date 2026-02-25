@@ -81,6 +81,11 @@ class ConfigService(
         return stringValue.toBoolean()
     }
 
+    fun getAsInt(item: ConfigItem): Int {
+        val stringValue = get(item)
+        return stringValue.toInt()
+    }
+
     fun getAsLong(item: ConfigItem): Long {
         val stringValue = get(item)
         return stringValue.toLong()

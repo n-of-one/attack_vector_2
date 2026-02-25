@@ -76,3 +76,12 @@ export const hasSkill = (user: User, requested: HackerSkillType): boolean => {
     const skills = user.hacker?.skills || []
     return skills.some((hackerSKill) => hackerSKill.type === requested)
 }
+
+export const skillValueAsIntOrNull = (user: User, requested: HackerSkillType): number | null => {
+    const skills = user.hacker?.skills || []
+    const skill = skills.find((hackerSKill) => hackerSKill.type === requested)
+    if (!skill || !skill.value) {
+        return null
+    }
+    return parseInt(skill.value)
+}

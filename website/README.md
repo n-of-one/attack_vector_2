@@ -1,6 +1,6 @@
 # Readme
 
-The documentatino for Attack Vector is made with Docusaurus. 
+The documentation for Attack Vector is made with Docusaurus. 
 
 
 ## Local Development

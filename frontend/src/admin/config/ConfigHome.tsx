@@ -3,6 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AdminRootState} from "../AdminRootReducer";
 import {webSocketConnection} from "../../common/server/WebSocketConnection";
 import {
+    ConfigItemHackerDefaultSpeed,
     ConfigItemHackerDeleteRunLinks,
     ConfigItemHackerEditCharacterName,
     ConfigItemHackerEditUserName,
@@ -18,7 +19,8 @@ import {ConfigItemLoginGoogleClientId, ConfigItemLoginPassword, ConfigItemLoginP
 import {
     ConfigItemDevSimulateNonLocalHost,
     ConfigItemHackerResetSite,
-    ConfigItemHackerUseDevCommands, ConfigItemMinimumShutdownDuration,
+    ConfigItemHackerUseDevCommands,
+    ConfigItemMinimumShutdownDuration,
     ConfigItemQuickPlaying,
     ConfigItemTestingMode
 } from "./items/ConfigItemsDev";
@@ -116,6 +118,8 @@ const ConfigItemElement = (props: { item: ConfigItem | null, value: string }) =>
             return <ConfigItemHackerScriptLockoutDuration value={props.value}/>
         case ConfigItem.HACKER_SCRIPT_LOAD_DURING_RUN:
             return <ConfigItemHackerScriptLoadDuringRun value={props.value}/>
+        case ConfigItem.HACKER_DEFAULT_SPEED:
+            return <ConfigItemHackerDefaultSpeed value={props.value}/>
 
         case ConfigItem.LOGIN_PATH:
             return <ConfigItemLoginPath value={props.value}/>

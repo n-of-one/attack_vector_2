@@ -40,6 +40,7 @@ enum class SkillType(
     val processUpdate: (userId: String, value: String?, context: ApplicationContext) -> Unit = noUpdateAction,
     val processSkillRemoval: (userId: String, context: ApplicationContext) -> Unit = noRemovalAction,
 ) {
+    ADJUSTED_SPEED("4", ::validateHackerSpeed),
     BYPASS(),
     CREATE_SITE(),
     JUMP_TO_HACKER(),
@@ -62,6 +63,12 @@ val noRemovalAction = { _: String, _: ApplicationContext -> }
 fun validatePositiveNumber(input: String): String? {
     val value = input.toIntOrNull() ?: return "must be a whole number"
     if (value < 0) return "must be a positive number"
+    return null
+}
+
+fun validateHackerSpeed(input: String): String? {
+    val value = input.toIntOrNull() ?: return "must be a whole number"
+    if (value < 1) return "Terminal speed must be at least 1"
     return null
 }
 

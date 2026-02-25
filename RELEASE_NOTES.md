@@ -1,8 +1,19 @@
-# Release notes AV 2.18.0 (25 Februari 2026)
+# Release notes AV 2.19.0 (25 February 2026)
+
+## Features
+- Hacker speed
+
+Speed can now be changed for the server as a whole or individual hackers. Hacker speed defines how quick text appears in the terminal, as well as how fast hackers move.
+
+Changing the speed will change how the system feels to work with. The 'adjusted speed' skill can be given the players to make them faster or slower.
+It's mostly cosmetics and does not impact actual hacking (solving of puzzles). It can be used to make experienced hackers feel more advanced.
+
+
+# Release notes AV 2.18.0 (25 February 2026)
 
 ## Features
 - Status lights can now have three or more options
-- Status ligth colors are now customizable
+- Status light colors are now customizable
 
 ## Bugfixes
 - Nodes that showed as hacked will show as not-hacked after site resets
@@ -12,7 +23,7 @@
 - Username updates in the menu when user changes it, not requiring reload.
 
 
-# Release notes AV 2.17.1 (18 Februari 2026)
+# Release notes AV 2.17.1 (18 February 2026)
 
 ## Features
 - Shutdown accelerator layer -> Timer adjuster layer
@@ -37,7 +48,7 @@ Existing Shutdown accelerator layers will be updated to the new type when you up
 
 
 
-# Release notes AV 2.17.0 (15 Februari 2026)
+# Release notes AV 2.17.0 (15 February 2026)
 
 ## Features
 
@@ -58,7 +69,7 @@ This new layer reduces the time left on running timers (started by tripwires or 
 - Fix importing sites with tripwires without an attached core
 
 
-# Release notes AV 2.16.0 (14 Februari 2026)
+# Release notes AV 2.16.0 (14 February 2026)
 
 ## Features
 
