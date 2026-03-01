@@ -41,7 +41,7 @@ class EditorService(
         } // GM can edit any site
         val siteProperties = sitePropertiesEntityService.findByName(siteName) ?: return // new site
         if (siteProperties.ownerUserId != userPrincipal.userEntity.id) {
-            connectionService.replyError("Site already exists")
+            connectionService.replyNotificationError("Site already exists")
             error("Site already exists")
         }
     }
@@ -53,7 +53,7 @@ class EditorService(
 
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         if (siteProperties.ownerUserId != userPrincipal.userEntity.id) {
-            connectionService.replyError("You don't have access to this site")
+            connectionService.replyNotificationError("You don't have access to this site")
             error("User ${userPrincipal.userId} tried to edit site: ${siteProperties.name} (${siteId}).")
         }
     }

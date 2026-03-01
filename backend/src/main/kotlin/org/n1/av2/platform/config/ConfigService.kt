@@ -65,7 +65,7 @@ class ConfigService(
         val messageFunction = item.message ?: return // no message function
         val message = messageFunction(value) ?: return // no message
 
-        connectionService.replyError(message)
+        connectionService.replyNotificationError(message)
     }
 
     private fun checkValue(item: ConfigItem, value: String) {

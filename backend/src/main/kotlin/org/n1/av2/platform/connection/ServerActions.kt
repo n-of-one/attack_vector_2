@@ -90,7 +90,6 @@ enum class ServerActions {
     SERVER_REDIRECT_HACK_ICE,           // open a new window to start hacking ICE
     SERVER_ICE_HACKED,                  // sent to ice screen to indicate ICE has been hacked.
     SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
-    SERVER_NODE_HACKED,                 // change icon of node in run
     SERVER_LAYER_CHANGED,               // sent to run to update info, this is visible when clicking on icon
 
     SERVER_ICE_HACKERS_UPDATED,         // sent to ice to inform all hackers of the current hackers on this ice

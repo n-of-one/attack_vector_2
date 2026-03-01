@@ -126,8 +126,8 @@ class CommandHackService(
         requireNotNull(hackerState.currentNodeId)
         val node = nodeEntityService.getById(hackerState.currentNodeId)
 
-        hackedUtil.iceHacked(iceId, layer.id, node, 0, IceHackState.USED_DEV_MODE)
         connectionService.replyTerminalReceive("Quick hacked ${layer.level}.")
+        hackedUtil.iceHacked(iceId, layer.id, node, 0, IceHackState.USED_DEV_MODE)
     }
 
 

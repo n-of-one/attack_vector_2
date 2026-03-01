@@ -206,25 +206,18 @@ export class NodeDisplay implements Display {
     }
 
 
-    crossFadeToNewIconStart(delay: number, canvasSelectedIcon: fabric.Image | null) {
+    crossFadeToNewIconStart(duration: number, canvasSelectedIcon: fabric.Image | null) {
         if (this.schedule == null) throw new Error("schedule not initialized")
 
         const crossFadeTime = NODE_TRANSITION_TICKS
-        this.schedule.run(delay, () => {
+        this.schedule.run(duration, () => {
 
             this.crossFadeNodeIcon = this.nodeIcon
             this.addNodeIcon()
             this.canvas.sendToBack(this.crossFadeNodeIcon)
 
-            // this.nodeIcon.set("left", this.x - 10)
-            // animate(this.canvas, this.oldNodeIcon, 'left', this.x - 10, crossFadeTime)
-            // animate(this.canvas, this.nodeIcon, 'left', this.x, crossFadeTime)
-
             this.gfx.fade(crossFadeTime, this.determineNodeIconOpacity(), this.nodeIcon)
             this.gfx.fadeOut(crossFadeTime, this.crossFadeNodeIcon)
-
-            // animate(this.canvas, this.nodeIcon, "opacity", this.determineNodeIconOpacity(), crossFadeTime)
-            // animate(this.canvas, this.oldNodeIcon, "opacity", 0, crossFadeTime)
 
             delayTicks(crossFadeTime, () => {
                 if (!this.crossFadeNodeIcon) {

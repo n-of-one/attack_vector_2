@@ -212,7 +212,7 @@ class UserAndHackerService(
         ramEntityRepo.findByUserId(userId)?.let { ramEntityRepo.delete(it) }
         userEntityService.delete(userId)
         sendUsersOverview()
-        connectionService.replyNeutral("${user.name} deleted")
+        connectionService.replyNotificationNeutral("${user.name} deleted")
     }
 
     fun getOrCreateHackerUser(externalId: String): UserEntity {

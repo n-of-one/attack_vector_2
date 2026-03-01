@@ -28,10 +28,10 @@ class PasswordIceManager extends GenericIceManager {
             this.displayTerminal(20, "")
         }
         this.displayTerminal(20, "↼ Suggested attack vectors: retrieve password, informed password guessing.")
-        this.schedule.dispatch(0, {type: ICE_PASSWORD_BEGIN})
         this.schedule.run(0, () => {
             terminalManager.start()
         })
+        this.schedule.dispatch(0, {type: ICE_PASSWORD_BEGIN})
     }
 
     close() {

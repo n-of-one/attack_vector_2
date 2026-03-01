@@ -26,7 +26,6 @@ export const SERVER_HACKER_MOVE_ARRIVE = "SERVER_HACKER_MOVE_ARRIVE"
 export const SERVER_HACKER_SCANS_NODE = "SERVER_HACKER_SCANS_NODE"
 export const SERVER_LAYER_HACKED = "SERVER_LAYER_HACKED"
 export const SERVER_LAYER_CHANGED = "SERVER_LAYER_CHANGED"
-export const SERVER_NODE_HACKED = "SERVER_NODE_HACKED"
 export const SERVER_HACKER_DC = "SERVER_HACKER_DC"
 export const SERVER_ENTERING_RUN = "SERVER_ENTERING_RUN"
 export const SERVER_ENTERED_RUN = "SERVER_ENTERED_RUN"
@@ -54,7 +53,6 @@ export const IGNORELIST_WHILE_ENTERING_RUN =
         SERVER_HACKER_SCANS_NODE,
         SERVER_LAYER_HACKED,
         SERVER_LAYER_CHANGED,
-        SERVER_NODE_HACKED,
         SERVER_HACKER_DC,
         SERVER_UPDATE_NODE_STATUS,
         SERVER_SITE_DISCOVERED,
@@ -186,7 +184,7 @@ export const initRunServerActions = (store: Store) => {
     })
 
     webSocketConnection.addAction(SERVER_UPDATE_NODE_STATUS, (data: UpdateNodeStatusAction) => {
-        runCanvas.updateNodeStatus(data.nodeId, data.newStatus)
+        runCanvas.updateNodeStatus(data.nodeId, data.newStatus, data.nodeHacked)
     })
 
     webSocketConnection.addAction(SERVER_DISCOVER_NODES, ({nodeStatusById}: ProbeResultConnections) => {
@@ -281,12 +279,6 @@ export const initRunServerActions = (store: Store) => {
     webSocketConnection.addAction(SERVER_REDIRECT_CONNECT_ICE, (data: RedirectConnectIce) => {
         const url = avEncodedUrl(`app/auth/${data.layerId}`)
         window.open(url, "app")
-    })
-
-    webSocketConnection.addAction(SERVER_NODE_HACKED, (data: NodeHacked) => {
-        delayTicks(data.delay, () => {
-            runCanvas.nodeHacked(data.nodeId)
-        })
     })
 
     webSocketConnection.addAction(SERVER_FLASH_PATROLLER, (data: FlashPatrollerAction) => {

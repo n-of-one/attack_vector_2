@@ -64,7 +64,7 @@ class TutorialService(
             val tutorialSiteProperties = sitePropertiesEntityService.findByName(tutorialTemplateName)
 
             if (tutorialSiteProperties == null) {
-                connectionService.replyError("Tutorial site not found: $tutorialTemplateName, please check the configuration.")
+                connectionService.replyNotificationError("Tutorial site not found: $tutorialTemplateName, please check the configuration.")
                 return
             }
 

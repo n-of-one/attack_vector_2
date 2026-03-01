@@ -39,7 +39,7 @@ const ReRoute = (): React.JSX.Element => {
             window.document.location.href = "/admin/"
         } else if (type === "GM") {
             window.document.location.href = "/gm/"
-        } else if (type === "HACKER" || type === "HACKER_MANAGER") {
+        } else if (type === "HACKER") {
             window.document.location.href = "/hacker/"
         } else {
             Cookies.remove("jwt")

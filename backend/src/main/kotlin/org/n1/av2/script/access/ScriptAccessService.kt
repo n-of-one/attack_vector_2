@@ -131,7 +131,7 @@ class ScriptAccessService(
         val access = scriptAccessRepository.findById(accessId).orElseThrow { error("Access not found with id: $accessId, maybe it was already deleted?") }
 
         if (priceInput != null && priceInput < 0) {
-            connectionService.replyError("Price cannot be negative.")
+            connectionService.replyNotificationError("Price cannot be negative.")
             sendScriptAccess(access.ownerUserId)
             return
         }
@@ -174,9 +174,9 @@ class ScriptAccessService(
         copyScriptAccess(from, to)
 
         if (existingAccess.isNotEmpty()) {
-            connectionService.replyError("${to.name} already has some script access, nothing was overwritten.")
+            connectionService.replyNotificationError("${to.name} already has some script access, nothing was overwritten.")
         }
-        connectionService.replyNeutral("Copied script access from ${from.name} to ${to.name}.")
+        connectionService.replyNotificationNeutral("Copied script access from ${from.name} to ${to.name}.")
     }
 
 
@@ -186,7 +186,7 @@ class ScriptAccessService(
                 addScriptAccess(access.typeId, to.id, access.receiveForFree, access.price)
             }
             catch (validationException: ValidationException) {
-                connectionService.replyError(validationException.message!!)
+                connectionService.replyNotificationError(validationException.message!!)
             }
         }
     }

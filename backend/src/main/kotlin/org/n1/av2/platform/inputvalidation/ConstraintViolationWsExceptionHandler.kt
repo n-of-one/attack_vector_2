@@ -22,7 +22,7 @@ class ConstraintViolationWsExceptionHandler(
     @SendToUser("/reply")
     fun handleException(exception: ConstraintViolationException): Any? {
         return if (!currentUserService.isSystemUser) {
-            connectionService.replyError(exception.message!!)
+            connectionService.replyNotificationError(exception.message!!)
             null
         } else {
             ReduxEvent(

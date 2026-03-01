@@ -401,7 +401,7 @@ class ScriptService(
         userAndHackerService.sendDetailsOfCurrentUser()
         userAndHackerService.sendDetailsOfSpecificUserOnlyToThatUser(receiverUser.id)
 
-        connectionService.replyNeutral("Transfer completed.")
+        connectionService.replyNotificationNeutral("Transfer completed.")
         connectionService.toUser(receiverUser.id, ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, "", "You received $amount \uD83D\uDDF2 from ${currentUserService.userEntity.name}"))
     }
 

@@ -70,7 +70,7 @@ class RunService(
     fun startNewRunAndReply(siteName: String): Run? {
         val siteProperties = sitePropertiesEntityService.findByName(siteName)
         if (siteProperties == null) {
-            connectionService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+            connectionService.replyNotification(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
             return null
         }
         if (!siteProperties.hackable) {
@@ -111,7 +111,7 @@ class RunService(
     }
 
     private fun replyNotHackable(siteProperties: SiteProperties) {
-        connectionService.replyMessage(
+        connectionService.replyNotification(
             NotyMessage(
                 NotyType.NEUTRAL,
                 "Site '${siteProperties.name}'",
@@ -233,8 +233,13 @@ class RunService(
 
         runs.forEach { run ->
             val nodeScan = run.nodeScanById[node.id]
-                ?: // this node did not exist when the previous run was created, probably added later by a GM. Skipping
+            if (nodeScan == null) {
+                // this node did not exist when the previous run was created, probably added later by a GM. Skipping
+                println("NodeScan not found")
                 return@forEach
+            }
+
+            println("NodeScanStatus: ${nodeScan.status}")
             if (!nodeScan.status.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
 
             run.updateScanStatus(node.id, FULLY_SCANNED_4)
@@ -242,7 +247,8 @@ class RunService(
                 run.runId,
                 ServerActions.SERVER_UPDATE_NODE_STATUS,
                 "nodeId" to node.id,
-                "newStatus" to FULLY_SCANNED_4
+                "newStatus" to FULLY_SCANNED_4,
+                "nodeHacked" to true
             )
 
             run.nodeScanById.filterKeys { nodeId -> neighboringNodeIds.contains(nodeId) }

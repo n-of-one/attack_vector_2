@@ -20,7 +20,8 @@ export interface NodeScan {
 
 export interface UpdateNodeStatusAction {
     nodeId: string,
-    newStatus: NodeScanStatus
+    newStatus: NodeScanStatus,
+    nodeHacked?: boolean
 }
 
 interface NodeScanById { [key: string] : NodeScan }

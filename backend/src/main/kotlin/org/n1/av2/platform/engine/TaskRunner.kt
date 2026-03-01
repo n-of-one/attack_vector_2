@@ -154,7 +154,7 @@ class TaskEngine(
                 throw exception
             }
             if (exception is ValidationException) {
-                connectionService.replyMessage(exception.getNoty())
+                connectionService.replyNotification(exception.getNoty())
                 return
             }
             if (exception is FatalException) {

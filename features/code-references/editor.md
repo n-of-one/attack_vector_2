@@ -22,6 +22,17 @@
 - **Text editor home**: `frontend/src/editor-text/component/EditorTextHome.tsx`
 - **Text editor link**: `frontend/src/editor/component/map/panel/layer/element/TextEditorLink.tsx`
 
+## Layer Validation (Backend)
+- **Layer base (validateName)**: `backend/src/main/kotlin/org/n1/av2/layer/Layer.kt`
+- **OsLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/os/OsLayer.kt`
+- **TextLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/text/TextLayer.kt`
+- **KeyStoreLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/keystore/KeyStoreLayer.kt`
+- **PasswordIceLayer**: `backend/src/main/kotlin/org/n1/av2/layer/ice/password/PasswordIceLayer.kt`
+- **TripwireLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/tripwire/TripwireLayer.kt`
+- **TimerAdjusterLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/timeradjuster/TimerAdjusterLayer.kt`
+- **ScriptCreditsLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptCreditsLayer.kt`
+- **ScriptInteractionLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptInteractionLayer.kt`
+
 ## Layer Editor Panels
 - **ICE password panel**: `frontend/src/editor/component/map/panel/layer/type/panel/ice/LayerIcePasswordPanel.tsx`
 - **ICE simple panel**: `frontend/src/editor/component/map/panel/layer/type/panel/ice/LayerSimpleIcePanel.tsx`

@@ -239,11 +239,18 @@ class RunCanvas {
         this.probeDisplays.add(probeId, probeDisplay)
     }
 
-    updateNodeStatus(nodeId: string, status: NodeScanStatus) {
+    updateNodeStatus(nodeId: string, status: NodeScanStatus, nodeHacked = false) {
         if (!this.active) return
 
         if (this.nodeDisplays.has(nodeId)) {
-            this.nodeDisplays.get(nodeId).updateStatus(status, this.selectedObject)
+            const nodeDisplay = this.nodeDisplays.get(nodeId);
+            if (nodeHacked) {
+                nodeDisplay.nodeData.hacked = true
+                nodeDisplay.updateStatus(status, this.selectedObject)
+                testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", nodeDisplay.schedule!, 2)
+            } else {
+                nodeDisplay.updateStatus(status, this.selectedObject)
+            }
 
             return false // already displayed
         } else {
@@ -259,7 +266,7 @@ class RunCanvas {
 
         const newNodes: string[] = []
         Object.entries(nodeStatusById).forEach(([nodeId, status]) => {
-            if (this.updateNodeStatus(nodeId, status)) {
+            if (this.updateNodeStatus(nodeId, status, false)) {
                 newNodes.push(nodeId)
             }
         })
@@ -410,16 +417,6 @@ class RunCanvas {
         const nodeDisplay = this.nodeDisplays.get(nodeId)
         const probe = new ProbeVisual(this.canvas, nodeDisplay, new Schedule(this.dispatch))
         probe.zoomInAndOutAndRemove(timings)
-    }
-
-    nodeHacked(nodeId: string) {
-        if (!this.active) return
-
-        this.nodeDataById[nodeId].hacked = true
-        this.nodeDisplays.get(nodeId).hacked(this.selectedObject)
-
-        testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", this.iconSchedule, NODE_TRANSITION_TICKS)
-
     }
 
     stop() {

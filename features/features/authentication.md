@@ -6,26 +6,22 @@ Attack Vector supports multiple login methods depending on the deployment enviro
 
 # Dev Login
 
-Development-mode login for testing and local environments.
+Development-mode login for testing and local environments. No passwords required.
 
 ## Capabilities
-- Text input for username (no password)
-- Quick-select buttons for common test accounts: "hacker", "Stalker", "Paradox", "Angler" (hackers), "gm" (game master), "admin" (administrator)
-- Creates user on first login if not found
-- Only available when the login path is configured to `/devLogin`
+- Text input for username
+- Quick-select buttons for gm, admin and test accounts
+
 
 ---
 
 # Google OAuth Login
 
-Production login via Google authentication.
+login via Google authentication.
 
 ## Capabilities
-- "Login with Google" button launches Google OAuth flow
-- Backend validates Google JWT and checks audience claim
+- Uses Google OAuth flow
 - Creates hacker user on first login
-- Issues JWT cookie on success
-- Error shown if Google client ID is not configured or authentication fails
 
 ---
 
@@ -34,10 +30,10 @@ Production login via Google authentication.
 Username and password login for admin and GM accounts.
 
 ## Capabilities
+- Reachable from other login pages by triple clicking the 2 of Attack Vector 2
 - Username and password form fields
 - Password checked against global configuration
 - Brute-force protection: tracks failed login attempts by IP address
-- System user accounts cannot log in
 
 ---
 
@@ -46,11 +42,11 @@ Username and password login for admin and GM accounts.
 After successful login, users are sent to their role-specific page.
 
 ## Capabilities
-- ADMIN → admin dashboard
-- GM → GM management page
-- HACKER → hacker home page
+- `admin`  → admin pages: users, config, tasks
+- `gm` → gm pages: gm-scripts, sites, users, statistics
+- `hacker` → hacker pages: (sites), (current run), home, (hacker-scripts), (market), (credits)
+- all roles: my account page
 - No valid role → redirected back to login
-- User type stored in browser cookie alongside JWT
 
 ---
 
@@ -69,6 +65,7 @@ Ends the user session.
 Handles concurrent logins and session lifecycle.
 
 ## Capabilities
-- Each login generates a new JWT cookie with expiration
-- Logging in on a new tab/browser force-disconnects the previous session
-- Previous session receives a disconnect message and closes its WebSocket connection
+- Login stores JWT in cookie
+- Hackers can only have one main browser tab open and one app browser tab
+- Widgets do not require login
+

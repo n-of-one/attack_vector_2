@@ -184,7 +184,7 @@ class SiteService(
     fun updateHackable(siteId: String, newHackableValue: Boolean, validateFirst: Boolean = true) {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
         if (!siteProperties.siteStructureOk && newHackableValue && validateFirst) {
-            connectionService.replyNeutral("The site \"${siteProperties.name}\" has errors. Fix these before making it hackable.")
+            connectionService.replyNotificationNeutral("The site \"${siteProperties.name}\" has errors. Fix these before making it hackable.")
             return
         }
         val newSiteProperties = siteProperties.copy(hackable = newHackableValue)
@@ -223,7 +223,7 @@ class SiteService(
         siteResetService.refreshSite(targetSiteId)
 
         sendSitesList()
-        connectionService.replyNeutral("Created site: $targetSiteName")
+        connectionService.replyNotificationNeutral("Created site: $targetSiteName")
     }
 
     private fun makeSiteCopyName(sourceName: String): String {

@@ -98,15 +98,15 @@ class ConnectionService(
 
     //**********************************************************************************************************************//
 
-    fun replyMessage(message: NotyMessage) {
+    fun replyNotification(message: NotyMessage) {
         reply(ServerActions.SERVER_NOTIFICATION, message)
     }
 
-    fun replyNeutral(message: String, title: String = "") {
+    fun replyNotificationNeutral(message: String, title: String = "") {
         reply(ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.NEUTRAL, title, message))
     }
 
-    fun replyError(message: String, title: String = "") {
+    fun replyNotificationError(message: String, title: String = "") {
         reply(ServerActions.SERVER_NOTIFICATION, NotyMessage(NotyType.ERROR, title, message))
     }
 

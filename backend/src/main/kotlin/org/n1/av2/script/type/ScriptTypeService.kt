@@ -227,10 +227,10 @@ class ScriptTypeService(
         else null
 
         if (!force && (ownershipError != null || accessError != null)) {
-            ownershipError?.let { connectionService.replyError(it) }
-            accessError?.let { connectionService.replyError(it) }
+            ownershipError?.let { connectionService.replyNotificationError(it) }
+            accessError?.let { connectionService.replyNotificationError(it) }
             connectionService.reply(SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED, "enabled" to true)
-            connectionService.replyError("Delete again (force) to remove these dependencies.")
+            connectionService.replyNotificationError("Delete again (force) to remove these dependencies.")
             return
         }
 
@@ -245,7 +245,7 @@ class ScriptTypeService(
         scriptTypeRepository.deleteById(scriptTypeId)
         sendScriptTypes()
 
-        connectionService.replyNeutral("Script type ${scriptType.name} deleted.")
+        connectionService.replyNotificationNeutral("Script type ${scriptType.name} deleted.")
     }
 
 }

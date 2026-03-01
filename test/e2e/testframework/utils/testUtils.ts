@@ -20,7 +20,7 @@ export function log(message: string) {
     console.log(`[playwright] ${message}`)
 }
 
-export async function  wait(page: Page, waitSeconds: number, reason: string) {
+export async function wait(page: Page, waitSeconds: number, reason: string) {
     log(`waiting for: ${waitSeconds} seconds. Reason: ${reason}`)
     await page.waitForTimeout(waitSeconds * 1000)
 }

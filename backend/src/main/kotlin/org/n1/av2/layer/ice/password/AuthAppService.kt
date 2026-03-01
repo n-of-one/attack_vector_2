@@ -165,7 +165,7 @@ class AuthAppService(
     }
 
     private fun resolveDuplicate(icePasswordStatus: IcePasswordStatus, password: String, layer: IceLayer) {
-        connectionService.replyNeutral("Password \"${password}\" already attempted, ignoring")
+        connectionService.replyNotificationNeutral("Password \"${password}\" already attempted, ignoring")
 
         val showHint = showHint(icePasswordStatus, layer)
         val result = UiStateUpdate(icePasswordStatus.lockedUntil, icePasswordStatus.hackerAttempts, showHint)
@@ -183,7 +183,7 @@ class AuthAppService(
             lockedUntil = time.now().plusSeconds(timeOutSeconds)
         )
         icePasswordStatusRepo.save(newStatus)
-        connectionService.replyNeutral("Password incorrect: ${password}")
+        connectionService.replyNotificationNeutral("Password incorrect: ${password}")
         val showHint = showHint(newStatus, layer)
         val result = UiStateUpdate(newStatus.lockedUntil, newStatus.hackerAttempts, showHint)
         connectionService.toIce(icePasswordStatus.id, ServerActions.SERVER_AUTH_UPDATE, result)
@@ -201,8 +201,8 @@ class AuthAppService(
     }
 
 
-    private fun calculateTimeOutSeconds(totalAttempts: Int): Long {
-        return when (totalAttempts) {
+    private fun calculateTimeOutSeconds(previouslyWrongAttemptCount: Int): Long {
+        return when (previouslyWrongAttemptCount) {
             0, 1, 2 -> 2L
             3, 4, 5 -> 5L
             6, 7, 8, 9, 10 -> 10L

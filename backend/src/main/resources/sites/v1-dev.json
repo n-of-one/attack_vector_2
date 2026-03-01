@@ -1,7 +1,7 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2026-02-15 21:01:14"
+    "exportTimeStamp" : "2026-03-01 11:57:05"
   },
   "siteProperties" : {
     "siteId" : "site-593b-4ba3",
@@ -9,7 +9,7 @@
     "description" : "Site created to help with development. Containing all layers",
     "purpose" : "Development",
     "startNodeNetworkId" : "00",
-    "nodesLocked" : false
+    "nodesLocked" : true
   },
   "nodes" : [ {
     "id" : "node-7e39-411b",
@@ -204,7 +204,7 @@
       "hacked" : false,
       "original" : null,
       "password" : "Swordfish",
-      "hint" : "",
+      "hint" : "it's a kind of fish",
       "ice" : true
     } ],
     "networkId" : "06",
@@ -286,11 +286,13 @@
       "nodeName" : ""
     }, {
       "id" : "node-3218-4c57:layer-bf90",
-      "type" : "SHUTDOWN_ACCELERATOR",
+      "type" : "TIMER_ADJUSTER",
       "level" : 1,
       "name" : "Shutdown amplifier",
       "note" : "",
-      "increase" : "1:00"
+      "amount" : "1:00",
+      "adjustmentType" : "SPEED_UP",
+      "recurring" : "EVERY_ENTRY"
     } ],
     "networkId" : "09",
     "ice" : false,

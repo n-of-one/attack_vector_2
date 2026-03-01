@@ -80,7 +80,7 @@ class SiteValidationService(
         validationContext.nodes.forEach { node ->
             validationContext.node = node
             validateNetworkId(node, networkIds, messages)
-            validateServices(node, validationContext, messages)
+            validateLayers(node, validationContext, messages)
         }
     }
 
@@ -95,13 +95,13 @@ class SiteValidationService(
         }
     }
 
-    private fun validateServices(node: Node, validationContext: ValidationContext, messages: MutableList<SiteStateMessage>) {
-        node.layers.forEach { service ->
-            service.allValidationMethods().forEach { validateMethod ->
+    private fun validateLayers(node: Node, validationContext: ValidationContext, messages: MutableList<SiteStateMessage>) {
+        node.layers.forEach { layer ->
+            layer.allValidationMethods().forEach { validateMethod ->
                 try {
                     validateMethod(validationContext)
                 } catch (exception: SiteValidationException) {
-                    val message = SiteStateMessage(exception.type, exception.message!!, node.id, service.id)
+                    val message = SiteStateMessage(exception.type, exception.message!!, node.id, layer.id)
                     messages.add(message)
                 }
             }

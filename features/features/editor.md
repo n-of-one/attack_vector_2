@@ -1,56 +1,33 @@
 # Site Editor
 
-The visual editor for designing site network topologies. GMs use the editor to create and configure the maps that hackers will attack.
+The visual editor for designing sites. GMs use the editor to create sites for hackers to hack.
 
 ---
 
-# Canvas
+# Canvas, nodes and connections
 
 The main editing surface for placing and connecting nodes.
 
 ## Capabilities
 - Visual canvas displaying nodes and connections
-- Click and drag nodes to reposition them
-- Real-time updates for all editors viewing the same site
-- Snap all nodes to grid alignment
-- Center all nodes on the canvas
+- Add and remove nodes
+- Reposition nodes
+- Add and remove connections
+- Option to snap all nodes to grid alignment
+- Option to center all nodes on the canvas
 
 ---
 
 # Node Management
 
-Adding, removing, and configuring network nodes.
+Managing layers within a node and node properties via OS layer.
 
 ## Capabilities
-- Add new nodes (default type: TRANSIT_2, also APP type available)
-- Move nodes by dragging on canvas
-- Delete nodes (removes all associated connections, validates site integrity)
-- Edit network ID for each node (used for navigation commands like `move 01`)
-- Each node can have multiple stacked layers
+- Always has OS layer that defines node name and network id
+- Add additional layers
+- Remove additional layers
+- Change order of additional layers
 
----
-
-# Connection Management
-
-Defining the paths between nodes.
-
-## Capabilities
-- Add connections between two nodes
-- Delete individual connections or all connections from a node
-- Cannot create duplicate connections between the same node pair
-- Connections define which moves are valid during a run
-
----
-
-# Layer Management
-
-Configuring the security and content layers on each node.
-
-## Capabilities
-- Add layers from a type dropdown (16 types available)
-- Remove layers (with validation — core layers linked by external tripwires cannot be removed)
-- Swap layer order (move up/down) — affects hack order during runs
-- Edit layer-specific properties
 
 ---
 
@@ -60,16 +37,16 @@ Each layer type has configurable properties.
 
 ## Capabilities
 - **OS**: name, note
-- **TEXT**: name, note, free-form text content
-- **KEYSTORE**: name, note, stored passwords (used by Password ICE)
-- **LOCK**: name, note (prevents further hacking below)
-- **TRIPWIRE**: name, note, countdown duration, shutdown duration, linked core layer (same or different site)
+- **TEXT**: name, note, text
+- **KEYSTORE**: name, note, target ice id
+- **TRIPWIRE**: name, note, countdown duration, shutdown duration, linked core layer, linked core site
 - **TIMER_ADJUSTER**: name, note, adjustment amount, type (SPEED_UP / SLOW_DOWN), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
-- **CORE**: name, note, reveal-network flag (shows full map when hacked)
+- **CORE**: name, note, reveal-network flag
 - **STATUS_LIGHT**: name, note, multiple display options (color, label, icon)
+- **LOCK**: same as **STATUS_LIGHT**
 - **SCRIPT_INTERACTION**: name, note, interaction key
-- **SCRIPT_CREDITS**: name, note, credit amount (GM-only layer)
-- **PASSWORD_ICE**: name, note, strength, password, hint text
+- **SCRIPT_CREDITS**: name, note, credit amount, stolen status
+- **PASSWORD_ICE**: name, note, password, hint
 - **TANGLE_ICE**: name, note, strength
 - **WORD_SEARCH_ICE**: name, note, strength
 - **NETWALK_ICE**: name, note, strength
@@ -83,12 +60,13 @@ Each layer type has configurable properties.
 Global settings for the site.
 
 ## Capabilities
-- Name (unique identifier)
-- Description (free-form text)
-- Purpose/plot (story context)
-- Start node (network ID of the entry point)
-- Hackable toggle (must be true for hackers to start runs)
-- Nodes locked toggle (prevents hackers from moving on the map)
+- Name
+- Purpose/plot
+- Owner
+- Description
+- Start node network ID
+- Nodes locked toggle
+- Hackable (not shown or editable in editor)
 
 ---
 
@@ -97,8 +75,28 @@ Global settings for the site.
 Automatic checks for site integrity.
 
 ## Capabilities
-- All tripwires must link to valid core layers
-- All nodes must be reachable from the start node
-- Shutdown duration must be at least 1 second
-- Validation status shown in GM site list as "ok" or error details
-- Cannot make a site hackable if it has validation errors
+- Info and error messages
+- error: service name empty (all layers)
+- info: site name too long to be displayed nicely
+- info: site purpose not filled in
+- error: start node network id not set
+- error: start node network id not found
+- error: node not reachable from start node
+- error: os network id empty
+- error: os network id not unique
+- error: text hacked text empty
+- error: keystore not linked to ICE layer
+- error: password ICE has empty password
+- error: tripwire countdown duration invalid
+- error: tripwire shutdown duration invalid
+- error: tripwire shutdown must be at least minimum duration
+- info: tripwire not connected to core
+- error: tripwire connected to removed core layer
+- error: tripwire connected to non-core layer
+- error: timer adjuster amount duration invalid
+- error: scriptcredits amount negative
+- info: scriptcredits amount not yet set
+- info: scriptcredits stolen
+- error: scriptinteraction interaction key empty
+- info: scriptinteraction message empty
+
