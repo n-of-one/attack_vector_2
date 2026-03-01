@@ -53,7 +53,9 @@ class NetwalkPuzzle(val grid: List<List<NetwalkCell>>, val wrapping: Boolean)
  * - has unreachable positions
  * - ends up with a solution where the middle is an end leaf
  */
-class NetwalkCreator(iceStrength: IceStrength) {
+class NetwalkCreator(iceStrength: IceStrength, testingMode: Boolean = false) {
+
+    private val random = if (testingMode) Random(0L) else Random
 
     companion object {
         val sizeByStrength = mapOf(
@@ -106,7 +108,7 @@ class NetwalkCreator(iceStrength: IceStrength) {
             for (x in 0 until sizeX) {
                 val type = cellType(x, y, walls, finalWalls) ?: return null
 
-                val rotations = Random.nextInt(4)
+                val rotations = random.nextInt(4)
                 var rotatedType = type
                 repeat(rotations) { rotatedType = rotatedType.rotateClockwise() }
 
@@ -122,14 +124,14 @@ class NetwalkCreator(iceStrength: IceStrength) {
     }
 
     private fun createPuzzle() {
-        val start = Point(Random.nextInt(sizeX), Random.nextInt(sizeY))
+        val start = Point(random.nextInt(sizeX), random.nextInt(sizeY))
         walls.addAll(findWalls(start))
         grid.add(start)
 
         while (walls.isNotEmpty()) {
     //            printGrid(walls, finalWalls)
 
-            val wall = walls.random()
+            val wall = walls.random(random)
             if (grid.contains(wall.to)) {
                 // The other side of the wall is already part of the maze.
                 // This wall will stay in the maze

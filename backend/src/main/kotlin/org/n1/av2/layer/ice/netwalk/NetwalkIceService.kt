@@ -46,8 +46,9 @@ class NetwalkIceService(
     }
 
     fun createNetwalkPuzzle(iceStrength: IceStrength): NetwalkPuzzle {
+        val testingMode = configService.getAsBoolean(ConfigItem.DEV_TESTING_MODE)
         repeat(MAX_CREATE_ATTEMPTS) {
-            val creator = NetwalkCreator(iceStrength)
+            val creator = NetwalkCreator(iceStrength, testingMode)
             val puzzle = creator.create()
             if (puzzle != null) return puzzle
         }

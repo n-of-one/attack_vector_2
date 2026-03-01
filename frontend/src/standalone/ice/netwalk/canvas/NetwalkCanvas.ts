@@ -59,6 +59,9 @@ class NetwalkCanvas {
 
         this.canvas.on('mouse:down', (event: fabric.IEvent<MouseEvent>) => {
             this.mouseDown(event);
+            // const x = event.e.pageX
+            // const y = event.e.pageY
+            // console.log("          await netwalk.leftClick(" + x + "," + y + ")")
         })
 
         // This is useful to regenerate the wrapping arrows, it's used to generate the background images.
