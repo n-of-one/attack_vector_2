@@ -34,7 +34,8 @@ class WordSearchService(
     }
 
     fun createIce(layer: WordSearchIceLayer): WordSearchIceStatus {
-        val creation = findBestCreation(layer.strength)
+        val testingMode = configService.getAsBoolean(ConfigItem.DEV_TESTING_MODE)
+        val creation = findBestCreation(layer.strength, testingMode)
 
         val id = createId("wordSearch", wordSearchIceStatusRepo::findById)
         val wordSearchIceStatus = WordSearchIceStatus(
@@ -52,11 +53,11 @@ class WordSearchService(
         return wordSearchIceStatus
     }
 
-    fun findBestCreation(strength: IceStrength): WordSearchCreation {
+    fun findBestCreation(strength: IceStrength, testingMode: Boolean): WordSearchCreation {
         var creation: WordSearchCreation
         measureTimeMillis {
             creation = (1..CREATION_ATTEMPTS).mapNotNull {
-                WordSearchCreator(strength).create()
+                WordSearchCreator(strength, testingMode).create()
             }
                 .ifEmpty { error("Failed to create ice") }
                 .maxBy { it.score }
