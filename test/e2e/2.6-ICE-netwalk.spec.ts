@@ -27,7 +27,7 @@ test('test', async ({page}) => {
 
     await test.step("Verify ICE state before hacking", async () => {
         await wait(page, 3.0, "Wait for ICE puzzle to fully render")
-        await netwalk.checkNameAndScreenshot("2.4-netwalk-before")
+        await netwalk.checkNameAndScreenshot("2.6-netwalk-before")
     })
 
     await test.step("Solve netwalk ICE puzzle", async () => {
@@ -100,7 +100,7 @@ test('test', async ({page}) => {
         await netwalk.leftClick(878,322)
         await netwalk.leftClick(878,322)
         await wait(page, 1, "Wait for last click to fully render")
-        await netwalk.checkNameAndScreenshot("2.4-netwalk-just-before-hack-complete")
+        await netwalk.checkNameAndScreenshot("2.6-netwalk-just-before-hack-complete")
     })
 
     await test.step("Verify ICE after hacking", async () => {
@@ -110,6 +110,6 @@ test('test', async ({page}) => {
 
     await test.step("Verify node shown as hacked in site map", async () => {
         await hacker.waitForNodeHackedAnimationFinished()
-        await hacker.verifyScreenshotCanvas("2.4-netwalk-ice-hacked")
+        await hacker.verifyScreenshotCanvas("2.6-netwalk-ice-hacked")
     })
 });
