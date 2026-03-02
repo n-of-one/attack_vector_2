@@ -137,7 +137,7 @@ const ShowMessageEffectRow = ({scriptType, effect}: { scriptType: ScriptType, ef
                 <hr/>
             </div>
         </div>
-        <div className="row form-group text" data-row="script-effect-one-row">
+        <div className="row form-group text">
             <div className="col-lg-1" style={{marginTop: "0", marginRight: "-30px"}}>
                 <InfoBadge infoText={effect.gmDescription} placement="top"/>
             </div>
@@ -218,7 +218,7 @@ export const EffectValueTerminalText = ({scriptType, effect}: { scriptType: Scri
     const encodedPath = avEncodedPath(`EFFECT|${scriptType.id}|${effect.effectNumber}|${scriptType.name} effect ${effect.effectNumber}`)
 
     return <>
-        <div className="row">
+        <div className="row" data-row="script-effect-textarea">
             <div className="col-lg-10 text">
                 <TextSaveInput className="form-control"
                                placeholder="Text to be shown to hackers."

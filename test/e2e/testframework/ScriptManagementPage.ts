@@ -119,26 +119,28 @@ export class ScriptManagementPage {
         await this.verifyShowingScriptDetails(scriptName)
     }
 
-    async addUsefulEffect(effectKey: string, effectName: string, value?: string) {
-        await this.addEffect(effectKey, effectName, "Useful effect", value)
+    async addUsefulEffect(effectKey: string, effectName: string, value?: string, valueType?: string) {
+        await this.addEffect(effectKey, effectName, "Useful effect", value, valueType)
     }
 
     async addDrawbackEffect(effectKey: string, effectName: string, value?: string) {
         await this.addEffect(effectKey, effectName, "Drawback effect", value)
     }
 
-    async addEffect(effectKey: string, effectName: string, type: string, value?: string) {
-        log(`Adding use effect: ${effectName}`)
+    async addEffect(effectKey: string, effectName: string, type: string, value?: string, valueType: string = "one-row") {
+        log(`Adding effect: ${effectName}`)
         const usefulEffectRow = this.page.locator('[data-row="add-effect"]', {hasText: type})
         await usefulEffectRow.getByRole('combobox').selectOption(effectKey)
         await usefulEffectRow.locator('a').click()
 
         if (value) {
             log(`  Setting effect value to ${value}`)
-            const effectRow = this.page.locator('[data-row="script-effect-one-row"]', {hasText: effectName}).getByRole('textbox')
-            await effectRow.click()
-            await effectRow.fill(value)
-            await effectRow.press('Enter')
+            const filter = valueType === "one-row" ? {hasText: effectName} : {}
+            const locator =  this.page.locator(`[data-row="script-effect-${valueType}"]`, filter)
+            const effectTextbox = locator.getByRole('textbox')
+            await effectTextbox.click()
+            await effectTextbox.fill(value)
+            await effectTextbox.press('Enter')
         }
     }
 
