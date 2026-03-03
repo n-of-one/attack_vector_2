@@ -1,7 +1,7 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2026-03-01 11:57:05"
+    "exportTimeStamp" : "2026-03-02 20:36:20"
   },
   "siteProperties" : {
     "siteId" : "site-593b-4ba3",
@@ -116,13 +116,13 @@
       "name" : "Jaal",
       "note" : "",
       "strength" : "VERY_WEAK",
-      "hacked" : false,
+      "hacked" : true,
       "original" : null,
       "ice" : true
     } ],
     "networkId" : "03",
     "ice" : true,
-    "hacked" : false
+    "hacked" : true
   }, {
     "id" : "node-c421-4498",
     "siteId" : "site-593b-4ba3",
@@ -297,6 +297,162 @@
     "networkId" : "09",
     "ice" : false,
     "hacked" : true
+  }, {
+    "id" : "node-a9a4-4a2f",
+    "siteId" : "site-593b-4ba3",
+    "type" : "ICE_1",
+    "x" : 465,
+    "y" : 232,
+    "layers" : [ {
+      "id" : "node-a9a4-4a2f:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-a9a4-4a2f:layer-3e09",
+      "type" : "TANGLE_ICE",
+      "level" : 1,
+      "name" : "Gaanth",
+      "note" : "",
+      "strength" : "AVERAGE",
+      "hacked" : false,
+      "original" : null,
+      "ice" : true
+    }, {
+      "id" : "node-a9a4-4a2f:layer-75ab",
+      "type" : "TANGLE_ICE",
+      "level" : 2,
+      "name" : "Gaanth",
+      "note" : "",
+      "strength" : "WEAK",
+      "hacked" : true,
+      "original" : null,
+      "ice" : true
+    } ],
+    "networkId" : "10",
+    "ice" : true,
+    "hacked" : false
+  }, {
+    "id" : "node-ba59-4413",
+    "siteId" : "site-593b-4ba3",
+    "type" : "ICE_2",
+    "x" : 545,
+    "y" : 232,
+    "layers" : [ {
+      "id" : "node-ba59-4413:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-ba59-4413:layer-eac9",
+      "type" : "NETWALK_ICE",
+      "level" : 1,
+      "name" : "Sanrachana",
+      "note" : "",
+      "strength" : "VERY_STRONG",
+      "hacked" : false,
+      "original" : null,
+      "ice" : true
+    } ],
+    "networkId" : "11",
+    "ice" : true,
+    "hacked" : false
+  }, {
+    "id" : "node-bfac-4686",
+    "siteId" : "site-593b-4ba3",
+    "type" : "ICE_3",
+    "x" : 625,
+    "y" : 232,
+    "layers" : [ {
+      "id" : "node-bfac-4686:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-bfac-4686:layer-5844",
+      "type" : "WORD_SEARCH_ICE",
+      "level" : 1,
+      "name" : "Jaal",
+      "note" : "",
+      "strength" : "ONYX",
+      "hacked" : false,
+      "original" : null,
+      "ice" : true
+    } ],
+    "networkId" : "12",
+    "ice" : true,
+    "hacked" : false
+  }, {
+    "id" : "node-a249-444a",
+    "siteId" : "site-593b-4ba3",
+    "type" : "UNHACKABLE",
+    "x" : 705,
+    "y" : 232,
+    "layers" : [ {
+      "id" : "node-a249-444a:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-a249-444a:layer-a706",
+      "type" : "TAR_ICE",
+      "level" : 1,
+      "name" : "Tar",
+      "note" : "",
+      "strength" : "AVERAGE",
+      "hacked" : false,
+      "original" : null,
+      "totalUnits" : 54000,
+      "time1Level1Hacker" : "1h 21m 49s",
+      "time1Level5Hacker" : "1h 0m 0s",
+      "time5Level10Hackers" : "9m 0s",
+      "ice" : true
+    }, {
+      "id" : "node-a249-444a:layer-4b88",
+      "type" : "KEYSTORE",
+      "level" : 2,
+      "name" : "Keystore",
+      "note" : "",
+      "iceLayerId" : "node-a249-444a:layer-a706"
+    } ],
+    "networkId" : "13",
+    "ice" : true,
+    "hacked" : false
+  }, {
+    "id" : "node-0315-40b9",
+    "siteId" : "site-593b-4ba3",
+    "type" : "MANUAL_1",
+    "x" : 785,
+    "y" : 232,
+    "layers" : [ {
+      "id" : "node-0315-40b9:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-0315-40b9:layer-c334",
+      "type" : "SWEEPER_ICE",
+      "level" : 1,
+      "name" : "Visphotak",
+      "note" : "",
+      "strength" : "AVERAGE",
+      "hacked" : false,
+      "original" : null,
+      "ice" : true
+    } ],
+    "networkId" : "14",
+    "ice" : true,
+    "hacked" : false
   } ],
   "connections" : [ {
     "fromId" : "node-7e39-411b",
@@ -328,5 +484,20 @@
   }, {
     "fromId" : "node-3218-4c57",
     "toId" : "node-d843-4a08"
+  }, {
+    "fromId" : "node-349f-464f",
+    "toId" : "node-a9a4-4a2f"
+  }, {
+    "fromId" : "node-ba59-4413",
+    "toId" : "node-7439-4cc0"
+  }, {
+    "fromId" : "node-bfac-4686",
+    "toId" : "node-6b4c-454d"
+  }, {
+    "fromId" : "node-a249-444a",
+    "toId" : "node-c421-4498"
+  }, {
+    "fromId" : "node-0315-40b9",
+    "toId" : "node-ed0f-4b7d"
   } ]
 }

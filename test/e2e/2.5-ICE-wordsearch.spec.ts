@@ -39,6 +39,9 @@ test('test', async ({page}) => {
         await wordSearch.dragWord(355, 604, 636, 604)
         await wordSearch.verifyTerminalText("Search fragment: JPEGGING 4/5")
         await wordSearch.dragWord(435, 437, 713, 442)
+
+        await hacker.verifyScreenshotCanvas("2.5-wordsearch-ice-intermediate")
+
         await wordSearch.verifyTerminalText("Search fragment: TOOLBAR 5/5")
         await wordSearch.dragWord(354, 199, 596, 204)
     })

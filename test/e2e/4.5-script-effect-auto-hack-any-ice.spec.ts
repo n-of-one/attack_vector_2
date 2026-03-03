@@ -67,6 +67,6 @@ test('4.5.2 - Script auto-hacks ICE', async ({page}: { page: Page }) => {
 
         await hacker.waitForNodeHackedAnimationFinished()
         await hacker.expectTerminalText("ICE hack complete.")
-        await hacker.verifyScreenshotCanvas("node-hacked")
+        await hacker.typeCommand("view", "1 Sanrachana ICE hacked")
     })
 })

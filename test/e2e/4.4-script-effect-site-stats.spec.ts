@@ -65,15 +65,15 @@ test('4.4.2 - Script displays site stats', async ({page}: { page: Page }) => {
 
         await hacker.expectTerminalText([
             "Site stats",
-            "Nodes: 10",
-            "Core : 1",
-            "Tripwire : 2",
-            "Tar ICE (tar) : 1 (strongest: Very weak)",
-            "Gaanth ICE (tangle) : 1 (strongest: Very weak)",
-            "Rahasy ICE (password) : 1 (strongest: Very weak)",
-            "Jaal ICE (word search) : 1 (strongest: Very weak)",
-            "Sanrachana ICE (netwalk) : 1 (strongest: Very weak)",
-            "Visphotak ICE (minesweeper): 1 (strongest: Very weak)",
+            "Nodes: 15",
+            "Core : 1 ",
+            "Tripwire : 2 ",
+            "Tar ICE (tar) : 2 (strongest: Average) ",
+            "Gaanth ICE (tangle) : 3 (strongest: Average) ",
+            "Rahasy ICE (password) : 1 (strongest: Very weak) ",
+            "Jaal ICE (word search) : 2 (strongest: Onyx) ",
+            "Sanrachana ICE (netwalk) : 2 (strongest: Very strong) ",
+            "Visphotak ICE (minesweeper): 2 (strongest: Average) "
         ])
     })
 })

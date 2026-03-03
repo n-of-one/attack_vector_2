@@ -155,6 +155,12 @@ export class ScriptManagementPage {
         await expect(this.page.getByText(expectedDescription)).toBeVisible()
     }
 
+    async setHackIceByStrengthLevel(strength: string) {
+        log(`Setting hack ICE by strength level to: ${strength}`)
+        const strengthRow = this.page.locator('[data-row="script-effect-ice-strength"]')
+        await strengthRow.locator('select').selectOption(strength)
+    }
+
     async addScriptAndLoad(scriptName: string, count: number = 1) {
         log(`Add script: ${scriptName} and loading in RAM`)
 

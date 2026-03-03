@@ -77,6 +77,6 @@ test('4.7.2 - Script only hacks matching ICE type', async ({page}: { page: Page 
         await hacker.waitForNodeHackedAnimationFinished()
         await hacker.expectTerminalText("ICE hack complete.")
         // verify ICE actually hacked.
-        await hacker.typeCommand("view", "0 OS")
+        await hacker.typeCommand("view", "1 Jaal ICE hack")
     })
 })
