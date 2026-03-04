@@ -79,7 +79,6 @@ class LoginService(
     fun generateJwtCookie(userEntity: UserEntity): Cookie {
         val jwt = jwtTokenProvider.generateJwt(userEntity)
         val cookie = Cookie("jwt", jwt)
-        cookie.secure = true
         cookie.isHttpOnly = true
         return cookie
     }
