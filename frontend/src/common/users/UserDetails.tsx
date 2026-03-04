@@ -1,6 +1,6 @@
 import React from 'react'
 import {CLOSE_USER_EDIT} from "./EditUserDataReducer";
-import {User, UserType} from "./CurrentUserReducer";
+import {hasSkill, User, UserType} from "./CurrentUserReducer";
 import {TextSaveInput} from "../component/TextSaveInput";
 import {DropDownSaveInput} from "../component/DropDownSaveInput";
 import userAuthorizations, {ROLE_USER_MANAGER} from "../user/UserAuthorizations";
@@ -13,6 +13,7 @@ import {ConfigItem, ConfigRootState, getConfigAsBoolean} from "../../admin/confi
 import {HackerSkillsElement} from "./HackerSkillsElement";
 import {InfoBadge} from "../component/ToolTip";
 import {HackerImage} from "../component/HackerImage";
+import {HackerSkillType} from "./HackerSkills";
 
 const save = (userId: string, field: string, value: string) => {
     const message = {userId: userId, field, value}
@@ -109,6 +110,14 @@ const HackerDetails = ({user}: { user: User }) => {
     const readonlySkills = !(authorizationToEditSkills)
     const showSkills = (hackerShowSkills || authorizationToEditSkills)
 
+    const creditsElement = hasSkill(user, HackerSkillType.SCRIPT_CREDITS) ? <UserAttribute
+        user={user}
+        label="Script credits" id="scriptCredits" size={4}
+        value={user.hacker?.scriptCredits}
+        attributeSaveName="scriptCredits"
+        readonly={!isUserManager}
+    /> : <></>
+
 
     return <>
         <hr/>
@@ -136,15 +145,7 @@ const HackerDetails = ({user}: { user: User }) => {
             </div>
         </div>
 
-
-        <UserAttribute
-            user={user}
-            label="Script credits" id="scriptCredits" size={4}
-            value={user.hacker?.scriptCredits}
-            attributeSaveName="scriptCredits"
-            readonly={!isUserManager}
-        />
-
+        {creditsElement}
 
         {showSkills ? <>
             <hr/>
