@@ -53,5 +53,6 @@ echo
 echo "or create the certificate using:"
 echo "sudo certbot certonly --standalone -d attackvector.nl --register-unsafely-without-email"
 echo
-echo "sudo openssl pkcs12 -export -in /etc/letsencrypt/live/attackvector.nl/fullchain.pem -inkey /etc/letsencrypt/live/attackvector.nl/privkey.pem -out ~/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/attackvector.nl/chain.pem -caname root"
-echo
+echo "sudo openssl pkcs12 -export -in /etc/letsencrypt/live/attackvector.nl/fullchain.pem -inkey /etc/letsencrypt/live/attackvector.nl/privkey.pem -out ~/av/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/attackvector.nl/chain.pem -caname root"
+echo 
+echo "sudo sh -c 'chown "$SUDO_UID":"$SUDO_GID" keystore.p12'"
