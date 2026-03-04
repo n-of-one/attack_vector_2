@@ -1,3 +1,25 @@
+# Release notes AV 2.20.0 (4 March 2026)
+
+## Features
+- AV installation and upgrade simplified
+- API for creating sites
+
+### AV installation and upgrade simplified
+
+Rather than downloading the entire git repository and building it locally, you can now just download and run the pre-built application. 
+This simplifies installation and makes upgrades much faster.
+
+You can switch to the new way first upgrading normally to this version. And then copying the `upgrade.sh`/`upgrade.bat` and `run.sh`/`run.bat` 
+from the installat folder to the folder where AV is installed (replacing the existing files). Then run upgrade.
+
+The existing upgrade scripts will also keep working. 
+
+### API for creating sites
+
+Attack Vector now has an API to create websites. The purpose is to allow other tools to generate sites. This is a work in progress but could make it easier to generate sites in the future.
+Several security improvements have been made to make the API more secure.
+
+
 # Release notes AV 2.19.0 (25 February 2026)
 
 ## Features

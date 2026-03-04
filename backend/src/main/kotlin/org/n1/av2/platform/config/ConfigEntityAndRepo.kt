@@ -1,5 +1,8 @@
 package org.n1.av2.platform.config
 
+import org.n1.av2.platform.config.ConfigItemVisibility.ADMIN
+import org.n1.av2.platform.config.ConfigItemVisibility.EVERYONE
+import org.n1.av2.platform.config.ConfigItemVisibility.NEVER
 import org.n1.av2.platform.util.validateDuration
 import org.springframework.data.annotation.Id
 import org.springframework.data.repository.CrudRepository
@@ -7,40 +10,45 @@ import org.springframework.stereotype.Repository
 import java.security.SecureRandom
 import kotlin.io.encoding.Base64
 
+enum class ConfigItemVisibility {
+    NEVER,
+    ADMIN,
+    EVERYONE
+}
 
 enum class ConfigItem(
-    val managedByAdmin: Boolean,
+    val visibility: ConfigItemVisibility,
     val defaultValue: String,
     val validate: ((String, Map<ConfigItem, String>) -> String?)? = null,
     val message: ((String) -> String?)? = null,
 ) {
-    LARP_NAME(true, "unknown", ::notEmpty),
+    LARP_NAME(EVERYONE, "unknown", ::notEmpty),
 
-    HACKER_SHOW_SKILLS(true, "false", ::validBoolean),
-    HACKER_EDIT_USER_NAME(true, "true", ::validBoolean),
-    HACKER_EDIT_CHARACTER_NAME(true, "true", ::validBoolean),
-    HACKER_DELETE_RUN_LINKS(true, "true", ::validBoolean),
-    HACKER_TUTORIAL_SITE_NAME(true, ""),
-    HACKER_SCRIPT_RAM_REFRESH_DURATION(true, "00:15:00", ::validDuration),
-    HACKER_SCRIPT_LOCKOUT_DURATION(true, "01:00:00", ::validDuration),
-    HACKER_SCRIPT_LOAD_DURING_RUN(true, "false", ::validBoolean),
-    HACKER_DEFAULT_SPEED(true, "4", ::validHackerSpeed),
+    HACKER_SHOW_SKILLS(EVERYONE, "false", ::validBoolean),
+    HACKER_EDIT_USER_NAME(EVERYONE, "true", ::validBoolean),
+    HACKER_EDIT_CHARACTER_NAME(EVERYONE, "true", ::validBoolean),
+    HACKER_DELETE_RUN_LINKS(EVERYONE, "true", ::validBoolean),
+    HACKER_TUTORIAL_SITE_NAME(EVERYONE, ""),
+    HACKER_SCRIPT_RAM_REFRESH_DURATION(EVERYONE, "00:15:00", ::validDuration),
+    HACKER_SCRIPT_LOCKOUT_DURATION(EVERYONE, "01:00:00", ::validDuration),
+    HACKER_SCRIPT_LOAD_DURING_RUN(EVERYONE, "false", ::validBoolean),
+    HACKER_DEFAULT_SPEED(EVERYONE, "4", ::validHackerSpeed),
 
-    LOGIN_PATH(true, "/login", ::notEmpty, ::loginPathMessage),
-    LOGIN_PASSWORD(true, "", ::validPassword, ::loginPasswordMessage),
-    LOGIN_GOOGLE_CLIENT_ID(true, ""),
+    LOGIN_PATH(EVERYONE, "/login", ::notEmpty, ::loginPathMessage),
+    LOGIN_PASSWORD(ADMIN, "", ::validPassword, ::loginPasswordMessage),
+    LOGIN_GOOGLE_CLIENT_ID(EVERYONE, ""),
 
-    DEV_HACKER_RESET_SITE(true, "false", ::validBoolean),
-    DEV_HACKER_USE_DEV_COMMANDS(true, "false", ::validBoolean),
-    DEV_MINIMUM_SHUTDOWN_DURATION(true, "00:01:00", ::validDuration),
-    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS(true, "0", ::validDelay),
-    DEV_TESTING_MODE(true, "false", ::validBoolean),
-    DEV_QUICK_PLAYING(true, "false", ::validBoolean),
+    DEV_HACKER_RESET_SITE(EVERYONE, "false", ::validBoolean),
+    DEV_HACKER_USE_DEV_COMMANDS(EVERYONE, "false", ::validBoolean),
+    DEV_MINIMUM_SHUTDOWN_DURATION(EVERYONE, "00:01:00", ::validDuration),
+    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS(EVERYONE, "0", ::validDelay),
+    DEV_TESTING_MODE(EVERYONE, "false", ::validBoolean),
+    DEV_QUICK_PLAYING(EVERYONE, "false", ::validBoolean),
 
-    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN(true, ""),
-    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED(true, "false", ::validBoolean),
+    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN(ADMIN, ""),
+    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED(ADMIN, "false", ::validBoolean),
 
-    SYSTEM_JWT_SECRET(false, createJwtSecret())
+    SYSTEM_JWT_SECRET(NEVER, createJwtSecret())
 }
 
 data class ConfigEntry(

@@ -1,11 +1,5 @@
 #!/bin/sh
 killall java
-cd attack_vector_2
-git stash
-git pull
-git stash apply
-git stash clear
-cd backend
-mvn clean install -DskipTests
-cd ../..
+sleep 1
+curl -L https://github.com/n-of-one/attack_vector_2/releases/latest/download/app.jar -o app.jar
 ./run.sh

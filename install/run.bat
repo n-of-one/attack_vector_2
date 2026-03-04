@@ -9,4 +9,4 @@ rem Sleep for 1 second
 timeout /t 1 /nobreak
 
 rem Start the Java application
-"%JAVA_HOME%\bin\java" -jar attack_vector_2/backend/target/app.jar
+java -jar app.jar

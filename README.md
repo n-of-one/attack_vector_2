@@ -32,22 +32,13 @@ and on an Ubuntu server, such as an AWS EC2 instance. It runs on a t4g.micro wit
 
 It's open source software with the MIT license which means you can use it for commercial purposes.
 
-## Technical stuff
-
-The repo consists of four separate projects:
-
-- frontend: browers-UI (React/Redux)
-- backend: server (Spring boot/Kotlin)
-- website: website (Docusaurus)
-- tests: e2e tests (Playwright )
-
-As well as stuff like the installation files.
-
 ## Installation
+
+Download `install-scripts.zip` from the latest release at:
+https://github.com/n-of-one/attack_vector_2/releases
 
 ### Linux
 See [install/README-linux.md](install/README-linux.md)
-
 
 ### Windows
 See [install/README-windows.md](install/README-windows.md)
@@ -57,26 +48,32 @@ This is not recommended for use in a Larp.
 
 
 ## Running Attack Vector
-The commands to manage the server are in the folder that you started in. You can start the server with: `./run.sh` or `./run.bat`
+Start the server with: `./run.sh` or `run.bat`
 
-You can upgrade to the latest version from Github with `./upgrade.sh` or `./upgrade.bat`
+Update to the latest version with `./upgrade.sh` or `upgrade.bat`
 
-
-Attack Vector runs on port 80 (windows) or port 443 (linux) by default. 
+Attack Vector runs on port 80 (windows) or port 443 (linux) by default.
 
 
 ## First time login as admin
 
 To log in as Admin, click on the 2 in the big "Attack Vector 2" banner on the login screen. This will take you to the admin login page.
-Alternatively you can navigate to "/adminLogin" in the browser. This will open up a login page where you can enter username and password. 
+Alternatively you can navigate to "/adminLogin" in the browser. This will open up a login page where you can enter username and password.
 Enter username "admin" and click "sign in".
 
 The first thing you want to do is set a master password. Find the configuration item "Password" and enter a secure password
 that you don't use for anything else.
 
-## Development instructions
+## Development
 
-Clone this repo and then create two separate Intellij projects. Once for frontend and one for backend. Each contains a separate README.md with more instructions for that
+The repo consists of four separate projects:
+
+- frontend: browser-UI (React/Redux)
+- backend: server (Spring boot/Kotlin)
+- website: website (Docusaurus)
+- tests: e2e tests (Playwright)
+
+Clone this repo and then create two separate Intellij projects. One for frontend and one for backend. Each contains a separate README.md with more instructions for that
 part.
 
 Requires separate Mongodb.
@@ -84,7 +81,8 @@ Requires separate Mongodb.
 ## Creating a release
 AV2 uses trunk based development. The main branch is the latest stable version.
 
-When making changes: 
+When making changes:
 - In Frontend: run the release.bat script. This will build the React application and copy all relevant files to the backend directory.
 - Commit & push all changes.
+- Tag the commit with a version tag (e.g. `v2.19.1`) and push the tag. This triggers a GitHub Actions workflow that builds the jar and creates a release.
 

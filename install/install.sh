@@ -1,13 +1,15 @@
-# Install script
+#!/bin/bash
 #
-# To run this script, first manually clone Attack Vector 2 repo to the server:
+# Install script for Attack Vector 2
 #
-# git clone https://github.com/n-of-one/attack_vector_2.git
+# Download install-scripts.zip from the latest release at:
+# https://github.com/n-of-one/attack_vector_2/releases
 #
-# Then run this script:
+# Extract the zip and run this script:
 #
-# cd attack_vector_2
-# chmod 770 install.sh
+# unzip install-scripts.zip -d ~/av
+# cd ~/av
+# chmod +x install.sh
 # ./install.sh
 #
 
@@ -18,37 +20,26 @@ sudo apt-get update
 sudo apt-get install -y mongodb-org
 
 # reduce memory usage of MongoDB
-sudo cp install/mongod.conf /etc/mongod.confls
+sudo cp mongod.conf /etc/mongod.conf
 
 sudo systemctl enable mongod
 sudo systemctl start mongod
 
 sleep 2
-# sudo systemctl status mongod
 
 # Create MongoDB user
-mongosh -file install/createUser.js
+mongosh -file createUser.js
 
-# Install Java & Maven
+# Install Java
 sudo apt install -y openjdk-21-jre-headless
-sudo apt install -y maven
 
-# Allow Java to bind to port 80
-sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/lib/jvm/java-21-openjdk-arm64/bin/java
-
-# prepare regular scripts for running the application
-cp install/setenv.sh ~
-cp install/run.sh ~
-cp install/upgrade.sh ~
-cd ..
-chmod 770 setenv.sh
-chmod 770 run.sh
-chmod 770 upgrade.sh
-
+# Make scripts executable
+chmod +x setenv.sh
+chmod +x run.sh
+chmod +x upgrade.sh
 
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
-
 
 echo
 echo
@@ -62,7 +53,5 @@ echo
 echo "or create the certificate using:"
 echo "sudo certbot certonly --standalone -d attackvector.nl --register-unsafely-without-email"
 echo
-echo "sudo openssl pkcs12 -export -in /etc/letsencrypt/live/attackvector.nl/fullchain.pem -inkey /etc/letsencrypt/live/attackvector.nl/privkey.pem -out ~ubuntu/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/attackvector.nl/chain.pem -caname root"
+echo "sudo openssl pkcs12 -export -in /etc/letsencrypt/live/attackvector.nl/fullchain.pem -inkey /etc/letsencrypt/live/attackvector.nl/privkey.pem -out ~/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/attackvector.nl/chain.pem -caname root"
 echo
-echo "sudo chown ubuntu:ubuntu ~ubuntu/keystore.p12"
-
