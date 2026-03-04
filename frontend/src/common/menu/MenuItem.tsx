@@ -12,7 +12,7 @@ import {HackerRootState} from "../../hacker/HackerRootReducer";
 interface Props {
     targetPage: Page,
     label: string,
-    requriesRole: string,
+    requiresRole: string,
 }
 
 export const MenuItem = (props: Props) => {
@@ -31,7 +31,7 @@ export const MenuItem = (props: Props) => {
     }
 
 
-    if (roles.includes(props.requriesRole)) {
+    if (roles.includes(props.requiresRole)) {
         if (currentPage === props.targetPage) {
             return <li className="nav-item active"><a className="nav-link">{props.label}</a></li>
         } else {

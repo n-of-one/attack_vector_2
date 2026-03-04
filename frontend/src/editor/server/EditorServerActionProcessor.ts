@@ -41,6 +41,11 @@ export const initEditorServerActions = () => {
         editorCanvas.addConnection(connectionData)
     })
 
+    webSocketConnection.addAction(SERVER_UPDATE_NETWORK_ID, (data: { nodeId: string, networkId: string} ) => {
+        editorCanvas.updateNetworkId({nodeId: data.nodeId, value: data.networkId})
+    })
+
+
 }
 
 export interface ServerNotification {

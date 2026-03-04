@@ -1,0 +1,221 @@
+### Site REST API test file
+
+### 1. List all sites
+GET {{host}}/api/site
+Authorization: Bearer {{token}}
+
+### 2. Create a new site
+POST {{host}}/api/site
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "api-test-site"
+}
+
+> {%
+    client.global.set("siteId", response.body.id);
+%}
+
+### 3. Get the created site
+GET {{host}}/api/site/{{siteId}}
+Authorization: Bearer {{token}}
+
+### 4. Edit site description
+PUT {{host}}/api/site/{{siteId}}/property
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "field": "DESCRIPTION",
+  "value": "A site created via the REST API"
+}
+
+### 5. Edit site purpose
+PUT {{host}}/api/site/{{siteId}}/property
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "field": "PURPOSE",
+  "value": "Test API-created site"
+}
+
+### 6. Add a second node (the site already has a default TRANSIT_2 node)
+POST {{host}}/api/site/{{siteId}}/node
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "x": 400,
+  "y": 300,
+  "type": "DATA_STORE"
+}
+
+> {%
+    let nodes = response.body.nodes;
+    let newNode = nodes.find(n => n.type === "DATA_STORE");
+    let startNode = nodes.find(n => n.type === "TRANSIT_2");
+    client.global.set("dataStoreNodeId", newNode.id);
+    client.global.set("startNodeId", startNode.id);
+%}
+
+### 7. Add a third node (ICE node)
+POST {{host}}/api/site/{{siteId}}/node
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "x": 700,
+  "y": 300,
+  "type": "ICE_1"
+}
+
+> {%
+    let nodes = response.body.nodes;
+    let iceNode = nodes.find(n => n.type === "ICE_1");
+    client.global.set("iceNodeId", iceNode.id);
+%}
+
+### 8. Connect default node to data store node
+POST {{host}}/api/site/{{siteId}}/connection
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "fromId": "{{startNodeId}}",
+  "toId": "{{dataStoreNodeId}}"
+}
+
+### 9. Connect default node to ICE node
+POST {{host}}/api/site/{{siteId}}/connection
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "fromId": "{{startNodeId}}",
+  "toId": "{{iceNodeId}}"
+}
+
+### 10. Add a PASSWORD_ICE layer to the ICE node
+POST {{host}}/api/site/{{siteId}}/node/{{iceNodeId}}/layer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "layerType": "PASSWORD_ICE"
+}
+
+> {%
+    let iceNode = response.body.nodes.find(n => n.id === client.global.get("iceNodeId"));
+    let passwordLayer = iceNode.layers.find(l => l.type === "PASSWORD_ICE");
+    client.global.set("passwordLayerId", passwordLayer.id);
+%}
+
+### 11. Edit the password ICE layer name
+PUT {{host}}/api/site/{{siteId}}/node/{{iceNodeId}}/layer/{{passwordLayerId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "key": "name",
+  "value": "Firewall Alpha"
+}
+
+### 12. Add a TEXT layer to the data store node
+POST {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/layer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "layerType": "TEXT"
+}
+
+### 13. Move the data store node
+PUT {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/move
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "siteId": "{{siteId}}",
+  "x": 350,
+  "y": 500
+}
+
+### 14. Edit the network ID of the data store node
+PUT {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/networkId
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "value": "10"
+}
+
+### 15. Snap all nodes to grid
+POST {{host}}/api/site/{{siteId}}/snap
+Authorization: Bearer {{token}}
+
+### 16. Center nodes
+POST {{host}}/api/site/{{siteId}}/center
+Authorization: Bearer {{token}}
+
+### 17. Get all nodes
+GET {{host}}/api/site/{{siteId}}/node
+Authorization: Bearer {{token}}
+
+### 18. Get a specific node
+GET {{host}}/api/site/{{siteId}}/node/{{iceNodeId}}
+Authorization: Bearer {{token}}
+
+### 19. Get all connections
+GET {{host}}/api/site/{{siteId}}/connection
+Authorization: Bearer {{token}}
+
+### 20. Verify final site state
+GET {{host}}/api/site/{{siteId}}
+Authorization: Bearer {{token}}
+
+### 21. Add a status light to the data store node
+POST {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/layer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "layerType": "STATUS_LIGHT"
+}
+
+> {%
+    let dataStoreNode = response.body.nodes.find(n => n.id === client.global.get("dataStoreNodeId"));
+    let statusLightLayer = dataStoreNode.layers.find(l => l.type === "STATUS_LIGHT");
+    client.global.set("statusLightLayerId", statusLightLayer.id);
+%}
+
+#### 22. Add an option to the status light
+POST {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/layer/{{statusLightLayerId}}/statusLightOption
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+}
+
+#### 23. Change the new status light option to blue
+PUT {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/layer/{{statusLightLayerId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "key": "COLOR_FOR_2",
+  "value": "blue"
+}
+
+#### 24. Delete status light option
+DELETE {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}/layer/{{statusLightLayerId}}/statusLightOption/0
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+}
+
+### 25. Get a specific node
+GET {{host}}/api/site/{{siteId}}/node/{{dataStoreNodeId}}
+Authorization: Bearer {{token}}

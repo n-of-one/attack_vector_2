@@ -22,7 +22,7 @@ const logout = (event: any) => {
 const scanItem = (currentPage: string, runName: string | null) => {
     if (currentPage === Page.RUN && runName) {
         return (
-            <MenuItem requriesRole="ROLE_HACKER" targetPage={Page.RUN} label={`> ${runName} <`}/>
+            <MenuItem requiresRole="ROLE_HACKER" targetPage={Page.RUN} label={`> ${runName} <`}/>
         )
     } else {
         return <span/>
@@ -44,11 +44,11 @@ export const MenuBar = () => {
     const hackerHasScriptsCreditsSkill = hasSkill(currentUser, HackerSkillType.SCRIPT_CREDITS)
 
 
-    const hackerSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
-    const hackerScripts = hackerHasScriptsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
+    const hackerSites = hackersCanCreateSites ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
+    const hackerScripts = hackerHasScriptsSkill ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
     const hackerMarket = hackerHasScriptsSkill && hackerHasScriptsCreditsSkill ?
-        <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
-    const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
+        <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
+    const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
 
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{
@@ -64,20 +64,20 @@ export const MenuBar = () => {
                             <ul className="navbar-nav mr-auto">
                                 <Title/>
                                 {scanItem(currentPage, siteName)}
-                                <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
+                                <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
                                 {hackerSites}
                                 {hackerScripts}
                                 {hackerMarket}
                                 {hackerCredits}
-                                <MenuItem requriesRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>
-                                <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={Page.SITES} label="Sites"/>
-                                <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={Page.USERS} label="Users"/>
-                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={Page.CONFIG} label="Config"/>
-                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={Page.TASKS} label="Tasks"/>
-                                <MenuItem requriesRole={ROLE_GM} targetPage={Page.STATISTICS} label="Statistics"/>
+                                <MenuItem requiresRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>
+                                <MenuItem requiresRole={ROLE_SITE_MANAGER} targetPage={Page.SITES} label="Sites"/>
+                                <MenuItem requiresRole={ROLE_USER_MANAGER} targetPage={Page.USERS} label="Users"/>
+                                <MenuItem requiresRole={ROLE_ADMIN} targetPage={Page.CONFIG} label="Config"/>
+                                <MenuItem requiresRole={ROLE_ADMIN} targetPage={Page.TASKS} label="Tasks"/>
+                                <MenuItem requiresRole={ROLE_GM} targetPage={Page.STATISTICS} label="Statistics"/>
                             </ul>
                             <ul className="navbar-nav">
-                                <MenuItem requriesRole="ROLE_USER" targetPage={Page.ME} label={"{" + userName + "}"}/>
+                                <MenuItem requiresRole="ROLE_USER" targetPage={Page.ME} label={"{" + userName + "}"}/>
                                 <li className="nav-item">
                                     <a className="nav-link" href="/login" onClick={(event) => logout(event)}>ꕻ
                                         Logout</a>

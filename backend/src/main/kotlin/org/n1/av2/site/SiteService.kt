@@ -52,12 +52,12 @@ class SiteService(
         val gmSite: Boolean
     )
 
-    fun sendSitesList() {
+    fun getSitesList(): List<SiteListItem> {
         val gm = currentUserService.userEntity.type == UserType.GM
 
         val sites = if (gm) sitePropertiesEntityService.findAll() else sitePropertiesEntityService.findByOwnerUserId(currentUserService.userId)
         val userNamesById = HashMap<String, String>()
-        val list = sites
+        return sites
             .map {
                 val mine = it.ownerUserId == currentUserService.userId
                 val owner = lookupUserName(it.ownerUserId, userNamesById)
@@ -72,6 +72,10 @@ class SiteService(
                     gmSite = userEntityService.isGmOrSystem(it.ownerUserId)
                 )
             }
+    }
+
+    fun sendSitesList() {
+        val list = getSitesList()
         connectionService.toUser(currentUserService.userId, actionType = ServerActions.SERVER_SITES_LIST, list)
     }
 

@@ -7,6 +7,7 @@ import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.validateDuration
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.util.*
 import javax.annotation.PostConstruct
 
 @Service
@@ -16,7 +17,7 @@ class ConfigService(
 ) {
     private val logger = mu.KotlinLogging.logger {}
 
-    val cache: MutableMap<ConfigItem, String> = HashMap()
+    val cache: MutableMap<ConfigItem, String> = EnumMap(ConfigItem::class.java)
 
     @PostConstruct
     fun logEnvironment() {
@@ -26,7 +27,9 @@ class ConfigService(
     fun initConfigValues() {
         val allEntries = repo.findAll()
         val allItems: List<ConfigEntry> = ConfigItem.entries.map { item ->
-            allEntries.find { it.item == item } ?: ConfigEntry(item, item.defaultValue)
+            allEntries.find { it.item == item } ?: ConfigEntry(item, item.defaultValue).also {
+                newEntry: ConfigEntry -> repo.save(newEntry)
+            }
         }
         updateCache(allItems)
     }
@@ -38,7 +41,7 @@ class ConfigService(
     }
 
     fun replyConfigValues() {
-        val allItems = cache.map { ConfigEntry(it.key, it.value) }
+        val allItems = cache.map { ConfigEntry(it.key, it.value) }.filter { it.item.managedByAdmin }
         connectionService.reply(ServerActions.SERVER_RECEIVE_CONFIG, allItems)
     }
 

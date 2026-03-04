@@ -37,7 +37,7 @@ private val OPEN_PATHS = listOf(
 
     "/ws_unrestricted", // websocket path for widgets and other apps that don't require any authentication
 
-    // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
+    // The following endpoints functionally have .hasAuthority(ROLE_USER.authority)
     // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
     // the handshake handler. See: WebSocketConnectionConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
     "/ws_hacker", "/ws_networked_app"

@@ -3,3 +3,4 @@ target
 ### IntelliJ IDEA ###
 .idea
 *.iml
+/httpclient/http-client.private.env.json

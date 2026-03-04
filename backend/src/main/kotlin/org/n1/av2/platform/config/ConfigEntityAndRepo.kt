@@ -4,38 +4,43 @@ import org.n1.av2.platform.util.validateDuration
 import org.springframework.data.annotation.Id
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import java.security.SecureRandom
+import kotlin.io.encoding.Base64
 
 
 enum class ConfigItem(
+    val managedByAdmin: Boolean,
     val defaultValue: String,
     val validate: ((String, Map<ConfigItem, String>) -> String?)? = null,
     val message: ((String) -> String?)? = null,
 ) {
-    LARP_NAME("unknown", ::notEmpty),
+    LARP_NAME(true, "unknown", ::notEmpty),
 
-    HACKER_SHOW_SKILLS("false", ::validBoolean),
-    HACKER_EDIT_USER_NAME("true", ::validBoolean),
-    HACKER_EDIT_CHARACTER_NAME("true", ::validBoolean),
-    HACKER_DELETE_RUN_LINKS("true", ::validBoolean),
-    HACKER_TUTORIAL_SITE_NAME(""),
-    HACKER_SCRIPT_RAM_REFRESH_DURATION("00:15:00", ::validDuration),
-    HACKER_SCRIPT_LOCKOUT_DURATION("01:00:00", ::validDuration),
-    HACKER_SCRIPT_LOAD_DURING_RUN("false", ::validBoolean),
-    HACKER_DEFAULT_SPEED("4", ::validHackerSpeed),
+    HACKER_SHOW_SKILLS(true, "false", ::validBoolean),
+    HACKER_EDIT_USER_NAME(true, "true", ::validBoolean),
+    HACKER_EDIT_CHARACTER_NAME(true, "true", ::validBoolean),
+    HACKER_DELETE_RUN_LINKS(true, "true", ::validBoolean),
+    HACKER_TUTORIAL_SITE_NAME(true, ""),
+    HACKER_SCRIPT_RAM_REFRESH_DURATION(true, "00:15:00", ::validDuration),
+    HACKER_SCRIPT_LOCKOUT_DURATION(true, "01:00:00", ::validDuration),
+    HACKER_SCRIPT_LOAD_DURING_RUN(true, "false", ::validBoolean),
+    HACKER_DEFAULT_SPEED(true, "4", ::validHackerSpeed),
 
-    LOGIN_PATH("/login", ::notEmpty, ::loginPathMessage),
-    LOGIN_PASSWORD("", ::validPassword, ::loginPasswordMessage),
-    LOGIN_GOOGLE_CLIENT_ID(""),
+    LOGIN_PATH(true, "/login", ::notEmpty, ::loginPathMessage),
+    LOGIN_PASSWORD(true, "", ::validPassword, ::loginPasswordMessage),
+    LOGIN_GOOGLE_CLIENT_ID(true, ""),
 
-    DEV_HACKER_RESET_SITE("false", ::validBoolean),
-    DEV_HACKER_USE_DEV_COMMANDS("false", ::validBoolean),
-    DEV_MINIMUM_SHUTDOWN_DURATION("00:01:00", ::validDuration),
-    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS("0", ::validDelay),
-    DEV_TESTING_MODE("false", ::validBoolean),
-    DEV_QUICK_PLAYING("false", ::validBoolean),
+    DEV_HACKER_RESET_SITE(true, "false", ::validBoolean),
+    DEV_HACKER_USE_DEV_COMMANDS(true, "false", ::validBoolean),
+    DEV_MINIMUM_SHUTDOWN_DURATION(true, "00:01:00", ::validDuration),
+    DEV_SIMULATE_NON_LOCALHOST_DELAY_MS(true, "0", ::validDelay),
+    DEV_TESTING_MODE(true, "false", ::validBoolean),
+    DEV_QUICK_PLAYING(true, "false", ::validBoolean),
 
-    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN(""),
-    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED("false", ::validBoolean),
+    LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN(true, ""),
+    LARP_SPECIFIC_FRONTIER_LOLA_ENABLED(true, "false", ::validBoolean),
+
+    SYSTEM_JWT_SECRET(false, createJwtSecret())
 }
 
 data class ConfigEntry(
@@ -98,4 +103,8 @@ fun loginPathMessage(value: String): String? {
 fun loginPasswordMessage (ignored: String) =
     "Please check that you can login using the new password. Do not close this window, but open an incognito browser window to do this."
 
-
+fun createJwtSecret(): String {
+    val bytes = ByteArray(512)
+    SecureRandom().nextBytes(bytes)
+    return Base64.encode(bytes)
+}

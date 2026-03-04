@@ -89,7 +89,7 @@ class EditorService(
     fun deleteConnections(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
         siteValidationService.validate(siteId)
-        replySiteFull(siteId)
+        sendFullSiteToSite(siteId)
     }
 
     private fun deleteConnectionsInternal(nodeId: String) {
@@ -109,13 +109,12 @@ class EditorService(
 
         try {
             when (command.field) {
-                "name" -> sitePropertiesEntityService.updateName(properties, value)
-                "description" -> properties.description = value
-                "plot" -> properties.purpose = value
-                "startNode" -> properties.startNodeNetworkId = value
-                "hackable" -> properties.hackable = value.toBoolean()
-                "nodesLocked" -> properties.nodesLocked = value.toBoolean()
-                else -> throw IllegalArgumentException("Site field ${command.field} unknown.")
+                SitePropertyField.NAME -> sitePropertiesEntityService.updateName(properties, value)
+                SitePropertyField.DESCRIPTION -> properties.description = value
+                SitePropertyField.PURPOSE -> properties.purpose = value
+                SitePropertyField.START_NODE -> properties.startNodeNetworkId = value
+                SitePropertyField.HACKABLE -> properties.hackable = value.toBoolean()
+                SitePropertyField.NODES_LOCKED -> properties.nodesLocked = value.toBoolean()
             }
 
             sitePropertiesEntityService.save(properties)
@@ -133,15 +132,15 @@ class EditorService(
     }
 
     fun enter(siteId: String) {
-        replySiteFull(siteId)
+        sendFullSiteToSite(siteId)
         userAndHackerService.sendDetailsOfCurrentUser()
         siteService.sendSitesList()
         siteService.sendAllCores() // used to configure tripwires with remote cores
     }
 
-    fun replySiteFull(siteId: String) {
+    fun sendFullSiteToSite(siteId: String) {
         val toSend = siteService.getSiteFull(siteId)
-        connectionService.reply(ServerActions.SERVER_SITE_FULL, toSend)
+        connectionService.toSite(siteId, ServerActions.SERVER_SITE_FULL, toSend)
     }
 
 
@@ -149,18 +148,18 @@ class EditorService(
         deleteConnectionsInternal(nodeId)
         nodeEntityService.deleteNode(nodeId)
         siteValidationService.validate(siteId)
-        replySiteFull(siteId)
+        sendFullSiteToSite(siteId)
     }
 
     fun snap(siteId: String) {
         nodeEntityService.snap(siteId)
-        replySiteFull(siteId)
+        sendFullSiteToSite(siteId)
     }
 
     fun center(siteId: String) {
         val properties = sitePropertiesEntityService.getBySiteId(siteId)
         nodeEntityService.center(siteId, properties.startNodeNetworkId)
-        replySiteFull(siteId)
+        sendFullSiteToSite(siteId)
     }
 
     data class ServerUpdateNetworkId(val nodeId: String, val networkId: String)
@@ -203,7 +202,7 @@ class EditorService(
 
         if (layer.options.size < 3) error("Cannot delete option. Status light must have at least 2 options.")
 
-        val newCurrentOption = if (layer.currentOption < command.optionIndex) layer.currentOption else layer.currentOption - 1
+        val newCurrentOption = if (layer.currentOption <= command.optionIndex) layer.currentOption else layer.currentOption - 1
 
         layer.options.removeAt(command.optionIndex)
         layer.currentOption = newCurrentOption

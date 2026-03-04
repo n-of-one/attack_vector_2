@@ -154,9 +154,8 @@ class HtmlController(
 
     @GetMapping("/localLogout")
     fun logout(response: HttpServletResponse) {
-        val logoutCookies = loginService.logout()
-        logoutCookies.forEach {
-            val cookie = Cookie(it.name, "")
+        loginService.getCookieNames().forEach { name ->
+            val cookie = Cookie(name, "")
             cookie.path = "/"
             cookie.maxAge = 0
             response.addCookie(cookie)
