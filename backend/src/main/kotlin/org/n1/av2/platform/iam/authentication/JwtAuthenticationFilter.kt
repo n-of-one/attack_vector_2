@@ -55,7 +55,7 @@ class JwtAuthenticationFilter(
                 response.writer.flush()
                 return
             }
-            logger.warn("Authentication failed: $errorMessage")
+            logger.warn("Authentication failed: $errorMessage for: ${request.requestURI}")
 
             // Need to set authentication to make AccessDeniedHandler work
             authentication = UserPrincipal.notLoggedIn()
@@ -89,13 +89,19 @@ class JwtAuthenticationFilter(
     }
 
     private fun dontNeedAuthentication(request: HttpServletRequest): Boolean {
-        // don't parse JWT for static resources
+        // don't parse JWT for static resources or login related paths
         request.requestURI.let {
             return (
                     it.startsWith("/resources") ||
                     it.startsWith("/img") ||
                     it.startsWith("/css") ||
-                    it.startsWith("/static")
+                    it.startsWith("/static") ||
+                    it.startsWith("/loggedOut") ||
+                    it.startsWith("/redirectToLogin") ||
+                    it.startsWith("/devLogin") ||
+                    it.startsWith("/adminLogin") ||
+                    it.startsWith("/login") ||
+                    it.startsWith("/openapi/")
                     )
         }
     }

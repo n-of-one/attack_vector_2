@@ -9,10 +9,10 @@
 Rather than downloading the entire git repository and building it locally, you can now just download and run the pre-built application. 
 This simplifies installation and makes upgrades much faster.
 
-You can switch to the new way first upgrading normally to this version. And then copying the `upgrade.sh`/`upgrade.bat` and `run.sh`/`run.bat` 
-from the installat folder to the folder where AV is installed (replacing the existing files). Then run upgrade.
+You can switch to the new way by first upgrading normally to this version. And then copying the `upgrade.sh`/`upgrade.bat` and `run.sh`/`run.bat` 
+from the installation folder to the folder where AV is installed (replacing the existing files). Then run upgrade.
 
-The existing upgrade scripts will also keep working. 
+The existing upgrade scripts will also keep working if you don't want to upgrade yet.
 
 ### API for creating sites
 
