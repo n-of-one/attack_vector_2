@@ -10,8 +10,12 @@ import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.run.entity.RunEntityService
 import org.n1.av2.run.runlink.RunLinkEntityService
 import org.n1.av2.run.scanning.ScanService
+import org.n1.av2.site.SiteCloneService
+import org.n1.av2.site.entity.ConnectionEntityService
+import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.n1.av2.site.export.ImportService
+import org.n1.av2.site.export.SiteBlueprint
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
@@ -24,6 +28,8 @@ class TutorialService(
     private val importService: ImportService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val siteCloneService: SiteCloneService,
+    private val nodeEntityService: NodeEntityService,
+    private val connectionEntityService: ConnectionEntityService,
     private val scanService: ScanService,
     private val runEntityService: RunEntityService,
     private val runLinkEntityService: RunLinkEntityService,
@@ -68,7 +74,10 @@ class TutorialService(
                 return
             }
 
-            val siteId = siteCloneService.cloneSite(tutorialSiteProperties, siteName, user)
+            val sourceNodes = nodeEntityService.findBySiteId(tutorialSiteProperties.siteId)
+            val sourceConnections = connectionEntityService.getAll(tutorialSiteProperties.siteId)
+            val bluePrint = SiteBlueprint(tutorialSiteProperties, sourceNodes, sourceConnections)
+            val siteId = siteCloneService.cloneSite(bluePrint, siteName, user)
             if (tutorialSiteProperties.siteStructureOk) {
                 val nodeScanById = scanService.createInitialNodeScans(siteId)
                 val run = runEntityService.create(siteId, nodeScanById, user.id)

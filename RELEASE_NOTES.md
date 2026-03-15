@@ -1,3 +1,13 @@
+# Release notes AV 2.20.1 (15 March 2026)
+
+## Bugfixes
+- Importing of sites is more robust, prevents bugs with duplicate DB ids.
+- Importing of sites with tripwires linked to cores in other sites now works.
+
+Tripwires can link to cores in other sites. When importing sites with those tripwires: first import the site with the core, then the site with the tripwire. 
+Check the connections manually afterwards.
+
+
 # Release notes AV 2.20.0 (4 March 2026)
 
 ## Features

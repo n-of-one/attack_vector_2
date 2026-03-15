@@ -10,7 +10,6 @@ import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.site.entity.NodeEntityService.Companion.deriveNodeIdFromLayerId
 import org.n1.av2.site.entity.enums.LayerType
-import java.time.Duration
 import kotlin.jvm.optionals.getOrElse
 
 class TripwireLayer(
@@ -23,16 +22,24 @@ class TripwireLayer(
     var shutdown: String, // shut down lasts for a duration of $shutdown
     var coreLayerId: String? = null,
     var coreSiteId: String? = null,
+
+    // These fields are used during export to make the export portable (i.e. not rely on DB id references).
+    var coreSiteName: String? = null,
+    var coreNetworkId: String? = null,
+    var coreLayerLevel: Int? = null,
 ) : Layer(id, LayerType.TRIPWIRE, level, name, note) {
 
-    constructor (id: String, level: Int, name: String, note: String, countdown: String, shutdown: String, coreLayerId: String?, coreSiteId: String?) :
-        this(id, LayerType.TRIPWIRE, level, name, note, countdown, shutdown, coreLayerId, coreSiteId)
+    constructor (id: String, level: Int, name: String, note: String, countdown: String, shutdown: String,
+                 coreLayerId: String?, coreSiteId: String?,
+                 coreSiteName: String? = null, coreNetworkId: String? = null, coreLayerLevel: Int? = null) :
+        this(id, LayerType.TRIPWIRE, level, name, note, countdown, shutdown, coreLayerId, coreSiteId, coreSiteName, coreNetworkId, coreLayerLevel)
 
     constructor(id: String, level: Int, defaultName: String) :
         this(id, LayerType.TRIPWIRE, level, defaultName, "", "15:00", "01:00", null)
 
     constructor(id: String, toClone: TripwireLayer) :
-        this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown, toClone.coreLayerId, toClone.coreSiteId)
+        this(id, LayerType.TRIPWIRE, toClone.level, toClone.name, toClone.note, toClone.countdown, toClone.shutdown,
+            toClone.coreLayerId, toClone.coreSiteId, toClone.coreSiteName, toClone.coreNetworkId, toClone.coreLayerLevel)
 
     @Suppress("unused")
     private fun validateCountdown(validationContext: ValidationContext) {

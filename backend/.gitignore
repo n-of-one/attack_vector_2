@@ -4,3 +4,6 @@ target
 .idea
 *.iml
 /httpclient/http-client.private.env.json
+
+### Coding agents
+.claude/

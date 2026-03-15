@@ -16,7 +16,7 @@ import org.n1.av2.site.CoreLayerRemovalType.DELETE_SITE_REMOVAL
 import org.n1.av2.site.CoreLayerRemovalType.INTERNAL_REMOVAL
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.enums.NodeType
-import org.n1.av2.site.tutorial.SiteCloneService
+import org.n1.av2.site.export.SiteBlueprint
 import org.springframework.stereotype.Service
 import java.time.Duration
 
@@ -222,8 +222,11 @@ class SiteService(
 
     fun copySite(sourceSiteId: String) {
         val sourceSiteProperties = sitePropertiesEntityService.getBySiteId(sourceSiteId)
+        val sourceNodes = nodeEntityService.findBySiteId(sourceSiteId)
+        val sourceConnections = connectionEntityService.getAll(sourceSiteId)
+        val blueprint = SiteBlueprint(sourceSiteProperties, sourceNodes, sourceConnections)
         val targetSiteName = makeSiteCopyName(sourceSiteProperties.name)
-        val targetSiteId = siteCloneService.cloneSite(sourceSiteProperties, targetSiteName, currentUserService.userEntity)
+        val targetSiteId = siteCloneService.cloneSite(blueprint, targetSiteName, currentUserService.userEntity)
         siteResetService.refreshSite(targetSiteId)
 
         sendSitesList()

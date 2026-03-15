@@ -7,6 +7,7 @@ import {toServerUrl} from "../util/DevEnvironment";
 import {SiteList} from "./SitesList";
 import {SiteInfo} from "./SitesReducer";
 import userAuthorizations, {ROLE_GM} from "../user/UserAuthorizations";
+import {currentUser} from "../user/CurrentUser";
 
 /* eslint react-hooks/exhaustive-deps: 0*/
 
@@ -32,7 +33,8 @@ export const SitesPage = () => {
         }
         const formData = new FormData()
         formData.append("file", file as unknown as string)
-        fetch(toServerUrl("/api/import/site"), {
+        const userConnection = `${currentUser.id}_${webSocketConnection.connectionId}`
+        fetch(toServerUrl(`/api/import/site/${userConnection}`), {
             method: "POST", body: formData, credentials: "include"
         }).then(() => {
             askForSitesList()

@@ -1,4 +1,4 @@
-package org.n1.av2.site.tutorial
+package org.n1.av2.site
 
 import org.n1.av2.editor.*
 import org.n1.av2.layer.Layer
@@ -19,6 +19,7 @@ import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.site.entity.*
+import org.n1.av2.site.export.SiteBlueprint
 import org.springframework.stereotype.Service
 
 @Service
@@ -30,17 +31,14 @@ class SiteCloneService(
     private val siteValidationService: SiteValidationService,
 ) {
 
-    fun cloneSite(sourceSideProperties: SiteProperties, targetSiteName: String, owner: UserEntity): String {
-        val sourceSiteId = sourceSideProperties.siteId
-
-        val siteId = cloneSiteProperties(targetSiteName, owner)
-
-        val sourceNodes = nodeEntityService.findBySiteId(sourceSiteId)
-        val nodesBySourceId = cloneNodes(sourceNodes, siteId)
-
-        val sourceConnections = connectionEntityService.getAll(sourceSiteId)
-        cloneConnections(sourceConnections, siteId, nodesBySourceId)
-
+    fun cloneSite(
+        source: SiteBlueprint,
+        targetSiteName: String,
+        owner: UserEntity
+    ): String {
+        val siteId = cloneSiteProperties(source.siteProperties, targetSiteName, owner)
+        val nodesBySourceId = cloneNodes(source.nodes, siteId, source.siteProperties.siteId)
+        cloneConnections(source.connections, siteId, nodesBySourceId)
         createEditorState(siteId)
         return siteId
     }
@@ -50,22 +48,23 @@ class SiteCloneService(
         return siteValidationService.validate(siteId)
     }
 
-    private fun cloneSiteProperties(targetSiteName: String, owner: UserEntity): String {
+    private fun cloneSiteProperties(source: SiteProperties, targetSiteName: String, owner: UserEntity): String {
         val siteId = sitePropertiesEntityService.createId()
         val siteProperties = SiteProperties(
             siteId = siteId,
             name = targetSiteName,
-            description = "Tutorial",
-            purpose = "tutorial",
-            startNodeNetworkId = "00",
+            description = source.description,
+            purpose = source.purpose,
+            startNodeNetworkId = source.startNodeNetworkId,
             ownerUserId = owner.id,
-            hackable = true,
+            hackable = false,
+            nodesLocked = source.nodesLocked,
         )
         sitePropertiesEntityService.save(siteProperties)
         return siteId
     }
 
-    private fun cloneNodes(sourceNodes: List<Node>, siteId: String): Map<String, Node> {
+    private fun cloneNodes(sourceNodes: List<Node>, siteId: String, sourceSiteId: String): Map<String, Node> {
         val nodesBySourceId = HashMap<String, Node>()
         val layersBySourceLayerId = HashMap<String, Layer>()
 
@@ -93,7 +92,7 @@ class SiteCloneService(
         }
 
         layersBySourceLayerId.values.forEach { layer ->
-            updateLayersDependingOnOtherLayers(layer, layersBySourceLayerId)
+            updateLayersDependingOnOtherLayers(layer, layersBySourceLayerId, sourceSiteId, siteId)
         }
 
         nodesBySourceId.values.forEach { nodeEntityService.save(it) }
@@ -136,9 +135,20 @@ class SiteCloneService(
         }
     }
 
-    private fun updateLayersDependingOnOtherLayers(layer: Layer, layersBySourceLayerId: Map<String, Layer>) {
+    private fun updateLayersDependingOnOtherLayers(
+        layer: Layer, layersBySourceLayerId: Map<String, Layer>,
+        sourceSiteId: String, targetSiteId: String
+    ) {
         if (layer is TripwireLayer && layer.coreLayerId != null) {
-            layer.coreLayerId = layersBySourceLayerId[layer.coreLayerId]?.id
+            val isSameSiteRef = (layer.coreSiteId == null || layer.coreSiteId == sourceSiteId)
+            if (isSameSiteRef) {
+                layer.coreLayerId = layersBySourceLayerId[layer.coreLayerId]?.id
+                layer.coreSiteId = targetSiteId
+            }
+            // Cross-site: leave coreLayerId and coreSiteId as-is (already resolved by importer)
+            layer.coreSiteName = null
+            layer.coreNetworkId = null
+            layer.coreLayerLevel = null
         }
         if (layer is KeyStoreLayer && layer.iceLayerId != null) {
             layer.iceLayerId = layersBySourceLayerId[layer.iceLayerId]?.id

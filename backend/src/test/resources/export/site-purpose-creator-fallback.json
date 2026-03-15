@@ -1,0 +1,8 @@
+{
+  "exportDetails": {"version": "v1", "exportTimeStamp": "2026-01-01 00:00:00"},
+  "siteProperties": {"siteId": "s1", "name": "site-purpose-creator-fallback", "description": "", "creator": "gm", "startNodeNetworkId": "00"},
+  "nodes": [{"id": "n1", "siteId": "s1", "type": "TRANSIT_1", "x": 625, "y": 432, "networkId": "00",
+    "layers": [{"id": "n1:layer-0000", "type": "OS", "level": 0, "name": "OS", "note": "", "nodeName": ""}]
+  }],
+  "connections": []
+}

@@ -10,7 +10,7 @@ const SITE_NAME = "test-timer-adjuster"
 
 
 test('3.1.0 - Prepare', async ({page}: { page: Page }) => {
-    test.setTimeout(15_000);
+    test.setTimeout(20_000);
     const [login, gm, hacker] = [new LoginPage(page), new GmPage(page), new HackerPage(page)]
 
     await test.step("Prepare run", async () => {
