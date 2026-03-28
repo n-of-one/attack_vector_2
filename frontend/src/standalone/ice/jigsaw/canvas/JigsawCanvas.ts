@@ -39,6 +39,8 @@ class JigsawCanvas {
             height: canvasHeight,
             backgroundColor: "#1a1a2e",
             selection: false,
+            fireRightClick: true,
+            stopContextMenu: true,
         })
 
         const puzzleCols = data.gridSize
@@ -64,12 +66,17 @@ class JigsawCanvas {
             this.piecesByLocation[`${config.col}:${config.row}`] = display
         }
 
-        // Record position at drag start for computing group delta
+        // Record position at drag start for computing group delta, and handle right-click rotation
         this.canvas.on('mouse:down', (event) => {
-            if (event.target && event.target.data instanceof JigsawPieceDisplay) {
-                this.dragStartLeft = event.target.left ?? 0
-                this.dragStartTop = event.target.top ?? 0
+            if (!event.target || !(event.target.data instanceof JigsawPieceDisplay)) return
+
+            if ((event.e as MouseEvent).button === 2) {
+                this.rotateGroup(event.target.data as JigsawPieceDisplay)
+                return
             }
+
+            this.dragStartLeft = event.target.left ?? 0
+            this.dragStartTop = event.target.top ?? 0
         })
 
         // Move all other pieces in the group along with the dragged piece
@@ -100,6 +107,20 @@ class JigsawCanvas {
         this.canvas.renderAll()
     }
 
+    private rotateGroup(clickedPiece: JigsawPieceDisplay) {
+        const group = clickedPiece.group
+
+        // Calculate pivot: center of all piece centers in the group
+        const centers = [...group].map(piece => piece.path.getCenterPoint())
+        const pivotX = centers.reduce((sum, center) => sum + center.x, 0) / centers.length
+        const pivotY = centers.reduce((sum, center) => sum + center.y, 0) / centers.length
+
+        const renderCallback = this.canvas.renderAll.bind(this.canvas)
+        for (const piece of group) {
+            piece.animateRotation(pivotX, pivotY, renderCallback)
+        }
+    }
+
     private trySnapToNeighbor(draggedPiece: JigsawPieceDisplay) {
         const snapTolerance = this.pieceSize * 0.2
         const group = draggedPiece.group
@@ -111,6 +132,9 @@ class JigsawCanvas {
             {colOffset: 0, rowOffset: 1},
         ]
 
+        // Only allow snapping when all pieces in the dragged group are at correct rotation
+        if (draggedPiece.rotation !== 0) return
+
         // Check every piece in the dragged group for a snap to an outside neighbor
         for (const piece of group) {
             const bodyOrigin = piece.getBodyOrigin()
@@ -119,6 +143,9 @@ class JigsawCanvas {
                 const neighborKey = `${piece.col + colOffset}:${piece.row + rowOffset}`
                 const neighbor = this.piecesByLocation[neighborKey]
                 if (!neighbor || group.has(neighbor)) continue
+
+                // Neighbor must also be at correct rotation to snap
+                if (neighbor.rotation !== 0) continue
 
                 const neighborBodyOrigin = neighbor.getBodyOrigin()
 

@@ -19,6 +19,9 @@ export class JigsawPieceDisplay {
     // All pieces snapped together share the same Set. Starts with just this piece.
     group: Set<JigsawPieceDisplay>
 
+    // Current rotation in degrees: 0, 90, 180, or 270. Pieces start at a random rotation.
+    rotation: number
+
     constructor(canvas: Canvas, col: number, row: number, config: PieceConfig,
                 sourceImage: HTMLImageElement, puzzleCols: number, puzzleRows: number,
                 pieceSize: number, canvasWidth: number, canvasHeight: number) {
@@ -67,6 +70,8 @@ export class JigsawPieceDisplay {
             hoverCursor: 'grab',
         })
 
+        this.rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)]
+        this.path.set({angle: this.rotation})
         this.group = new Set([this])
 
         canvas.add(this.path)
@@ -96,6 +101,51 @@ export class JigsawPieceDisplay {
             top: (this.path.top ?? 0) + deltaY,
         })
         this.path.setCoords()
+    }
+
+    /**
+     * Animate a 90° clockwise rotation around a pivot point.
+     * For a single piece the pivot is its own center; for a group it's the group center.
+     * Position and angle interpolate together so the piece arcs smoothly to its new location.
+     */
+    animateRotation(pivotX: number, pivotY: number, renderCallback: () => void) {
+        const startAngle = this.path.angle ?? 0
+        const targetAngle = startAngle + 90
+        this.rotation = (this.rotation + 90) % 360
+
+        const startCenter = this.path.getCenterPoint()
+
+        // Rotate center 90° clockwise around pivot (in screen-coords: y-down)
+        const dx = startCenter.x - pivotX
+        const dy = startCenter.y - pivotY
+        const targetCenterX = pivotX - dy
+        const targetCenterY = pivotY + dx
+
+        this.path.animate('angle', targetAngle, {
+            onChange: () => {
+                // Derive progress from the angle so position follows the same easing curve
+                const progress = ((this.path.angle ?? startAngle) - startAngle) / 90
+                const currentCenterX = startCenter.x + (targetCenterX - startCenter.x) * progress
+                const currentCenterY = startCenter.y + (targetCenterY - startCenter.y) * progress
+
+                this.path.setPositionByOrigin(
+                    new fabric.Point(currentCenterX, currentCenterY),
+                    'center', 'center'
+                )
+                this.path.setCoords()
+                renderCallback()
+            },
+            duration: 200,
+            onComplete: () => {
+                this.path.set({angle: this.rotation})
+                this.path.setPositionByOrigin(
+                    new fabric.Point(targetCenterX, targetCenterY),
+                    'center', 'center'
+                )
+                this.path.setCoords()
+                renderCallback()
+            }
+        })
     }
 
     /** Merge this piece's group with another piece's group. All pieces end up sharing one Set. */
