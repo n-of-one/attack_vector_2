@@ -70,6 +70,25 @@ export class JigsawPieceDisplay {
             hoverCursor: 'grab',
         })
 
+        // Override the selection border to only surround the piece body, not the tabs.
+        // In the drawBorders context, (0,0) is the bounding-box center (rotated with the object).
+        // We offset to the body center and draw a pieceSize rect.
+        const bodyOffsetX = (extensionLeft - extensionRight) / 2
+        const bodyOffsetY = (extensionTop - extensionBottom) / 2
+        const borderColor = this.path.borderColor || '#44ff44'
+        this.path.drawBorders = function (ctx: CanvasRenderingContext2D, _styleOverride: any) {
+            ctx.save()
+            ctx.strokeStyle = borderColor
+            ctx.strokeRect(
+                bodyOffsetX - pieceSize / 2,
+                bodyOffsetY - pieceSize / 2,
+                pieceSize,
+                pieceSize
+            )
+            ctx.restore()
+            return this
+        }
+
         this.rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)]
         this.path.set({angle: this.rotation})
         this.group = new Set([this])
