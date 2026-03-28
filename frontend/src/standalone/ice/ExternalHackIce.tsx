@@ -3,10 +3,11 @@ import {TangleRoot} from "./tangle/TangleRoot";
 import {PasswordRoot} from "./password/PasswordRoot";
 import {WordSearchRoot} from "./wordsearch/WordSearchRoot";
 import {NetwalkRoot} from "./netwalk/NetwalkRoot";
-import {NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE, TAR_ICE, WORD_SEARCH_ICE} from "../../common/enums/LayerTypes";
+import {JIGSAW_ICE, NETWALK_ICE, PASSWORD_ICE, TANGLE_ICE, TAR_ICE, WORD_SEARCH_ICE} from "../../common/enums/LayerTypes";
 import {TarRoot} from "./tar/TarRoot";
 import {TopLevelError} from "../../common/component/TopLevelError";
 import {layer} from "../StandaloneGlobals";
+import {JigsawRoot} from "./jigsaw/JigsawRoot";
 
 interface Props {
     layerId: string,
@@ -51,6 +52,7 @@ export const ExternalHackIce = (props: Props) => {
     if (iceType === WORD_SEARCH_ICE) return <WordSearchRoot iceId={iceId} externalHack={true}/>
     if (iceType === NETWALK_ICE) return <NetwalkRoot iceId={iceId} externalHack={true}/>
     if (iceType === TAR_ICE) return <TarRoot iceId={iceId} externalHack={true}/>
+    if (iceType === JIGSAW_ICE) return <JigsawRoot iceId={iceId} externalHack={true}/>
 
     if (iceType === "CONNECT_ERROR") return <TopLevelError error="Connection error"
                                                            description={`(Failed to connect to AV server, try again)`}/>

@@ -11,6 +11,7 @@ import {Privacy} from "./Privacy";
 import {HackerRoot} from "./hacker/HackerRoot";
 import {GmRoot} from "./gm/GmRoot";
 import {Standalone} from "./standalone/Standalone";
+import {JigsawRoot} from "./standalone/ice/jigsaw/JigsawRoot";
 import {Lola} from "./larp/frontier/Lola";
 import {AdminRoot} from "./admin/AdminRoot";
 import {GoogleAuth} from "./login/GoogleAuth";
@@ -93,6 +94,9 @@ root.render(
                 {/*This happens when running in development on port 3000, there is no backend that redirects to the correct login*/}
                 <Route path="/redirectToLogin" element={<DevLogin/>}/>
 
+
+                {/* Dev testing */}
+                <Route path="/dev/jigsaw" element={<JigsawRoot iceId="jigsaw-dev-test" externalHack={false}/>}/>
 
                 {/* Larp specific */}
                 <Route path="/larp/frontier/lola" element={<Lola/>}/>

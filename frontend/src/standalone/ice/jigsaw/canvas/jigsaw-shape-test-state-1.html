@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jigsaw Shape Test</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            margin: 40px;
+        }
+
+        canvas {
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+<canvas id="c" width="800" height="400"></canvas>
+<script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    const size = 150;
+    const tab = size * 0.2;
+    const o = tab; // offset so tabs have room
+
+    ctx.translate(80, 80);
+
+    // --- First piece: inverse of the second piece (holes) ---
+    const c1 = tab * 0.15;
+
+    // Outer square (clockwise)
+    ctx.beginPath();
+    ctx.moveTo(o, o);
+    ctx.lineTo(o + size, o);
+    ctx.lineTo(o + size, o + size);
+    ctx.lineTo(o, o + size);
+    ctx.closePath();
+
+    // Top hole: mirrored trapezoid (counter-clockwise)
+    ctx.moveTo(o + size * 0.6, o);
+    ctx.lineTo(o + size * 0.69, o + tab - c1);
+    ctx.lineTo(o + size * 0.7 - c1, o + tab);
+    ctx.lineTo(o + size * 0.3 + c1, o + tab);
+    ctx.lineTo(o + size * 0.31, o + tab - c1);
+    ctx.lineTo(o + size * 0.4, o);
+    ctx.closePath();
+
+    // Right hole: mirrored parapet (counter-clockwise)
+    ctx.moveTo(o + size, o + size * 0.65);
+    ctx.lineTo(o + size - tab + c1, o + size * 0.65);
+    ctx.lineTo(o + size - tab, o + size * 0.65 - c1);
+    ctx.lineTo(o + size - tab, o + size * 0.55);
+    ctx.lineTo(o + size - tab * 0.5, o + size * 0.55);
+    ctx.lineTo(o + size - tab * 0.5, o + size * 0.45);
+    ctx.lineTo(o + size - tab, o + size * 0.45);
+    ctx.lineTo(o + size - tab, o + size * 0.35 + c1);
+    ctx.lineTo(o + size - tab + c1, o + size * 0.35);
+    ctx.lineTo(o + size, o + size * 0.35);
+    ctx.closePath();
+
+    // Bottom hole: mirrored saw (counter-clockwise)
+    const teeth1 = 3;
+    const sawWidth1 = size * 0.3;
+    const toothWidth1 = sawWidth1 / teeth1;
+    const sawStart1 = o + size * 0.35;
+    const toothTip1 = o + size - tab;
+    const toothValley1 = o + size - tab * 0.5;
+    ctx.moveTo(o + size * 0.35, o + size);
+    for (let i = 0; i < teeth1; i++) {
+        ctx.lineTo(sawStart1 + i * toothWidth1, toothValley1);
+        ctx.lineTo(sawStart1 + (i + 0.5) * toothWidth1, toothTip1);
+        ctx.lineTo(sawStart1 + (i + 1) * toothWidth1, toothValley1);
+    }
+    ctx.lineTo(o + size * 0.65, o + size);
+    ctx.closePath();
+
+    // Left hole: mirrored flattened triangle with neck (counter-clockwise)
+    ctx.moveTo(o, o + size * 0.35);
+    ctx.lineTo(o + tab * 0.3, o + size * 0.32);
+    ctx.lineTo(o + tab, o + size * 0.45);
+    ctx.lineTo(o + tab, o + size * 0.55);
+    ctx.lineTo(o + tab * 0.3, o + size * 0.68);
+    ctx.lineTo(o, o + size * 0.65);
+    ctx.closePath();
+
+    ctx.fillStyle = '#446688';
+    ctx.fill('evenodd');
+
+    // Stroke only the holes, not the outer square
+    ctx.strokeStyle = '#88aacc';
+    ctx.lineWidth = 2;
+
+    // Stroke the full outline: edges + holes as one continuous path
+    ctx.strokeStyle = '#88aacc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    // Top edge with hole
+    ctx.moveTo(o, o);
+    ctx.lineTo(o + size * 0.4, o);
+    ctx.lineTo(o + size * 0.31, o + tab - c1);
+    ctx.lineTo(o + size * 0.3 + c1, o + tab);
+    ctx.lineTo(o + size * 0.7 - c1, o + tab);
+    ctx.lineTo(o + size * 0.69, o + tab - c1);
+    ctx.lineTo(o + size * 0.6, o);
+    ctx.lineTo(o + size, o);
+
+    // Right edge with hole
+    ctx.lineTo(o + size, o + size * 0.35);
+    ctx.lineTo(o + size - tab + c1, o + size * 0.35);
+    ctx.lineTo(o + size - tab, o + size * 0.35 + c1);
+    ctx.lineTo(o + size - tab, o + size * 0.45);
+    ctx.lineTo(o + size - tab * 0.5, o + size * 0.45);
+    ctx.lineTo(o + size - tab * 0.5, o + size * 0.55);
+    ctx.lineTo(o + size - tab, o + size * 0.55);
+    ctx.lineTo(o + size - tab, o + size * 0.65 - c1);
+    ctx.lineTo(o + size - tab + c1, o + size * 0.65);
+    ctx.lineTo(o + size, o + size * 0.65);
+    ctx.lineTo(o + size, o + size);
+
+    // Bottom edge with hole
+    ctx.lineTo(o + size * 0.65, o + size);
+    for (let i = teeth1; i > 0; i--) {
+        ctx.lineTo(sawStart1 + i * toothWidth1, toothValley1);
+        ctx.lineTo(sawStart1 + (i - 0.5) * toothWidth1, toothTip1);
+        ctx.lineTo(sawStart1 + (i - 1) * toothWidth1, toothValley1);
+    }
+    ctx.lineTo(o + size * 0.35, o + size);
+    ctx.lineTo(o, o + size);
+
+    // Left edge with hole
+    ctx.lineTo(o, o + size * 0.65);
+    ctx.lineTo(o + tab * 0.3, o + size * 0.68);
+    ctx.lineTo(o + tab, o + size * 0.55);
+    ctx.lineTo(o + tab, o + size * 0.45);
+    ctx.lineTo(o + tab * 0.3, o + size * 0.32);
+    ctx.lineTo(o, o + size * 0.35);
+
+    ctx.closePath();
+    ctx.stroke();
+
+    // --- Second piece: fixed symmetrical bottom ---
+    ctx.save();
+    ctx.translate(350, 0);
+
+    ctx.beginPath();
+    const c = tab * 0.15; // chamfer size
+
+    // Top edge: triangle (wider at top, narrow at piece) with chamfered top corners
+    ctx.moveTo(o, o);
+    ctx.lineTo(o + size * 0.4, o);
+    ctx.lineTo(o + size * 0.31, o - tab + c);
+    ctx.lineTo(o + size * 0.3 + c, o - tab);
+    ctx.lineTo(o + size * 0.7 - c, o - tab);
+    ctx.lineTo(o + size * 0.69, o - tab + c);
+    ctx.lineTo(o + size * 0.6, o);
+    ctx.lineTo(o + size, o);
+
+    // Right edge: rectangular extrusion with parapet indent, chamfered first/last corners
+    ctx.lineTo(o + size, o + size * 0.35);
+    ctx.lineTo(o + size + tab - c, o + size * 0.35);    // approach top-right corner
+    ctx.lineTo(o + size + tab, o + size * 0.35 + c);    // chamfer
+    ctx.lineTo(o + size + tab, o + size * 0.45);
+    ctx.lineTo(o + size + tab * 0.5, o + size * 0.45);
+    ctx.lineTo(o + size + tab * 0.5, o + size * 0.55);
+    ctx.lineTo(o + size + tab, o + size * 0.55);
+    ctx.lineTo(o + size + tab, o + size * 0.65 - c);    // approach bottom-right corner
+    ctx.lineTo(o + size + tab - c, o + size * 0.65);    // chamfer
+    ctx.lineTo(o + size, o + size * 0.65);
+    ctx.lineTo(o + size, o + size);
+
+    // Bottom edge: symmetrical zigzag saw in the middle
+    ctx.lineTo(o + size * 0.65, o + size);
+    const teeth2 = 3;
+    const sawWidth2 = size * 0.3;
+    const toothWidth2 = sawWidth2 / teeth2;
+    const sawStart2 = o + size * 0.35;
+    const toothTip2 = o + size + tab;
+    const toothValley2 = o + size + tab * 0.5;
+    for (let i = teeth2; i > 0; i--) {
+        ctx.lineTo(sawStart2 + i * toothWidth2, toothValley2);
+        ctx.lineTo(sawStart2 + (i - 0.5) * toothWidth2, toothTip2);
+        ctx.lineTo(sawStart2 + (i - 1) * toothWidth2, toothValley2);
+    }
+    ctx.lineTo(o + size * 0.35, o + size);
+    ctx.lineTo(o, o + size);
+
+    // Left edge: flattened triangle TAB with angled neck at base
+    ctx.lineTo(o, o + size * 0.65);
+    ctx.lineTo(o - tab * 0.3, o + size * 0.68);   // neck angled outward
+    ctx.lineTo(o - tab, o + size * 0.55);          // widen to flat tip
+    ctx.lineTo(o - tab, o + size * 0.45);          // flat tip
+    ctx.lineTo(o - tab * 0.3, o + size * 0.32);   // widen back to neck
+    ctx.lineTo(o, o + size * 0.35);                // neck angled back to body
+    ctx.closePath();
+
+    ctx.fillStyle = '#446688';
+    ctx.fill();
+    ctx.strokeStyle = '#88aacc';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.restore();
+</script>
+</body>
+</html>

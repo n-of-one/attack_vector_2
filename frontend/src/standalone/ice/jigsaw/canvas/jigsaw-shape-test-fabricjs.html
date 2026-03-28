@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jigsaw Shape Test - Fabric.js</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            margin: 40px;
+        }
+
+        canvas {
+            border: 1px solid #333;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+</head>
+<body>
+<canvas id="c" width="800" height="500"></canvas>
+<script>
+
+    // --- Shape definitions ---
+    // Each shape returns [along, perp] points in canonical form:
+    //   along = pixels along the edge from start corner
+    //   perp  = pixels outward from the piece (positive = away from center)
+
+    const shapes = {
+        trapezoid: (size, tab, c) => [
+            [size * 0.4, 0],
+            [size * 0.31, tab - c],
+            [size * 0.3 + c, tab],
+            [size * 0.7 - c, tab],
+            [size * 0.69, tab - c],
+            [size * 0.6, 0],
+        ],
+        parapet: (size, tab, c) => [
+            [size * 0.385, 0],
+            [size * 0.35, tab * 0.3],
+            [size * 0.35, tab - c],
+            [size * 0.35 + c, tab],
+            [size * 0.45, tab],
+            [size * 0.45, tab * 0.5],
+            [size * 0.55, tab * 0.5],
+            [size * 0.55, tab],
+            [size * 0.65 - c, tab],
+            [size * 0.65, tab - c],
+            [size * 0.65, tab * 0.3],
+            [size * 0.615, 0],
+        ],
+        saw: (size, tab, _c) => [
+            [size * 0.365, 0],
+            [size * 0.35, tab * 0.5],
+            [size * 0.38, tab],
+            [size * 0.42, tab],
+            [size * 0.45, tab * 0.5],
+            [size * 0.50, tab],
+            [size * 0.55, tab * 0.5],
+            [size * 0.58, tab],
+            [size * 0.62, tab],
+            [size * 0.65, tab * 0.5],
+            [size * 0.635, 0],
+        ],
+        triangle: (size, tab, _c) => [
+            [size * 0.35, 0],
+            [size * 0.32, tab * 0.3],
+            [size * 0.45, tab],
+            [size * 0.55, tab],
+            [size * 0.68, tab * 0.3],
+            [size * 0.65, 0],
+        ],
+    };
+
+    // --- Edge mappers ---
+    // Map canonical (along, perp) to canvas (x, y).
+    // Positive perp points outward from the piece center.
+
+    function getEdgeMapper(edge, ox, oy, size) {
+        switch (edge) {
+            case 'top':
+                return (a, p) => [ox + a, oy - p];
+            case 'right':
+                return (a, p) => [ox + size + p, oy + a];
+            case 'bottom':
+                return (a, p) => [ox + size - a, oy + size + p];
+            case 'left':
+                return (a, p) => [ox - p, oy + size - a];
+        }
+    }
+
+    // --- Path builder ---
+
+    function buildPiecePath(ox, oy, size, config) {
+        const tab = size * 0.2;
+        const c = tab * 0.15;
+        let path = `M ${ox} ${oy}`;
+
+        for (const edge of ['top', 'right', 'bottom', 'left']) {
+            const side = config[edge];
+            const map = getEdgeMapper(edge, ox, oy, size);
+
+            if (!side || side.dir === 'flat') {
+                const [ex, ey] = map(size, 0);
+                path += ` L ${ex} ${ey}`;
+            } else {
+                const d = side.dir === 'out' ? 1 : -1;
+                const pts = shapes[side.shape](size, tab, c);
+                for (const [a, p] of pts) {
+                    const [x, y] = map(a, p * d);
+                    path += ` L ${x} ${y}`;
+                }
+                const [ex, ey] = map(size, 0);
+                path += ` L ${ex} ${ey}`;
+            }
+        }
+
+        path += ' Z';
+        return path;
+    }
+
+    // --- Image-pattern piece factory ---
+
+    function createPiecePatternCanvas(sourceImg, col, row, puzzleCols, puzzleRows, size, config) {
+        const tab = size * 0.2;
+        const extL = (config.left && config.left.dir === 'out') ? tab : 0;
+        const extT = (config.top && config.top.dir === 'out') ? tab : 0;
+        const extR = (config.right && config.right.dir === 'out') ? tab : 0;
+        const extB = (config.bottom && config.bottom.dir === 'out') ? tab : 0;
+
+        const bbW = extL + size + extR;
+        const bbH = extT + size + extB;
+
+        const puzzleW = size * puzzleCols;
+        const puzzleH = size * puzzleRows;
+        const imgScaleX = sourceImg.width / puzzleW;
+        const imgScaleY = sourceImg.height / puzzleH;
+
+        const sx = (col * size - extL) * imgScaleX;
+        const sy = (row * size - extT) * imgScaleY;
+        const sw = bbW * imgScaleX;
+        const sh = bbH * imgScaleY;
+
+        const pc = document.createElement('canvas');
+        pc.width = bbW;
+        pc.height = bbH;
+        const ctx = pc.getContext('2d');
+        ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, bbW, bbH);
+        return pc;
+    }
+
+    function createPiece(sourceImg, col, row, puzzleCols, puzzleRows, size, config, canvasX, canvasY) {
+        const patternCanvas = createPiecePatternCanvas(sourceImg, col, row, puzzleCols, puzzleRows, size, config);
+        const pathStr = buildPiecePath(canvasX, canvasY, size, config);
+
+        return new fabric.Path(pathStr, {
+            fill: new fabric.Pattern({
+                source: patternCanvas,
+                repeat: 'no-repeat',
+            }),
+            stroke: '#88aacc',
+            strokeWidth: 2,
+        });
+    }
+
+    // --- Render ---
+
+    const FLAT = {dir: 'flat'};
+
+    const img = new Image();
+    img.src = '../../../../../public/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png';
+    img.onload = function () {
+        const fabricCanvas = new fabric.Canvas('c');
+        const size = 150;
+
+        const puzzleCols = 2;
+        const puzzleRows = 2;
+        const puzzleX = 80;
+        const puzzleY = 80;
+
+        //  Piece layout (2x2 grid, flat outer edges):
+        //
+        //  (0,0) ←trapezoid→ (1,0)
+        //    ↕                  ↕
+        //   saw              triangle
+        //    ↕                  ↕
+        //  (0,1) ←parapet→   (1,1)
+
+        const pieces = [
+            {
+                col: 0, row: 0,
+                config: {
+                    top: FLAT,
+                    right: {shape: 'trapezoid', dir: 'out'},
+                    bottom: {shape: 'saw', dir: 'out'},
+                    left: FLAT,
+                },
+            },
+            {
+                col: 1, row: 0,
+                config: {
+                    top: FLAT,
+                    right: FLAT,
+                    bottom: {shape: 'triangle', dir: 'out'},
+                    left: {shape: 'trapezoid', dir: 'in'},
+                },
+            },
+            {
+                col: 0, row: 1,
+                config: {
+                    top: {shape: 'saw', dir: 'in'},
+                    right: {shape: 'parapet', dir: 'out'},
+                    bottom: FLAT,
+                    left: FLAT,
+                },
+            },
+            {
+                col: 1, row: 1,
+                config: {
+                    top: {shape: 'triangle', dir: 'in'},
+                    right: FLAT,
+                    bottom: FLAT,
+                    left: {shape: 'parapet', dir: 'in'},
+                },
+            },
+        ];
+
+        pieces.forEach(p => {
+            const canvasX = puzzleX + p.col * size;
+            const canvasY = puzzleY + p.row * size;
+            const piece = createPiece(img, p.col, p.row, puzzleCols, puzzleRows, size, p.config, canvasX, canvasY);
+            fabricCanvas.add(piece);
+        });
+
+        fabricCanvas.renderAll();
+    };
+
+</script>
+</body>
+</html>

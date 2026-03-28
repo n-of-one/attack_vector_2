@@ -35,6 +35,9 @@ const renderLayer = (layer: LayerDetails) => {
             return <ScanInfoIce layer={layer} iceDescription="tar" showStrength={true}/>
         case LayerType.SWEEPER_ICE:
             return <ScanInfoIce layer={layer} iceDescription="minesweeper" showStrength={true}/>
+        // FIXME: implement
+        case LayerType.JIGSAW_ICE:
+            return <ScanInfoIce layer={layer} iceDescription="minesweeper" showStrength={true}/>
         default:
             assertNever(layer.type)
     }

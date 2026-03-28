@@ -16,6 +16,7 @@ export enum LayerType {
     NETWALK_ICE = "NETWALK_ICE",
     TAR_ICE = "TAR_ICE",
     SWEEPER_ICE = "SWEEPER_ICE",
+    JIGSAW_ICE = "JIGSAW_ICE",
 }
 
 export enum IceType {
@@ -25,6 +26,7 @@ export enum IceType {
     NETWALK_ICE = "NETWALK_ICE",
     TAR_ICE = "TAR_ICE",
     SWEEPER_ICE = "SWEEPER_ICE",
+    JIGSAW_ICE = "JIGSAW_ICE",
 }
 
 export const OS = "OS"
@@ -42,6 +44,7 @@ export const WORD_SEARCH_ICE = "WORD_SEARCH_ICE"
 export const NETWALK_ICE = "NETWALK_ICE"
 export const TAR_ICE = "TAR_ICE"
 export const SWEEPER_ICE = "SWEEPER_ICE"
+export const JIGSAW_ICE = "JIGSAW_ICE"
 
 export const LOCK = "LOCK"
 export const STATUS_LIGHT = "STATUS_LIGHT"
@@ -63,6 +66,8 @@ export const layerTypeFromIceId = (iceId: string): LayerType | null => {
         case "netwalk": return LayerType.NETWALK_ICE
         case "tar": return LayerType.TAR_ICE
         case "sweeper": return LayerType.SWEEPER_ICE
+        case "jigsaw":
+            return LayerType.JIGSAW_ICE
         default: return null
     }
 }
@@ -72,7 +77,8 @@ export const iceThemeName = {
     NETWALK_ICE: "Sanrachana",
     WORD_SEARCH_ICE: "Jaal",
     TAR_ICE: "Tar",
-    SWEEPER_ICE: "Visphotak"
+    SWEEPER_ICE: "Visphotak",
+    JIGSAW_ICE: "Paheli"
 }
 
 export const iceSimpleName = {
@@ -81,7 +87,8 @@ export const iceSimpleName = {
     NETWALK_ICE: "Netwalk",
     WORD_SEARCH_ICE: "Word search",
     TAR_ICE: "Tar",
-    SWEEPER_ICE: "Minesweeper"
+    SWEEPER_ICE: "Minesweeper",
+    JIGSAW_ICE: "Jigsaw"
 }
 
 export const iceDefaultOrder = {
@@ -91,6 +98,7 @@ export const iceDefaultOrder = {
     SWEEPER_ICE: 4,
     TAR_ICE: 5,
     PASSWORD_ICE: 6,
+    JIGSAW_ICE: 7,
 }
 
 export function iceTypeDefaultSorter(a: IceType, b: IceType) {
