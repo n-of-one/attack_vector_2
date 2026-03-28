@@ -2,7 +2,7 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {JigsawEnterData} from "../JigsawServerActionProcessor";
-import {generatePieceConfigs} from "../logic/JigsawLogic";
+import {generatePieceConfigs} from "../component/JigsawShapes";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 
 class JigsawCanvas {

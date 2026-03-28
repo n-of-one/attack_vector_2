@@ -26,7 +26,7 @@ export const FLAT: FlatEdge = {dir: 'flat'}
 
 // Canonical point: [along, perp] relative to an edge
 type CanonicalPoint = [number, number]
-type ShapeGenerator = (size: number, tab: number, c: number) => CanonicalPoint[]
+type ShapeGenerator = (size: number, tabHeight: number, chamferSize: number) => CanonicalPoint[]
 
 // --- Shape definitions ---
 // Each shape returns [along, perp] points in canonical form:
@@ -34,47 +34,47 @@ type ShapeGenerator = (size: number, tab: number, c: number) => CanonicalPoint[]
 //   perp  = pixels outward from the piece (positive = away from center)
 
 export const SHAPES: Record<ShapeType, ShapeGenerator> = {
-    trapezoid: (size, tab, c) => [
+    trapezoid: (size, tabHeight, chamferSize) => [
         [size * 0.4, 0],
-        [size * 0.31, tab - c],
-        [size * 0.3 + c, tab],
-        [size * 0.7 - c, tab],
-        [size * 0.69, tab - c],
+        [size * 0.31, tabHeight - chamferSize],
+        [size * 0.3 + chamferSize, tabHeight],
+        [size * 0.7 - chamferSize, tabHeight],
+        [size * 0.69, tabHeight - chamferSize],
         [size * 0.6, 0],
     ],
-    parapet: (size, tab, c) => [
+    parapet: (size, tabHeight, chamferSize) => [
         [size * 0.385, 0],
-        [size * 0.35, tab * 0.3],
-        [size * 0.35, tab - c],
-        [size * 0.35 + c, tab],
-        [size * 0.45, tab],
-        [size * 0.45, tab * 0.5],
-        [size * 0.55, tab * 0.5],
-        [size * 0.55, tab],
-        [size * 0.65 - c, tab],
-        [size * 0.65, tab - c],
-        [size * 0.65, tab * 0.3],
+        [size * 0.35, tabHeight * 0.3],
+        [size * 0.35, tabHeight - chamferSize],
+        [size * 0.35 + chamferSize, tabHeight],
+        [size * 0.45, tabHeight],
+        [size * 0.45, tabHeight * 0.5],
+        [size * 0.55, tabHeight * 0.5],
+        [size * 0.55, tabHeight],
+        [size * 0.65 - chamferSize, tabHeight],
+        [size * 0.65, tabHeight - chamferSize],
+        [size * 0.65, tabHeight * 0.3],
         [size * 0.615, 0],
     ],
-    saw: (size, tab, _c) => [
+    saw: (size, tabHeight, _chamferSize) => [
         [size * 0.365, 0],
-        [size * 0.35, tab * 0.5],
-        [size * 0.38, tab],
-        [size * 0.42, tab],
-        [size * 0.45, tab * 0.5],
-        [size * 0.50, tab],
-        [size * 0.55, tab * 0.5],
-        [size * 0.58, tab],
-        [size * 0.62, tab],
-        [size * 0.65, tab * 0.5],
+        [size * 0.35, tabHeight * 0.5],
+        [size * 0.38, tabHeight],
+        [size * 0.42, tabHeight],
+        [size * 0.45, tabHeight * 0.5],
+        [size * 0.50, tabHeight],
+        [size * 0.55, tabHeight * 0.5],
+        [size * 0.58, tabHeight],
+        [size * 0.62, tabHeight],
+        [size * 0.65, tabHeight * 0.5],
         [size * 0.635, 0],
     ],
-    triangle: (size, tab, _c) => [
+    triangle: (size, tabHeight, _chamferSize) => [
         [size * 0.35, 0],
-        [size * 0.32, tab * 0.3],
-        [size * 0.45, tab],
-        [size * 0.55, tab],
-        [size * 0.68, tab * 0.3],
+        [size * 0.32, tabHeight * 0.3],
+        [size * 0.45, tabHeight],
+        [size * 0.55, tabHeight],
+        [size * 0.68, tabHeight * 0.3],
         [size * 0.65, 0],
     ],
 }
@@ -87,16 +87,16 @@ const ALL_SHAPES: ShapeType[] = ['trapezoid', 'parapet', 'saw', 'triangle']
 
 type EdgeMapper = (along: number, perp: number) => [number, number]
 
-export function getEdgeMapper(edge: string, ox: number, oy: number, size: number): EdgeMapper {
+export function getEdgeMapper(edge: string, originX: number, originY: number, size: number): EdgeMapper {
     switch (edge) {
         case 'top':
-            return (a, p) => [ox + a, oy - p]
+            return (along, perp) => [originX + along, originY - perp]
         case 'right':
-            return (a, p) => [ox + size + p, oy + a]
+            return (along, perp) => [originX + size + perp, originY + along]
         case 'bottom':
-            return (a, p) => [ox + size - a, oy + size + p]
+            return (along, perp) => [originX + size - along, originY + size + perp]
         case 'left':
-            return (a, p) => [ox - p, oy + size - a]
+            return (along, perp) => [originX - perp, originY + size - along]
         default:
             throw new Error(`Invalid edge: ${edge}`)
     }
@@ -104,10 +104,10 @@ export function getEdgeMapper(edge: string, ox: number, oy: number, size: number
 
 // --- Path builder ---
 
-export function buildPiecePath(ox: number, oy: number, size: number, config: PieceConfig): string {
-    const tab = size * 0.2
-    const c = tab * 0.15
-    let path = `M ${ox} ${oy}`
+export function buildPiecePath(originX: number, originY: number, size: number, config: PieceConfig): string {
+    const tabHeight = size * 0.2
+    const chamferSize = tabHeight * 0.15
+    let path = `M ${originX} ${originY}`
 
     const edges: Array<{ name: string, edgeConfig: EdgeConfig }> = [
         {name: 'top', edgeConfig: config.top},
@@ -117,20 +117,20 @@ export function buildPiecePath(ox: number, oy: number, size: number, config: Pie
     ]
 
     for (const {name, edgeConfig} of edges) {
-        const map = getEdgeMapper(name, ox, oy, size)
+        const mapper = getEdgeMapper(name, originX, originY, size)
 
         if (edgeConfig.dir === 'flat') {
-            const [ex, ey] = map(size, 0)
-            path += ` L ${ex} ${ey}`
+            const [endX, endY] = mapper(size, 0)
+            path += ` L ${endX} ${endY}`
         } else {
-            const d = edgeConfig.dir === 'out' ? 1 : -1
-            const pts = SHAPES[(edgeConfig as ShapedEdge).shape](size, tab, c)
-            for (const [a, p] of pts) {
-                const [x, y] = map(a, p * d)
+            const direction = edgeConfig.dir === 'out' ? 1 : -1
+            const points = SHAPES[(edgeConfig as ShapedEdge).shape](size, tabHeight, chamferSize)
+            for (const [along, perp] of points) {
+                const [x, y] = mapper(along, perp * direction)
                 path += ` L ${x} ${y}`
             }
-            const [ex, ey] = map(size, 0)
-            path += ` L ${ex} ${ey}`
+            const [endX, endY] = mapper(size, 0)
+            path += ` L ${endX} ${endY}`
         }
     }
 
