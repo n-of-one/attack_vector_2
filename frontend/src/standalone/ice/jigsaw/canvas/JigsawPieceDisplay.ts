@@ -11,6 +11,14 @@ export class JigsawPieceDisplay {
     pieceSize: number
     path: fabric.Path
 
+    // Offset from the path's left/top to the piece body's top-left corner.
+    // Needed because outward tabs extend the bounding box beyond the piece body.
+    extensionLeft: number
+    extensionTop: number
+
+    // All pieces snapped together share the same Set. Starts with just this piece.
+    group: Set<JigsawPieceDisplay>
+
     constructor(canvas: Canvas, col: number, row: number, config: PieceConfig,
                 sourceImage: HTMLImageElement, puzzleCols: number, puzzleRows: number,
                 pieceSize: number, canvasWidth: number, canvasHeight: number) {
@@ -22,10 +30,13 @@ export class JigsawPieceDisplay {
 
         const tabSize = pieceSize * 0.2
 
-        const extensionLeft = this.extension(config.left, tabSize)
-        const extensionTop = this.extension(config.top, tabSize)
+        this.extensionLeft = this.extension(config.left, tabSize)
+        this.extensionTop = this.extension(config.top, tabSize)
         const extensionRight = this.extension(config.right, tabSize)
         const extensionBottom = this.extension(config.bottom, tabSize)
+
+        const extensionLeft = this.extensionLeft
+        const extensionTop = this.extensionTop
 
         const patternCanvas = this.createPatternCanvas(sourceImage, col, row, puzzleCols, puzzleRows, pieceSize, tabSize,
             extensionLeft, extensionTop, extensionRight, extensionBottom)
@@ -56,7 +67,46 @@ export class JigsawPieceDisplay {
             hoverCursor: 'grab',
         })
 
+        this.group = new Set([this])
+
         canvas.add(this.path)
+    }
+
+    /** Canvas position of the piece body's top-left corner (excluding tab extensions). */
+    getBodyOrigin(): { x: number, y: number } {
+        return {
+            x: (this.path.left ?? 0) + this.extensionLeft,
+            y: (this.path.top ?? 0) + this.extensionTop,
+        }
+    }
+
+    /** Move this piece so its body origin is at the given canvas position. */
+    setBodyOrigin(x: number, y: number) {
+        this.path.set({
+            left: x - this.extensionLeft,
+            top: y - this.extensionTop,
+        })
+        this.path.setCoords()
+    }
+
+    /** Move this piece by a delta (used for group dragging). */
+    moveBy(deltaX: number, deltaY: number) {
+        this.path.set({
+            left: (this.path.left ?? 0) + deltaX,
+            top: (this.path.top ?? 0) + deltaY,
+        })
+        this.path.setCoords()
+    }
+
+    /** Merge this piece's group with another piece's group. All pieces end up sharing one Set. */
+    mergeGroup(other: JigsawPieceDisplay) {
+        if (this.group === other.group) return
+
+        const mergedGroup = this.group
+        for (const piece of other.group) {
+            mergedGroup.add(piece)
+            piece.group = mergedGroup
+        }
     }
 
     private extension(edge: EdgeConfig, tabSize: number): number {

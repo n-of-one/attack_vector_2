@@ -54,7 +54,7 @@ export class JigsawRoot extends Component<Props> {
                 hacked: false,
                 strength: IceStrength.AVERAGE,
                 imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
-                gridSize: 4,
+                gridSize: 6,
             })
         }, 200)
     }
