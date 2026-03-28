@@ -16,6 +16,11 @@ export class JigsawPieceDisplay {
     extensionLeft: number
     extensionTop: number
 
+    // Offset from the bounding-box center to the body center in unrotated local coords.
+    // When the piece is rotated, this offset rotates with it.
+    bodyOffsetX: number
+    bodyOffsetY: number
+
     // All pieces snapped together share the same Set. Starts with just this piece.
     group: Set<JigsawPieceDisplay>
 
@@ -41,6 +46,9 @@ export class JigsawPieceDisplay {
         const extensionLeft = this.extensionLeft
         const extensionTop = this.extensionTop
 
+        this.bodyOffsetX = (extensionLeft - extensionRight) / 2
+        this.bodyOffsetY = (extensionTop - extensionBottom) / 2
+
         const patternCanvas = this.createPatternCanvas(sourceImage, col, row, puzzleCols, puzzleRows, pieceSize, tabSize,
             extensionLeft, extensionTop, extensionRight, extensionBottom)
 
@@ -63,31 +71,11 @@ export class JigsawPieceDisplay {
             top: scatteredY,
             selectable: true,
             hasControls: false,
-            hasBorders: true,
-            borderColor: '#44ff44',
+            hasBorders: false,
             lockRotation: true,
             data: this,
             hoverCursor: 'grab',
         })
-
-        // Override the selection border to only surround the piece body, not the tabs.
-        // In the drawBorders context, (0,0) is the bounding-box center (rotated with the object).
-        // We offset to the body center and draw a pieceSize rect.
-        const bodyOffsetX = (extensionLeft - extensionRight) / 2
-        const bodyOffsetY = (extensionTop - extensionBottom) / 2
-        const borderColor = this.path.borderColor || '#44ff44'
-        this.path.drawBorders = function (ctx: CanvasRenderingContext2D, _styleOverride: any) {
-            ctx.save()
-            ctx.strokeStyle = borderColor
-            ctx.strokeRect(
-                bodyOffsetX - pieceSize / 2,
-                bodyOffsetY - pieceSize / 2,
-                pieceSize,
-                pieceSize
-            )
-            ctx.restore()
-            return this
-        }
 
         this.rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)]
         this.path.set({angle: this.rotation})
@@ -113,6 +101,32 @@ export class JigsawPieceDisplay {
         this.path.setCoords()
     }
 
+    /** Canvas position of the body center, accounting for the current rotation. */
+    getBodyCenter(): { x: number, y: number } {
+        const bbCenter = this.path.getCenterPoint()
+        const angle = (this.path.angle ?? 0) * Math.PI / 180
+        const cos = Math.cos(angle)
+        const sin = Math.sin(angle)
+        return {
+            x: bbCenter.x + this.bodyOffsetX * cos - this.bodyOffsetY * sin,
+            y: bbCenter.y + this.bodyOffsetX * sin + this.bodyOffsetY * cos,
+        }
+    }
+
+    /** Position this piece so its body center (rotation-aware) is at the given canvas position. */
+    setBodyCenter(x: number, y: number) {
+        const angle = (this.path.angle ?? 0) * Math.PI / 180
+        const cos = Math.cos(angle)
+        const sin = Math.sin(angle)
+        const bbCenterX = x - (this.bodyOffsetX * cos - this.bodyOffsetY * sin)
+        const bbCenterY = y - (this.bodyOffsetX * sin + this.bodyOffsetY * cos)
+        this.path.setPositionByOrigin(
+            new fabric.Point(bbCenterX, bbCenterY),
+            'center', 'center'
+        )
+        this.path.setCoords()
+    }
+
     /** Move this piece by a delta (used for group dragging). */
     moveBy(deltaX: number, deltaY: number) {
         this.path.set({
@@ -123,8 +137,8 @@ export class JigsawPieceDisplay {
     }
 
     /**
-     * Animate a 90° clockwise rotation around a pivot point.
-     * For a single piece the pivot is its own center; for a group it's the group center.
+     * Animate a 90° clockwise rotation around a pivot point (in body-center space).
+     * For a single piece the pivot is its own body center; for a group it's the average body center.
      * Position and angle interpolate together so the piece arcs smoothly to its new location.
      */
     animateRotation(pivotX: number, pivotY: number, renderCallback: () => void) {
@@ -132,36 +146,28 @@ export class JigsawPieceDisplay {
         const targetAngle = startAngle + 90
         this.rotation = (this.rotation + 90) % 360
 
-        const startCenter = this.path.getCenterPoint()
+        const startBodyCenter = this.getBodyCenter()
 
-        // Rotate center 90° clockwise around pivot (in screen-coords: y-down)
-        const dx = startCenter.x - pivotX
-        const dy = startCenter.y - pivotY
-        const targetCenterX = pivotX - dy
-        const targetCenterY = pivotY + dx
+        // Rotate body center 90° clockwise around pivot (in screen-coords: y-down)
+        const dx = startBodyCenter.x - pivotX
+        const dy = startBodyCenter.y - pivotY
+        const targetBodyCenterX = pivotX - dy
+        const targetBodyCenterY = pivotY + dx
 
         this.path.animate('angle', targetAngle, {
             onChange: () => {
                 // Derive progress from the angle so position follows the same easing curve
                 const progress = ((this.path.angle ?? startAngle) - startAngle) / 90
-                const currentCenterX = startCenter.x + (targetCenterX - startCenter.x) * progress
-                const currentCenterY = startCenter.y + (targetCenterY - startCenter.y) * progress
+                const currentBodyCenterX = startBodyCenter.x + (targetBodyCenterX - startBodyCenter.x) * progress
+                const currentBodyCenterY = startBodyCenter.y + (targetBodyCenterY - startBodyCenter.y) * progress
 
-                this.path.setPositionByOrigin(
-                    new fabric.Point(currentCenterX, currentCenterY),
-                    'center', 'center'
-                )
-                this.path.setCoords()
+                this.setBodyCenter(currentBodyCenterX, currentBodyCenterY)
                 renderCallback()
             },
             duration: 200,
             onComplete: () => {
                 this.path.set({angle: this.rotation})
-                this.path.setPositionByOrigin(
-                    new fabric.Point(targetCenterX, targetCenterY),
-                    'center', 'center'
-                )
-                this.path.setCoords()
+                this.setBodyCenter(targetBodyCenterX, targetBodyCenterY)
                 renderCallback()
             }
         })

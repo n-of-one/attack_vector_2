@@ -31,8 +31,8 @@ class JigsawCanvas {
         this.dispatch = dispatch
         this.store = store
 
-        const canvasWidth = 900
-        const canvasHeight = 700
+        const canvasWidth = 1576
+        const canvasHeight = 828
 
         this.canvas = new fabric.Canvas('jigsawCanvas', {
             width: canvasWidth,
@@ -110,10 +110,10 @@ class JigsawCanvas {
     private rotateGroup(clickedPiece: JigsawPieceDisplay) {
         const group = clickedPiece.group
 
-        // Calculate pivot: center of all piece centers in the group
-        const centers = [...group].map(piece => piece.path.getCenterPoint())
-        const pivotX = centers.reduce((sum, center) => sum + center.x, 0) / centers.length
-        const pivotY = centers.reduce((sum, center) => sum + center.y, 0) / centers.length
+        // Calculate pivot: average of all body centers in the group
+        const bodyCenters = [...group].map(piece => piece.getBodyCenter())
+        const pivotX = bodyCenters.reduce((sum, center) => sum + center.x, 0) / bodyCenters.length
+        const pivotY = bodyCenters.reduce((sum, center) => sum + center.y, 0) / bodyCenters.length
 
         const renderCallback = this.canvas.renderAll.bind(this.canvas)
         for (const piece of group) {
