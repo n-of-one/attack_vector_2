@@ -1,6 +1,6 @@
 // --- Types ---
 
-export type ShapeType = 'trapezoid' | 'parapet' | 'saw' | 'triangle'
+export type ShapeType = 'invected' | 'embattled' | 'indented' | 'raguly'
 export type EdgeType = 'top' | 'right' | 'bottom' | 'left'
 
 export interface ShapedEdge {
@@ -30,10 +30,10 @@ export const FLAT: FlatEdge = {dir: 'flat'}
 
 // Canonical point: [along, perp] relative to an edge
 type CanonicalPoint = [number, number]
-type ShapeGenerator = (size: number, tabHeight: number, chamferSize: number) => CanonicalPoint[]
+type ShapeGenerator = (size: number, tabHeight: number) => CanonicalPoint[]
 
-const TAB_HEIGHT_RATIO = 0.2
-const CHAMFER_RATIO = 0.15
+const TAB_HEIGHT_RATIO = 0.08
+const EDGE_MARGIN_RATIO = 0.15
 const CANVAS_MARGIN = 80
 const MAX_PIECE_SIZE = 150
 
@@ -52,53 +52,88 @@ export function calculatePieceSize(canvasWidth: number, canvasHeight: number, co
 //   along = pixels along the edge from start corner
 //   perp  = pixels outward from the piece (positive = away from center)
 
+const SEGMENTS_PER_BULB = 8
+
 export const SHAPES: Record<ShapeType, ShapeGenerator> = {
-    trapezoid: (size, tabHeight, chamferSize) => [
-        [size * 0.4, 0],
-        [size * 0.31, tabHeight - chamferSize],
-        [size * 0.3 + chamferSize, tabHeight],
-        [size * 0.7 - chamferSize, tabHeight],
-        [size * 0.69, tabHeight - chamferSize],
-        [size * 0.6, 0],
-    ],
-    parapet: (size, tabHeight, chamferSize) => [
-        [size * 0.385, 0],
-        [size * 0.35, tabHeight * 0.3],
-        [size * 0.35, tabHeight - chamferSize],
-        [size * 0.35 + chamferSize, tabHeight],
-        [size * 0.45, tabHeight],
-        [size * 0.45, tabHeight * 0.5],
-        [size * 0.55, tabHeight * 0.5],
-        [size * 0.55, tabHeight],
-        [size * 0.65 - chamferSize, tabHeight],
-        [size * 0.65, tabHeight - chamferSize],
-        [size * 0.65, tabHeight * 0.3],
-        [size * 0.615, 0],
-    ],
-    saw: (size, tabHeight, _chamferSize) => [
-        [size * 0.365, 0],
-        [size * 0.35, tabHeight * 0.5],
-        [size * 0.38, tabHeight],
-        [size * 0.42, tabHeight],
-        [size * 0.45, tabHeight * 0.5],
-        [size * 0.50, tabHeight],
-        [size * 0.55, tabHeight * 0.5],
-        [size * 0.58, tabHeight],
-        [size * 0.62, tabHeight],
-        [size * 0.65, tabHeight * 0.5],
-        [size * 0.635, 0],
-    ],
-    triangle: (size, tabHeight, _chamferSize) => [
-        [size * 0.35, 0],
-        [size * 0.32, tabHeight * 0.3],
-        [size * 0.45, tabHeight],
-        [size * 0.55, tabHeight],
-        [size * 0.68, tabHeight * 0.3],
-        [size * 0.65, 0],
-    ],
+    // Consecutive semicircular bulbs (no gaps between bulbs)
+    invected: (size, _tabHeight) => {
+        const margin = size * EDGE_MARGIN_RATIO
+        const inner = size - 2 * margin
+        const count = 4
+        const r = inner / (count * 2)
+        const points: CanonicalPoint[] = []
+        for (let i = 0; i < count; i++) {
+            const center = margin + r * (2 * i + 1)
+            for (let j = 0; j <= SEGMENTS_PER_BULB; j++) {
+                const angle = Math.PI - j * Math.PI / SEGMENTS_PER_BULB
+                points.push([center + r * Math.cos(angle), r * Math.sin(angle)])
+            }
+        }
+        return points
+    },
+    // Square battlements — starts and ends with a merlon
+    embattled: (size, tabHeight) => {
+        const margin = size * EDGE_MARGIN_RATIO
+        const inner = size - 2 * margin
+        const count = 3
+        const unit = inner / (count * 2 - 1)
+        const points: CanonicalPoint[] = []
+        points.push([margin, 0])
+        points.push([margin, tabHeight])
+        for (let i = 0; i < count; i++) {
+            const mEnd = margin + (2 * i + 1) * unit
+            points.push([mEnd, tabHeight])
+            if (i < count - 1) {
+                points.push([mEnd, 0])
+                const gEnd = margin + (2 * i + 2) * unit
+                points.push([gEnd, 0])
+                points.push([gEnd, tabHeight])
+            }
+        }
+        points.push([size - margin, 0])
+        return points
+    },
+    // Zigzag triangles
+    indented: (size, tabHeight) => {
+        const margin = size * EDGE_MARGIN_RATIO
+        const inner = size - 2 * margin
+        const count = 5
+        const toothWidth = inner / count
+        const points: CanonicalPoint[] = []
+        points.push([margin, 0])
+        for (let i = 0; i < count; i++) {
+            points.push([margin + (i + 0.5) * toothWidth, tabHeight])
+            points.push([margin + (i + 1) * toothWidth, 0])
+        }
+        return points
+    },
+    // Diagonal branch stumps — starts and ends with a stump, perpendicular at edges
+    raguly: (size, tabHeight) => {
+        const margin = size * EDGE_MARGIN_RATIO
+        const inner = size - 2 * margin
+        const count = 4
+        const unit = inner / (count * 2 - 1)
+        const slant = unit * 0.3
+        const points: CanonicalPoint[] = []
+        points.push([margin, 0])
+        points.push([margin, tabHeight])
+        for (let i = 0; i < count; i++) {
+            const stumpEnd = margin + (2 * i + 1) * unit
+            points.push([stumpEnd - slant / 2, tabHeight])
+            if (i < count - 1) {
+                points.push([stumpEnd + slant / 2, 0])
+                const gapEnd = margin + (2 * i + 2) * unit
+                points.push([gapEnd - slant / 2, 0])
+                points.push([gapEnd + slant / 2, tabHeight])
+            }
+        }
+        points.push([size - margin, tabHeight])
+        points.push([size - margin, 0])
+        return points
+    },
 }
 
-const ALL_SHAPES: ShapeType[] = ['trapezoid', 'parapet', 'saw', 'triangle']
+const ALL_SHAPES: ShapeType[] = ['invected', 'embattled', 'indented', 'raguly']
 
 // --- Edge mapper ---
 // Map canonical (along, perp) to canvas (x, y).
@@ -123,7 +158,6 @@ export function getEdgeMapper(edge: EdgeType, originX: number, originY: number, 
 
 export function buildPiecePath(originX: number, originY: number, size: number, config: PieceConfig): string {
     const tabHeight = size * TAB_HEIGHT_RATIO
-    const chamferSize = tabHeight * CHAMFER_RATIO
     let pathString = `M ${originX} ${originY}`
 
     const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
@@ -141,7 +175,7 @@ export function buildPiecePath(originX: number, originY: number, size: number, c
             pathString += ` L ${endX} ${endY}`
         } else {
             const direction = edgeConfig.dir === 'out' ? 1 : -1
-            const points = SHAPES[edgeConfig.shape](size, tabHeight, chamferSize)
+            const points = SHAPES[edgeConfig.shape](size, tabHeight)
             for (const [along, perp] of points) {
                 const [x, y] = mapper(along, perp * direction)
                 pathString += ` L ${x} ${y}`

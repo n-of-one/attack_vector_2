@@ -26,11 +26,11 @@
     ctx.translate(80, 80);
 
     ctx.beginPath();
-    const margin = size * 0.15; // 15% flat at each end of every edge
-    const inner = size - 2 * margin; // 70% for the pattern
+    const margin = size * 0.1; // 10% flat at each end of every edge
+    const inner = size - 2 * margin; // 80% for the pattern
 
     // --- Top edge: invected (consecutive bulbs, no gaps) ---
-    const bulbCount = 4;
+    const bulbCount = 5;
     const bulbRadius = inner / (bulbCount * 2);
 
     ctx.moveTo(o, o);
@@ -44,7 +44,7 @@
 
     // --- Right edge: embattled (square battlements) ---
     // Starts and ends with an extrusion (merlon)
-    const merlonCount = 3;
+    const merlonCount = 4;
     const merlonUnit = inner / (merlonCount * 2 - 1); // 4 merlons + 3 gaps
 
     ctx.lineTo(o + size, o + margin); // 10% flat start
@@ -63,7 +63,7 @@
     ctx.lineTo(o + size, o + size);
 
     // --- Bottom edge: indented (zigzag / wavy triangles) ---
-    const toothCount = 5;
+    const toothCount = 6;
     const toothWidth = inner / toothCount;
 
     ctx.lineTo(o + size - margin, o + size); // 10% flat start

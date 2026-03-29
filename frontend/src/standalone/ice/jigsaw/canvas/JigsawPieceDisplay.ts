@@ -2,7 +2,7 @@ import {fabric} from "fabric";
 import {Canvas} from "fabric/fabric-impl";
 import {buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
 
-const TAB_SIZE_RATIO = 0.2
+const TAB_SIZE_RATIO = 0.08
 
 /** Opacity steps indexed by max possible neighbors:
  *  Corner (2 max):  0 → 100%, 1 → 60%, 2 → 0%
