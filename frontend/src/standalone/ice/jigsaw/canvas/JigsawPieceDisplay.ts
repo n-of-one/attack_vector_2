@@ -27,6 +27,9 @@ export class JigsawPieceDisplay {
     // Current rotation in degrees: 0, 90, 180, or 270. Pieces start at a random rotation.
     rotation: number
 
+    // How many neighbors this piece can have (2 for corners, 3 for edges, 4 for center pieces)
+    maxNeighborCount: number
+
     constructor(canvas: Canvas, col: number, row: number, config: PieceConfig,
                 sourceImage: HTMLImageElement, puzzleCols: number, puzzleRows: number,
                 pieceSize: number, canvasWidth: number, canvasHeight: number) {
@@ -65,7 +68,7 @@ export class JigsawPieceDisplay {
                 source: patternCanvas as unknown as HTMLImageElement, // fabric.js accepts canvas elements at runtime
                 repeat: 'no-repeat',
             }),
-            stroke: '#88aacc00',
+            stroke: '#88aacc',
             strokeWidth: 1.5,
             left: scatteredX,
             top: scatteredY,
@@ -76,6 +79,12 @@ export class JigsawPieceDisplay {
             data: this,
             hoverCursor: 'grab',
         })
+
+        const onLeftEdge = col === 0
+        const onRightEdge = col === puzzleCols - 1
+        const onTopEdge = row === 0
+        const onBottomEdge = row === puzzleRows - 1
+        this.maxNeighborCount = 4 - (onLeftEdge ? 1 : 0) - (onRightEdge ? 1 : 0) - (onTopEdge ? 1 : 0) - (onBottomEdge ? 1 : 0)
 
         this.rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)]
         this.path.set({angle: this.rotation})
@@ -125,6 +134,21 @@ export class JigsawPieceDisplay {
             'center', 'center'
         )
         this.path.setCoords()
+    }
+
+    /** Update the stroke opacity based on how many neighbors are snapped to this piece. */
+    updateSnappedNeighborCount(snappedNeighborCount: number) {
+        // Opacity steps based on max possible neighbors:
+        // Corner (2 max):  0 → 100%, 1 → 60%, 2 → 0%
+        // Edge (3 max):    0 → 100%, 1 → 60%, 2 → 40%, 3 → 0%
+        // Center (4 max):  0 → 100%, 1 → 60%, 2 → 40%, 3 → 30%, 4 → 0%
+        const opacitySteps: { [maxNeighbors: number]: number[] } = {
+            2: [1.0, 0.6, 0],
+            3: [1.0, 0.6, 0.4, 0],
+            4: [1.0, 0.6, 0.4, 0.3, 0],
+        }
+        const opacity = opacitySteps[this.maxNeighborCount][snappedNeighborCount]
+        this.path.set({stroke: `rgba(136, 170, 204, ${opacity})`})
     }
 
     /** Move this piece by a delta (used for group dragging). */

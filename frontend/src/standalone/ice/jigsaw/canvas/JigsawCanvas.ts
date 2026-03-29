@@ -13,6 +13,8 @@ class JigsawCanvas {
     imageLoaded_: boolean = false
     piecesByLocation: { [key: string]: JigsawPieceDisplay } = {}
     pieceSize: number = 0
+    puzzleCols: number = 0
+    puzzleRows: number = 0
 
     // Track the position at the start of a drag so we can compute the delta for group movement
     dragStartLeft: number = 0
@@ -47,6 +49,8 @@ class JigsawCanvas {
 
         const puzzleCols = data.columns
         const puzzleRows = data.rows
+        this.puzzleCols = puzzleCols
+        this.puzzleRows = puzzleRows
 
         // Calculate piece size to fit within canvas with some margin
         const maxPieceSize = Math.min(
@@ -195,10 +199,24 @@ class JigsawCanvas {
 
                     // Merge the two groups
                     draggedPiece.mergeGroup(neighbor)
+                    this.updateStrokeOpacity(draggedPiece.group)
                     this.canvas.renderAll()
                     return
                 }
             }
+        }
+    }
+
+    private updateStrokeOpacity(group: Set<JigsawPieceDisplay>) {
+        for (const piece of group) {
+            let snappedNeighborCount = 0
+            for (const [colOffset, rowOffset] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+                const neighbor = this.piecesByLocation[`${piece.col + colOffset}:${piece.row + rowOffset}`]
+                if (neighbor && group.has(neighbor)) {
+                    snappedNeighborCount++
+                }
+            }
+            piece.updateSnappedNeighborCount(snappedNeighborCount)
         }
     }
 }
