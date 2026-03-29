@@ -5,10 +5,15 @@ import {IceTitle} from "../../common/IceTitle";
 import {JigsawRootState} from "../reducer/JigsawRootReducer";
 import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
-import {jigsawCanvas} from "../canvas/JigsawCanvas";
 import {CloseTabButton} from "../../common/CloseTabButton";
 
 /* eslint jsx-a11y/alt-text: 0*/
+
+let resolveSourceImageLoaded: (img: HTMLImageElement) => void
+
+export const sourceImageLoaded: Promise<HTMLImageElement> = new Promise((resolve) => {
+    resolveSourceImageLoaded = resolve
+})
 
 export const JigsawHome = () => {
 
@@ -54,8 +59,8 @@ export const JigsawHome = () => {
 
 const JigsawSourceImage = () => {
     const path = "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png"
-    return <span><img id="jigsawSourceImage" src={path} style={{display: "none"}} onLoad={() => {
-        jigsawCanvas.imageLoaded()
+    return <span><img id="jigsawSourceImage" src={path} style={{display: "none"}} onLoad={(e) => {
+        resolveSourceImageLoaded(e.target as HTMLImageElement)
     }}/></span>
 }
 

@@ -1,14 +1,16 @@
 import {ICE_DISPLAY_TERMINAL_ID} from "../../../common/terminal/ActiveTerminalIdReducer";
 import {GenericIceManager} from "../common/GenericIceManager";
-import {jigsawCanvas} from "./canvas/JigsawCanvas";
-import {delay} from "../../../common/util/Util";
+import {JigsawCanvas} from "./canvas/JigsawCanvas";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {JIGSAW_BEGIN} from "./reducer/JigsawUiStateReducer";
 import {JigsawEnterData} from "./JigsawServerActionProcessor";
+import {sourceImageLoaded} from "./component/JigsawHome";
 
 class JigsawIceManager extends GenericIceManager {
 
     solved: boolean = false
+
+    jigsawCanvas: JigsawCanvas | null = null
 
     enter(data: JigsawEnterData) {
         if (data.hacked) {
@@ -27,8 +29,8 @@ class JigsawIceManager extends GenericIceManager {
         this.displayTerminal(0, "↼ Puzzle interface [info]online");
         this.schedule.dispatch(0, {type: JIGSAW_BEGIN});
 
-        delay(() => {
-            jigsawCanvas.init(data, this.dispatch, this.store)
+        sourceImageLoaded.then((sourceImage) => {
+            this.jigsawCanvas = new JigsawCanvas(data, this.dispatch, this.store, sourceImage)
         })
     }
 }

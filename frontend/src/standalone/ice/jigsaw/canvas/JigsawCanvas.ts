@@ -15,6 +15,7 @@ const NEIGHBOR_OFFSETS: ReadonlyArray<{ colOffset: number, rowOffset: number }> 
     {colOffset: 0, rowOffset: 1},
 ]
 
+/** Precomputed cos/sin for the four valid rotation angles (avoids floating-point drift). */
 const PRECOMPUTED_ROTATION_TRIGONOMETRY: { [degrees: number]: { cos: number, sin: number } } = {
     0: {cos: 1, sin: 0},
     90: {cos: 0, sin: 1},
@@ -22,34 +23,22 @@ const PRECOMPUTED_ROTATION_TRIGONOMETRY: { [degrees: number]: { cos: number, sin
     270: {cos: 0, sin: -1},
 }
 
-class JigsawCanvas {
+export class JigsawCanvas {
 
-    canvas: Canvas = null as unknown as Canvas
-    store: Store = null as unknown as Store
-    dispatch: Dispatch = null as unknown as Dispatch
-
-    imageLoaded_: boolean = false
-    piecesByLocation: { [key: string]: JigsawPieceDisplay } = {}
-    pieceSize: number = 0
-    puzzleCols: number = 0
-    puzzleRows: number = 0
+    private readonly canvas: Canvas
+    private readonly store: Store
+    private readonly dispatch: Dispatch
+    private readonly piecesByLocation: { [key: string]: JigsawPieceDisplay }
+    private readonly pieceSize: number
 
     // Track the position at the start of a drag so we can compute the delta for group movement
-    dragStartLeft: number = 0
-    dragStartTop: number = 0
+    private dragStartLeft: number = 0
+    private dragStartTop: number = 0
 
     // True while a rotation animation is in progress, to prevent overlapping rotations
-    rotating: boolean = false
+    private rotating: boolean = false
 
-    imageLoaded() {
-        this.imageLoaded_ = true
-    }
-
-    init(data: JigsawEnterData, dispatch: Dispatch, store: Store) {
-        if (!this.imageLoaded_) {
-            setTimeout(() => this.init(data, dispatch, store), 100)
-            return
-        }
+    constructor(data: JigsawEnterData, dispatch: Dispatch, store: Store, sourceImage: HTMLImageElement) {
         this.dispatch = dispatch
         this.store = store
 
@@ -67,28 +56,28 @@ class JigsawCanvas {
 
         const puzzleCols = data.columns
         const puzzleRows = data.rows
-        this.puzzleCols = puzzleCols
-        this.puzzleRows = puzzleRows
 
         // Calculate piece size to fit within canvas with some margin
         const maxPieceSize = Math.min(
             (canvasWidth - CANVAS_MARGIN) / (puzzleCols + 1),
             (canvasHeight - CANVAS_MARGIN) / (puzzleRows + 1)
         )
-        const pieceSize = Math.min(maxPieceSize, MAX_PIECE_SIZE)
-        this.pieceSize = pieceSize
-
-        const sourceImg = document.getElementById('jigsawSourceImage') as HTMLImageElement
+        this.pieceSize = Math.min(maxPieceSize, MAX_PIECE_SIZE)
 
         this.piecesByLocation = {}
         for (const config of data.pieces) {
             const display = new JigsawPieceDisplay({
-                canvas: this.canvas, col: config.col, row: config.row, config, sourceImage: sourceImg,
-                puzzleCols, puzzleRows, pieceSize, canvasWidth, canvasHeight
+                canvas: this.canvas, col: config.col, row: config.row, config, sourceImage,
+                puzzleCols, puzzleRows, pieceSize: this.pieceSize, canvasWidth, canvasHeight
             })
             this.piecesByLocation[`${config.col}:${config.row}`] = display
         }
 
+        this.registerEventHandlers()
+        this.canvas.renderAll()
+    }
+
+    private registerEventHandlers() {
         // Record position at drag start for computing group delta, and handle right-click rotation
         this.canvas.on('mouse:down', (event) => {
             if (!event.target || !(event.target.data instanceof JigsawPieceDisplay)) return
@@ -135,8 +124,6 @@ class JigsawCanvas {
                 this.trySnapToNeighbor(event.target.data)
             }
         })
-
-        this.canvas.renderAll()
     }
 
     private rotateGroup(clickedPiece: JigsawPieceDisplay, clockwise: boolean) {
@@ -233,5 +220,3 @@ class JigsawCanvas {
         }
     }
 }
-
-export const jigsawCanvas = new JigsawCanvas()
