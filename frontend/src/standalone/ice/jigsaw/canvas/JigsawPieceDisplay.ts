@@ -27,22 +27,22 @@ export interface JigsawPieceDisplayOptions {
 
 export class JigsawPieceDisplay {
 
-    canvas: Canvas
-    col: number
-    row: number
-    config: PieceConfig
-    pieceSize: number
-    path: fabric.Path
+    private readonly canvas: Canvas
+    readonly col: number
+    readonly row: number
+    private readonly config: PieceConfig
+    private readonly pieceSize: number
+    readonly path: fabric.Path
 
     // Offset from the path's left/top to the piece body's top-left corner.
     // Needed because outward tabs extend the bounding box beyond the piece body.
-    extensionLeft: number
-    extensionTop: number
+    private readonly extensionLeft: number
+    private readonly extensionTop: number
 
     // Offset from the bounding-box center to the body center in unrotated local coords.
     // When the piece is rotated, this offset rotates with it.
-    bodyOffsetX: number
-    bodyOffsetY: number
+    private readonly bodyOffsetX: number
+    private readonly bodyOffsetY: number
 
     // All pieces snapped together share the same Set. Starts with just this piece.
     group: Set<JigsawPieceDisplay>
@@ -51,7 +51,7 @@ export class JigsawPieceDisplay {
     rotation: number
 
     // How many neighbors this piece can have (2 for corners, 3 for edges, 4 for center pieces)
-    maxNeighborCount: number
+    readonly maxNeighborCount: number
 
     constructor(options: JigsawPieceDisplayOptions) {
         const {canvas, col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize} = options
@@ -95,11 +95,9 @@ export class JigsawPieceDisplay {
             hoverCursor: 'grab',
         })
 
-        const onLeftEdge = col === 0
-        const onRightEdge = col === puzzleCols - 1
-        const onTopEdge = row === 0
-        const onBottomEdge = row === puzzleRows - 1
-        this.maxNeighborCount = 4 - (onLeftEdge ? 1 : 0) - (onRightEdge ? 1 : 0) - (onTopEdge ? 1 : 0) - (onBottomEdge ? 1 : 0)
+        const borderCount = [col === 0, col === puzzleCols - 1, row === 0, row === puzzleRows - 1]
+            .filter(Boolean).length
+        this.maxNeighborCount = 4 - borderCount
 
         this.rotation = config.rotation
         this.path.set({angle: this.rotation})

@@ -27,7 +27,7 @@ export class JigsawCanvas {
     private readonly canvas: Canvas
     private readonly store: Store
     private readonly dispatch: Dispatch
-    private readonly piecesByLocation: { [key: string]: JigsawPieceDisplay }
+    private readonly piecesByLocation: Map<string, JigsawPieceDisplay>
     private readonly pieceSize: number
 
     // Track the position at the start of a drag so we can compute the delta for group movement
@@ -57,14 +57,15 @@ export class JigsawCanvas {
         const puzzleRows = data.rows
         this.pieceSize = calculatePieceSize(canvasWidth, canvasHeight, puzzleCols, puzzleRows)
 
-        this.piecesByLocation = {}
-        for (const config of data.pieces) {
-            const display = new JigsawPieceDisplay({
-                canvas: this.canvas, col: config.col, row: config.row, config, sourceImage,
-                puzzleCols, puzzleRows, pieceSize: this.pieceSize
+        this.piecesByLocation = new Map(
+            data.pieces.map(config => {
+                const display = new JigsawPieceDisplay({
+                    canvas: this.canvas, col: config.col, row: config.row, config, sourceImage,
+                    puzzleCols, puzzleRows, pieceSize: this.pieceSize
+                })
+                return [`${config.col}:${config.row}`, display]
             })
-            this.piecesByLocation[`${config.col}:${config.row}`] = display
-        }
+        )
 
         this.registerEventHandlers()
         this.canvas.renderAll()
@@ -132,15 +133,9 @@ export class JigsawCanvas {
         const group = clickedPiece.group
 
         // Calculate pivot: average of all body centers in the group
-        let pivotX = 0
-        let pivotY = 0
-        for (const piece of group) {
-            const center = piece.getBodyCenter()
-            pivotX += center.x
-            pivotY += center.y
-        }
-        pivotX /= group.size
-        pivotY /= group.size
+        const centers = [...group].map(p => p.getBodyCenter())
+        const pivotX = centers.reduce((sum, c) => sum + c.x, 0) / group.size
+        const pivotY = centers.reduce((sum, c) => sum + c.y, 0) / group.size
 
         const renderCallback = this.canvas.renderAll.bind(this.canvas)
         let completedCount = 0
@@ -168,7 +163,7 @@ export class JigsawCanvas {
 
             for (const {colOffset, rowOffset} of NEIGHBOR_OFFSETS) {
                 const neighborKey = `${piece.col + colOffset}:${piece.row + rowOffset}`
-                const neighbor = this.piecesByLocation[neighborKey]
+                const neighbor = this.piecesByLocation.get(neighborKey)
                 if (!neighbor || group.has(neighbor)) continue
 
                 // Only snap pieces that share the same rotation
@@ -208,13 +203,10 @@ export class JigsawCanvas {
 
     private updateStrokeOpacity(group: Set<JigsawPieceDisplay>) {
         for (const piece of group) {
-            let snappedNeighborCount = 0
-            for (const {colOffset, rowOffset} of NEIGHBOR_OFFSETS) {
-                const neighbor = this.piecesByLocation[`${piece.col + colOffset}:${piece.row + rowOffset}`]
-                if (neighbor && group.has(neighbor)) {
-                    snappedNeighborCount++
-                }
-            }
+            const snappedNeighborCount = NEIGHBOR_OFFSETS.filter(({colOffset, rowOffset}) => {
+                const neighbor = this.piecesByLocation.get(`${piece.col + colOffset}:${piece.row + rowOffset}`)
+                return neighbor && group.has(neighbor)
+            }).length
             piece.updateSnappedNeighborCount(snappedNeighborCount)
         }
     }
