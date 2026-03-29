@@ -94,7 +94,7 @@ export class JigsawCanvas {
 
                 // Match rotation to anchor
                 piece.rotation = anchor.rotation
-                piece.path.set({angle: anchor.rotation})
+                piece.displayObject.set({angle: anchor.rotation})
 
                 // Position relative to anchor using rotated grid offset
                 const colOffset = col - anchorCol
@@ -128,7 +128,7 @@ export class JigsawCanvas {
             // Bring the dragged piece (and its group) to the top of the z-order
             const piece = event.target.data as JigsawPieceDisplay
             for (const groupPiece of piece.group) {
-                this.canvas.bringToFront(groupPiece.path)
+                this.canvas.bringToFront(groupPiece.displayObject)
             }
         })
 

@@ -52,8 +52,10 @@ export class JigsawRoot extends Component<Props> {
         // DEV: simulate server enter response with hardcoded data
         // const devColumns = 5
         // const devRows = 3
-        const devColumns = 7
-        const devRows = 4
+        // const devColumns = 7
+        // const devRows = 4
+        const devColumns = 17
+        const devRows = 10
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,
@@ -64,12 +66,9 @@ export class JigsawRoot extends Component<Props> {
                 rows: devRows,
                 pieces: generatePieceConfigs(devColumns, devRows, 1576, 828),
                 groups: [
-                    [
-                        [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0],
-                        [0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1],
-                        // [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2],
-                        // [0, 3], [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3]
-                    ],
+                    // Array.from({length: devColumns * devRows}, (_, i) =>
+                    //     [i % devColumns, Math.floor(i / devColumns)] as [number, number]
+                    // ),
                 ],
             })
         }, 200)

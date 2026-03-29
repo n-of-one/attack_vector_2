@@ -196,6 +196,45 @@ export function buildPiecePath(originX: number, originY: number, size: number, c
     return pathString
 }
 
+/**
+ * Build an SVG path string for just the flat (border) edges of a piece.
+ * Returns null if the piece has no flat edges (center piece).
+ * Includes invisible anchor points at the main path's bounding box corners
+ * so that fabric.js computes the same pathOffset/dimensions as the main path.
+ */
+export function buildBorderPath(originX: number, originY: number, size: number, config: PieceConfig): string | null {
+    const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
+        {name: 'top', edgeConfig: config.top},
+        {name: 'right', edgeConfig: config.right},
+        {name: 'bottom', edgeConfig: config.bottom},
+        {name: 'left', edgeConfig: config.left},
+    ]
+
+    const hasBorder = edges.some(e => e.edgeConfig.dir === 'flat')
+    if (!hasBorder) return null
+
+    // Compute the full bounding box to match the main path.
+    // The main path always starts at (0,0) min because extensions push the origin inward.
+    const tabHeight = size * TAB_HEIGHT_RATIO
+    const extRight = config.right.dir === 'out' ? tabHeight : 0
+    const extBottom = config.bottom.dir === 'out' ? tabHeight : 0
+    const maxX = round(originX + size + extRight)
+    const maxY = round(originY + size + extBottom)
+
+    // Anchor M commands at opposite corners to force same bounding box as main path
+    let pathString = `M 0 0 M ${maxX} ${maxY}`
+
+    for (const {name, edgeConfig} of edges) {
+        if (edgeConfig.dir !== 'flat') continue
+        const mapper = getEdgeMapper(name, originX, originY, size)
+        const [startX, startY] = mapper(0, 0)
+        const [endX, endY] = mapper(size, 0)
+        pathString += ` M ${round(startX)} ${round(startY)} L ${round(endX)} ${round(endY)}`
+    }
+
+    return pathString
+}
+
 // --- Grid generation ---
 
 export function flipDir(edge: EdgeConfig): EdgeConfig {

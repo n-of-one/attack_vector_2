@@ -1,6 +1,6 @@
 import {fabric} from "fabric";
 import {Canvas} from "fabric/fabric-impl";
-import {buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
+import {buildBorderPath, buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
 
 const TAB_SIZE_RATIO = 0.08
 
@@ -32,7 +32,13 @@ export class JigsawPieceDisplay {
     readonly row: number
     private readonly config: PieceConfig
     private readonly pieceSize: number
-    readonly path: fabric.Path
+    private readonly strokeWidth: number
+
+    /** The main piece shape (fill + fading stroke). Child of displayObject. */
+    private readonly piecePath: fabric.Path
+
+    /** The single fabric object added to the canvas — a Group wrapping piecePath + optional borderPath. */
+    readonly displayObject: fabric.Group
 
     // Offset from the path's left/top to the piece body's top-left corner.
     // Needed because outward tabs extend the bounding box beyond the piece body.
@@ -61,6 +67,7 @@ export class JigsawPieceDisplay {
         this.row = row
         this.config = config
         this.pieceSize = pieceSize
+        this.strokeWidth = 1
 
         const tabSize = pieceSize * TAB_SIZE_RATIO
 
@@ -78,13 +85,28 @@ export class JigsawPieceDisplay {
         // Build path at local origin (extensionLeft, extensionTop) so all coordinates are non-negative
         const pathString = buildPiecePath(this.extensionLeft, this.extensionTop, pieceSize, config)
 
-        this.path = new fabric.Path(pathString, {
+        this.piecePath = new fabric.Path(pathString, {
             fill: new fabric.Pattern({
                 source: patternCanvas as unknown as HTMLImageElement, // fabric.js accepts canvas elements at runtime
                 repeat: 'no-repeat',
             }),
             stroke: '#88aacc',
-            strokeWidth: 1.5,
+            strokeWidth: this.strokeWidth,
+        })
+
+        // Build a separate non-fading outline for flat (puzzle border) edges
+        const children: fabric.Object[] = [this.piecePath]
+        const borderString = buildBorderPath(this.extensionLeft, this.extensionTop, pieceSize, config)
+        if (borderString) {
+            children.push(new fabric.Path(borderString, {
+                fill: '',
+                stroke: '#fff',
+                strokeWidth: this.strokeWidth * 1.5,
+            }))
+        }
+
+        // Wrap in a Group so both paths move/rotate/z-order as one unit
+        this.displayObject = new fabric.Group(children, {
             left: config.x,
             top: config.y,
             selectable: true,
@@ -93,6 +115,7 @@ export class JigsawPieceDisplay {
             lockRotation: true,
             data: this,
             hoverCursor: 'grab',
+            subTargetCheck: false,
         })
 
         const borderCount = [col === 0, col === puzzleCols - 1, row === 0, row === puzzleRows - 1]
@@ -100,33 +123,33 @@ export class JigsawPieceDisplay {
         this.maxNeighborCount = 4 - borderCount
 
         this.rotation = config.rotation
-        this.path.set({angle: this.rotation})
+        this.displayObject.set({angle: this.rotation})
         this.group = new Set([this])
 
-        canvas.add(this.path)
+        canvas.add(this.displayObject)
     }
 
     /** Canvas position of the piece body's top-left corner (excluding tab extensions). */
     getBodyOrigin(): { x: number, y: number } {
         return {
-            x: (this.path.left ?? 0) + this.extensionLeft,
-            y: (this.path.top ?? 0) + this.extensionTop,
+            x: (this.displayObject.left ?? 0) + this.extensionLeft,
+            y: (this.displayObject.top ?? 0) + this.extensionTop,
         }
     }
 
     /** Move this piece so its body origin is at the given canvas position. */
     setBodyOrigin(x: number, y: number) {
-        this.path.set({
+        this.displayObject.set({
             left: x - this.extensionLeft,
             top: y - this.extensionTop,
         })
-        this.path.setCoords()
+        this.displayObject.setCoords()
     }
 
     /** Canvas position of the body center, accounting for the current rotation. */
     getBodyCenter(): { x: number, y: number } {
-        const bbCenter = this.path.getCenterPoint()
-        const angle = (this.path.angle ?? 0) * Math.PI / 180
+        const bbCenter = this.displayObject.getCenterPoint()
+        const angle = (this.displayObject.angle ?? 0) * Math.PI / 180
         const cos = Math.cos(angle)
         const sin = Math.sin(angle)
         return {
@@ -137,31 +160,31 @@ export class JigsawPieceDisplay {
 
     /** Position this piece so its body center (rotation-aware) is at the given canvas position. */
     setBodyCenter(x: number, y: number) {
-        const angle = (this.path.angle ?? 0) * Math.PI / 180
+        const angle = (this.displayObject.angle ?? 0) * Math.PI / 180
         const cos = Math.cos(angle)
         const sin = Math.sin(angle)
         const bbCenterX = x - (this.bodyOffsetX * cos - this.bodyOffsetY * sin)
         const bbCenterY = y - (this.bodyOffsetX * sin + this.bodyOffsetY * cos)
-        this.path.setPositionByOrigin(
+        this.displayObject.setPositionByOrigin(
             new fabric.Point(bbCenterX, bbCenterY),
             'center', 'center'
         )
-        this.path.setCoords()
+        this.displayObject.setCoords()
     }
 
     /** Update the stroke opacity based on how many neighbors are snapped to this piece. */
     updateSnappedNeighborCount(snappedNeighborCount: number) {
         const opacity = OPACITY_STEPS[this.maxNeighborCount][snappedNeighborCount]
-        this.path.set({stroke: `rgba(136, 170, 204, ${opacity})`})
+        this.piecePath.set({stroke: `rgba(136, 170, 204, ${opacity})`})
     }
 
     /** Move this piece by a delta (used for group dragging). */
     moveBy(deltaX: number, deltaY: number) {
-        this.path.set({
-            left: (this.path.left ?? 0) + deltaX,
-            top: (this.path.top ?? 0) + deltaY,
+        this.displayObject.set({
+            left: (this.displayObject.left ?? 0) + deltaX,
+            top: (this.displayObject.top ?? 0) + deltaY,
         })
-        this.path.setCoords()
+        this.displayObject.setCoords()
     }
 
     /**
@@ -171,7 +194,7 @@ export class JigsawPieceDisplay {
      */
     animateRotation(pivotX: number, pivotY: number, clockwise: boolean, renderCallback: () => void, onComplete?: () => void) {
         const angleDelta = clockwise ? 90 : -90
-        const startAngle = this.path.angle ?? 0
+        const startAngle = this.displayObject.angle ?? 0
         const targetAngle = startAngle + angleDelta
         this.rotation = (this.rotation + angleDelta + 360) % 360
 
@@ -184,10 +207,10 @@ export class JigsawPieceDisplay {
         const targetBodyCenterX = clockwise ? pivotX - dy : pivotX + dy
         const targetBodyCenterY = clockwise ? pivotY + dx : pivotY - dx
 
-        this.path.animate('angle', targetAngle, {
+        this.displayObject.animate('angle', targetAngle, {
             onChange: () => {
                 // Derive progress from the angle so position follows the same easing curve
-                const progress = ((this.path.angle ?? startAngle) - startAngle) / angleDelta
+                const progress = ((this.displayObject.angle ?? startAngle) - startAngle) / angleDelta
                 const currentBodyCenterX = startBodyCenter.x + (targetBodyCenterX - startBodyCenter.x) * progress
                 const currentBodyCenterY = startBodyCenter.y + (targetBodyCenterY - startBodyCenter.y) * progress
 
@@ -196,7 +219,7 @@ export class JigsawPieceDisplay {
             },
             duration: 200,
             onComplete: () => {
-                this.path.set({angle: this.rotation})
+                this.displayObject.set({angle: this.rotation})
                 this.setBodyCenter(targetBodyCenterX, targetBodyCenterY)
                 renderCallback()
                 if (onComplete) onComplete()

@@ -58,8 +58,8 @@ export const JigsawHome = () => {
 
 
 const JigsawSourceImage = () => {
-    const path = "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png"
-    // const path = "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg"
+    // const path = "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png"
+    const path = "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg"
     // const path = "/img/frontier/ice/jigsaw/barbaraalane-fractal-1992882.jpg"
     // const path = "/img/frontier/ice/jigsaw/green.png"
     return <span><img id="jigsawSourceImage" src={path} style={{display: "none"}} onLoad={(e) => {
