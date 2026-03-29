@@ -72,12 +72,21 @@ class JigsawCanvas {
             if (!event.target || !(event.target.data instanceof JigsawPieceDisplay)) return
 
             if ((event.e as MouseEvent).button === 2) {
-                this.rotateGroup(event.target.data as JigsawPieceDisplay)
+                this.rotateGroup(event.target.data as JigsawPieceDisplay, true)
                 return
             }
 
             this.dragStartLeft = event.target.left ?? 0
             this.dragStartTop = event.target.top ?? 0
+        })
+
+        // Scroll wheel rotates the piece under the cursor: down = CW, up = CCW
+        this.canvas.on('mouse:wheel', (event) => {
+            event.e.preventDefault()
+            const target = this.canvas.findTarget(event.e as MouseEvent, false)
+            if (!target || !(target.data instanceof JigsawPieceDisplay)) return
+            const clockwise = (event.e as WheelEvent).deltaY > 0
+            this.rotateGroup(target.data as JigsawPieceDisplay, clockwise)
         })
 
         // Move all other pieces in the group along with the dragged piece
@@ -108,7 +117,7 @@ class JigsawCanvas {
         this.canvas.renderAll()
     }
 
-    private rotateGroup(clickedPiece: JigsawPieceDisplay) {
+    private rotateGroup(clickedPiece: JigsawPieceDisplay, clockwise: boolean) {
         if (this.rotating) return
         this.rotating = true
 
@@ -129,7 +138,7 @@ class JigsawCanvas {
             }
         }
         for (const piece of pieces) {
-            piece.animateRotation(pivotX, pivotY, renderCallback, onPieceComplete)
+            piece.animateRotation(pivotX, pivotY, clockwise, renderCallback, onPieceComplete)
         }
     }
 

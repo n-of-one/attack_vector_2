@@ -65,7 +65,7 @@ export class JigsawPieceDisplay {
                 source: patternCanvas as unknown as HTMLImageElement, // fabric.js accepts canvas elements at runtime
                 repeat: 'no-repeat',
             }),
-            stroke: '#88aacc',
+            stroke: '#88aacc00',
             strokeWidth: 1.5,
             left: scatteredX,
             top: scatteredY,
@@ -137,27 +137,29 @@ export class JigsawPieceDisplay {
     }
 
     /**
-     * Animate a 90° clockwise rotation around a pivot point (in body-center space).
+     * Animate a 90° rotation around a pivot point (in body-center space).
      * For a single piece the pivot is its own body center; for a group it's the average body center.
      * Position and angle interpolate together so the piece arcs smoothly to its new location.
      */
-    animateRotation(pivotX: number, pivotY: number, renderCallback: () => void, onComplete?: () => void) {
+    animateRotation(pivotX: number, pivotY: number, clockwise: boolean, renderCallback: () => void, onComplete?: () => void) {
+        const angleDelta = clockwise ? 90 : -90
         const startAngle = this.path.angle ?? 0
-        const targetAngle = startAngle + 90
-        this.rotation = (this.rotation + 90) % 360
+        const targetAngle = startAngle + angleDelta
+        this.rotation = (this.rotation + angleDelta + 360) % 360
 
         const startBodyCenter = this.getBodyCenter()
 
-        // Rotate body center 90° clockwise around pivot (in screen-coords: y-down)
+        // Rotate body center 90° around pivot (in screen-coords: y-down)
+        // CW: (dx, dy) → (-dy, dx). CCW: (dx, dy) → (dy, -dx).
         const dx = startBodyCenter.x - pivotX
         const dy = startBodyCenter.y - pivotY
-        const targetBodyCenterX = pivotX - dy
-        const targetBodyCenterY = pivotY + dx
+        const targetBodyCenterX = clockwise ? pivotX - dy : pivotX + dy
+        const targetBodyCenterY = clockwise ? pivotY + dx : pivotY - dx
 
         this.path.animate('angle', targetAngle, {
             onChange: () => {
                 // Derive progress from the angle so position follows the same easing curve
-                const progress = ((this.path.angle ?? startAngle) - startAngle) / 90
+                const progress = ((this.path.angle ?? startAngle) - startAngle) / angleDelta
                 const currentBodyCenterX = startBodyCenter.x + (targetBodyCenterX - startBodyCenter.x) * progress
                 const currentBodyCenterY = startBodyCenter.y + (targetBodyCenterY - startBodyCenter.y) * progress
 
