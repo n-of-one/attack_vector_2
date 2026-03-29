@@ -141,7 +141,7 @@ export class JigsawPieceDisplay {
      * For a single piece the pivot is its own body center; for a group it's the average body center.
      * Position and angle interpolate together so the piece arcs smoothly to its new location.
      */
-    animateRotation(pivotX: number, pivotY: number, renderCallback: () => void) {
+    animateRotation(pivotX: number, pivotY: number, renderCallback: () => void, onComplete?: () => void) {
         const startAngle = this.path.angle ?? 0
         const targetAngle = startAngle + 90
         this.rotation = (this.rotation + 90) % 360
@@ -169,6 +169,7 @@ export class JigsawPieceDisplay {
                 this.path.set({angle: this.rotation})
                 this.setBodyCenter(targetBodyCenterX, targetBodyCenterY)
                 renderCallback()
+                if (onComplete) onComplete()
             }
         })
     }

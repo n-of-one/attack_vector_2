@@ -2,7 +2,6 @@ import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {JigsawEnterData} from "../JigsawServerActionProcessor";
-import {generatePieceConfigs} from "../component/JigsawShapes";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 
 class JigsawCanvas {
@@ -18,6 +17,9 @@ class JigsawCanvas {
     // Track the position at the start of a drag so we can compute the delta for group movement
     dragStartLeft: number = 0
     dragStartTop: number = 0
+
+    // True while a rotation animation is in progress, to prevent overlapping rotations
+    rotating: boolean = false
 
     imageLoaded() {
         this.imageLoaded_ = true
@@ -43,8 +45,8 @@ class JigsawCanvas {
             stopContextMenu: true,
         })
 
-        const puzzleCols = data.gridSize
-        const puzzleRows = data.gridSize
+        const puzzleCols = data.columns
+        const puzzleRows = data.rows
 
         // Calculate piece size to fit within canvas with some margin
         const maxPieceSize = Math.min(
@@ -55,10 +57,9 @@ class JigsawCanvas {
         this.pieceSize = pieceSize
 
         const sourceImg = document.getElementById('jigsawSourceImage') as HTMLImageElement
-        const pieces = generatePieceConfigs(puzzleCols, puzzleRows)
 
         this.piecesByLocation = {}
-        for (const config of pieces) {
+        for (const config of data.pieces) {
             const display = new JigsawPieceDisplay(
                 this.canvas, config.col, config.row, config, sourceImg,
                 puzzleCols, puzzleRows, pieceSize, canvasWidth, canvasHeight
@@ -108,6 +109,9 @@ class JigsawCanvas {
     }
 
     private rotateGroup(clickedPiece: JigsawPieceDisplay) {
+        if (this.rotating) return
+        this.rotating = true
+
         const group = clickedPiece.group
 
         // Calculate pivot: average of all body centers in the group
@@ -116,8 +120,16 @@ class JigsawCanvas {
         const pivotY = bodyCenters.reduce((sum, center) => sum + center.y, 0) / bodyCenters.length
 
         const renderCallback = this.canvas.renderAll.bind(this.canvas)
-        for (const piece of group) {
-            piece.animateRotation(pivotX, pivotY, renderCallback)
+        const pieces = [...group]
+        const completionTracker = {count: 0}
+        const onPieceComplete = () => {
+            completionTracker.count++
+            if (completionTracker.count === pieces.length) {
+                this.rotating = false
+            }
+        }
+        for (const piece of pieces) {
+            piece.animateRotation(pivotX, pivotY, renderCallback, onPieceComplete)
         }
     }
 
@@ -132,34 +144,41 @@ class JigsawCanvas {
             {colOffset: 0, rowOffset: 1},
         ]
 
-        // Only allow snapping when all pieces in the dragged group are at correct rotation
-        if (draggedPiece.rotation !== 0) return
-
-        // Check every piece in the dragged group for a snap to an outside neighbor
+        // Check every piece in the dragged group for a snap to an outside neighbor.
+        // The puzzle-space offset (colOffset, rowOffset) must be rotated into canvas space
+        // so that snapping works at any rotation. E.g. at 90° CW, "below" in puzzle space
+        // becomes "to the left" in canvas space.
         for (const piece of group) {
-            const bodyOrigin = piece.getBodyOrigin()
+            const bodyCenter = piece.getBodyCenter()
+            const angle = piece.rotation * Math.PI / 180
+            const cos = Math.cos(angle)
+            const sin = Math.sin(angle)
 
             for (const {colOffset, rowOffset} of neighborOffsets) {
                 const neighborKey = `${piece.col + colOffset}:${piece.row + rowOffset}`
                 const neighbor = this.piecesByLocation[neighborKey]
                 if (!neighbor || group.has(neighbor)) continue
 
-                // Neighbor must also be at correct rotation to snap
-                if (neighbor.rotation !== 0) continue
+                // Only snap pieces that share the same rotation
+                if (neighbor.rotation !== piece.rotation) continue
 
-                const neighborBodyOrigin = neighbor.getBodyOrigin()
+                const neighborBodyCenter = neighbor.getBodyCenter()
 
-                // Where this piece should be, relative to the neighbor
-                const expectedX = neighborBodyOrigin.x - colOffset * this.pieceSize
-                const expectedY = neighborBodyOrigin.y - rowOffset * this.pieceSize
+                // Rotate the puzzle-space offset into canvas space
+                const canvasOffsetX = (colOffset * cos - rowOffset * sin) * this.pieceSize
+                const canvasOffsetY = (colOffset * sin + rowOffset * cos) * this.pieceSize
 
-                const deltaX = Math.abs(bodyOrigin.x - expectedX)
-                const deltaY = Math.abs(bodyOrigin.y - expectedY)
+                // Where this piece's body center should be, relative to the neighbor
+                const expectedX = neighborBodyCenter.x - canvasOffsetX
+                const expectedY = neighborBodyCenter.y - canvasOffsetY
+
+                const deltaX = Math.abs(bodyCenter.x - expectedX)
+                const deltaY = Math.abs(bodyCenter.y - expectedY)
 
                 if (deltaX < snapTolerance && deltaY < snapTolerance) {
                     // Compute correction and apply to entire dragged group
-                    const correctionX = expectedX - bodyOrigin.x
-                    const correctionY = expectedY - bodyOrigin.y
+                    const correctionX = expectedX - bodyCenter.x
+                    const correctionY = expectedY - bodyCenter.y
 
                     for (const groupPiece of group) {
                         groupPiece.moveBy(correctionX, correctionY)

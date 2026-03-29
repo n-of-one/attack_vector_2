@@ -13,6 +13,7 @@ import {initJigsawServerActions} from "./JigsawServerActionProcessor";
 import {Page} from "../../../common/menu/pageReducer";
 import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 import {IceStrength} from "../../../common/model/IceStrength";
+import {generatePieceConfigs} from "./component/JigsawShapes";
 
 interface Props {
     iceId: string
@@ -49,12 +50,16 @@ export class JigsawRoot extends Component<Props> {
         initJigsawServerActions()
 
         // DEV: simulate server enter response with hardcoded data
+        const devColumns = 6
+        const devRows = 6
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,
                 strength: IceStrength.AVERAGE,
                 imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
-                gridSize: 6,
+                columns: devColumns,
+                rows: devRows,
+                pieces: generatePieceConfigs(devColumns, devRows),
             })
         }, 200)
     }
