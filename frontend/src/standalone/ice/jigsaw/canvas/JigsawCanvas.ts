@@ -4,6 +4,24 @@ import {fabric} from "fabric";
 import {JigsawEnterData} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 
+const SNAP_TOLERANCE_PIXELS = 15
+const CANVAS_MARGIN = 80
+const MAX_PIECE_SIZE = 150
+
+const NEIGHBOR_OFFSETS: ReadonlyArray<{ colOffset: number, rowOffset: number }> = [
+    {colOffset: -1, rowOffset: 0},
+    {colOffset: 1, rowOffset: 0},
+    {colOffset: 0, rowOffset: -1},
+    {colOffset: 0, rowOffset: 1},
+]
+
+const PRECOMPUTED_ROTATION_TRIGONOMETRY: { [degrees: number]: { cos: number, sin: number } } = {
+    0: {cos: 1, sin: 0},
+    90: {cos: 0, sin: 1},
+    180: {cos: -1, sin: 0},
+    270: {cos: 0, sin: -1},
+}
+
 class JigsawCanvas {
 
     canvas: Canvas = null as unknown as Canvas
@@ -54,20 +72,20 @@ class JigsawCanvas {
 
         // Calculate piece size to fit within canvas with some margin
         const maxPieceSize = Math.min(
-            (canvasWidth - 80) / (puzzleCols + 1),
-            (canvasHeight - 80) / (puzzleRows + 1)
+            (canvasWidth - CANVAS_MARGIN) / (puzzleCols + 1),
+            (canvasHeight - CANVAS_MARGIN) / (puzzleRows + 1)
         )
-        const pieceSize = Math.min(maxPieceSize, 150)
+        const pieceSize = Math.min(maxPieceSize, MAX_PIECE_SIZE)
         this.pieceSize = pieceSize
 
         const sourceImg = document.getElementById('jigsawSourceImage') as HTMLImageElement
 
         this.piecesByLocation = {}
         for (const config of data.pieces) {
-            const display = new JigsawPieceDisplay(
-                this.canvas, config.col, config.row, config, sourceImg,
+            const display = new JigsawPieceDisplay({
+                canvas: this.canvas, col: config.col, row: config.row, config, sourceImage: sourceImg,
                 puzzleCols, puzzleRows, pieceSize, canvasWidth, canvasHeight
-            )
+            })
             this.piecesByLocation[`${config.col}:${config.row}`] = display
         }
 
@@ -128,34 +146,31 @@ class JigsawCanvas {
         const group = clickedPiece.group
 
         // Calculate pivot: average of all body centers in the group
-        const bodyCenters = [...group].map(piece => piece.getBodyCenter())
-        const pivotX = bodyCenters.reduce((sum, center) => sum + center.x, 0) / bodyCenters.length
-        const pivotY = bodyCenters.reduce((sum, center) => sum + center.y, 0) / bodyCenters.length
+        let pivotX = 0
+        let pivotY = 0
+        for (const piece of group) {
+            const center = piece.getBodyCenter()
+            pivotX += center.x
+            pivotY += center.y
+        }
+        pivotX /= group.size
+        pivotY /= group.size
 
         const renderCallback = this.canvas.renderAll.bind(this.canvas)
-        const pieces = [...group]
-        const completionTracker = {count: 0}
+        let completedCount = 0
         const onPieceComplete = () => {
-            completionTracker.count++
-            if (completionTracker.count === pieces.length) {
+            completedCount++
+            if (completedCount === group.size) {
                 this.rotating = false
             }
         }
-        for (const piece of pieces) {
+        for (const piece of group) {
             piece.animateRotation(pivotX, pivotY, clockwise, renderCallback, onPieceComplete)
         }
     }
 
     private trySnapToNeighbor(draggedPiece: JigsawPieceDisplay) {
-        const snapTolerance = this.pieceSize * 0.2
         const group = draggedPiece.group
-
-        const neighborOffsets: Array<{ colOffset: number, rowOffset: number }> = [
-            {colOffset: -1, rowOffset: 0},
-            {colOffset: 1, rowOffset: 0},
-            {colOffset: 0, rowOffset: -1},
-            {colOffset: 0, rowOffset: 1},
-        ]
 
         // Check every piece in the dragged group for a snap to an outside neighbor.
         // The puzzle-space offset (colOffset, rowOffset) must be rotated into canvas space
@@ -163,11 +178,9 @@ class JigsawCanvas {
         // becomes "to the left" in canvas space.
         for (const piece of group) {
             const bodyCenter = piece.getBodyCenter()
-            const angle = piece.rotation * Math.PI / 180
-            const cos = Math.cos(angle)
-            const sin = Math.sin(angle)
+            const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[piece.rotation]
 
-            for (const {colOffset, rowOffset} of neighborOffsets) {
+            for (const {colOffset, rowOffset} of NEIGHBOR_OFFSETS) {
                 const neighborKey = `${piece.col + colOffset}:${piece.row + rowOffset}`
                 const neighbor = this.piecesByLocation[neighborKey]
                 if (!neighbor || group.has(neighbor)) continue
@@ -188,7 +201,7 @@ class JigsawCanvas {
                 const deltaX = Math.abs(bodyCenter.x - expectedX)
                 const deltaY = Math.abs(bodyCenter.y - expectedY)
 
-                if (deltaX < snapTolerance && deltaY < snapTolerance) {
+                if (deltaX < SNAP_TOLERANCE_PIXELS && deltaY < SNAP_TOLERANCE_PIXELS) {
                     // Compute correction and apply to entire dragged group
                     const correctionX = expectedX - bodyCenter.x
                     const correctionY = expectedY - bodyCenter.y
@@ -210,7 +223,7 @@ class JigsawCanvas {
     private updateStrokeOpacity(group: Set<JigsawPieceDisplay>) {
         for (const piece of group) {
             let snappedNeighborCount = 0
-            for (const [colOffset, rowOffset] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+            for (const {colOffset, rowOffset} of NEIGHBOR_OFFSETS) {
                 const neighbor = this.piecesByLocation[`${piece.col + colOffset}:${piece.row + rowOffset}`]
                 if (neighbor && group.has(neighbor)) {
                     snappedNeighborCount++

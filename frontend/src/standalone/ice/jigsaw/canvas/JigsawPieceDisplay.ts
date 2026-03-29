@@ -1,6 +1,31 @@
 import {fabric} from "fabric";
 import {Canvas} from "fabric/fabric-impl";
-import {buildPiecePath, EdgeConfig, PieceConfig, ShapedEdge} from "../component/JigsawShapes";
+import {buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
+
+const TAB_SIZE_RATIO = 0.2
+
+/** Opacity steps indexed by max possible neighbors:
+ *  Corner (2 max):  0 → 100%, 1 → 60%, 2 → 0%
+ *  Edge (3 max):    0 → 100%, 1 → 60%, 2 → 40%, 3 → 0%
+ *  Center (4 max):  0 → 100%, 1 → 60%, 2 → 40%, 3 → 30%, 4 → 0% */
+const OPACITY_STEPS: { [maxNeighbors: number]: number[] } = {
+    2: [1.0, 0.6, 0],
+    3: [1.0, 0.6, 0.4, 0],
+    4: [1.0, 0.6, 0.4, 0.3, 0],
+}
+
+export interface JigsawPieceDisplayOptions {
+    canvas: Canvas
+    col: number
+    row: number
+    config: PieceConfig
+    sourceImage: HTMLImageElement
+    puzzleCols: number
+    puzzleRows: number
+    pieceSize: number
+    canvasWidth: number
+    canvasHeight: number
+}
 
 export class JigsawPieceDisplay {
 
@@ -30,33 +55,30 @@ export class JigsawPieceDisplay {
     // How many neighbors this piece can have (2 for corners, 3 for edges, 4 for center pieces)
     maxNeighborCount: number
 
-    constructor(canvas: Canvas, col: number, row: number, config: PieceConfig,
-                sourceImage: HTMLImageElement, puzzleCols: number, puzzleRows: number,
-                pieceSize: number, canvasWidth: number, canvasHeight: number) {
+    constructor(options: JigsawPieceDisplayOptions) {
+        const {canvas, col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize, canvasWidth, canvasHeight} = options
+
         this.canvas = canvas
         this.col = col
         this.row = row
         this.config = config
         this.pieceSize = pieceSize
 
-        const tabSize = pieceSize * 0.2
+        const tabSize = pieceSize * TAB_SIZE_RATIO
 
-        this.extensionLeft = this.extension(config.left, tabSize)
-        this.extensionTop = this.extension(config.top, tabSize)
-        const extensionRight = this.extension(config.right, tabSize)
-        const extensionBottom = this.extension(config.bottom, tabSize)
+        this.extensionLeft = this.extensionSize(config.left, tabSize)
+        this.extensionTop = this.extensionSize(config.top, tabSize)
+        const extensionRight = this.extensionSize(config.right, tabSize)
+        const extensionBottom = this.extensionSize(config.bottom, tabSize)
 
-        const extensionLeft = this.extensionLeft
-        const extensionTop = this.extensionTop
+        this.bodyOffsetX = (this.extensionLeft - extensionRight) / 2
+        this.bodyOffsetY = (this.extensionTop - extensionBottom) / 2
 
-        this.bodyOffsetX = (extensionLeft - extensionRight) / 2
-        this.bodyOffsetY = (extensionTop - extensionBottom) / 2
-
-        const patternCanvas = this.createPatternCanvas(sourceImage, col, row, puzzleCols, puzzleRows, pieceSize, tabSize,
-            extensionLeft, extensionTop, extensionRight, extensionBottom)
+        const patternCanvas = this.createPatternCanvas(sourceImage, puzzleCols, puzzleRows,
+            extensionRight, extensionBottom)
 
         // Build path at local origin (extensionLeft, extensionTop) so all coordinates are non-negative
-        const pathString = buildPiecePath(extensionLeft, extensionTop, pieceSize, config)
+        const pathString = buildPiecePath(this.extensionLeft, this.extensionTop, pieceSize, config)
 
         // Scatter piece to random position on canvas
         const margin = tabSize * 2
@@ -138,16 +160,7 @@ export class JigsawPieceDisplay {
 
     /** Update the stroke opacity based on how many neighbors are snapped to this piece. */
     updateSnappedNeighborCount(snappedNeighborCount: number) {
-        // Opacity steps based on max possible neighbors:
-        // Corner (2 max):  0 → 100%, 1 → 60%, 2 → 0%
-        // Edge (3 max):    0 → 100%, 1 → 60%, 2 → 40%, 3 → 0%
-        // Center (4 max):  0 → 100%, 1 → 60%, 2 → 40%, 3 → 30%, 4 → 0%
-        const opacitySteps: { [maxNeighbors: number]: number[] } = {
-            2: [1.0, 0.6, 0],
-            3: [1.0, 0.6, 0.4, 0],
-            4: [1.0, 0.6, 0.4, 0.3, 0],
-        }
-        const opacity = opacitySteps[this.maxNeighborCount][snappedNeighborCount]
+        const opacity = OPACITY_STEPS[this.maxNeighborCount][snappedNeighborCount]
         this.path.set({stroke: `rgba(136, 170, 204, ${opacity})`})
     }
 
@@ -211,24 +224,23 @@ export class JigsawPieceDisplay {
         }
     }
 
-    private extension(edge: EdgeConfig, tabSize: number): number {
-        return (edge.dir !== 'flat' && (edge as ShapedEdge).dir === 'out') ? tabSize : 0
+    private extensionSize(edge: EdgeConfig, tabSize: number): number {
+        return edge.dir === 'out' ? tabSize : 0
     }
 
-    private createPatternCanvas(sourceImage: HTMLImageElement, col: number, row: number,
-                                puzzleCols: number, puzzleRows: number, pieceSize: number, tabSize: number,
-                                extensionLeft: number, extensionTop: number,
+    private createPatternCanvas(sourceImage: HTMLImageElement,
+                                puzzleCols: number, puzzleRows: number,
                                 extensionRight: number, extensionBottom: number): HTMLCanvasElement {
-        const boundingBoxWidth = extensionLeft + pieceSize + extensionRight
-        const boundingBoxHeight = extensionTop + pieceSize + extensionBottom
+        const boundingBoxWidth = this.extensionLeft + this.pieceSize + extensionRight
+        const boundingBoxHeight = this.extensionTop + this.pieceSize + extensionBottom
 
-        const puzzleWidth = pieceSize * puzzleCols
-        const puzzleHeight = pieceSize * puzzleRows
+        const puzzleWidth = this.pieceSize * puzzleCols
+        const puzzleHeight = this.pieceSize * puzzleRows
         const imageScaleX = sourceImage.naturalWidth / puzzleWidth
         const imageScaleY = sourceImage.naturalHeight / puzzleHeight
 
-        const sourceX = (col * pieceSize - extensionLeft) * imageScaleX
-        const sourceY = (row * pieceSize - extensionTop) * imageScaleY
+        const sourceX = (this.col * this.pieceSize - this.extensionLeft) * imageScaleX
+        const sourceY = (this.row * this.pieceSize - this.extensionTop) * imageScaleY
         const sourceWidth = boundingBoxWidth * imageScaleX
         const sourceHeight = boundingBoxHeight * imageScaleY
 

@@ -1,6 +1,7 @@
 // --- Types ---
 
 export type ShapeType = 'trapezoid' | 'parapet' | 'saw' | 'triangle'
+export type EdgeType = 'top' | 'right' | 'bottom' | 'left'
 
 export interface ShapedEdge {
     shape: ShapeType
@@ -27,6 +28,9 @@ export const FLAT: FlatEdge = {dir: 'flat'}
 // Canonical point: [along, perp] relative to an edge
 type CanonicalPoint = [number, number]
 type ShapeGenerator = (size: number, tabHeight: number, chamferSize: number) => CanonicalPoint[]
+
+const TAB_HEIGHT_RATIO = 0.2
+const CHAMFER_RATIO = 0.15
 
 // --- Shape definitions ---
 // Each shape returns [along, perp] points in canonical form:
@@ -87,7 +91,7 @@ const ALL_SHAPES: ShapeType[] = ['trapezoid', 'parapet', 'saw', 'triangle']
 
 type EdgeMapper = (along: number, perp: number) => [number, number]
 
-export function getEdgeMapper(edge: string, originX: number, originY: number, size: number): EdgeMapper {
+export function getEdgeMapper(edge: EdgeType, originX: number, originY: number, size: number): EdgeMapper {
     switch (edge) {
         case 'top':
             return (along, perp) => [originX + along, originY - perp]
@@ -97,19 +101,17 @@ export function getEdgeMapper(edge: string, originX: number, originY: number, si
             return (along, perp) => [originX + size - along, originY + size + perp]
         case 'left':
             return (along, perp) => [originX - perp, originY + size - along]
-        default:
-            throw new Error(`Invalid edge: ${edge}`)
     }
 }
 
 // --- Path builder ---
 
 export function buildPiecePath(originX: number, originY: number, size: number, config: PieceConfig): string {
-    const tabHeight = size * 0.2
-    const chamferSize = tabHeight * 0.15
-    let path = `M ${originX} ${originY}`
+    const tabHeight = size * TAB_HEIGHT_RATIO
+    const chamferSize = tabHeight * CHAMFER_RATIO
+    let pathString = `M ${originX} ${originY}`
 
-    const edges: Array<{ name: string, edgeConfig: EdgeConfig }> = [
+    const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
         {name: 'top', edgeConfig: config.top},
         {name: 'right', edgeConfig: config.right},
         {name: 'bottom', edgeConfig: config.bottom},
@@ -121,28 +123,28 @@ export function buildPiecePath(originX: number, originY: number, size: number, c
 
         if (edgeConfig.dir === 'flat') {
             const [endX, endY] = mapper(size, 0)
-            path += ` L ${endX} ${endY}`
+            pathString += ` L ${endX} ${endY}`
         } else {
             const direction = edgeConfig.dir === 'out' ? 1 : -1
-            const points = SHAPES[(edgeConfig as ShapedEdge).shape](size, tabHeight, chamferSize)
+            const points = SHAPES[edgeConfig.shape](size, tabHeight, chamferSize)
             for (const [along, perp] of points) {
                 const [x, y] = mapper(along, perp * direction)
-                path += ` L ${x} ${y}`
+                pathString += ` L ${x} ${y}`
             }
             const [endX, endY] = mapper(size, 0)
-            path += ` L ${endX} ${endY}`
+            pathString += ` L ${endX} ${endY}`
         }
     }
 
-    path += ' Z'
-    return path
+    pathString += ' Z'
+    return pathString
 }
 
 // --- Grid generation ---
 
 export function flipDir(edge: EdgeConfig): EdgeConfig {
     if (edge.dir === 'flat') return FLAT
-    return {shape: (edge as ShapedEdge).shape, dir: edge.dir === 'out' ? 'in' : 'out'}
+    return {shape: edge.shape, dir: edge.dir === 'out' ? 'in' : 'out'}
 }
 
 function randomShape(): ShapeType {
