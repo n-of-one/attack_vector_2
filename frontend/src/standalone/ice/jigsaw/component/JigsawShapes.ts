@@ -17,6 +17,9 @@ export type EdgeConfig = ShapedEdge | FlatEdge
 export interface PieceConfig {
     col: number
     row: number
+    x: number
+    y: number
+    rotation: number // 0, 90, 180, or 270
     top: EdgeConfig
     right: EdgeConfig
     bottom: EdgeConfig
@@ -31,6 +34,18 @@ type ShapeGenerator = (size: number, tabHeight: number, chamferSize: number) => 
 
 const TAB_HEIGHT_RATIO = 0.2
 const CHAMFER_RATIO = 0.15
+const CANVAS_MARGIN = 80
+const MAX_PIECE_SIZE = 150
+
+const ROTATIONS = [0, 90, 180, 270]
+
+export function calculatePieceSize(canvasWidth: number, canvasHeight: number, cols: number, rows: number): number {
+    const maxPieceSize = Math.min(
+        (canvasWidth - CANVAS_MARGIN) / (cols + 1),
+        (canvasHeight - CANVAS_MARGIN) / (rows + 1)
+    )
+    return Math.min(maxPieceSize, MAX_PIECE_SIZE)
+}
 
 // --- Shape definitions ---
 // Each shape returns [along, perp] points in canonical form:
@@ -155,7 +170,11 @@ function randomDir(): 'out' | 'in' {
     return Math.random() < 0.5 ? 'out' : 'in'
 }
 
-export function generatePieceConfigs(cols: number, rows: number): PieceConfig[] {
+export function generatePieceConfigs(cols: number, rows: number, canvasWidth: number, canvasHeight: number): PieceConfig[] {
+    const pieceSize = calculatePieceSize(canvasWidth, canvasHeight, cols, rows)
+    const tabSize = pieceSize * TAB_HEIGHT_RATIO
+    const margin = tabSize * 2
+
     // Pre-generate internal edges
     // horizontalEdges[row][col] = edge between (col, row).right and (col+1, row).left
     const horizontalEdges: ShapedEdge[][] = []
@@ -184,7 +203,11 @@ export function generatePieceConfigs(cols: number, rows: number): PieceConfig[] 
             const left: EdgeConfig = col === 0 ? FLAT : flipDir(horizontalEdges[row][col - 1])
             const right: EdgeConfig = col === cols - 1 ? FLAT : horizontalEdges[row][col]
 
-            pieces.push({col, row, top, right, bottom, left})
+            const x = margin + Math.random() * (canvasWidth - pieceSize - margin * 2)
+            const y = margin + Math.random() * (canvasHeight - pieceSize - margin * 2)
+            const rotation = ROTATIONS[Math.floor(Math.random() * 4)]
+
+            pieces.push({col, row, x, y, rotation, top, right, bottom, left})
         }
     }
 

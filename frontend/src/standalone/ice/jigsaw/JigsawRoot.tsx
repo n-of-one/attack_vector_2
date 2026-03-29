@@ -50,8 +50,8 @@ export class JigsawRoot extends Component<Props> {
         initJigsawServerActions()
 
         // DEV: simulate server enter response with hardcoded data
-        const devColumns = 21
-        const devRows = 12
+        const devColumns = 5
+        const devRows = 3
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,
@@ -59,7 +59,7 @@ export class JigsawRoot extends Component<Props> {
                 imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
                 columns: devColumns,
                 rows: devRows,
-                pieces: generatePieceConfigs(devColumns, devRows),
+                pieces: generatePieceConfigs(devColumns, devRows, 1576, 828),
             })
         }, 200)
     }

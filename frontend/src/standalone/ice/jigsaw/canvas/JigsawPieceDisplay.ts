@@ -23,8 +23,6 @@ export interface JigsawPieceDisplayOptions {
     puzzleCols: number
     puzzleRows: number
     pieceSize: number
-    canvasWidth: number
-    canvasHeight: number
 }
 
 export class JigsawPieceDisplay {
@@ -56,7 +54,7 @@ export class JigsawPieceDisplay {
     maxNeighborCount: number
 
     constructor(options: JigsawPieceDisplayOptions) {
-        const {canvas, col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize, canvasWidth, canvasHeight} = options
+        const {canvas, col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize} = options
 
         this.canvas = canvas
         this.col = col
@@ -80,11 +78,6 @@ export class JigsawPieceDisplay {
         // Build path at local origin (extensionLeft, extensionTop) so all coordinates are non-negative
         const pathString = buildPiecePath(this.extensionLeft, this.extensionTop, pieceSize, config)
 
-        // Scatter piece to random position on canvas
-        const margin = tabSize * 2
-        const scatteredX = margin + Math.random() * (canvasWidth - pieceSize - margin * 2)
-        const scatteredY = margin + Math.random() * (canvasHeight - pieceSize - margin * 2)
-
         this.path = new fabric.Path(pathString, {
             fill: new fabric.Pattern({
                 source: patternCanvas as unknown as HTMLImageElement, // fabric.js accepts canvas elements at runtime
@@ -92,8 +85,8 @@ export class JigsawPieceDisplay {
             }),
             stroke: '#88aacc',
             strokeWidth: 1.5,
-            left: scatteredX,
-            top: scatteredY,
+            left: config.x,
+            top: config.y,
             selectable: true,
             hasControls: false,
             hasBorders: false,
@@ -108,7 +101,7 @@ export class JigsawPieceDisplay {
         const onBottomEdge = row === puzzleRows - 1
         this.maxNeighborCount = 4 - (onLeftEdge ? 1 : 0) - (onRightEdge ? 1 : 0) - (onTopEdge ? 1 : 0) - (onBottomEdge ? 1 : 0)
 
-        this.rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)]
+        this.rotation = config.rotation
         this.path.set({angle: this.rotation})
         this.group = new Set([this])
 

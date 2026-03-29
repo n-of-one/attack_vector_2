@@ -3,10 +3,9 @@ import {Dispatch, Store} from "redux";
 import {fabric} from "fabric";
 import {JigsawEnterData} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
+import {calculatePieceSize} from "../component/JigsawShapes";
 
 const SNAP_TOLERANCE_PIXELS = 15
-const CANVAS_MARGIN = 80
-const MAX_PIECE_SIZE = 150
 
 const NEIGHBOR_OFFSETS: ReadonlyArray<{ colOffset: number, rowOffset: number }> = [
     {colOffset: -1, rowOffset: 0},
@@ -56,19 +55,13 @@ export class JigsawCanvas {
 
         const puzzleCols = data.columns
         const puzzleRows = data.rows
-
-        // Calculate piece size to fit within canvas with some margin
-        const maxPieceSize = Math.min(
-            (canvasWidth - CANVAS_MARGIN) / (puzzleCols + 1),
-            (canvasHeight - CANVAS_MARGIN) / (puzzleRows + 1)
-        )
-        this.pieceSize = Math.min(maxPieceSize, MAX_PIECE_SIZE)
+        this.pieceSize = calculatePieceSize(canvasWidth, canvasHeight, puzzleCols, puzzleRows)
 
         this.piecesByLocation = {}
         for (const config of data.pieces) {
             const display = new JigsawPieceDisplay({
                 canvas: this.canvas, col: config.col, row: config.row, config, sourceImage,
-                puzzleCols, puzzleRows, pieceSize: this.pieceSize, canvasWidth, canvasHeight
+                puzzleCols, puzzleRows, pieceSize: this.pieceSize
             })
             this.piecesByLocation[`${config.col}:${config.row}`] = display
         }
