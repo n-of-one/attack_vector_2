@@ -6,6 +6,9 @@ import {PieceConfig} from "./component/JigsawShapes";
 
 export const SERVER_JIGSAW_ENTER = "SERVER_JIGSAW_ENTER"
 
+/** A group is a list of [col, row] pairs identifying pieces that are already snapped together. */
+export type PieceGroup = [number, number][]
+
 export interface JigsawEnterData {
     hacked: boolean,
     strength: IceStrength,
@@ -13,6 +16,7 @@ export interface JigsawEnterData {
     columns: number,
     rows: number,
     pieces: PieceConfig[],
+    groups: PieceGroup[],
 }
 
 export const initJigsawServerActions = () => {

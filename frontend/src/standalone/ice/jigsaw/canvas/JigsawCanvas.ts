@@ -67,8 +67,49 @@ export class JigsawCanvas {
             })
         )
 
+        this.applyGroups(data.groups)
         this.registerEventHandlers()
         this.canvas.renderAll()
+    }
+
+    /**
+     * Apply pre-existing groups: merge pieces into shared groups and position them
+     * correctly relative to the first piece in each group.
+     */
+    private applyGroups(groups: JigsawEnterData['groups']) {
+        for (const group of groups) {
+            if (group.length < 2) continue
+
+            const [anchorCol, anchorRow] = group[0]
+            const anchor = this.piecesByLocation.get(`${anchorCol}:${anchorRow}`)
+            if (!anchor) continue
+
+            const anchorCenter = anchor.getBodyCenter()
+            const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[anchor.rotation]
+
+            for (let i = 1; i < group.length; i++) {
+                const [col, row] = group[i]
+                const piece = this.piecesByLocation.get(`${col}:${row}`)
+                if (!piece) continue
+
+                // Match rotation to anchor
+                piece.rotation = anchor.rotation
+                piece.path.set({angle: anchor.rotation})
+
+                // Position relative to anchor using rotated grid offset
+                const colOffset = col - anchorCol
+                const rowOffset = row - anchorRow
+                const canvasOffsetX = (colOffset * cos - rowOffset * sin) * this.pieceSize
+                const canvasOffsetY = (colOffset * sin + rowOffset * cos) * this.pieceSize
+
+                piece.setBodyCenter(anchorCenter.x + canvasOffsetX, anchorCenter.y + canvasOffsetY)
+
+                // Merge into anchor's group
+                anchor.mergeGroup(piece)
+            }
+
+            this.updateStrokeOpacity(anchor.group)
+        }
     }
 
     private registerEventHandlers() {

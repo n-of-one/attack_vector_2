@@ -44,7 +44,7 @@ export function calculatePieceSize(canvasWidth: number, canvasHeight: number, co
         (canvasWidth - CANVAS_MARGIN) / (cols + 1),
         (canvasHeight - CANVAS_MARGIN) / (rows + 1)
     )
-    return Math.min(maxPieceSize, MAX_PIECE_SIZE)
+    return Math.ceil(Math.min(maxPieceSize, MAX_PIECE_SIZE))
 }
 
 // --- Shape definitions ---
@@ -56,17 +56,19 @@ const SEGMENTS_PER_BULB = 8
 
 export const SHAPES: Record<ShapeType, ShapeGenerator> = {
     // Consecutive semicircular bulbs (no gaps between bulbs)
-    invected: (size, _tabHeight) => {
+    // Uses tabHeight as max perp so the extrusion matches the layout extension
+    invected: (size, tabHeight) => {
         const margin = size * EDGE_MARGIN_RATIO
         const inner = size - 2 * margin
         const count = 4
-        const r = inner / (count * 2)
+        const rx = inner / (count * 2) // horizontal radius: fills the edge
+        const ry = tabHeight            // vertical radius: matches extension
         const points: CanonicalPoint[] = []
         for (let i = 0; i < count; i++) {
-            const center = margin + r * (2 * i + 1)
+            const center = margin + rx * (2 * i + 1)
             for (let j = 0; j <= SEGMENTS_PER_BULB; j++) {
                 const angle = Math.PI - j * Math.PI / SEGMENTS_PER_BULB
-                points.push([center + r * Math.cos(angle), r * Math.sin(angle)])
+                points.push([center + rx * Math.cos(angle), ry * Math.sin(angle)])
             }
         }
         return points
@@ -156,9 +158,14 @@ export function getEdgeMapper(edge: EdgeType, originX: number, originY: number, 
 
 // --- Path builder ---
 
+/** Round to 2 decimal places to eliminate floating-point drift between matching in/out edges. */
+function round(n: number): number {
+    return Math.round(n * 100) / 100
+}
+
 export function buildPiecePath(originX: number, originY: number, size: number, config: PieceConfig): string {
     const tabHeight = size * TAB_HEIGHT_RATIO
-    let pathString = `M ${originX} ${originY}`
+    let pathString = `M ${round(originX)} ${round(originY)}`
 
     const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
         {name: 'top', edgeConfig: config.top},
@@ -172,16 +179,16 @@ export function buildPiecePath(originX: number, originY: number, size: number, c
 
         if (edgeConfig.dir === 'flat') {
             const [endX, endY] = mapper(size, 0)
-            pathString += ` L ${endX} ${endY}`
+            pathString += ` L ${round(endX)} ${round(endY)}`
         } else {
             const direction = edgeConfig.dir === 'out' ? 1 : -1
             const points = SHAPES[edgeConfig.shape](size, tabHeight)
             for (const [along, perp] of points) {
                 const [x, y] = mapper(along, perp * direction)
-                pathString += ` L ${x} ${y}`
+                pathString += ` L ${round(x)} ${round(y)}`
             }
             const [endX, endY] = mapper(size, 0)
-            pathString += ` L ${endX} ${endY}`
+            pathString += ` L ${round(endX)} ${round(endY)}`
         }
     }
 
