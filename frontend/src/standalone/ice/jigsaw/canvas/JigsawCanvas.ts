@@ -89,6 +89,12 @@ export class JigsawCanvas {
 
             this.dragStartLeft = event.target.left ?? 0
             this.dragStartTop = event.target.top ?? 0
+
+            // Bring the dragged piece (and its group) to the top of the z-order
+            const piece = event.target.data as JigsawPieceDisplay
+            for (const groupPiece of piece.group) {
+                this.canvas.bringToFront(groupPiece.path)
+            }
         })
 
         // Scroll wheel rotates the piece under the cursor: down = CW, up = CCW
