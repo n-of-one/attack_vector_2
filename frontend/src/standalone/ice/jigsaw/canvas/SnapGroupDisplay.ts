@@ -2,7 +2,9 @@ import {fabric} from "fabric"
 import {Canvas} from "fabric/fabric-impl"
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay"
 
-export const NEIGHBOR_OFFSETS: ReadonlyArray<{ colOffset: number, rowOffset: number }> = [
+const SNAP_TOLERANCE_PIXELS = 15
+
+const NEIGHBOR_OFFSETS: ReadonlyArray<{ colOffset: number, rowOffset: number }> = [
     {colOffset: -1, rowOffset: 0},
     {colOffset: 1, rowOffset: 0},
     {colOffset: 0, rowOffset: -1},
@@ -23,31 +25,64 @@ export class SnapGroupDisplay {
 
     readonly pieces: Set<JigsawPieceDisplay>
     readonly fabricGroup: fabric.Group
+    readonly canvas: Canvas
 
-    private constructor(pieces: Set<JigsawPieceDisplay>, fabricGroup: fabric.Group) {
+    constructor(pieces: Set<JigsawPieceDisplay>, canvas: Canvas) {
         this.pieces = pieces
-        this.fabricGroup = fabricGroup
-        fabricGroup.data = this
+        this.canvas = canvas
+        const displayObjects = [...pieces].map(p => p.displayObject)
+        this.fabricGroup = new fabric.Group(displayObjects, FABRIC_GROUP_OPTIONS)
+        this.fabricGroup.data = this
         for (const piece of pieces) {
             piece.snapGroup = this
         }
+        canvas.add(this.fabricGroup)
     }
 
-    /** Create a snap group wrapping a single piece whose displayObject is already positioned. */
-    static createForPiece(piece: JigsawPieceDisplay, canvas: Canvas): SnapGroupDisplay {
-        const fabricGroup = new fabric.Group([piece.displayObject], FABRIC_GROUP_OPTIONS)
-        const snapGroup = new SnapGroupDisplay(new Set([piece]), fabricGroup)
-        canvas.add(fabricGroup)
-        return snapGroup
+    /** Animate a 90-degree rotation around the group's bounding box center. */
+    rotate(clockwise: boolean, onComplete: () => void) {
+        const angleDelta = clockwise ? 90 : -90
+        const startAngle = this.fabricGroup.angle ?? 0
+        const targetAngle = startAngle + angleDelta
+
+        this.fabricGroup.animate('angle', targetAngle, {
+            onChange: () => this.canvas.renderAll(),
+            duration: 200,
+            onComplete: () => {
+                this.fabricGroup.set({angle: targetAngle})
+                this.fabricGroup.setCoords()
+                for (const piece of this.pieces) {
+                    piece.rotation = (piece.rotation + angleDelta + 360) % 360
+                }
+                this.canvas.renderAll()
+                onComplete()
+            }
+        })
     }
 
-    /** Create a snap group from multiple pieces whose displayObjects are already positioned. */
-    static createFromPieces(pieces: Set<JigsawPieceDisplay>, canvas: Canvas): SnapGroupDisplay {
-        const displayObjects = [...pieces].map(p => p.displayObject)
-        const fabricGroup = new fabric.Group(displayObjects, FABRIC_GROUP_OPTIONS)
-        const snapGroup = new SnapGroupDisplay(pieces, fabricGroup)
-        canvas.add(fabricGroup)
-        return snapGroup
+    /** Check all pieces for a snappable neighbor. If found, snap and merge groups. Returns true if snapped. */
+    trySnap(piecesByLocation: Map<string, JigsawPieceDisplay>) {
+        for (const piece of this.pieces) {
+            for (const {colOffset, rowOffset} of NEIGHBOR_OFFSETS) {
+                const neighbor = piecesByLocation.get(`${piece.col + colOffset}:${piece.row + rowOffset}`)
+                if (!neighbor || this.pieces.has(neighbor)) continue
+
+                const correction = piece.checkSnapTo(neighbor, SNAP_TOLERANCE_PIXELS)
+                if (!correction) continue
+
+                // Align this group with the neighbor
+                this.fabricGroup.set({
+                    left: (this.fabricGroup.left ?? 0) + correction.x,
+                    top: (this.fabricGroup.top ?? 0) + correction.y,
+                })
+                this.fabricGroup.setCoords()
+
+                // Merge and update visuals
+                const merged = this.merge(neighbor.snapGroup, this.canvas)
+                merged.updateStrokeOpacity(piecesByLocation)
+                this.canvas.renderAll()
+            }
+        }
     }
 
     /** Merge this snap group with another. Returns the new combined SnapGroupDisplay. */
@@ -67,16 +102,14 @@ export class SnapGroupDisplay {
         for (const piece of this.pieces) this.fabricGroup.remove(piece.displayObject)
         for (const piece of other.pieces) other.fabricGroup.remove(piece.displayObject)
 
-        // Restore absolute positions on standalone displayObjects
+        // Restore absolute positions on extracted displayObjects
         const allPieces = new Set([...this.pieces, ...other.pieces])
         for (const piece of allPieces) {
-            const pos = positions.get(piece)!
-            piece.displayObject.set({angle: piece.rotation})
-            piece.setBodyCenter(pos.x, pos.y)
+            piece.restoreAbsolutePosition(positions.get(piece)!)
         }
 
         // Create merged group
-        return SnapGroupDisplay.createFromPieces(allPieces, canvas)
+        return new SnapGroupDisplay(allPieces, canvas)
     }
 
     /** Update stroke opacity for all pieces based on snapped neighbor count within this group. */
