@@ -30,10 +30,6 @@ export class JigsawCanvas {
     private readonly piecesByLocation: Map<string, JigsawPieceDisplay>
     private readonly pieceSize: number
 
-    // Track the position at the start of a drag so we can compute the delta for group movement
-    private dragStartLeft: number = 0
-    private dragStartTop: number = 0
-
     // True while a rotation animation is in progress, to prevent overlapping rotations
     private rotating: boolean = false
 
@@ -60,12 +56,17 @@ export class JigsawCanvas {
         this.piecesByLocation = new Map(
             data.pieces.map(config => {
                 const display = new JigsawPieceDisplay({
-                    canvas: this.canvas, col: config.col, row: config.row, config, sourceImage,
+                    col: config.col, row: config.row, config, sourceImage,
                     puzzleCols, puzzleRows, pieceSize: this.pieceSize
                 })
                 return [`${config.col}:${config.row}`, display]
             })
         )
+
+        // Add all pieces as standalone canvas objects
+        for (const piece of this.piecesByLocation.values()) {
+            this.canvas.add(piece.displayObject)
+        }
 
         this.applyGroups(data.groups)
         this.registerEventHandlers()
@@ -73,8 +74,8 @@ export class JigsawCanvas {
     }
 
     /**
-     * Apply pre-existing groups: merge pieces into shared groups and position them
-     * correctly relative to the first piece in each group.
+     * Apply pre-existing groups: merge pieces into shared groups, position them
+     * correctly relative to the anchor, then wrap in snap fabric groups.
      */
     private applyGroups(groups: JigsawEnterData['groups']) {
         for (const group of groups) {
@@ -109,95 +110,194 @@ export class JigsawCanvas {
             }
 
             this.updateStrokeOpacity(anchor.group)
+            this.createSnapFabricGroup(anchor.group)
         }
     }
 
+    /** Create a snap fabric.Group from pieces whose displayObjects are already positioned on the canvas. */
+    private createSnapFabricGroup(pieces: Set<JigsawPieceDisplay>) {
+        if (pieces.size <= 1) return
+
+        // Remove standalone displayObjects from canvas
+        for (const piece of pieces) {
+            this.canvas.remove(piece.displayObject)
+        }
+
+        const displayObjects = [...pieces].map(p => p.displayObject)
+        const representative = [...pieces][0]
+
+        const snapGroup = new fabric.Group(displayObjects, {
+            selectable: true,
+            hasControls: false,
+            hasBorders: false,
+            lockRotation: true,
+            hoverCursor: 'grab',
+            subTargetCheck: false,
+            perPixelTargetFind: true,
+            data: representative,
+        })
+
+        for (const piece of pieces) {
+            piece.snapFabricGroup = snapGroup
+        }
+
+        this.canvas.add(snapGroup)
+    }
+
+    /**
+     * Merge two snap groups (or standalone pieces) into a single snap fabric.Group.
+     * The logical groups must already be merged (via mergeGroup) before calling this.
+     */
+    private mergeSnapFabricGroups(allPieces: Set<JigsawPieceDisplay>, representative: JigsawPieceDisplay) {
+        // Record absolute body centers before destroying groups
+        const positions = new Map<JigsawPieceDisplay, { x: number, y: number }>()
+        for (const piece of allPieces) {
+            positions.set(piece, piece.getBodyCenter())
+        }
+
+        // Remove current canvas objects (snap groups or standalone displayObjects)
+        const removed = new Set<fabric.Object>()
+        for (const piece of allPieces) {
+            const obj = piece.getCanvasObject()
+            if (!removed.has(obj)) {
+                this.canvas.remove(obj)
+                removed.add(obj)
+            }
+        }
+
+        // Extract displayObjects from old snap groups
+        for (const piece of allPieces) {
+            if (piece.snapFabricGroup) {
+                piece.snapFabricGroup.remove(piece.displayObject)
+                piece.snapFabricGroup = null
+            }
+        }
+
+        // Restore absolute positions on now-standalone displayObjects
+        for (const piece of allPieces) {
+            const pos = positions.get(piece)!
+            piece.displayObject.set({angle: piece.rotation})
+            piece.setBodyCenter(pos.x, pos.y)
+        }
+
+        // Create the merged snap group
+        const displayObjects = [...allPieces].map(p => p.displayObject)
+
+        const snapGroup = new fabric.Group(displayObjects, {
+            selectable: true,
+            hasControls: false,
+            hasBorders: false,
+            lockRotation: true,
+            hoverCursor: 'grab',
+            subTargetCheck: false,
+            perPixelTargetFind: true,
+            data: representative,
+        })
+
+        for (const piece of allPieces) {
+            piece.snapFabricGroup = snapGroup
+        }
+
+        this.canvas.add(snapGroup)
+    }
+
     private registerEventHandlers() {
-        // Record position at drag start for computing group delta, and handle right-click rotation
+        // Right-click rotation and z-order on mouse down
         this.canvas.on('mouse:down', (event) => {
-            if (!event.target || !(event.target.data instanceof JigsawPieceDisplay)) return
+            const piece = this.getPieceFromTarget(event.target)
+            if (!piece) return
 
             if ((event.e as MouseEvent).button === 2) {
-                this.rotateGroup(event.target.data as JigsawPieceDisplay, true)
+                this.rotateGroup(piece, true)
                 return
             }
 
-            this.dragStartLeft = event.target.left ?? 0
-            this.dragStartTop = event.target.top ?? 0
-
-            // Bring the dragged piece (and its group) to the top of the z-order
-            const piece = event.target.data as JigsawPieceDisplay
-            for (const groupPiece of piece.group) {
-                this.canvas.bringToFront(groupPiece.displayObject)
-            }
+            // Bring the canvas object (snap group or standalone piece) to top
+            this.canvas.bringToFront(piece.getCanvasObject())
         })
 
-        // Scroll wheel rotates the piece under the cursor: down = CW, up = CCW
+        // Scroll wheel rotates the piece under the cursor
         this.canvas.on('mouse:wheel', (event) => {
             event.e.preventDefault()
             const target = this.canvas.findTarget(event.e as MouseEvent, false)
-            if (!target || !(target.data instanceof JigsawPieceDisplay)) return
+            const piece = this.getPieceFromTarget(target)
+            if (!piece) return
             const clockwise = (event.e as WheelEvent).deltaY > 0
-            this.rotateGroup(target.data as JigsawPieceDisplay, clockwise)
+            this.rotateGroup(piece, clockwise)
         })
 
-        // Move all other pieces in the group along with the dragged piece
-        this.canvas.on('object:moving', (event) => {
-            if (!event.target || !(event.target.data instanceof JigsawPieceDisplay)) return
+        // No object:moving handler needed — fabric.Group handles group drag natively
 
-            const piece = event.target.data as JigsawPieceDisplay
-            if (piece.group.size <= 1) return
-
-            const deltaX = (event.target.left ?? 0) - this.dragStartLeft
-            const deltaY = (event.target.top ?? 0) - this.dragStartTop
-            this.dragStartLeft = event.target.left ?? 0
-            this.dragStartTop = event.target.top ?? 0
-
-            for (const groupPiece of piece.group) {
-                if (groupPiece === piece) continue
-                groupPiece.moveBy(deltaX, deltaY)
-            }
-        })
-
-        // After drop, try to snap the whole group to a neighbor
+        // After drop, try to snap to a neighbor
         this.canvas.on('object:modified', (event) => {
-            if (event.target && event.target.data instanceof JigsawPieceDisplay) {
-                this.trySnapToNeighbor(event.target.data)
+            const piece = this.getPieceFromTarget(event.target)
+            if (piece) {
+                this.trySnapToNeighbor(piece)
             }
         })
+    }
+
+    private getPieceFromTarget(target: fabric.Object | undefined | null): JigsawPieceDisplay | null {
+        if (!target || !(target.data instanceof JigsawPieceDisplay)) return null
+        return target.data as JigsawPieceDisplay
     }
 
     private rotateGroup(clickedPiece: JigsawPieceDisplay, clockwise: boolean) {
         if (this.rotating) return
         this.rotating = true
 
-        const group = clickedPiece.group
+        const canvasObj = clickedPiece.getCanvasObject()
+        const angleDelta = clockwise ? 90 : -90
+        const startAngle = canvasObj.angle ?? 0
+        const targetAngle = startAngle + angleDelta
 
-        // Calculate pivot: average of all body centers in the group
-        const centers = [...group].map(p => p.getBodyCenter())
-        const pivotX = centers.reduce((sum, c) => sum + c.x, 0) / group.size
-        const pivotY = centers.reduce((sum, c) => sum + c.y, 0) / group.size
+        // Pivot: average body center of all pieces in the group (ignoring tabs)
+        const pieces = [...clickedPiece.group]
+        const centers = pieces.map(p => p.getBodyCenter())
+        const pivotX = centers.reduce((sum, c) => sum + c.x, 0) / pieces.length
+        const pivotY = centers.reduce((sum, c) => sum + c.y, 0) / pieces.length
 
-        const renderCallback = this.canvas.renderAll.bind(this.canvas)
-        let completedCount = 0
-        const onPieceComplete = () => {
-            completedCount++
-            if (completedCount === group.size) {
+        // Rotate the canvas object's bounding-box center around the pivot
+        const startCenter = canvasObj.getCenterPoint()
+        const dx = startCenter.x - pivotX
+        const dy = startCenter.y - pivotY
+        // CW 90°: (dx,dy) → (-dy, dx).  CCW 90°: (dx,dy) → (dy, -dx).
+        const targetCenterX = clockwise ? pivotX - dy : pivotX + dy
+        const targetCenterY = clockwise ? pivotY + dx : pivotY - dx
+
+        canvasObj.animate('angle', targetAngle, {
+            onChange: () => {
+                // Derive progress from the current angle so position follows the same easing curve
+                const currentAngle = canvasObj.angle ?? startAngle
+                const progress = (currentAngle - startAngle) / angleDelta
+                const currentCenterX = startCenter.x + (targetCenterX - startCenter.x) * progress
+                const currentCenterY = startCenter.y + (targetCenterY - startCenter.y) * progress
+                canvasObj.setPositionByOrigin(
+                    new fabric.Point(currentCenterX, currentCenterY), 'center', 'center'
+                )
+                canvasObj.setCoords()
+                this.canvas.renderAll()
+            },
+            duration: 200,
+            onComplete: () => {
+                canvasObj.set({angle: targetAngle})
+                canvasObj.setPositionByOrigin(
+                    new fabric.Point(targetCenterX, targetCenterY), 'center', 'center'
+                )
+                canvasObj.setCoords()
+
+                for (const piece of clickedPiece.group) {
+                    piece.rotation = (piece.rotation + angleDelta + 360) % 360
+                }
+                this.canvas.renderAll()
                 this.rotating = false
             }
-        }
-        for (const piece of group) {
-            piece.animateRotation(pivotX, pivotY, clockwise, renderCallback, onPieceComplete)
-        }
+        })
     }
 
     private trySnapToNeighbor(draggedPiece: JigsawPieceDisplay) {
         const group = draggedPiece.group
 
-        // Check every piece in the dragged group for a snap to an outside neighbor.
-        // The puzzle-space offset (colOffset, rowOffset) must be rotated into canvas space
-        // so that snapping works at any rotation. E.g. at 90° CW, "below" in puzzle space
-        // becomes "to the left" in canvas space.
         for (const piece of group) {
             const bodyCenter = piece.getBodyCenter()
             const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[piece.rotation]
@@ -216,7 +316,6 @@ export class JigsawCanvas {
                 const canvasOffsetX = (colOffset * cos - rowOffset * sin) * this.pieceSize
                 const canvasOffsetY = (colOffset * sin + rowOffset * cos) * this.pieceSize
 
-                // Where this piece's body center should be, relative to the neighbor
                 const expectedX = neighborBodyCenter.x - canvasOffsetX
                 const expectedY = neighborBodyCenter.y - canvasOffsetY
 
@@ -224,16 +323,20 @@ export class JigsawCanvas {
                 const deltaY = Math.abs(bodyCenter.y - expectedY)
 
                 if (deltaX < SNAP_TOLERANCE_PIXELS && deltaY < SNAP_TOLERANCE_PIXELS) {
-                    // Compute correction and apply to entire dragged group
                     const correctionX = expectedX - bodyCenter.x
                     const correctionY = expectedY - bodyCenter.y
 
-                    for (const groupPiece of group) {
-                        groupPiece.moveBy(correctionX, correctionY)
-                    }
+                    // Move the entire canvas object by the correction
+                    const canvasObj = draggedPiece.getCanvasObject()
+                    canvasObj.set({
+                        left: (canvasObj.left ?? 0) + correctionX,
+                        top: (canvasObj.top ?? 0) + correctionY,
+                    })
+                    canvasObj.setCoords()
 
-                    // Merge the two groups
+                    // Merge logical groups then create combined snap fabric group
                     draggedPiece.mergeGroup(neighbor)
+                    this.mergeSnapFabricGroups(draggedPiece.group, draggedPiece)
                     this.updateStrokeOpacity(draggedPiece.group)
                     this.canvas.renderAll()
                     return

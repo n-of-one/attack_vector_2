@@ -1,5 +1,4 @@
 import {fabric} from "fabric";
-import {Canvas} from "fabric/fabric-impl";
 import {buildBorderPath, buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
 
 const TAB_SIZE_RATIO = 0.08
@@ -15,7 +14,6 @@ const OPACITY_STEPS: { [maxNeighbors: number]: number[] } = {
 }
 
 export interface JigsawPieceDisplayOptions {
-    canvas: Canvas
     col: number
     row: number
     config: PieceConfig
@@ -27,45 +25,42 @@ export interface JigsawPieceDisplayOptions {
 
 export class JigsawPieceDisplay {
 
-    private readonly canvas: Canvas
     readonly col: number
     readonly row: number
-    private readonly config: PieceConfig
     private readonly pieceSize: number
     private readonly strokeWidth: number
 
     /** The main piece shape (fill + fading stroke). Child of displayObject. */
     private readonly piecePath: fabric.Path
 
-    /** The single fabric object added to the canvas — a Group wrapping piecePath + optional borderPath. */
+    /** Group wrapping piecePath + optional borderPath. */
     readonly displayObject: fabric.Group
 
-    // Offset from the path's left/top to the piece body's top-left corner.
-    // Needed because outward tabs extend the bounding box beyond the piece body.
     private readonly extensionLeft: number
     private readonly extensionTop: number
 
     // Offset from the bounding-box center to the body center in unrotated local coords.
-    // When the piece is rotated, this offset rotates with it.
     private readonly bodyOffsetX: number
     private readonly bodyOffsetY: number
 
     // All pieces snapped together share the same Set. Starts with just this piece.
     group: Set<JigsawPieceDisplay>
 
-    // Current rotation in degrees: 0, 90, 180, or 270. Pieces start at a random rotation.
+    // Current rotation in degrees: 0, 90, 180, or 270.
     rotation: number
 
     // How many neighbors this piece can have (2 for corners, 3 for edges, 4 for center pieces)
     readonly maxNeighborCount: number
 
-    constructor(options: JigsawPieceDisplayOptions) {
-        const {canvas, col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize} = options
+    /** When this piece is part of a snap fabric group, references that group.
+     *  null when the piece's displayObject is directly on the canvas. */
+    snapFabricGroup: fabric.Group | null = null
 
-        this.canvas = canvas
+    constructor(options: JigsawPieceDisplayOptions) {
+        const {col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize} = options
+
         this.col = col
         this.row = row
-        this.config = config
         this.pieceSize = pieceSize
         this.strokeWidth = 1
 
@@ -82,19 +77,17 @@ export class JigsawPieceDisplay {
         const patternCanvas = this.createPatternCanvas(sourceImage, puzzleCols, puzzleRows,
             extensionRight, extensionBottom)
 
-        // Build path at local origin (extensionLeft, extensionTop) so all coordinates are non-negative
         const pathString = buildPiecePath(this.extensionLeft, this.extensionTop, pieceSize, config)
 
         this.piecePath = new fabric.Path(pathString, {
             fill: new fabric.Pattern({
-                source: patternCanvas as unknown as HTMLImageElement, // fabric.js accepts canvas elements at runtime
+                source: patternCanvas as unknown as HTMLImageElement,
                 repeat: 'no-repeat',
             }),
             stroke: '#88aacc',
             strokeWidth: this.strokeWidth,
         })
 
-        // Build a separate non-fading outline for flat (puzzle border) edges
         const children: fabric.Object[] = [this.piecePath]
         const borderString = buildBorderPath(this.extensionLeft, this.extensionTop, pieceSize, config)
         if (borderString) {
@@ -105,7 +98,6 @@ export class JigsawPieceDisplay {
             }))
         }
 
-        // Wrap in a Group so both paths move/rotate/z-order as one unit
         this.displayObject = new fabric.Group(children, {
             left: config.x,
             top: config.y,
@@ -116,6 +108,7 @@ export class JigsawPieceDisplay {
             data: this,
             hoverCursor: 'grab',
             subTargetCheck: false,
+            perPixelTargetFind: true,
         })
 
         const borderCount = [col === 0, col === puzzleCols - 1, row === 0, row === puzzleRows - 1]
@@ -125,40 +118,30 @@ export class JigsawPieceDisplay {
         this.rotation = config.rotation
         this.displayObject.set({angle: this.rotation})
         this.group = new Set([this])
-
-        canvas.add(this.displayObject)
     }
 
-    /** Canvas position of the piece body's top-left corner (excluding tab extensions). */
-    getBodyOrigin(): { x: number, y: number } {
-        return {
-            x: (this.displayObject.left ?? 0) + this.extensionLeft,
-            y: (this.displayObject.top ?? 0) + this.extensionTop,
-        }
+    /** The fabric object currently on the canvas: snap group if grouped, displayObject if standalone. */
+    getCanvasObject(): fabric.Object {
+        return this.snapFabricGroup ?? this.displayObject
     }
 
-    /** Move this piece so its body origin is at the given canvas position. */
-    setBodyOrigin(x: number, y: number) {
-        this.displayObject.set({
-            left: x - this.extensionLeft,
-            top: y - this.extensionTop,
-        })
-        this.displayObject.setCoords()
-    }
-
-    /** Canvas position of the body center, accounting for the current rotation. */
+    /** Canvas position of the body center. Works whether the piece is standalone or inside a snap group,
+     *  because calcTransformMatrix accounts for all parent group transforms. */
     getBodyCenter(): { x: number, y: number } {
-        const bbCenter = this.displayObject.getCenterPoint()
-        const angle = (this.displayObject.angle ?? 0) * Math.PI / 180
+        const matrix = this.displayObject.calcTransformMatrix()
+        const bbCenterX = matrix[4]
+        const bbCenterY = matrix[5]
+        const angle = Math.atan2(matrix[1], matrix[0])
         const cos = Math.cos(angle)
         const sin = Math.sin(angle)
         return {
-            x: bbCenter.x + this.bodyOffsetX * cos - this.bodyOffsetY * sin,
-            y: bbCenter.y + this.bodyOffsetX * sin + this.bodyOffsetY * cos,
+            x: bbCenterX + this.bodyOffsetX * cos - this.bodyOffsetY * sin,
+            y: bbCenterY + this.bodyOffsetX * sin + this.bodyOffsetY * cos,
         }
     }
 
-    /** Position this piece so its body center (rotation-aware) is at the given canvas position. */
+    /** Position this piece so its body center is at the given canvas position.
+     *  Only valid when the piece is standalone (not inside a snap fabric group). */
     setBodyCenter(x: number, y: number) {
         const angle = (this.displayObject.angle ?? 0) * Math.PI / 180
         const cos = Math.cos(angle)
@@ -176,55 +159,10 @@ export class JigsawPieceDisplay {
     updateSnappedNeighborCount(snappedNeighborCount: number) {
         const opacity = OPACITY_STEPS[this.maxNeighborCount][snappedNeighborCount]
         this.piecePath.set({stroke: `rgba(136, 170, 204, ${opacity})`})
-    }
-
-    /** Move this piece by a delta (used for group dragging). */
-    moveBy(deltaX: number, deltaY: number) {
-        this.displayObject.set({
-            left: (this.displayObject.left ?? 0) + deltaX,
-            top: (this.displayObject.top ?? 0) + deltaY,
-        })
-        this.displayObject.setCoords()
-    }
-
-    /**
-     * Animate a 90° rotation around a pivot point (in body-center space).
-     * For a single piece the pivot is its own body center; for a group it's the average body center.
-     * Position and angle interpolate together so the piece arcs smoothly to its new location.
-     */
-    animateRotation(pivotX: number, pivotY: number, clockwise: boolean, renderCallback: () => void, onComplete?: () => void) {
-        const angleDelta = clockwise ? 90 : -90
-        const startAngle = this.displayObject.angle ?? 0
-        const targetAngle = startAngle + angleDelta
-        this.rotation = (this.rotation + angleDelta + 360) % 360
-
-        const startBodyCenter = this.getBodyCenter()
-
-        // Rotate body center 90° around pivot (in screen-coords: y-down)
-        // CW: (dx, dy) → (-dy, dx). CCW: (dx, dy) → (dy, -dx).
-        const dx = startBodyCenter.x - pivotX
-        const dy = startBodyCenter.y - pivotY
-        const targetBodyCenterX = clockwise ? pivotX - dy : pivotX + dy
-        const targetBodyCenterY = clockwise ? pivotY + dx : pivotY - dx
-
-        this.displayObject.animate('angle', targetAngle, {
-            onChange: () => {
-                // Derive progress from the angle so position follows the same easing curve
-                const progress = ((this.displayObject.angle ?? startAngle) - startAngle) / angleDelta
-                const currentBodyCenterX = startBodyCenter.x + (targetBodyCenterX - startBodyCenter.x) * progress
-                const currentBodyCenterY = startBodyCenter.y + (targetBodyCenterY - startBodyCenter.y) * progress
-
-                this.setBodyCenter(currentBodyCenterX, currentBodyCenterY)
-                renderCallback()
-            },
-            duration: 200,
-            onComplete: () => {
-                this.displayObject.set({angle: this.rotation})
-                this.setBodyCenter(targetBodyCenterX, targetBodyCenterY)
-                renderCallback()
-                if (onComplete) onComplete()
-            }
-        })
+        this.displayObject.set({dirty: true})
+        if (this.snapFabricGroup) {
+            this.snapFabricGroup.set({dirty: true})
+        }
     }
 
     /** Merge this piece's group with another piece's group. All pieces end up sharing one Set. */

@@ -52,10 +52,12 @@ export class JigsawRoot extends Component<Props> {
         // DEV: simulate server enter response with hardcoded data
         // const devColumns = 5
         // const devRows = 3
-        // const devColumns = 7
-        // const devRows = 4
-        const devColumns = 17
-        const devRows = 10
+        const devColumns = 7
+        const devRows = 4
+        // const devColumns = 17
+        // const devRows = 10
+        // const devColumns = 21
+        // const devRows = 12
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,
