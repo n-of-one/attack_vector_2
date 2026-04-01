@@ -50,6 +50,8 @@ export class JigsawCanvas {
             })
         )
 
+        this.addBackgroundImage(sourceImage, pieceSize * puzzleCols, pieceSize * puzzleRows, canvasWidth, canvasHeight)
+
         // Create snap groups: multi-piece groups from server data, single-piece groups for the rest.
         const groupedPieces = this.applyGroups(data.groups)
         for (const piece of this.piecesByLocation.values()) {
@@ -95,6 +97,39 @@ export class JigsawCanvas {
         }
 
         return groupedPieces
+    }
+
+    private addBackgroundImage(sourceImage: HTMLImageElement, puzzleWidth: number, puzzleHeight: number,
+                               canvasWidth: number, canvasHeight: number) {
+        // Draw a tiny version of the image, then scale it up with no smoothing to get chunky pixels.
+        const pixelSize = 96
+        // const pixelSize = 192
+        const aspect = sourceImage.naturalWidth / sourceImage.naturalHeight
+        const tinyWidth = Math.round(aspect >= 1 ? pixelSize : pixelSize * aspect)
+        const tinyHeight = Math.round(aspect >= 1 ? pixelSize / aspect : pixelSize)
+
+        const tinyCanvas = document.createElement('canvas')
+        tinyCanvas.width = tinyWidth
+        tinyCanvas.height = tinyHeight
+        const tinyCtx = tinyCanvas.getContext('2d')!
+        tinyCtx.drawImage(sourceImage, 0, 0, tinyWidth, tinyHeight)
+
+        const pixelCanvas = document.createElement('canvas')
+        pixelCanvas.width = puzzleWidth
+        pixelCanvas.height = puzzleHeight
+        const pixelCtx = pixelCanvas.getContext('2d')!
+        pixelCtx.imageSmoothingEnabled = false
+        pixelCtx.drawImage(tinyCanvas, 0, 0, puzzleWidth, puzzleHeight)
+
+        const img = new fabric.Image(pixelCanvas as unknown as HTMLImageElement, {
+            left: canvasWidth / 2,
+            top: canvasHeight / 2,
+            opacity: 0.25,
+            selectable: false,
+            evented: false,
+        })
+        this.canvas.add(img)
+        this.canvas.sendToBack(img)
     }
 
     private registerEventHandlers() {

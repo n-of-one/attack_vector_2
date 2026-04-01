@@ -60,29 +60,38 @@ export class SnapGroupDisplay {
         })
     }
 
-    /** Check all pieces for a snappable neighbor. If found, snap and merge groups. Returns true if snapped. */
+    /** Check all pieces for a snappable neighbor. If found, snap to the closest match and merge groups. */
     trySnap(piecesByLocation: Map<string, JigsawPieceDisplay>) {
+        let bestDistance = SNAP_TOLERANCE_PIXELS
+        let bestCorrection: { x: number, y: number } | null = null
+        let bestNeighbor: JigsawPieceDisplay | null = null
+
         for (const piece of this.pieces) {
             for (const {colOffset, rowOffset} of NEIGHBOR_OFFSETS) {
                 const neighbor = piecesByLocation.get(`${piece.col + colOffset}:${piece.row + rowOffset}`)
                 if (!neighbor || this.pieces.has(neighbor)) continue
 
-                const correction = piece.checkSnapTo(neighbor, SNAP_TOLERANCE_PIXELS)
+                const correction = piece.checkSnapTo(neighbor, bestDistance)
                 if (!correction) continue
 
-                // Align this group with the neighbor
-                this.fabricGroup.set({
-                    left: (this.fabricGroup.left ?? 0) + correction.x,
-                    top: (this.fabricGroup.top ?? 0) + correction.y,
-                })
-                this.fabricGroup.setCoords()
-
-                // Merge and update visuals
-                const merged = this.merge(neighbor.snapGroup, this.canvas)
-                merged.updateStrokeOpacity(piecesByLocation)
-                this.canvas.renderAll()
+                const distance = Math.max(Math.abs(correction.x), Math.abs(correction.y))
+                bestDistance = distance
+                bestCorrection = correction
+                bestNeighbor = neighbor
             }
         }
+
+        if (!bestCorrection || !bestNeighbor) return
+
+        this.fabricGroup.set({
+            left: (this.fabricGroup.left ?? 0) + bestCorrection.x,
+            top: (this.fabricGroup.top ?? 0) + bestCorrection.y,
+        })
+        this.fabricGroup.setCoords()
+
+        const merged = this.merge(bestNeighbor.snapGroup, this.canvas)
+        merged.updateStrokeOpacity(piecesByLocation)
+        this.canvas.renderAll()
     }
 
     /** Merge this snap group with another. Returns the new combined SnapGroupDisplay. */

@@ -4,7 +4,6 @@ import {JigsawCanvas} from "./canvas/JigsawCanvas";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {JIGSAW_BEGIN} from "./reducer/JigsawUiStateReducer";
 import {JigsawEnterData} from "./JigsawServerActionProcessor";
-import {sourceImageLoaded} from "./component/JigsawHome";
 
 class JigsawIceManager extends GenericIceManager {
 
@@ -29,9 +28,11 @@ class JigsawIceManager extends GenericIceManager {
         this.displayTerminal(0, "↼ Puzzle interface [info]online");
         this.schedule.dispatch(0, {type: JIGSAW_BEGIN});
 
-        sourceImageLoaded.then((sourceImage) => {
+        const sourceImage = new Image()
+        sourceImage.onload = () => {
             this.jigsawCanvas = new JigsawCanvas(data, this.dispatch, this.store, sourceImage)
-        })
+        }
+        sourceImage.src = data.imageSrc
     }
 }
 

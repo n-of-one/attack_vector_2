@@ -62,8 +62,10 @@ export class JigsawRoot extends Component<Props> {
             jigsawIceManager.enter({
                 hacked: false,
                 strength: IceStrength.AVERAGE,
-                // imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
-                imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
+                imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
+                // imageSrc: "/img/frontier/ice/jigsaw/pexels-steve-12755815.jpg",
+                // imageSrc: "/img/frontier/ice/jigsaw/pexels-marcin-jozwiak-199600-13835514.jpg",
+                // imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
                 columns: devColumns,
                 rows: devRows,
                 pieces: generatePieceConfigs(devColumns, devRows, 1576, 828),

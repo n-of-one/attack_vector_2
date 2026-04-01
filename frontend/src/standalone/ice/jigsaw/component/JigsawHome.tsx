@@ -7,14 +7,6 @@ import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {CloseTabButton} from "../../common/CloseTabButton";
 
-/* eslint jsx-a11y/alt-text: 0*/
-
-let resolveSourceImageLoaded: (img: HTMLImageElement) => void
-
-export const sourceImageLoaded: Promise<HTMLImageElement> = new Promise((resolve) => {
-    resolveSourceImageLoaded = resolve
-})
-
 export const JigsawHome = () => {
 
     const uiMode = useSelector((rootState: JigsawRootState) => rootState.ui.mode)
@@ -51,20 +43,8 @@ export const JigsawHome = () => {
                     </div>
                 </div>
             </div>
-            <JigsawSourceImage/>
         </div>
     )
-}
-
-
-const JigsawSourceImage = () => {
-    // const path = "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png"
-    const path = "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg"
-    // const path = "/img/frontier/ice/jigsaw/barbaraalane-fractal-1992882.jpg"
-    // const path = "/img/frontier/ice/jigsaw/green.png"
-    return <span><img id="jigsawSourceImage" src={path} style={{display: "none"}} onLoad={(e) => {
-        resolveSourceImageLoaded(e.target as HTMLImageElement)
-    }}/></span>
 }
 
 const DisplayTerminal = () => {
