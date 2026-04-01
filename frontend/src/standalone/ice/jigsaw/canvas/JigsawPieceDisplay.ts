@@ -1,5 +1,6 @@
 import {fabric} from "fabric";
 import {buildBorderPath, buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
+import type {SnapGroupDisplay} from "./SnapGroupDisplay";
 
 const TAB_SIZE_RATIO = 0.08
 
@@ -33,18 +34,15 @@ export class JigsawPieceDisplay {
     /** The main piece shape (fill + fading stroke). Child of displayObject. */
     private readonly piecePath: fabric.Path
 
-    /** Group wrapping piecePath + optional borderPath. */
+    /** Group wrapping piecePath + optional borderPath. Always a child of a SnapGroupDisplay's fabricGroup. */
     readonly displayObject: fabric.Group
 
     private readonly extensionLeft: number
     private readonly extensionTop: number
 
     // Offset from the bounding-box center to the body center in unrotated local coords.
-    private readonly bodyOffsetX: number
-    private readonly bodyOffsetY: number
-
-    // All pieces snapped together share the same Set. Starts with just this piece.
-    group: Set<JigsawPieceDisplay>
+    readonly bodyOffsetX: number
+    readonly bodyOffsetY: number
 
     // Current rotation in degrees: 0, 90, 180, or 270.
     rotation: number
@@ -52,9 +50,8 @@ export class JigsawPieceDisplay {
     // How many neighbors this piece can have (2 for corners, 3 for edges, 4 for center pieces)
     readonly maxNeighborCount: number
 
-    /** When this piece is part of a snap fabric group, references that group.
-     *  null when the piece's displayObject is directly on the canvas. */
-    snapFabricGroup: fabric.Group | null = null
+    /** The snap group this piece belongs to. Set during canvas initialization. */
+    snapGroup!: SnapGroupDisplay
 
     constructor(options: JigsawPieceDisplayOptions) {
         const {col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize} = options
@@ -101,14 +98,6 @@ export class JigsawPieceDisplay {
         this.displayObject = new fabric.Group(children, {
             left: config.x,
             top: config.y,
-            selectable: true,
-            hasControls: false,
-            hasBorders: false,
-            lockRotation: true,
-            data: this,
-            hoverCursor: 'grab',
-            subTargetCheck: false,
-            perPixelTargetFind: true,
         })
 
         const borderCount = [col === 0, col === puzzleCols - 1, row === 0, row === puzzleRows - 1]
@@ -117,15 +106,9 @@ export class JigsawPieceDisplay {
 
         this.rotation = config.rotation
         this.displayObject.set({angle: this.rotation})
-        this.group = new Set([this])
     }
 
-    /** The fabric object currently on the canvas: snap group if grouped, displayObject if standalone. */
-    getCanvasObject(): fabric.Object {
-        return this.snapFabricGroup ?? this.displayObject
-    }
-
-    /** Canvas position of the body center. Works whether the piece is standalone or inside a snap group,
+    /** Canvas position of the body center. Works whether the piece is inside a snap group or standalone,
      *  because calcTransformMatrix accounts for all parent group transforms. */
     getBodyCenter(): { x: number, y: number } {
         const matrix = this.displayObject.calcTransformMatrix()
@@ -141,17 +124,14 @@ export class JigsawPieceDisplay {
     }
 
     /** Position this piece so its body center is at the given canvas position.
-     *  Only valid when the piece is standalone (not inside a snap fabric group). */
+     *  Only valid when the piece's displayObject is standalone (not inside a fabric group). */
     setBodyCenter(x: number, y: number) {
         const angle = (this.displayObject.angle ?? 0) * Math.PI / 180
         const cos = Math.cos(angle)
         const sin = Math.sin(angle)
         const bbCenterX = x - (this.bodyOffsetX * cos - this.bodyOffsetY * sin)
         const bbCenterY = y - (this.bodyOffsetX * sin + this.bodyOffsetY * cos)
-        this.displayObject.setPositionByOrigin(
-            new fabric.Point(bbCenterX, bbCenterY),
-            'center', 'center'
-        )
+        this.displayObject.set({left: bbCenterX, top: bbCenterY})
         this.displayObject.setCoords()
     }
 
@@ -160,20 +140,7 @@ export class JigsawPieceDisplay {
         const opacity = OPACITY_STEPS[this.maxNeighborCount][snappedNeighborCount]
         this.piecePath.set({stroke: `rgba(136, 170, 204, ${opacity})`})
         this.displayObject.set({dirty: true})
-        if (this.snapFabricGroup) {
-            this.snapFabricGroup.set({dirty: true})
-        }
-    }
-
-    /** Merge this piece's group with another piece's group. All pieces end up sharing one Set. */
-    mergeGroup(other: JigsawPieceDisplay) {
-        if (this.group === other.group) return
-
-        const mergedGroup = this.group
-        for (const piece of other.group) {
-            mergedGroup.add(piece)
-            piece.group = mergedGroup
-        }
+        this.snapGroup?.fabricGroup.set({dirty: true})
     }
 
     private extensionSize(edge: EdgeConfig, tabSize: number): number {
