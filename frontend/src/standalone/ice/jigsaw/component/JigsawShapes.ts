@@ -250,6 +250,7 @@ function randomDir(): 'out' | 'in' {
     return Math.random() < 0.5 ? 'out' : 'in'
 }
 
+// FIXME: canvas dimensions should not define piece size
 export function generatePieceConfigs(cols: number, rows: number, canvasWidth: number, canvasHeight: number): PieceConfig[] {
     const pieceSize = calculatePieceSize(canvasWidth, canvasHeight, cols, rows)
     const tabSize = pieceSize * TAB_HEIGHT_RATIO

@@ -24,8 +24,14 @@ export class JigsawCanvas {
         this.dispatch = dispatch
         this.store = store
 
-        const canvasWidth = 1576
-        const canvasHeight = 828
+        // const puzzleDesignWidth = 1576
+        // const puzzleDesignHeight = 828
+        const puzzleDesignWidth = sourceImage.width
+        const puzzleDesignHeight = sourceImage.height
+
+        const canvasWidth = window.innerWidth - 30
+        // const canvasHeight = 828
+        const canvasHeight = 928
 
         this.canvas = new fabric.Canvas('jigsawCanvas', {
             width: canvasWidth,
@@ -38,7 +44,7 @@ export class JigsawCanvas {
 
         const puzzleCols = data.columns
         const puzzleRows = data.rows
-        const pieceSize = calculatePieceSize(canvasWidth, canvasHeight, puzzleCols, puzzleRows)
+        const pieceSize = calculatePieceSize(puzzleDesignWidth, puzzleDesignHeight, puzzleCols, puzzleRows)
 
         this.piecesByLocation = new Map(
             data.pieces.map(config => {

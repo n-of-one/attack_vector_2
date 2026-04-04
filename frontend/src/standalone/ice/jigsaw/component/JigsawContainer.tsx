@@ -3,7 +3,6 @@ import {useSelector} from "react-redux";
 import {Page} from "../../../../common/menu/pageReducer";
 import {ForceDisconnected} from "../../../../common/component/ForceDisconnected";
 import {JigsawRootState} from "../reducer/JigsawRootReducer";
-import {IceHackerPresence} from "../../common/IceHackerPresence";
 import {JigsawHome} from "./JigsawHome";
 
 export const JigsawContainer = () => {
@@ -13,18 +12,7 @@ export const JigsawContainer = () => {
 
     return (
         <div className="container-fluid" data-bs-theme="dark">
-            <div className="row">
-                <div className="col-lg-2">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <IceHackerPresence blocked={[]}/>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-10">
-                    <JigsawHome/>
-                </div>
-            </div>
+            <JigsawHome/>
         </div>
     )
 }

@@ -6,6 +6,7 @@ import {JigsawRootState} from "../reducer/JigsawRootReducer";
 import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {CloseTabButton} from "../../common/CloseTabButton";
+import {IceHackerPresence} from "../../common/IceHackerPresence";
 
 export const JigsawHome = () => {
 
@@ -18,7 +19,10 @@ export const JigsawHome = () => {
         <div className="row icePanelRow">
             <div className="col-lg-12">
                 <div className="row">
-                    <div className="col-lg-3">
+                    <div className="col-lg-2" style={{maxHeight: "80px", overflowY: "auto"}}>
+                        <IceHackerPresence blocked={[]}/>
+                    </div>
+                    <div className="col-lg-2">
                         <IceTitle name="Paheli" strength={strength}/>
                     </div>
                     <div className="col-lg-7" style={{paddingTop: "4px"}}>
