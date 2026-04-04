@@ -28,8 +28,6 @@ To give some idea of how inaccurate this table is for predicting actual ICE solv
 So before committing to large sites with high impact on your plot, it's smart to try out a few low-stakes sites with your players to get a feel for how fast your players are. It will also give them some low stakes practice.
 
 
-TODO point to ICE statistics section.
-
 ## Player ICE preference
 Besides how fast players are at solving certain puzzles, some players don't like certain types of ICE. So from that perspective it's good 
 to add a variety of ICE throughout your site to give everyone something they do like.
