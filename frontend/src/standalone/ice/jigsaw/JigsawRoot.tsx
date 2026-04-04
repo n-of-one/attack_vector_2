@@ -14,6 +14,7 @@ import {Page} from "../../../common/menu/pageReducer";
 import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 import {IceStrength} from "../../../common/model/IceStrength";
 import {generatePieceConfigs} from "./component/JigsawShapes";
+import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./canvas/JigsawCanvas";
 
 interface Props {
     iceId: string
@@ -68,7 +69,7 @@ export class JigsawRoot extends Component<Props> {
                 // imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
                 columns: devColumns,
                 rows: devRows,
-                pieces: generatePieceConfigs(devColumns, devRows, 1576, 828),
+                pieces: generatePieceConfigs(devColumns, devRows, 1576, 828, CANVAS_WIDTH, CANVAS_HEIGHT),
                 groups: [
                     // Array.from({length: devColumns * devRows}, (_, i) =>
                     //     [i % devColumns, Math.floor(i / devColumns)] as [number, number]

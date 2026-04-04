@@ -250,11 +250,11 @@ function randomDir(): 'out' | 'in' {
     return Math.random() < 0.5 ? 'out' : 'in'
 }
 
-// FIXME: canvas dimensions should not define piece size
-export function generatePieceConfigs(cols: number, rows: number, canvasWidth: number, canvasHeight: number): PieceConfig[] {
-    const pieceSize = calculatePieceSize(canvasWidth, canvasHeight, cols, rows)
+// FIXME: fix the image aspect-ratio and find corresponding piece sizes
+export function generatePieceConfigs(cols: number, rows: number, imageWidth: number, imageHeight: number,
+                                     canvasWidth: number, canvasHeight: number): PieceConfig[] {
+    const pieceSize = calculatePieceSize(imageWidth, imageHeight, cols, rows)
     const tabSize = pieceSize * TAB_HEIGHT_RATIO
-    const margin = tabSize * 2
 
     // Pre-generate internal edges
     // horizontalEdges[row][col] = edge between (col, row).right and (col+1, row).left
@@ -275,6 +275,8 @@ export function generatePieceConfigs(cols: number, rows: number, canvasWidth: nu
         }
     }
 
+    const positions = generateSurroundingPositions(cols * rows, pieceSize, tabSize, cols, rows, canvasWidth, canvasHeight)
+
     const pieces: PieceConfig[] = []
 
     for (let row = 0; row < rows; row++) {
@@ -284,8 +286,7 @@ export function generatePieceConfigs(cols: number, rows: number, canvasWidth: nu
             const left: EdgeConfig = col === 0 ? FLAT : flipDir(horizontalEdges[row][col - 1])
             const right: EdgeConfig = col === cols - 1 ? FLAT : horizontalEdges[row][col]
 
-            const x = margin + Math.random() * (canvasWidth - pieceSize - margin * 2)
-            const y = margin + Math.random() * (canvasHeight - pieceSize - margin * 2)
+            const {x, y} = positions[row * cols + col]
             const rotation = ROTATIONS[Math.floor(Math.random() * 4)]
 
             pieces.push({col, row, x, y, rotation, top, right, bottom, left})
@@ -293,4 +294,115 @@ export function generatePieceConfigs(cols: number, rows: number, canvasWidth: nu
     }
 
     return pieces
+}
+
+interface Rect {
+    x: number
+    y: number
+    w: number
+    h: number
+}
+
+/**
+ * Generate positions for pieces distributed around the central puzzle image.
+ * Defines 4 zones (left, right, top, bottom) around the centered puzzle area,
+ * then distributes pieces across zones proportionally to zone area.
+ */
+function generateSurroundingPositions(
+    count: number, pieceSize: number, tabSize: number,
+    cols: number, rows: number,
+    canvasWidth: number, canvasHeight: number
+): Array<{ x: number, y: number }> {
+
+    const puzzleWidth = pieceSize * cols
+    const puzzleHeight = pieceSize * rows
+
+    // The puzzle image is centered on the canvas
+    const puzzleCenterX = canvasWidth / 2
+    const puzzleCenterY = canvasHeight / 2
+
+    // Add padding around the puzzle area so pieces don't touch it
+    const padding = tabSize * 2
+    const excludeLeft = puzzleCenterX - puzzleWidth / 2 - padding
+    const excludeRight = puzzleCenterX + puzzleWidth / 2 + padding
+    const excludeTop = puzzleCenterY - puzzleHeight / 2 - padding
+    const excludeBottom = puzzleCenterY + puzzleHeight / 2 + padding
+
+    // Piece placement margin from canvas edges
+    const edgeMargin = tabSize
+
+    // Define 4 zones around the excluded area.
+    // Left and right zones span full canvas height; top and bottom fill the gaps between.
+    const zones: Rect[] = [
+        {x: edgeMargin, y: edgeMargin, w: Math.max(0, excludeLeft - edgeMargin), h: canvasHeight - edgeMargin * 2},
+        {x: excludeRight, y: edgeMargin, w: Math.max(0, canvasWidth - edgeMargin - excludeRight), h: canvasHeight - edgeMargin * 2},
+        {x: excludeLeft, y: edgeMargin, w: Math.max(0, excludeRight - excludeLeft), h: Math.max(0, excludeTop - edgeMargin)},
+        {x: excludeLeft, y: excludeBottom, w: Math.max(0, excludeRight - excludeLeft), h: Math.max(0, canvasHeight - edgeMargin - excludeBottom)},
+    ].filter(z => z.w > 0 && z.h > 0)
+
+    // Fallback: if no zones have any space (very large puzzle), use the full canvas
+    if (zones.length === 0) {
+        zones.push({x: edgeMargin, y: edgeMargin, w: canvasWidth - edgeMargin * 2, h: canvasHeight - edgeMargin * 2})
+    }
+
+    // Distribute pieces across zones proportionally to zone area
+    const totalArea = zones.reduce((sum, z) => sum + z.w * z.h, 0)
+    const positions: Array<{ x: number, y: number }> = []
+
+    let remaining = count
+    for (let i = 0; i < zones.length; i++) {
+        const zone = zones[i]
+        const zonePieceCount = (i === zones.length - 1)
+            ? remaining  // last zone gets whatever is left
+            : Math.round(count * (zone.w * zone.h) / totalArea)
+        remaining -= zonePieceCount
+
+        // Lay out pieces in a grid within the zone, with jitter to avoid perfect alignment
+        const cellSize = pieceSize * 1.1 // slight spacing between cells
+        const gridCols = Math.max(1, Math.floor(zone.w / cellSize))
+        const gridRows = Math.max(1, Math.floor(zone.h / cellSize))
+        const gridCapacity = gridCols * gridRows
+
+        // Spacing between cell origins
+        const spacingX = gridCols > 1 ? (zone.w - pieceSize) / (gridCols - 1) : 0
+        const spacingY = gridRows > 1 ? (zone.h - pieceSize) / (gridRows - 1) : 0
+
+        // Max random offset within a cell (half the gap between cells, clamped)
+        const jitterX = Math.max(0, (spacingX - pieceSize) * 0.4)
+        const jitterY = Math.max(0, (spacingY - pieceSize) * 0.4)
+
+        for (let j = 0; j < zonePieceCount; j++) {
+            if (j < gridCapacity) {
+                // Place in grid cell with jitter
+                const gridCol = j % gridCols
+                const gridRow = Math.floor(j / gridCols)
+                positions.push({
+                    x: zone.x + gridCol * spacingX + (Math.random() - 0.5) * 2 * jitterX,
+                    y: zone.y + gridRow * spacingY + (Math.random() - 0.5) * 2 * jitterY,
+                })
+            } else {
+                // Overflow: random position within zone
+                positions.push({
+                    x: zone.x + Math.random() * Math.max(0, zone.w - pieceSize),
+                    y: zone.y + Math.random() * Math.max(0, zone.h - pieceSize),
+                })
+            }
+        }
+    }
+
+    // Shuffle so pieces from the same grid row aren't all in the same zone
+    for (let i = positions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [positions[i], positions[j]] = [positions[j], positions[i]]
+    }
+
+    // Clamp all positions so pieces stay fully on canvas.
+    // With center-origin, the worst-case half-extent is (pieceSize + 2*tabSize) / 2 (out-tabs on both sides).
+    const halfExtent = (pieceSize + 2 * tabSize) / 2
+    for (const pos of positions) {
+        pos.x = Math.max(halfExtent, Math.min(canvasWidth - halfExtent, pos.x))
+        pos.y = Math.max(halfExtent, Math.min(canvasHeight - halfExtent, pos.y))
+    }
+
+    return positions
 }

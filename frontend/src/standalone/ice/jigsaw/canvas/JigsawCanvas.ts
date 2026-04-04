@@ -10,6 +10,11 @@ import {calculatePieceSize} from "../component/JigsawShapes";
 fabric.Object.prototype.originX = "center"
 fabric.Object.prototype.originY = "center"
 
+export const CANVAS_HEIGHT = 928;
+export const CANVAS_WIDTH = 1880;
+
+
+
 export class JigsawCanvas {
 
     private readonly canvas: Canvas
@@ -29,9 +34,10 @@ export class JigsawCanvas {
         const puzzleDesignWidth = sourceImage.width
         const puzzleDesignHeight = sourceImage.height
 
-        const canvasWidth = window.innerWidth - 30
+        // const canvasWidth = window.innerWidth - 30
+        const canvasWidth = CANVAS_WIDTH
         // const canvasHeight = 828
-        const canvasHeight = 928
+        const canvasHeight = CANVAS_HEIGHT
 
         this.canvas = new fabric.Canvas('jigsawCanvas', {
             width: canvasWidth,
