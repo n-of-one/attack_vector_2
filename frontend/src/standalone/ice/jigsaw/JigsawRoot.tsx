@@ -21,12 +21,29 @@ interface Props {
     externalHack: boolean,
 }
 
+interface PuzzlePieces {
+    columns: number,
+    rows: number,
+}
+
+
+const ICE_DIFFICULTY: Record<IceStrength, PuzzlePieces> = {
+    [IceStrength.UNKNOWN]: {columns: 5, rows: 3},
+    [IceStrength.VERY_WEAK]: {columns: 5, rows: 3},
+    [IceStrength.WEAK]: {columns: 7, rows: 4},
+    [IceStrength.AVERAGE]: {columns: 10, rows: 6},
+    [IceStrength.STRONG]: {columns: 13, rows: 8},
+    [IceStrength.VERY_STRONG]: {columns: 17, rows: 10},
+    [IceStrength.ONYX]: {columns: 21, rows: 12},
+}
+
 export class JigsawRoot extends Component<Props> {
 
     store: Store
 
     constructor(props: Props) {
         super(props)
+        document.body.style.backgroundColor = "#333"
         ice.id = props.iceId
         const preLoadedState = {currentPage: Page.ICE}
 
@@ -51,14 +68,8 @@ export class JigsawRoot extends Component<Props> {
         initJigsawServerActions()
 
         // DEV: simulate server enter response with hardcoded data
-        // const devColumns = 5
-        // const devRows = 3
-        const devColumns = 7
-        const devRows = 4
-        // const devColumns = 17
-        // const devRows = 10
-        // const devColumns = 21
-        // const devRows = 12
+
+        const {columns, rows} = ICE_DIFFICULTY[IceStrength.ONYX]
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,
@@ -67,9 +78,9 @@ export class JigsawRoot extends Component<Props> {
                 imageSrc: "/img/frontier/ice/jigsaw/chatgpt-angel-2.png",
                 // imageSrc: "/img/frontier/ice/jigsaw/pexels-marcin-jozwiak-199600-13835514.jpg",
                 // imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
-                columns: devColumns,
-                rows: devRows,
-                pieces: generatePieceConfigs(devColumns, devRows, 1576, 828, CANVAS_WIDTH, CANVAS_HEIGHT),
+                columns: columns,
+                rows: rows,
+                pieces: generatePieceConfigs(columns, rows, 1576, 828, CANVAS_WIDTH, CANVAS_HEIGHT),
                 groups: [
                     // Array.from({length: devColumns * devRows}, (_, i) =>
                     //     [i % devColumns, Math.floor(i / devColumns)] as [number, number]
