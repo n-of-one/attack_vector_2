@@ -19,6 +19,7 @@ const FABRIC_GROUP_OPTIONS = {
     hoverCursor: 'grab',
     subTargetCheck: false,
     perPixelTargetFind: true,
+    // objectCaching: false //  set to true as a potential fix for problems with drag and drop for snapgroups
 }
 
 export class SnapGroupDisplay {

@@ -4,7 +4,7 @@ import {fabric} from "fabric";
 import {JigsawEnterData, PieceGroup} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 import {SnapGroupDisplay} from "./SnapGroupDisplay";
-import {calculatePieceDimensions, IMAGE_HEIGHT, IMAGE_WIDTH} from "../component/JigsawShapes";
+import {calculatePieceDimensions, IMAGE_HEIGHT, IMAGE_WIDTH, PUZZLE_SCALE} from "../component/JigsawShapes";
 
 // Set center origin globally so left/top refer to the center of each object.
 fabric.Object.prototype.originX = "center"
@@ -116,8 +116,10 @@ export class JigsawCanvas {
         // then pixelate by drawing tiny and scaling up with no smoothing.
         const cropOffsetX = (sourceImage.naturalWidth - IMAGE_WIDTH) / 2
         const cropOffsetY = (sourceImage.naturalHeight - IMAGE_HEIGHT) / 2
+        const displayWidth = IMAGE_WIDTH * PUZZLE_SCALE
+        const displayHeight = IMAGE_HEIGHT * PUZZLE_SCALE
 
-        const pixelSize = 96
+        const pixelSize = 96 * 1.5
         const aspect = IMAGE_WIDTH / IMAGE_HEIGHT
         const tinyWidth = Math.round(aspect >= 1 ? pixelSize : pixelSize * aspect)
         const tinyHeight = Math.round(aspect >= 1 ? pixelSize / aspect : pixelSize)
@@ -129,11 +131,11 @@ export class JigsawCanvas {
         tinyCtx.drawImage(sourceImage, cropOffsetX, cropOffsetY, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0, tinyWidth, tinyHeight)
 
         const pixelCanvas = document.createElement('canvas')
-        pixelCanvas.width = IMAGE_WIDTH
-        pixelCanvas.height = IMAGE_HEIGHT
+        pixelCanvas.width = displayWidth
+        pixelCanvas.height = displayHeight
         const pixelCtx = pixelCanvas.getContext('2d')!
         pixelCtx.imageSmoothingEnabled = false
-        pixelCtx.drawImage(tinyCanvas, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
+        pixelCtx.drawImage(tinyCanvas, 0, 0, displayWidth, displayHeight)
 
         const img = new fabric.Image(pixelCanvas as unknown as HTMLImageElement, {
             left: canvasWidth / 2,

@@ -70,7 +70,7 @@ export class JigsawRoot extends Component<Props> {
 
         // DEV: simulate server enter response with hardcoded data
 
-        const {columns, rows} = ICE_DIFFICULTY[IceStrength.ONYX]
+        const {columns, rows} = ICE_DIFFICULTY[IceStrength.AVERAGE]
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,

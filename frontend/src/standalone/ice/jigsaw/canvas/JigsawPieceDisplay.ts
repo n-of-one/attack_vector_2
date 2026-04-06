@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import {buildBorderPath, buildPiecePath, EdgeConfig, EdgeType, IMAGE_HEIGHT, IMAGE_WIDTH, PieceConfig} from "../component/JigsawShapes";
+import {buildBorderPath, buildPiecePath, EdgeConfig, EdgeType, IMAGE_HEIGHT, IMAGE_WIDTH, PieceConfig, PUZZLE_SCALE} from "../component/JigsawShapes";
 import type {SnapGroupDisplay} from "./SnapGroupDisplay";
 
 const TAB_SIZE_RATIO = 0.08
@@ -217,14 +217,15 @@ export class JigsawPieceDisplay {
         const boundingBoxHeight = this.extensionTop + this.pieceHeight + extensionBottom
 
         // The source image is center-cropped to IMAGE_WIDTH x IMAGE_HEIGHT.
-        // Compute offset into the source image for the crop region.
+        // Map canvas (scaled) coordinates back to source image coordinates.
         const cropOffsetX = (sourceImage.naturalWidth - IMAGE_WIDTH) / 2
         const cropOffsetY = (sourceImage.naturalHeight - IMAGE_HEIGHT) / 2
+        const imageScale = 1 / PUZZLE_SCALE
 
-        const sourceX = cropOffsetX + this.col * this.pieceWidth - this.extensionLeft
-        const sourceY = cropOffsetY + this.row * this.pieceHeight - this.extensionTop
-        const sourceWidth = boundingBoxWidth
-        const sourceHeight = boundingBoxHeight
+        const sourceX = cropOffsetX + (this.col * this.pieceWidth - this.extensionLeft) * imageScale
+        const sourceY = cropOffsetY + (this.row * this.pieceHeight - this.extensionTop) * imageScale
+        const sourceWidth = boundingBoxWidth * imageScale
+        const sourceHeight = boundingBoxHeight * imageScale
 
         const patternCanvas = document.createElement('canvas')
         patternCanvas.width = boundingBoxWidth

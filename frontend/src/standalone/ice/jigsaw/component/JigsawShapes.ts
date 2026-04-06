@@ -34,6 +34,7 @@ type ShapeGenerator = (size: number, tabHeight: number) => CanonicalPoint[]
 
 export const IMAGE_WIDTH = 1376
 export const IMAGE_HEIGHT = 768
+export const PUZZLE_SCALE = 0.8
 
 const TAB_HEIGHT_RATIO = 0.08
 const EDGE_MARGIN_RATIO = 0.15
@@ -42,8 +43,8 @@ const ROTATIONS = [0, 90, 180, 270]
 
 export function calculatePieceDimensions(cols: number, rows: number): { pieceWidth: number, pieceHeight: number } {
     return {
-        pieceWidth: IMAGE_WIDTH / cols,
-        pieceHeight: IMAGE_HEIGHT / rows,
+        pieceWidth: IMAGE_WIDTH * PUZZLE_SCALE / cols,
+        pieceHeight: IMAGE_HEIGHT * PUZZLE_SCALE / rows,
     }
 }
 
@@ -320,14 +321,16 @@ function generateSurroundingPositions(
     canvasWidth: number, canvasHeight: number
 ): Array<{ x: number, y: number }> {
 
-    // The puzzle image is always IMAGE_WIDTH x IMAGE_HEIGHT, centered on the canvas
+    // The puzzle display area is the scaled image size, centered on the canvas
+    const displayWidth = IMAGE_WIDTH * PUZZLE_SCALE
+    const displayHeight = IMAGE_HEIGHT * PUZZLE_SCALE
     const puzzleCenterX = canvasWidth / 2
     const puzzleCenterY = canvasHeight / 2
 
-    const puzzleLeft = puzzleCenterX - IMAGE_WIDTH / 2
-    const puzzleRight = puzzleCenterX + IMAGE_WIDTH / 2
-    const puzzleTop = puzzleCenterY - IMAGE_HEIGHT / 2
-    const puzzleBottom = puzzleCenterY + IMAGE_HEIGHT / 2
+    const puzzleLeft = puzzleCenterX - displayWidth / 2
+    const puzzleRight = puzzleCenterX + displayWidth / 2
+    const puzzleTop = puzzleCenterY - displayHeight / 2
+    const puzzleBottom = puzzleCenterY + displayHeight / 2
 
     // Piece placement margin from canvas edges
     const edgeMargin = maxTabSize
