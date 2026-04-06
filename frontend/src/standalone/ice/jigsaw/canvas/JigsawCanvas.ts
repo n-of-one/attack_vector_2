@@ -4,7 +4,7 @@ import {fabric} from "fabric";
 import {JigsawEnterData, PieceGroup} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 import {SnapGroupDisplay} from "./SnapGroupDisplay";
-import {calculatePieceSize} from "../component/JigsawShapes";
+import {calculatePieceDimensions, IMAGE_HEIGHT, IMAGE_WIDTH} from "../component/JigsawShapes";
 
 // Set center origin globally so left/top refer to the center of each object.
 fabric.Object.prototype.originX = "center"
@@ -29,14 +29,14 @@ export class JigsawCanvas {
         this.dispatch = dispatch
         this.store = store
 
-        // const puzzleDesignWidth = 1576
-        // const puzzleDesignHeight = 828
-        const puzzleDesignWidth = sourceImage.width
-        const puzzleDesignHeight = sourceImage.height
+        if (sourceImage.naturalWidth < IMAGE_WIDTH || sourceImage.naturalHeight < IMAGE_HEIGHT) {
+            throw new Error(
+                `Source image (${sourceImage.naturalWidth}x${sourceImage.naturalHeight}) is too small. ` +
+                `Minimum size is ${IMAGE_WIDTH}x${IMAGE_HEIGHT}.`
+            )
+        }
 
-        // const canvasWidth = window.innerWidth - 30
         const canvasWidth = CANVAS_WIDTH
-        // const canvasHeight = 828
         const canvasHeight = CANVAS_HEIGHT
 
         this.canvas = new fabric.Canvas('jigsawCanvas', {
@@ -50,19 +50,19 @@ export class JigsawCanvas {
 
         const puzzleCols = data.columns
         const puzzleRows = data.rows
-        const pieceSize = calculatePieceSize(puzzleDesignWidth, puzzleDesignHeight, puzzleCols, puzzleRows)
+        const {pieceWidth, pieceHeight} = calculatePieceDimensions(puzzleCols, puzzleRows)
 
         this.piecesByLocation = new Map(
             data.pieces.map(config => {
                 const display = new JigsawPieceDisplay({
                     col: config.col, row: config.row, config, sourceImage,
-                    puzzleCols, puzzleRows, pieceSize
+                    puzzleCols, puzzleRows, pieceWidth, pieceHeight
                 })
                 return [`${config.col}:${config.row}`, display]
             })
         )
 
-        this.addBackgroundImage(sourceImage, pieceSize * puzzleCols, pieceSize * puzzleRows, canvasWidth, canvasHeight)
+        this.addBackgroundImage(sourceImage, canvasWidth, canvasHeight)
 
         // Create snap groups: multi-piece groups from server data, single-piece groups for the rest.
         const groupedPieces = this.applyGroups(data.groups)
@@ -111,12 +111,14 @@ export class JigsawCanvas {
         return groupedPieces
     }
 
-    private addBackgroundImage(sourceImage: HTMLImageElement, puzzleWidth: number, puzzleHeight: number,
-                               canvasWidth: number, canvasHeight: number) {
-        // Draw a tiny version of the image, then scale it up with no smoothing to get chunky pixels.
+    private addBackgroundImage(sourceImage: HTMLImageElement, canvasWidth: number, canvasHeight: number) {
+        // Center-crop the source image to IMAGE_WIDTH x IMAGE_HEIGHT,
+        // then pixelate by drawing tiny and scaling up with no smoothing.
+        const cropOffsetX = (sourceImage.naturalWidth - IMAGE_WIDTH) / 2
+        const cropOffsetY = (sourceImage.naturalHeight - IMAGE_HEIGHT) / 2
+
         const pixelSize = 96
-        // const pixelSize = 192
-        const aspect = sourceImage.naturalWidth / sourceImage.naturalHeight
+        const aspect = IMAGE_WIDTH / IMAGE_HEIGHT
         const tinyWidth = Math.round(aspect >= 1 ? pixelSize : pixelSize * aspect)
         const tinyHeight = Math.round(aspect >= 1 ? pixelSize / aspect : pixelSize)
 
@@ -124,14 +126,14 @@ export class JigsawCanvas {
         tinyCanvas.width = tinyWidth
         tinyCanvas.height = tinyHeight
         const tinyCtx = tinyCanvas.getContext('2d')!
-        tinyCtx.drawImage(sourceImage, 0, 0, tinyWidth, tinyHeight)
+        tinyCtx.drawImage(sourceImage, cropOffsetX, cropOffsetY, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0, tinyWidth, tinyHeight)
 
         const pixelCanvas = document.createElement('canvas')
-        pixelCanvas.width = puzzleWidth
-        pixelCanvas.height = puzzleHeight
+        pixelCanvas.width = IMAGE_WIDTH
+        pixelCanvas.height = IMAGE_HEIGHT
         const pixelCtx = pixelCanvas.getContext('2d')!
         pixelCtx.imageSmoothingEnabled = false
-        pixelCtx.drawImage(tinyCanvas, 0, 0, puzzleWidth, puzzleHeight)
+        pixelCtx.drawImage(tinyCanvas, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT)
 
         const img = new fabric.Image(pixelCanvas as unknown as HTMLImageElement, {
             left: canvasWidth / 2,

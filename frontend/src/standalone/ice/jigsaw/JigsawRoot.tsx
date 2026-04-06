@@ -16,6 +16,7 @@ import {IceStrength} from "../../../common/model/IceStrength";
 import {generatePieceConfigs} from "./component/JigsawShapes";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./canvas/JigsawCanvas";
 
+
 interface Props {
     iceId: string
     externalHack: boolean,
@@ -75,12 +76,13 @@ export class JigsawRoot extends Component<Props> {
                 hacked: false,
                 strength: IceStrength.AVERAGE,
                 // imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
-                imageSrc: "/img/frontier/ice/jigsaw/chatgpt-angel-2.png",
+                // imageSrc: "/img/frontier/ice/jigsaw/chatgpt-angel-2.png",
+                imageSrc: "/img/frontier/ice/jigsaw/anubis.png",
                 // imageSrc: "/img/frontier/ice/jigsaw/pexels-marcin-jozwiak-199600-13835514.jpg",
                 // imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
                 columns: columns,
                 rows: rows,
-                pieces: generatePieceConfigs(columns, rows, 1576, 828, CANVAS_WIDTH, CANVAS_HEIGHT),
+                pieces: generatePieceConfigs(columns, rows, CANVAS_WIDTH, CANVAS_HEIGHT),
                 groups: [
                     // Array.from({length: devColumns * devRows}, (_, i) =>
                     //     [i % devColumns, Math.floor(i / devColumns)] as [number, number]

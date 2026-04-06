@@ -1,8 +1,13 @@
 import {fabric} from "fabric";
-import {buildBorderPath, buildPiecePath, EdgeConfig, PieceConfig} from "../component/JigsawShapes";
+import {buildBorderPath, buildPiecePath, EdgeConfig, EdgeType, IMAGE_HEIGHT, IMAGE_WIDTH, PieceConfig} from "../component/JigsawShapes";
 import type {SnapGroupDisplay} from "./SnapGroupDisplay";
 
 const TAB_SIZE_RATIO = 0.08
+
+/** Return the tab size for a given edge type. Horizontal edges use pieceWidth; vertical edges use pieceHeight. */
+function tabSizeForEdge(edge: EdgeType, pieceWidth: number, pieceHeight: number): number {
+    return ((edge === 'top' || edge === 'bottom') ? pieceWidth : pieceHeight) * TAB_SIZE_RATIO
+}
 
 /** Precomputed cos/sin for the four valid rotation angles (avoids floating-point drift). */
 const PRECOMPUTED_ROTATION_TRIGONOMETRY: { [degrees: number]: { cos: number, sin: number } } = {
@@ -29,14 +34,16 @@ export interface JigsawPieceDisplayOptions {
     sourceImage: HTMLImageElement
     puzzleCols: number
     puzzleRows: number
-    pieceSize: number
+    pieceWidth: number
+    pieceHeight: number
 }
 
 export class JigsawPieceDisplay {
 
     readonly col: number
     readonly row: number
-    private readonly pieceSize: number
+    private readonly pieceWidth: number
+    private readonly pieceHeight: number
     private readonly strokeWidth: number
 
     /** The main piece shape (fill + fading stroke). Child of displayObject. */
@@ -62,27 +69,29 @@ export class JigsawPieceDisplay {
     snapGroup!: SnapGroupDisplay
 
     constructor(options: JigsawPieceDisplayOptions) {
-        const {col, row, config, sourceImage, puzzleCols, puzzleRows, pieceSize} = options
+        const {col, row, config, sourceImage, puzzleCols, puzzleRows, pieceWidth, pieceHeight} = options
 
         this.col = col
         this.row = row
-        this.pieceSize = pieceSize
+        this.pieceWidth = pieceWidth
+        this.pieceHeight = pieceHeight
         this.strokeWidth = 1
 
-        const tabSize = pieceSize * TAB_SIZE_RATIO
+        const vTabSize = tabSizeForEdge('left', pieceWidth, pieceHeight)   // vertical edges (left/right)
+        const hTabSize = tabSizeForEdge('top', pieceWidth, pieceHeight)    // horizontal edges (top/bottom)
 
-        this.extensionLeft = this.extensionSize(config.left, tabSize)
-        this.extensionTop = this.extensionSize(config.top, tabSize)
-        const extensionRight = this.extensionSize(config.right, tabSize)
-        const extensionBottom = this.extensionSize(config.bottom, tabSize)
+        this.extensionLeft = this.extensionSize(config.left, vTabSize)
+        this.extensionTop = this.extensionSize(config.top, hTabSize)
+        const extensionRight = this.extensionSize(config.right, vTabSize)
+        const extensionBottom = this.extensionSize(config.bottom, hTabSize)
 
         this.bodyOffsetX = (this.extensionLeft - extensionRight) / 2
         this.bodyOffsetY = (this.extensionTop - extensionBottom) / 2
 
-        const patternCanvas = this.createPatternCanvas(sourceImage, puzzleCols, puzzleRows,
+        const patternCanvas = this.createPatternCanvas(sourceImage,
             extensionRight, extensionBottom)
 
-        const pathString = buildPiecePath(this.extensionLeft, this.extensionTop, pieceSize, config)
+        const pathString = buildPiecePath(this.extensionLeft, this.extensionTop, pieceWidth, pieceHeight, config)
 
         this.piecePath = new fabric.Path(pathString, {
             fill: new fabric.Pattern({
@@ -94,7 +103,7 @@ export class JigsawPieceDisplay {
         })
 
         const children: fabric.Object[] = [this.piecePath]
-        const borderString = buildBorderPath(this.extensionLeft, this.extensionTop, pieceSize, config)
+        const borderString = buildBorderPath(this.extensionLeft, this.extensionTop, pieceWidth, pieceHeight, config)
         if (borderString) {
             children.push(new fabric.Path(borderString, {
                 fill: '',
@@ -143,8 +152,8 @@ export class JigsawPieceDisplay {
         const rowOffset = this.row - anchor.row
 
         this.setBodyCenter(
-            anchorCenter.x + (colOffset * cos - rowOffset * sin) * this.pieceSize,
-            anchorCenter.y + (colOffset * sin + rowOffset * cos) * this.pieceSize,
+            anchorCenter.x + colOffset * this.pieceWidth * cos - rowOffset * this.pieceHeight * sin,
+            anchorCenter.y + colOffset * this.pieceWidth * sin + rowOffset * this.pieceHeight * cos,
         )
     }
 
@@ -167,8 +176,8 @@ export class JigsawPieceDisplay {
         const rowOffset = neighbor.row - this.row
         const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[this.rotation]
 
-        const expectedNeighborX = bodyCenter.x + (colOffset * cos - rowOffset * sin) * this.pieceSize
-        const expectedNeighborY = bodyCenter.y + (colOffset * sin + rowOffset * cos) * this.pieceSize
+        const expectedNeighborX = bodyCenter.x + colOffset * this.pieceWidth * cos - rowOffset * this.pieceHeight * sin
+        const expectedNeighborY = bodyCenter.y + colOffset * this.pieceWidth * sin + rowOffset * this.pieceHeight * cos
 
         const dx = neighborCenter.x - expectedNeighborX
         const dy = neighborCenter.y - expectedNeighborY
@@ -203,20 +212,19 @@ export class JigsawPieceDisplay {
     }
 
     private createPatternCanvas(sourceImage: HTMLImageElement,
-                                puzzleCols: number, puzzleRows: number,
                                 extensionRight: number, extensionBottom: number): HTMLCanvasElement {
-        const boundingBoxWidth = this.extensionLeft + this.pieceSize + extensionRight
-        const boundingBoxHeight = this.extensionTop + this.pieceSize + extensionBottom
+        const boundingBoxWidth = this.extensionLeft + this.pieceWidth + extensionRight
+        const boundingBoxHeight = this.extensionTop + this.pieceHeight + extensionBottom
 
-        const puzzleWidth = this.pieceSize * puzzleCols
-        const puzzleHeight = this.pieceSize * puzzleRows
-        const imageScaleX = sourceImage.naturalWidth / puzzleWidth
-        const imageScaleY = sourceImage.naturalHeight / puzzleHeight
+        // The source image is center-cropped to IMAGE_WIDTH x IMAGE_HEIGHT.
+        // Compute offset into the source image for the crop region.
+        const cropOffsetX = (sourceImage.naturalWidth - IMAGE_WIDTH) / 2
+        const cropOffsetY = (sourceImage.naturalHeight - IMAGE_HEIGHT) / 2
 
-        const sourceX = (this.col * this.pieceSize - this.extensionLeft) * imageScaleX
-        const sourceY = (this.row * this.pieceSize - this.extensionTop) * imageScaleY
-        const sourceWidth = boundingBoxWidth * imageScaleX
-        const sourceHeight = boundingBoxHeight * imageScaleY
+        const sourceX = cropOffsetX + this.col * this.pieceWidth - this.extensionLeft
+        const sourceY = cropOffsetY + this.row * this.pieceHeight - this.extensionTop
+        const sourceWidth = boundingBoxWidth
+        const sourceHeight = boundingBoxHeight
 
         const patternCanvas = document.createElement('canvas')
         patternCanvas.width = boundingBoxWidth

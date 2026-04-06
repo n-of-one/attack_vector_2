@@ -32,19 +32,24 @@ export const FLAT: FlatEdge = {dir: 'flat'}
 type CanonicalPoint = [number, number]
 type ShapeGenerator = (size: number, tabHeight: number) => CanonicalPoint[]
 
+export const IMAGE_WIDTH = 1376
+export const IMAGE_HEIGHT = 768
+
 const TAB_HEIGHT_RATIO = 0.08
 const EDGE_MARGIN_RATIO = 0.15
-const CANVAS_MARGIN = 80
-const MAX_PIECE_SIZE = 150
 
 const ROTATIONS = [0, 90, 180, 270]
 
-export function calculatePieceSize(canvasWidth: number, canvasHeight: number, cols: number, rows: number): number {
-    const maxPieceSize = Math.min(
-        (canvasWidth - CANVAS_MARGIN) / (cols + 1),
-        (canvasHeight - CANVAS_MARGIN) / (rows + 1)
-    )
-    return Math.ceil(Math.min(maxPieceSize, MAX_PIECE_SIZE))
+export function calculatePieceDimensions(cols: number, rows: number): { pieceWidth: number, pieceHeight: number } {
+    return {
+        pieceWidth: IMAGE_WIDTH / cols,
+        pieceHeight: IMAGE_HEIGHT / rows,
+    }
+}
+
+/** Return the "along" length for a given edge type. Top/bottom run along width; left/right along height. */
+function edgeLength(edge: EdgeType, pieceWidth: number, pieceHeight: number): number {
+    return (edge === 'top' || edge === 'bottom') ? pieceWidth : pieceHeight
 }
 
 // --- Shape definitions ---
@@ -143,16 +148,16 @@ const ALL_SHAPES: ShapeType[] = ['invected', 'embattled', 'indented', 'raguly']
 
 type EdgeMapper = (along: number, perp: number) => [number, number]
 
-export function getEdgeMapper(edge: EdgeType, originX: number, originY: number, size: number): EdgeMapper {
+export function getEdgeMapper(edge: EdgeType, originX: number, originY: number, width: number, height: number): EdgeMapper {
     switch (edge) {
         case 'top':
             return (along, perp) => [originX + along, originY - perp]
         case 'right':
-            return (along, perp) => [originX + size + perp, originY + along]
+            return (along, perp) => [originX + width + perp, originY + along]
         case 'bottom':
-            return (along, perp) => [originX + size - along, originY + size + perp]
+            return (along, perp) => [originX + width - along, originY + height + perp]
         case 'left':
-            return (along, perp) => [originX - perp, originY + size - along]
+            return (along, perp) => [originX - perp, originY + height - along]
     }
 }
 
@@ -163,8 +168,7 @@ function round(n: number): number {
     return Math.round(n * 100) / 100
 }
 
-export function buildPiecePath(originX: number, originY: number, size: number, config: PieceConfig): string {
-    const tabHeight = size * TAB_HEIGHT_RATIO
+export function buildPiecePath(originX: number, originY: number, pieceWidth: number, pieceHeight: number, config: PieceConfig): string {
     let pathString = `M ${round(originX)} ${round(originY)}`
 
     const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
@@ -175,19 +179,21 @@ export function buildPiecePath(originX: number, originY: number, size: number, c
     ]
 
     for (const {name, edgeConfig} of edges) {
-        const mapper = getEdgeMapper(name, originX, originY, size)
+        const mapper = getEdgeMapper(name, originX, originY, pieceWidth, pieceHeight)
+        const length = edgeLength(name, pieceWidth, pieceHeight)
+        const tabHeight = length * TAB_HEIGHT_RATIO
 
         if (edgeConfig.dir === 'flat') {
-            const [endX, endY] = mapper(size, 0)
+            const [endX, endY] = mapper(length, 0)
             pathString += ` L ${round(endX)} ${round(endY)}`
         } else {
             const direction = edgeConfig.dir === 'out' ? 1 : -1
-            const points = SHAPES[edgeConfig.shape](size, tabHeight)
+            const points = SHAPES[edgeConfig.shape](length, tabHeight)
             for (const [along, perp] of points) {
                 const [x, y] = mapper(along, perp * direction)
                 pathString += ` L ${round(x)} ${round(y)}`
             }
-            const [endX, endY] = mapper(size, 0)
+            const [endX, endY] = mapper(length, 0)
             pathString += ` L ${round(endX)} ${round(endY)}`
         }
     }
@@ -202,7 +208,7 @@ export function buildPiecePath(originX: number, originY: number, size: number, c
  * Includes invisible anchor points at the main path's bounding box corners
  * so that fabric.js computes the same pathOffset/dimensions as the main path.
  */
-export function buildBorderPath(originX: number, originY: number, size: number, config: PieceConfig): string | null {
+export function buildBorderPath(originX: number, originY: number, pieceWidth: number, pieceHeight: number, config: PieceConfig): string | null {
     const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
         {name: 'top', edgeConfig: config.top},
         {name: 'right', edgeConfig: config.right},
@@ -215,20 +221,22 @@ export function buildBorderPath(originX: number, originY: number, size: number, 
 
     // Compute the full bounding box to match the main path.
     // The main path always starts at (0,0) min because extensions push the origin inward.
-    const tabHeight = size * TAB_HEIGHT_RATIO
-    const extRight = config.right.dir === 'out' ? tabHeight : 0
-    const extBottom = config.bottom.dir === 'out' ? tabHeight : 0
-    const maxX = round(originX + size + extRight)
-    const maxY = round(originY + size + extBottom)
+    const vTabHeight = pieceHeight * TAB_HEIGHT_RATIO // tab height for vertical edges (left/right)
+    const hTabHeight = pieceWidth * TAB_HEIGHT_RATIO  // tab height for horizontal edges (top/bottom)
+    const extRight = config.right.dir === 'out' ? vTabHeight : 0
+    const extBottom = config.bottom.dir === 'out' ? hTabHeight : 0
+    const maxX = round(originX + pieceWidth + extRight)
+    const maxY = round(originY + pieceHeight + extBottom)
 
     // Anchor M commands at opposite corners to force same bounding box as main path
     let pathString = `M 0 0 M ${maxX} ${maxY}`
 
     for (const {name, edgeConfig} of edges) {
         if (edgeConfig.dir !== 'flat') continue
-        const mapper = getEdgeMapper(name, originX, originY, size)
+        const mapper = getEdgeMapper(name, originX, originY, pieceWidth, pieceHeight)
+        const length = edgeLength(name, pieceWidth, pieceHeight)
         const [startX, startY] = mapper(0, 0)
-        const [endX, endY] = mapper(size, 0)
+        const [endX, endY] = mapper(length, 0)
         pathString += ` M ${round(startX)} ${round(startY)} L ${round(endX)} ${round(endY)}`
     }
 
@@ -250,11 +258,9 @@ function randomDir(): 'out' | 'in' {
     return Math.random() < 0.5 ? 'out' : 'in'
 }
 
-// FIXME: fix the image aspect-ratio and find corresponding piece sizes
-export function generatePieceConfigs(cols: number, rows: number, imageWidth: number, imageHeight: number,
-                                     canvasWidth: number, canvasHeight: number): PieceConfig[] {
-    const pieceSize = calculatePieceSize(imageWidth, imageHeight, cols, rows)
-    const tabSize = pieceSize * TAB_HEIGHT_RATIO
+export function generatePieceConfigs(cols: number, rows: number, canvasWidth: number, canvasHeight: number): PieceConfig[] {
+    const {pieceWidth, pieceHeight} = calculatePieceDimensions(cols, rows)
+    const maxTabSize = Math.max(pieceWidth, pieceHeight) * TAB_HEIGHT_RATIO
 
     // Pre-generate internal edges
     // horizontalEdges[row][col] = edge between (col, row).right and (col+1, row).left
@@ -275,7 +281,7 @@ export function generatePieceConfigs(cols: number, rows: number, imageWidth: num
         }
     }
 
-    const positions = generateSurroundingPositions(cols * rows, pieceSize, tabSize, cols, rows, canvasWidth, canvasHeight)
+    const positions = generateSurroundingPositions(cols * rows, pieceWidth, pieceHeight, maxTabSize, canvasWidth, canvasHeight)
 
     const pieces: PieceConfig[] = []
 
@@ -310,32 +316,27 @@ interface Rect {
  * Pieces may partially overlap the puzzle image when space on a side is tight.
  */
 function generateSurroundingPositions(
-    count: number, pieceSize: number, tabSize: number,
-    cols: number, rows: number,
+    count: number, pieceWidth: number, pieceHeight: number, maxTabSize: number,
     canvasWidth: number, canvasHeight: number
 ): Array<{ x: number, y: number }> {
 
-    const puzzleWidth = pieceSize * cols
-    const puzzleHeight = pieceSize * rows
-
-    // The puzzle image is centered on the canvas
+    // The puzzle image is always IMAGE_WIDTH x IMAGE_HEIGHT, centered on the canvas
     const puzzleCenterX = canvasWidth / 2
     const puzzleCenterY = canvasHeight / 2
 
-    // Puzzle bounds (no extra padding — partial overlap with the image is acceptable)
-    const puzzleLeft = puzzleCenterX - puzzleWidth / 2
-    const puzzleRight = puzzleCenterX + puzzleWidth / 2
-    const puzzleTop = puzzleCenterY - puzzleHeight / 2
-    const puzzleBottom = puzzleCenterY + puzzleHeight / 2
+    const puzzleLeft = puzzleCenterX - IMAGE_WIDTH / 2
+    const puzzleRight = puzzleCenterX + IMAGE_WIDTH / 2
+    const puzzleTop = puzzleCenterY - IMAGE_HEIGHT / 2
+    const puzzleBottom = puzzleCenterY + IMAGE_HEIGHT / 2
 
     // Piece placement margin from canvas edges
-    const edgeMargin = tabSize
+    const edgeMargin = maxTabSize
 
     // Define 4 zones around the puzzle area.
     // Left and right zones span full canvas height; top and bottom fill the gap between them.
     // Use Math.max to ensure zones always have at least some minimum width/height
     // so that every side gets pieces even when space is tight (partial overlap is OK).
-    const minZoneSize = pieceSize * 0.5
+    const minZoneSize = Math.max(pieceWidth, pieceHeight) * 0.5
     const zones: Rect[] = [
         // Left
         {
@@ -409,8 +410,10 @@ function generateSurroundingPositions(
     }
 
     // Clamp all positions so pieces stay fully on canvas.
-    // With center-origin, the worst-case half-extent is (pieceSize + 2*tabSize) / 2 (out-tabs on both sides).
-    const halfExtent = (pieceSize + 2 * tabSize) / 2
+    // With center-origin, the worst-case half-extent accounts for piece size + tabs on both sides.
+    // Pieces can be rotated, so use the max of both dimensions.
+    const maxPieceDim = Math.max(pieceWidth, pieceHeight)
+    const halfExtent = (maxPieceDim + 2 * maxTabSize) / 2
     for (const pos of positions) {
         pos.x = Math.max(halfExtent, Math.min(canvasWidth - halfExtent, pos.x))
         pos.y = Math.max(halfExtent, Math.min(canvasHeight - halfExtent, pos.y))
