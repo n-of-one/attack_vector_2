@@ -335,35 +335,68 @@ function generateSurroundingPositions(
     // Piece placement margin from canvas edges
     const edgeMargin = maxTabSize
 
+    // Half-extent of a piece (worst case with tabs and rotation)
+    const maxPieceDim = Math.max(pieceWidth, pieceHeight)
+    const halfExtent = (maxPieceDim + 2 * maxTabSize) / 2
+
     // Define 4 zones around the puzzle area.
     // Left and right zones span full canvas height; top and bottom fill the gap between them.
     // Use Math.max to ensure zones always have at least some minimum width/height
     // so that every side gets pieces even when space is tight (partial overlap is OK).
+    // When there IS enough space, push zones away from the puzzle edge by halfExtent
+    // so pieces don't overlap the central image.
     const minZoneSize = Math.max(pieceWidth, pieceHeight) * 0.5
+
+    // For each side, compute the "safe" zone boundary that avoids puzzle overlap,
+    // but fall back to the puzzle edge when space is too tight.
+    const leftNaturalW = puzzleLeft - edgeMargin
+    const leftSafeW = puzzleLeft - halfExtent - edgeMargin
+    const leftW = leftSafeW >= minZoneSize ? leftSafeW : Math.max(minZoneSize, leftNaturalW)
+
+    const rightNaturalX = puzzleRight
+    const rightSafeX = puzzleRight + halfExtent
+    const rightNaturalW = canvasWidth - edgeMargin - puzzleRight
+    const rightSafeW = canvasWidth - edgeMargin - rightSafeX
+    const useRightSafe = rightSafeW >= minZoneSize
+    const rightX = useRightSafe ? rightSafeX : Math.min(rightNaturalX, canvasWidth - edgeMargin - minZoneSize)
+    const rightW = useRightSafe ? rightSafeW : Math.max(minZoneSize, rightNaturalW)
+
+    const topNaturalH = puzzleTop - edgeMargin
+    const topSafeH = puzzleTop - halfExtent - edgeMargin
+    const topH = topSafeH >= minZoneSize ? topSafeH : Math.max(minZoneSize, topNaturalH)
+
+    const bottomNaturalY = puzzleBottom
+    const bottomSafeY = puzzleBottom + halfExtent
+    const bottomNaturalH = canvasHeight - edgeMargin - puzzleBottom
+    const bottomSafeH = canvasHeight - edgeMargin - bottomSafeY
+    const useBottomSafe = bottomSafeH >= minZoneSize
+    const bottomY = useBottomSafe ? bottomSafeY : Math.min(bottomNaturalY, canvasHeight - edgeMargin - minZoneSize)
+    const bottomH = useBottomSafe ? bottomSafeH : Math.max(minZoneSize, bottomNaturalH)
+
     const zones: Rect[] = [
         // Left
         {
             x: edgeMargin, y: edgeMargin,
-            w: Math.max(minZoneSize, puzzleLeft - edgeMargin),
+            w: leftW,
             h: canvasHeight - edgeMargin * 2
         },
         // Right
         {
-            x: Math.min(puzzleRight, canvasWidth - edgeMargin - minZoneSize), y: edgeMargin,
-            w: Math.max(minZoneSize, canvasWidth - edgeMargin - puzzleRight),
+            x: rightX, y: edgeMargin,
+            w: rightW,
             h: canvasHeight - edgeMargin * 2
         },
         // Top (between left and right zones)
         {
             x: puzzleLeft, y: edgeMargin,
             w: Math.max(minZoneSize, puzzleRight - puzzleLeft),
-            h: Math.max(minZoneSize, puzzleTop - edgeMargin)
+            h: topH
         },
         // Bottom (between left and right zones)
         {
-            x: puzzleLeft, y: Math.min(puzzleBottom, canvasHeight - edgeMargin - minZoneSize),
+            x: puzzleLeft, y: bottomY,
             w: Math.max(minZoneSize, puzzleRight - puzzleLeft),
-            h: Math.max(minZoneSize, canvasHeight - edgeMargin - puzzleBottom)
+            h: bottomH
         },
     ]
 
@@ -413,10 +446,6 @@ function generateSurroundingPositions(
     }
 
     // Clamp all positions so pieces stay fully on canvas.
-    // With center-origin, the worst-case half-extent accounts for piece size + tabs on both sides.
-    // Pieces can be rotated, so use the max of both dimensions.
-    const maxPieceDim = Math.max(pieceWidth, pieceHeight)
-    const halfExtent = (maxPieceDim + 2 * maxTabSize) / 2
     for (const pos of positions) {
         pos.x = Math.max(halfExtent, Math.min(canvasWidth - halfExtent, pos.x))
         pos.y = Math.max(halfExtent, Math.min(canvasHeight - halfExtent, pos.y))
