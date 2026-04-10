@@ -34,6 +34,7 @@ private val OPEN_PATHS = listOf(
 
     "/o/**", // for widgets and other apps that don't require any authentication
     "/openapi/**", // open api calls
+    "/dev/**", // development paths
 
     "/ws_unrestricted", // websocket path for widgets and other apps that don't require any authentication
 

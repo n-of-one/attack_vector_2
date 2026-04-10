@@ -168,7 +168,7 @@ export class JigsawCanvas {
 
         const texture = Texture.from(pixelCanvas)
         const sprite = new Sprite(texture)
-        sprite.alpha = 0.25
+        sprite.alpha = 0.15
         sprite.anchor.set(0.5)
         sprite.position.set(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
         backgroundLayer.addChild(sprite)

@@ -54,7 +54,8 @@ class HtmlController(
 
         "/about",
         "/privacy",
-        "/larp/**"
+        "/larp/**",
+        "/dev/**",
     )
     fun default(): String {
         return INDEX

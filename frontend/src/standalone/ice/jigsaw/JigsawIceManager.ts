@@ -28,7 +28,7 @@ async function loadMedia(url: string): Promise<LoadedMedia> {
         video.autoplay = true
         video.crossOrigin = 'anonymous'
         await new Promise<void>((resolve, reject) => {
-            video.onloadedmetadata = () => resolve()
+            video.oncanplay = () => resolve()
             video.onerror = () => reject(new Error(`Failed to load video: ${url}`))
         })
         void video.play().catch(() => { /* autoplay may be blocked; texture still shows first frame */

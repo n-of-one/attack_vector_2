@@ -71,6 +71,7 @@ export class JigsawRoot extends Component<Props> {
         // DEV: simulate server enter response with hardcoded data
 
         const {columns, rows} = ICE_DIFFICULTY[IceStrength.AVERAGE]
+        const imageSrcFromQuery = new URLSearchParams(window.location.search).get('imageSrc')
         setTimeout(() => {
             jigsawIceManager.enter({
                 hacked: false,
@@ -80,7 +81,9 @@ export class JigsawRoot extends Component<Props> {
                 // imageSrc: "/img/frontier/ice/jigsaw/anubis.png",
                 // imageSrc: "/img/frontier/ice/jigsaw/gemini-aker.png",
                 // imageSrc: "/img/frontier/ice/jigsaw/2026-04-07_22-29-34.mp4",
-                imageSrc: "/img/frontier/ice/jigsaw/7020070_City_Sun_1920x1080.mp4",
+                // imageSrc: "/img/frontier/ice/jigsaw/7020070_City_Sun_1920x1080.mp4",
+                // imageSrc: "https://localhost/local/7020070_City_Sun_1920x1080.mp4",
+                imageSrc: imageSrcFromQuery ?? "/img/frontier/ice/jigsaw/7020070_City_Sun_1920x1080.mp4",
                 // imageSrc: "/img/frontier/ice/jigsaw/pexels-marcin-jozwiak-199600-13835514.jpg",
                 // imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
                 columns: columns,
