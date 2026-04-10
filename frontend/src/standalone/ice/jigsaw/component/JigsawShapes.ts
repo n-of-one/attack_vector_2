@@ -203,6 +203,41 @@ export function buildPiecePath(originX: number, originY: number, pieceWidth: num
     return pathString
 }
 
+/** Build the outline of a piece as a flat array of [x0,y0,x1,y1,...] numbers, suitable for PIXI.Polygon. */
+export function buildPiecePoints(originX: number, originY: number, pieceWidth: number, pieceHeight: number, config: PieceConfig): number[] {
+    const out: number[] = []
+    out.push(round(originX), round(originY))
+
+    const edges: Array<{ name: EdgeType, edgeConfig: EdgeConfig }> = [
+        {name: 'top', edgeConfig: config.top},
+        {name: 'right', edgeConfig: config.right},
+        {name: 'bottom', edgeConfig: config.bottom},
+        {name: 'left', edgeConfig: config.left},
+    ]
+
+    for (const {name, edgeConfig} of edges) {
+        const mapper = getEdgeMapper(name, originX, originY, pieceWidth, pieceHeight)
+        const length = edgeLength(name, pieceWidth, pieceHeight)
+        const tabHeight = length * TAB_HEIGHT_RATIO
+
+        if (edgeConfig.dir === 'flat') {
+            const [endX, endY] = mapper(length, 0)
+            out.push(round(endX), round(endY))
+        } else {
+            const direction = edgeConfig.dir === 'out' ? 1 : -1
+            const points = SHAPES[edgeConfig.shape](length, tabHeight)
+            for (const [along, perp] of points) {
+                const [x, y] = mapper(along, perp * direction)
+                out.push(round(x), round(y))
+            }
+            const [endX, endY] = mapper(length, 0)
+            out.push(round(endX), round(endY))
+        }
+    }
+
+    return out
+}
+
 /**
  * Build an SVG path string for just the flat (border) edges of a piece.
  * Returns null if the piece has no flat edges (center piece).

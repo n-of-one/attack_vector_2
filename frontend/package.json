@@ -8,6 +8,7 @@
         "fabric": "^5.5.2",
         "js-cookie": "^3.0.1",
         "license-checker": "^25.0.1",
+        "pixi.js": "^8.6.6",
         "react": "^18.2.0",
         "react-bootstrap": "^2.7.0",
         "react-datepicker": "^8.4.0",

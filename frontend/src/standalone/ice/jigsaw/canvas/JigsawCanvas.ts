@@ -1,52 +1,69 @@
-import {Canvas} from "fabric/fabric-impl";
 import {Dispatch, Store} from "redux";
-import {fabric} from "fabric";
+import {Application, Container, FederatedPointerEvent, FederatedWheelEvent, Rectangle, Sprite, Texture,} from "pixi.js";
 import {JigsawEnterData, PieceGroup} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 import {SnapGroupDisplay} from "./SnapGroupDisplay";
 import {calculatePieceDimensions, IMAGE_HEIGHT, IMAGE_WIDTH, PUZZLE_SCALE} from "../component/JigsawShapes";
-
-// Set center origin globally so left/top refer to the center of each object.
-fabric.Object.prototype.originX = "center"
-fabric.Object.prototype.originY = "center"
+import {LoadedMedia} from "../JigsawIceManager";
 
 export const CANVAS_HEIGHT = 928;
 export const CANVAS_WIDTH = 1880;
 
-
-
 export class JigsawCanvas {
 
-    private readonly canvas: Canvas
+    private readonly app: Application
     private readonly store: Store
     private readonly dispatch: Dispatch
     private readonly piecesByLocation: Map<string, JigsawPieceDisplay>
 
-    // True while a rotation animation is in progress, to prevent overlapping rotations
-    private rotating: boolean = false
+    private readonly piecesLayer: Container
+    private readonly topLayer: Container
 
-    constructor(data: JigsawEnterData, dispatch: Dispatch, store: Store, sourceImage: HTMLImageElement) {
+    private rotating: boolean = false
+    private draggingGroup: SnapGroupDisplay | null = null
+    private dragOffsetX: number = 0
+    private dragOffsetY: number = 0
+
+    static async create(
+        data: JigsawEnterData, dispatch: Dispatch, store: Store, media: LoadedMedia,
+    ): Promise<JigsawCanvas> {
+        const canvasEl = document.getElementById('jigsawCanvas') as HTMLCanvasElement | null
+        if (!canvasEl) throw new Error("jigsawCanvas element not found")
+
+        const app = new Application()
+        await app.init({
+            canvas: canvasEl,
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT,
+            background: 0x181818,
+            antialias: true,
+        })
+
+        return new JigsawCanvas(app, data, dispatch, store, media)
+    }
+
+    private constructor(
+        app: Application, data: JigsawEnterData, dispatch: Dispatch, store: Store, media: LoadedMedia,
+    ) {
+        this.app = app
         this.dispatch = dispatch
         this.store = store
 
-        if (sourceImage.naturalWidth < IMAGE_WIDTH || sourceImage.naturalHeight < IMAGE_HEIGHT) {
+        if (media.width < IMAGE_WIDTH || media.height < IMAGE_HEIGHT) {
             throw new Error(
-                `Source image (${sourceImage.naturalWidth}x${sourceImage.naturalHeight}) is too small. ` +
+                `Source media (${media.width}x${media.height}) is too small. ` +
                 `Minimum size is ${IMAGE_WIDTH}x${IMAGE_HEIGHT}.`
             )
         }
 
-        const canvasWidth = CANVAS_WIDTH
-        const canvasHeight = CANVAS_HEIGHT
+        const bgLayer = new Container()
+        this.piecesLayer = new Container()
+        this.topLayer = new Container()
+        this.app.stage.addChild(bgLayer)
+        this.app.stage.addChild(this.piecesLayer)
+        this.app.stage.addChild(this.topLayer)
 
-        this.canvas = new fabric.Canvas('jigsawCanvas', {
-            width: canvasWidth,
-            height: canvasHeight,
-            backgroundColor: "#181818",
-            selection: false,
-            fireRightClick: true,
-            stopContextMenu: true,
-        })
+        this.addBackgroundImage(bgLayer, media)
 
         const puzzleCols = data.columns
         const puzzleRows = data.rows
@@ -55,31 +72,39 @@ export class JigsawCanvas {
         this.piecesByLocation = new Map(
             data.pieces.map(config => {
                 const display = new JigsawPieceDisplay({
-                    col: config.col, row: config.row, config, sourceImage,
-                    puzzleCols, puzzleRows, pieceWidth, pieceHeight
+                    col: config.col, row: config.row, config,
+                    sharedTexture: media.texture,
+                    sourceWidth: media.width, sourceHeight: media.height,
+                    puzzleCols, puzzleRows, pieceWidth, pieceHeight,
                 })
                 return [`${config.col}:${config.row}`, display]
             })
         )
 
-        this.addBackgroundImage(sourceImage, canvasWidth, canvasHeight)
-
-        // Create snap groups: multi-piece groups from server data, single-piece groups for the rest.
         const groupedPieces = this.applyGroups(data.groups)
         for (const piece of this.piecesByLocation.values()) {
             if (!groupedPieces.has(piece)) {
-                new SnapGroupDisplay(new Set([piece]), this.canvas)
+                new SnapGroupDisplay(new Set([piece]), this)
             }
         }
 
         this.registerEventHandlers()
-        this.canvas.renderAll()
     }
 
-    /**
-     * Apply pre-existing groups: position pieces relative to anchor, then wrap in snap groups.
-     * Returns the set of all pieces that were part of a group.
-     */
+    get ticker() {
+        return this.app.ticker
+    }
+
+    addSnapGroup(group: SnapGroupDisplay) {
+        this.piecesLayer.addChild(group.container)
+    }
+
+    removeSnapGroup(group: SnapGroupDisplay) {
+        if (group.container.parent) {
+            group.container.parent.removeChild(group.container)
+        }
+    }
+
     private applyGroups(groups: PieceGroup[]): Set<JigsawPieceDisplay> {
         const groupedPieces = new Set<JigsawPieceDisplay>()
 
@@ -104,18 +129,16 @@ export class JigsawCanvas {
                 groupedPieces.add(piece)
             }
 
-            const snapGroup = new SnapGroupDisplay(pieces, this.canvas)
+            const snapGroup = new SnapGroupDisplay(pieces, this)
             snapGroup.updateStrokeOpacity(this.piecesByLocation)
         }
 
         return groupedPieces
     }
 
-    private addBackgroundImage(sourceImage: HTMLImageElement, canvasWidth: number, canvasHeight: number) {
-        // Center-crop the source image to IMAGE_WIDTH x IMAGE_HEIGHT,
-        // then pixelate by drawing tiny and scaling up with no smoothing.
-        const cropOffsetX = (sourceImage.naturalWidth - IMAGE_WIDTH) / 2
-        const cropOffsetY = (sourceImage.naturalHeight - IMAGE_HEIGHT) / 2
+    private addBackgroundImage(backgroundLayer: Container, media: LoadedMedia) {
+        const cropOffsetX = (media.width - IMAGE_WIDTH) / 2
+        const cropOffsetY = (media.height - IMAGE_HEIGHT) / 2
         const displayWidth = IMAGE_WIDTH * PUZZLE_SCALE
         const displayHeight = IMAGE_HEIGHT * PUZZLE_SCALE
 
@@ -128,7 +151,13 @@ export class JigsawCanvas {
         tinyCanvas.width = tinyWidth
         tinyCanvas.height = tinyHeight
         const tinyCtx = tinyCanvas.getContext('2d')!
-        tinyCtx.drawImage(sourceImage, cropOffsetX, cropOffsetY, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0, tinyWidth, tinyHeight)
+        try {
+            tinyCtx.drawImage(media.sourceElement as CanvasImageSource,
+                cropOffsetX, cropOffsetY, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0, tinyWidth, tinyHeight)
+        } catch (e) {
+            console.warn("Could not snapshot background frame", e)
+            return
+        }
 
         const pixelCanvas = document.createElement('canvas')
         pixelCanvas.width = displayWidth
@@ -137,50 +166,70 @@ export class JigsawCanvas {
         pixelCtx.imageSmoothingEnabled = false
         pixelCtx.drawImage(tinyCanvas, 0, 0, displayWidth, displayHeight)
 
-        const img = new fabric.Image(pixelCanvas as unknown as HTMLImageElement, {
-            left: canvasWidth / 2,
-            top: canvasHeight / 2,
-            opacity: 0.25,
-            selectable: false,
-            evented: false,
-        })
-        this.canvas.add(img)
-        this.canvas.sendToBack(img)
+        const texture = Texture.from(pixelCanvas)
+        const sprite = new Sprite(texture)
+        sprite.alpha = 0.25
+        sprite.anchor.set(0.5)
+        sprite.position.set(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
+        backgroundLayer.addChild(sprite)
     }
 
     private registerEventHandlers() {
-        this.canvas.on('mouse:down', (event) => {
-            if ((event.e as MouseEvent).button !== 2) return
-            const snapGroup = this.getGroupFromTarget(event.target)
-            if (snapGroup) this.rotateGroup(snapGroup, true)
+        const stage = this.app.stage
+        stage.eventMode = 'static'
+        stage.hitArea = new Rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+
+        const canvasEl = this.app.canvas
+        canvasEl.addEventListener('contextmenu', e => e.preventDefault())
+        canvasEl.addEventListener('wheel', e => e.preventDefault(), {passive: false})
+
+        stage.on('pointerdown', (ev: FederatedPointerEvent) => {
+            const group = this.findGroupAtTarget(ev.target as Container | null)
+            if (!group) return
+            if (ev.button === 2) {
+                this.rotateGroup(group, true)
+                return
+            }
+            if (ev.button !== 0) return
+            this.draggingGroup = group
+            this.topLayer.addChild(group.container)
+            this.dragOffsetX = group.container.position.x - ev.global.x
+            this.dragOffsetY = group.container.position.y - ev.global.y
         })
 
-        // Bring to front on mouse:up, not mouse:down — bringToFront re-adds the object
-        // to the canvas which breaks fabric's active drag if done during mouse:down.
-        this.canvas.on('mouse:up', (event) => {
-            if ((event.e as MouseEvent).button !== 0) return
-            const snapGroup = this.getGroupFromTarget(event.target)
-            if (snapGroup) this.canvas.bringToFront(snapGroup.fabricGroup)
+        stage.on('pointermove', (ev: FederatedPointerEvent) => {
+            if (!this.draggingGroup) return
+            this.draggingGroup.container.position.set(
+                ev.global.x + this.dragOffsetX,
+                ev.global.y + this.dragOffsetY,
+            )
         })
 
-        this.canvas.on('mouse:wheel', (event) => {
-            event.e.preventDefault()
-            const target = this.canvas.findTarget(event.e as MouseEvent, false)
-            const snapGroup = this.getGroupFromTarget(target)
-            if (!snapGroup) return
-            const clockwise = (event.e as WheelEvent).deltaY > 0
-            this.rotateGroup(snapGroup, clockwise)
-        })
+        const endDrag = () => {
+            if (!this.draggingGroup) return
+            const group = this.draggingGroup
+            this.draggingGroup = null
+            this.piecesLayer.addChild(group.container)
+            group.trySnap(this.piecesByLocation)
+        }
+        stage.on('pointerup', endDrag)
+        stage.on('pointerupoutside', endDrag)
 
-        this.canvas.on('object:modified', (event) => {
-            const snapGroup = this.getGroupFromTarget(event.target)
-            snapGroup?.trySnap(this.piecesByLocation)
+        stage.on('wheel', (ev: FederatedWheelEvent) => {
+            const group = this.findGroupAtTarget(ev.target as Container | null)
+            if (!group) return
+            this.rotateGroup(group, ev.deltaY > 0)
         })
     }
 
-    private getGroupFromTarget(target: fabric.Object | undefined | null): SnapGroupDisplay | null {
-        if (!target || !(target.data instanceof SnapGroupDisplay)) return null
-        return target.data
+    private findGroupAtTarget(target: Container | null): SnapGroupDisplay | null {
+        let node: Container | null = target
+        while (node) {
+            const sg = (node as any).__snapGroup
+            if (sg) return sg as SnapGroupDisplay
+            node = node.parent
+        }
+        return null
     }
 
     private rotateGroup(snapGroup: SnapGroupDisplay, clockwise: boolean) {
