@@ -1,3 +1,10 @@
+# Release notes AV 2.20.2 (04 April 2026)
+
+## Bugfixes
+- Full screen editor no longer redirects to login page
+
+
+
 # Release notes AV 2.20.1 (15 March 2026)
 
 ## Bugfixes

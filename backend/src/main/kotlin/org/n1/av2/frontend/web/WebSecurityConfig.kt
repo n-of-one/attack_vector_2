@@ -49,7 +49,7 @@ private val HACKER_PATHS = listOf(
 
 )
 
-private val USER_PATHS = listOf("/api/**", "/edit/**")
+private val USER_PATHS = listOf("/api/**", "/edit/**", "/editText/**")
 private val GM_PATHS = listOf("/gm/**", "/larp/**")
 private val ADMIN_PATHS = listOf("/admin/**", "/api/admin/**")
 
