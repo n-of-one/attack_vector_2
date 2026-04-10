@@ -57,16 +57,16 @@ export class JigsawRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
-            webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/ice/jigsaw/enter", {iceId: ice.id})
-        });
+        // webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
+        //     webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
+        //     webSocketConnection.sendObject("/ice/jigsaw/enter", {iceId: ice.id})
+        // });
 
         jigsawIceManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
-        initGenericServerActions({fontSize: 12})
-        initGenericAppActions()
-        initJigsawServerActions()
+        // initGenericServerActions({fontSize: 12})
+        // initGenericAppActions()
+        // initJigsawServerActions()
 
         // DEV: simulate server enter response with hardcoded data
 
