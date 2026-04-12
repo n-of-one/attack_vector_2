@@ -27,7 +27,7 @@ import java.util.stream.StreamSupport
 class OpenIdConnectUserInfos(
     val externalId: String,
     val userName: String,
-    val isGm: Boolean,
+    val type: UserType,
     val characterName: String,
     val skills: List<SkillType>
 )
@@ -68,9 +68,9 @@ class OpenIdConnectService(
         closeSession(baseUrl, clientId, oidcTokens.refreshToken)
 
         val userInfos = getInfosFromToken(oidcTokens.accessToken, clientId)
-        val user = getOrCreateHackerUser(userInfos)
 
-        updateHackerWithCharacterInfo(user, userInfos)
+        val user = getOrCreateUser(userInfos)
+        createOrUpdateHacker(user, userInfos)
         return user
     }
 
@@ -128,35 +128,39 @@ class OpenIdConnectService(
         )
     }
 
+    private fun getOrCreateUser(userInfos: OpenIdConnectUserInfos): UserEntity {
+        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(userInfos.externalId)
 
-    private fun getOrCreateHackerUser(hackerInfo: OpenIdConnectUserInfos): UserEntity {
-        val existingUserEntity: UserEntity? = userEntityService.findByExternalId(hackerInfo.externalId)
         if (existingUserEntity != null) {
+            if (existingUserEntity.type != userInfos.type) {
+                existingUserEntity.type = userInfos.type
+                return userEntityService.save(existingUserEntity)
+            }
             return existingUserEntity
         }
 
-        if (hackerInfo.isGm) {
-            return userEntityService.createUser(hackerInfo.userName, UserType.GM, hackerInfo.externalId)
+        val name = userEntityService.findFreeUserName(userInfos.characterName)
+        return userEntityService.createUser(name, userInfos.type, userInfos.externalId)
+    }
+
+
+    private fun createOrUpdateHacker(user: UserEntity, openIdConnectUserInfos: OpenIdConnectUserInfos) {
+        if (UserType.GM == openIdConnectUserInfos.type) return
+
+        val hacker = hackerEntityService.findForUserOrNull(user)
+        if (hacker == null) {
+            hackerEntityService.createHacker(user, HackerIcon.FROG, openIdConnectUserInfos.characterName)
+            hackerEntityService.findForUser(user);
+        } else {
+            val updatedHacker = hacker.copy(
+                characterName = openIdConnectUserInfos.characterName,
+            )
+            hackerEntityService.save(updatedHacker)
         }
 
-        val name = userEntityService.findFreeUserName(hackerInfo.characterName)
-        val user = userEntityService.createUser(name, UserType.HACKER, hackerInfo.externalId)
-        hackerEntityService.createHacker(user, HackerIcon.FROG, hackerInfo.characterName)
-
-        return user
-    }
-
-
-    private fun updateHackerWithCharacterInfo(user: UserEntity, openIdConnectUserInfos: OpenIdConnectUserInfos) {
-        if (openIdConnectUserInfos.isGm) return
-
-        val hacker = hackerEntityService.findForUser(user)
-        val updatedHacker = hacker.copy(
-            characterName = openIdConnectUserInfos.characterName,
-        )
-        hackerEntityService.save(updatedHacker)
         skillService.addSkillsForUser(user, openIdConnectUserInfos.skills)
     }
+
 
     private fun getInfosFromToken(jwt: String, clientId: String): OpenIdConnectUserInfos {
         val objectMapper = ObjectMapper()
@@ -168,15 +172,22 @@ class OpenIdConnectService(
         val id = getStringField(rootNode, "sub")
         val characterName = getStringField(rootNode, "character_name")
         val userName = getStringField(rootNode, "preferred_username")
-        val isGm = hasRole(rootNode, clientId, "GM")
+        val type = getUserType(rootNode, clientId)
         val skills = mapSkills(rootNode, clientId)
 
-        return OpenIdConnectUserInfos(id, userName, isGm, characterName, skills)
+        return OpenIdConnectUserInfos(id, userName, type, characterName, skills)
     }
 
     private fun getStringField(node: JsonNode, fieldName: String): String {
         val field = node.get(fieldName) ?: return ""
         return field.asText()
+    }
+
+    private fun getUserType(tokenPayload: JsonNode, clientId: String): UserType {
+        if (hasRole(tokenPayload, clientId, "GM")) {
+            return UserType.GM
+        }
+        return UserType.HACKER
     }
 
     private fun hasRole(tokenPayload: JsonNode, clientId: String, roleName: String): Boolean {
