@@ -106,8 +106,9 @@ class SkillService(
     }
 
     fun addSkillForUser(userId: String, type: SkillType, valueInput: String? = null) {
-        val id = createId("skill", skillRepo::findById)
-        val value  = valueInput ?: type.defaultValue
+        val id = skillRepo.findFirstByTypeAndUserId(type, userId)?.id
+            ?: createId("skill", skillRepo::findById)
+        val value = valueInput ?: type.defaultValue
         val skill = Skill(id, userId, type, value)
         skillRepo.save(skill)
     }
@@ -127,5 +128,4 @@ class SkillService(
                 skillRepo.save(updatedSkill)
             }
     }
-
 }
