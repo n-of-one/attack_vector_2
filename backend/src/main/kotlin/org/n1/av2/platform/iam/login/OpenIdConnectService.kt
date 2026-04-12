@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.contains
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
+import org.n1.av2.hacker.skill.SkillType.*
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.user.HackerIcon
@@ -21,7 +21,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
 import java.util.*
-import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 
 
 class OpenIdConnectUserInfos(
@@ -67,7 +67,7 @@ class OpenIdConnectService(
         val oidcTokens = getToken(baseUrl, clientId, code, redirectUri)
         closeSession(baseUrl, clientId, oidcTokens.refreshToken)
 
-        val userInfos = getInfosFromToken(oidcTokens.accessToken)
+        val userInfos = getInfosFromToken(oidcTokens.accessToken, clientId)
         val user = getOrCreateHackerUser(userInfos)
 
         updateHackerWithCharacterInfo(user, userInfos)
@@ -155,11 +155,10 @@ class OpenIdConnectService(
             characterName = openIdConnectUserInfos.characterName,
         )
         hackerEntityService.save(updatedHacker)
-
         skillService.addSkillsForUser(user, openIdConnectUserInfos.skills)
     }
 
-    private fun getInfosFromToken(jwt: String): OpenIdConnectUserInfos {
+    private fun getInfosFromToken(jwt: String, clientId: String): OpenIdConnectUserInfos {
         val objectMapper = ObjectMapper()
 
         val chunks = jwt.split(".")
@@ -169,8 +168,8 @@ class OpenIdConnectService(
         val id = getStringField(rootNode, "sub")
         val characterName = getStringField(rootNode, "character_name")
         val userName = getStringField(rootNode, "preferred_username")
-        val isGm = hasRole(rootNode, "GM")
-        val skills = mapSkills(rootNode)
+        val isGm = hasRole(rootNode, clientId, "GM")
+        val skills = mapSkills(rootNode, clientId)
 
         return OpenIdConnectUserInfos(id, userName, isGm, characterName, skills)
     }
@@ -180,17 +179,47 @@ class OpenIdConnectService(
         return field.asText()
     }
 
-    private fun hasRole(tokenPayload: JsonNode, role: String): Boolean {
-        val realmAccess = tokenPayload.get("realm_access") ?: return false
-        val roles = realmAccess.get("roles") ?: return false
-        return roles.contains(role)
+    private fun hasRole(tokenPayload: JsonNode, clientId: String, roleName: String): Boolean {
+        if (roleName.isBlank()) {
+            return false
+        }
+
+        val roles = getRolesFromToken(tokenPayload, clientId)
+        return roles.stream()
+            .filter(Objects::nonNull)
+            .flatMap { StreamSupport.stream(it.spliterator(), false) }
+            .filter(Objects::nonNull)
+            .anyMatch { role -> roleName == role.asText() }
+
     }
 
-    private fun mapSkills(tokenPayload: JsonNode): List<SkillType> {
-        val tokenSkills = tokenPayload.get("skills") ?: return emptyList()
-        return SkillType.entries.stream()
-            .filter { skillName -> tokenSkills.contains(skillName.name) }
-            .collect(Collectors.toList())
+    private fun getRolesFromToken(tokenPayload: JsonNode, clientId: String): Set<JsonNode> {
+        val realmRoles = getRealmRoles(tokenPayload)
+        val clientRoles = getClientRoles(tokenPayload, clientId)
+        return setOfNotNull(realmRoles, clientRoles)
+    }
+
+    private fun getRealmRoles(tokenPayload: JsonNode): JsonNode? {
+        val realmAccess = tokenPayload.get("realm_access") ?: return null
+        return realmAccess.get("roles") ?: return null
+    }
+
+    private fun getClientRoles(tokenPayload: JsonNode, clientId: String): JsonNode? {
+        val resourceAccess = tokenPayload.get("resource_access") ?: return null
+        val client = resourceAccess.get(clientId) ?: return null
+        return client.get("roles") ?: return null
+    }
+
+    private fun mapSkills(tokenPayload: JsonNode, clientId: String): List<SkillType> {
+        if (hasRole(tokenPayload, clientId, "SITE_ADMIN")) {
+            return listOf(SEARCH_SITE, SCAN, CREATE_SITE)
+        }
+
+        if (hasRole(tokenPayload, clientId, "HACKER")) {
+            return listOf(SEARCH_SITE, SCAN)
+        }
+
+        return listOf()
     }
 }
 
