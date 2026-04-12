@@ -50,8 +50,8 @@ enum class ConfigItem(
 
     SYSTEM_JWT_SECRET(NEVER, createJwtSecret()),
 
-    LARP_SPECIFIC_OPENID_CONNECT_URL(""),
-    LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID("attack_vector"),
+    LARP_SPECIFIC_OPENID_CONNECT_URL(ADMIN, ""),
+    LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID(ADMIN, "attack_vector"),
 }
 
 data class ConfigEntry(

@@ -66,7 +66,7 @@ class LoginService(
 
     fun openIdConnectLogin(code: String, redirectUri: String): List<Cookie> {
         val user = openIdConnectService.login(code, redirectUri) ?: return emptyList()
-        return getCookies(user)
+        return addCookies(user)
     }
 
     fun addCookies(userEntity: UserEntity): List<Cookie> {
