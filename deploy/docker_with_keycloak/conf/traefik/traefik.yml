@@ -1,0 +1,17 @@
+entryPoints:
+  web:
+    address: ':80'
+
+api:
+  dashboard: true
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: conf.d
+
+
+accessLog:
+  filePath: "/log/access.log"
+  bufferingSize: 100

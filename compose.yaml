@@ -1,0 +1,28 @@
+services:
+  attack_vector_2-DB:
+    container_name: attack_vector_2-DB
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - TZ='Europe/Amsterdam'
+    volumes:
+      - mongo_data:/data/db
+      - ./install/createUser.js:/docker-entrypoint-initdb.d/init.js:ro
+
+  attack_vector_2:
+    build:
+      context: .
+#      no_cache: true # uncomment to rebuild the application
+    container_name: attack_vector_2
+    ports:
+      - "80:80"
+    depends_on:
+      - attack_vector_2-DB
+    environment:
+      - MONGODB_URI=mongodb://attackvector2:attackvector2@attack_vector_2-DB/admin
+      - MONGODB_NAME=attackvector2
+      - TZ='Europe/Amsterdam'
+
+volumes:
+  mongo_data:
