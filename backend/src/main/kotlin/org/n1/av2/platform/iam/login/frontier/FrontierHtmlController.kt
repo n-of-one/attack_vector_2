@@ -28,7 +28,7 @@ class FrontierHtmlController(
             return ""
         }
         val user = frontierService.frontierLogin(frontierInfo)
-        val loginCookies = loginService.getCookies(user)
+        val loginCookies = loginService.addCookies(user)
         response.addLoginCookies(loginCookies)
 
         val redirectPath = next ?: "/"

@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct
 class InitStatusLightService(
     private val statusLightService: StatusLightService,
     private val editorService: EditorService,
-){
+) {
     @PostConstruct
     fun postConstruct() {
         statusLightService.editorService = editorService
@@ -28,16 +28,17 @@ class StatusLightService(
 ) {
     lateinit var editorService: EditorService
 
-    class StatusLightMessage(val status: Boolean, val textForRed: String, val textForGreen: String)
+    class StatusLightMessage(val switchLabel: String, val currentOption: Int, val options: List<StatusLightOption>)
+
     fun enter(layerId: String) {
         val (_, layer) = findByLayerId(layerId)
         sendUpdate(layer)
     }
 
     // Called by Switch app
-    fun setValue(layerId: String, newValue: Boolean) {
+    fun setValue(layerId: String, newOption: Int) {
         val (node, layer) = findByLayerId(layerId)
-        layer.status = newValue
+        layer.currentOption = newOption
         nodeEntityService.save(node)
 
         sendUpdate(layer)
@@ -45,7 +46,7 @@ class StatusLightService(
     }
 
     fun sendUpdate(layer: StatusLightLayer) {
-        val message = StatusLightMessage(layer.status, layer.textForRed, layer.textForGreen)
+        val message = StatusLightMessage(layer.switchLabel, layer.currentOption, layer.options)
         connectionService.toApp(layer.id, ServerActions.SERVER_STATUS_LIGHT_UPDATE, message)
     }
 

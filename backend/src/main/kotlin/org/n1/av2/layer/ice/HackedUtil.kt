@@ -40,9 +40,6 @@ class HackedUtil(
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_HACKED, update) // to update scan status of site
 
         if (node.hacked) {
-            val nodeHackedUpdate = NodeHacked(node.id, delayTicks)
-            connectionService.toSite(node.siteId, ServerActions.SERVER_NODE_HACKED, nodeHackedUpdate)
-
             systemTaskRunner.queueInTicks("node hacked", mapOf("siteId" to node.siteId), delayTicks) {
                 runService.updateNodeStatusToHacked(node)
             }

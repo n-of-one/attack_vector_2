@@ -49,11 +49,9 @@ class SkillService(
         return values.maxOrNull()
     }
 
-    fun addSkill(userId: String, type: SkillType) {
-        val id = createId("skill", skillRepo::findById)
-        val skill = Skill(id, userId, type)
-        skillRepo.save(skill)
-        skill.type.processUpdate(skill.userId, skill.type.defaultValue, applicationContext)
+    fun addSkillAndUpdateUi(userId: String, type: SkillType) {
+        addSkillForUser(userId, type)
+        type.processUpdate(userId, type.defaultValue, applicationContext)
         userAndHackerService.sendDetailsOfSpecificUser(userId)
     }
 
@@ -103,10 +101,15 @@ class SkillService(
 
     fun addSkillsForUser(user: UserEntity, types: List<SkillType>) {
         types.forEach { type ->
-            val id = createId("skill", skillRepo::findById)
-            val skill = Skill(id, user.id, type)
-            skillRepo.save(skill)
+            addSkillForUser(user.id, type)
         }
+    }
+
+    fun addSkillForUser(userId: String, type: SkillType, valueInput: String? = null) {
+        val id = createId("skill", skillRepo::findById)
+        val value  = valueInput ?: type.defaultValue
+        val skill = Skill(id, userId, type, value)
+        skillRepo.save(skill)
     }
 
     fun useSkillOnSite(skillId: SkillId, siteId: String) {

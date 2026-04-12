@@ -2,6 +2,8 @@ import {webSocketConnection} from "./WebSocketConnection";
 import {serverTime} from "./ServerTime";
 import {notify} from "../util/Notification";
 import {ServerNotification} from "../../editor/server/EditorServerActionProcessor";
+import {SERVER_RECEIVE_CURRENT_USER, User} from "../users/CurrentUserReducer";
+import {attachFontChangeListener, setFontSize} from "../util/FontSizeListener";
 
 export const SERVER_NOTIFICATION = "SERVER_NOTIFICATION"
 export const SERVER_ERROR = "SERVER_ERROR"
@@ -12,7 +14,17 @@ export const SERVER_OPEN_EDITOR = "SERVER_OPEN_EDITOR"
 export const SERVER_ICE_HACKED = "SERVER_ICE_HACKED"
 export const SERVER_RESET_ICE = "SERVER_RESET_ICE"
 
-export const initGenericServerActions = () => {
+export const initGenericServerActions = ({fontSize = "dynamic"}: {fontSize: number | "dynamic"}) => {
+
+    if (fontSize === "dynamic") {
+        webSocketConnection.addAction(SERVER_RECEIVE_CURRENT_USER, (user: User) => {
+            setFontSize(user.preferences.fontSize)
+            attachFontChangeListener(user.id)
+        })
+    }
+    else {
+        setFontSize(fontSize)
+    }
 
     webSocketConnection.addAction(SERVER_TIME_SYNC, (timeOnServer: string) => {
         serverTime.init(timeOnServer)

@@ -23,6 +23,7 @@ data class SiteProperties(
     var ownerUserId: String,
     var startNodeNetworkId: String = "00",
     var hackable: Boolean = false,
+    var nodesLocked: Boolean = false,
     val shutdownEnd: ZonedDateTime? = null,
     val siteStructureOk: Boolean = true,
     val alertnessTimerAdjustment: Duration? = null,

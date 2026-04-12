@@ -7,6 +7,7 @@ import {toServerUrl} from "../util/DevEnvironment";
 import {SiteList} from "./SitesList";
 import {SiteInfo} from "./SitesReducer";
 import userAuthorizations, {ROLE_GM} from "../user/UserAuthorizations";
+import {currentUser} from "../user/CurrentUser";
 
 /* eslint react-hooks/exhaustive-deps: 0*/
 
@@ -32,7 +33,8 @@ export const SitesPage = () => {
         }
         const formData = new FormData()
         formData.append("file", file as unknown as string)
-        fetch(toServerUrl("/api/import/site"), {
+        const userConnection = `${currentUser.id}_${webSocketConnection.connectionId}`
+        fetch(toServerUrl(`/api/import/site/${userConnection}`), {
             method: "POST", body: formData, credentials: "include"
         }).then(() => {
             askForSitesList()
@@ -61,7 +63,7 @@ export const SitesPage = () => {
                     <div className="text">
                         <TextInput placeholder="Site name"
                                    buttonLabel="New"
-                                   buttonClass="btn-info"
+                                   buttonClass="btn-info text-size"
                                    save={(siteName: string) => edit(siteName)}
                                    clearAfterSubmit={true}
                                    size={8}
@@ -82,7 +84,7 @@ export const SitesPage = () => {
                                     <input className="form-control" type="file" id="formFile" onChange={selectFile}/>
                                 </div>
                                 <div className="col-lg-2">
-                                    <button className="btn btn-info" type="submit" style={{fontSize: "12px"}}>Upload</button>
+                                    <button className="btn btn-info text-size" type="submit" >Upload</button>
                                 </div>
                             </div>
                         </form>

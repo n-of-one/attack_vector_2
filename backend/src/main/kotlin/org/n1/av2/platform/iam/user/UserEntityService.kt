@@ -80,6 +80,7 @@ class UserEntityService(
             type = type,
             externalId = externalId,
             tag = role,
+            preferences = UserPreferences(13)
         )
         save(user)
         return user
@@ -102,7 +103,7 @@ class UserEntityService(
     }
 
     fun isGmOrSystem(userId: String): Boolean {
-        val user = getById(userId)
+        val user = getByIdOrNull(userId) ?: return false
         return (user.type == UserType.GM || user.type == UserType.SYSTEM)
     }
 

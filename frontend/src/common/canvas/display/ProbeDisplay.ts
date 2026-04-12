@@ -107,7 +107,6 @@ export class ProbeDisplay implements Display {
             this.connectionVisuals.forEach(lineElement => {
                 lineElement.remove()
             })
-            console.timeEnd("scan")
         })
     }
 

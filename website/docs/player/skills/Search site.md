@@ -1,0 +1,2 @@
+# Search site
+This skill allows you to access a new site. Without this skill, there is no search box on your home page, so you cannot start a new hack. Instead, you must be invited to a hack by a hacker that does have this skill with the `/share` command.

@@ -1,3 +1,171 @@
+# Release notes AV 2.20.2 (04 April 2026)
+
+## Bugfixes
+- Full screen editor no longer redirects to login page
+
+
+
+# Release notes AV 2.20.1 (15 March 2026)
+
+## Bugfixes
+- Importing of sites is more robust, prevents bugs with duplicate DB ids.
+- Importing of sites with tripwires linked to cores in other sites now works.
+
+Tripwires can link to cores in other sites. When importing sites with those tripwires: first import the site with the core, then the site with the tripwire. 
+Check the connections manually afterwards.
+
+
+# Release notes AV 2.20.0 (4 March 2026)
+
+## Features
+- AV installation and upgrade simplified
+- API for creating sites
+
+### AV installation and upgrade simplified
+
+Rather than downloading the entire git repository and building it locally, you can now just download and run the pre-built application. 
+This simplifies installation and makes upgrades much faster.
+
+You can switch to the new way by first upgrading normally to this version. And then copying the `upgrade.sh`/`upgrade.bat` and `run.sh`/`run.bat` 
+from the installation folder to the folder where AV is installed (replacing the existing files). Then run upgrade.
+
+The existing upgrade scripts will also keep working if you don't want to upgrade yet.
+
+### API for creating sites
+
+Attack Vector now has an API to create websites. The purpose is to allow other tools to generate sites. This is a work in progress but could make it easier to generate sites in the future.
+Several security improvements have been made to make the API more secure.
+
+
+# Release notes AV 2.19.0 (25 February 2026)
+
+## Features
+- Hacker speed
+
+Speed can now be changed for the server as a whole or individual hackers. Hacker speed defines how quick text appears in the terminal, as well as how fast hackers move.
+
+Changing the speed will change how the system feels to work with. The 'adjusted speed' skill can be given the players to make them faster or slower.
+It's mostly cosmetics and does not impact actual hacking (solving of puzzles). It can be used to make experienced hackers feel more advanced.
+
+
+# Release notes AV 2.18.0 (25 February 2026)
+
+## Features
+- Status lights can now have three or more options
+- Status light colors are now customizable
+
+## Bugfixes
+- Nodes that showed as hacked will show as not-hacked after site resets
+- ICE and other apps close when the hacker moves to another node
+- Prevent word search from making 100% overlapping words
+- Terminal syntax highlighting is correct after disconnecting
+- Username updates in the menu when user changes it, not requiring reload.
+
+
+# Release notes AV 2.17.1 (18 February 2026)
+
+## Features
+- Shutdown accelerator layer -> Timer adjuster layer
+
+## Bugfixes
+- Importing sites was broken (again)
+
+
+### Shutdown accelerator layer -> Timer adjuster layer
+The Shutdown accelerator layer (introduced last release) has been reworked into the Timer adjuster layer, which is more flexible.
+
+This layer now allows to increase the countdown timer (helping the players) instead of decreasing it.
+
+This layer now allows you to choose how it works if multiple hackers enter a node with this layer. The options are:
+- only trigger once
+- trigger once per hacker
+- trigger on every hacker even if they entered the node before
+
+This layer no longer affects timers started by scripts.
+
+Existing Shutdown accelerator layers will be updated to the new type when you upgrade Attack Vector. Any layers named: "Shutdown accelerator" will be renamed to "Timer accelerator". Their behavior will be the same.
+
+
+
+# Release notes AV 2.17.0 (15 February 2026)
+
+## Features
+
+- Shutdown accelerator layer added
+- Script management improvements
+
+### Shutdown accelerator layer added
+This new layer reduces the time left on running timers (started by tripwires or scripts) when a hacker enters a node that contains it. This allows for new puzzle design in sites.
+
+### Script management improvements
+- Script access of template user is applied to new users
+- Ability to copy script access from one user to another user
+- Default price for scripts added
+
+
+## Bugfixes
+- Deleting a user now also deletes their scripts and script access.
+- Fix importing sites with tripwires without an attached core
+
+
+# Release notes AV 2.16.0 (14 February 2026)
+
+## Features
+
+- Documentation overhaul
+- Adjustable font-size
+- Show hacker icon when choosing it
+- Lock nodes option
+- QR code download
+- Full-screen text editor
+- Show correct times for hacking Tar ICE
+- Force delete script types that are in use
+
+
+### Documentation overhaul
+Documentation has been vastly expanded and restructured as a documentation site. In general there is a lot more documentation.
+
+For players there is more explanation on how the game works, and what all layers and skills do. There is more explanation on the types of ICE and the various difficulty.
+
+For game masters there is now much more info on building sites, how layers work, and also a section on advanced site design. Scripts are also explained in much more detail.
+
+For installation there is more information on how to set up Google authentication 
+
+The documentation for the latest version of Attack Vector is hosted on Github pages: https://n-of-one.github.io/attack_vector_2/docs/ .
+
+
+### Adjustable font-size
+You can now change your font size. Options are 12px, 13px and 14px. The default size for new users is 13px, but existing users will keep their current size of 12px.  You can change font-size at any time with shift + page-up / page-down.
+
+### Show hacker icon when choosing it
+In the user details page, you can now see the hacker icon that you have chosen.
+
+### Lock nodes option
+When editing a site, there is now an option to lock the nodes. When nodes are locked, they cannot be moved. This is useful to prevent accidental moving of nodes.
+
+### QR code download
+Some layers can be accessed directly, without having to start a hacking run. QR codes are an option for this.
+
+QR codes now can be downloaded as PNG or SVG images or can be copied to the clipboard.
+
+### Full-screen text editor
+For text layers, if you have a large amount of text to show, the current editor is too small. An option is added to open a full-screen editor. This is especially useful if you are using the text node to show formatted text.
+
+The terminal preview will assume a font size of 14px, to make sure that formatted output renders correctly for all users.
+
+### Show correct times for hacking Tar ICE
+The tooltips and information now show the correct time that players will take to hack Tar ICE.
+
+### Force delete script types that are in use
+You can now force delete script types that are in use. The warning message will tell you which users still have access to this script type.
+
+
+## Bugfixes
+
+- Fix hacking standalone ICE
+- Fix showing wrong amount of mines in minesweeper
+
+
 # Release notes AV 2.15.0 (28 December 2025)
 
 ## Features

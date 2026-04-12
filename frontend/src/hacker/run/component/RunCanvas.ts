@@ -239,11 +239,18 @@ class RunCanvas {
         this.probeDisplays.add(probeId, probeDisplay)
     }
 
-    updateNodeStatus(nodeId: string, status: NodeScanStatus) {
+    updateNodeStatus(nodeId: string, status: NodeScanStatus, nodeHacked = false) {
         if (!this.active) return
 
         if (this.nodeDisplays.has(nodeId)) {
-            this.nodeDisplays.get(nodeId).updateStatus(status, this.selectedObject)
+            const nodeDisplay = this.nodeDisplays.get(nodeId);
+            if (nodeHacked) {
+                nodeDisplay.nodeData.hacked = true
+                nodeDisplay.updateStatus(status, this.selectedObject)
+                testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", nodeDisplay.schedule!, 2)
+            } else {
+                nodeDisplay.updateStatus(status, this.selectedObject)
+            }
 
             return false // already displayed
         } else {
@@ -259,7 +266,7 @@ class RunCanvas {
 
         const newNodes: string[] = []
         Object.entries(nodeStatusById).forEach(([nodeId, status]) => {
-            if (this.updateNodeStatus(nodeId, status)) {
+            if (this.updateNodeStatus(nodeId, status, false)) {
                 newNodes.push(nodeId)
             }
         })
@@ -363,7 +370,7 @@ class RunCanvas {
         }
         this.hackerDisplays.get(userId).startRun(quick, timings)
 
-        const waitTime = quick ? NODE_TRANSITION_TICKS : timings.main - 50
+        const waitTime = quick ? NODE_TRANSITION_TICKS : timings.move
         testSupport.scheduleEmitEvent("startAttackAnimationsFinished", this.iconSchedule, waitTime)
 
     }
@@ -412,16 +419,6 @@ class RunCanvas {
         probe.zoomInAndOutAndRemove(timings)
     }
 
-    nodeHacked(nodeId: string) {
-        if (!this.active) return
-
-        this.nodeDataById[nodeId].hacked = true
-        this.nodeDisplays.get(nodeId).hacked(this.selectedObject)
-
-        testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", this.iconSchedule, NODE_TRANSITION_TICKS)
-
-    }
-
     stop() {
         this.iconSchedule.terminate()
         this.nodeDisplays.removeAllAndTerminate(this.canvas)
@@ -460,6 +457,7 @@ class RunCanvas {
 
     siteShutdownFinish() {
         this.nodeDisplays.forEach((nodeDisplay: NodeDisplay) => {
+            nodeDisplay.nodeData.hacked = false
             nodeDisplay.siteShutdownFinish()
         })
     }

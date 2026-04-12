@@ -84,6 +84,20 @@ class EditorWsController(
         userTaskRunner.runTask("/editor/editLayerData", userPrincipal) { editorService.editLayerData(command) }
     }
 
+    class AddStatusLightOptionCommand(val siteId: String, val nodeId: String, val layerId: String)
+    @MessageMapping("/editor/addStatusLightOption")
+    fun addStatusLightOption(command: AddStatusLightOptionCommand, userPrincipal: UserPrincipal) {
+        editorService.validateAccessToSiteById(command.siteId, userPrincipal)
+        userTaskRunner.runTask("/editor/addStatusLightOption", userPrincipal) { editorService.addStatusLightOption(command) }
+    }
+
+    class DeleteStatusLightOptionCommand(val siteId: String, val nodeId: String, val layerId: String, val optionIndex: Int)
+    @MessageMapping("/editor/deleteStatusLightOption")
+    fun deleteStatusLightOption(command: DeleteStatusLightOptionCommand, userPrincipal: UserPrincipal) {
+        editorService.validateAccessToSiteById(command.siteId, userPrincipal)
+        userTaskRunner.runTask("/editor/deleteStatusLightOption", userPrincipal) { editorService.deleteStatusLightOption(command) }
+    }
+
     @MessageMapping("/editor/addLayer")
     fun addLayer(command: AddLayerCommand, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(command.siteId, userPrincipal)

@@ -15,12 +15,15 @@ import {CurrentScriptManagement} from "./scripts/currentScripts/CurrentScriptMan
 import {GmStatisticsHome} from "./statistics/GmStatisticsHome";
 import {ScriptIncome} from "./scripts/income/ScriptIncome";
 import {ManageHackerCredits} from "./scripts/manageHackerCredits/ManageHackerCredits";
+import {Me} from "../common/users/Me";
 
 
 const renderCurrentPage = (currentPage: Page) => {
     switch (currentPage) {
         case Page.SITES:
             return <SitesPage/>
+        case Page.ME:
+            return <Me/>
         case Page.USERS:
             return <UserManagement/>
         case Page.GM_SCRIPTS_HOME:

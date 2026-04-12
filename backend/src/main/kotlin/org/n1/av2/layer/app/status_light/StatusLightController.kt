@@ -17,7 +17,7 @@ class StatusLightController (
         userTaskRunner.runTask("/app/statusLight/enter", userPrincipal) { statusLightService.enter(command.layerId) }
     }
 
-    class SetValueMessage(val layerId: String, val value: Boolean)
+    class SetValueMessage(val layerId: String, val value: Int)
     @MessageMapping("/app/statusLight/setValue")
     fun toggle(command: SetValueMessage, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/app/statusLight/setValue", userPrincipal) { statusLightService.setValue(command.layerId, command.value) }

@@ -95,7 +95,7 @@ const FreeReceive = ({accesses}: { accesses: ScriptAccess[] }) => {
             </DataTable>
             <br/>
             <SilentLink onClick={retrieve}>
-                <div className="btn btn-info" style={{fontSize: "12px"}}>Retrieve scripts</div>
+                <div className="btn btn-info text-size">Retrieve scripts</div>
             </SilentLink>
             <br/>
         </>

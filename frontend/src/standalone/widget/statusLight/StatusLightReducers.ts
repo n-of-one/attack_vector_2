@@ -2,16 +2,20 @@ import {AnyAction} from "redux";
 
 const SERVER_STATUS_LIGHT_UPDATE = "SERVER_STATUS_LIGHT_UPDATE"
 
+
+export interface StatusLightOption {
+    text: string,
+    color: string,
+}
+
 export interface StatusLightState {
-    status: boolean | null,
-    textForRed: string,
-    textForGreen: string
+    currentOption: number | null,
+    options: StatusLightOption[],
 }
 
 export const defaultState = {
-    status: null,
-    textForRed: "",
-    textForGreen: "",
+    currentOption: null,
+    options: [ { text: "", color: "grey" }, { text: "", color: "grey" } ]
 }
 
 export const statusLightReducer = (state: StatusLightState = defaultState, action: AnyAction): StatusLightState => {

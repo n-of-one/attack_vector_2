@@ -8,6 +8,7 @@ import React from "react";
 import {ConfigHome} from "./config/ConfigHome";
 import {UserType} from "../common/users/CurrentUserReducer";
 import {HackerRootState} from "../hacker/HackerRootReducer";
+import {Me} from "../common/users/Me";
 
 const renderCurrentPage = (currentPage: Page) => {
     switch (currentPage) {
@@ -17,6 +18,8 @@ const renderCurrentPage = (currentPage: Page) => {
             return <TaskMonitorHome/>
         case Page.CONFIG:
             return <ConfigHome/>
+        case Page.ME:
+            return <Me/>
         default:
             return <ConfigHome/>
     }

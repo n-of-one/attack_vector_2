@@ -3,6 +3,7 @@ package org.n1.av2.site.export
 import jakarta.servlet.http.HttpServletResponse
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
+import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.util.FileNameUtil
 import org.springframework.boot.web.servlet.error.ErrorController
@@ -17,6 +18,7 @@ class ExportImportController(
     private val exportService: ExportService,
     private val fileNameUtil: FileNameUtil,
     private val importService: ImportService,
+    private val userTaskRunner: UserTaskRunner
 ) : ErrorController {
 
 
@@ -36,10 +38,12 @@ class ExportImportController(
         return "${export.version}-${configService.get(ConfigItem.LARP_NAME)}-${fileSafeSiteName} ${export.exportTime}.json"
     }
 
-    @PostMapping("/api/import/site", consumes = ["multipart/form-data"])
+    @PostMapping("/api/import/site/{connectionId}", consumes = ["multipart/form-data"])
     @ResponseBody
-    fun import(@RequestParam("file") file: MultipartFile, userPrincipal: UserPrincipal): String {
-        importService.import(file.inputStream.bufferedReader().use { it.readText() })
+    fun import(@RequestParam("file") file: MultipartFile, @PathVariable connectionId: String, userPrincipal: UserPrincipal): String {
+        userTaskRunner.runTask("/api/import/site/{connectionId}", userPrincipal) {
+            importService.import(file.inputStream.bufferedReader().use { it.readText() }, connectionId)
+        }
         return ""
     }
 

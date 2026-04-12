@@ -19,6 +19,9 @@ interface Position {
 
 class WordSearchCanvas {
 
+    // startX = 0
+    // startY = 0
+
     canvas: Canvas = null as unknown as Canvas
     store: Store = null as unknown as Store
     dispatch: Dispatch = null as unknown as Dispatch
@@ -39,7 +42,7 @@ class WordSearchCanvas {
         const rows = puzzleData.letterGrid.length
         const columns = puzzleData.letterGrid[0].length
 
-        this.cellSize = (rows <= 20) ? 40: 30
+        this.cellSize = (rows <= 20) ? 40 : 30
 
         this.canvas = this.createCanvas(columns, rows)
 
@@ -63,7 +66,7 @@ class WordSearchCanvas {
         this.canvas.renderAll();
     }
 
-    private createCanvas(columns: number, rows: number) : Canvas {
+    private createCanvas(columns: number, rows: number): Canvas {
         const width = columns * this.cellSize + MARGIN_LEFT + MARGIN_RIGHT
         const height = rows * this.cellSize + MARGIN_TOP + MARGIN_BOTTOM
 
@@ -118,6 +121,9 @@ class WordSearchCanvas {
         const key = `${this.letterStartPosition.x}:${this.letterStartPosition.y}`
         this.lettersSelected = [key]
         this.updateLettersSelected()
+
+        // this.startX = event.pageX
+        // this.startY = event.pageY
     }
 
     mouseMove(event: MouseEvent) {
@@ -159,6 +165,10 @@ class WordSearchCanvas {
         this.indicatorVisual = null
 
         this.processLetters()
+
+        // const x = event.pageX
+        // const y = event.pageY
+        // console.log(`await wordSearch.dragWord(startGX, startGY, endGX, endGY)(${this.startX}, ${this.startY}, ${x}, ${y}`)
     }
 
     updateLettersSelected() {
@@ -170,10 +180,10 @@ class WordSearchCanvas {
 
             const toSend = this.lettersSelected
             // Delay the sending, so that the selected cells have some time to fade out.
-            setTimeout(()=> {
+            setTimeout(() => {
                 const payload = {iceId: ice.id, letters: toSend}
                 webSocketConnection.send("/ice/wordSearch/selected", JSON.stringify(payload))
-            },200)
+            }, 200)
         }
 
         this.lettersSelected = []

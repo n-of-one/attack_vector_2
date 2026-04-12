@@ -5,6 +5,7 @@ export enum LayerType {
     STATUS_LIGHT = "STATUS_LIGHT",
     KEYSTORE = "KEYSTORE",
     TRIPWIRE = "TRIPWIRE",
+    TIMER_ADJUSTER = "TIMER_ADJUSTER",
     CORE = "CORE",
     SCRIPT_INTERACTION = "SCRIPT_INTERACTION",
     SCRIPT_CREDITS = "SCRIPT_CREDITS",
@@ -47,6 +48,7 @@ export const STATUS_LIGHT = "STATUS_LIGHT"
 
 export const KEYSTORE = "KEYSTORE"
 export const TRIPWIRE = "TRIPWIRE"
+export const TIMER_ADJUSTER = "TIMER_ADJUSTER"
 
 export const SCRIPT_INTERACTION = LayerType.SCRIPT_INTERACTION.toString()
 export const SCRIPT_CREDITS = LayerType.SCRIPT_CREDITS.toString()
@@ -94,8 +96,3 @@ export const iceDefaultOrder = {
 export function iceTypeDefaultSorter(a: IceType, b: IceType) {
     return iceDefaultOrder[a] - iceDefaultOrder[b]
 }
-// export function sortedIceTypes(iceTypes: IceType[]): IceType[] {
-//     const copy = [...iceTypes]
-//     copy.sort((a, b) => iceDefaultOrder[b] - iceDefaultOrder[a])
-//     return copy
-// }

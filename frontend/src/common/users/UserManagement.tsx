@@ -37,13 +37,13 @@ export const UserManagementAuthorized = () => {
 
     return (
         <div className="row">
-            <div className="col-lg-2">
+            <div className="col-lg-1">
             </div>
-            <div className="col-lg-4">
+            <div className="col-lg-5">
                 <div className="text">
                     <h3 className="text-info">User management</h3><br/>
                     {CreateUser(user)}
-                    {user !== null ? <UserDetails user={user}/> : <></>}
+                    {user !== null ? <UserDetails user={user} me={false}/> : <></>}
                 </div>
 
             </div>
@@ -56,23 +56,39 @@ export const UserManagementAuthorized = () => {
     )
 }
 
-export const UserOverviewTable = ({users, selectUser}: { users: UserOverview[], selectUser: (user: UserOverview) => void }) => {
+interface UserOverviewTableProps {
+    users: UserOverview[],
+    selectUser: (user: UserOverview) => void,
+    actions?: UserAction[],
+}
+
+export interface UserAction {
+    icon: React.JSX.Element,
+    action: (user: UserOverview) => void,
+    enabled: (user: UserOverview) => boolean,
+    tooltip: string,
+}
+
+export const UserOverviewTable = ({users, selectUser, actions}: UserOverviewTableProps) => {
     const sortedUsers = sortUsers(users).map((user: UserOverview) => {
         return {...user, name: user.name.toLowerCase()}
     })
     const sortedTexts = sortedUsers.map(user => `${user.name}~${user.characterName}~${UserTypeLabels[user.type]}~${UserTagLabels[user.tag]}`)
 
+    const actionsHeader = actions ? <div className="col-lg-2 strong">Actions</div> : <></>
+
     const rows = sortedUsers.map((user: UserOverview) => {
         return (
             <div className="row text" key={user.id}>
-                <div className="col-lg-4"><SilentLink onClick={() => {
+                <div className="col-lg-3"><SilentLink onClick={() => {
                     selectUser(user)
                 }}><>{user.name}</>
                 </SilentLink>
                 </div>
-                <div className="col-lg-4">{user.characterName}</div>
+                <div className="col-lg-3">{user.characterName}</div>
                 <div className="col-lg-2">{UserTypeLabels[user.type]}</div>
                 <div className="col-lg-2">{UserTagLabels[user.tag]}</div>
+                <div className="col-lg-2"> <ActionsForUser actionsInput={actions} user={user}/></div>
             </div>)
     })
 
@@ -81,13 +97,30 @@ export const UserOverviewTable = ({users, selectUser}: { users: UserOverview[], 
     return (
         <DataTable rows={rows} rowTexts={sortedTexts} pageSize={35} hr={hr}>
             <div className="row text">
-                <div className="col-lg-4 strong">Name</div>
-                <div className="col-lg-4 strong">Character</div>
+                <div className="col-lg-3 strong">Name</div>
+                <div className="col-lg-3 strong">Character</div>
                 <div className="col-lg-2 strong">Type</div>
                 <div className="col-lg-2 strong">Tag</div>
+                {actionsHeader}
             </div>
         </DataTable>
     )
+}
+
+const ActionsForUser = ({actionsInput, user}: { actionsInput?: UserAction[], user: UserOverview }) => {
+    if (!actionsInput) return <></>
+
+    const actions = actionsInput.filter(action => action.enabled(user))
+
+    if (actions.length === 0) return <></>
+
+    return <>{actions.map((action, count: number) => <ActionForUser action={action} user={user} key={count.toString()}/>)}</>
+}
+
+const ActionForUser = ({action, user}: { action: UserAction, user: UserOverview }) => {
+    return <>
+        <SilentLink title={action.tooltip} onClick={() => action.action(user)}>{action.icon}</SilentLink>&nbsp;
+    </>
 }
 
 

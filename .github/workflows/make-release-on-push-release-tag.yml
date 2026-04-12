@@ -27,18 +27,29 @@ jobs:
         working-directory: ./backend
         run: ls -als target/
 
-      - name: Remove leading v from tag to create release name
-        id: release_name
+      - name: Create install scripts archive
+        run: zip -j install-scripts.zip install/*
+
+      - name: Extract version from tag
         run: |
           # strip leading 'v' if present
-          NAME=${GITHUB_REF_NAME#v}
-          echo "release_name=$NAME" >> $GITHUB_ENV
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "release_name=$VERSION" >> $GITHUB_ENV
+          # Replace dots with dashes for jar filename
+          DASH_VERSION=$(echo "$VERSION" | tr '.' '-')
+          JAR_NAME="attackvector-${DASH_VERSION}.jar"
+          echo "jar_name=$JAR_NAME" >> $GITHUB_ENV
+
+      - name: Rename jar
+        run: mv backend/target/app.jar "backend/target/${{ env.jar_name }}"
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ env.release_name }}
-          files: backend/target/app.jar
+          files: |
+            backend/target/${{ env.jar_name }}
+            install-scripts.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

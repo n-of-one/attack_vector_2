@@ -79,7 +79,7 @@ export const AdminLogin = () => {
                         <div className="row align-items-center">
                             <div className="col col-4"></div>
                             <div className="col col-8">
-                                <button type="submit" className="btn btn-primary button-text">Sign in</button>
+                                <button type="submit" className="btn btn-primary text-size">Sign in</button>
                             </div>
                         </div>
                         <br/>

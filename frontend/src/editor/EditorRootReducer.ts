@@ -11,6 +11,7 @@ import {NodeI} from "../common/sites/SiteModel";
 import {SiteInfo, sitesReducer} from "../common/sites/SitesReducer";
 import {allCoresReducer, CoreInfo} from "./reducer/AllCoresReducer";
 import {currentUserReducer, User} from "../common/users/CurrentUserReducer";
+import {editorTerminalPreviewReducer} from "./reducer/editorTerminalPreviewReducer";
 
 export interface EditorState {
     siteProperties: SiteProperties,
@@ -24,6 +25,7 @@ export interface EditorState {
     sites: Array<SiteInfo>,
     allCores: CoreInfo[],
     currentUser: User,
+    terminalPreview: string | undefined
 }
 
 export const editorRootDefaultState = {
@@ -37,6 +39,7 @@ export const editorRootDefaultState = {
     state: siteStateDefault,
     sites: [],
     allCores: [],
+    terminalPreview: undefined,
 }
 
 export const editorRootReducer = (state:EditorState, action: AnyAction): EditorState => {
@@ -53,5 +56,6 @@ export const editorRootReducer = (state:EditorState, action: AnyAction): EditorS
         sites: sitesReducer(state.sites, action),
         allCores: allCoresReducer(state.allCores, action),
         currentUser: currentUserReducer(state.currentUser, action),
+        terminalPreview: editorTerminalPreviewReducer(state.terminalPreview, state.currentNodeId, state.nodes, state.currentLayerId, action),
     }
 }

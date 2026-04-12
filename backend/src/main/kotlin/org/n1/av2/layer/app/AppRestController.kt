@@ -35,7 +35,7 @@ class AppRestController(
 
         return when (layer) {
             is StatusLightLayer -> {
-                AppResponse(layer.appId, null, null)
+                AppResponse(null, null, null)
             }
             is IceLayer -> {
                 val iceId = iceService.findOrCreateIceForLayerAndIceStatus(layer)

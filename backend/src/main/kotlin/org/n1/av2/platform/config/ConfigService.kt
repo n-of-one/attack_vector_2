@@ -1,5 +1,7 @@
 package org.n1.av2.platform.config
 
+import org.n1.av2.platform.config.ConfigItemVisibility.ADMIN
+import org.n1.av2.platform.config.ConfigItemVisibility.EVERYONE
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.inputvalidation.ValidationException
@@ -27,7 +29,9 @@ class ConfigService(
     fun initConfigValues() {
         val allEntries = repo.findAll()
         val allItems: List<ConfigEntry> = ConfigItem.entries.map { item ->
-            allEntries.find { it.item == item } ?: ConfigEntry(item, item.defaultValue)
+            allEntries.find { it.item == item } ?: ConfigEntry(item, item.defaultValue).also {
+                newEntry: ConfigEntry -> repo.save(newEntry)
+            }
         }
         updateCache(allItems)
     }
@@ -39,9 +43,15 @@ class ConfigService(
     }
 
     fun replyConfigValues() {
-        val allItems = cache.map { ConfigEntry(it.key, it.value) }
+        val allItems = cache.map { ConfigEntry(it.key, it.value) }.filter { it.item.visibility == EVERYONE }
         connectionService.reply(ServerActions.SERVER_RECEIVE_CONFIG, allItems)
     }
+
+    fun replyConfigValuesAdmin() {
+        val allItems = cache.map { ConfigEntry(it.key, it.value) }.filter { it.item.visibility == EVERYONE || it.item.visibility == ADMIN }
+        connectionService.reply(ServerActions.SERVER_RECEIVE_CONFIG, allItems)
+    }
+
 
     fun get(item: ConfigItem): String {
         if (cache.isEmpty()) initConfigValues()
@@ -49,9 +59,10 @@ class ConfigService(
     }
 
     fun setAndReply(item: ConfigItem, value: String) {
+        if (item.visibility != EVERYONE && item.visibility != ADMIN) error("Cannot set value of $item")
         set(item, value)
 
-        replyConfigValues()
+        replyConfigValuesAdmin()
         replySpecificConfigValue(item, value)
     }
 
@@ -66,7 +77,7 @@ class ConfigService(
         val messageFunction = item.message ?: return // no message function
         val message = messageFunction(value) ?: return // no message
 
-        connectionService.replyError(message)
+        connectionService.replyNotificationError(message)
     }
 
     private fun checkValue(item: ConfigItem, value: String) {
@@ -80,6 +91,11 @@ class ConfigService(
     fun getAsBoolean(item: ConfigItem): Boolean {
         val stringValue = get(item)
         return stringValue.toBoolean()
+    }
+
+    fun getAsInt(item: ConfigItem): Int {
+        val stringValue = get(item)
+        return stringValue.toInt()
     }
 
     fun getAsLong(item: ConfigItem): Long {

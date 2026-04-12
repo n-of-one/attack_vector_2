@@ -23,7 +23,7 @@ const IceStrengthRow = ({scriptType, effect}: { scriptType: ScriptType, effect: 
         .sort((a, b) => iceStrengthValue[b] - iceStrengthValue[a])
         .map(strength => <option value={strength}>{strengthDescription(strength)}</option>)
 
-    return <div className="row form-group text">
+    return <div className="row form-group text" data-row="script-effect-ice-strength">
         <div className="col-lg-1">&nbsp;</div>
         <div className="col-lg-4">
             Max strength script can hack

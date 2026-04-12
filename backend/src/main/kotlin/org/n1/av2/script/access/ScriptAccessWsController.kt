@@ -47,4 +47,12 @@ class ScriptAccessWsController(
     }
 
 
+    data class CopyScriptAccessCommand(val from: String, val to: String)
+    @MessageMapping("/gm/scriptAccess/copyFromUser")
+    fun copyScriptAccessFromUser(command: CopyScriptAccessCommand, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/gm/scriptAccess/copyFromUser", userPrincipal) {
+            scriptAccessService.copyScriptAccess(command.from, command.to)
+        }
+    }
+
 }

@@ -104,7 +104,7 @@ export const Lola = (): React.JSX.Element => {
 
                     <div className="row align-items-center">
                         <div className="col col-lg-6">
-                            <button type="submit" className="btn btn-primary button-text"
+                            <button type="submit" className="btn btn-primary text-size"
                             >Speak
                             </button>
                         </div>

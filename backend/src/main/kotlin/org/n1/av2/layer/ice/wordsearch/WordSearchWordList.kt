@@ -4,7 +4,7 @@ import org.n1.av2.site.entity.enums.IceStrength
 import kotlin.random.Random
 
 
-class WordSearchWordList {
+class WordSearchWordList(private val random: Random = Random) {
 
     companion object {
         const val MAX_ATTEMPTS = 100
@@ -38,10 +38,10 @@ class WordSearchWordList {
     }
 
     private fun addWord(words: MutableList<String>, minLength: Int, maxLength: Int) {
-        val wordSize = Random.nextInt(1 + maxLength - minLength) + minLength
+        val wordSize = random.nextInt(1 + maxLength - minLength) + minLength
         val wordsInThatSize = this.wordsBySize[wordSize] ?: error("No words of size ${wordSize}")
         repeat(MAX_ATTEMPTS) {
-            val word = wordsInThatSize.random()
+            val word = wordsInThatSize.random(random)
             if (word !in words) {
                 words.add(word)
                 return

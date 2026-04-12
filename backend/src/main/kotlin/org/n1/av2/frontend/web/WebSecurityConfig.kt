@@ -20,13 +20,14 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import java.util.stream.Collectors
 
 private val OPEN_PATHS = listOf(
     "/", "/index.html",
     "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
-    "/about", "/privacy", "/website/**",
     "/loggedOut", "/redirectToLogin", "/login", "/adminLogin", "devLogin", "/logout", "/localLogout", "login-frontier", "login-oidc",
+
+    "/attack_vector_2", "/attack_vector_2/**",
+
     "/.well-known/acme-challenge/**", // for letsencrypt
 
     "/local/**", // for locally hosted files
@@ -36,7 +37,7 @@ private val OPEN_PATHS = listOf(
 
     "/ws_unrestricted", // websocket path for widgets and other apps that don't require any authentication
 
-    // The following endspoints functionally have .hasAuthority(ROLE_USER.authority)
+    // The following endpoints functionally have .hasAuthority(ROLE_USER.authority)
     // But the client cannot distinguish between a rejected connection and a server that is down. So instead, we do the authentication check in
     // the handshake handler. See: WebSocketConnectionConfig.kt AuthenticatedHandshakeHandler. This allows us to tell the client to redirect to the login page instead.
     "/ws_hacker", "/ws_networked_app"
@@ -48,7 +49,7 @@ private val HACKER_PATHS = listOf(
 
 )
 
-private val USER_PATHS = listOf("/api/**", "/edit/**")
+private val USER_PATHS = listOf("/api/**", "/edit/**", "/editText/**")
 private val GM_PATHS = listOf("/gm/**", "/larp/**")
 private val ADMIN_PATHS = listOf("/admin/**", "/api/admin/**")
 

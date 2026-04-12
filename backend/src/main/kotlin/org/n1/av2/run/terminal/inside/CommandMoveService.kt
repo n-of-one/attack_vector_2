@@ -6,6 +6,8 @@ import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
@@ -33,6 +35,7 @@ class CommandMoveService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val runEntityService: RunEntityService,
     private val tripwireLayerService: TripwireLayerService,
+    private val timerAdjusterService: TimerAdjusterService,
     private val scanService: ScanService,
     private val userTaskRunner: UserTaskRunner,
     private val connectionService: ConnectionService,
@@ -126,16 +129,18 @@ class CommandMoveService(
     private fun handleMove(toNode: Node, hackerState: HackerStateRunning, bypassingIceAtStartNode: Boolean) {
         connectionService.replyTerminalSetLocked(true)
 
+        val timings = timingsService.skillAndConfigAdjusted(timingsService.MOVE_START, hackerState.userId)
+
         @Suppress("unused")
         class StartMove(val userId: String, val nodeId: String, val bypassingIceAtStartNode: Boolean, val timings: Timings)
         connectionService.toRun(
             hackerState.runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(
                 hackerState.userId, toNode.id,
-                bypassingIceAtStartNode, timingsService.MOVE_START
+                bypassingIceAtStartNode, timings
             )
         )
 
-        userTaskRunner.queueInTicksForSite("move-arrive", hackerState.siteId, timingsService.MOVE_START.totalTicks) {
+        userTaskRunner.queueInTicksForSite("move-arrive", hackerState.siteId, timings.totalTicks) {
             moveArrive(
                 toNode.id,
                 hackerState.userId,
@@ -155,6 +160,8 @@ class CommandMoveService(
             connectionService.replyTerminalSetLocked(false)
             return
         }
+
+        connectionService.toUser(userId, ServerActions.SERVER_LEAVE_NODE)
 
         val nodeStatus = run.nodeScanById[nodeId]!!.status
 
@@ -199,6 +206,7 @@ class CommandMoveService(
         node.layers.forEach { layer ->
             when (layer) {
                 is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, runId)
+                is TimerAdjusterLayer -> timerAdjusterService.hackerArrivesNode(siteId, layer, nodeId, runId)
                 else -> {} // do nothing
             }
         }

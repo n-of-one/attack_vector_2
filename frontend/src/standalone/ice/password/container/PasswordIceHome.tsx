@@ -46,7 +46,7 @@ export const PasswordIceHome = () => {
                 </div>
                 <hr style={{borderTopColor: "#300", marginTop: "5px", marginBottom: "5px"}}/>
 
-                <div className={"row transition_alpha_fast" + classHidden}>
+                <div className={"row transition_alpha_fast" + classHidden} data-testid="passwordContentSection" data-ready={hackUiState !== HIDDEN}>
                     <div className="col-lg-6">
                         <h4 className="text-success">
                             <strong>

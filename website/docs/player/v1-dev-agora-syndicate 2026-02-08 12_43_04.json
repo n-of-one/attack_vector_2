@@ -1,0 +1,127 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-02-08 12:43:04"
+  },
+  "siteProperties" : {
+    "siteId" : "site-6191-4ae0",
+    "name" : "agora-syndicate",
+    "description" : "",
+    "purpose" : "",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : true
+  },
+  "nodes" : [ {
+    "id" : "node-50d3-4591",
+    "siteId" : "site-6191-4ae0",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-50d3-4591:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-50d3-4591:layer-faa1",
+      "type" : "TRIPWIRE",
+      "level" : 1,
+      "name" : "Tripwire",
+      "note" : "",
+      "countdown" : "15:00",
+      "shutdown" : "01:00",
+      "coreLayerId" : "node-599f-43b5:layer-b568",
+      "coreSiteId" : null
+    } ],
+    "networkId" : "00",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-e231-457f",
+    "siteId" : "site-6191-4ae0",
+    "type" : "ICE_1",
+    "x" : 625,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-e231-457f:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-e231-457f:layer-ac94",
+      "type" : "TANGLE_ICE",
+      "level" : 1,
+      "name" : "Gaanth",
+      "note" : "",
+      "strength" : "VERY_WEAK",
+      "hacked" : false,
+      "original" : null,
+      "ice" : true
+    } ],
+    "networkId" : "01",
+    "ice" : true,
+    "hacked" : false
+  }, {
+    "id" : "node-599f-43b5",
+    "siteId" : "site-6191-4ae0",
+    "type" : "DATA_STORE",
+    "x" : 625,
+    "y" : 192,
+    "layers" : [ {
+      "id" : "node-599f-43b5:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-599f-43b5:layer-b568",
+      "type" : "CORE",
+      "level" : 1,
+      "name" : "Core",
+      "note" : "",
+      "revealNetwork" : false
+    }, {
+      "id" : "node-599f-43b5:layer-76b5",
+      "type" : "TEXT",
+      "level" : 2,
+      "name" : "Finance records",
+      "note" : "",
+      "text" : "Scanning finance records of the last week for transactions > 1 million credits...\n\n[ok]done\n\nTransactions found for recipients:\n- E. Whitman\n- T. Toya\n"
+    } ],
+    "networkId" : "02",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-09ab-448e",
+    "siteId" : "site-6191-4ae0",
+    "type" : "RESOURCE_STORE",
+    "x" : 744,
+    "y" : 108,
+    "layers" : [ {
+      "id" : "node-09ab-448e:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    } ],
+    "networkId" : "03",
+    "ice" : false,
+    "hacked" : true
+  } ],
+  "connections" : [ {
+    "fromId" : "node-50d3-4591",
+    "toId" : "node-e231-457f"
+  }, {
+    "fromId" : "node-e231-457f",
+    "toId" : "node-599f-43b5"
+  }, {
+    "fromId" : "node-09ab-448e",
+    "toId" : "node-599f-43b5"
+  } ]
+}

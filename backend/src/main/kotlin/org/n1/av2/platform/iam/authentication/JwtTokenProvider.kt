@@ -1,23 +1,23 @@
 package org.n1.av2.platform.iam.authentication
 
-import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Keys
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.user.UserEntity
 import org.springframework.stereotype.Component
-import java.security.SignatureException
 import java.util.*
 
 const val expirationInS: Int = 60 * 60 * 5 // 5 hours
 
 @Component
-class JwtTokenProvider {
+class JwtTokenProvider(
+    configService: ConfigService,
+) {
 
     private val logger = mu.KotlinLogging.logger {}
 
-    private val jwtSecret: String = "SuperSecretKeyForHS512NeedsToBeLongEnoughToContainAtLeast512BitsOfEntropySoThisShouldDoIt"
+    private val jwtSecret = configService.get(ConfigItem.SYSTEM_JWT_SECRET)
     private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
     private val jwtParser = Jwts.parser().verifyWith(key).build()
 
@@ -45,21 +45,12 @@ class JwtTokenProvider {
         return claims.subject
     }
 
-    fun validateToken(authToken: String): Boolean {
+    fun validateToken(authToken: String): Pair<Boolean, String> {
         try {
             jwtParser.parseSignedClaims(authToken)
-            return true
-        } catch (ex: SignatureException) {
-            logger.error("Invalid JWT signature")
-        } catch (ex: MalformedJwtException) {
-            logger.error("Malformed JWT token", ex)
-        } catch (ex: ExpiredJwtException) {
-            logger.error("Expired JWT token")
-        } catch (ex: UnsupportedJwtException) {
-            logger.error("Unsupported JWT token")
-        } catch (ex: IllegalArgumentException) {
-            logger.error("JWT claims string is empty.")
+            return true to ""
+        } catch (ex: Exception) {
+            return false to (ex.message ?: "Unknown problem validating JWT token")
         }
-        return false
     }
 }

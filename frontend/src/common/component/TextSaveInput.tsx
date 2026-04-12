@@ -1,8 +1,7 @@
 import React, {CSSProperties, useState} from 'react';
 import {ENTER_KEY} from "../util/KeyCodes";
-import {parseTextToTerminalLine} from "../terminal/TerminalLineParser";
-import {TerminalLineData} from "../terminal/TerminalReducer";
-import {TerminalLine} from "../terminal/TerminalLine";
+import {useDispatch} from "react-redux";
+import {TEXT_INPUT_CHANGED} from "./terminalPreview/terminalPreviewReducer";
 
 /*
 When the focus is lost, enter is hit, or this component is no longer rendered, the component fires its "save" method as provided by the props.
@@ -11,7 +10,7 @@ During the saving, a floppy disk 'save' icon is shown.
 This component does something that is not supported by React. See the longer text at the bottom for an explanation.
 */
 
-export enum TextSaveType { TEXT, TEXTAREA, TERMINAL_TEXTAREA }
+export enum TextSaveType { TEXT, TEXTAREA }
 
 interface Props {
     id?: string,
@@ -22,10 +21,10 @@ interface Props {
     className: string,
     rows?: number,
     readonly?: boolean,
-    terminalPrefix?: string,
     maxLength?: number,
     style?: CSSProperties,
     name?: string,
+    sendEvent?: boolean,
 }
 
 enum State {
@@ -48,6 +47,7 @@ export const TextSaveInput = (props: Props) => {
     const [id] = useState(new Date().getTime() + ":" + Math.random())
     const [dummy, setDummy] = useState(0) // dummy state to force re-rendering when value changes
     const [saveIcon, setSaveIcon] = useState(false)
+    const dispatch = useDispatch()
 
     if (!stateMap.has(id)) {
         stateMap.set(id, State.IDLE)
@@ -84,6 +84,10 @@ export const TextSaveInput = (props: Props) => {
         currentTextInputBlurMethod = handleBlur
 
         setDummy(dummy + 1) // force re-rendering
+
+        if (props.sendEvent) {
+            dispatch({type: TEXT_INPUT_CHANGED, text: value})
+        }
     }
 
     const handleKeyDown = (event: any, defocusOnEnter: boolean) => {
@@ -125,11 +129,8 @@ export const TextSaveInput = (props: Props) => {
         className="glyphicon glyphicon-floppy-save"
         aria-hidden="true"/></span>) : '';
 
-    if (props.type === TextSaveType.TEXTAREA || props.type === TextSaveType.TERMINAL_TEXTAREA) {
+    if (props.type === TextSaveType.TEXTAREA) {
         const rows = (props.rows) ? props.rows : 5
-        const terminalText = (props.terminalPrefix ? props.terminalPrefix : "") + text
-        const terminalPreview = props.type === TextSaveType.TERMINAL_TEXTAREA ?
-            <TerminalPreview text={terminalText}/> : <></>
         return (
             <span>
                 <textarea id={props.id}
@@ -144,7 +145,6 @@ export const TextSaveInput = (props: Props) => {
                           name={props.name}
                 />
                 {icon}
-                {terminalPreview}
             </span>
         );
     } else {
@@ -169,19 +169,7 @@ export const TextSaveInput = (props: Props) => {
 }
 
 
-const TerminalPreview = ({text}: { text: string }) => {
-    const lines = text.split("\n")
-    const terminalLines = lines.map((line: string) => parseTextToTerminalLine(line))
 
-    return <div>
-        <div className="layerLabel" style={{textAlign: "left", paddingTop: 0}}>Preview</div>
-        <div className="terminalPreview">
-            <div className="terminalPanel" >
-                {terminalLines.map((line: TerminalLineData) => <TerminalLine line={line} key={line.key}/>)}
-            </div>
-        </div>
-    </div>
-}
 
 /*
 We want to have the component showing the "save" icon and then wait for an update from the server
@@ -201,7 +189,7 @@ Any solution where state is tracked inside the component will not work, because 
 
 
 Additional complication: we want this component to save when it is no longer rendered. In the editor there are two situations this can occur
-- the user clicks on the canvas, and the layer panel is no longer rendered. This means the component is no longer renderd. In this case the onBlur() method is triggered
+- the user clicks on the canvas, and the layer panel is no longer rendered. This means the component is no longer rendered. In this case the onBlur() method is triggered
  by the browser, so saving is done automatically.
 
 - The user clicks on another node. The layer panel of that node is rendered, and this (propably) includes the TextInput, but for another layer. In this case the onBlur()
@@ -213,7 +201,7 @@ Additional complication: we want this component to save when it is no longer ren
 let currentTextInputBlurMethod: (() => void) | null = null
 
 // When React stops rendering this textinput, it usually calls the onBlur method. However, this is not consistent, and in some cases, the onBlur is not called.
-// That is annyoing, as this means that any changed input in that method is lost. To prevent this, we have this global method that can be called to trigger the onBlur
+// That is annoying, as this means that any changed input in that method is lost. To prevent this, we have this global method that can be called to trigger the onBlur
 // of the last TextInput that was focussed.
 export const saveTextInput = () => {
     if (currentTextInputBlurMethod) {

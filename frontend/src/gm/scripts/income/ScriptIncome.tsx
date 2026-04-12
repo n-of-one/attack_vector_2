@@ -49,7 +49,7 @@ export const ScriptIncome = () => {
 }
 
 const IncomeDates = () => {
-    const incomeDates = useSelector((state: GmRootState) => state.incomeDates).sort((a, b) => a.date.getMilliseconds() - b.date.getMilliseconds())
+    const incomeDates = useSelector((state: GmRootState) => state.incomeDates).sort((a, b) => new Date(a.date).getMilliseconds() - new Date(b.date).getMilliseconds())
 
 
     return <>
@@ -93,9 +93,11 @@ const IncomeDateHeaders= () => {
 
 const IncomeDateLine = ({incomeDate}: { incomeDate: IncomeDate }) => {
 
-    const day = new Intl.DateTimeFormat('en', {weekday: 'short'}).format(incomeDate.date);
-    const month = new Intl.DateTimeFormat('en', {month: 'short'}).format(incomeDate.date);
-    const dateText = `${day} ${incomeDate.date.getDate()} ${month} ${incomeDate.date.getFullYear()}`
+    const date = new Date(incomeDate.date)
+
+    const day = new Intl.DateTimeFormat('en', {weekday: 'short'}).format(date);
+    const month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+    const dateText = `${day} ${date.getDate()} ${month} ${date.getFullYear()}`
 
     const statusBadgeClass = incomeDateStatusToBadgeClass[incomeDate.status]
 
@@ -143,7 +145,7 @@ const AddSingleDate = () => {
         <div className="col-lg-2">
             <ActionButton text="Add date" onClick={() => addSingleDate(date)}/>
         </div>
-        <div className="col-lg-2">
+        <div className="col-lg-3">
             <DatePicker
                 selected={date}
                 onChange={(date) => {
@@ -164,7 +166,7 @@ const AddDateRange = () => {
         <div className="col-lg-2">
             <ActionButton text="Add range" onClick={() => addDateRange(startDate, endDate)}/>
         </div>
-        <div className="col-lg-2">
+        <div className="col-lg-3">
             <DatePicker
                 selected={startDate}
                 onChange={(date) => {
@@ -179,7 +181,7 @@ const AddDateRange = () => {
             <span style={{top: "8px", position: "relative"}}>-</span>
         </div>
 
-        <div className="col-lg-2">
+        <div className="col-lg-3">
             <DatePicker
                 selected={endDate}
                 onChange={(date) => {

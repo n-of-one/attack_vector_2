@@ -1,30 +1,48 @@
 import {Layer} from "./Layer"
 import {LayerDetails, NodeI} from "../../sites/SiteModel";
 import {Dispatch} from "redux"
+import {StatusLightOption} from "../../../standalone/widget/statusLight/StatusLightReducers";
+import {editorSiteId} from "../../../editor/EditorRoot";
+import {webSocketConnection} from "../../server/WebSocketConnection";
 
 export class LayerStatusLight extends Layer {
 
-    status: boolean
-    textForGreen: string
-    textForRed: string
+    switchLabel: string
+    currentOption: number
+    options: StatusLightOption[]
 
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 
-        this.status = layer.status!
-        this.textForGreen = layer.textForGreen!
-        this.textForRed = layer.textForRed!
+        this.switchLabel = layer.switchLabel!
+        this.currentOption = layer.currentOption!
+        this.options = layer.options!
     }
 
-    saveStatus(value: string) {
-        super._save("STATUS", value )
+    saveSwitchLabel(value: string) {
+        super._save("SWITCH_LABEL", value )
     }
 
-    saveTextForRed(value: string) {
-        super._save("TEXT_FOR_RED", value )
+    saveCurrentOption(value: string) {
+        super._save("CURRENT_OPTION", value )
     }
 
-    saveTextForGreen(value: string) {
-        super._save("TEXT_FOR_GREEN", value )
+    saveTextFor(index: number, value: string) {
+        super._save(`TEXT_FOR_${index}`, value )
     }
+
+    saveColorFor(index: number, value: string) {
+        super._save(`COLOR_FOR_${index}`, value )
+    }
+
+    addOption() {
+        const payload = {siteId: editorSiteId, nodeId: this.node.id, layerId: this.layer.id}
+        webSocketConnection.send("/editor/addStatusLightOption", payload)
+    }
+
+    deleteOption(index: number) {
+        const payload = {siteId: editorSiteId, nodeId: this.node.id, layerId: this.layer.id, optionIndex: index}
+        webSocketConnection.send("/editor/deleteStatusLightOption", payload)
+    }
+
 }

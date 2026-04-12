@@ -4,9 +4,10 @@ import {configureStore} from "@reduxjs/toolkit";
 import {webSocketConnection, WS_NETWORK_APP} from "../../../common/server/WebSocketConnection";
 import {Provider} from "react-redux";
 import {initGenericServerActions} from "../../../common/server/GenericServerActionProcessor";
-import {SwitchRootState, swithRootReducer} from "./SwitchReducers";
+import {switchRootReducer, SwitchRootState} from "./SwitchReducers";
 import {Switch} from "./Switch";
 import {layer} from "../../StandaloneGlobals";
+import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
 
 interface Props {
     layerId: string
@@ -24,7 +25,7 @@ export class SwitchRoot extends Component<Props> {
         const isDevelopmentServer: boolean = process.env.NODE_ENV === "development"
 
         this.store = configureStore({
-            reducer: swithRootReducer as Reducer<SwitchRootState>,
+            reducer: switchRootReducer as Reducer<SwitchRootState>,
             preloadedState: preLoadedState,
             middleware: (getDefaultMiddleware) => [...getDefaultMiddleware()],
             devTools: isDevelopmentServer
@@ -35,7 +36,8 @@ export class SwitchRoot extends Component<Props> {
             webSocketConnection.sendObject("/app/statusLight/enter", {layerId: layer.id})
         });
 
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 14})
+        initGenericAppActions()
     }
 
     render() {

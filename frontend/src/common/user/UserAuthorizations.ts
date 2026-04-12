@@ -9,14 +9,12 @@ export const ROLE_GM = "ROLE_GM"
 
 
 class UserAuthorizations {
-    public jwt: string | undefined
     public authenticated: boolean
     public roles: string[]
 
     constructor() {
-        this.jwt = Cookies.get("jwt")
-        this.authenticated = this.jwt !== undefined
         const cookieRoles: string | undefined = Cookies.get("roles")
+        this.authenticated = cookieRoles !== undefined
         this.roles = (cookieRoles !== undefined) ? cookieRoles.split("|") : []
     }
 

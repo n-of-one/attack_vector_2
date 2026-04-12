@@ -26,7 +26,12 @@ export interface User {
     id: string,
     name: string,
     type: UserType,
+    preferences: UserPreferences,
     hacker?: Hacker,
+}
+
+export interface UserPreferences {
+    fontSize: number,
 }
 
 export interface Hacker {
@@ -55,6 +60,7 @@ const defaultUser = {
     name: "",
     email: "",
     type: UserType.NO_DATA,
+    preferences: {fontSize: 12},
     hacker: undefined,
     gmNote: "",
 }
@@ -69,4 +75,13 @@ export const currentUserReducer = (state: User = defaultUser, action: AnyAction)
 export const hasSkill = (user: User, requested: HackerSkillType): boolean => {
     const skills = user.hacker?.skills || []
     return skills.some((hackerSKill) => hackerSKill.type === requested)
+}
+
+export const skillValueAsIntOrNull = (user: User, requested: HackerSkillType): number | null => {
+    const skills = user.hacker?.skills || []
+    const skill = skills.find((hackerSKill) => hackerSKill.type === requested)
+    if (!skill || !skill.value) {
+        return null
+    }
+    return parseInt(skill.value)
 }

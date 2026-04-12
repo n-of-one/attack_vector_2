@@ -21,7 +21,7 @@ export const Standalone = () => {
         case "ice":
             return <Ice route={type} id={id} />
         case "app":
-            return <AppSelector type={type} layerId={id}/>
+            return <RequiresRole requires={"ROLE_USER"}><AppSelector type={type} layerId={id}/></RequiresRole>
         case "widget":
             return <WidgetSelector type={type} layerId={id}/>
         default:

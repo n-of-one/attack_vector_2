@@ -45,9 +45,18 @@ data class MoveNode(
 
 data class EditSiteProperty(
     val siteId: String,
-    val field: String,
+    val field: SitePropertyField,
     val value: String,
 )
+
+enum class SitePropertyField {
+    NAME,
+    DESCRIPTION,
+    PURPOSE,
+    START_NODE,
+    HACKABLE,
+    NODES_LOCKED,
+}
 
 data class EditNetworkIdCommand(
     val siteId: String,

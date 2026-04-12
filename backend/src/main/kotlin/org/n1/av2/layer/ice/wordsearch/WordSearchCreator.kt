@@ -11,7 +11,7 @@ class WordSearchCreation(
     val score: Int,
 )
 
-class WordSearchCreator(private val strength: IceStrength) {
+class WordSearchCreator(private val strength: IceStrength, testingMode: Boolean) {
 
     companion object {
         const val FIT_WORD_MAX_ATTEMPTS = 1000
@@ -19,7 +19,8 @@ class WordSearchCreator(private val strength: IceStrength) {
         const val SCORE_FOR_DIAGONAL = 10
     }
 
-    private val wordSearchWordList = WordSearchWordList()
+    private val random = if (testingMode) Random(0L) else Random
+    private val wordSearchWordList = WordSearchWordList(random)
 
     private val letterGrid: MutableList<MutableList<Char>>
     private val usedGrid: MutableList<MutableList<Boolean>>
@@ -50,16 +51,27 @@ class WordSearchCreator(private val strength: IceStrength) {
                     val solution = fitWord(word)
                     solutions.add(solution)
                 }
+            verifySolutionsHaveAtLeastOneUniquePosition(solutions)
             return WordSearchCreation(words, letterGrid, solutions, score)
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             return null // failed to create puzzle
+        }
+    }
+
+    private fun verifySolutionsHaveAtLeastOneUniquePosition(solutions: MutableList<List<String>>) {
+        solutions.forEach { solution ->
+            val otherLists = solutions.filter { it != solution }
+            val otherPositions = otherLists.flatten().toSet()
+            if (solution.all { it in otherPositions }) {
+                error("Solution does not have any unique position compared to other solutions")
+            }
         }
     }
 
     private fun fitWord(word: String): List<String> {
         repeat(FIT_WORD_MAX_ATTEMPTS) {
-            val x = Random.nextInt(sizeX)
-            val y = Random.nextInt(sizeY)
+            val x = random.nextInt(sizeX)
+            val y = random.nextInt(sizeY)
 
             val solution = attemptFitWord(word, x, y)
             if (solution != null) return solution
@@ -72,7 +84,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             return null
         }
 
-        var startDirection = Random.nextInt(4)
+        var startDirection = random.nextInt(4)
         if (diagonalSolutions < (this.words.size / 2)) {
             val solution = attemptFitWordInDirectionType(startDirection, word, x, y) { direction: Int ->
                 directionVectorDiagonal(direction)
@@ -84,7 +96,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             }
         }
 
-        startDirection = Random.nextInt(4)
+        startDirection = random.nextInt(4)
         val solution = attemptFitWordInDirectionType(startDirection, word, x, y) { direction: Int ->
             directionVectorHorizontalVertical(direction)
         }
@@ -177,7 +189,7 @@ class WordSearchCreator(private val strength: IceStrength) {
     }
 
     private fun randomLetter(): Char {
-        return Char('A'.code + Random.nextInt(26))
+        return Char('A'.code + random.nextInt(26))
     }
 
     private fun sizeX(strength: IceStrength): Int {
@@ -187,7 +199,7 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 30
             IceStrength.VERY_STRONG -> 40
-            IceStrength.ONYX, -> 50
+            IceStrength.ONYX -> 50
         }
     }
 
@@ -198,12 +210,12 @@ class WordSearchCreator(private val strength: IceStrength) {
             IceStrength.AVERAGE -> 20
             IceStrength.STRONG -> 22
             IceStrength.VERY_STRONG -> 24
-            IceStrength.ONYX, -> 28
+            IceStrength.ONYX -> 28
         }
     }
 
     private fun addHeader() {
-        var x = Random.nextInt(sizeX)
+        var x = random.nextInt(sizeX)
         var y = 2
         "____inject{@authorize(92), @remote_core_dump_analyze()}___".forEach { letter ->
             letterGrid[y][x] = letter

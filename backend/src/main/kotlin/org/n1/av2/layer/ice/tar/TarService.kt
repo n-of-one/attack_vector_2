@@ -1,7 +1,7 @@
 package org.n1.av2.layer.ice.tar
 
 import org.n1.av2.layer.ice.HackedUtil
-import org.n1.av2.layer.ice.tar.TarCreator.Companion.unitsPerSecond
+import org.n1.av2.layer.ice.tar.TarCreator.Companion.unitsPerSecondForLevel
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
@@ -48,7 +48,7 @@ class TarService(
     fun enter(iceId: String) {
         val tarIceStatus = tarIceStatusRepo.findById(iceId).getOrElse { error("Netwalk not found for: ${iceId}") }
 
-        val unitsPerSecond = unitsPerSecond(5)
+        val unitsPerSecond = unitsPerSecondForLevel(5)
 
         val quickPlaying = configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
 

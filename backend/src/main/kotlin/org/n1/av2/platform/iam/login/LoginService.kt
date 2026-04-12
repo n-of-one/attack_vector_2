@@ -29,7 +29,7 @@ class LoginService(
 
         val user = userEntityService.getByName(userName)
         if (user.type == UserType.SYSTEM) error("Cannot login as system user")
-        return getCookies(user)
+        return addCookies(user)
     }
 
     private fun checkPassword(password: String, ipAddress: String) {
@@ -41,15 +41,12 @@ class LoginService(
         }
     }
 
-    fun logout(): List<Cookie> {
-        val cookies = mutableListOf<Cookie>()
-        cookies.add(Cookie("jwt", ""))
-        cookies.add(Cookie("userName", ""))
-        cookies.add(Cookie("type", ""))
-        cookies.add(Cookie("roles", ""))
-
-        return cookies
-    }
+    fun getCookieNames() = listOf(
+        "jwt",
+        "userName",
+        "type",
+        "roles"
+    )
 
     fun googleLogin(jwt: String): List<Cookie> {
         val externalId = googleOauthService.parse(jwt)
@@ -60,7 +57,7 @@ class LoginService(
         SecurityContextHolder.getContext().authentication = authentication
         currentUserService.set(user)
 
-        return getCookies(user)
+        return addCookies(user)
     }
 
     fun getOpenIdConnectLoginUrl(redirectUri: String): String {
@@ -72,8 +69,7 @@ class LoginService(
         return getCookies(user)
     }
 
-
-    fun getCookies(userEntity: UserEntity): List<Cookie> {
+    fun addCookies(userEntity: UserEntity): List<Cookie> {
         val cookies = mutableListOf<Cookie>()
         cookies.add(generateJwtCookie(userEntity))
         cookies.add(generateUserNameCookie(userEntity))
@@ -91,7 +87,9 @@ class LoginService(
 
     fun generateJwtCookie(userEntity: UserEntity): Cookie {
         val jwt = jwtTokenProvider.generateJwt(userEntity)
-        return Cookie("jwt", jwt)
+        val cookie = Cookie("jwt", jwt)
+        cookie.isHttpOnly = true
+        return cookie
     }
 
     private fun generateTypeCookie(userEntity: UserEntity): Cookie {
@@ -103,4 +101,5 @@ class LoginService(
         val roles = userEntity.type.authorities.joinToString(separator = "|") { it.authority }
         return Cookie("roles", roles)
     }
+
 }

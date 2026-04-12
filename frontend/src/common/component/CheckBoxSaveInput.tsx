@@ -44,6 +44,7 @@ export const CheckboxSaveInput = (props: Props) => {
     return (
 
         <input type="checkbox"
+               style={{height: "29px"}}
                className={className}
                checked={value}
                onChange={(event) => handleChange(event)}

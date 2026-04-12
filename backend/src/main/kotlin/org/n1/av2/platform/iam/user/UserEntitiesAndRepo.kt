@@ -24,6 +24,11 @@ data class UserEntity(
     var type: UserType = UserType.NOT_LOGGED_IN,
     val externalId: String? = null,
     val tag: UserTag = UserTag.REGULAR,
+    val preferences: UserPreferences = UserPreferences(),
+)
+
+data class UserPreferences(
+    val fontSize: Int = 12
 )
 
 

@@ -34,6 +34,7 @@ class UiUserDetails(
     val id: String,
     val name: String,
     val type: UserType,
+    val preferences: UserPreferences,
     val hacker: UiHacker?,
 )
 

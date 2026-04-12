@@ -19,6 +19,10 @@ class Timings(vararg entries: Pair<String, Int>) : HashMap<String, Int>() {
             return this.values.sum()
         }
 
+    fun ticksFor(key: String): Int {
+        return entries.find { it.key == key }?.value ?: error("key not found: ${key}")
+    }
+
     val totalWithoutConnection: Int
         get() {
             val connectionTicks = this.get("connections") ?: 0
@@ -29,4 +33,9 @@ class Timings(vararg entries: Pair<String, Int>) : HashMap<String, Int>() {
         get() {
             return this.get("connection") ?: error("No timining defined for: connection")
         }
+
+    fun adjustedForSpeed(factor: Double): Timings {
+        val newEntries = entries.toList().map { (key, value) -> Pair(key, (value * factor).toInt()) }.toTypedArray()
+        return Timings(*newEntries)
+    }
 }

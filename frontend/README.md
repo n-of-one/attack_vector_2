@@ -10,7 +10,11 @@ Notes:
 
 Use `npm audit --production` to check for vulnerabilities.
 See: https://github.com/facebook/create-react-app/issues/11174
-****
+
+### Generate license file for frontend:
+(in bash)
+`npx license-checker --csv | tr -d '"' | column -t -s, > license.txt`
+
 
 
 

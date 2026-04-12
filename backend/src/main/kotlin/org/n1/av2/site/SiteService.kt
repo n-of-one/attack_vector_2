@@ -4,7 +4,6 @@ import org.n1.av2.editor.AddNode
 import org.n1.av2.editor.SiteEditorStateEntityService
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.editor.SiteValidationService
-import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
@@ -17,8 +16,9 @@ import org.n1.av2.site.CoreLayerRemovalType.DELETE_SITE_REMOVAL
 import org.n1.av2.site.CoreLayerRemovalType.INTERNAL_REMOVAL
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.enums.NodeType
-import org.n1.av2.site.tutorial.SiteCloneService
+import org.n1.av2.site.export.SiteBlueprint
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 
 enum class CoreLayerRemovalType {
@@ -33,7 +33,6 @@ class SiteService(
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
     private val siteEditorStateEntityService: SiteEditorStateEntityService,
-    private val iceService: IceService,
     private val currentUserService: CurrentUserService,
     private val userEntityService: UserEntityService,
     private val siteValidationService: SiteValidationService,
@@ -53,12 +52,12 @@ class SiteService(
         val gmSite: Boolean
     )
 
-    fun sendSitesList() {
+    fun getSitesList(): List<SiteListItem> {
         val gm = currentUserService.userEntity.type == UserType.GM
 
         val sites = if (gm) sitePropertiesEntityService.findAll() else sitePropertiesEntityService.findByOwnerUserId(currentUserService.userId)
         val userNamesById = HashMap<String, String>()
-        val list = sites
+        return sites
             .map {
                 val mine = it.ownerUserId == currentUserService.userId
                 val owner = lookupUserName(it.ownerUserId, userNamesById)
@@ -73,6 +72,10 @@ class SiteService(
                     gmSite = userEntityService.isGmOrSystem(it.ownerUserId)
                 )
             }
+    }
+
+    fun sendSitesList() {
+        val list = getSitesList()
         connectionService.toUser(currentUserService.userId, actionType = ServerActions.SERVER_SITES_LIST, list)
     }
 
@@ -145,12 +148,12 @@ class SiteService(
     }
 
     fun removeSite(siteId: String) {
+        siteResetService.resetSite(siteId, Duration.parse("PT96H"))
+
         sitePropertiesEntityService.delete(siteId)
         nodeEntityService.deleteAllForSite(siteId)
         connectionEntityService.deleteAllForSite(siteId)
         siteEditorStateEntityService.delete(siteId)
-
-        iceService.resetIceForSite(siteId)
         sendSitesList()
     }
 
@@ -182,10 +185,10 @@ class SiteService(
         }
     }
 
-    fun updateHackable(siteId: String, newHackableValue: Boolean) {
+    fun updateHackable(siteId: String, newHackableValue: Boolean, validateFirst: Boolean = true) {
         val siteProperties = sitePropertiesEntityService.getBySiteId(siteId)
-        if (!siteProperties.siteStructureOk && newHackableValue) {
-            connectionService.replyNeutral("The site \"${siteProperties.name}\" has errors. Fix these before making it hackable.")
+        if (!siteProperties.siteStructureOk && newHackableValue && validateFirst) {
+            connectionService.replyNotificationNeutral("The site \"${siteProperties.name}\" has errors. Fix these before making it hackable.")
             return
         }
         val newSiteProperties = siteProperties.copy(hackable = newHackableValue)
@@ -219,12 +222,15 @@ class SiteService(
 
     fun copySite(sourceSiteId: String) {
         val sourceSiteProperties = sitePropertiesEntityService.getBySiteId(sourceSiteId)
+        val sourceNodes = nodeEntityService.findBySiteId(sourceSiteId)
+        val sourceConnections = connectionEntityService.getAll(sourceSiteId)
+        val blueprint = SiteBlueprint(sourceSiteProperties, sourceNodes, sourceConnections)
         val targetSiteName = makeSiteCopyName(sourceSiteProperties.name)
-        val targetSiteId = siteCloneService.cloneSite(sourceSiteProperties, targetSiteName, currentUserService.userEntity)
+        val targetSiteId = siteCloneService.cloneSite(blueprint, targetSiteName, currentUserService.userEntity)
         siteResetService.refreshSite(targetSiteId)
 
         sendSitesList()
-        connectionService.replyNeutral("Created site: $targetSiteName")
+        connectionService.replyNotificationNeutral("Created site: $targetSiteName")
     }
 
     private fun makeSiteCopyName(sourceName: String): String {

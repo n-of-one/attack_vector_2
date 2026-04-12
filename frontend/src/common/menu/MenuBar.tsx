@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 import {MenuItem} from "./MenuItem"
 import {HackerRootState} from "../../hacker/HackerRootReducer"
 import {ROLE_ADMIN, ROLE_GM, ROLE_HACKER, ROLE_SITE_MANAGER, ROLE_USER_MANAGER} from "../user/UserAuthorizations";
-import {hasSkill} from "../users/CurrentUserReducer";
+import {GenericUserRootState, hasSkill, UserType} from "../users/CurrentUserReducer";
 import {Page} from "./pageReducer";
 import {HackerSkillType} from "../users/HackerSkills";
 
@@ -22,7 +22,7 @@ const logout = (event: any) => {
 const scanItem = (currentPage: string, runName: string | null) => {
     if (currentPage === Page.RUN && runName) {
         return (
-            <MenuItem requriesRole="ROLE_HACKER" targetPage={Page.RUN} label={`> ${runName} <`}/>
+            <MenuItem requiresRole="ROLE_HACKER" targetPage={Page.RUN} label={`> ${runName} <`}/>
         )
     } else {
         return <span/>
@@ -31,7 +31,7 @@ const scanItem = (currentPage: string, runName: string | null) => {
 
 export const MenuBar = () => {
 
-    const userName = Cookies.get("userName")
+    const userName = useSelector((state: GenericUserRootState) => state.currentUser.name)
 
     const siteName = useSelector((state: HackerRootState) => (state.run && state.run.site.siteProperties) ? state.run.site.siteProperties.name : "")
     const currentPage = useSelector((state: HackerRootState) => state.currentPage)
@@ -44,11 +44,11 @@ export const MenuBar = () => {
     const hackerHasScriptsCreditsSkill = hasSkill(currentUser, HackerSkillType.SCRIPT_CREDITS)
 
 
-    const hackerSites = hackersCanCreateSites ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
-    const hackerScripts = hackerHasScriptsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
+    const hackerSites = hackersCanCreateSites ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
+    const hackerScripts = hackerHasScriptsSkill ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
     const hackerMarket = hackerHasScriptsSkill && hackerHasScriptsCreditsSkill ?
-        <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
-    const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
+        <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
+    const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
 
     return (
         <nav className="navbar navbar-expand-sm navbar-av fixed-bottom" style={{
@@ -62,22 +62,22 @@ export const MenuBar = () => {
                     <div className="container-fluid">
                         <div className="d-flex justify-content-between">
                             <ul className="navbar-nav mr-auto">
-                                <li className="nav-item"><a className="nav-link" href="/about" target="_blank">↼ Attack Vector ⇁</a></li>
+                                <Title/>
                                 {scanItem(currentPage, siteName)}
-                                <MenuItem requriesRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
+                                <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.HACKER_HOME} label="Home"/>
                                 {hackerSites}
                                 {hackerScripts}
                                 {hackerMarket}
                                 {hackerCredits}
-                                <MenuItem requriesRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>
-                                <MenuItem requriesRole={ROLE_SITE_MANAGER} targetPage={Page.SITES} label="Sites"/>
-                                <MenuItem requriesRole={ROLE_USER_MANAGER} targetPage={Page.USERS} label="Users"/>
-                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={Page.CONFIG} label="Config"/>
-                                <MenuItem requriesRole={ROLE_ADMIN} targetPage={Page.TASKS} label="Tasks"/>
-                                <MenuItem requriesRole={ROLE_GM} targetPage={Page.STATISTICS} label="Statistics"/>
+                                <MenuItem requiresRole={ROLE_GM} targetPage={Page.GM_SCRIPTS_HOME} label="Scripts"/>
+                                <MenuItem requiresRole={ROLE_SITE_MANAGER} targetPage={Page.SITES} label="Sites"/>
+                                <MenuItem requiresRole={ROLE_USER_MANAGER} targetPage={Page.USERS} label="Users"/>
+                                <MenuItem requiresRole={ROLE_ADMIN} targetPage={Page.CONFIG} label="Config"/>
+                                <MenuItem requiresRole={ROLE_ADMIN} targetPage={Page.TASKS} label="Tasks"/>
+                                <MenuItem requiresRole={ROLE_GM} targetPage={Page.STATISTICS} label="Statistics"/>
                             </ul>
                             <ul className="navbar-nav">
-                                <MenuItem requriesRole="ROLE_USER" targetPage={Page.ME} label={"{" + userName + "}"}/>
+                                <MenuItem requiresRole="ROLE_USER" targetPage={Page.ME} label={"{" + userName + "}"}/>
                                 <li className="nav-item">
                                     <a className="nav-link" href="/login" onClick={(event) => logout(event)}>ꕻ
                                         Logout</a>
@@ -89,4 +89,29 @@ export const MenuBar = () => {
             </div>
         </nav>
     )
+}
+
+/* eslint react/jsx-no-target-blank  : 0*/
+const Title = () => {
+
+    const currentUser = useSelector((state: HackerRootState) => state.currentUser)
+
+    const location = docsLocation(currentUser.type)
+
+    return <li className="nav-item">
+        <a className="nav-link" href={location} target="_blank">↼ Attack Vector ⇁</a>
+    </li>
+}
+
+const docsLocation = (userType: UserType) => {
+    switch (userType) {
+        case UserType.HACKER:
+            return "/attack_vector_2/player/index.html"
+        case UserType.GM:
+            return "/attack_vector_2/gm/index.html"
+        case UserType.ADMIN:
+            return "/attack_vector_2/installation/Configuration/index.html"
+        default:
+            return "/attack_vector_2/docs/index.html"
+    }
 }

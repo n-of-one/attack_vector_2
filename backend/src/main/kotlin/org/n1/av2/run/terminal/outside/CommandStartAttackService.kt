@@ -2,6 +2,7 @@ package org.n1.av2.run.terminal.outside
 
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service
 @Service
 class CommandStartAttackService(
     private val hackerStateEntityService: HackerStateEntityService,
+    private val skillService: SkillService,
     private val currentUserService: CurrentUserService,
     private val userTaskRunner: UserTaskRunner,
     private val commandMoveService: CommandMoveService,
@@ -46,7 +48,7 @@ class CommandStartAttackService(
         startAttack(hackerState, true)
     }
 
-    private fun startAttack(hackerState: HackerStateRunning, quick: Boolean) {
+    private fun startAttack(hackerState: HackerStateRunning, quickHacking: Boolean) {
         if (!outsideTerminalHelper.verifyOutside(hackerState)) return
         if (!outsideTerminalHelper.verifySiteNotShutdown(hackerState.siteId)) return
 
@@ -56,13 +58,16 @@ class CommandStartAttackService(
         hackerStateEntityService.startAttack(userId, run)
 
         data class StartRun(val userId: String, val quick: Boolean, val timings: Timings)
-        val timings = if (quick) timingsService.START_ATTACK_FAST else timingsService.START_ATTACK_SLOW
-        val data = StartRun(userId, quick, timings)
+
+        val baseTimings = if (quickHacking) timingsService.START_ATTACK_FAST else timingsService.START_ATTACK_SLOW
+        val timings = timingsService.skillAndConfigAdjusted(baseTimings, userId)
+
+        val data = StartRun(userId, quickHacking, timings)
         connectionService.replyTerminalSetLocked(true)
         connectionService.toRun(run.runId, ServerActions.SERVER_HACKER_START_ATTACK, data)
         connectionService.reply(ServerActions.SERVER_TERMINAL_UPDATE_PROMPT, "prompt" to "⇋ ", "terminalId" to TERMINAL_MAIN)
 
-        userTaskRunner.queueInTicksForSite("attack-arrive", run.siteId, timings.totalTicks) { startAttackArrive(userId, run.runId) }
+        userTaskRunner.queueInTicksForSite("attack-arrive", run.siteId, timings.ticksFor("main")) { startAttackArrive(userId, run.runId) }
 
         ramService.startHack(userId)
     }
@@ -79,5 +84,6 @@ class CommandStartAttackService(
 
         commandMoveService.moveArrive(startNodeId, userId, runId)
     }
+
 
 }

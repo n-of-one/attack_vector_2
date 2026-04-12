@@ -70,7 +70,7 @@ class RunService(
     fun startNewRunAndReply(siteName: String): Run? {
         val siteProperties = sitePropertiesEntityService.findByName(siteName)
         if (siteProperties == null) {
-            connectionService.replyMessage(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+            connectionService.replyNotification(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
             return null
         }
         if (!siteProperties.hackable) {
@@ -111,7 +111,7 @@ class RunService(
     }
 
     private fun replyNotHackable(siteProperties: SiteProperties) {
-        connectionService.replyMessage(
+        connectionService.replyNotification(
             NotyMessage(
                 NotyType.NEUTRAL,
                 "Site '${siteProperties.name}'",
@@ -162,6 +162,7 @@ class RunService(
         taskEngine.removeForUser(hackerState.userId)
 
         connectionService.toRun(hackerState.runId!!, ServerActions.SERVER_HACKER_DC, "userId" to hackerState.userId)
+        connectionService.toUser(hackerState.userId, ServerActions.SERVER_LEAVE_NODE) // closes any open ICE or app tabs.
         connectionService.toUser(
             hackerState.userId,
             ServerActions.SERVER_TERMINAL_RECEIVE,
@@ -187,6 +188,8 @@ class RunService(
         class HackerLeaveNotification(val userId: String)
         connectionService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
 
+        connectionService.toUser(hackerState.userId, ServerActions.SERVER_LEAVE_NODE) // closes any open ICE or app tabs.
+
         if (updateHackerState) {
             hackerStateEntityService.leaveSite(hackerState)
         }
@@ -194,10 +197,13 @@ class RunService(
 
     fun enterIce(iceId: String) {
         hackerStateEntityService.enterIce(iceId)
-
-        val hackerState = hackerStateEntityService.retrieveForCurrentUser().toRunState()
-        updateIceHackers(hackerState.runId, iceId)
+        val hackerState =  hackerStateEntityService.retrieveForCurrentUser()
         statisticsService.hackerEnterIce(iceId, currentUserService.userEntity)
+
+        if (hackerState.runId != null) {
+            // Hacker is in a run, not hacking from a standalone URL.
+            updateIceHackers(hackerState.runId, iceId)
+        }
     }
 
     class IceHacker(val userId: String, val name: String, val icon: HackerIcon)
@@ -205,8 +211,8 @@ class RunService(
     fun updateIceHackers(runId: String, iceId: String) {
         val usersInIce = hackerStateEntityService.findByRunIdAndIceId(runId, iceId)
 
-        val iceHackers = usersInIce.map { userIceHackingState ->
-            val user = userEntityService.getById(userIceHackingState.userId)
+        val iceHackers = usersInIce.map { userInIceHackerState ->
+            val user = userEntityService.getById(userInIceHackerState.userId)
             val hacker = hackerEntityService.findForUser(user)
             IceHacker(user.id, user.name, hacker.icon)
         }
@@ -227,8 +233,13 @@ class RunService(
 
         runs.forEach { run ->
             val nodeScan = run.nodeScanById[node.id]
-                ?: // this node did not exist when the previous run was created, probably added later by a GM. Skipping
+            if (nodeScan == null) {
+                // this node did not exist when the previous run was created, probably added later by a GM. Skipping
+                println("NodeScan not found")
                 return@forEach
+            }
+
+            println("NodeScanStatus: ${nodeScan.status}")
             if (!nodeScan.status.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
 
             run.updateScanStatus(node.id, FULLY_SCANNED_4)
@@ -236,7 +247,8 @@ class RunService(
                 run.runId,
                 ServerActions.SERVER_UPDATE_NODE_STATUS,
                 "nodeId" to node.id,
-                "newStatus" to FULLY_SCANNED_4
+                "newStatus" to FULLY_SCANNED_4,
+                "nodeHacked" to true
             )
 
             run.nodeScanById.filterKeys { nodeId -> neighboringNodeIds.contains(nodeId) }

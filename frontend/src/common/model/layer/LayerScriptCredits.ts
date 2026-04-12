@@ -10,7 +10,7 @@ export class LayerScriptCredits extends Layer {
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 
-        this.amount = layer.amount!
+        this.amount = layer.amount! as number
         this.stolen = layer.stolen!
     }
 

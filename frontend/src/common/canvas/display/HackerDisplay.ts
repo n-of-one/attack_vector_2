@@ -267,7 +267,7 @@ export class HackerDisplay implements Display {
 
         this.schedule.run(timings.main, () => {
             if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, false, timings.main - 50, this.you, easeOutSine)
+            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, false, timings.move, this.you, easeOutSine)
         })
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)

@@ -21,7 +21,7 @@ export class GmRoot extends Component<Props>{
     constructor(props: Props) {
         super(props)
 
-        initGenericServerActions()
+        initGenericServerActions({fontSize: "dynamic"})
         initGmServerActions()
 
         this.gmStore = configureStore({
@@ -34,7 +34,6 @@ export class GmRoot extends Component<Props>{
 
         // set up initial state:
         this.gmStore.dispatch({type: NAVIGATE_PAGE, to: Page.SITES})
-
 
         terminalManager.init(this.gmStore)
     }

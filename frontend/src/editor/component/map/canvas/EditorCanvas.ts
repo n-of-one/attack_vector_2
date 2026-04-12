@@ -14,11 +14,13 @@ import {saveTextInput} from "../../../../common/component/TextSaveInput";
 import {CANVAS_HEIGHT_EDITOR, CANVAS_WIDTH} from "../../../../common/canvas/CanvasConst";
 import {NodeI} from "../../../../common/sites/SiteModel";
 import {MoveNodeI} from "../../../reducer/EditorNodesReducer";
+import {SiteProperties} from "../../../reducer/SitePropertiesReducer";
 
 export interface LoadSiteData {
     id: string,
     nodes: NodeI[],
     connections: Connection[]
+    siteProperties: SiteProperties
 }
 
 class EditorCanvas {
@@ -80,7 +82,13 @@ class EditorCanvas {
             this.addConnection(connection)
         })
 
+        this.updateNodesLocked(loadSiteData.siteProperties.nodesLocked)
+
         this.render()
+    }
+
+    updateNodesLocked(locked: boolean) {
+        this.nodeDisplays.forEach((node) => {node.setLocked(locked)})
     }
 
     addNode(nodeDataInput: NodeI) {

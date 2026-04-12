@@ -29,8 +29,12 @@ export const ScriptsTransactionsTable = ({transactions, viewForUserName, pageSiz
 
     return <DataTable rows={rows} rowTexts={rowTexts} pageSize={pageSizeValue} hr={<Hr/>}>
         <div className="row text strong">
-            <div className="col-lg-3">Timestamp</div>
-            <div className="col-lg-2 text-end">Amount</div>
+            <div className="col-lg-5">
+                    <div className="d-flex justify-content-between">
+                        <div>Timestamp</div>
+                        <div>Amount</div>
+                    </div>
+            </div>
             <div className="col-lg-3">Sender/Receiver</div>
             <div className="col-lg-4">Description</div>
         </div>
@@ -53,8 +57,12 @@ const TransactionLine = ({transaction, viewForUserName}: { transaction: CreditTr
     const otherUserStyle = otherUserIsSystem ? " dark" : ""
 
     return <div className="row text">
-        <div className="col-lg-3">{formatTimestamp(new Date(transaction.timestamp))}</div>
-        <div className="col-lg-2 text-end">{sign + transaction.amount}<CreditsIcon/></div>
+        <div className="col-lg-5">
+            <div className="d-flex justify-content-between">
+                <div>{formatTimestamp(new Date(transaction.timestamp))}</div>
+                <div>{sign + transaction.amount}<CreditsIcon/></div>
+            </div>
+        </div>
         <div className={`col-lg-3 ${otherUserStyle}`}>{otherUserName}</div>
         <div className="col-lg-4">{transaction.description}</div>
     </div>

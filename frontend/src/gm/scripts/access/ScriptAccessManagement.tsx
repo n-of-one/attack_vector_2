@@ -8,27 +8,32 @@ import {User} from "../../../common/users/CurrentUserReducer";
 import {CloseButton} from "../../../common/component/CloseButton";
 import {InfoBadge} from "../../../common/component/ToolTip";
 import {CLOSE_USER_EDIT, UserOverview} from "../../../common/users/EditUserDataReducer";
-import {UserOverviewTable} from "../../../common/users/UserManagement";
+import {UserAction, UserOverviewTable} from "../../../common/users/UserManagement";
 import {ScriptTypesTable} from "../scriptType/ScriptTypeManagement";
 import {ScriptType} from "../../../common/script/type/ScriptTypeReducer";
 import {ScriptAccess} from "../../../common/script/access/ScriptAccessReducer";
+import {COPY_ICON, PASTE_ICON} from "../../../common/component/icon/SvgIcon";
+import {Icon} from "../../../common/component/icon/Icon";
+import {SELECT_USER_TO_COPY_FROM} from "../scriptUiReducer";
+import {notifyQuick} from "../../../common/util/Notification";
 
 
 export const ScriptAccessManagement = () => {
-
     useEffect(() => {
         webSocketConnection.send("/user/overview", "")
     }, [])
 
+    const dispatch = useDispatch()
     const userOverViewLines: UserOverview[] = useSelector((state: GmRootState) => state.users.overview)
     const hackers = userOverViewLines.filter(overViewLine => overViewLine.hacker)
+    const user = useSelector((state: GmRootState) => state.users.edit.userData)
+    const userIdToCopyFrom = useSelector((state: GmRootState) => state.scriptsManagement.ui.userIdToCopyFrom)
 
 
     const selectUser = (userOverview: UserOverview) => {
         webSocketConnection.send("/gm/scriptAccess/get", userOverview.id)
     }
 
-    const user = useSelector((state: GmRootState) => state.users.edit.userData)
     const userAccessElement = user ? <AccessOfUser user={user}/> :
         <div className="text">Click on a user in the table on the right to manage their access to scripts.</div>
 
@@ -36,7 +41,26 @@ export const ScriptAccessManagement = () => {
         webSocketConnection.send("/gm/scriptAccess/add", {userId: user!!.id, typeId: type.id})
     }
 
-    const tableElement = user ? <ScriptTypesForAccess onSelect={addScriptAccess}/> : <UserOverviewTable users={hackers} selectUser={selectUser}/>
+    const copyFromAction: UserAction =  {
+            action: ((user: UserOverview) => {
+                dispatch({type: SELECT_USER_TO_COPY_FROM, userId: user.id})
+                notifyQuick(`Selected ${user.name} to copy script access from.`)
+            }),
+            icon: <span className="text"><Icon type={COPY_ICON} color="green"/></span>,
+            tooltip: "Currently copying access from this user",
+            enabled: (user: UserOverview) => userIdToCopyFrom === undefined
+        }
+    const pasteToAction: UserAction = {
+            action: ((user: UserOverview) => webSocketConnection.send("/gm/scriptAccess/copyFromUser", {from: userIdToCopyFrom, to: user.id})),
+            icon: <span className="text"><Icon type={PASTE_ICON}/></span>,
+            tooltip: "Paste access to this user",
+            enabled: (user: UserOverview) => { return userIdToCopyFrom !== undefined && user.id !== userIdToCopyFrom }
+        }
+    const actions = [ copyFromAction, pasteToAction  ]
+
+
+    const tableElement = user ? <ScriptTypesForAccess onSelect={addScriptAccess}/> :
+        <UserOverviewTable users={hackers} selectUser={selectUser} actions={actions}/>
 
     return (
         <div className="row">
@@ -56,6 +80,7 @@ export const ScriptAccessManagement = () => {
         </div>
     )
 }
+
 
 const ScriptTypesForAccess = ({onSelect}: { onSelect: (type: ScriptType) => void }) => {
     return (<>

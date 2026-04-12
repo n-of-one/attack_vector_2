@@ -19,6 +19,8 @@ import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayerService
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.text.TextLayerService
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
+import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
 import org.n1.av2.platform.connection.ConnectionService
@@ -42,6 +44,7 @@ class CommandHackService(
     private val coreLayerService: CoreLayerService,
     private val scriptInteractionLayerService: ScriptInteractionLayerService,
     private val scriptCreditsLayerService: ScriptCreditsLayerService,
+    private val timerAdjusterService: TimerAdjusterService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
 ) {
@@ -83,6 +86,7 @@ class CommandHackService(
             is TripwireLayer -> tripwireLayerService.hack(layer, hackerState)
             is ScriptInteractionLayer -> scriptInteractionLayerService.hack()
             is ScriptCreditsLayer -> scriptCreditsLayerService.hack(layer, hackerState)
+            is TimerAdjusterLayer -> timerAdjusterService.hack(layer)
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }
     }
@@ -122,8 +126,8 @@ class CommandHackService(
         requireNotNull(hackerState.currentNodeId)
         val node = nodeEntityService.getById(hackerState.currentNodeId)
 
-        hackedUtil.iceHacked(iceId, layer.id, node, 0, IceHackState.USED_DEV_MODE)
         connectionService.replyTerminalReceive("Quick hacked ${layer.level}.")
+        hackedUtil.iceHacked(iceId, layer.id, node, 0, IceHackState.USED_DEV_MODE)
     }
 
 

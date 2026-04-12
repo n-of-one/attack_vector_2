@@ -41,11 +41,11 @@ class TarCreator {
 
         fun defaultTimeHackerGroup(strength: IceStrength, hackerLevel: Int, hackerCount: Int ): String {
             val units = totalUnitsByStrength[strength] ?: error("No Ice units defined for strength: ${strength}")
-            val seconds = units / unitsPerSecond(hackerLevel, hackerCount)
+            val seconds = units / unitsPerSecondForLevel(hackerLevel, hackerCount)
             return secondsToTime(seconds)
         }
 
-        fun unitsPerSecond(hackerLevel: Int, hackerCount: Int = 1): Int {
+        fun unitsPerSecondForLevel(hackerLevel: Int, hackerCount: Int = 1): Int {
             val baseUnitsPerSecond = 10 + hackerLevel
             return baseUnitsPerSecond * hackerCount
         }

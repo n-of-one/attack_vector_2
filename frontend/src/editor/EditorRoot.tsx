@@ -46,7 +46,7 @@ export class EditorRoot extends Component<Props> {
         })
 
         initEditorServerActions()
-        initGenericServerActions()
+        initGenericServerActions({fontSize: 14})
 
         webSocketConnection.create(WS_UNRESTRICTED, this.store, () => {
             webSocketConnection.subscribe('/topic/site/' + props.siteId)

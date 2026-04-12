@@ -14,6 +14,7 @@ export enum ConfigItem {
     HACKER_SCRIPT_RAM_REFRESH_DURATION = "HACKER_SCRIPT_RAM_REFRESH_DURATION",
     HACKER_SCRIPT_LOCKOUT_DURATION = "HACKER_SCRIPT_LOCKOUT_DURATION",
     HACKER_SCRIPT_LOAD_DURING_RUN = "HACKER_SCRIPT_LOAD_DURING_RUN",
+    HACKER_DEFAULT_SPEED = "HACKER_DEFAULT_SPEED",
 
     LOGIN_GOOGLE_CLIENT_ID = "LOGIN_GOOGLE_CLIENT_ID",
     LOGIN_PASSWORD = "LOGIN_PASSWORD",
@@ -21,6 +22,7 @@ export enum ConfigItem {
 
     DEV_HACKER_RESET_SITE = "DEV_HACKER_RESET_SITE",
     DEV_HACKER_USE_DEV_COMMANDS = "DEV_HACKER_USE_DEV_COMMANDS",
+    DEV_MINIMUM_SHUTDOWN_DURATION = "DEV_MINIMUM_SHUTDOWN_DURATION",
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS = "DEV_SIMULATE_NON_LOCALHOST_DELAY_MS",
     DEV_TESTING_MODE = "DEV_TESTING_MODE",
     DEV_QUICK_PLAYING = "DEV_QUICK_PLAYING",
@@ -43,6 +45,7 @@ export const ConfigItemCategories = {
     HACKER_SCRIPT_RAM_REFRESH_DURATION: "2. Hacker",
     HACKER_SCRIPT_LOCKOUT_DURATION: "2. Hacker",
     HACKER_SCRIPT_LOAD_DURING_RUN: "2. Hacker",
+    HACKER_DEFAULT_SPEED: "2. Hacker",
 
     LOGIN_GOOGLE_CLIENT_ID: "3. Login",
     LOGIN_PASSWORD: "3. Login",
@@ -50,6 +53,7 @@ export const ConfigItemCategories = {
 
     DEV_HACKER_RESET_SITE: "4. Development",
     DEV_HACKER_USE_DEV_COMMANDS: "4. Development",
+    DEV_MINIMUM_SHUTDOWN_DURATION: "4. Development",
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "4. Development",
     DEV_TESTING_MODE: "4. Development",
     DEV_QUICK_PLAYING: "4. Development",
@@ -72,6 +76,7 @@ export const ConfigItemNames = {
     HACKER_SCRIPT_RAM_REFRESH_DURATION: "Script RAM refresh duration",
     HACKER_SCRIPT_LOCKOUT_DURATION: "Script lockout duration",
     HACKER_SCRIPT_LOAD_DURING_RUN: "Script loading during run",
+    HACKER_DEFAULT_SPEED: "Default speed",
 
     LOGIN_GOOGLE_CLIENT_ID: "Google client id",
     LOGIN_PASSWORD: "Password",
@@ -79,6 +84,7 @@ export const ConfigItemNames = {
 
     DEV_HACKER_USE_DEV_COMMANDS: "Hackers can use dev commands",
     DEV_HACKER_RESET_SITE: "Hackers can reset sites",
+    DEV_MINIMUM_SHUTDOWN_DURATION: "Minimum shutdown duration",
     DEV_SIMULATE_NON_LOCALHOST_DELAY_MS: "Simulate non-localhost",
     DEV_TESTING_MODE: "Testing mode",
     DEV_QUICK_PLAYING: "ICE quick playing",
@@ -102,7 +108,7 @@ export interface ConfigState {
 }
 
 const defaultState = {
-    entries: [{item: ConfigItem.HACKER_SHOW_SKILLS, value: "false"}],
+    entries: [],
     currentItem: null,
     currentValue: "false"
 }
@@ -119,7 +125,7 @@ export const configReducer = (state: ConfigState = defaultState, action: AnyActi
     }
 }
 
-interface ActionReceiveConfig {
+export interface ActionReceiveConfig {
     data: ConfigEntry[]
 }
 
@@ -165,7 +171,14 @@ export interface ConfigRootState {
 
 // for convenience
 
-export const getConfigAsBoolean = (item: ConfigItem, state: ConfigState,): boolean => {
+export const getConfigAsBoolean = (item: ConfigItem, state: ConfigState): boolean => {
     const entry = state.entries.find((entry) => entry.item === item)
     return (entry !== undefined) ? entry.value.toUpperCase() === "TRUE" : false
 }
+
+export const getConfigAsInt = (item: ConfigItem, state: ConfigState): number => {
+    const entry = state.entries.find((entry) => entry.item === item)
+    if (!entry) throw new Error(`Config entry is missing for: ${item}`)
+    return parseInt(entry!.value)
+}
+

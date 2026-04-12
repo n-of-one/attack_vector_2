@@ -41,6 +41,7 @@ enum class ServerActions {
     SERVER_SCRIPT_STATISTICS,       // Send the script statistics to the client
     SERVER_SCRIPT_TYPES,            // Send all script types to the client
     SERVER_EDIT_SCRIPT_TYPE,        // Send to the client that this script type is being edited
+    SERVER_SCRIPT_UI_FORCE_DELETE_ENABLED, // Send to the client whether the force delete option should be enabled in the UI for scripts
 
     SERVER_RECEIVE_SCRIPT_ACCESS,   // Send all script accesses of a user to the client
 
@@ -72,6 +73,7 @@ enum class ServerActions {
     SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
     SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.
     SERVER_HACKER_DC,                   // A hacker disconnects from the site but is still at the site
+    SERVER_LEAVE_NODE,                  // Sent to frontend to disconnect any apps the hacker is in (ICE, switch, auth, ...)
 
     SERVER_HACKER_START_ATTACK,         // A hacker starts the attack (connects to the entry site node)
     SERVER_HACKER_MOVE_START,           // step one of the move
@@ -88,7 +90,6 @@ enum class ServerActions {
     SERVER_REDIRECT_HACK_ICE,           // open a new window to start hacking ICE
     SERVER_ICE_HACKED,                  // sent to ice screen to indicate ICE has been hacked.
     SERVER_LAYER_HACKED,                // sent to run to update info, this is visible when clicking on icon
-    SERVER_NODE_HACKED,                 // change icon of node in run
     SERVER_LAYER_CHANGED,               // sent to run to update info, this is visible when clicking on icon
 
     SERVER_ICE_HACKERS_UPDATED,         // sent to ice to inform all hackers of the current hackers on this ice

@@ -11,7 +11,9 @@ export default async function globalSetup() {
 
     await login.loginUsingLink("admin")
     await admin.setConfigItem("Testing mode", "true")
+    await admin.setConfigItem("ICE quick playing", "true")
     await admin.setConfigItem("Simulate non-localhost", "0")
+    await admin.setConfigItem("Minimum shutdown duration", "00:00:10")
 
     await wait(page, 0.1, "don't close the page immediately to allow changes to be sent by browser")
     await browser.close()

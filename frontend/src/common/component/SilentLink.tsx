@@ -20,9 +20,10 @@ interface Props {
     onClick?: (e: MouseEvent) => void,
     title?: string,
     text?: string,
+    newTab?: boolean,
 }
 
-export const SilentLink = ({href, classNameInput, children, onClick, title, text}: Props) => {
+export const SilentLink = ({href, classNameInput, children, onClick, title, text, newTab}: Props) => {
     if (!classNameInput) classNameInput = '';
 
     const onClickLocal = (e: any) => {
@@ -31,7 +32,11 @@ export const SilentLink = ({href, classNameInput, children, onClick, title, text
             return;
         }
         if (href) {
-            window.location.href = href;
+            if (newTab) {
+                window.open(href, '_blank');
+            } else {
+                window.location.href = href;
+            }
         }
     };
 
