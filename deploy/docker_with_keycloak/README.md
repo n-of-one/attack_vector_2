@@ -7,7 +7,7 @@
 ## Current pre-set
 
 The current setting allow you to run it directly on your computer for testing.
-Keycloak will be available on [auth.localhost](auth.localhost) and Attack Vector on [hack.localhost](hack.localhost)
+Keycloak will be available on [auth.localhost](http://auth.localhost) and Attack Vector on [hack.localhost](http://hack.localhost)
 
 Keycloak is pre-configured with a realm `larp` and a client `attack_vector`
 
@@ -15,13 +15,13 @@ New user will get the non_hacker role
 
 ## Steps
 
-1. Change value of `DOMAIN` from [.env](deploy/docker_with_keycloak/.env) to match your domain
-2. Change value of `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` from [.env](deploy/docker_with_keycloak/.env) to define the userName and password of Keycloak admin user
+1. Change value of `DOMAIN` from [.env](./.env) to match your domain
+2. Change value of `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` from [.env](./.env) to define the userName and password of Keycloak admin user
 3. [Configure certificates (optional)](#configure-certificates)
 4. Run docker compose -d 
 5. [Configure Keycloak (optional)](#configure-keycloak-optional)
 6. [Configure Attack Vector](#configure-attack-vector)
-7. Try your config by accessing [hack.domain](hack.domain), you should be redirect to Keycloak for login or registration as hacker
+7. Try your config by accessing [hack.domain](http://hack.domain), you should be redirect to Keycloak for login or registration as hacker
 8. Have fun
 
 
@@ -34,7 +34,7 @@ Set the login, password and name of your domain name provider
 
 
 ### Configure Keycloak (optional)
-Login as admin to [admin console](http://auth.localhost/admin/master/console/) using username and password define in [.env](deploy/docker_with_keycloak/.env) (KEYCLOAK_ADMIN and KEYCLOAK_ADMIN_PASSWORD)
+Login as admin to [admin console](http://auth.localhost/admin/master/console/) using username and password define in [.env](./.env) (KEYCLOAK_ADMIN and KEYCLOAK_ADMIN_PASSWORD)
 
 If you have change the attack vector url (domain or submain) you need to update manually it in the Keycloak configuration.
 Click on `Manage realms` then `larp` (or your custom realm name) then `Clients` in the side menu.
@@ -90,6 +90,8 @@ They have the following skills :
 * SEARCH_SITE
 * SCAN
 * CREATE_SITE
+
+### GM:
 
 ### Add a role to a user
 1. Click on `Manage realms` then `larp` (or your custom realm name)
