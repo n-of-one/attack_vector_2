@@ -150,7 +150,7 @@ class OpenIdConnectService(
         val hacker = hackerEntityService.findForUserOrNull(user)
         if (hacker == null) {
             hackerEntityService.createHacker(user, HackerIcon.FROG, openIdConnectUserInfos.characterName)
-            hackerEntityService.findForUser(user);
+            hackerEntityService.findForUser(user)
         } else {
             val updatedHacker = hacker.copy(
                 characterName = openIdConnectUserInfos.characterName,
