@@ -32,9 +32,9 @@ ICE strength determines the number of puzzle pieces via a grid of columns x rows
 
 - Canvas size: 1880 x 928 pixels.
 - The puzzle display area is centered on the canvas.
-- A pixelated (low-resolution) version of the source image is shown as a semi-transparent background (opacity 0.25) at the puzzle position, as a visual guide
-  for the player.
-    - Created by drawing the image at ~144 x 80 pixels (96 * 1.5 scaled by aspect ratio), then scaling back up with `imageSmoothingEnabled = false`.
+- A pixelated (low-resolution) version of the source image is shown as a semi-transparent background (opacity 0.15) at the puzzle position, as a visual guide
+  for the player. The pixelation is achieved by first downsampling the image to roughly 144 x 80 pixels (scaled by aspect ratio) and then scaling it back up
+  without smoothing, giving a blocky look.
 
 ## Piece Shapes
 
@@ -65,11 +65,12 @@ The jigsaw shapes are detailed in the file: `jigsaw-shapes.html`.
 
 ### Piece rendering
 
-- Each piece is rendered as a fabric.js Group containing:
-    - A **main path** (SVG path) filled with the corresponding section of the source image via a pattern fill.
-    - An optional **border path** (white stroke, 1.5px) drawn only along the flat (border) edges of edge/corner pieces. Center pieces have no border path.
-- Stroke color: `#88aacc`, width 1px, with opacity that fades as more neighbors snap (see Snap section).
-- The border path includes invisible anchor points at the bounding box corners of the main path, so fabric.js computes identical dimensions for both paths.
+- Each piece displays the corresponding section of the source image, clipped to the piece's shape (including tabs and recesses).
+- Each piece has a thin outline ("stroke") drawn on top, in color `#88aacc` with a width of 1px. The stroke opacity fades as more neighbors snap to the piece
+  (see Snap section).
+- Pieces on the outer border of the puzzle additionally have a white border, 1.5px wide, drawn only along their flat (border) edges. Center pieces have no
+  such border.
+- Clicks/hits on a piece only register on the actual piece shape, not on its bounding rectangle.
 
 ## Initial Piece Placement
 
@@ -99,27 +100,25 @@ Pieces start scattered in 4 zones around the central puzzle image:
 ### Drag
 
 - Left-click and drag moves the entire snap group (the piece and any pieces already snapped to it).
-- On mouse-up (left button), the group is brought to the front of the canvas z-order.
+- While dragging, the snap group is rendered on top of all other pieces. Once the drag ends it returns to the normal rendering order.
 
 ### Rotation
 
 - **Right-click** on a piece/group rotates it 90 degrees clockwise.
 - **Mouse wheel** rotates: scroll down = clockwise, scroll up = counter-clockwise.
-- Rotation is animated over 200ms.
+- Rotation is animated linearly over 200ms.
 - Only one rotation can be in progress at a time (subsequent rotation inputs are ignored until the current animation completes).
 - Rotation is always in 90-degree increments. Valid values: 0, 90, 180, 270.
 - Rotation must be around the body center of the pieces that make the snap group.
 
-### Context menu
+### Context menu and page scroll
 
-- The browser context menu is suppressed on the canvas (`stopContextMenu: true`).
+- The browser context menu is suppressed on the canvas (so right-click can be used for rotation).
+- Browser wheel scroll is suppressed on the canvas (so the mouse wheel can be used for rotation).
 
 ### Selection
 
-- Native fabric.js multi-select (rubber band selection) is disabled (`selection: false`).
-- Pieces have no resize handles or borders (`hasControls: false`, `hasBorders: false`).
-- Hover cursor is `grab`.
-- Per-pixel target finding is enabled (`perPixelTargetFind: true`) so clicks must land on the actual piece shape, not its bounding box.
+- There is no rubber-band or multi-select; pieces are interacted with one snap group at a time.
 
 ## Snap Groups
 
@@ -127,7 +126,7 @@ Pieces are organized into snap groups. A snap group is a set of one or more piec
 
 ### Snap detection
 
-- After a drag completes (`object:modified` event), the system checks all pieces in the moved group for potential snaps to neighboring pieces.
+- After a drag completes, the system checks all pieces in the moved group for potential snaps to neighboring pieces.
 - A neighbor is a piece at an adjacent grid position (left, right, above, below).
 - Snap criteria:
     1. The neighbor must have the same rotation as the dragged piece.
@@ -166,9 +165,9 @@ outward tabs extend the bounding box asymmetrically.
 
 - `bodyOffsetX = (extensionLeft - extensionRight) / 2`
 - `bodyOffsetY = (extensionTop - extensionBottom) / 2`
-- The body center is computed from the fabric.js transform matrix, accounting for parent group transforms and rotation.
+- The body center is derived from the piece's own position and rotation combined with its snap group's position and rotation.
 - Body centers are used for snap detection and positioning.
-- Body centers are used for rotation
+- Body centers are used for rotation.
 
 ## Piece Configuration Data Model
 
@@ -270,11 +269,48 @@ interface JigsawUiState {
 - **Terminal intro sequence**: A cinematic intro sequence with timed messages is commented out (connecting, analyzing, pattern fragmentation, exploit success,
   puzzle online). Currently skipped - puzzle shows immediately.
 
-## Technical Stack
+## Implementation Notes
 
-- **Fabric.js** v5.5.2 for canvas rendering and interaction.
-- **React + Redux** for UI state management.
-- **TypeScript** throughout.
-- SVG path strings for piece shape geometry (M/L commands only, no curves).
-- Center-origin mode for all fabric objects (`originX/Y = "center"`).
-- Precomputed trigonometry for 0/90/180/270 rotation to avoid floating-point drift.
+PixiJS is used instead of Fabric.js to support movies as well as static images.
+
+This section captures choices specific to PixiJS v8. They are implementation details, not functional requirements.
+
+### Scene structure
+
+- One PixiJS `Application` hosts the canvas. The stage is organized into three layers:
+    1. **Background layer** - holds the pixelated guide image.
+    2. **Pieces layer** - holds all snap groups under normal conditions.
+    3. **Top layer** - the currently dragged snap group is temporarily reparented here so it renders above all other pieces.
+- One shared `Texture` is used by all piece sprites (supports both image and video sources; video textures auto-update each frame).
+
+### Piece composition
+
+- Each piece is a `Container` holding:
+    - A `Sprite` of the shared texture, clipped by a polygon `Graphics` mask in the shape of the piece.
+    - A `Graphics` stroke overlay for the outline.
+    - An optional `Graphics` border overlay for the white edge on border pieces.
+- The container's polygon `hitArea` is set so pointer events only hit the actual shape.
+
+### Input
+
+- Pointer and wheel input is handled via Pixi's federated event system (`pointerdown` / `pointermove` / `pointerup` / `pointerupoutside` / `wheel`) on the
+  stage.
+- The stage uses `eventMode = 'static'` with a rectangular `hitArea` covering the full canvas so events reach it even when no piece is under the cursor.
+- The browser `contextmenu` and `wheel` DOM events on the canvas element are prevented.
+
+### Geometry
+
+- Piece shape geometry is expressed as arrays of polygon vertices (not SVG paths). The same points feed the mask, stroke, hit area, and border overlay.
+- Precomputed sin/cos values for 0/90/180/270 degrees avoid floating-point drift.
+- All vertex coordinates are rounded to 2 decimal places so matching in/out edges share identical points.
+- Body-center computation derives from local and parent transforms directly rather than relying on Pixi's cached world transform, which may not be refreshed
+  during a single input tick.
+
+### Animation
+
+- Rotation animation is driven by a callback on the `Application.ticker` using linear interpolation. The callback unregisters itself on completion.
+
+### Performance
+
+- The ticker is capped at 30 FPS to reduce load on weaker machines. Pointer input still updates positions every event; only rendering runs less often.
+- Antialiasing on the `Application` is disabled to save GPU fragment shader work; the piece outlines give sufficient edge definition.
