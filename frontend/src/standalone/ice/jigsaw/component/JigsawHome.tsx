@@ -7,6 +7,7 @@ import {HIDDEN} from "../../common/IceModel";
 import {IceStrength} from "../../../../common/model/IceStrength";
 import {CloseTabButton} from "../../common/CloseTabButton";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
+import {VideoSpeedControls} from "./VideoSpeedControls";
 
 export const JigsawHome = () => {
 
@@ -25,7 +26,10 @@ export const JigsawHome = () => {
                     <div className="col-lg-2">
                         <IceTitle name="Paheli" strength={strength}/>
                     </div>
-                    <div className="col-lg-7" style={{paddingTop: "4px"}}>
+                    <div className="col-lg-2" style={{paddingTop: "60px"}}>
+                        <VideoSpeedControls/>
+                    </div>
+                    <div className="col-lg-5" style={{paddingTop: "4px"}}>
                         <DisplayTerminal/>
                     </div>
                     <div className="col-lg-1">

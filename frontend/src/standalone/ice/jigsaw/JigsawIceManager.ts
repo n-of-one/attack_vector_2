@@ -53,6 +53,7 @@ class JigsawIceManager extends GenericIceManager {
     solved: boolean = false
 
     jigsawCanvas: JigsawCanvas | null = null
+    media: LoadedMedia | null = null
 
     enter(data: JigsawEnterData) {
         if (data.hacked) {
@@ -67,10 +68,17 @@ class JigsawIceManager extends GenericIceManager {
         this.schedule.dispatch(0, {type: JIGSAW_BEGIN});
 
         loadMedia(data.imageSrc).then(async media => {
+            this.media = media
             this.jigsawCanvas = await JigsawCanvas.create(data, this.dispatch, this.store, media)
         }).catch(err => {
             console.error("Failed to load jigsaw source media", err)
         })
+    }
+
+    /** Returns the video element backing the puzzle, or null if the media is a static image or not yet loaded. */
+    getVideoElement(): HTMLVideoElement | null {
+        const el = this.media?.sourceElement
+        return el instanceof HTMLVideoElement ? el : null
     }
 }
 
