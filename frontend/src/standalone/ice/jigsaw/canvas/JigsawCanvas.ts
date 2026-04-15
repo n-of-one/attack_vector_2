@@ -36,7 +36,7 @@ export class JigsawCanvas {
             width: CANVAS_WIDTH,
             height: CANVAS_HEIGHT,
             background: 0x181818,
-            antialias: false,
+            antialias: true,
         })
         app.ticker.maxFPS = 30
 

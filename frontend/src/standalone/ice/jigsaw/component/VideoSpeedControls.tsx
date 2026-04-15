@@ -70,6 +70,7 @@ export const VideoSpeedControls = () => {
                         key={s}
                         type="button"
                         className={className}
+                        style={{width: "58px"}}
                         onClick={() => applySpeed(s)}
                     >
                         {formatSpeed(s)}
