@@ -1,5 +1,5 @@
 import {Dispatch, Store} from "redux";
-import {Application, Container, FederatedPointerEvent, FederatedWheelEvent, Rectangle, Sprite, Texture,} from "pixi.js";
+import {Application, ColorMatrixFilter, Container, FederatedPointerEvent, FederatedWheelEvent, Rectangle, Sprite, Texture,} from "pixi.js";
 import {JigsawEnterData, PieceGroup} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 import {SnapGroupDisplay} from "./SnapGroupDisplay";
@@ -90,6 +90,101 @@ export class JigsawCanvas {
         }
 
         this.registerEventHandlers()
+        this.installVideoLoopFader(media)
+    }
+
+    /**
+     * For videos whose first and last frames don't match, we drive the loop
+     * manually (loop=false + ended handler) and fade the puzzle pieces to
+     * black across the boundary to hide the seam.
+     */
+    private installVideoLoopFader(media: LoadedMedia) {
+        if (!(media.sourceElement instanceof HTMLVideoElement)) return
+        if (media.loopsCleanly) return
+
+        const video = media.sourceElement
+        const FADE_SECONDS = 0.3
+        const FADE_MS = FADE_SECONDS * 1000
+
+        const easeInSine = (t: number) => 1 - Math.cos((t * Math.PI) / 2)
+        const easeOutSine = (t: number) => Math.sin((t * Math.PI) / 2)
+
+        const filter = new ColorMatrixFilter()
+        this.piecesLayer.filters = [filter]
+
+        // Single state machine. The fade VALUE is always wall-clock-driven so it
+        // can't stutter when video.currentTime plateaus, jumps, or there's a gap
+        // between the `ended` event and the `seeked` event. The video clock is
+        // only used to TRIGGER the fade-out, never to compute its progress.
+        type Phase = 'playing' | 'fadingOut' | 'wrapping' | 'fadingIn'
+        let phase: Phase = 'playing'
+        let phaseStart = 0
+
+        video.addEventListener('ended', () => {
+            // fadingOut should already be in progress, but in case `ended` fires
+            // before our trigger (short clip, or playbackRate spike) we just go.
+            phase = 'wrapping'
+            video.currentTime = 0
+            void video.play().catch(() => { /* ignore */
+            })
+        })
+        video.addEventListener('seeked', () => {
+            // Only react to seeks that happen as part of our manual wrap.
+            // User-initiated seeks (e.g. future scrubbing) won't be in 'wrapping'.
+            if (phase === 'wrapping') {
+                phase = 'fadingIn'
+                phaseStart = performance.now()
+            }
+        })
+
+        this.app.ticker.add(() => {
+            const now = performance.now()
+
+            // Trigger fade-out once when we cross into the tail of the video.
+            // Backdate phaseStart by how far we already are into the fade window
+            // (scaled by playbackRate) so the fade picks up smoothly instead of
+            // snapping. After this, `currentTime` is no longer consulted.
+            if (phase === 'playing') {
+                const duration = video.duration
+                if (isFinite(duration) && duration > 0) {
+                    const remainingVideoSec = duration - video.currentTime
+                    const rate = video.playbackRate || 1
+                    const remainingWallMs = (remainingVideoSec / rate) * 1000
+                    if (remainingWallMs < FADE_MS) {
+                        phase = 'fadingOut'
+                        phaseStart = now - (FADE_MS - remainingWallMs)
+                    }
+                }
+            }
+
+            let fade = 1
+            switch (phase) {
+                case 'playing':
+                    fade = 1
+                    break
+                case 'fadingOut': {
+                    const elapsed = now - phaseStart
+                    const t = Math.min(1, elapsed / FADE_MS)
+                    fade = 1 - easeInSine(t)
+                    break
+                }
+                case 'wrapping':
+                    // Hold black across the gap between `ended` and `seeked`.
+                    fade = 0
+                    break
+                case 'fadingIn': {
+                    const elapsed = now - phaseStart
+                    if (elapsed >= FADE_MS) {
+                        phase = 'playing'
+                        fade = 1
+                    } else {
+                        fade = easeOutSine(elapsed / FADE_MS)
+                    }
+                    break
+                }
+            }
+            filter.brightness(fade, false)
+        })
     }
 
     get ticker() {
