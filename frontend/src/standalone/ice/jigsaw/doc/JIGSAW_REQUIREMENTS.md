@@ -26,7 +26,10 @@ ICE strength determines the number of puzzle pieces via a grid of columns x rows
 - The source image must be at least 1376 x 768 pixels.
 - The image is center-cropped to exactly 1376 x 768 from the source.
 - The image is displayed at 80% scale (PUZZLE_SCALE = 0.8), giving a display size of 1100.8 x 614.4 pixels.
-- The image source path is provided by the server in the enter data (e.g. `/img/frontier/ice/jigsaw/anubis.png`).
+- The image source path is provided by the server in the enter data (e.g. `/img/frontier/ice/jigsaw/green.png`). Videos (`.mp4`) are also supported.
+- The server picks a random source from a per-strength bucket (`JigsawDefaultMedia.kt`) at ICE creation time, so every hacker entering the same ICE sees the
+  same media.
+- In testing mode (`DEV_TESTING_MODE`), the creator uses a deterministic RNG seed (0) so puzzles are reproducible.
 
 ## Canvas
 
@@ -122,27 +125,20 @@ Pieces start scattered in 4 zones around the central puzzle image:
 
 ## Snap Groups
 
-Pieces are organized into snap groups. A snap group is a set of one or more pieces that move and rotate together.
+Pieces are organized into snap groups. A snap group is a set of one or more pieces that move and rotate together. Group state is server-authoritative (see
+Server Communication § Snap engine). The client only:
 
-### Snap detection
+- Sends `moved` / `rotate` commands when the user finishes a drag or rotation.
+- Applies server broadcasts (`MOVED`, `ROTATE`, `SNAP`) to its local group display.
 
-- After a drag completes, the system checks all pieces in the moved group for potential snaps to neighboring pieces.
-- A neighbor is a piece at an adjacent grid position (left, right, above, below).
-- Snap criteria:
-    1. The neighbor must have the same rotation as the dragged piece.
-    2. The neighbor must not already be in the same snap group.
-    3. The distance between the neighbor's actual body center and its expected body center (computed from the dragged piece's position + grid offset, rotated)
-       must be less than **15 pixels** (Chebyshev distance: `max(|dx|, |dy|) < 15`).
-- The closest valid match is chosen.
+### Server-authoritative groups
 
-### Group merging
-
-- When a snap occurs, the two snap groups are merged.
-
-### Pre-existing groups
-
-- The server can send pre-snapped groups in the enter data. Each group is a list of `[col, row]` pairs.
-- The first piece in a group is the anchor. Other pieces are positioned relative to the anchor, matching its rotation.
+- All snap-group state (position, rotation, membership) is owned by the server. The frontend never generates piece positions or rotations for pre-existing
+  groups; it just renders what it receives.
+- On enter, the server sends every piece as its own single-piece group plus whatever merged groups already exist from prior hacker activity (`JigsawGroup`
+  objects with `id`, `pieces: [{column, row}]`, `rotation`, `x`, `y`).
+- `(x, y)` on a group is the pivot in canvas coordinates: the centroid of the group pieces' body centers in grid-rotated space. Each piece's world body center =
+  `pivot + rotate(gridOffsetFromGridCentroid, rotation)`.
 
 ## Stroke Opacity Feedback
 
@@ -169,36 +165,40 @@ outward tabs extend the bounding box asymmetrically.
 - Body centers are used for snap detection and positioning.
 - Body centers are used for rotation.
 
-## Piece Configuration Data Model
+## Data Model
 
-Each piece is described by a `PieceConfig`:
+`PieceConfig` describes immutable piece geometry only. Position and rotation live on the owning
+`JigsawGroup`, not on the piece.
 
 ```typescript
 interface PieceConfig {
-    col: number           // Grid column (0-based)
+    column: number        // Grid column (0-based)
     row: number           // Grid row (0-based)
-    x: number             // Initial canvas x position
-    y: number             // Initial canvas y position
-    rotation: number      // Initial rotation: 0, 90, 180, or 270
     top: EdgeConfig       // Top edge shape
     right: EdgeConfig     // Right edge shape
     bottom: EdgeConfig    // Bottom edge shape
     left: EdgeConfig      // Left edge shape
 }
 
-type EdgeConfig = ShapedEdge | FlatEdge
-
-interface ShapedEdge {
-    shape: ShapeType       // 'invected' | 'embattled' | 'indented' | 'raguly'
-    dir: 'out' | 'in'
+interface EdgeConfig {
+    shape: ShapeType | null   // 'invected' | 'embattled' | 'indented' | 'raguly'; null for flat
+    direction: 'out' | 'in' | 'flat'
 }
 
-interface FlatEdge {
-    dir: 'flat'
+interface JigsawGroup {
+    id: string                               // e.g. "g-0"; survives merges as the smallest id
+    pieces: Array<{ column: number, row: number }>
+    rotation: number                         // 0, 90, 180, 270
+    x: number                                // pivot x in canvas coords
+    y: number                                // pivot y in canvas coords
 }
 ```
 
 ## Server Communication
+
+The server is authoritative for all group state. The client never mutates groups locally; it
+sends intents to the server and re-renders from the resulting broadcasts. Every command produces
+exactly one broadcast: `MOVED`, `ROTATE`, or `SNAP`.
 
 ### Enter flow
 
@@ -207,20 +207,52 @@ interface FlatEdge {
 3. Server responds with `SERVER_JIGSAW_ENTER` containing `JigsawEnterData`:
     - `hacked: boolean` - Whether the puzzle is already solved.
     - `strength: IceStrength` - Difficulty level.
-    - `imageSrc: string` - Path to the puzzle image.
+   - `imageSource: string` - Path to the puzzle image/video.
     - `columns: number` - Grid columns.
     - `rows: number` - Grid rows.
-    - `pieces: PieceConfig[]` - Configuration for every piece.
-    - `groups: PieceGroup[]` - Pre-snapped groups (each is a list of `[col, row]` pairs).
+   - `pieces: PieceConfig[]` - Edge geometry for every piece.
+   - `groups: JigsawGroup[]` - Current snap groups with live pivot positions and rotations.
+
+### Client → server commands
+
+- `/ice/jigsaw/moved` — `{ iceId, groupId, x, y }`. Fired when the user finishes dragging a group.
+- `/ice/jigsaw/rotate` — `{ iceId, groupId, rotation }`. Fired when the user rotates a group; rotation is the new absolute value (0/90/180/270).
+
+Commands for a `groupId` that no longer exists (already absorbed by another hacker's snap) are dropped silently.
+
+### Server → clients broadcasts (`/topic/ice/{iceId}`)
+
+- `SERVER_JIGSAW_MOVED` — `{ groupId, x, y }`. The move didn't trigger a snap; update that group's pivot.
+- `SERVER_JIGSAW_ROTATE` — `{ groupId, rotation }`. The rotation didn't trigger a snap; update that group's rotation.
+- `SERVER_JIGSAW_SNAP` — `{ survivingGroupId, absorbedGroupIds, pieces, rotation, x, y }`. One or more groups snapped into the surviving group. `pieces` is the
+  full piece membership of the surviving group; `absorbedGroupIds` is the complete list of groups removed in this settle pass (including transitive/bridge
+  snaps).
+- `SERVER_ICE_HACKED` — Puzzle solved. The frontend plays the hacked UI and the run progresses after a 4-second delay on the backend.
+- `SERVER_RESET_ICE` — Triggers `processIceReset()` on the ice manager, which closes the connection.
+
+### Snap engine (server)
+
+After each `moved` or `rotate`, the server runs a settle loop seeded on the changed group:
+
+1. Find every other group whose rotation matches the seed and whose grid-neighbour piece lies within **15 px** Chebyshev distance of its expected body-center
+   position.
+2. Pick the closest candidate's positional correction and apply it to the seed (so the merged geometry lands on exact grid positions).
+3. Merge the seed with every in-tolerance neighbour in a single pass (bridge snaps collapse multiple groups at once).
+4. The merged group keeps the smallest `id` (string compare) of the participants, and its pivot becomes the centroid of the merged pieces' world body centers.
+5. Repeat with the merged group as the new seed until no more snaps trigger.
+
+If no merges happened the server sends `MOVED` or `ROTATE`; otherwise it sends a single `SNAP` with the final surviving group state.
 
 ### Completion
 
-- `SERVER_ICE_HACKED` action is defined but not yet implemented.
-- The `solved` flag exists on the ice manager but completion detection is not yet wired up.
+- Puzzle is solved when `groups.size == 1 && groups[0].rotation == 0`.
+- The server then marks the ICE hacked and schedules `SERVER_ICE_HACKED` via `HackedUtil` with a 4-second delay (`IceHackState.HACKED`).
+- Further `moved` / `rotate` commands on a hacked ICE are ignored.
 
-### Reset
+### Persistence
 
-- `SERVER_RESET_ICE` triggers `processIceReset()` on the ice manager, which closes the connection.
+- `JigsawIceStatus` is stored in MongoDB (one document per ICE layer, indexed by `layerId`).
+- `JigsawService.findOrCreateIceByLayerId` creates the status on first access; `resetIceByLayerId` deletes it and broadcasts `SERVER_RESET_ICE`.
 
 ## UI Layout
 
@@ -262,9 +294,6 @@ interface JigsawUiState {
 
 ## Not Yet Implemented
 
-- **Completion detection**: No logic to detect when all pieces are in a single snap group at correct positions and rotation 0.
-- **Server-side puzzle logic**: The backend directory exists but is empty. Currently the frontend generates all piece configs, positions, and shapes locally (
-  simulating the server response).
 - **Hacked state handling**: `enterHacked()` is called when `data.hacked` is true, but the jigsaw-specific completion UI is not implemented.
 - **Terminal intro sequence**: A cinematic intro sequence with timed messages is commented out (connecting, analyzing, pattern fragmentation, exploit success,
   puzzle online). Currently skipped - puzzle shows immediately.
