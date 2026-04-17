@@ -4,7 +4,7 @@ import {GenericIceManager} from "../common/GenericIceManager";
 import {JigsawCanvas} from "./canvas/JigsawCanvas";
 import {TERMINAL_CLEAR} from "../../../common/terminal/TerminalReducer";
 import {JIGSAW_BEGIN} from "./reducer/JigsawUiStateReducer";
-import {JigsawEnterData} from "./JigsawServerActionProcessor";
+import {JigsawEnterData, JigsawMovedPayload, JigsawRotatePayload, JigsawSnapPayload} from "./JigsawServerActionProcessor";
 
 export interface LoadedMedia {
     texture: Texture
@@ -78,7 +78,7 @@ class JigsawIceManager extends GenericIceManager {
         // handler in JigsawCanvas for clips whose end doesn't match their start.
         const smoothLoop = false
 
-        loadMedia(data.imageSrc, smoothLoop).then(async media => {
+        loadMedia(data.imageSource, smoothLoop).then(async media => {
             this.media = media
             this.jigsawCanvas = await JigsawCanvas.create(data, this.dispatch, this.store, media)
         }).catch(err => {
@@ -90,6 +90,22 @@ class JigsawIceManager extends GenericIceManager {
     getVideoElement(): HTMLVideoElement | null {
         const el = this.media?.sourceElement
         return el instanceof HTMLVideoElement ? el : null
+    }
+
+    onGroupMoved(data: JigsawMovedPayload) {
+        this.jigsawCanvas?.onGroupMoved(data)
+    }
+
+    onGroupRotated(data: JigsawRotatePayload) {
+        this.jigsawCanvas?.onGroupRotated(data)
+    }
+
+    onSnap(data: JigsawSnapPayload) {
+        this.jigsawCanvas?.onSnap(data)
+    }
+
+    iceHacked() {
+        this.solved = true
     }
 }
 

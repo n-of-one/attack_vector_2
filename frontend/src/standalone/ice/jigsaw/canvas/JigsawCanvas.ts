@@ -1,10 +1,12 @@
 import {Dispatch, Store} from "redux";
 import {Application, ColorMatrixFilter, Container, FederatedPointerEvent, FederatedWheelEvent, Rectangle, Sprite, Texture,} from "pixi.js";
-import {JigsawEnterData, PieceGroup} from "../JigsawServerActionProcessor";
+import {JigsawEnterData, JigsawMovedPayload, JigsawRotatePayload, JigsawSnapPayload} from "../JigsawServerActionProcessor";
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay";
 import {SnapGroupDisplay} from "./SnapGroupDisplay";
-import {calculatePieceDimensions, IMAGE_HEIGHT, IMAGE_WIDTH, PUZZLE_SCALE} from "../component/JigsawShapes";
+import {calculatePieceDimensions, Group, IMAGE_HEIGHT, IMAGE_WIDTH, PUZZLE_SCALE} from "../component/JigsawShapes";
 import {LoadedMedia} from "../JigsawIceManager";
+import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
+import {ice} from "../../../StandaloneGlobals";
 
 export const CANVAS_HEIGHT = 928;
 export const CANVAS_WIDTH = 1880;
@@ -15,12 +17,13 @@ export class JigsawCanvas {
     private readonly store: Store
     private readonly dispatch: Dispatch
     private readonly piecesByLocation: Map<string, JigsawPieceDisplay>
+    private readonly groupsById: Map<string, SnapGroupDisplay> = new Map()
 
     private readonly piecesLayer: Container
     private readonly topLayer: Container
 
     private rotating: boolean = false
-    private draggingGroup: SnapGroupDisplay | null = null
+    private draggingGroupId: string | null = null
     private dragOffsetX: number = 0
     private dragOffsetY: number = 0
 
@@ -73,21 +76,16 @@ export class JigsawCanvas {
         this.piecesByLocation = new Map(
             data.pieces.map(config => {
                 const display = new JigsawPieceDisplay({
-                    col: config.col, row: config.row, config,
+                    column: config.column, row: config.row, config,
                     sharedTexture: media.texture,
                     sourceWidth: media.width, sourceHeight: media.height,
                     puzzleCols, puzzleRows, pieceWidth, pieceHeight,
                 })
-                return [`${config.col}:${config.row}`, display]
+                return [`${config.column}:${config.row}`, display]
             })
         )
 
-        const groupedPieces = this.applyGroups(data.groups)
-        for (const piece of this.piecesByLocation.values()) {
-            if (!groupedPieces.has(piece)) {
-                new SnapGroupDisplay(new Set([piece]), this)
-            }
-        }
+        this.applyGroups(data.groups)
 
         this.registerEventHandlers()
         this.installVideoLoopFader(media)
@@ -193,43 +191,46 @@ export class JigsawCanvas {
 
     addSnapGroup(group: SnapGroupDisplay) {
         this.piecesLayer.addChild(group.container)
+        this.groupsById.set(group.id, group)
     }
 
     removeSnapGroup(group: SnapGroupDisplay) {
         if (group.container.parent) {
             group.container.parent.removeChild(group.container)
         }
+        if (this.groupsById.get(group.id) === group) {
+            this.groupsById.delete(group.id)
+        }
     }
 
-    private applyGroups(groups: PieceGroup[]): Set<JigsawPieceDisplay> {
-        const groupedPieces = new Set<JigsawPieceDisplay>()
-
+    private applyGroups(groups: Group[]) {
         for (const group of groups) {
-            if (group.length < 2) continue
+            const pieces = new Set<JigsawPieceDisplay>()
 
-            const [anchorCol, anchorRow] = group[0]
-            const anchor = this.piecesByLocation.get(`${anchorCol}:${anchorRow}`)
+            const anchorLoc = group.pieces[0]
+            if (!anchorLoc) continue
+            const anchor = this.piecesByLocation.get(`${anchorLoc.column}:${anchorLoc.row}`)
             if (!anchor) continue
 
-            const pieces = new Set<JigsawPieceDisplay>()
+            // Set anchor's logical rotation; the snap group container holds the actual rotation.
+            anchor.rotation = group.rotation
             pieces.add(anchor)
-            groupedPieces.add(anchor)
 
-            for (let i = 1; i < group.length; i++) {
-                const [col, row] = group[i]
-                const piece = this.piecesByLocation.get(`${col}:${row}`)
+            for (let i = 1; i < group.pieces.length; i++) {
+                const {column, row} = group.pieces[i]
+                const piece = this.piecesByLocation.get(`${column}:${row}`)
                 if (!piece) continue
-
                 piece.positionRelativeTo(anchor)
                 pieces.add(piece)
-                groupedPieces.add(piece)
             }
 
-            const snapGroup = new SnapGroupDisplay(pieces, this)
+            const snapGroup = new SnapGroupDisplay(group.id, pieces, this)
+            // Constructor's recomputePivot put pivot = position = local centroid. Move the group
+            // so that centroid sits at the server-provided (group.x, group.y), then apply rotation.
+            snapGroup.container.position.set(group.x, group.y)
+            snapGroup.container.rotation = (group.rotation * Math.PI) / 180
             snapGroup.updateStrokeOpacity(this.piecesByLocation)
         }
-
-        return groupedPieces
     }
 
     private addBackgroundImage(backgroundLayer: Container, media: LoadedMedia) {
@@ -287,26 +288,35 @@ export class JigsawCanvas {
                 return
             }
             if (ev.button !== 0) return
-            this.draggingGroup = group
+            this.draggingGroupId = group.id
             this.topLayer.addChild(group.container)
             this.dragOffsetX = group.container.position.x - ev.global.x
             this.dragOffsetY = group.container.position.y - ev.global.y
         })
 
         stage.on('pointermove', (ev: FederatedPointerEvent) => {
-            if (!this.draggingGroup) return
-            this.draggingGroup.container.position.set(
+            if (!this.draggingGroupId) return
+            const group = this.groupsById.get(this.draggingGroupId)
+            if (!group) return
+            group.container.position.set(
                 ev.global.x + this.dragOffsetX,
                 ev.global.y + this.dragOffsetY,
             )
         })
 
         const endDrag = () => {
-            if (!this.draggingGroup) return
-            const group = this.draggingGroup
-            this.draggingGroup = null
+            if (!this.draggingGroupId) return
+            const groupId = this.draggingGroupId
+            const group = this.groupsById.get(groupId)
+            this.draggingGroupId = null
+            if (!group) return
             this.piecesLayer.addChild(group.container)
-            group.trySnap(this.piecesByLocation)
+            webSocketConnection.sendObject("/ice/jigsaw/moved", {
+                iceId: ice.id,
+                groupId,
+                x: group.container.position.x,
+                y: group.container.position.y,
+            })
         }
         stage.on('pointerup', endDrag)
         stage.on('pointerupoutside', endDrag)
@@ -331,8 +341,92 @@ export class JigsawCanvas {
     private rotateGroup(snapGroup: SnapGroupDisplay, clockwise: boolean) {
         if (this.rotating) return
         this.rotating = true
+        const groupId = snapGroup.id
         snapGroup.rotate(clockwise, () => {
             this.rotating = false
+            const degrees = (snapGroup.container.rotation * 180) / Math.PI
+            const normalized = ((Math.round(degrees) % 360) + 360) % 360
+            webSocketConnection.sendObject("/ice/jigsaw/rotate", {
+                iceId: ice.id,
+                groupId,
+                rotation: normalized,
+            })
         })
+    }
+
+    /** Inbound: server confirmed/initiated a move of a group. */
+    onGroupMoved(data: JigsawMovedPayload) {
+        if (this.draggingGroupId === data.groupId) return
+        const group = this.groupsById.get(data.groupId)
+        if (!group) return
+        // Pixi semantics: pivot is a point in local (untransformed) coords; position is where
+        // that point lands in the parent. Moving the group changes position, not pivot.
+        group.container.position.set(data.x, data.y)
+    }
+
+    /** Inbound: server confirmed/initiated a rotation of a group. */
+    onGroupRotated(data: JigsawRotatePayload) {
+        const group = this.groupsById.get(data.groupId)
+        if (!group) return
+        const currentDeg = ((Math.round((group.container.rotation * 180) / Math.PI) % 360) + 360) % 360
+        if (currentDeg === data.rotation) return
+        if (this.rotating) return
+        this.rotating = true
+        // Decide direction: rotate the shortest path (+90 = clockwise, -90 = counter).
+        const diff = ((data.rotation - currentDeg) + 360) % 360
+        const clockwise = diff === 90 || diff === 180 // 180 we also do clockwise (two successive rotations not handled; server is the source of truth)
+        group.rotate(clockwise, () => {
+            this.rotating = false
+            // If still off by 180, do a second rotation to land exactly. Avoids sending any outbound frame.
+            const afterDeg = ((Math.round((group.container.rotation * 180) / Math.PI) % 360) + 360) % 360
+            if (afterDeg !== data.rotation) {
+                this.rotating = true
+                group.rotate(clockwise, () => {
+                    this.rotating = false
+                })
+            }
+        })
+    }
+
+    /** Inbound: server fused groups together. Rebuild surviving group from scratch. */
+    onSnap(data: JigsawSnapPayload) {
+        // Cancel any active local drag that involves a participating group.
+        if (this.draggingGroupId === data.survivingGroupId ||
+            (this.draggingGroupId && data.absorbedGroupIds.includes(this.draggingGroupId))) {
+            this.draggingGroupId = null
+        }
+
+        const participatingIds = [data.survivingGroupId, ...data.absorbedGroupIds]
+        const allPieces = new Set<JigsawPieceDisplay>()
+
+        for (const id of participatingIds) {
+            const g = this.groupsById.get(id)
+            if (!g) continue
+            for (const piece of g.pieces) allPieces.add(piece)
+            // Detach pieces from old container so we can hand them to a fresh group.
+            for (const piece of g.pieces) g.container.removeChild(piece.container)
+            this.removeSnapGroup(g)
+            g.container.destroy({children: false})
+        }
+
+        // Choose an anchor from the server-provided pieces list so we position using the
+        // authoritative grid layout (ignoring any local pre-snap offset drift).
+        const anchorLoc = data.pieces[0]
+        const anchor = anchorLoc ? this.piecesByLocation.get(`${anchorLoc.column}:${anchorLoc.row}`) : undefined
+        if (!anchor) return
+
+        anchor.rotation = data.rotation
+
+        for (const loc of data.pieces) {
+            const piece = this.piecesByLocation.get(`${loc.column}:${loc.row}`)
+            if (!piece || piece === anchor) continue
+            piece.positionRelativeTo(anchor)
+        }
+
+        const newGroup = new SnapGroupDisplay(data.survivingGroupId, allPieces, this)
+        // Constructor's recomputePivot placed pivot=position=local centroid; shift/rotate to server state.
+        newGroup.container.position.set(data.x, data.y)
+        newGroup.container.rotation = (data.rotation * Math.PI) / 180
+        newGroup.updateStrokeOpacity(this.piecesByLocation)
     }
 }

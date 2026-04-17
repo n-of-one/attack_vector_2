@@ -1,7 +1,7 @@
 import React from "react"
-import {CORE, LOCK, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
-import { ReactComponent as CopyIcon } from "./svgIcons/9080754_copy.svg";
-import { ReactComponent as PasteIcon } from "./svgIcons/9080712_plus_clipboard.svg";
+import {CORE, JIGSAW_ICE, LOCK, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
+import {ReactComponent as CopyIcon} from "./svgIcons/9080754_copy.svg";
+import {ReactComponent as PasteIcon} from "./svgIcons/9080712_plus_clipboard.svg";
 
 export const COPY_ICON = "COPY_ICON"
 export const PASTE_ICON = "PASTE_ICON"
@@ -32,6 +32,8 @@ const determinePath = (type: string| undefined) => {
         case CORE: return "/img/editor/tabler/9080715_cpu.svg"
         case SCRIPT_CREDITS:
             return "/img/editor/tabler/9080253_bolt.svg"
+        case JIGSAW_ICE:
+            return "/img/editor/tabler/9081239_2_puzzle.svg"
         default: return "unknown-type svg:" + type
     }
 }

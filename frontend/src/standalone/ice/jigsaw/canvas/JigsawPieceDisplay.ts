@@ -29,7 +29,7 @@ const BORDER_COLOR = 0xffffff
 const BORDER_WIDTH = 2.5
 
 export interface JigsawPieceDisplayOptions {
-    col: number
+    column: number
     row: number
     config: PieceConfig
     sharedTexture: Texture
@@ -43,7 +43,7 @@ export interface JigsawPieceDisplayOptions {
 
 export class JigsawPieceDisplay {
 
-    readonly col: number
+    readonly column: number
     readonly row: number
     private readonly pieceWidth: number
     private readonly pieceHeight: number
@@ -68,11 +68,11 @@ export class JigsawPieceDisplay {
 
     constructor(options: JigsawPieceDisplayOptions) {
         const {
-            col, row, config, sharedTexture, sourceWidth, sourceHeight,
+            column, row, config, sharedTexture, sourceWidth, sourceHeight,
             puzzleCols, puzzleRows, pieceWidth, pieceHeight
         } = options
 
-        this.col = col
+        this.column = column
         this.row = row
         this.pieceWidth = pieceWidth
         this.pieceHeight = pieceHeight
@@ -104,7 +104,7 @@ export class JigsawPieceDisplay {
         // appears within this piece's bounding box.
         const cropOffsetX = (sourceWidth - IMAGE_WIDTH) / 2
         const cropOffsetY = (sourceHeight - IMAGE_HEIGHT) / 2
-        const sourceX = cropOffsetX + (col * pieceWidth - this.extensionLeft) / PUZZLE_SCALE
+        const sourceX = cropOffsetX + (column * pieceWidth - this.extensionLeft) / PUZZLE_SCALE
         const sourceY = cropOffsetY + (row * pieceHeight - this.extensionTop) / PUZZLE_SCALE
 
         const sprite = new Sprite(sharedTexture)
@@ -135,7 +135,9 @@ export class JigsawPieceDisplay {
 
         // Pivot on the bounding box center so rotation matches fabric's center-origin behavior.
         this.container.pivot.set(bbCenterLocalX, bbCenterLocalY)
-        this.container.position.set(config.x, config.y)
+        // Position/rotation come from the owning SnapGroupDisplay container; start at identity.
+        this.container.position.set(0, 0)
+        this.container.rotation = 0
 
         // Hit area for per-pixel-like click detection (polygon in local pre-pivot coords).
         this.container.hitArea = new Polygon(polygonPoints)
@@ -143,12 +145,11 @@ export class JigsawPieceDisplay {
         this.container.cursor = 'grab'
         ;(this.container as any).__piece = this
 
-        const borderCount = [col === 0, col === puzzleCols - 1, row === 0, row === puzzleRows - 1]
+        const borderCount = [column === 0, column === puzzleCols - 1, row === 0, row === puzzleRows - 1]
             .filter(Boolean).length
         this.maxNeighborCount = 4 - borderCount
 
-        this.rotation = config.rotation
-        this.container.rotation = (this.rotation * Math.PI) / 180
+        this.rotation = 0
     }
 
     /** World-space body center, computed directly from position/rotation/pivot.
@@ -178,25 +179,23 @@ export class JigsawPieceDisplay {
         }
     }
 
-    /** Position this piece relative to an anchor piece, matching the anchor's rotation. */
+    /** Position this piece relative to an anchor piece in un-rotated grid layout.
+     *  The owning snap group container holds the rotation, so pieces are laid out flat
+     *  here and the parent rotates them as a unit. */
     positionRelativeTo(anchor: JigsawPieceDisplay) {
         this.rotation = anchor.rotation
-        this.container.rotation = (this.rotation * Math.PI) / 180
-
         const anchorCenter = anchor.getBodyCenter()
-        const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[this.rotation]
-        const colOffset = this.col - anchor.col
+        const colOffset = this.column - anchor.column
         const rowOffset = this.row - anchor.row
 
         this.setBodyCenter(
-            anchorCenter.x + colOffset * this.pieceWidth * cos - rowOffset * this.pieceHeight * sin,
-            anchorCenter.y + colOffset * this.pieceWidth * sin + rowOffset * this.pieceHeight * cos,
+            anchorCenter.x + colOffset * this.pieceWidth,
+            anchorCenter.y + rowOffset * this.pieceHeight,
         )
     }
 
     /** Restore an absolute world position after being extracted from a snap group. */
     restoreAbsolutePosition(bodyCenter: { x: number, y: number }) {
-        this.container.rotation = (this.rotation * Math.PI) / 180
         this.setBodyCenter(bodyCenter.x, bodyCenter.y)
     }
 
@@ -207,7 +206,7 @@ export class JigsawPieceDisplay {
         const bodyCenter = this.getBodyCenter()
         const neighborCenter = neighbor.getBodyCenter()
 
-        const colOffset = neighbor.col - this.col
+        const colOffset = neighbor.column - this.column
         const rowOffset = neighbor.row - this.row
         const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[this.rotation]
 
@@ -240,7 +239,7 @@ export class JigsawPieceDisplay {
     }
 
     private extensionSize(edge: EdgeConfig, tabSize: number): number {
-        return edge.dir === 'out' ? tabSize : 0
+        return edge.direction === 'out' ? tabSize : 0
     }
 
     /** Compute line segments for the white border on flat (outer) edges. */
@@ -250,10 +249,10 @@ export class JigsawPieceDisplay {
         const oY = this.extensionTop
         const pw = this.pieceWidth
         const ph = this.pieceHeight
-        if (config.top.dir === 'flat') segments.push([oX, oY, oX + pw, oY])
-        if (config.right.dir === 'flat') segments.push([oX + pw, oY, oX + pw, oY + ph])
-        if (config.bottom.dir === 'flat') segments.push([oX + pw, oY + ph, oX, oY + ph])
-        if (config.left.dir === 'flat') segments.push([oX, oY + ph, oX, oY])
+        if (config.top.direction === 'flat') segments.push([oX, oY, oX + pw, oY])
+        if (config.right.direction === 'flat') segments.push([oX + pw, oY, oX + pw, oY + ph])
+        if (config.bottom.direction === 'flat') segments.push([oX + pw, oY + ph, oX, oY + ph])
+        if (config.left.direction === 'flat') segments.push([oX, oY + ph, oX, oY])
         return segments
     }
 }

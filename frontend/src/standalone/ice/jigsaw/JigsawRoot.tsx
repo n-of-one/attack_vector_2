@@ -12,30 +12,11 @@ import {jigsawIceManager} from "./JigsawIceManager";
 import {initJigsawServerActions} from "./JigsawServerActionProcessor";
 import {Page} from "../../../common/menu/pageReducer";
 import {initGenericAppActions} from "../../../common/server/GenericAppActionProcessor";
-import {IceStrength} from "../../../common/model/IceStrength";
-import {generatePieceConfigs} from "./component/JigsawShapes";
-import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./canvas/JigsawCanvas";
 
 
 interface Props {
     iceId: string
     externalHack: boolean,
-}
-
-interface PuzzlePieces {
-    columns: number,
-    rows: number,
-}
-
-
-const ICE_DIFFICULTY: Record<IceStrength, PuzzlePieces> = {
-    [IceStrength.UNKNOWN]: {columns: 5, rows: 3},
-    [IceStrength.VERY_WEAK]: {columns: 5, rows: 3},
-    [IceStrength.WEAK]: {columns: 7, rows: 4},
-    [IceStrength.AVERAGE]: {columns: 10, rows: 6},
-    [IceStrength.STRONG]: {columns: 13, rows: 8},
-    [IceStrength.VERY_STRONG]: {columns: 17, rows: 10},
-    [IceStrength.ONYX]: {columns: 21, rows: 12},
 }
 
 export class JigsawRoot extends Component<Props> {
@@ -57,45 +38,16 @@ export class JigsawRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
-        // webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
-        //     webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-        //     webSocketConnection.sendObject("/ice/jigsaw/enter", {iceId: ice.id})
-        // });
+        webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
+            webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
+            webSocketConnection.sendObject("/ice/jigsaw/enter", {iceId: ice.id})
+        });
 
         jigsawIceManager.init(this.store, props.externalHack);
         terminalManager.init(this.store)
-        // initGenericServerActions({fontSize: 12})
-        // initGenericAppActions()
-        // initJigsawServerActions()
-
-        // DEV: simulate server enter response with hardcoded data
-
-        const {columns, rows} = ICE_DIFFICULTY[IceStrength.AVERAGE]
-        const imageSrcFromQuery = new URLSearchParams(window.location.search).get('imageSrc')
-        setTimeout(() => {
-            jigsawIceManager.enter({
-                hacked: false,
-                strength: IceStrength.AVERAGE,
-                // imageSrc: "/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png",
-                // imageSrc: "/img/frontier/ice/jigsaw/chatgpt-angel-2.png",
-                // imageSrc: "/img/frontier/ice/jigsaw/anubis.png",
-                // imageSrc: "/img/frontier/ice/jigsaw/gemini-aker.png",
-                // imageSrc: "/img/frontier/ice/jigsaw/2026-04-07_22-29-34.mp4",
-                // imageSrc: "/img/frontier/ice/jigsaw/7020070_City_Sun_1920x1080.mp4",
-                // imageSrc: "https://localhost/local/7020070_City_Sun_1920x1080.mp4",
-                imageSrc: imageSrcFromQuery ?? "/img/frontier/ice/jigsaw/7020070_City_Sun_1920x1080.mp4",
-                // imageSrc: "/img/frontier/ice/jigsaw/pexels-marcin-jozwiak-199600-13835514.jpg",
-                // imageSrc: "/img/frontier/ice/jigsaw/barbaraalane-fractal-2035686.jpg",
-                columns: columns,
-                rows: rows,
-                pieces: generatePieceConfigs(columns, rows, CANVAS_WIDTH, CANVAS_HEIGHT),
-                groups: [
-                    // Array.from({length: devColumns * devRows}, (_, i) =>
-                    //     [i % devColumns, Math.floor(i / devColumns)] as [number, number]
-                    // ),
-                ],
-            })
-        }, 200)
+        initGenericServerActions({fontSize: 12})
+        initGenericAppActions()
+        initJigsawServerActions()
     }
 
     render() {

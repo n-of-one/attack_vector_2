@@ -3,6 +3,7 @@ package org.n1.av2.site.entity
 import org.n1.av2.editor.*
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.app.status_light.StatusLightLayer
+import org.n1.av2.layer.ice.jigsaw.JigsawIceLayer
 import org.n1.av2.layer.ice.netwalk.NetwalkIceLayer
 import org.n1.av2.layer.ice.password.PasswordIceLayer
 import org.n1.av2.layer.ice.sweeper.SweeperIceLayer
@@ -215,6 +216,7 @@ class NodeEntityService(
             LayerType.NETWALK_ICE -> NetwalkIceLayer(layerId, level, defaultName)
             LayerType.TAR_ICE -> TarIceLayer(layerId, level, defaultName)
             LayerType.SWEEPER_ICE -> SweeperIceLayer(layerId, level, defaultName)
+            LayerType.JIGSAW_ICE -> JigsawIceLayer(layerId, level, defaultName)
             LayerType.OS -> error("Cannot add OS")
             LayerType.STATUS_LIGHT -> createStatusLightLayer(layerId, LayerType.STATUS_LIGHT, level, defaultName, "Status", "off", "on")
             LayerType.LOCK -> createStatusLightLayer(layerId, LayerType.LOCK, level, defaultName, "Lock status", "locked", "unlocked")

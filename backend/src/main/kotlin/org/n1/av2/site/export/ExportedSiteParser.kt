@@ -143,7 +143,8 @@ class ExportedSiteParser {
                 LayerType.TAR_ICE,
                 LayerType.PASSWORD_ICE,
                 LayerType.WORD_SEARCH_ICE,
-                LayerType.SWEEPER_ICE -> mapIceLayer(input, layerType, id, level, name, note)
+                LayerType.SWEEPER_ICE,
+                LayerType.JIGSAW_ICE -> mapIceLayer(input, layerType, id, level, name, note)
             }
         } catch (_: IllegalArgumentException) {
             if (typeText == "SHUTDOWN_ACCELERATOR") {

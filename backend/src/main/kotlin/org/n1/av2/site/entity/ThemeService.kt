@@ -25,6 +25,7 @@ class ThemeService {
         LayerType.NETWALK_ICE -> "Sanrachana" // structure in Hindi
         LayerType.TAR_ICE -> "Tar" // after the substance tar in English
         LayerType.SWEEPER_ICE -> "Visphotak" // explosive in Hindi
+        LayerType.JIGSAW_ICE -> "Paheli" // puzzle in Hindi
     }
 
     fun iceSimpleName(type: LayerType): String = when (type) {
@@ -34,6 +35,7 @@ class ThemeService {
         LayerType.NETWALK_ICE -> "netwalk"
         LayerType.TAR_ICE -> "tar"
         LayerType.SWEEPER_ICE -> "minesweeper"
+        LayerType.JIGSAW_ICE -> "jigsaw"
         else -> error("Not ICE: $type")
     }
 

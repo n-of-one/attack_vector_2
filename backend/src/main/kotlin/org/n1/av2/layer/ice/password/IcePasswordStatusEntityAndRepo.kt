@@ -34,6 +34,7 @@ fun String.determineIceType(): LayerType {
         "wordSearch" -> LayerType.WORD_SEARCH_ICE
         "tar" -> LayerType.TAR_ICE
         "sweeper" -> LayerType.SWEEPER_ICE
+        "jigsaw" -> LayerType.JIGSAW_ICE
         else -> error("Unknown ice type for ID: ${this}")
     }
 }

@@ -3,30 +3,41 @@
 export type ShapeType = 'invected' | 'embattled' | 'indented' | 'raguly'
 export type EdgeType = 'top' | 'right' | 'bottom' | 'left'
 
-export interface ShapedEdge {
-    shape: ShapeType
-    dir: 'out' | 'in'
+/**
+ * Flat edge-structure used on the wire (matches backend EdgeConfig exactly).
+ *  - flat (border):  {shape: null, direction: 'flat'}
+ *  - shaped edge:    {shape: ShapeType, direction: 'in' | 'out'}
+ */
+export interface EdgeConfig {
+    shape: ShapeType | null
+    direction: 'flat' | 'in' | 'out'
 }
 
-export interface FlatEdge {
-    dir: 'flat'
-}
-
-export type EdgeConfig = ShapedEdge | FlatEdge
-
+/**
+ * Immutable geometry for a puzzle piece. Position and rotation live on the owning Group, not here.
+ */
 export interface PieceConfig {
-    col: number
+    column: number
     row: number
-    x: number
-    y: number
-    rotation: number // 0, 90, 180, or 270
     top: EdgeConfig
     right: EdgeConfig
     bottom: EdgeConfig
     left: EdgeConfig
 }
 
-export const FLAT: FlatEdge = {dir: 'flat'}
+/**
+ * A snap-group of one or more pieces. Initially every piece is its own single-piece group.
+ * All position/rotation state lives here. The pieces array is a list of grid positions.
+ */
+export interface Group {
+    id: string
+    pieces: Array<{ column: number, row: number }>
+    rotation: number // 0, 90, 180, 270
+    x: number
+    y: number
+}
+
+export const FLAT: EdgeConfig = {shape: null, direction: 'flat'}
 
 // Canonical point: [along, perp] relative to an edge
 type CanonicalPoint = [number, number]
@@ -38,8 +49,6 @@ export const PUZZLE_SCALE = 0.8
 
 const TAB_HEIGHT_RATIO = 0.08
 const EDGE_MARGIN_RATIO = 0.15
-
-const ROTATIONS = [0, 90, 180, 270]
 
 export function calculatePieceDimensions(cols: number, rows: number): { pieceWidth: number, pieceHeight: number } {
     return {
@@ -141,8 +150,6 @@ export const SHAPES: Record<ShapeType, ShapeGenerator> = {
     },
 }
 
-const ALL_SHAPES: ShapeType[] = ['invected', 'embattled', 'indented', 'raguly']
-
 // --- Edge mapper ---
 // Map canonical (along, perp) to canvas (x, y).
 // Positive perp points outward from the piece center.
@@ -184,12 +191,12 @@ export function buildPiecePath(originX: number, originY: number, pieceWidth: num
         const length = edgeLength(name, pieceWidth, pieceHeight)
         const tabHeight = length * TAB_HEIGHT_RATIO
 
-        if (edgeConfig.dir === 'flat') {
+        if (edgeConfig.direction === 'flat') {
             const [endX, endY] = mapper(length, 0)
             pathString += ` L ${round(endX)} ${round(endY)}`
         } else {
-            const direction = edgeConfig.dir === 'out' ? 1 : -1
-            const points = SHAPES[edgeConfig.shape](length, tabHeight)
+            const direction = edgeConfig.direction === 'out' ? 1 : -1
+            const points = SHAPES[edgeConfig.shape!](length, tabHeight)
             for (const [along, perp] of points) {
                 const [x, y] = mapper(along, perp * direction)
                 pathString += ` L ${round(x)} ${round(y)}`
@@ -220,12 +227,12 @@ export function buildPiecePoints(originX: number, originY: number, pieceWidth: n
         const length = edgeLength(name, pieceWidth, pieceHeight)
         const tabHeight = length * TAB_HEIGHT_RATIO
 
-        if (edgeConfig.dir === 'flat') {
+        if (edgeConfig.direction === 'flat') {
             const [endX, endY] = mapper(length, 0)
             out.push(round(endX), round(endY))
         } else {
-            const direction = edgeConfig.dir === 'out' ? 1 : -1
-            const points = SHAPES[edgeConfig.shape](length, tabHeight)
+            const direction = edgeConfig.direction === 'out' ? 1 : -1
+            const points = SHAPES[edgeConfig.shape!](length, tabHeight)
             for (const [along, perp] of points) {
                 const [x, y] = mapper(along, perp * direction)
                 out.push(round(x), round(y))
@@ -252,15 +259,15 @@ export function buildBorderPath(originX: number, originY: number, pieceWidth: nu
         {name: 'left', edgeConfig: config.left},
     ]
 
-    const hasBorder = edges.some(e => e.edgeConfig.dir === 'flat')
+    const hasBorder = edges.some(e => e.edgeConfig.direction === 'flat')
     if (!hasBorder) return null
 
     // Compute the full bounding box to match the main path.
     // The main path always starts at (0,0) min because extensions push the origin inward.
     const vTabHeight = pieceHeight * TAB_HEIGHT_RATIO // tab height for vertical edges (left/right)
     const hTabHeight = pieceWidth * TAB_HEIGHT_RATIO  // tab height for horizontal edges (top/bottom)
-    const extRight = config.right.dir === 'out' ? vTabHeight : 0
-    const extBottom = config.bottom.dir === 'out' ? hTabHeight : 0
+    const extRight = config.right.direction === 'out' ? vTabHeight : 0
+    const extBottom = config.bottom.direction === 'out' ? hTabHeight : 0
     const maxX = round(originX + pieceWidth + extRight)
     const maxY = round(originY + pieceHeight + extBottom)
 
@@ -268,7 +275,7 @@ export function buildBorderPath(originX: number, originY: number, pieceWidth: nu
     let pathString = `M 0 0 M ${maxX} ${maxY}`
 
     for (const {name, edgeConfig} of edges) {
-        if (edgeConfig.dir !== 'flat') continue
+        if (edgeConfig.direction !== 'flat') continue
         const mapper = getEdgeMapper(name, originX, originY, pieceWidth, pieceHeight)
         const length = edgeLength(name, pieceWidth, pieceHeight)
         const [startX, startY] = mapper(0, 0)
@@ -279,212 +286,5 @@ export function buildBorderPath(originX: number, originY: number, pieceWidth: nu
     return pathString
 }
 
-// --- Grid generation ---
-
-export function flipDir(edge: EdgeConfig): EdgeConfig {
-    if (edge.dir === 'flat') return FLAT
-    return {shape: edge.shape, dir: edge.dir === 'out' ? 'in' : 'out'}
-}
-
-function randomShape(): ShapeType {
-    return ALL_SHAPES[Math.floor(Math.random() * ALL_SHAPES.length)]
-}
-
-function randomDir(): 'out' | 'in' {
-    return Math.random() < 0.5 ? 'out' : 'in'
-}
-
-export function generatePieceConfigs(cols: number, rows: number, canvasWidth: number, canvasHeight: number): PieceConfig[] {
-    const {pieceWidth, pieceHeight} = calculatePieceDimensions(cols, rows)
-    const maxTabSize = Math.max(pieceWidth, pieceHeight) * TAB_HEIGHT_RATIO
-
-    // Pre-generate internal edges
-    // horizontalEdges[row][col] = edge between (col, row).right and (col+1, row).left
-    const horizontalEdges: ShapedEdge[][] = []
-    for (let row = 0; row < rows; row++) {
-        horizontalEdges[row] = []
-        for (let col = 0; col < cols - 1; col++) {
-            horizontalEdges[row][col] = {shape: randomShape(), dir: randomDir()}
-        }
-    }
-
-    // verticalEdges[row][col] = edge between (col, row).bottom and (col, row+1).top
-    const verticalEdges: ShapedEdge[][] = []
-    for (let row = 0; row < rows - 1; row++) {
-        verticalEdges[row] = []
-        for (let col = 0; col < cols; col++) {
-            verticalEdges[row][col] = {shape: randomShape(), dir: randomDir()}
-        }
-    }
-
-    const positions = generateSurroundingPositions(cols * rows, pieceWidth, pieceHeight, maxTabSize, canvasWidth, canvasHeight)
-
-    const pieces: PieceConfig[] = []
-
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            const top: EdgeConfig = row === 0 ? FLAT : flipDir(verticalEdges[row - 1][col])
-            const bottom: EdgeConfig = row === rows - 1 ? FLAT : verticalEdges[row][col]
-            const left: EdgeConfig = col === 0 ? FLAT : flipDir(horizontalEdges[row][col - 1])
-            const right: EdgeConfig = col === cols - 1 ? FLAT : horizontalEdges[row][col]
-
-            const {x, y} = positions[row * cols + col]
-            const rotation = ROTATIONS[Math.floor(Math.random() * 4)]
-
-            pieces.push({col, row, x, y, rotation, top, right, bottom, left})
-        }
-    }
-
-    return pieces
-}
-
-interface Rect {
-    x: number
-    y: number
-    w: number
-    h: number
-}
-
-/**
- * Generate positions for pieces distributed around the central puzzle image.
- * Defines 4 zones (left, right, top, bottom) around the centered puzzle area,
- * then distributes pieces across zones proportionally to zone area.
- * Pieces may partially overlap the puzzle image when space on a side is tight.
- */
-function generateSurroundingPositions(
-    count: number, pieceWidth: number, pieceHeight: number, maxTabSize: number,
-    canvasWidth: number, canvasHeight: number
-): Array<{ x: number, y: number }> {
-
-    // The puzzle display area is the scaled image size, centered on the canvas
-    const displayWidth = IMAGE_WIDTH * PUZZLE_SCALE
-    const displayHeight = IMAGE_HEIGHT * PUZZLE_SCALE
-    const puzzleCenterX = canvasWidth / 2
-    const puzzleCenterY = canvasHeight / 2
-
-    const puzzleLeft = puzzleCenterX - displayWidth / 2
-    const puzzleRight = puzzleCenterX + displayWidth / 2
-    const puzzleTop = puzzleCenterY - displayHeight / 2
-    const puzzleBottom = puzzleCenterY + displayHeight / 2
-
-    // Piece placement margin from canvas edges
-    const edgeMargin = maxTabSize
-
-    // Half-extent of a piece (worst case with tabs and rotation)
-    const maxPieceDim = Math.max(pieceWidth, pieceHeight)
-    const halfExtent = (maxPieceDim + 2 * maxTabSize) / 2
-
-    // Define 4 zones around the puzzle area.
-    // Left and right zones span full canvas height; top and bottom fill the gap between them.
-    // Use Math.max to ensure zones always have at least some minimum width/height
-    // so that every side gets pieces even when space is tight (partial overlap is OK).
-    // When there IS enough space, push zones away from the puzzle edge by halfExtent
-    // so pieces don't overlap the central image.
-    const minZoneSize = Math.max(pieceWidth, pieceHeight) * 0.5
-
-    // For each side, compute the "safe" zone boundary that avoids puzzle overlap,
-    // but fall back to the puzzle edge when space is too tight.
-    const leftNaturalW = puzzleLeft - edgeMargin
-    const leftSafeW = puzzleLeft - halfExtent - edgeMargin
-    const leftW = leftSafeW >= minZoneSize ? leftSafeW : Math.max(minZoneSize, leftNaturalW)
-
-    const rightNaturalX = puzzleRight
-    const rightSafeX = puzzleRight + halfExtent
-    const rightNaturalW = canvasWidth - edgeMargin - puzzleRight
-    const rightSafeW = canvasWidth - edgeMargin - rightSafeX
-    const useRightSafe = rightSafeW >= minZoneSize
-    const rightX = useRightSafe ? rightSafeX : Math.min(rightNaturalX, canvasWidth - edgeMargin - minZoneSize)
-    const rightW = useRightSafe ? rightSafeW : Math.max(minZoneSize, rightNaturalW)
-
-    const topNaturalH = puzzleTop - edgeMargin
-    const topSafeH = puzzleTop - halfExtent - edgeMargin
-    const topH = topSafeH >= minZoneSize ? topSafeH : Math.max(minZoneSize, topNaturalH)
-
-    const bottomNaturalY = puzzleBottom
-    const bottomSafeY = puzzleBottom + halfExtent
-    const bottomNaturalH = canvasHeight - edgeMargin - puzzleBottom
-    const bottomSafeH = canvasHeight - edgeMargin - bottomSafeY
-    const useBottomSafe = bottomSafeH >= minZoneSize
-    const bottomY = useBottomSafe ? bottomSafeY : Math.min(bottomNaturalY, canvasHeight - edgeMargin - minZoneSize)
-    const bottomH = useBottomSafe ? bottomSafeH : Math.max(minZoneSize, bottomNaturalH)
-
-    const zones: Rect[] = [
-        // Left
-        {
-            x: edgeMargin, y: edgeMargin,
-            w: leftW,
-            h: canvasHeight - edgeMargin * 2
-        },
-        // Right
-        {
-            x: rightX, y: edgeMargin,
-            w: rightW,
-            h: canvasHeight - edgeMargin * 2
-        },
-        // Top (between left and right zones)
-        {
-            x: puzzleLeft, y: edgeMargin,
-            w: Math.max(minZoneSize, puzzleRight - puzzleLeft),
-            h: topH
-        },
-        // Bottom (between left and right zones)
-        {
-            x: puzzleLeft, y: bottomY,
-            w: Math.max(minZoneSize, puzzleRight - puzzleLeft),
-            h: bottomH
-        },
-    ]
-
-    // Distribute pieces across zones proportionally to zone area
-    const totalArea = zones.reduce((sum, z) => sum + z.w * z.h, 0)
-    const positions: Array<{ x: number, y: number }> = []
-
-    let remaining = count
-    for (let i = 0; i < zones.length; i++) {
-        const zone = zones[i]
-        const zonePieceCount = (i === zones.length - 1)
-            ? remaining  // last zone gets whatever is left
-            : Math.round(count * (zone.w * zone.h) / totalArea)
-        remaining -= zonePieceCount
-
-        // Determine grid dimensions to spread pieces evenly across the zone.
-        // Choose grid rows/cols to match the zone's aspect ratio while fitting zonePieceCount cells.
-        const zoneAspect = zone.w / zone.h
-        const gridRows = Math.max(1, Math.round(Math.sqrt(zonePieceCount / zoneAspect)))
-        const gridCols = Math.max(1, Math.ceil(zonePieceCount / gridRows))
-
-        // Spacing: spread cells evenly across the full zone
-        const spacingX = gridCols > 1 ? zone.w / gridCols : 0
-        const spacingY = gridRows > 1 ? zone.h / gridRows : 0
-
-        // Small jitter so pieces don't look perfectly aligned
-        const jitterX = spacingX * 0.15
-        const jitterY = spacingY * 0.15
-
-        for (let j = 0; j < zonePieceCount; j++) {
-            const gridCol = j % gridCols
-            const gridRow = Math.floor(j / gridCols)
-            // Center each piece within its cell
-            const baseX = zone.x + (gridCol + 0.5) * spacingX
-            const baseY = zone.y + (gridRow + 0.5) * spacingY
-            positions.push({
-                x: baseX + (Math.random() - 0.5) * 2 * jitterX,
-                y: baseY + (Math.random() - 0.5) * 2 * jitterY,
-            })
-        }
-    }
-
-    // Shuffle so pieces from the same grid row aren't all in the same zone
-    for (let i = positions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [positions[i], positions[j]] = [positions[j], positions[i]]
-    }
-
-    // Clamp all positions so pieces stay fully on canvas.
-    for (const pos of positions) {
-        pos.x = Math.max(halfExtent, Math.min(canvasWidth - halfExtent, pos.x))
-        pos.y = Math.max(halfExtent, Math.min(canvasHeight - halfExtent, pos.y))
-    }
-
-    return positions
-}
+// Piece/edge generation has moved to the backend (JigsawCreator.kt); the client receives a
+// pre-generated PieceConfig[] + initial Group[] in the SERVER_JIGSAW_ENTER payload.

@@ -121,6 +121,11 @@ enum class ServerActions {
     SERVER_SWEEPER_RESET_STOP,          // sent to everyone when someone stops reset
     SERVER_SWEEPER_RESET_COMPLETE,      // sent to everyone when someone completes reset
 
+    SERVER_JIGSAW_ENTER,                // sent to hacker that hacks this ice, first message of Ice window
+    SERVER_JIGSAW_MOVED,                // some hacker finished dragging a group of pieces
+    SERVER_JIGSAW_ROTATE,               // some hacker rotated a group of pieces
+    SERVER_JIGSAW_SNAP,                 // a move/rotate caused one or more groups to merge
+
     SERVER_REDIRECT_CONNECT_ICE,        // open a new window to connect to ICE auth UI
     SERVER_REDIRECT_CONNECT_APP,        // open a new window to connect to an app
 

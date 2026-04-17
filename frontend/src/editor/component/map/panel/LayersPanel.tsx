@@ -2,6 +2,7 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import {
     CORE,
+    JIGSAW_ICE,
     KEYSTORE,
     LOCK,
     NETWALK_ICE,
@@ -12,7 +13,8 @@ import {
     SWEEPER_ICE,
     TANGLE_ICE,
     TAR_ICE,
-    TEXT, TIMER_ADJUSTER,
+    TEXT,
+    TIMER_ADJUSTER,
     TRIPWIRE,
     WORD_SEARCH_ICE
 } from "../../../../common/enums/LayerTypes"
@@ -74,6 +76,7 @@ export const LayersPanel = () => {
                     {regular(WORD_SEARCH_ICE, "NavajoWhite")}
                     {regular(TAR_ICE, "NavajoWhite")}
                     {regular(SWEEPER_ICE, "NavajoWhite")}
+                    {regular(JIGSAW_ICE, "NavajoWhite")}
                     {regular(LOCK, "royalblue")}
                     {regular(STATUS_LIGHT, "royalblue")}
                 </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import {useDispatch, useSelector} from "react-redux"
 import {LayerOsPanel} from "./type/panel/app/LayerOsPanel"
 import {findElementById} from "../../../../../common/util/Immutable"
-import {LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
+import {JIGSAW_ICE, LayerType, NETWALK_ICE, OS, PASSWORD_ICE, TANGLE_ICE, TEXT, WORD_SEARCH_ICE} from "../../../../../common/enums/LayerTypes"
 import {LayerTextPanel} from "./type/panel/app/LayerTextPanel"
 import {SilentLink} from "../../../../../common/component/SilentLink"
 import {LayerIcePasswordPanel} from "./type/panel/ice/LayerIcePasswordPanel"
@@ -45,6 +45,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerIceTarPanel node={node} layer={layer}/>
         case LayerType.SWEEPER_ICE:
             return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE Minesweeper"/>
+        case JIGSAW_ICE:
+            return <LayerSimpleIcePanel node={node} layer={layer} typeDisplay="ICE Jigsaw"/>
         case LayerType.STATUS_LIGHT:
             return <LayerStatusLightPanel node={node} layer={layer}/>
         case LayerType.LOCK:

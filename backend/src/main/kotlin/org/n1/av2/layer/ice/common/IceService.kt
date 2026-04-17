@@ -1,6 +1,8 @@
 package org.n1.av2.layer.ice.common
 
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.ice.jigsaw.JigsawIceLayer
+import org.n1.av2.layer.ice.jigsaw.JigsawService
 import org.n1.av2.layer.ice.netwalk.NetwalkIceLayer
 import org.n1.av2.layer.ice.netwalk.NetwalkIceService
 import org.n1.av2.layer.ice.password.AuthAppService
@@ -36,6 +38,7 @@ class InitIceService(
     private val netwalkIceService: NetwalkIceService,
     private val sweeperService: SweeperService,
     private val tarService: TarService,
+    private val jigsawService: JigsawService,
 ) {
 
     @PostConstruct
@@ -46,6 +49,7 @@ class InitIceService(
         iceService.netwalkIceService = netwalkIceService
         iceService.tarService = tarService
         iceService.sweeperService = sweeperService
+        iceService.jigsawService = jigsawService
     }
 }
 
@@ -62,6 +66,7 @@ class IceService(
     lateinit var netwalkIceService: NetwalkIceService
     lateinit var tarService: TarService
     lateinit var sweeperService: SweeperService
+    lateinit var jigsawService: JigsawService
 
 
     fun findOrCreateIceForLayerAndIceStatus(layer: IceLayer): String {
@@ -78,6 +83,7 @@ class IceService(
             is TarIceLayer -> tarService.findOrCreateIceByLayerId(layer).id
             is PasswordIceLayer -> return authAppService.findOrCreateIceStatus(layer).id
             is SweeperIceLayer -> return sweeperService.findOrCreateIceStatus(layer).id
+            is JigsawIceLayer -> jigsawService.findOrCreateIceByLayerId(layer).id
             else -> error("Unsupported ice layer: $layer")
         }
     }
@@ -117,6 +123,7 @@ class IceService(
             is TarIceLayer -> tarService.resetIceByLayerId(layer.id)
             is PasswordIceLayer -> authAppService.resetIceByLayerId(layer.id)
             is SweeperIceLayer -> sweeperService.resetIceByLayerId(layer.id)
+            is JigsawIceLayer -> jigsawService.resetIceByLayerId(layer.id)
             else -> error("Unsupported ice layer: $layer")
         }
         authAppService.deleteByLayerId(layer.id)
@@ -129,6 +136,7 @@ class IceService(
         TAR_ICE -> TarIceLayer::class
         PASSWORD_ICE -> PasswordIceLayer::class
         SWEEPER_ICE -> SweeperIceLayer::class
+        JIGSAW_ICE -> JigsawIceLayer::class
         else -> error("Unsupported ice layer type: $layerType")
     }
 
@@ -156,6 +164,7 @@ class IceService(
             TANGLE_ICE -> TangleIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
             NETWALK_ICE -> NetwalkIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
             SWEEPER_ICE -> SweeperIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
+            JIGSAW_ICE -> JigsawIceLayer(layer.id, layer.level, newName, layer.note, newStrength, false, originalLayer)
             TAR_ICE -> TarIceLayer(layer.id, layer.level, newName, layer.note, newStrength, originalLayer)
 
             else -> error("Unsupported ice type: $newType")

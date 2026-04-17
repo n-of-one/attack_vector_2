@@ -25,7 +25,8 @@ enum class LayerType(
     TANGLE_ICE(ICE),
     NETWALK_ICE(ICE),
     TAR_ICE(ICE),
-    SWEEPER_ICE(ICE);
+    SWEEPER_ICE(ICE),
+    JIGSAW_ICE(ICE);
 
     companion object {
         fun valueOfOrNull(value: String): LayerType? {

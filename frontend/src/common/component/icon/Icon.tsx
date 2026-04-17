@@ -4,6 +4,7 @@ import {COPY_ICON, PASTE_ICON, SvgIcon} from "./SvgIcon";
 import {
     CODE,
     CORE,
+    JIGSAW_ICE,
     KEYSTORE,
     LOCK,
     MONEY,
@@ -18,10 +19,10 @@ import {
     TANGLE_ICE,
     TAR_ICE,
     TEXT,
+    TIMER_ADJUSTER,
     TRACE_LOG,
     TRACER,
     TRIPWIRE,
-    TIMER_ADJUSTER,
     WORD_SEARCH_ICE
 } from "../../enums/LayerTypes";
 
@@ -77,6 +78,7 @@ const iconFamily = (type: string) => {
         case STATUS_LIGHT:
         case CORE:
         case SCRIPT_CREDITS:
+        case JIGSAW_ICE:
         case COPY_ICON:
         case PASTE_ICON:
             return "svg"
