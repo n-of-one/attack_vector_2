@@ -15,6 +15,7 @@ export class SnapGroupDisplay {
     readonly pieces: Set<JigsawPieceDisplay>
     readonly container: Container
     private readonly canvas: JigsawCanvas
+    private activeRotation: (() => void) | null = null
 
     constructor(id: string, pieces: Set<JigsawPieceDisplay>, canvas: JigsawCanvas) {
         this.id = id
@@ -65,6 +66,7 @@ export class SnapGroupDisplay {
             if (elapsed >= duration) {
                 this.container.rotation = targetAngle
                 ticker.remove(tick)
+                this.activeRotation = null
                 for (const piece of this.pieces) {
                     piece.rotation = (piece.rotation + angleDeltaDeg + 360) % 360
                 }
@@ -73,7 +75,17 @@ export class SnapGroupDisplay {
             }
             this.container.rotation = startAngle + angleDeltaRad * (elapsed / duration)
         }
+        this.activeRotation = () => ticker.remove(tick)
         ticker.add(tick)
+    }
+
+    /** Stop any in-flight rotation tween without firing onComplete. Used when a server SNAP
+     *  supersedes a local rotation: the old container is about to be destroyed and the new
+     *  merged group will carry the server's authoritative rotation. */
+    cancelRotation() {
+        if (!this.activeRotation) return
+        this.activeRotation()
+        this.activeRotation = null
     }
 
     /** Merge this snap group with another. Returns the new combined SnapGroupDisplay. */

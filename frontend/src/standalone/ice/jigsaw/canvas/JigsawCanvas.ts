@@ -402,12 +402,17 @@ export class JigsawCanvas {
         for (const id of participatingIds) {
             const g = this.groupsById.get(id)
             if (!g) continue
+            // Kill any in-flight rotation tween on a participating group before we destroy its
+            // container — the tween's onComplete would otherwise fire on a dead container and
+            // cause `rotating = true` forever.
+            g.cancelRotation()
             for (const piece of g.pieces) allPieces.add(piece)
             // Detach pieces from old container so we can hand them to a fresh group.
             for (const piece of g.pieces) g.container.removeChild(piece.container)
             this.removeSnapGroup(g)
             g.container.destroy({children: false})
         }
+        this.rotating = false
 
         // Choose an anchor from the server-provided pieces list so we position using the
         // authoritative grid layout (ignoring any local pre-snap offset drift).
