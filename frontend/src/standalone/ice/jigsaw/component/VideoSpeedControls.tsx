@@ -15,24 +15,24 @@ const formatSpeed = (speed: number): string => {
 
 export const VideoSpeedControls = () => {
     const uiMode = useSelector((state: JigsawRootState) => state.ui.mode)
-    const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null)
+    const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null)
     const [speed, setSpeed] = useState<number>(DEFAULT_SPEED)
 
     // Once the puzzle becomes visible, poll briefly for the loaded video element.
     useEffect(() => {
         if (uiMode === HIDDEN) return
-        if (videoEl) return
+        if (videoElement) return
 
         const found = jigsawIceManager.getVideoElement()
         if (found) {
-            setVideoEl(found)
+            setVideoElement(found)
             return
         }
 
         const intervalId = window.setInterval(() => {
-            const el = jigsawIceManager.getVideoElement()
-            if (el) {
-                setVideoEl(el)
+            const element = jigsawIceManager.getVideoElement()
+            if (element) {
+                setVideoElement(element)
                 window.clearInterval(intervalId)
             }
         }, 200)
@@ -44,36 +44,36 @@ export const VideoSpeedControls = () => {
             window.clearInterval(intervalId)
             window.clearTimeout(timeoutId)
         }
-    }, [uiMode, videoEl])
+    }, [uiMode, videoElement])
 
     const applySpeed = (newSpeed: number) => {
-        if (!videoEl) return
+        if (!videoElement) return
         setSpeed(newSpeed)
         if (newSpeed === 0) {
-            videoEl.pause()
+            videoElement.pause()
             return
         }
-        videoEl.playbackRate = newSpeed
-        void videoEl.play().catch(() => { /* ignore autoplay rejection */
+        videoElement.playbackRate = newSpeed
+        void videoElement.play().catch(() => { /* ignore autoplay rejection */
         })
     }
 
-    if (!videoEl) return null
+    if (!videoElement) return null
 
     return (
         <div className="btn-group btn-group-sm" role="group" aria-label="Video speed" style={{paddingTop: "4px"}}>
-            {SPEEDS.map(s => {
-                const active = s === speed
+            {SPEEDS.map(speedOption => {
+                const active = speedOption === speed
                 const className = "btn btn-sm " + (active ? "btn-info" : "btn-outline-info")
                 return (
                     <button
-                        key={s}
+                        key={speedOption}
                         type="button"
                         className={className}
                         style={{width: "58px"}}
-                        onClick={() => applySpeed(s)}
+                        onClick={() => applySpeed(speedOption)}
                     >
-                        {formatSpeed(s)}
+                        {formatSpeed(speedOption)}
                     </button>
                 )
             })}

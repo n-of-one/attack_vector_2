@@ -35,7 +35,7 @@ export interface JigsawPieceDisplayOptions {
     sharedTexture: Texture
     sourceWidth: number
     sourceHeight: number
-    puzzleCols: number
+    puzzleColumns: number
     puzzleRows: number
     pieceWidth: number
     pieceHeight: number
@@ -69,7 +69,7 @@ export class JigsawPieceDisplay {
     constructor(options: JigsawPieceDisplayOptions) {
         const {
             column, row, config, sharedTexture, sourceWidth, sourceHeight,
-            puzzleCols, puzzleRows, pieceWidth, pieceHeight
+            puzzleColumns, puzzleRows, pieceWidth, pieceHeight
         } = options
 
         this.column = column
@@ -77,21 +77,21 @@ export class JigsawPieceDisplay {
         this.pieceWidth = pieceWidth
         this.pieceHeight = pieceHeight
 
-        const vTabSize = tabSizeForEdge('left', pieceWidth, pieceHeight)
-        const hTabSize = tabSizeForEdge('top', pieceWidth, pieceHeight)
+        const verticalTabSize = tabSizeForEdge('left', pieceWidth, pieceHeight)
+        const horizontalTabSize = tabSizeForEdge('top', pieceWidth, pieceHeight)
 
-        this.extensionLeft = this.extensionSize(config.left, vTabSize)
-        this.extensionTop = this.extensionSize(config.top, hTabSize)
-        const extensionRight = this.extensionSize(config.right, vTabSize)
-        const extensionBottom = this.extensionSize(config.bottom, hTabSize)
+        this.extensionLeft = this.extensionSize(config.left, verticalTabSize)
+        this.extensionTop = this.extensionSize(config.top, horizontalTabSize)
+        const extensionRight = this.extensionSize(config.right, verticalTabSize)
+        const extensionBottom = this.extensionSize(config.bottom, horizontalTabSize)
 
         this.bodyOffsetX = (this.extensionLeft - extensionRight) / 2
         this.bodyOffsetY = (this.extensionTop - extensionBottom) / 2
 
-        const bbWidth = this.extensionLeft + pieceWidth + extensionRight
-        const bbHeight = this.extensionTop + pieceHeight + extensionBottom
-        const bbCenterLocalX = bbWidth / 2
-        const bbCenterLocalY = bbHeight / 2
+        const boundingBoxWidth = this.extensionLeft + pieceWidth + extensionRight
+        const boundingBoxHeight = this.extensionTop + pieceHeight + extensionBottom
+        const boundingBoxCenterLocalX = boundingBoxWidth / 2
+        const boundingBoxCenterLocalY = boundingBoxHeight / 2
 
         // Piece outline as polygon points (local coords, origin at top-left of bounding box).
         const polygonPoints = buildPiecePoints(
@@ -126,15 +126,15 @@ export class JigsawPieceDisplay {
         const borderSegments = this.collectBorderSegments(config)
         if (borderSegments.length > 0) {
             const borderGraphics = new Graphics()
-            for (const seg of borderSegments) {
-                borderGraphics.moveTo(seg[0], seg[1]).lineTo(seg[2], seg[3])
+            for (const segment of borderSegments) {
+                borderGraphics.moveTo(segment[0], segment[1]).lineTo(segment[2], segment[3])
             }
             borderGraphics.stroke({color: BORDER_COLOR, width: BORDER_WIDTH, alpha: 1})
             this.container.addChild(borderGraphics)
         }
 
         // Pivot on the bounding box center so rotation matches fabric's center-origin behavior.
-        this.container.pivot.set(bbCenterLocalX, bbCenterLocalY)
+        this.container.pivot.set(boundingBoxCenterLocalX, boundingBoxCenterLocalY)
         // Position/rotation come from the owning SnapGroupDisplay container; start at identity.
         this.container.position.set(0, 0)
         this.container.rotation = 0
@@ -145,7 +145,7 @@ export class JigsawPieceDisplay {
         this.container.cursor = 'grab'
         ;(this.container as any).__piece = this
 
-        const borderCount = [column === 0, column === puzzleCols - 1, row === 0, row === puzzleRows - 1]
+        const borderCount = [column === 0, column === puzzleColumns - 1, row === 0, row === puzzleRows - 1]
             .filter(Boolean).length
         this.maxNeighborCount = 4 - borderCount
 
@@ -168,14 +168,14 @@ export class JigsawPieceDisplay {
         if (!parent || !parent.__snapGroup) {
             return {x: inParentX, y: inParentY}
         }
-        const gAngle = parent.rotation as number
-        const gCos = Math.cos(gAngle)
-        const gSin = Math.sin(gAngle)
-        const dx = inParentX - parent.pivot.x
-        const dy = inParentY - parent.pivot.y
+        const groupAngle = parent.rotation as number
+        const groupCos = Math.cos(groupAngle)
+        const groupSin = Math.sin(groupAngle)
+        const deltaX = inParentX - parent.pivot.x
+        const deltaY = inParentY - parent.pivot.y
         return {
-            x: parent.position.x + dx * gCos - dy * gSin,
-            y: parent.position.y + dx * gSin + dy * gCos,
+            x: parent.position.x + deltaX * groupCos - deltaY * groupSin,
+            y: parent.position.y + deltaX * groupSin + deltaY * groupCos,
         }
     }
 
@@ -185,11 +185,11 @@ export class JigsawPieceDisplay {
     positionRelativeTo(anchor: JigsawPieceDisplay) {
         this.rotation = anchor.rotation
         const anchorCenter = anchor.getBodyCenter()
-        const colOffset = this.column - anchor.column
+        const columnOffset = this.column - anchor.column
         const rowOffset = this.row - anchor.row
 
         this.setBodyCenter(
-            anchorCenter.x + colOffset * this.pieceWidth,
+            anchorCenter.x + columnOffset * this.pieceWidth,
             anchorCenter.y + rowOffset * this.pieceHeight,
         )
     }
@@ -206,19 +206,19 @@ export class JigsawPieceDisplay {
         const bodyCenter = this.getBodyCenter()
         const neighborCenter = neighbor.getBodyCenter()
 
-        const colOffset = neighbor.column - this.column
+        const columnOffset = neighbor.column - this.column
         const rowOffset = neighbor.row - this.row
         const {cos, sin} = PRECOMPUTED_ROTATION_TRIGONOMETRY[this.rotation]
 
-        const expectedNeighborX = bodyCenter.x + colOffset * this.pieceWidth * cos - rowOffset * this.pieceHeight * sin
-        const expectedNeighborY = bodyCenter.y + colOffset * this.pieceWidth * sin + rowOffset * this.pieceHeight * cos
+        const expectedNeighborX = bodyCenter.x + columnOffset * this.pieceWidth * cos - rowOffset * this.pieceHeight * sin
+        const expectedNeighborY = bodyCenter.y + columnOffset * this.pieceWidth * sin + rowOffset * this.pieceHeight * cos
 
-        const dx = neighborCenter.x - expectedNeighborX
-        const dy = neighborCenter.y - expectedNeighborY
+        const deltaX = neighborCenter.x - expectedNeighborX
+        const deltaY = neighborCenter.y - expectedNeighborY
 
-        if (Math.abs(dx) >= tolerance || Math.abs(dy) >= tolerance) return null
+        if (Math.abs(deltaX) >= tolerance || Math.abs(deltaY) >= tolerance) return null
 
-        return {x: dx, y: dy}
+        return {x: deltaX, y: deltaY}
     }
 
     updateSnappedNeighborCount(snappedNeighborCount: number) {
@@ -245,14 +245,14 @@ export class JigsawPieceDisplay {
     /** Compute line segments for the white border on flat (outer) edges. */
     private collectBorderSegments(config: PieceConfig): Array<[number, number, number, number]> {
         const segments: Array<[number, number, number, number]> = []
-        const oX = this.extensionLeft
-        const oY = this.extensionTop
-        const pw = this.pieceWidth
-        const ph = this.pieceHeight
-        if (config.top.direction === 'flat') segments.push([oX, oY, oX + pw, oY])
-        if (config.right.direction === 'flat') segments.push([oX + pw, oY, oX + pw, oY + ph])
-        if (config.bottom.direction === 'flat') segments.push([oX + pw, oY + ph, oX, oY + ph])
-        if (config.left.direction === 'flat') segments.push([oX, oY + ph, oX, oY])
+        const originX = this.extensionLeft
+        const originY = this.extensionTop
+        const width = this.pieceWidth
+        const height = this.pieceHeight
+        if (config.top.direction === 'flat') segments.push([originX, originY, originX + width, originY])
+        if (config.right.direction === 'flat') segments.push([originX + width, originY, originX + width, originY + height])
+        if (config.bottom.direction === 'flat') segments.push([originX + width, originY + height, originX, originY + height])
+        if (config.left.direction === 'flat') segments.push([originX, originY + height, originX, originY])
         return segments
     }
 }

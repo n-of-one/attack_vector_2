@@ -81,15 +81,15 @@ class JigsawIceManager extends GenericIceManager {
         loadMedia(data.imageSource, smoothLoop).then(async media => {
             this.media = media
             this.jigsawCanvas = await JigsawCanvas.create(data, this.dispatch, this.store, media)
-        }).catch(err => {
-            console.error("Failed to load jigsaw source media", err)
+        }).catch(error => {
+            console.error("Failed to load jigsaw source media", error)
         })
     }
 
     /** Returns the video element backing the puzzle, or null if the media is a static image or not yet loaded. */
     getVideoElement(): HTMLVideoElement | null {
-        const el = this.media?.sourceElement
-        return el instanceof HTMLVideoElement ? el : null
+        const element = this.media?.sourceElement
+        return element instanceof HTMLVideoElement ? element : null
     }
 
     onGroupMoved(data: JigsawMovedPayload) {

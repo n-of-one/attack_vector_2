@@ -39,7 +39,7 @@ export interface Group {
 
 export const FLAT: EdgeConfig = {shape: null, direction: 'flat'}
 
-// Canonical point: [along, perp] relative to an edge
+// Canonical point: [along, perpendicular] relative to an edge
 type CanonicalPoint = [number, number]
 type ShapeGenerator = (size: number, tabHeight: number) => CanonicalPoint[]
 
@@ -50,9 +50,9 @@ export const PUZZLE_SCALE = 0.8
 const TAB_HEIGHT_RATIO = 0.08
 const EDGE_MARGIN_RATIO = 0.15
 
-export function calculatePieceDimensions(cols: number, rows: number): { pieceWidth: number, pieceHeight: number } {
+export function calculatePieceDimensions(columns: number, rows: number): { pieceWidth: number, pieceHeight: number } {
     return {
-        pieceWidth: IMAGE_WIDTH * PUZZLE_SCALE / cols,
+        pieceWidth: IMAGE_WIDTH * PUZZLE_SCALE / columns,
         pieceHeight: IMAGE_HEIGHT * PUZZLE_SCALE / rows,
     }
 }
@@ -63,27 +63,27 @@ function edgeLength(edge: EdgeType, pieceWidth: number, pieceHeight: number): nu
 }
 
 // --- Shape definitions ---
-// Each shape returns [along, perp] points in canonical form:
-//   along = pixels along the edge from start corner
-//   perp  = pixels outward from the piece (positive = away from center)
+// Each shape returns [along, perpendicular] points in canonical form:
+//   along         = pixels along the edge from start corner
+//   perpendicular = pixels outward from the piece (positive = away from center)
 
 const SEGMENTS_PER_BULB = 8
 
 export const SHAPES: Record<ShapeType, ShapeGenerator> = {
     // Consecutive semicircular bulbs (no gaps between bulbs)
-    // Uses tabHeight as max perp so the extrusion matches the layout extension
+    // Uses tabHeight as max perpendicular so the extrusion matches the layout extension
     invected: (size, tabHeight) => {
         const margin = size * EDGE_MARGIN_RATIO
         const inner = size - 2 * margin
         const count = 4
-        const rx = inner / (count * 2) // horizontal radius: fills the edge
-        const ry = tabHeight            // vertical radius: matches extension
+        const radiusX = inner / (count * 2) // horizontal radius: fills the edge
+        const radiusY = tabHeight            // vertical radius: matches extension
         const points: CanonicalPoint[] = []
         for (let i = 0; i < count; i++) {
-            const center = margin + rx * (2 * i + 1)
+            const center = margin + radiusX * (2 * i + 1)
             for (let j = 0; j <= SEGMENTS_PER_BULB; j++) {
                 const angle = Math.PI - j * Math.PI / SEGMENTS_PER_BULB
-                points.push([center + rx * Math.cos(angle), ry * Math.sin(angle)])
+                points.push([center + radiusX * Math.cos(angle), radiusY * Math.sin(angle)])
             }
         }
         return points
@@ -98,13 +98,13 @@ export const SHAPES: Record<ShapeType, ShapeGenerator> = {
         points.push([margin, 0])
         points.push([margin, tabHeight])
         for (let i = 0; i < count; i++) {
-            const mEnd = margin + (2 * i + 1) * unit
-            points.push([mEnd, tabHeight])
+            const merlonEnd = margin + (2 * i + 1) * unit
+            points.push([merlonEnd, tabHeight])
             if (i < count - 1) {
-                points.push([mEnd, 0])
-                const gEnd = margin + (2 * i + 2) * unit
-                points.push([gEnd, 0])
-                points.push([gEnd, tabHeight])
+                points.push([merlonEnd, 0])
+                const gapEnd = margin + (2 * i + 2) * unit
+                points.push([gapEnd, 0])
+                points.push([gapEnd, tabHeight])
             }
         }
         points.push([size - margin, 0])
@@ -151,29 +151,29 @@ export const SHAPES: Record<ShapeType, ShapeGenerator> = {
 }
 
 // --- Edge mapper ---
-// Map canonical (along, perp) to canvas (x, y).
-// Positive perp points outward from the piece center.
+// Map canonical (along, perpendicular) to canvas (x, y).
+// Positive perpendicular points outward from the piece center.
 
-type EdgeMapper = (along: number, perp: number) => [number, number]
+type EdgeMapper = (along: number, perpendicular: number) => [number, number]
 
 export function getEdgeMapper(edge: EdgeType, originX: number, originY: number, width: number, height: number): EdgeMapper {
     switch (edge) {
         case 'top':
-            return (along, perp) => [originX + along, originY - perp]
+            return (along, perpendicular) => [originX + along, originY - perpendicular]
         case 'right':
-            return (along, perp) => [originX + width + perp, originY + along]
+            return (along, perpendicular) => [originX + width + perpendicular, originY + along]
         case 'bottom':
-            return (along, perp) => [originX + width - along, originY + height + perp]
+            return (along, perpendicular) => [originX + width - along, originY + height + perpendicular]
         case 'left':
-            return (along, perp) => [originX - perp, originY + height - along]
+            return (along, perpendicular) => [originX - perpendicular, originY + height - along]
     }
 }
 
 // --- Path builder ---
 
 /** Round to 2 decimal places to eliminate floating-point drift between matching in/out edges. */
-function round(n: number): number {
-    return Math.round(n * 100) / 100
+function round(value: number): number {
+    return Math.round(value * 100) / 100
 }
 
 export function buildPiecePath(originX: number, originY: number, pieceWidth: number, pieceHeight: number, config: PieceConfig): string {
@@ -197,8 +197,8 @@ export function buildPiecePath(originX: number, originY: number, pieceWidth: num
         } else {
             const direction = edgeConfig.direction === 'out' ? 1 : -1
             const points = SHAPES[edgeConfig.shape!](length, tabHeight)
-            for (const [along, perp] of points) {
-                const [x, y] = mapper(along, perp * direction)
+            for (const [along, perpendicular] of points) {
+                const [x, y] = mapper(along, perpendicular * direction)
                 pathString += ` L ${round(x)} ${round(y)}`
             }
             const [endX, endY] = mapper(length, 0)
@@ -233,8 +233,8 @@ export function buildPiecePoints(originX: number, originY: number, pieceWidth: n
         } else {
             const direction = edgeConfig.direction === 'out' ? 1 : -1
             const points = SHAPES[edgeConfig.shape!](length, tabHeight)
-            for (const [along, perp] of points) {
-                const [x, y] = mapper(along, perp * direction)
+            for (const [along, perpendicular] of points) {
+                const [x, y] = mapper(along, perpendicular * direction)
                 out.push(round(x), round(y))
             }
             const [endX, endY] = mapper(length, 0)
@@ -259,17 +259,17 @@ export function buildBorderPath(originX: number, originY: number, pieceWidth: nu
         {name: 'left', edgeConfig: config.left},
     ]
 
-    const hasBorder = edges.some(e => e.edgeConfig.direction === 'flat')
+    const hasBorder = edges.some(edge => edge.edgeConfig.direction === 'flat')
     if (!hasBorder) return null
 
     // Compute the full bounding box to match the main path.
     // The main path always starts at (0,0) min because extensions push the origin inward.
-    const vTabHeight = pieceHeight * TAB_HEIGHT_RATIO // tab height for vertical edges (left/right)
-    const hTabHeight = pieceWidth * TAB_HEIGHT_RATIO  // tab height for horizontal edges (top/bottom)
-    const extRight = config.right.direction === 'out' ? vTabHeight : 0
-    const extBottom = config.bottom.direction === 'out' ? hTabHeight : 0
-    const maxX = round(originX + pieceWidth + extRight)
-    const maxY = round(originY + pieceHeight + extBottom)
+    const verticalTabHeight = pieceHeight * TAB_HEIGHT_RATIO // tab height for vertical edges (left/right)
+    const horizontalTabHeight = pieceWidth * TAB_HEIGHT_RATIO  // tab height for horizontal edges (top/bottom)
+    const extensionRight = config.right.direction === 'out' ? verticalTabHeight : 0
+    const extensionBottom = config.bottom.direction === 'out' ? horizontalTabHeight : 0
+    const maxX = round(originX + pieceWidth + extensionRight)
+    const maxY = round(originY + pieceHeight + extensionBottom)
 
     // Anchor M commands at opposite corners to force same bounding box as main path
     let pathString = `M 0 0 M ${maxX} ${maxY}`

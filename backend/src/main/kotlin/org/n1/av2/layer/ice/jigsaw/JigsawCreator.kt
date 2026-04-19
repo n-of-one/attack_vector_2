@@ -155,73 +155,73 @@ class JigsawCreator(testingMode: Boolean) {
         val puzzleBottom = puzzleCenterY + displayHeight / 2
 
         val edgeMargin = maxTabSize
-        val maxPieceDim = max(pieceWidth, pieceHeight)
-        val halfExtent = (maxPieceDim + 2 * maxTabSize) / 2
+        val maxPieceDimension = max(pieceWidth, pieceHeight)
+        val halfExtent = (maxPieceDimension + 2 * maxTabSize) / 2
 
         val minZoneSize = max(pieceWidth, pieceHeight) * 0.5
 
-        val leftNaturalW = puzzleLeft - edgeMargin
-        val leftSafeW = puzzleLeft - halfExtent - edgeMargin
-        val leftW = if (leftSafeW >= minZoneSize) leftSafeW else max(minZoneSize, leftNaturalW)
+        val leftNaturalWidth = puzzleLeft - edgeMargin
+        val leftSafeWidth = puzzleLeft - halfExtent - edgeMargin
+        val leftWidth = if (leftSafeWidth >= minZoneSize) leftSafeWidth else max(minZoneSize, leftNaturalWidth)
 
         val rightNaturalX = puzzleRight
         val rightSafeX = puzzleRight + halfExtent
-        val rightNaturalW = canvasWidth - edgeMargin - puzzleRight
-        val rightSafeW = canvasWidth - edgeMargin - rightSafeX
-        val useRightSafe = rightSafeW >= minZoneSize
+        val rightNaturalWidth = canvasWidth - edgeMargin - puzzleRight
+        val rightSafeWidth = canvasWidth - edgeMargin - rightSafeX
+        val useRightSafe = rightSafeWidth >= minZoneSize
         val rightX = if (useRightSafe) rightSafeX else min(rightNaturalX, canvasWidth - edgeMargin - minZoneSize)
-        val rightW = if (useRightSafe) rightSafeW else max(minZoneSize, rightNaturalW)
+        val rightWidth = if (useRightSafe) rightSafeWidth else max(minZoneSize, rightNaturalWidth)
 
-        val topNaturalH = puzzleTop - edgeMargin
-        val topSafeH = puzzleTop - halfExtent - edgeMargin
-        val topH = if (topSafeH >= minZoneSize) topSafeH else max(minZoneSize, topNaturalH)
+        val topNaturalHeight = puzzleTop - edgeMargin
+        val topSafeHeight = puzzleTop - halfExtent - edgeMargin
+        val topHeight = if (topSafeHeight >= minZoneSize) topSafeHeight else max(minZoneSize, topNaturalHeight)
 
         val bottomNaturalY = puzzleBottom
         val bottomSafeY = puzzleBottom + halfExtent
-        val bottomNaturalH = canvasHeight - edgeMargin - puzzleBottom
-        val bottomSafeH = canvasHeight - edgeMargin - bottomSafeY
-        val useBottomSafe = bottomSafeH >= minZoneSize
+        val bottomNaturalHeight = canvasHeight - edgeMargin - puzzleBottom
+        val bottomSafeHeight = canvasHeight - edgeMargin - bottomSafeY
+        val useBottomSafe = bottomSafeHeight >= minZoneSize
         val bottomY = if (useBottomSafe) bottomSafeY else min(bottomNaturalY, canvasHeight - edgeMargin - minZoneSize)
-        val bottomH = if (useBottomSafe) bottomSafeH else max(minZoneSize, bottomNaturalH)
+        val bottomHeight = if (useBottomSafe) bottomSafeHeight else max(minZoneSize, bottomNaturalHeight)
 
-        data class Rect(val x: Double, val y: Double, val w: Double, val h: Double)
+        data class Rect(val x: Double, val y: Double, val width: Double, val height: Double)
 
         val zones = listOf(
             // Left
-            Rect(edgeMargin, edgeMargin, leftW, canvasHeight - edgeMargin * 2),
+            Rect(edgeMargin, edgeMargin, leftWidth, canvasHeight - edgeMargin * 2),
             // Right
-            Rect(rightX, edgeMargin, rightW, canvasHeight - edgeMargin * 2),
+            Rect(rightX, edgeMargin, rightWidth, canvasHeight - edgeMargin * 2),
             // Top
-            Rect(puzzleLeft, edgeMargin, max(minZoneSize, puzzleRight - puzzleLeft), topH),
+            Rect(puzzleLeft, edgeMargin, max(minZoneSize, puzzleRight - puzzleLeft), topHeight),
             // Bottom
-            Rect(puzzleLeft, bottomY, max(minZoneSize, puzzleRight - puzzleLeft), bottomH),
+            Rect(puzzleLeft, bottomY, max(minZoneSize, puzzleRight - puzzleLeft), bottomHeight),
         )
 
-        val totalArea = zones.sumOf { it.w * it.h }
+        val totalArea = zones.sumOf { it.width * it.height }
         val positions = mutableListOf<Pair<Double, Double>>()
 
         var remaining = count
         for (i in zones.indices) {
             val zone = zones[i]
             val zonePieceCount = if (i == zones.size - 1) remaining
-            else (count * (zone.w * zone.h) / totalArea).roundToInt()
+            else (count * (zone.width * zone.height) / totalArea).roundToInt()
             remaining -= zonePieceCount
             if (zonePieceCount <= 0) continue
 
-            val zoneAspect = zone.w / zone.h
+            val zoneAspect = zone.width / zone.height
             val gridRows = max(1, sqrt(zonePieceCount / zoneAspect).roundToInt())
-            val gridCols = max(1, ceil(zonePieceCount.toDouble() / gridRows).toInt())
+            val gridColumns = max(1, ceil(zonePieceCount.toDouble() / gridRows).toInt())
 
-            val spacingX = if (gridCols > 1) zone.w / gridCols else 0.0
-            val spacingY = if (gridRows > 1) zone.h / gridRows else 0.0
+            val spacingX = if (gridColumns > 1) zone.width / gridColumns else 0.0
+            val spacingY = if (gridRows > 1) zone.height / gridRows else 0.0
 
             val jitterX = spacingX * 0.15
             val jitterY = spacingY * 0.15
 
             for (j in 0 until zonePieceCount) {
-                val gridCol = j % gridCols
-                val gridRow = j / gridCols
-                val baseX = zone.x + (gridCol + 0.5) * spacingX
+                val gridColumn = j % gridColumns
+                val gridRow = j / gridColumns
+                val baseX = zone.x + (gridColumn + 0.5) * spacingX
                 val baseY = zone.y + (gridRow + 0.5) * spacingY
                 positions.add(
                     Pair(
@@ -235,9 +235,9 @@ class JigsawCreator(testingMode: Boolean) {
         // Shuffle so pieces from the same grid row aren't all in the same zone
         for (i in positions.size - 1 downTo 1) {
             val j = random.nextInt(i + 1)
-            val tmp = positions[i]
+            val held = positions[i]
             positions[i] = positions[j]
-            positions[j] = tmp
+            positions[j] = held
         }
 
         // Clamp to stay fully on canvas

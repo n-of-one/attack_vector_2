@@ -19,34 +19,34 @@
 <script>
 
     // --- Shape definitions ---
-    // Each shape returns [along, perp] points in canonical form:
-    //   along = pixels along the edge from start corner
-    //   perp  = pixels outward from the piece (positive = away from center)
+    // Each shape returns [along, perpendicular] points in canonical form:
+    //   along         = pixels along the edge from start corner
+    //   perpendicular = pixels outward from the piece (positive = away from center)
 
     const shapes = {
-        trapezoid: (size, tab, c) => [
+        trapezoid: (size, tab, chamfer) => [
             [size * 0.4, 0],
-            [size * 0.31, tab - c],
-            [size * 0.3 + c, tab],
-            [size * 0.7 - c, tab],
-            [size * 0.69, tab - c],
+            [size * 0.31, tab - chamfer],
+            [size * 0.3 + chamfer, tab],
+            [size * 0.7 - chamfer, tab],
+            [size * 0.69, tab - chamfer],
             [size * 0.6, 0],
         ],
-        parapet: (size, tab, c) => [
+        parapet: (size, tab, chamfer) => [
             [size * 0.385, 0],
             [size * 0.35, tab * 0.3],
-            [size * 0.35, tab - c],
-            [size * 0.35 + c, tab],
+            [size * 0.35, tab - chamfer],
+            [size * 0.35 + chamfer, tab],
             [size * 0.45, tab],
             [size * 0.45, tab * 0.5],
             [size * 0.55, tab * 0.5],
             [size * 0.55, tab],
-            [size * 0.65 - c, tab],
-            [size * 0.65, tab - c],
+            [size * 0.65 - chamfer, tab],
+            [size * 0.65, tab - chamfer],
             [size * 0.65, tab * 0.3],
             [size * 0.615, 0],
         ],
-        saw: (size, tab, _c) => [
+        saw: (size, tab, _chamfer) => [
             [size * 0.365, 0],
             [size * 0.35, tab * 0.5],
             [size * 0.38, tab],
@@ -59,7 +59,7 @@
             [size * 0.65, tab * 0.5],
             [size * 0.635, 0],
         ],
-        triangle: (size, tab, _c) => [
+        triangle: (size, tab, _chamfer) => [
             [size * 0.35, 0],
             [size * 0.32, tab * 0.3],
             [size * 0.45, tab],
@@ -70,45 +70,45 @@
     };
 
     // --- Edge mappers ---
-    // Map canonical (along, perp) to canvas (x, y).
-    // Positive perp points outward from the piece center.
+    // Map canonical (along, perpendicular) to canvas (x, y).
+    // Positive perpendicular points outward from the piece center.
 
-    function getEdgeMapper(edge, ox, oy, size) {
+    function getEdgeMapper(edge, originX, originY, size) {
         switch (edge) {
             case 'top':
-                return (a, p) => [ox + a, oy - p];
+                return (along, perpendicular) => [originX + along, originY - perpendicular];
             case 'right':
-                return (a, p) => [ox + size + p, oy + a];
+                return (along, perpendicular) => [originX + size + perpendicular, originY + along];
             case 'bottom':
-                return (a, p) => [ox + size - a, oy + size + p];
+                return (along, perpendicular) => [originX + size - along, originY + size + perpendicular];
             case 'left':
-                return (a, p) => [ox - p, oy + size - a];
+                return (along, perpendicular) => [originX - perpendicular, originY + size - along];
         }
     }
 
     // --- Path builder ---
 
-    function buildPiecePath(ox, oy, size, config) {
+    function buildPiecePath(originX, originY, size, config) {
         const tab = size * 0.2;
-        const c = tab * 0.15;
-        let path = `M ${ox} ${oy}`;
+        const chamfer = tab * 0.15;
+        let path = `M ${originX} ${originY}`;
 
         for (const edge of ['top', 'right', 'bottom', 'left']) {
             const side = config[edge];
-            const map = getEdgeMapper(edge, ox, oy, size);
+            const map = getEdgeMapper(edge, originX, originY, size);
 
-            if (!side || side.dir === 'flat') {
-                const [ex, ey] = map(size, 0);
-                path += ` L ${ex} ${ey}`;
+            if (!side || side.direction === 'flat') {
+                const [endX, endY] = map(size, 0);
+                path += ` L ${endX} ${endY}`;
             } else {
-                const d = side.dir === 'out' ? 1 : -1;
-                const pts = shapes[side.shape](size, tab, c);
-                for (const [a, p] of pts) {
-                    const [x, y] = map(a, p * d);
+                const directionSign = side.direction === 'out' ? 1 : -1;
+                const points = shapes[side.shape](size, tab, chamfer);
+                for (const [along, perpendicular] of points) {
+                    const [x, y] = map(along, perpendicular * directionSign);
                     path += ` L ${x} ${y}`;
                 }
-                const [ex, ey] = map(size, 0);
-                path += ` L ${ex} ${ey}`;
+                const [endX, endY] = map(size, 0);
+                path += ` L ${endX} ${endY}`;
             }
         }
 
@@ -118,39 +118,39 @@
 
     // --- Image-pattern piece factory ---
 
-    function createPiecePatternCanvas(sourceImg, col, row, puzzleCols, puzzleRows, size, config) {
+    function createPiecePatternCanvas(sourceImage, column, row, puzzleColumns, puzzleRows, size, config) {
         const tab = size * 0.2;
-        const extL = (config.left && config.left.dir === 'out') ? tab : 0;
-        const extT = (config.top && config.top.dir === 'out') ? tab : 0;
-        const extR = (config.right && config.right.dir === 'out') ? tab : 0;
-        const extB = (config.bottom && config.bottom.dir === 'out') ? tab : 0;
+        const extensionLeft = (config.left && config.left.direction === 'out') ? tab : 0;
+        const extensionTop = (config.top && config.top.direction === 'out') ? tab : 0;
+        const extensionRight = (config.right && config.right.direction === 'out') ? tab : 0;
+        const extensionBottom = (config.bottom && config.bottom.direction === 'out') ? tab : 0;
 
-        const bbW = extL + size + extR;
-        const bbH = extT + size + extB;
+        const boundingBoxWidth = extensionLeft + size + extensionRight;
+        const boundingBoxHeight = extensionTop + size + extensionBottom;
 
-        const puzzleW = size * puzzleCols;
-        const puzzleH = size * puzzleRows;
-        const imgScaleX = sourceImg.width / puzzleW;
-        const imgScaleY = sourceImg.height / puzzleH;
+        const puzzleWidth = size * puzzleColumns;
+        const puzzleHeight = size * puzzleRows;
+        const imageScaleX = sourceImage.width / puzzleWidth;
+        const imageScaleY = sourceImage.height / puzzleHeight;
 
-        const sx = (col * size - extL) * imgScaleX;
-        const sy = (row * size - extT) * imgScaleY;
-        const sw = bbW * imgScaleX;
-        const sh = bbH * imgScaleY;
+        const sourceX = (column * size - extensionLeft) * imageScaleX;
+        const sourceY = (row * size - extensionTop) * imageScaleY;
+        const sourceWidth = boundingBoxWidth * imageScaleX;
+        const sourceHeight = boundingBoxHeight * imageScaleY;
 
-        const pc = document.createElement('canvas');
-        pc.width = bbW;
-        pc.height = bbH;
-        const ctx = pc.getContext('2d');
-        ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, bbW, bbH);
-        return pc;
+        const patternCanvas = document.createElement('canvas');
+        patternCanvas.width = boundingBoxWidth;
+        patternCanvas.height = boundingBoxHeight;
+        const ctx = patternCanvas.getContext('2d');
+        ctx.drawImage(sourceImage, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, boundingBoxWidth, boundingBoxHeight);
+        return patternCanvas;
     }
 
-    function createPiece(sourceImg, col, row, puzzleCols, puzzleRows, size, config, canvasX, canvasY) {
-        const patternCanvas = createPiecePatternCanvas(sourceImg, col, row, puzzleCols, puzzleRows, size, config);
-        const pathStr = buildPiecePath(canvasX, canvasY, size, config);
+    function createPiece(sourceImage, column, row, puzzleColumns, puzzleRows, size, config, canvasX, canvasY) {
+        const patternCanvas = createPiecePatternCanvas(sourceImage, column, row, puzzleColumns, puzzleRows, size, config);
+        const pathString = buildPiecePath(canvasX, canvasY, size, config);
 
-        return new fabric.Path(pathStr, {
+        return new fabric.Path(pathString, {
             fill: new fabric.Pattern({
                 source: patternCanvas,
                 repeat: 'no-repeat',
@@ -162,15 +162,15 @@
 
     // --- Render ---
 
-    const FLAT = {dir: 'flat'};
+    const FLAT = {direction: 'flat'};
 
-    const img = new Image();
-    img.src = '../../../../../public/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png';
-    img.onload = function () {
+    const image = new Image();
+    image.src = '../../../../../public/img/frontier/ice/jigsaw/tylijura-ai-generated-9396797_1920.png';
+    image.onload = function () {
         const fabricCanvas = new fabric.Canvas('c');
         const size = 150;
 
-        const puzzleCols = 2;
+        const puzzleColumns = 2;
         const puzzleRows = 2;
         const puzzleX = 80;
         const puzzleY = 80;
@@ -185,47 +185,47 @@
 
         const pieces = [
             {
-                col: 0, row: 0,
+                column: 0, row: 0,
                 config: {
                     top: FLAT,
-                    right: {shape: 'trapezoid', dir: 'out'},
-                    bottom: {shape: 'saw', dir: 'out'},
+                    right: {shape: 'trapezoid', direction: 'out'},
+                    bottom: {shape: 'saw', direction: 'out'},
                     left: FLAT,
                 },
             },
             {
-                col: 1, row: 0,
+                column: 1, row: 0,
                 config: {
                     top: FLAT,
                     right: FLAT,
-                    bottom: {shape: 'triangle', dir: 'out'},
-                    left: {shape: 'trapezoid', dir: 'in'},
+                    bottom: {shape: 'triangle', direction: 'out'},
+                    left: {shape: 'trapezoid', direction: 'in'},
                 },
             },
             {
-                col: 0, row: 1,
+                column: 0, row: 1,
                 config: {
-                    top: {shape: 'saw', dir: 'in'},
-                    right: {shape: 'parapet', dir: 'out'},
+                    top: {shape: 'saw', direction: 'in'},
+                    right: {shape: 'parapet', direction: 'out'},
                     bottom: FLAT,
                     left: FLAT,
                 },
             },
             {
-                col: 1, row: 1,
+                column: 1, row: 1,
                 config: {
-                    top: {shape: 'triangle', dir: 'in'},
+                    top: {shape: 'triangle', direction: 'in'},
                     right: FLAT,
                     bottom: FLAT,
-                    left: {shape: 'parapet', dir: 'in'},
+                    left: {shape: 'parapet', direction: 'in'},
                 },
             },
         ];
 
-        pieces.forEach(p => {
-            const canvasX = puzzleX + p.col * size;
-            const canvasY = puzzleY + p.row * size;
-            const piece = createPiece(img, p.col, p.row, puzzleCols, puzzleRows, size, p.config, canvasX, canvasY);
+        pieces.forEach(pieceData => {
+            const canvasX = puzzleX + pieceData.column * size;
+            const canvasY = puzzleY + pieceData.row * size;
+            const piece = createPiece(image, pieceData.column, pieceData.row, puzzleColumns, puzzleRows, size, pieceData.config, canvasX, canvasY);
             fabricCanvas.add(piece);
         });
 

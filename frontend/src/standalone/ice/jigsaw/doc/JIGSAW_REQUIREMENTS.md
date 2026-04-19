@@ -298,6 +298,12 @@ interface JigsawUiState {
 - **Terminal intro sequence**: A cinematic intro sequence with timed messages is commented out (connecting, analyzing, pattern fragmentation, exploit success,
   puzzle online). Currently skipped - puzzle shows immediately.
 
+## Naming Convention
+
+- Spell out abbreviations in identifiers (`col` → `column`, `dir` → `direction`, `imageSrc` → `imageSource`, `GridPos` → `GridPosition`).
+- This applies to all identifiers, including local variables and loop variables (e.g. `gridCol` → `gridColumn`).
+- The following abbreviations are allowed: `config`, `id`, `repo`, `ctx`, `min`, `max`.
+
 ## Implementation Notes
 
 PixiJS is used instead of Fabric.js to support movies as well as static images.
@@ -342,4 +348,3 @@ This section captures choices specific to PixiJS v8. They are implementation det
 ### Performance
 
 - The ticker is capped at 30 FPS to reduce load on weaker machines. Pointer input still updates positions every event; only rendering runs less often.
-- Antialiasing on the `Application` is disabled to save GPU fragment shader work; the piece outlines give sufficient edge definition.

@@ -253,9 +253,9 @@ class JigsawService(
             "${it.column}:${it.row}" to bodyCenter(seed, it, pieceWidth, pieceHeight)
         }
 
-        val angleRad = Math.toRadians(seed.rotation.toDouble())
-        val cos = cos(angleRad)
-        val sin = sin(angleRad)
+        val angleRadians = Math.toRadians(seed.rotation.toDouble())
+        val cos = cos(angleRadians)
+        val sin = sin(angleRadians)
 
         data class BestPerGroup(val correctionX: Double, val correctionY: Double, val distance: Double)
 
@@ -267,10 +267,11 @@ class JigsawService(
 
             for (otherPiece in otherGroup.pieces) {
                 // Which of the seed's pieces is a grid neighbour (4-connected) of otherPiece?
-                val seedNeighbours = seed.pieces.filter { sp ->
-                    val dc = otherPiece.column - sp.column
-                    val dr = otherPiece.row - sp.row
-                    (dc == 1 && dr == 0) || (dc == -1 && dr == 0) || (dc == 0 && dr == 1) || (dc == 0 && dr == -1)
+                val seedNeighbours = seed.pieces.filter { seedPiece ->
+                    val deltaColumn = otherPiece.column - seedPiece.column
+                    val deltaRow = otherPiece.row - seedPiece.row
+                    (deltaColumn == 1 && deltaRow == 0) || (deltaColumn == -1 && deltaRow == 0) ||
+                        (deltaColumn == 0 && deltaRow == 1) || (deltaColumn == 0 && deltaRow == -1)
                 }
                 if (seedNeighbours.isEmpty()) continue
 
@@ -278,20 +279,20 @@ class JigsawService(
 
                 for (seedPiece in seedNeighbours) {
                     val seedCenter = seedBodyCenters["${seedPiece.column}:${seedPiece.row}"]!!
-                    val dCol = (otherPiece.column - seedPiece.column).toDouble()
-                    val dRow = (otherPiece.row - seedPiece.row).toDouble()
-                    val expectedX = seedCenter.first + dCol * pieceWidth * cos - dRow * pieceHeight * sin
-                    val expectedY = seedCenter.second + dCol * pieceWidth * sin + dRow * pieceHeight * cos
+                    val deltaColumn = (otherPiece.column - seedPiece.column).toDouble()
+                    val deltaRow = (otherPiece.row - seedPiece.row).toDouble()
+                    val expectedX = seedCenter.first + deltaColumn * pieceWidth * cos - deltaRow * pieceHeight * sin
+                    val expectedY = seedCenter.second + deltaColumn * pieceWidth * sin + deltaRow * pieceHeight * cos
 
-                    val dx = otherWorldCenter.first - expectedX
-                    val dy = otherWorldCenter.second - expectedY
-                    val distance = max(abs(dx), abs(dy))
+                    val deltaX = otherWorldCenter.first - expectedX
+                    val deltaY = otherWorldCenter.second - expectedY
+                    val distance = max(abs(deltaX), abs(deltaY))
                     if (distance >= SNAP_TOLERANCE_PIXELS) continue
 
-                    // Correction moves the SEED by (dx, dy) so its neighbour lands on the other piece.
+                    // Correction moves the SEED by (deltaX, deltaY) so its neighbour lands on the other piece.
                     val existing = bestByGroupId[otherGroup.id]
                     if (existing == null || distance < existing.distance) {
-                        bestByGroupId[otherGroup.id] = BestPerGroup(dx, dy, distance)
+                        bestByGroupId[otherGroup.id] = BestPerGroup(deltaX, deltaY, distance)
                     }
                 }
             }
@@ -352,14 +353,14 @@ class JigsawService(
     private fun bodyCenter(group: JigsawGroup, piece: GridPosition, pieceWidth: Double, pieceHeight: Double): Pair<Double, Double> {
         val gridCentroidX = group.pieces.sumOf { it.column.toDouble() } / group.pieces.size * pieceWidth
         val gridCentroidY = group.pieces.sumOf { it.row.toDouble() } / group.pieces.size * pieceHeight
-        val ox = piece.column * pieceWidth - gridCentroidX
-        val oy = piece.row * pieceHeight - gridCentroidY
+        val offsetX = piece.column * pieceWidth - gridCentroidX
+        val offsetY = piece.row * pieceHeight - gridCentroidY
 
-        val angleRad = Math.toRadians(group.rotation.toDouble())
-        val cos = cos(angleRad)
-        val sin = sin(angleRad)
-        val rx = ox * cos - oy * sin
-        val ry = ox * sin + oy * cos
-        return Pair(group.x + rx, group.y + ry)
+        val angleRadians = Math.toRadians(group.rotation.toDouble())
+        val cos = cos(angleRadians)
+        val sin = sin(angleRadians)
+        val rotatedX = offsetX * cos - offsetY * sin
+        val rotatedY = offsetX * sin + offsetY * cos
+        return Pair(group.x + rotatedX, group.y + rotatedY)
     }
 }

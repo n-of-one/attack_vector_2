@@ -2,11 +2,11 @@ import {Container} from "pixi.js"
 import {JigsawPieceDisplay} from "./JigsawPieceDisplay"
 import type {JigsawCanvas} from "./JigsawCanvas"
 
-const NEIGHBOR_OFFSETS: ReadonlyArray<{ colOffset: number, rowOffset: number }> = [
-    {colOffset: -1, rowOffset: 0},
-    {colOffset: 1, rowOffset: 0},
-    {colOffset: 0, rowOffset: -1},
-    {colOffset: 0, rowOffset: 1},
+const NEIGHBOR_OFFSETS: ReadonlyArray<{ columnOffset: number, rowOffset: number }> = [
+    {columnOffset: -1, rowOffset: 0},
+    {columnOffset: 1, rowOffset: 0},
+    {columnOffset: 0, rowOffset: -1},
+    {columnOffset: 0, rowOffset: 1},
 ]
 
 export class SnapGroupDisplay {
@@ -37,26 +37,26 @@ export class SnapGroupDisplay {
     recomputePivot() {
         // Before this call, the container is at position (0,0), pivot (0,0), rotation 0.
         // getBodyCenter for each piece returns the absolute world body center.
-        let sx = 0, sy = 0
+        let sumX = 0, sumY = 0
         for (const piece of this.pieces) {
-            const c = piece.getBodyCenter()
-            sx += c.x
-            sy += c.y
+            const center = piece.getBodyCenter()
+            sumX += center.x
+            sumY += center.y
         }
-        const n = this.pieces.size
-        const cx = sx / n
-        const cy = sy / n
+        const count = this.pieces.size
+        const centerX = sumX / count
+        const centerY = sumY / count
         // Setting pivot shifts children visually by -pivot; compensate by setting position = pivot.
-        this.container.pivot.set(cx, cy)
-        this.container.position.set(cx, cy)
+        this.container.pivot.set(centerX, centerY)
+        this.container.position.set(centerX, centerY)
     }
 
     /** Animate a 90-degree rotation around the group's pivot. */
     rotate(clockwise: boolean, onComplete: () => void) {
-        const angleDeltaDeg = clockwise ? 90 : -90
-        const angleDeltaRad = (angleDeltaDeg * Math.PI) / 180
+        const angleDeltaDegrees = clockwise ? 90 : -90
+        const angleDeltaRadians = (angleDeltaDegrees * Math.PI) / 180
         const startAngle = this.container.rotation
-        const targetAngle = startAngle + angleDeltaRad
+        const targetAngle = startAngle + angleDeltaRadians
         const duration = 200
         const startTime = performance.now()
 
@@ -68,12 +68,12 @@ export class SnapGroupDisplay {
                 ticker.remove(tick)
                 this.activeRotation = null
                 for (const piece of this.pieces) {
-                    piece.rotation = (piece.rotation + angleDeltaDeg + 360) % 360
+                    piece.rotation = (piece.rotation + angleDeltaDegrees + 360) % 360
                 }
                 onComplete()
                 return
             }
-            this.container.rotation = startAngle + angleDeltaRad * (elapsed / duration)
+            this.container.rotation = startAngle + angleDeltaRadians * (elapsed / duration)
         }
         this.activeRotation = () => ticker.remove(tick)
         ticker.add(tick)
@@ -119,8 +119,8 @@ export class SnapGroupDisplay {
     /** Update stroke opacity for all pieces based on snapped neighbor count within this group. */
     updateStrokeOpacity(piecesByLocation: Map<string, JigsawPieceDisplay>) {
         for (const piece of this.pieces) {
-            const snappedNeighborCount = NEIGHBOR_OFFSETS.filter(({colOffset, rowOffset}) => {
-                const neighbor = piecesByLocation.get(`${piece.column + colOffset}:${piece.row + rowOffset}`)
+            const snappedNeighborCount = NEIGHBOR_OFFSETS.filter(({columnOffset, rowOffset}) => {
+                const neighbor = piecesByLocation.get(`${piece.column + columnOffset}:${piece.row + rowOffset}`)
                 return neighbor && this.pieces.has(neighbor)
             }).length
             piece.updateSnappedNeighborCount(snappedNeighborCount)

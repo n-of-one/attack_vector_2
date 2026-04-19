@@ -30,12 +30,12 @@ export class JigsawCanvas {
     static async create(
         data: JigsawEnterData, dispatch: Dispatch, store: Store, media: LoadedMedia,
     ): Promise<JigsawCanvas> {
-        const canvasEl = document.getElementById('jigsawCanvas') as HTMLCanvasElement | null
-        if (!canvasEl) throw new Error("jigsawCanvas element not found")
+        const canvasElement = document.getElementById('jigsawCanvas') as HTMLCanvasElement | null
+        if (!canvasElement) throw new Error("jigsawCanvas element not found")
 
         const app = new Application()
         await app.init({
-            canvas: canvasEl,
+            canvas: canvasElement,
             width: CANVAS_WIDTH,
             height: CANVAS_HEIGHT,
             background: 0x181818,
@@ -60,18 +60,18 @@ export class JigsawCanvas {
             )
         }
 
-        const bgLayer = new Container()
+        const backgroundLayer = new Container()
         this.piecesLayer = new Container()
         this.topLayer = new Container()
-        this.app.stage.addChild(bgLayer)
+        this.app.stage.addChild(backgroundLayer)
         this.app.stage.addChild(this.piecesLayer)
         this.app.stage.addChild(this.topLayer)
 
-        this.addBackgroundImage(bgLayer, media)
+        this.addBackgroundImage(backgroundLayer, media)
 
-        const puzzleCols = data.columns
+        const puzzleColumns = data.columns
         const puzzleRows = data.rows
-        const {pieceWidth, pieceHeight} = calculatePieceDimensions(puzzleCols, puzzleRows)
+        const {pieceWidth, pieceHeight} = calculatePieceDimensions(puzzleColumns, puzzleRows)
 
         this.piecesByLocation = new Map(
             data.pieces.map(config => {
@@ -79,7 +79,7 @@ export class JigsawCanvas {
                     column: config.column, row: config.row, config,
                     sharedTexture: media.texture,
                     sourceWidth: media.width, sourceHeight: media.height,
-                    puzzleCols, puzzleRows, pieceWidth, pieceHeight,
+                    puzzleColumns, puzzleRows, pieceWidth, pieceHeight,
                 })
                 return [`${config.column}:${config.row}`, display]
             })
@@ -102,7 +102,7 @@ export class JigsawCanvas {
 
         const video = media.sourceElement
         const FADE_SECONDS = 0.3
-        const FADE_MS = FADE_SECONDS * 1000
+        const FADE_MILLISECONDS = FADE_SECONDS * 1000
 
         const easeInSine = (t: number) => 1 - Math.cos((t * Math.PI) / 2)
         const easeOutSine = (t: number) => Math.sin((t * Math.PI) / 2)
@@ -145,12 +145,12 @@ export class JigsawCanvas {
             if (phase === 'playing') {
                 const duration = video.duration
                 if (isFinite(duration) && duration > 0) {
-                    const remainingVideoSec = duration - video.currentTime
+                    const remainingVideoSeconds = duration - video.currentTime
                     const rate = video.playbackRate || 1
-                    const remainingWallMs = (remainingVideoSec / rate) * 1000
-                    if (remainingWallMs < FADE_MS) {
+                    const remainingWallMilliseconds = (remainingVideoSeconds / rate) * 1000
+                    if (remainingWallMilliseconds < FADE_MILLISECONDS) {
                         phase = 'fadingOut'
-                        phaseStart = now - (FADE_MS - remainingWallMs)
+                        phaseStart = now - (FADE_MILLISECONDS - remainingWallMilliseconds)
                     }
                 }
             }
@@ -162,7 +162,7 @@ export class JigsawCanvas {
                     break
                 case 'fadingOut': {
                     const elapsed = now - phaseStart
-                    const t = Math.min(1, elapsed / FADE_MS)
+                    const t = Math.min(1, elapsed / FADE_MILLISECONDS)
                     fade = 1 - easeInSine(t)
                     break
                 }
@@ -172,11 +172,11 @@ export class JigsawCanvas {
                     break
                 case 'fadingIn': {
                     const elapsed = now - phaseStart
-                    if (elapsed >= FADE_MS) {
+                    if (elapsed >= FADE_MILLISECONDS) {
                         phase = 'playing'
                         fade = 1
                     } else {
-                        fade = easeOutSine(elapsed / FADE_MS)
+                        fade = easeOutSine(elapsed / FADE_MILLISECONDS)
                     }
                     break
                 }
@@ -207,9 +207,9 @@ export class JigsawCanvas {
         for (const group of groups) {
             const pieces = new Set<JigsawPieceDisplay>()
 
-            const anchorLoc = group.pieces[0]
-            if (!anchorLoc) continue
-            const anchor = this.piecesByLocation.get(`${anchorLoc.column}:${anchorLoc.row}`)
+            const anchorLocation = group.pieces[0]
+            if (!anchorLocation) continue
+            const anchor = this.piecesByLocation.get(`${anchorLocation.column}:${anchorLocation.row}`)
             if (!anchor) continue
 
             // Set anchor's logical rotation; the snap group container holds the actual rotation.
@@ -251,8 +251,8 @@ export class JigsawCanvas {
         try {
             tinyCtx.drawImage(media.sourceElement as CanvasImageSource,
                 cropOffsetX, cropOffsetY, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0, tinyWidth, tinyHeight)
-        } catch (e) {
-            console.warn("Could not snapshot background frame", e)
+        } catch (error) {
+            console.warn("Could not snapshot background frame", error)
             return
         }
 
@@ -276,31 +276,31 @@ export class JigsawCanvas {
         stage.eventMode = 'static'
         stage.hitArea = new Rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
-        const canvasEl = this.app.canvas
-        canvasEl.addEventListener('contextmenu', e => e.preventDefault())
-        canvasEl.addEventListener('wheel', e => e.preventDefault(), {passive: false})
+        const canvasElement = this.app.canvas
+        canvasElement.addEventListener('contextmenu', event => event.preventDefault())
+        canvasElement.addEventListener('wheel', event => event.preventDefault(), {passive: false})
 
-        stage.on('pointerdown', (ev: FederatedPointerEvent) => {
-            const group = this.findGroupAtTarget(ev.target as Container | null)
+        stage.on('pointerdown', (event: FederatedPointerEvent) => {
+            const group = this.findGroupAtTarget(event.target as Container | null)
             if (!group) return
-            if (ev.button === 2) {
+            if (event.button === 2) {
                 this.rotateGroup(group, true)
                 return
             }
-            if (ev.button !== 0) return
+            if (event.button !== 0) return
             this.draggingGroupId = group.id
             this.topLayer.addChild(group.container)
-            this.dragOffsetX = group.container.position.x - ev.global.x
-            this.dragOffsetY = group.container.position.y - ev.global.y
+            this.dragOffsetX = group.container.position.x - event.global.x
+            this.dragOffsetY = group.container.position.y - event.global.y
         })
 
-        stage.on('pointermove', (ev: FederatedPointerEvent) => {
+        stage.on('pointermove', (event: FederatedPointerEvent) => {
             if (!this.draggingGroupId) return
             const group = this.groupsById.get(this.draggingGroupId)
             if (!group) return
             group.container.position.set(
-                ev.global.x + this.dragOffsetX,
-                ev.global.y + this.dragOffsetY,
+                event.global.x + this.dragOffsetX,
+                event.global.y + this.dragOffsetY,
             )
         })
 
@@ -321,18 +321,18 @@ export class JigsawCanvas {
         stage.on('pointerup', endDrag)
         stage.on('pointerupoutside', endDrag)
 
-        stage.on('wheel', (ev: FederatedWheelEvent) => {
-            const group = this.findGroupAtTarget(ev.target as Container | null)
+        stage.on('wheel', (event: FederatedWheelEvent) => {
+            const group = this.findGroupAtTarget(event.target as Container | null)
             if (!group) return
-            this.rotateGroup(group, ev.deltaY > 0)
+            this.rotateGroup(group, event.deltaY > 0)
         })
     }
 
     private findGroupAtTarget(target: Container | null): SnapGroupDisplay | null {
         let node: Container | null = target
         while (node) {
-            const sg = (node as any).__snapGroup
-            if (sg) return sg as SnapGroupDisplay
+            const snapGroup = (node as any).__snapGroup
+            if (snapGroup) return snapGroup as SnapGroupDisplay
             node = node.parent
         }
         return null
@@ -368,18 +368,18 @@ export class JigsawCanvas {
     onGroupRotated(data: JigsawRotatePayload) {
         const group = this.groupsById.get(data.groupId)
         if (!group) return
-        const currentDeg = ((Math.round((group.container.rotation * 180) / Math.PI) % 360) + 360) % 360
-        if (currentDeg === data.rotation) return
+        const currentDegrees = ((Math.round((group.container.rotation * 180) / Math.PI) % 360) + 360) % 360
+        if (currentDegrees === data.rotation) return
         if (this.rotating) return
         this.rotating = true
         // Decide direction: rotate the shortest path (+90 = clockwise, -90 = counter).
-        const diff = ((data.rotation - currentDeg) + 360) % 360
-        const clockwise = diff === 90 || diff === 180 // 180 we also do clockwise (two successive rotations not handled; server is the source of truth)
+        const difference = ((data.rotation - currentDegrees) + 360) % 360
+        const clockwise = difference === 90 || difference === 180 // 180 we also do clockwise (two successive rotations not handled; server is the source of truth)
         group.rotate(clockwise, () => {
             this.rotating = false
             // If still off by 180, do a second rotation to land exactly. Avoids sending any outbound frame.
-            const afterDeg = ((Math.round((group.container.rotation * 180) / Math.PI) % 360) + 360) % 360
-            if (afterDeg !== data.rotation) {
+            const afterDegrees = ((Math.round((group.container.rotation * 180) / Math.PI) % 360) + 360) % 360
+            if (afterDegrees !== data.rotation) {
                 this.rotating = true
                 group.rotate(clockwise, () => {
                     this.rotating = false
@@ -400,30 +400,30 @@ export class JigsawCanvas {
         const allPieces = new Set<JigsawPieceDisplay>()
 
         for (const id of participatingIds) {
-            const g = this.groupsById.get(id)
-            if (!g) continue
+            const group = this.groupsById.get(id)
+            if (!group) continue
             // Kill any in-flight rotation tween on a participating group before we destroy its
             // container — the tween's onComplete would otherwise fire on a dead container and
             // cause `rotating = true` forever.
-            g.cancelRotation()
-            for (const piece of g.pieces) allPieces.add(piece)
+            group.cancelRotation()
+            for (const piece of group.pieces) allPieces.add(piece)
             // Detach pieces from old container so we can hand them to a fresh group.
-            for (const piece of g.pieces) g.container.removeChild(piece.container)
-            this.removeSnapGroup(g)
-            g.container.destroy({children: false})
+            for (const piece of group.pieces) group.container.removeChild(piece.container)
+            this.removeSnapGroup(group)
+            group.container.destroy({children: false})
         }
         this.rotating = false
 
         // Choose an anchor from the server-provided pieces list so we position using the
         // authoritative grid layout (ignoring any local pre-snap offset drift).
-        const anchorLoc = data.pieces[0]
-        const anchor = anchorLoc ? this.piecesByLocation.get(`${anchorLoc.column}:${anchorLoc.row}`) : undefined
+        const anchorLocation = data.pieces[0]
+        const anchor = anchorLocation ? this.piecesByLocation.get(`${anchorLocation.column}:${anchorLocation.row}`) : undefined
         if (!anchor) return
 
         anchor.rotation = data.rotation
 
-        for (const loc of data.pieces) {
-            const piece = this.piecesByLocation.get(`${loc.column}:${loc.row}`)
+        for (const location of data.pieces) {
+            const piece = this.piecesByLocation.get(`${location.column}:${location.row}`)
             if (!piece || piece === anchor) continue
             piece.positionRelativeTo(anchor)
         }

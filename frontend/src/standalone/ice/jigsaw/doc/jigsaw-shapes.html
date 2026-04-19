@@ -21,7 +21,7 @@
 
     const size = 150;
     const tab = size * 0.08; // shorter extension from the edge
-    const o = tab + 20; // offset so tabs have room
+    const offset = tab + 20; // offset so tabs have room
 
     ctx.translate(80, 80);
 
@@ -33,76 +33,76 @@
     const bulbCount = 4;
     const bulbRadius = inner / (bulbCount * 2);
 
-    ctx.moveTo(o, o);
-    ctx.lineTo(o + margin, o); // 10% flat start
+    ctx.moveTo(offset, offset);
+    ctx.lineTo(offset + margin, offset); // 10% flat start
     for (let i = 0; i < bulbCount; i++) {
-        const bx = o + margin + bulbRadius * (2 * i + 1);
-        ctx.arc(bx, o, bulbRadius, Math.PI, 0, false);
+        const bulbCenterX = offset + margin + bulbRadius * (2 * i + 1);
+        ctx.arc(bulbCenterX, offset, bulbRadius, Math.PI, 0, false);
     }
-    ctx.lineTo(o + size - margin, o);
-    ctx.lineTo(o + size, o); // 10% flat end
+    ctx.lineTo(offset + size - margin, offset);
+    ctx.lineTo(offset + size, offset); // 10% flat end
 
     // --- Right edge: embattled (square battlements) ---
     // Starts and ends with an extrusion (merlon)
     const merlonCount = 3;
     const merlonUnit = inner / (merlonCount * 2 - 1); // 4 merlons + 3 gaps
 
-    ctx.lineTo(o + size, o + margin); // 10% flat start
-    ctx.lineTo(o + size + tab, o + margin); // step out for first merlon
+    ctx.lineTo(offset + size, offset + margin); // 10% flat start
+    ctx.lineTo(offset + size + tab, offset + margin); // step out for first merlon
     for (let i = 0; i < merlonCount; i++) {
-        const mEnd = o + margin + (2 * i + 1) * merlonUnit;
-        ctx.lineTo(o + size + tab, mEnd); // merlon bottom edge
+        const merlonEnd = offset + margin + (2 * i + 1) * merlonUnit;
+        ctx.lineTo(offset + size + tab, merlonEnd); // merlon bottom edge
         if (i < merlonCount - 1) {
-            ctx.lineTo(o + size, mEnd); // step in for gap
-            const gEnd = o + margin + (2 * i + 2) * merlonUnit;
-            ctx.lineTo(o + size, gEnd); // gap bottom edge
-            ctx.lineTo(o + size + tab, gEnd); // step out for next merlon
+            ctx.lineTo(offset + size, merlonEnd); // step in for gap
+            const gapEnd = offset + margin + (2 * i + 2) * merlonUnit;
+            ctx.lineTo(offset + size, gapEnd); // gap bottom edge
+            ctx.lineTo(offset + size + tab, gapEnd); // step out for next merlon
         }
     }
-    ctx.lineTo(o + size, o + size - margin); // step in, 10% flat end
-    ctx.lineTo(o + size, o + size);
+    ctx.lineTo(offset + size, offset + size - margin); // step in, 10% flat end
+    ctx.lineTo(offset + size, offset + size);
 
     // --- Bottom edge: indented (zigzag / wavy triangles) ---
     const toothCount = 5;
     const toothWidth = inner / toothCount;
 
-    ctx.lineTo(o + size - margin, o + size); // 10% flat start
+    ctx.lineTo(offset + size - margin, offset + size); // 10% flat start
     for (let i = 0; i < toothCount; i++) {
-        const x1 = o + size - margin - i * toothWidth;
-        const x2 = o + size - margin - (i + 0.5) * toothWidth;
-        const x3 = o + size - margin - (i + 1) * toothWidth;
-        ctx.lineTo(x1, o + size);
-        ctx.lineTo(x2, o + size + tab);
-        ctx.lineTo(x3, o + size);
+        const x1 = offset + size - margin - i * toothWidth;
+        const x2 = offset + size - margin - (i + 0.5) * toothWidth;
+        const x3 = offset + size - margin - (i + 1) * toothWidth;
+        ctx.lineTo(x1, offset + size);
+        ctx.lineTo(x2, offset + size + tab);
+        ctx.lineTo(x3, offset + size);
     }
-    ctx.lineTo(o + margin, o + size);
-    ctx.lineTo(o, o + size); // 10% flat end
+    ctx.lineTo(offset + margin, offset + size);
+    ctx.lineTo(offset, offset + size); // 10% flat end
 
     // --- Left edge: raguly (diagonal branch stumps) ---
     // Like embattled but with diagonal transitions; stumps = gaps in size
-    const ragCount = 4;
-    const ragUnit = inner / (ragCount * 2 - 1); // 4 stumps + 3 gaps = 7 units
-    const ragSlant = ragUnit * 0.3; // diagonal offset, split evenly between stump and gap
+    const ragulyCount = 4;
+    const ragulyUnit = inner / (ragulyCount * 2 - 1); // 4 stumps + 3 gaps = 7 units
+    const ragulySlant = ragulyUnit * 0.3; // diagonal offset, split evenly between stump and gap
 
-    ctx.lineTo(o, o + size - margin); // 10% flat start
-    ctx.lineTo(o - tab, o + size - margin); // perpendicular step out
-    for (let i = 0; i < ragCount; i++) {
-        const stumpBot = o + size - margin - 2 * i * ragUnit;
-        const stumpTop = stumpBot - ragUnit;
-        // stump body at o-tab (shortened by half-slant at each end)
-        ctx.lineTo(o - tab, stumpTop + ragSlant / 2);
-        if (i < ragCount - 1) {
-            // diagonal step in (eats ragSlant/2 from stump top + ragSlant/2 from gap bottom)
-            ctx.lineTo(o, stumpTop - ragSlant / 2);
-            const gapTop = stumpTop - ragUnit;
-            // gap body at o (shortened by half-slant at each end)
-            ctx.lineTo(o, gapTop + ragSlant / 2);
-            // diagonal step out (eats ragSlant/2 from gap top + ragSlant/2 from next stump bottom)
-            ctx.lineTo(o - tab, gapTop - ragSlant / 2);
+    ctx.lineTo(offset, offset + size - margin); // 10% flat start
+    ctx.lineTo(offset - tab, offset + size - margin); // perpendicular step out
+    for (let i = 0; i < ragulyCount; i++) {
+        const stumpBottom = offset + size - margin - 2 * i * ragulyUnit;
+        const stumpTop = stumpBottom - ragulyUnit;
+        // stump body at offset-tab (shortened by half-slant at each end)
+        ctx.lineTo(offset - tab, stumpTop + ragulySlant / 2);
+        if (i < ragulyCount - 1) {
+            // diagonal step in (eats ragulySlant/2 from stump top + ragulySlant/2 from gap bottom)
+            ctx.lineTo(offset, stumpTop - ragulySlant / 2);
+            const gapTop = stumpTop - ragulyUnit;
+            // gap body at offset (shortened by half-slant at each end)
+            ctx.lineTo(offset, gapTop + ragulySlant / 2);
+            // diagonal step out (eats ragulySlant/2 from gap top + ragulySlant/2 from next stump bottom)
+            ctx.lineTo(offset - tab, gapTop - ragulySlant / 2);
         }
     }
-    ctx.lineTo(o - tab, o + margin); // last stump to top
-    ctx.lineTo(o, o + margin); // perpendicular step in
+    ctx.lineTo(offset - tab, offset + margin); // last stump to top
+    ctx.lineTo(offset, offset + margin); // perpendicular step in
 
     ctx.closePath();
 
@@ -119,60 +119,60 @@
     ctx.beginPath();
 
     // --- Top edge: invected inward (consecutive dips) ---
-    ctx.moveTo(o, o);
-    ctx.lineTo(o + margin, o);
+    ctx.moveTo(offset, offset);
+    ctx.lineTo(offset + margin, offset);
     for (let i = 0; i < bulbCount; i++) {
-        const bx = o + margin + bulbRadius * (2 * i + 1);
-        ctx.arc(bx, o, bulbRadius, Math.PI, 0, true); // true = inward (down)
+        const bulbCenterX = offset + margin + bulbRadius * (2 * i + 1);
+        ctx.arc(bulbCenterX, offset, bulbRadius, Math.PI, 0, true); // true = inward (down)
     }
-    ctx.lineTo(o + size - margin, o);
-    ctx.lineTo(o + size, o);
+    ctx.lineTo(offset + size - margin, offset);
+    ctx.lineTo(offset + size, offset);
 
     // --- Right edge: embattled inward (indentations) ---
-    ctx.lineTo(o + size, o + margin);
-    ctx.lineTo(o + size - tab, o + margin); // step in for first indentation
+    ctx.lineTo(offset + size, offset + margin);
+    ctx.lineTo(offset + size - tab, offset + margin); // step in for first indentation
     for (let i = 0; i < merlonCount; i++) {
-        const mEnd = o + margin + (2 * i + 1) * merlonUnit;
-        ctx.lineTo(o + size - tab, mEnd);
+        const merlonEnd = offset + margin + (2 * i + 1) * merlonUnit;
+        ctx.lineTo(offset + size - tab, merlonEnd);
         if (i < merlonCount - 1) {
-            ctx.lineTo(o + size, mEnd); // step out for gap
-            const gEnd = o + margin + (2 * i + 2) * merlonUnit;
-            ctx.lineTo(o + size, gEnd);
-            ctx.lineTo(o + size - tab, gEnd); // step in for next indentation
+            ctx.lineTo(offset + size, merlonEnd); // step out for gap
+            const gapEnd = offset + margin + (2 * i + 2) * merlonUnit;
+            ctx.lineTo(offset + size, gapEnd);
+            ctx.lineTo(offset + size - tab, gapEnd); // step in for next indentation
         }
     }
-    ctx.lineTo(o + size, o + size - margin);
-    ctx.lineTo(o + size, o + size);
+    ctx.lineTo(offset + size, offset + size - margin);
+    ctx.lineTo(offset + size, offset + size);
 
     // --- Bottom edge: indented inward (zigzag pointing up) ---
-    ctx.lineTo(o + size - margin, o + size);
+    ctx.lineTo(offset + size - margin, offset + size);
     for (let i = 0; i < toothCount; i++) {
-        const x1 = o + size - margin - i * toothWidth;
-        const x2 = o + size - margin - (i + 0.5) * toothWidth;
-        const x3 = o + size - margin - (i + 1) * toothWidth;
-        ctx.lineTo(x1, o + size);
-        ctx.lineTo(x2, o + size - tab); // inward (up)
-        ctx.lineTo(x3, o + size);
+        const x1 = offset + size - margin - i * toothWidth;
+        const x2 = offset + size - margin - (i + 0.5) * toothWidth;
+        const x3 = offset + size - margin - (i + 1) * toothWidth;
+        ctx.lineTo(x1, offset + size);
+        ctx.lineTo(x2, offset + size - tab); // inward (up)
+        ctx.lineTo(x3, offset + size);
     }
-    ctx.lineTo(o + margin, o + size);
-    ctx.lineTo(o, o + size);
+    ctx.lineTo(offset + margin, offset + size);
+    ctx.lineTo(offset, offset + size);
 
     // --- Left edge: raguly inward (diagonal indentations) ---
-    ctx.lineTo(o, o + size - margin);
-    ctx.lineTo(o + tab, o + size - margin); // perpendicular step in
-    for (let i = 0; i < ragCount; i++) {
-        const stumpBot = o + size - margin - 2 * i * ragUnit;
-        const stumpTop = stumpBot - ragUnit;
-        ctx.lineTo(o + tab, stumpTop + ragSlant / 2);
-        if (i < ragCount - 1) {
-            ctx.lineTo(o, stumpTop - ragSlant / 2);
-            const gapTop = stumpTop - ragUnit;
-            ctx.lineTo(o, gapTop + ragSlant / 2);
-            ctx.lineTo(o + tab, gapTop - ragSlant / 2);
+    ctx.lineTo(offset, offset + size - margin);
+    ctx.lineTo(offset + tab, offset + size - margin); // perpendicular step in
+    for (let i = 0; i < ragulyCount; i++) {
+        const stumpBottom = offset + size - margin - 2 * i * ragulyUnit;
+        const stumpTop = stumpBottom - ragulyUnit;
+        ctx.lineTo(offset + tab, stumpTop + ragulySlant / 2);
+        if (i < ragulyCount - 1) {
+            ctx.lineTo(offset, stumpTop - ragulySlant / 2);
+            const gapTop = stumpTop - ragulyUnit;
+            ctx.lineTo(offset, gapTop + ragulySlant / 2);
+            ctx.lineTo(offset + tab, gapTop - ragulySlant / 2);
         }
     }
-    ctx.lineTo(o + tab, o + margin);
-    ctx.lineTo(o, o + margin);
+    ctx.lineTo(offset + tab, offset + margin);
+    ctx.lineTo(offset, offset + margin);
 
     ctx.closePath();
 
