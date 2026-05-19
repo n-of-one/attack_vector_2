@@ -25,7 +25,7 @@ echo --- --- --- --- --- ---
 cd ../../website
 npm run build
 mkdir ../backend/src/main/resources/static/attack_vector_2
-cp -r build ../backend/src/main/resources/static/attack_vector_2
+cp -r build/* ../backend/src/main/resources/static/attack_vector_2
 
 cd ../frontend
 
