@@ -19,6 +19,14 @@ RUN rm -f asset-manifest.json
 RUN rm -f favicon.ico
 
 
+FROM node:22-slim AS build-docusaurus
+
+WORKDIR /website
+COPY ../website .
+
+RUN npm install
+RUN npm run build
+
 FROM maven:latest AS build-backend
 
 WORKDIR /backend
@@ -30,6 +38,7 @@ COPY ../backend/src src
 # load the newly build frontend to the backend
 RUN rm -rf src/main/resources/static
 COPY --from=build-frontend /frontend/build src/main/resources/static
+COPY --from=build-docusaurus /website/build src/main/resources/static/attack_vector_2
 
 RUN mvn clean package -DskipTests
 
