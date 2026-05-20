@@ -2,7 +2,7 @@ services:
   # traefik config base on https://joeeey.com/blog/selfhosting-sso-with-traefik-keycloak-part-1/
 
   traefik:
-    image: traefik:latest
+    image: traefik:3.7.1
     ports:
       - '80:80'
       - '443:443'
@@ -54,7 +54,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.route-auth.rule=Host(`${KEYCLOAK_HOST}`)"
       - "traefik.http.services.route-auth.loadbalancer.server.port=8080"
-#    restart: unless-stopped
+    restart: unless-stopped
     depends_on:
       - keycloak-db
       - traefik
@@ -78,6 +78,7 @@ services:
       POSTGRES_DB: ${KEYCLOAK_DB}
       POSTGRES_USER: ${KEYCLOAK_DB_USER}
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    restart: unless-stopped
 
   attack_vector_2-DB:
     extends:

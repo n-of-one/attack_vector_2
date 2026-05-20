@@ -1,7 +1,7 @@
 services:
   attack_vector_2-DB:
     container_name: attack_vector_2-DB
-    image: mongo:latest
+    image: mongo:4.4.13 # last version compatible with raspberry pi
     ports:
       - "27017:27017"
     environment:
@@ -9,6 +9,7 @@ services:
     volumes:
       - mongo_data:/data/db
       - ./install/createUser.js:/docker-entrypoint-initdb.d/init.js:ro
+    restart: unless-stopped
 
   attack_vector_2:
     build:
@@ -23,6 +24,7 @@ services:
       - MONGODB_URI=mongodb://attackvector2:attackvector2@attack_vector_2-DB/admin
       - MONGODB_NAME=attackvector2
       - TZ='Europe/Amsterdam'
+    restart: unless-stopped
 
 volumes:
   mongo_data:
