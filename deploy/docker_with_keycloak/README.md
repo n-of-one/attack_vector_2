@@ -31,7 +31,8 @@ New user will get the non_hacker role
 
 If you host attack_vector on a LAN, you can skip this step
 
-To enabled https, uncomment the folling section in [traefik.yml](./conf/traefik/traefik.yml) 
+To enabled https, uncomment the folling section in [traefik.yml](./conf/traefik/traefik.yml)
+
 ```
 #    http:
 #      redirections:
@@ -47,10 +48,20 @@ To enabled https, uncomment the folling section in [traefik.yml](./conf/traefik/
 ```
 
 Then update the `certificatesResolvers: letsencrypt` with the configuration relative to your dns provider.
+Replace the email field in the certificatesResolvers by yours.
+
 In the provided exemple I'm using [dynu](https://www.dynu.com/en-US/), the confidential information like username,
 password, apiKey, ... can be provided as environment viriables by the [letsencrypt.env](letsencrypt.env) file.
 
-More information [here](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge)
+More
+information [here](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge)
+
+#### Testing
+
+If you want to test your configuration, remplace `certResolver: letsencrypt` by `certResolver: letsencrypt-staging`
+in [traefik.yml](./conf/traefik/traefik.yml)
+and `resolver: letsencrypt` by `resolver: letsencrypt-staging` in [config.yml](./conf/traefik/conf.d/config.yml) to
+avoid rate limit
 
 ### Configure Keycloak (optional)
 

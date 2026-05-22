@@ -32,7 +32,7 @@ tls:
   stores:
     default:
       defaultCertificate:
-        resolver: letsencrypt-staging
+        resolver: letsencrypt
         domains:
           - main: '{{ env "DOMAIN" }}'
           - sans:
