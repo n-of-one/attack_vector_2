@@ -29,6 +29,11 @@ http:
       compress: {}
 
 tls:
-  options:
+  stores:
     default:
-      sniStrict: true
+      defaultCertificate:
+        resolver: letsencrypt-staging
+        domains:
+          - main: '{{ env "DOMAIN" }}'
+          - sans:
+            - '*.{{ env "DOMAIN" }}'

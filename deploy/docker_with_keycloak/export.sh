@@ -34,6 +34,7 @@ sed -i "s%$line_old2%$line_new2%g" ./export/av2only_compose.yaml
 echo 'Creating a run.sh file'
 echo "#!/bin/bash
 
+chmod 600 ./conf/traefik/acme.json
 docker image inspect av2 > /dev/null
 RET=\$?
 if [[ \${RET} -eq 1 ]]
