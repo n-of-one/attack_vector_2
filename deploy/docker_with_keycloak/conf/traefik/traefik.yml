@@ -27,7 +27,7 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: "theo.julien.henry@gmail.com"
-      storage: /etc/traefik/acme.json
+      storage: /etc/traefik/letsencrypt/acme.json
       dnsChallenge:
         provider: dynu
 
@@ -35,7 +35,7 @@ certificatesResolvers:
   letsencrypt-staging:
     acme:
       email: "theo.julien.henry@gmail.com"
-      storage: /etc/traefik/acme-staging.json  # Fichier séparé !
+      storage: /etc/traefik/letsencrypt/acme-staging.json  # Fichier séparé !
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       dnsChallenge:
         provider: dynu

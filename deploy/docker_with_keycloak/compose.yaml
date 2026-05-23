@@ -13,7 +13,7 @@ services:
       - ./conf/traefik/traefik.yml:/traefik.yml
       - ./conf/traefik/conf.d:/conf.d
       - /var/run/docker.sock:/var/run/docker.sock
-      - traefik-certificates:/etc/traefik/letsencrypt
+      - ./data/traefik/letsencrypt:/etc/traefik/letsencrypt
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.route-reverseproxy.rule=Host(`${TRAEFIK_HOST}`)"

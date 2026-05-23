@@ -33,7 +33,9 @@ tls:
     default:
       defaultCertificate:
         resolver: letsencrypt
-        domains:
-          - main: '{{ env "DOMAIN" }}'
-          - sans:
+      defaultGeneratedCert:
+        resolver: letsencrypt
+        domain:
+          main: '{{ env "DOMAIN" }}'
+          sans:
             - '*.{{ env "DOMAIN" }}'
