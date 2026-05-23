@@ -5,6 +5,7 @@ mkdir export
 
 echo 'Copy env and conf'
 cp ./.env ./export
+cp ./letsencrypt.env .export
 cp -R ./conf/ ./export
 mkdir ./export/conf/mongoDB
 cp -R ../../install/createUser.js ./export/conf/mongoDB
