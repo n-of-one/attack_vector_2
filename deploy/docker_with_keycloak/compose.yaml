@@ -97,6 +97,10 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+      traefik:
+        condition: service_started
+    environment:
+      - CORS_ALLOWEDORIGINS=https://${DOMAIN},https://${ATTACK_VECTOR_HOST}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.route-hack.rule=Host(`${ATTACK_VECTOR_HOST}`)"

@@ -9,6 +9,7 @@ import org.n1.av2.platform.iam.user.ROLE_ADMIN
 import org.n1.av2.platform.iam.user.ROLE_GM
 import org.n1.av2.platform.iam.user.ROLE_HACKER
 import org.n1.av2.platform.iam.user.ROLE_USER
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.AccessDeniedException
@@ -91,7 +92,7 @@ class WebSecurityConfig(
         paths.addAll(GM_PATHS)
         paths.addAll(ADMIN_PATHS)
 
-        val pathsRegex = paths.stream().map { urlPattern -> urlPattern.replace("*" , "[^ ]*").toRegex() }.collect(Collectors.toList())
+        val pathsRegex = paths.stream().map { urlPattern -> urlPattern.replace("*", "[^ ]*").toRegex() }.collect(Collectors.toList())
         return AccessDeniedHandler { request: HttpServletRequest, response: HttpServletResponse, _: AccessDeniedException? ->
             val path = request.requestURI
             val isIncoming = pathsRegex.stream().anyMatch { regex -> regex.matches(path) }
@@ -108,9 +109,15 @@ class WebSecurityConfig(
 
 @Configuration
 class WebConfiguration : WebMvcConfigurer {
+    //can be override with ENV variable CORS_ALLOWEDORIGINS
+    @Value("\${cors.allowedOrigins:}")
+    private val allowedOrigins: String? = null
+
     override fun addCorsMappings(registry: CorsRegistry) {
         // disable CORS for local development
-        registry.addMapping("/**").allowedOrigins("http://localhost", "http://localhost:3000", "https://av.eosfrontier.space", "https://eosfrontier.space")
-            .allowedMethods("*").allowCredentials(true)
+        registry.addMapping("/**")
+            .allowedOrigins(allowedOrigins)
+            .allowedMethods("*")
+            .allowCredentials(true)
     }
 }
