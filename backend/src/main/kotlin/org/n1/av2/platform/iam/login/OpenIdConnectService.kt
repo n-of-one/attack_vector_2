@@ -19,6 +19,7 @@ import org.n1.av2.platform.util.HttpClient
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import java.net.URI
 import java.net.URLEncoder
 import java.util.*
 import java.util.stream.StreamSupport
@@ -92,7 +93,7 @@ class OpenIdConnectService(
             encodedUrl,
             mapOf(
                 "Content-Type" to "application/x-www-form-urlencoded",
-                "Host" to "auth.localhost"
+                "Host" to URI(baseUrl).host
             )
         )
         if (!response.isOk() || response.body.isEmpty() || response.body.contains("error")) {
