@@ -44,3 +44,10 @@ then
    docker load -i av2image.tar
 fi
 docker compose up" > ./export/run.sh
+
+echo 'Creating a run.sh file'
+echo "#!/bin/bash
+
+echo 'Loading AV2 docker image'
+docker load -i av2image.tar
+docker compose up" > ./export/update.sh

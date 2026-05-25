@@ -31,8 +31,6 @@ http:
 tls:
   stores:
     default:
-      defaultCertificate:
-        resolver: letsencrypt
       defaultGeneratedCert:
         resolver: letsencrypt
         domain:

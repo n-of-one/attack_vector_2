@@ -52,7 +52,6 @@ services:
       start_period: 240s
     volumes:
       - ./conf/keycloak/:/opt/keycloak/data/import/
-      - ./data/keycloak:/opt/keycloak/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.route-auth.rule=Host(`${KEYCLOAK_HOST}`)"
