@@ -248,4 +248,8 @@ class ScriptTypeService(
         connectionService.replyNotificationNeutral("Script type ${scriptType.name} deleted.")
     }
 
+    fun findByName(scriptName: String): ScriptType? {
+        return scriptTypeRepository.findByNameIgnoreCase(scriptName)
+    }
+
 }

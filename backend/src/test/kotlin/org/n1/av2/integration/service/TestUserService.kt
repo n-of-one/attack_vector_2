@@ -24,7 +24,7 @@ class TestUserService(
         }
         val user = userEntityService.createUser(name, type)
         hackerEntityService.createHacker(user, HackerIcon.CAT, name)
-        skillService.addSkillsForUser(user, listOf(SCAN, SEARCH_SITE))
+        skillService.updateSkillsForUser(user, listOf(SCAN, SEARCH_SITE))
 
         return user
     }

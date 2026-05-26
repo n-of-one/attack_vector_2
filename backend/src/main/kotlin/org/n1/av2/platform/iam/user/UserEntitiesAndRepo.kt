@@ -51,7 +51,7 @@ val NOT_LOGGED_IN_USER = UserEntity(
     id = "user-not-logged-in",
     externalId = "user-not-logged-in",
     name = "notLoggedIn",
-    type = UserType.SYSTEM,
+    type = UserType.NOT_LOGGED_IN,
 )
 
 // This user is the sender when hackers receive (daily) script income
@@ -85,3 +85,12 @@ val GM_ADJUST_CREDITS_USER = UserEntity(
     name = "(system)",
     type = UserType.SYSTEM,
 )
+
+// This user is used when configuring accounts/systems when logging in via an external system (such as frontier)
+val EXTERNAL_USER_MANAGER = UserEntity(
+    id = "system-iam-usermanager",
+    externalId = "system-iam-usermanager",
+    name = "(system)",
+    type = UserType.GM,
+)
+
