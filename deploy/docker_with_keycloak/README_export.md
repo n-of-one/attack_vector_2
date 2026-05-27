@@ -6,4 +6,4 @@
 4. Run `bash run.sh` inside the export folder
 
 ## Load a new version of the av2 image
-`docker load -i av2image.tar`
+Run `sh update.sh` inside the export folder
