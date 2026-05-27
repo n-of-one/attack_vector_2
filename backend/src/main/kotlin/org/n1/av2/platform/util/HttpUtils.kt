@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import java.net.HttpURLConnection
 import java.net.URI
+import java.net.URL
 
 
 class HttpClient {
@@ -44,11 +45,37 @@ class HttpClient {
         cookies: Array<Cookie> = emptyArray(),
         requestBody: String? = null,
     ): Response {
-        val url = URI(urlString).toURL()
-        try {
-            val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+        return try {
+            getResponseAndFollowRedirect(
+                URI(urlString).toURL(),
+                method,
+                props,
+                cookies,
+                requestBody
+            )
+        } catch (e: IOException) {
+            Response(-1, e.message ?: "Unknown error")
+        }
+    }
 
-            try {
+    /**
+     * Enable redirection between HTTP URL and HTTPS URL
+     */
+    private fun getResponseAndFollowRedirect(
+        url: URL,
+        method: String,
+        props: Map<String, String>,
+        cookies: Array<Cookie> = emptyArray(),
+        requestBody: String? = null,
+    ): Response {
+        var conn = url.openConnection() as HttpURLConnection
+
+        try {
+            var nbOfRedirects = 0
+            var responseBody = ""
+            while (nbOfRedirects < 5) {
+                conn.setInstanceFollowRedirects(false)
+
                 conn.requestMethod = method
                 conn.setRequestProperty("Accept", "application/json")
                 if (cookies.isNotEmpty()) {
@@ -59,35 +86,51 @@ class HttpClient {
                 }
 
                 logRequest(conn, requestBody)
-                if(!requestBody.isNullOrEmpty()) {
+                if (!requestBody.isNullOrEmpty()) {
                     conn.setDoOutput(true)
                     conn.getOutputStream().write(requestBody.toByteArray())
                 }
 
                 // Read response body
-                val responseBody = conn.inputStream.bufferedReader().readText()
+                responseBody = conn.inputStream.bufferedReader().readText()
                 logResponse(conn, responseBody)
+                when (conn.responseCode) {
+                    HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP, 307, 308 -> {
+                        val loc = conn.getHeaderField("Location")
+                        val target = URI(loc).toURL()
+                        logger.info("redirected to $target")
+                        conn.disconnect()
 
-                return Response(conn.responseCode, responseBody)
-            } catch (e: Exception) {
-                logger.error(e.message, e)
-                if(conn.errorStream != null) {
-                    val responseBody = conn.errorStream.bufferedReader().readText()
-                    logResponse(conn, responseBody)
-                    return Response(conn.responseCode, responseBody)
+                        nbOfRedirects += 1
+
+                        conn = target.openConnection() as HttpURLConnection
+                    }
+
+                    else -> {
+                        return Response(conn.responseCode, responseBody)
+                    }
                 }
-                return Response(-1, e.message ?: e.javaClass.simpleName)
-            } finally {
-                conn.disconnect()
             }
-        } catch (e: IOException) {
-            return Response(-1, e.message ?: "Unknown error")
+
+            // Read response body
+            return Response(conn.responseCode, responseBody)
+
+        } catch (e: Exception) {
+            logger.error(e.message, e)
+            if (conn.errorStream != null) {
+                val responseBody = conn.errorStream.bufferedReader().readText()
+                logResponse(conn, responseBody)
+                return Response(conn.responseCode, responseBody)
+            }
+            return Response(-1, e.message ?: e.javaClass.simpleName)
+        } finally {
+            conn.disconnect()
         }
     }
 
 
     private fun logRequest(conn: HttpURLConnection, body: String?) {
-        if(!enableLog) return
+        if (!enableLog) return
         logger.info("Request URL : ${conn.url}")
         logger.info("Request Method : ${conn.requestMethod}")
         logger.info("Request Headers : ${conn.requestProperties}")
@@ -97,7 +140,7 @@ class HttpClient {
     }
 
     private fun logResponse(conn: HttpURLConnection, body: String?) {
-        if(!enableLog) return
+        if (!enableLog) return
         logger.info("Response Status Code : ${conn.responseCode} ${conn.responseMessage}")
         logger.info("Response Headers : ${conn.headerFields}")
         if (!body.isNullOrEmpty()) {
