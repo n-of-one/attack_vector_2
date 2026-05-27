@@ -8,12 +8,37 @@ services:
       - '443:443'
     env_file:
       - ".env"
-      - "letsencrypt.env"
+      - ".env-letsencrypt"
     volumes:
-      - ./conf/traefik/traefik.yml:/traefik.yml
       - ./conf/traefik/conf.d:/conf.d
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./data/traefik/letsencrypt:/etc/traefik/letsencrypt
+#      - ./data/traefik/letsencrypt:/etc/traefik/letsencrypt
+      - traefik-certificates:/etc/traefik/letsencrypt
+    command:
+      - "--providers.docker.exposedByDefault=false"
+      - "--providers.file.directory=conf.d"
+      - "--api.dashboard=true"
+      - "--log.level=INFO"
+
+      - "--entrypoints.web.address=:80"
+
+    # uncomment the following block to enabled https
+#      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+#      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+#      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+#      - "--entrypoints.websecure.address=:443"
+#      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
+#      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
+#      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
+#
+#      - "--certificatesResolvers.letsencrypt.acme.storage=etc/traefik/letsencrypt/acme.json"
+#      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+#      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=${RESOLVER_NAME}"
+#
+#      - "--certificatesResolvers.letsencrypt-staging.acme.storage=etc/traefik/letsencrypt/acme-staging.json"
+#      - "--certificatesResolvers.letsencrypt-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+#      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+#      - "--certificatesResolvers.letsencrypt-staging.acme.dnsChallenge.provider=${RESOLVER_NAME}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.route-reverseproxy.rule=Host(`${TRAEFIK_HOST}`)"
@@ -86,6 +111,9 @@ services:
     extends:
       file: ../../compose.yaml
       service: attack_vector_2-DB
+    mem_limit: 256m
+    cpus: 0.25
+    command: --wiredTigerCacheSizeGB 0.25
 
   attack_vector_2:
     container_name: ${ATTACK_VECTOR_HOST}

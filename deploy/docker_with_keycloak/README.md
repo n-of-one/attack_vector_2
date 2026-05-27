@@ -31,37 +31,38 @@ New user will get the non_hacker role
 
 If you host attack_vector on a LAN, you can skip this step
 
-To enabled https, uncomment the folling section in [traefik.yml](./conf/traefik/traefik.yml)
+To enabled https, uncomment the folling section in [compose.yaml](./compose.yaml)
 
 ```
-#    http:
-#      redirections:
-#        entryPoint:
-#          to: websecure
-#          scheme: https
-#          permanent: true
-#  websecure:
-#    address: ":443"
-#    http:
-#      tls:
-#        certResolver: letsencrypt
+#      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+#      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+#      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+#      - "--entrypoints.websecure.address=:443"
+#      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
+#      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
+#      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
+#
+#      - "--certificatesResolvers.letsencrypt.acme.storage=etc/traefik/letsencrypt/acme.json"
+#      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+#      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=dynu"
+#
+#      - "--certificatesResolvers.letsencrypt-staging.acme.storage=etc/traefik/letsencrypt/acme-staging.json"
+#      - "--certificatesResolvers.letsencrypt-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+#      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+#      - "--certificatesResolvers.letsencrypt-staging.acme.dnsChallenge.provider=dynu"
+
 ```
 
-Then update the `certificatesResolvers: letsencrypt` with the configuration relative to your dns provider.
-Replace the email field in the certificatesResolvers by yours.
+Then update the [.env-letsencrypt](.env-letsencrypt) file with an e-mail and the name your DNS resolver.
+Add the necessary information needed by the resolver.
 
-In the provided exemple I'm using [dynu](https://www.dynu.com/en-US/), the confidential information like username,
-password, apiKey, ... can be provided as environment viriables by the [letsencrypt.env](letsencrypt.env) file.
-
-More
-information [here](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge)
+In the provided exemple, I'm using [dynu](https://www.dynu.com/en-US/), which need a custom ENV variable `DYNU_API_KEY`
+More information [here](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge)
 
 #### Testing
 
-If you want to test your configuration, remplace `certResolver: letsencrypt` by `certResolver: letsencrypt-staging`
-in [traefik.yml](./conf/traefik/traefik.yml)
-and `resolver: letsencrypt` by `resolver: letsencrypt-staging` in [config.yml](./conf/traefik/conf.d/config.yml) to
-avoid rate limit
+If you want to test your configuration, remplace `--entrypoints.websecure.http.tls.certResolver=letsencrypt` by `--entrypoints.websecure.http.tls.certResolver=letsencrypt-staging`
+in [compose.yaml](./compose.yaml) to avoid rate limit
 
 ### Configure Keycloak (optional)
 

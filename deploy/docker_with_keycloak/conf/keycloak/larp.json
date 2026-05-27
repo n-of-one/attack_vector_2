@@ -594,13 +594,13 @@
       "alwaysDisplayInConsole": true,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost*",
-        "https://hack.localhost*",
-        "http://hack.localhost*"
+        "http://${DOMAIN}*",
+        "https://${ATTACK_VECTOR_HOST}*",
+        "http://${ATTACK_VECTOR_HOST}*"
       ],
       "webOrigins": [
-        "localhost",
-        "hack.localhost"
+        "${DOMAIN}",
+        "${ATTACK_VECTOR_HOST}"
       ],
       "notBefore": 0,
       "bearerOnly": false,

@@ -45,7 +45,7 @@ then
 fi
 docker compose up" > ./export/run.sh
 
-echo 'Creating a run.sh file'
+echo 'Creating a update.sh file'
 echo "#!/bin/bash
 
 echo 'Loading AV2 docker image'
