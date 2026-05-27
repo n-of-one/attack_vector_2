@@ -53,7 +53,7 @@ To enabled https, uncomment the folling section in [compose.yaml](./compose.yaml
 
 ```
 
-Then update the [.env-letsencrypt](.env-letsencrypt) file with an e-mail and the name your DNS resolver.
+Then update the [.env](.env) file with an e-mail and the name your DNS resolver.
 Add the necessary information needed by the resolver.
 
 In the provided exemple, I'm using [dynu](https://www.dynu.com/en-US/), which need a custom ENV variable `DYNU_API_KEY`

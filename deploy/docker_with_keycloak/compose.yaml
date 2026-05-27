@@ -8,12 +8,10 @@ services:
       - '443:443'
     env_file:
       - ".env"
-      - ".env-letsencrypt"
     volumes:
       - ./conf/traefik/conf.d:/conf.d
       - /var/run/docker.sock:/var/run/docker.sock
-#      - ./data/traefik/letsencrypt:/etc/traefik/letsencrypt
-      - traefik-certificates:/etc/traefik/letsencrypt
+      - traefik-certificates:/etc/acme
     command:
       - "--providers.docker.exposedByDefault=false"
       - "--providers.file.directory=conf.d"
@@ -31,13 +29,13 @@ services:
 #      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
 #      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
 #
-#      - "--certificatesResolvers.letsencrypt.acme.storage=etc/traefik/letsencrypt/acme.json"
+#      - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme/acme.json"
 #      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
 #      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=${RESOLVER_NAME}"
 #
-#      - "--certificatesResolvers.letsencrypt-staging.acme.storage=etc/traefik/letsencrypt/acme-staging.json"
+#      - "--certificatesResolvers.letsencrypt-staging.acme.storage=/etc/acme/acme-staging.json"
 #      - "--certificatesResolvers.letsencrypt-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
-#      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+#      - "--certificatesResolvers.letsencrypt-staging.acme.email=${E_MAIL}"
 #      - "--certificatesResolvers.letsencrypt-staging.acme.dnsChallenge.provider=${RESOLVER_NAME}"
     labels:
       - "traefik.enable=true"
