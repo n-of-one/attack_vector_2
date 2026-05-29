@@ -5,12 +5,11 @@ mkdir export
 
 echo 'Copy env and conf'
 cp ./.env ./export
-cp ./letsencrypt.env ./export
 cp -R ./conf/ ./export
 mkdir ./export/conf/mongoDB
 cp -R ../../install/createUser.js ./export/conf/mongoDB
 
-echo 'Clean cache and build a new docker image of AV2'
+echo 'Clean cache and build a new docker image of AV2 for linux/arm64'
 echo 'This step can be long and take more than 10 minutes'
 docker build --no-cache ../../. -t av2:latest --platform linux/arm64
 
