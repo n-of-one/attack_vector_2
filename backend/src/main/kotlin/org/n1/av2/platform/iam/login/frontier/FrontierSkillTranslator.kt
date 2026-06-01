@@ -27,14 +27,14 @@ class FrontierSkillTranslator(
 
         if (slicerSpecialisation()) {
             addIfPresent { eliteLevel(6, STEALTH, "25") }
-            addIfPresent { eliteLevel(7, ADJUSTED_SPEED, "8") }
+            addIfPresent { eliteLevel(7, ADJUSTED_SPEED, "10") }
             addIfPresent { eliteLevel(8, UNDO_TRIPWIRE) }
             addIfPresent { eliteLevel(9, BYPASS) }
             addIfPresent { eliteLevel(10, JUMP_TO_HACKER) }
         }
 
         if (ghostSpecialisation()) {
-            addIfPresent { architectLevel(7, ADJUSTED_SPEED, "8") }
+            addIfPresent { architectLevel(7, ADJUSTED_SPEED, "10") }
 
             // Stealth is primarily for elites.
             // However, if you are an architect that also has elite levels then you get stealth as well
@@ -90,7 +90,7 @@ class FrontierSkillTranslator(
         // Architect->Ghosts get botnet at level 6, and dual elite/architect also get it.
         val incomeFromBotNet = 100
 
-        val incomeFromSlicer1 = if (skills.architect >= 6 && ghostSpecialisation()) 100 else 0
+        val incomeFromSlicer1 = if (ghostSpecialisation()) 100 else 0
 
         return SCRIPT_CREDITS to (incomeFromBotNet + incomeFromSlicer1).toString()
     }
