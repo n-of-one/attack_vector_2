@@ -7,7 +7,7 @@ services:
       - '80:80'
       - '443:443'
     env_file:
-      - ".env"
+      - .env
     volumes:
       - ./conf/traefik/conf.d:/conf.d
       - /var/run/docker.sock:/var/run/docker.sock
@@ -47,8 +47,13 @@ services:
     # internal: keycloak on port 8080
     image: quay.io/keycloak/keycloak:26.6
     command: start --import-realm
+    env_file:
+      - .env
     environment:
       JAVA_OPTS_APPEND: "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
+
+#      DOMAIN: ${DOMAIN}
+#      ATTACK_VECTOR_HOST: ${ATTACK_VECTOR_HOST}
 
       KC_HOSTNAME: ${KEYCLOAK_HOST}
 

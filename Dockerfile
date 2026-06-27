@@ -4,10 +4,11 @@ WORKDIR /frontend
 COPY ../frontend/src src
 COPY ../frontend/public public
 COPY ../frontend/package.json package.json
+COPY ../frontend/package-lock.json package-lock.json
 COPY ../frontend/tsconfig.json tsconfig.json
 COPY ../frontend/.eslint .eslint
 
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 # clean unwanted files based on frontend/build.sh
@@ -24,7 +25,7 @@ FROM node:22-slim AS build-docusaurus
 WORKDIR /website
 COPY ../website .
 
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 FROM maven:latest AS build-backend
