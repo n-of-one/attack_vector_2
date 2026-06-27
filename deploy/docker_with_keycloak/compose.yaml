@@ -52,9 +52,6 @@ services:
     environment:
       JAVA_OPTS_APPEND: "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
 
-#      DOMAIN: ${DOMAIN}
-#      ATTACK_VECTOR_HOST: ${ATTACK_VECTOR_HOST}
-
       KC_HOSTNAME: ${KEYCLOAK_HOST}
 
       KC_PROXY: 'edge'
