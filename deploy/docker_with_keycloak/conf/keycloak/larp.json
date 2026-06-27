@@ -1774,7 +1774,8 @@
   "internationalizationEnabled": true,
   "supportedLocales": [
     "en",
-    "fr"
+    "fr",
+    "nl"
   ],
   "defaultLocale": "en",
   "authenticationFlows": [
