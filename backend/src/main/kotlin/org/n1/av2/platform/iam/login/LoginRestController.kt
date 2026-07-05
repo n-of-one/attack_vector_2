@@ -7,6 +7,7 @@ import jakarta.validation.Valid
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.authentication.expirationInS
+import org.n1.av2.platform.inputvalidation.LoginRedirectParam
 import org.n1.av2.platform.inputvalidation.SafeJwt
 import org.n1.av2.platform.inputvalidation.SafeString
 import org.springframework.web.bind.annotation.*
@@ -61,7 +62,7 @@ class LoginRestController(
     fun openIdConnectAuthenticate(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        @RequestParam next: String?
+        @RequestParam @LoginRedirectParam next: String?
     ): String {
         val redirectUri = buildOpenIdConnectCallbackUri(request, next)
         response.sendRedirect(loginService.getOpenIdConnectLoginUrl(redirectUri))
@@ -73,7 +74,7 @@ class LoginRestController(
         request: HttpServletRequest,
         response: HttpServletResponse,
         @RequestParam code: String,
-        @RequestParam next: String?
+        @RequestParam @LoginRedirectParam next: String?
     ): String {
         val redirectUri = buildOpenIdConnectCallbackUri(request, next)
         val loginCookies = loginService.openIdConnectLogin(code, redirectUri)
