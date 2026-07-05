@@ -4,7 +4,8 @@ services:
   traefik:
     image: traefik:3.7.1
     ports:
-      - '80:80'
+      # uncomment the following block to enabled dashboard for dev purpose
+      #      - '80:80'
       - '443:443'
     env_file:
       - .env
