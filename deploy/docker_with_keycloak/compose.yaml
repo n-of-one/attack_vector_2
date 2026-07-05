@@ -15,31 +15,33 @@ services:
     command:
       - "--providers.docker.exposedByDefault=false"
       - "--providers.file.directory=conf.d"
-      - "--api.dashboard=true"
       - "--log.level=INFO"
 
-      - "--entrypoints.web.address=:80"
+    # uncomment the following block to enabled dashboard for dev purpose
+    #      - "--api.dashboard=true"
+    #      - "--entrypoints.web.address=:80"
 
     # uncomment the following block to enabled https
-#      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-#      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-#      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-#      - "--entrypoints.websecure.address=:443"
-#      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
-#      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
-#      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
-#
-#      - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme/acme.json"
-#      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
-#      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=${RESOLVER_NAME}"
-#
-#      - "--certificatesResolvers.letsencrypt-staging.acme.storage=/etc/acme/acme-staging.json"
-#      - "--certificatesResolvers.letsencrypt-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
-#      - "--certificatesResolvers.letsencrypt-staging.acme.email=${E_MAIL}"
-#      - "--certificatesResolvers.letsencrypt-staging.acme.dnsChallenge.provider=${RESOLVER_NAME}"
+    #      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    #      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+    #      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    #      - "--entrypoints.websecure.address=:443"
+    #      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
+    #      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
+    #      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
+    #
+    #      - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme/acme.json"
+    #      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+    #      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=${RESOLVER_NAME}"
+    #
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.storage=/etc/acme/acme-staging.json"
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.email=${E_MAIL}"
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.dnsChallenge.provider=${RESOLVER_NAME}"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.route-reverseproxy.rule=Host(`${TRAEFIK_HOST}`)"
+      # uncomment the following block to enabled dashboard for dev purpose
+      #      - "traefik.enable=true"
+      #      - "traefik.http.routers.route-reverseproxy.rule=Host(`${TRAEFIK_HOST}`)"
       - "traefik.http.routers.route-reverseproxy.service=api@internal"
     restart: unless-stopped
 
@@ -70,7 +72,7 @@ services:
 
       KC_HOSTNAME_STRICT: false
     healthcheck:
-      test: [ "CMD-SHELL", " exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | tee /tmp/healthcheck.log | grep -q '200 OK'"]
+      test: [ "CMD-SHELL", " exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | tee /tmp/healthcheck.log | grep -q '200 OK'" ]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -90,7 +92,7 @@ services:
 
 
 
-# https://medium.com/@disa2aka/docker-deployments-for-keycloak-and-postgresql-e75707b155e5
+  # https://medium.com/@disa2aka/docker-deployments-for-keycloak-and-postgresql-e75707b155e5
 
   keycloak-db:
     container_name: keycloak-db
@@ -122,7 +124,7 @@ services:
     extends:
       file: ../../compose.yaml
       service: attack_vector_2
-    ports: !reset []
+    ports: !reset [ ]
     depends_on:
       keycloak:
         condition: service_healthy

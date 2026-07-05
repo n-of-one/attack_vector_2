@@ -3,7 +3,7 @@ services:
     container_name: attack_vector_2-DB
     image: mongo:4.4.13 # last version compatible with raspberry pi
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     environment:
       - TZ='Europe/Amsterdam'
     volumes:

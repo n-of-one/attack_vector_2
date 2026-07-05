@@ -20,7 +20,7 @@ New user will get the non_hacker role
 2. Change value of `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` from [.env](./.env) to define the userName and
    password of Keycloak admin user
 3. [Configure certificates (optional)](#configure-certificates)
-4. Run docker compose -d
+4. Run docker compose up -d
 5. [Configure Keycloak (optional)](#configure-keycloak-optional)
 6. [Configure Attack Vector](#configure-attack-vector)
 7. Try your config by accessing [hack.domain](http://hack.domain), you should be redirect to Keycloak for login or
