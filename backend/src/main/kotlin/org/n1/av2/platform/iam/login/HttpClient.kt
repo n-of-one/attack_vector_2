@@ -1,20 +1,23 @@
-package org.n1.av2.platform.util
+package org.n1.av2.platform.iam.login
 
 import io.jsonwebtoken.io.IOException
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
 
 
+@Service
 class HttpClient {
 
     @Value("\${http-client.log-request}")
     private var enableLog: Boolean = false
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     class Response(val code: Int, val body: String) {
         fun isOk(): Boolean = code in 200..299

@@ -15,7 +15,6 @@ import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
-import org.n1.av2.platform.util.HttpClient
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -47,6 +46,7 @@ class OpenIdConnectService(
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
     private val skillService: SkillService,
+    private val httpClient: HttpClient
 ) {
     private val decoder = Base64.getUrlDecoder()
     private val objectMapper = jacksonObjectMapper()
@@ -88,7 +88,7 @@ class OpenIdConnectService(
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val response = HttpClient().post(
+        val response = httpClient.post(
             "${baseUrl}/token",
             encodedUrl,
             mapOf(
@@ -122,7 +122,7 @@ class OpenIdConnectService(
             )
         )
 
-        HttpClient().post(
+        httpClient.post(
             "${baseUrl}/logout",
             encodedUrl,
             mapOf("content-type" to "application/x-www-form-urlencoded")

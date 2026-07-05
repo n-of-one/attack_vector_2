@@ -7,15 +7,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.Cookie
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
-import org.n1.av2.platform.util.HttpClient
+import org.n1.av2.platform.iam.login.HttpClient
 import org.springframework.stereotype.Service
 
 @Service
 class OrthankService(
     private val configService: ConfigService,
+    private val httpClient: HttpClient
 ) {
 
-    private val httpClient = HttpClient()
     private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 

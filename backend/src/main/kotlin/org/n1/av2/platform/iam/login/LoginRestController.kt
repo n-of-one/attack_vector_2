@@ -9,7 +9,6 @@ import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.authentication.expirationInS
 import org.n1.av2.platform.inputvalidation.SafeJwt
 import org.n1.av2.platform.inputvalidation.SafeString
-import org.n1.av2.platform.util.getIp
 import org.springframework.web.bind.annotation.*
 
 @RestController
