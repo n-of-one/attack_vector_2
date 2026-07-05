@@ -140,7 +140,7 @@ class OpenIdConnectService(
             return existingUserEntity
         }
 
-        val name = userEntityService.findFreeUserName(userInfos.characterName)
+        val name = userEntityService.findFreeUserName(userInfos.userName)
         return userEntityService.createUser(name, userInfos.type, userInfos.externalId)
     }
 
