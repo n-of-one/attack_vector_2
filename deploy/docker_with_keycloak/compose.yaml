@@ -1,0 +1,146 @@
+services:
+  # traefik config base on https://joeeey.com/blog/selfhosting-sso-with-traefik-keycloak-part-1/
+
+  traefik:
+    image: traefik:3.7.1
+    ports:
+      # uncomment the following block to enabled dashboard for dev purpose
+      #      - '80:80'
+      - '443:443'
+    env_file:
+      - .env
+    volumes:
+      - ./conf/traefik/conf.d:/conf.d
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik-certificates:/etc/acme
+    command:
+      - "--providers.docker.exposedByDefault=false"
+      - "--providers.file.directory=conf.d"
+      - "--log.level=INFO"
+
+    # uncomment the following block to enabled dashboard for dev purpose
+    #      - "--api.dashboard=true"
+    #      - "--entrypoints.web.address=:80"
+
+    # uncomment the following block to enabled https
+    #      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    #      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+    #      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    #      - "--entrypoints.websecure.address=:443"
+    #      - "--entrypoints.websecure.http.tls.domains[0].main=${ATTACK_VECTOR_HOST}"
+    #      - "--entrypoints.websecure.http.tls.domains[1].main=${KEYCLOAK_HOST}"
+    #      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
+    #
+    #      - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme/acme.json"
+    #      - "--certificatesResolvers.letsencrypt.acme.email=${E_MAIL}"
+    #      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=${RESOLVER_NAME}"
+    #
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.storage=/etc/acme/acme-staging.json"
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.email=${E_MAIL}"
+    #      - "--certificatesResolvers.letsencrypt-staging.acme.dnsChallenge.provider=${RESOLVER_NAME}"
+    labels:
+      # uncomment the following block to enabled dashboard for dev purpose
+      #      - "traefik.enable=true"
+      #      - "traefik.http.routers.route-reverseproxy.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.route-reverseproxy.service=api@internal"
+    restart: unless-stopped
+
+  keycloak:
+    # internal: keycloak on port 8080
+    image: quay.io/keycloak/keycloak:26.6
+    command: start --import-realm
+    env_file:
+      - .env
+    environment:
+      JAVA_OPTS_APPEND: "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
+
+      KC_HOSTNAME: ${KEYCLOAK_HOST}
+
+      KC_PROXY: 'edge'
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db/${KEYCLOAK_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_PROXY_HEADERS: xforwarded
+      PROXY_ADDRESS_FORWARDING: 'true'
+
+      KC_HOSTNAME_STRICT: false
+    healthcheck:
+      test: [ "CMD-SHELL", " exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | tee /tmp/healthcheck.log | grep -q '200 OK'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 240s
+    volumes:
+      - ./conf/keycloak/:/opt/keycloak/data/import/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.route-auth.rule=Host(`${KEYCLOAK_HOST}`)"
+      - "traefik.http.services.route-auth.loadbalancer.server.port=8080"
+    restart: unless-stopped
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+
+
+
+  # https://medium.com/@disa2aka/docker-deployments-for-keycloak-and-postgresql-e75707b155e5
+
+  keycloak-db:
+    container_name: keycloak-db
+    image: postgres:16.2
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${KEYCLOAK_DB}", "-U", "${KEYCLOAK_DB_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    restart: unless-stopped
+
+  attack_vector_2-DB:
+    extends:
+      file: ../../compose.yaml
+      service: attack_vector_2-DB
+    mem_limit: 256m
+    cpus: 0.25
+    command: --wiredTigerCacheSizeGB 0.25
+
+  attack_vector_2:
+    container_name: ${ATTACK_VECTOR_HOST}
+    extends:
+      file: ../../compose.yaml
+      service: attack_vector_2
+    ports: !reset [ ]
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+    environment:
+      - CORS_ALLOWEDORIGINS=https://${DOMAIN},https://${ATTACK_VECTOR_HOST}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.route-hack.rule=Host(`${ATTACK_VECTOR_HOST}`)"
+    links:
+      - traefik:${KEYCLOAK_HOST}
+
+volumes:
+  postgres_data:
+    driver: local
+  mongo_data:
+  traefik-certificates:

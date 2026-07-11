@@ -9,6 +9,8 @@ import org.n1.av2.platform.iam.user.ROLE_ADMIN
 import org.n1.av2.platform.iam.user.ROLE_GM
 import org.n1.av2.platform.iam.user.ROLE_HACKER
 import org.n1.av2.platform.iam.user.ROLE_USER
+import org.n1.av2.platform.inputvalidation.validLoginRedirectParam
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.AccessDeniedException
@@ -20,11 +22,12 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.util.stream.Collectors
 
 private val OPEN_PATHS = listOf(
     "/", "/index.html",
     "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
-    "/loggedOut", "/redirectToLogin", "/login", "/adminLogin", "devLogin", "/logout", "/localLogout", "login-frontier",
+    "/loggedOut", "/redirectToLogin", "/login", "/adminLogin", "devLogin", "/logout", "/localLogout", "login-frontier", "login-oidc",
 
     "/attack_vector_2", "/attack_vector_2/**",
 
@@ -83,19 +86,42 @@ class WebSecurityConfig(
 
     @Bean
     fun customAccessDeniedHandler(): AccessDeniedHandler {
+        val paths = mutableListOf<String>()
+        paths.addAll(OPEN_PATHS)
+        paths.addAll(HACKER_PATHS)
+        paths.addAll(USER_PATHS)
+        paths.addAll(GM_PATHS)
+        paths.addAll(ADMIN_PATHS)
+
+        val pathsRegex = paths.stream().map { urlPattern -> urlPattern.replace("*", "[^ ]*").toRegex() }.collect(Collectors.toList())
         return AccessDeniedHandler { request: HttpServletRequest, response: HttpServletResponse, _: AccessDeniedException? ->
             val path = request.requestURI
-            val redirectUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH) + "?next=$path"
-            response.sendRedirect(redirectUrl)
+            val isIncoming = pathsRegex.stream().anyMatch { regex -> regex.matches(path) }
+
+            // Only apply handler on incoming requests
+            // Needed for integration of open-id connect provider
+            if (isIncoming) {
+                val loginUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH)
+                val redirectUrl = if (validLoginRedirectParam(path)) "$loginUrl?next=$path" else loginUrl
+                response.sendRedirect(redirectUrl)
+            } else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN)
+            }
         }
     }
 }
 
 @Configuration
 class WebConfiguration : WebMvcConfigurer {
+    //can be override with ENV variable CORS_ALLOWEDORIGINS
+    @Value("\${cors.allowedOrigins:}")
+    private val allowedOrigins: String? = null
+
     override fun addCorsMappings(registry: CorsRegistry) {
         // disable CORS for local development
-        registry.addMapping("/**").allowedOrigins("http://localhost", "http://localhost:3000", "https://av.eosfrontier.space", "https://eosfrontier.space")
-            .allowedMethods("*").allowCredentials(true)
+        registry.addMapping("/**")
+            .allowedOrigins(allowedOrigins)
+            .allowedMethods("*")
+            .allowCredentials(true)
     }
 }

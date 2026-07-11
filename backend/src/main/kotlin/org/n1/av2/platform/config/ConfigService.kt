@@ -105,7 +105,7 @@ class ConfigService(
 
     fun getAsDuration(item: ConfigItem): Duration {
         val stringValue = get(item)
-        if (stringValue.validateDuration() != null ) error("Duration invalid for config item: $item")
+        if (stringValue.validateDuration() != null) error("Duration invalid for config item: $item")
         return stringValue.toDuration()
     }
 }

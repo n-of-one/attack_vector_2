@@ -17,7 +17,17 @@ mkdir ../../backend/src/main/resources/static
 cp -r * ../../backend/src/main/resources/static
 
 
-cd ..
+echo --- --- --- --- --- ---
+echo Build docusaurus docs
+echo --- --- --- --- --- ---
+
+
+cd ../../website
+npm run build
+mkdir ../backend/src/main/resources/static/attack_vector_2
+cp -r build/* ../backend/src/main/resources/static/attack_vector_2
+
+cd ../frontend
 
 echo --- --- ---
 echo Build complete

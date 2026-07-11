@@ -27,6 +27,7 @@ data class Skill(
 @Repository
 interface SkillRepo : MongoRepository<Skill, SkillId> {
     fun findByUserId(userId: String): List<Skill>
+    fun findFirstByTypeAndUserId(skillType: SkillType, userId: String): Skill?
 }
 
 fun List<Skill>.containsType(type: SkillType) = this.any { it.type == type }

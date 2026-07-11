@@ -41,3 +41,33 @@ export const ConfigItemLarpFrontierOrthankToken = (props: { value: string }) => 
         </>
     )
 }
+
+export const ConfigItemLarpOpenIdConnectUrl = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="OpenId Connect: Url" value={props.value} item={ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_URL}/>
+            <small className="form-text text-muted">OpenId Connect: Url<br/><br/>
+                Default: (empty)<br/>
+                General advice: leave empty<br/><br/>
+                If you are not running with a custom OpenId Connect SSO, you can ignore this field.<br/>
+                Ex with a local Keycloak: 'http://auth.localhost/realms/larp/protocol/openid-connect'
+                <br/><br/>
+            </small>
+        </>
+    )
+}
+
+export const ConfigItemLarpOpenIdConnectClientId = (props: { value: string }) => {
+    return (
+        <>
+            <ConfigItemText name="OpenId Connect: Client Id" value={props.value} item={ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID}/>
+            <small className="form-text text-muted">OpenId Connect: Client Id<br/><br/>
+                Default: attack_vector<br/>
+                General advice: leave default<br/><br/>
+                Id representing attack_vector in your OpenId Connect SSO<br/>
+                If you are not running with a custom OpenId Connect SSO, you can ignore this field.
+                <br/><br/>
+            </small>
+        </>
+    )
+}

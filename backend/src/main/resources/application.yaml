@@ -7,3 +7,7 @@ spring.servlet.multipart:
 
 spring.data.mongodb.auto-index-creation: true
 
+http-client.log-request: false
+
+cors:
+    allowedOrigins: "http://localhost,http://localhost:3000,https://av.eosfrontier.space,https://eosfrontier.space"

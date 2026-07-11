@@ -29,6 +29,9 @@ export enum ConfigItem {
 
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN = "LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN",
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED = "LARP_SPECIFIC_FRONTIER_LOLA_ENABLED",
+
+    LARP_SPECIFIC_OPENID_CONNECT_URL = "LARP_SPECIFIC_OPENID_CONNECT_URL",
+    LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID = "LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID",
 }
 
 export const ConfigItemCategories = {
@@ -58,6 +61,8 @@ export const ConfigItemCategories = {
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "5. Larp specific - Frontier",
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN: "5. Larp specific - Frontier",
 
+    LARP_SPECIFIC_OPENID_CONNECT_URL: "6. Larp specific - OpenId Connect",
+    LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID: "6. Larp specific - OpenId Connect",
 }
 
 export const ConfigItemNames = {
@@ -86,6 +91,9 @@ export const ConfigItemNames = {
 
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED: "LOLA enabled",
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN: "Orthank token",
+
+    LARP_SPECIFIC_OPENID_CONNECT_URL: "OpenId Connect url",
+    LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID: "OpenId Connect client_id",
 }
 
 export interface ConfigEntry {
