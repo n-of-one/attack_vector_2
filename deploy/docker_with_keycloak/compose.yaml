@@ -27,8 +27,8 @@ services:
     #      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
     #      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
     #      - "--entrypoints.websecure.address=:443"
-    #      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
-    #      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
+    #      - "--entrypoints.websecure.http.tls.domains[0].main=${ATTACK_VECTOR_HOST}"
+    #      - "--entrypoints.websecure.http.tls.domains[1].main=${KEYCLOAK_HOST}"
     #      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt" # change to letsencrypt-staging for testings
     #
     #      - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme/acme.json"
