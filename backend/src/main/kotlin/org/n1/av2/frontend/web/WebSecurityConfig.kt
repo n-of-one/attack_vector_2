@@ -9,6 +9,7 @@ import org.n1.av2.platform.iam.user.ROLE_ADMIN
 import org.n1.av2.platform.iam.user.ROLE_GM
 import org.n1.av2.platform.iam.user.ROLE_HACKER
 import org.n1.av2.platform.iam.user.ROLE_USER
+import org.n1.av2.platform.inputvalidation.validLoginRedirectParam
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -100,8 +101,11 @@ class WebSecurityConfig(
             // Only apply handler on incoming requests
             // Needed for integration of open-id connect provider
             if (isIncoming) {
-                val redirectUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH) + "?next=$path"
+                val loginUrl = request.contextPath + configService.get(ConfigItem.LOGIN_PATH)
+                val redirectUrl = if (validLoginRedirectParam(path)) "$loginUrl?next=$path" else loginUrl
                 response.sendRedirect(redirectUrl)
+            } else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN)
             }
         }
     }

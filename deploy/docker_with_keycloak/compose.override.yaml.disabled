@@ -1,0 +1,13 @@
+# Local development override — not used in deployment.
+# rename to compose.override.yaml to enable.
+# Exposes Keycloak directly on the host so a locally-run backend (mvn spring-boot:run)
+# can reach it at http://localhost:8180 without going through traefik.
+services:
+  keycloak:
+    ports:
+      - "127.0.0.1:8180:8080"
+    environment:
+      # The deploy config pins KC_HOSTNAME to auth.localhost, which makes Keycloak
+      # rewrite issuer/login-form URLs to that host. Override so the flow stays on
+      # localhost:8180 end-to-end.
+      KC_HOSTNAME: http://localhost:8180

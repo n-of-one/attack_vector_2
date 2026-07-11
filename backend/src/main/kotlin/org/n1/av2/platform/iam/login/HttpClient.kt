@@ -1,6 +1,6 @@
 package org.n1.av2.platform.iam.login
 
-import io.jsonwebtoken.io.IOException
+import java.io.IOException
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging

@@ -6,6 +6,15 @@ import jakarta.validation.constraints.Size
 import kotlin.reflect.KClass
 
 
+const val LOGIN_REDIRECT_PARAM_PATTERN = "[a-zA-Z0-9_/-]+"
+const val LOGIN_REDIRECT_PARAM_MAX_LENGTH = 80 // long enough for: /x/<encoded app path>
+
+private val loginRedirectParamRegex = Regex(LOGIN_REDIRECT_PARAM_PATTERN)
+
+fun validLoginRedirectParam(value: String): Boolean {
+    return value.length in 1..LOGIN_REDIRECT_PARAM_MAX_LENGTH && loginRedirectParamRegex.matches(value)
+}
+
 @MustBeDocumented
 @Constraint(validatedBy = [])
 @Target(
@@ -13,8 +22,8 @@ import kotlin.reflect.KClass
     AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.VALUE_PARAMETER
 )
 @Retention(AnnotationRetention.RUNTIME)
-@Pattern(regexp = "[a-zA-Z0-9_/-]+")
-@Size(min = 1, max = 80, ) // long enough for: /x/<encoded app path>
+@Pattern(regexp = LOGIN_REDIRECT_PARAM_PATTERN)
+@Size(min = 1, max = LOGIN_REDIRECT_PARAM_MAX_LENGTH)
 annotation class LoginRedirectParam(
     val message: String = "",
     val groups: Array<KClass<out Any>> = [],

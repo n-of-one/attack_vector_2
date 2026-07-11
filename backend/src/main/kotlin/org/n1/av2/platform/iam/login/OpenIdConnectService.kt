@@ -2,8 +2,6 @@ package org.n1.av2.platform.iam.login
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.skill.SkillService
@@ -17,11 +15,10 @@ import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.URLEncoder
-import java.util.*
-import java.util.stream.StreamSupport
 
 
 class OpenIdConnectUserInfos(
@@ -46,9 +43,9 @@ class OpenIdConnectService(
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
     private val skillService: SkillService,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val jwtDecoderProvider: OpenIdConnectJwtDecoderProvider,
 ) {
-    private val decoder = Base64.getUrlDecoder()
     private val objectMapper = jacksonObjectMapper()
 
     fun getLoginUrl(redirectUri: String): String {
@@ -96,10 +93,14 @@ class OpenIdConnectService(
                 "Host" to URI(baseUrl).host
             )
         )
-        if (!response.isOk() || response.body.isEmpty() || response.body.contains("error")) {
+        if (!response.isOk() || response.body.isEmpty()) {
             error("Can't retrieve oidc tokens")
         }
-        return objectMapper.readValue(response.body, OpenIdConnectTokens::class.java)
+        val body = objectMapper.readTree(response.body)
+        if (body.has("error")) {
+            error("Can't retrieve oidc tokens: ${body.get("error").asText()}")
+        }
+        return objectMapper.treeToValue(body, OpenIdConnectTokens::class.java)
     }
 
     private fun buildEncodedUrl(params: Map<String, String>): String {
@@ -163,71 +164,58 @@ class OpenIdConnectService(
     }
 
 
-    private fun getInfosFromToken(jwt: String, clientId: String): OpenIdConnectUserInfos {
-        val objectMapper = ObjectMapper()
+    private fun getInfosFromToken(accessToken: String, clientId: String): OpenIdConnectUserInfos {
+        val jwt = jwtDecoderProvider.decoder().decode(accessToken) // throws JwtException if invalid
 
-        val chunks = jwt.split(".")
-        val payload = String(decoder.decode(chunks[1]))
-        val rootNode = objectMapper.readTree(payload)
-
-        val id = getStringField(rootNode, "sub")
-        val characterName = getStringField(rootNode, "character_name")
-        val userName = getStringField(rootNode, "preferred_username")
-        val type = getUserType(rootNode, clientId)
-        val skills = mapSkills(rootNode, clientId)
+        val id = jwt.getClaimAsString("sub") ?: ""
+        val characterName = jwt.getClaimAsString("character_name") ?: ""
+        val userName = jwt.getClaimAsString("preferred_username") ?: ""
+        val type = getUserType(jwt, clientId)
+        val skills = mapSkills(jwt, clientId)
 
         return OpenIdConnectUserInfos(id, userName, type, characterName, skills)
     }
 
-    private fun getStringField(node: JsonNode, fieldName: String): String {
-        val field = node.get(fieldName) ?: return ""
-        return field.asText()
-    }
-
-    private fun getUserType(tokenPayload: JsonNode, clientId: String): UserType {
-        if (hasRole(tokenPayload, clientId, "GM")) {
+    private fun getUserType(jwt: Jwt, clientId: String): UserType {
+        if (hasRole(jwt, clientId, "GM")) {
             return UserType.GM
         }
         return UserType.HACKER
     }
 
-    private fun hasRole(tokenPayload: JsonNode, clientId: String, roleName: String): Boolean {
+    private fun hasRole(jwt: Jwt, clientId: String, roleName: String): Boolean {
         if (roleName.isBlank()) {
             return false
         }
-
-        val roles = getRolesFromToken(tokenPayload, clientId)
-        return roles.stream()
-            .filter(Objects::nonNull)
-            .flatMap { StreamSupport.stream(it.spliterator(), false) }
-            .filter(Objects::nonNull)
-            .anyMatch { role -> roleName == role.asText() }
-
+        return roleName in getRolesFromToken(jwt, clientId)
     }
 
-    private fun getRolesFromToken(tokenPayload: JsonNode, clientId: String): Set<JsonNode> {
-        val realmRoles = getRealmRoles(tokenPayload)
-        val clientRoles = getClientRoles(tokenPayload, clientId)
-        return setOfNotNull(realmRoles, clientRoles)
+    private fun getRolesFromToken(jwt: Jwt, clientId: String): Set<String> {
+        return getRealmRoles(jwt) + getClientRoles(jwt, clientId)
     }
 
-    private fun getRealmRoles(tokenPayload: JsonNode): JsonNode? {
-        val realmAccess = tokenPayload.get("realm_access") ?: return null
-        return realmAccess.get("roles") ?: return null
+    private fun getRealmRoles(jwt: Jwt): Set<String> {
+        val realmAccess = jwt.getClaimAsMap("realm_access") ?: return emptySet()
+        return extractRoles(realmAccess)
     }
 
-    private fun getClientRoles(tokenPayload: JsonNode, clientId: String): JsonNode? {
-        val resourceAccess = tokenPayload.get("resource_access") ?: return null
-        val client = resourceAccess.get(clientId) ?: return null
-        return client.get("roles") ?: return null
+    private fun getClientRoles(jwt: Jwt, clientId: String): Set<String> {
+        val resourceAccess = jwt.getClaimAsMap("resource_access") ?: return emptySet()
+        val client = resourceAccess[clientId] as? Map<*, *> ?: return emptySet()
+        return extractRoles(client)
     }
 
-    private fun mapSkills(tokenPayload: JsonNode, clientId: String): List<SkillType> {
-        if (hasRole(tokenPayload, clientId, "SITE_ADMIN")) {
+    private fun extractRoles(access: Map<*, *>): Set<String> {
+        val roles = access["roles"] as? Collection<*> ?: return emptySet()
+        return roles.filterIsInstance<String>().toSet()
+    }
+
+    private fun mapSkills(jwt: Jwt, clientId: String): List<SkillType> {
+        if (hasRole(jwt, clientId, "SITE_ADMIN")) {
             return listOf(SEARCH_SITE, SCAN, CREATE_SITE)
         }
 
-        if (hasRole(tokenPayload, clientId, "HACKER")) {
+        if (hasRole(jwt, clientId, "HACKER")) {
             return listOf(SEARCH_SITE, SCAN)
         }
 
