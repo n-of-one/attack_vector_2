@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.5</version>
+		<version>3.5.16</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -28,7 +28,6 @@
         <kotlin-api.version>2.3</kotlin-api.version>
 		<kotlinx-coroutines-core.version>1.9.0</kotlinx-coroutines-core.version>
 		<kotlin-logging>3.0.5</kotlin-logging>
-		<logback-classic>1.5.12</logback-classic>
 		<jsonwebtoken>0.12.6</jsonwebtoken>
 		<flapdoodle.version>4.12.2</flapdoodle.version>
         <mockk.version>1.14.3</mockk.version>
@@ -98,7 +97,6 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>${logback-classic}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
@@ -120,6 +118,13 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
 			<version>${jsonwebtoken}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Temporary during the Boot 4 upgrade: reports deprecated/renamed configuration properties at startup. Remove after Stage C. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-properties-migrator</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
