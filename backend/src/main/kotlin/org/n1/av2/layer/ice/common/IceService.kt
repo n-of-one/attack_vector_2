@@ -23,7 +23,7 @@ import org.n1.av2.site.entity.enums.LayerType
 import org.n1.av2.site.entity.enums.LayerType.*
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import kotlin.reflect.KClass
 
 // To prevent circular bean dependencies

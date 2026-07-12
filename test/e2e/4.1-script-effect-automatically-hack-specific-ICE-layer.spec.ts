@@ -42,7 +42,7 @@ test('4.1.1 - Create script and give to hacker', async ({page}: { page: Page }) 
     await test.step("Create script", async () => {
         await login.loginUsingLink("gm")
         await scriptManagement.createScript(SCRIPT_NAME)
-        await scriptManagement.addUsefulEffect("AUTO_HACK_SPECIFIC_ICE_LAYER", "Automatically hack a specific ICE layer", "node-c421-4498:layer-d20a")
+        await scriptManagement.addUsefulEffect("AUTO_HACK_SPECIFIC_ICE_LAYER", "Automatically hack a specific ICE layer", "node-46c8-4a2f:layer-788e")
         await scriptManagement.verifyHackerEffectDescription(SCRIPT_NAME, "Automatically hack layer 1 of node: 04 of site: dev")
     })
 

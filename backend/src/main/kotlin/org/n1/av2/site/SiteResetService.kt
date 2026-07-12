@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 // To prevent circular bean dependencies
 @Configuration

@@ -54,7 +54,7 @@ export class WebSocketConnection {
         const hostName: string = window.location.hostname
         this.developmentServer = (window.location.port === "3000")
         // During development connect directly to backend, websocket proxying does not work with create-react-app.
-        const port = this.developmentServer ? "80" :  window.location.port
+        const port = this.developmentServer ? "8080" :  window.location.port
         const protocol = (window.location.protocol === "http:") ? "ws" : "wss"
         const path = pathByConnectionType[connection]
         return `${protocol}://${hostName}:${port}${path}`

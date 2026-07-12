@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.util.*
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Configuration
 class RamServiceInitializer(

@@ -19,7 +19,7 @@ class StaticConfig(
     @Value("\${environment.TIME_ZONE:default}")
     val timeZoneInput: String,
 
-    @Value("\${DEVELOPMENT:false}")
+    @Value("\${development:false}")
     val developmentEnvironment: Boolean
 
 )

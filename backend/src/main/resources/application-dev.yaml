@@ -1,4 +1,4 @@
-server.port: 80
+server.port: 8080
 
 spring.servlet.multipart:
     file-size-threshold: 2KB
@@ -8,3 +8,5 @@ spring.servlet.multipart:
 spring.data.mongodb.auto-index-creation: true
 
 http-client.log-request: true
+
+development: true

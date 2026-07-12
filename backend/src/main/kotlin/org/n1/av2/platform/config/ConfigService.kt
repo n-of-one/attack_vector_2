@@ -10,7 +10,7 @@ import org.n1.av2.platform.util.validateDuration
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.util.*
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Service
 class ConfigService(

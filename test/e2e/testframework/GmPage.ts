@@ -34,7 +34,7 @@ export class GmPage {
         log(`Site (${siteName}) exists: ${siteExists}`)
 
         if (!siteExists) {
-            await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(path.join("e2e/sites", fileName));
+            await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(path.join(__dirname, "..", "sites", fileName));
             await this.page.getByRole('button', { name: 'Upload' }).click();
             await expect(appLocator(this.page), `Verify import success noty`).toContainText(`Imported site: ${siteName}`)
             await this.page.getByText('[close]').click();
@@ -44,6 +44,5 @@ export class GmPage {
             await siteHackableCheckboxLocator.click();
             await expect(siteHackableCheckboxLocator).toBeChecked()
         }
-1
     }
 }

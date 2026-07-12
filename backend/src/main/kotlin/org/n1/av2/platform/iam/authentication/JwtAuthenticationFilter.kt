@@ -92,6 +92,7 @@ class JwtAuthenticationFilter(
         // don't parse JWT for static resources or login related paths
         request.requestURI.let {
             return (
+                    it == "/" ||
                     it.startsWith("/resources") ||
                     it.startsWith("/img") ||
                     it.startsWith("/css") ||
