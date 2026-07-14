@@ -1,6 +1,8 @@
 package org.n1.av2.integration.stomp
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.future.await
+import java.util.concurrent.CompletableFuture
 import org.n1.av2.platform.connection.HACKER_ENDPOINT
 import org.n1.av2.platform.connection.ServerActions
 import org.springframework.http.HttpHeaders
@@ -51,6 +53,7 @@ class AvClient(
         val stompSessionFuture = stompClient.connectAsync(url, headers, sessionHandler)
 
         this.stompSession = stompSessionFuture.await()
+        sessionHandler.connected.await()
 
         subscribe("/user/reply")
         subscribe("/topic/user/${sessionHandler.userAndConnectionName}")
@@ -113,6 +116,8 @@ class MyStompSessionHandler(
     lateinit var userAndConnectionName: String
     lateinit var userName: String
 
+    val connected = CompletableFuture<Unit>()
+
     fun send(destination: String, payload: Any) {
         session.send(destination, payload)
     }
@@ -123,6 +128,7 @@ class MyStompSessionHandler(
 
         userAndConnectionName = connectedHeaders.get("user-name")!![0]
         userName = userAndConnectionName.split("_")[0]
+        connected.complete(Unit)
     }
 
     fun subscribe(destination: String) {

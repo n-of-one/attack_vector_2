@@ -98,7 +98,7 @@ class LoginService(
     }
 
     private fun generateRoleCookie(userEntity: UserEntity): Cookie {
-        val roles = userEntity.type.authorities.joinToString(separator = "|") { it.authority }
+        val roles = userEntity.type.authorities.joinToString(separator = "|") { it.authority ?: "" }
         return Cookie("roles", roles)
     }
 

@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.16</version>
+		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -26,10 +26,8 @@
 		<java.version>21</java.version>
 		<kotlin.version>2.3.10</kotlin.version>
         <kotlin-api.version>2.3</kotlin-api.version>
-		<kotlinx-coroutines-core.version>1.9.0</kotlinx-coroutines-core.version>
 		<kotlin-logging>3.0.5</kotlin-logging>
-		<jsonwebtoken>0.12.6</jsonwebtoken>
-		<flapdoodle.version>4.12.2</flapdoodle.version>
+		<jsonwebtoken>0.13.0</jsonwebtoken>
         <mockk.version>1.14.3</mockk.version>
 	</properties>
 
@@ -51,6 +49,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 		<dependency>
@@ -61,16 +63,9 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-jose</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-messaging</artifactId>
-			<type>jar</type>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-messaging</artifactId>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -82,13 +77,11 @@
 			<version>${kotlin.version}</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core -->
-		<dependency>
-			<groupId>org.jetbrains.kotlinx</groupId>
-			<artifactId>kotlinx-coroutines-core</artifactId>
-			<version>${kotlinx-coroutines-core.version}</version>
-			<type>pom</type>
-		</dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>io.github.microutils</groupId>
 			<artifactId>kotlin-logging-jvm</artifactId>
@@ -99,7 +92,7 @@
 			<artifactId>logback-classic</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
+			<groupId>tools.jackson.module</groupId>
 			<artifactId>jackson-module-kotlin</artifactId>
 		</dependency>
 
@@ -121,44 +114,23 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Temporary during the Boot 4 upgrade: reports deprecated/renamed configuration properties at startup. Remove after Stage C. -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-properties-migrator</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
             <version>${mockk.version}</version>
             <scope>test</scope>
         </dependency>
-
-		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>${flapdoodle.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
-			<version>${flapdoodle.version}</version>
-			<scope>test</scope>
-		</dependency>
 
 	</dependencies>
 

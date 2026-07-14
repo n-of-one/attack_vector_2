@@ -58,14 +58,14 @@ open class MongoDbConfig(
 
     inner class DateToZonedDateTimeConverter : Converter<Date, ZonedDateTime> {
 
-        override fun convert(source: Date): ZonedDateTime? {
+        override fun convert(source: Date): ZonedDateTime {
             return ZonedDateTime.ofInstant(source.toInstant(), timeService.clock.zone)
         }
     }
 
     inner class ZonedDateTimeToDateConverter : Converter<ZonedDateTime, Date> {
 
-        override fun convert(source: ZonedDateTime): Date? {
+        override fun convert(source: ZonedDateTime): Date {
             return Date.from(source.toInstant())
         }
     }

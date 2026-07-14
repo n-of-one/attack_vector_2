@@ -91,7 +91,7 @@ class ConnectionService(
         val user = (SecurityContextHolder.getContext().authentication?.principal as UserEntity?)
         if (user == null || user.type == UserType.SYSTEM || user.type == UserType.NOT_LOGGED_IN) return // don't reply if no user or system user
 
-        val connection = SecurityContextHolder.getContext().authentication.name
+        val connection = SecurityContextHolder.getContext().authentication!!.name
 
         sendToDestination("/topic/user/${connection}", actionType, data)
     }

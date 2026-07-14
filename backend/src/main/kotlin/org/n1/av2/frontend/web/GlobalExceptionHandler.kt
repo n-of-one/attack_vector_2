@@ -63,7 +63,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(HandlerMethodValidationException::class)
     fun handleException(e: HandlerMethodValidationException, request: HttpServletRequest): ResponseEntity<String> {
         // Handle validation exceptions here
-        val message = e.allValidationResults.map {
+        val message = e.parameterValidationResults.map {
             val errorMessage =  it.resolvableErrors.map{
                 it.defaultMessage
             }.joinToString(", ")

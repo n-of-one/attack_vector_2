@@ -23,12 +23,10 @@ class ImportService(
     private val currentUserService: CurrentUserService,
     private val siteService: SiteService,
     private val siteCloneService: SiteCloneService,
+    private val parser: ExportedSiteParser,
 ) {
 
     private val logger = mu.KotlinLogging.logger {}
-
-    private val parser = ExportedSiteParser()
-
 
     fun import(json: String, importingUserConnectionId: String) {
         try {

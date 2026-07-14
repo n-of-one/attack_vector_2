@@ -9,8 +9,8 @@ import org.springframework.context.event.EventListener
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.messaging.context.SecurityContextChannelInterceptor
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
@@ -22,15 +22,6 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.security.Principal
 
-
-@Configuration
-class WebSocketSecurityConfig: AbstractSecurityWebSocketMessageBrokerConfigurer() {
-
-
-    override fun sameOriginDisabled(): Boolean {
-        return true
-    }
-}
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -110,7 +101,7 @@ class WebSocketConfig(
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {
-        registration.interceptors(MessageIn())
+        registration.interceptors(SecurityContextChannelInterceptor(), MessageIn())
     }
 
     @EventListener

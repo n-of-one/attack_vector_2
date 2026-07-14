@@ -2,7 +2,6 @@ package org.n1.av2.platform.iam.login
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
@@ -17,6 +16,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
+import tools.jackson.databind.json.JsonMapper
 import java.net.URI
 import java.net.URLEncoder
 
@@ -45,9 +45,8 @@ class OpenIdConnectService(
     private val skillService: SkillService,
     private val httpClient: HttpClient,
     private val jwtDecoderProvider: OpenIdConnectJwtDecoderProvider,
+    private val jsonMapper: JsonMapper,
 ) {
-    private val objectMapper = jacksonObjectMapper()
-
     fun getLoginUrl(redirectUri: String): String {
         val baseUrl = configService.get(ConfigItem.LARP_SPECIFIC_OPENID_CONNECT_URL)
         if (baseUrl.isBlank()) { //fallback to default login method if no URL has been set
@@ -96,11 +95,11 @@ class OpenIdConnectService(
         if (!response.isOk() || response.body.isEmpty()) {
             error("Can't retrieve oidc tokens")
         }
-        val body = objectMapper.readTree(response.body)
+        val body = jsonMapper.readTree(response.body)
         if (body.has("error")) {
-            error("Can't retrieve oidc tokens: ${body.get("error").asText()}")
+            error("Can't retrieve oidc tokens: ${body.get("error").asString()}")
         }
-        return objectMapper.treeToValue(body, OpenIdConnectTokens::class.java)
+        return jsonMapper.treeToValue(body, OpenIdConnectTokens::class.java)
     }
 
     private fun buildEncodedUrl(params: Map<String, String>): String {

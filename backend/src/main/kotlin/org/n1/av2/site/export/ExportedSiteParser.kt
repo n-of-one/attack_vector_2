@@ -1,8 +1,5 @@
 package org.n1.av2.site.export
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightOption
@@ -30,10 +27,13 @@ import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.enums.IceStrength
 import org.n1.av2.site.entity.enums.LayerType
 import org.n1.av2.site.entity.enums.NodeType
+import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 
 
 fun JsonNode.getAsTextOrNull(field: String): String? {
-    return if (this.has(field) && !this.get(field).isNull) this.get(field).asText() else null
+    return if (this.has(field) && !this.get(field).isNull) this.get(field).asString() else null
 }
 
 fun JsonNode.getAsIntOrNull(field: String): Int? {
@@ -48,12 +48,13 @@ data class SiteBlueprint(
 )
 
 
-class ExportedSiteParser {
-
-    private val objectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+@Service
+class ExportedSiteParser(
+    private val jsonMapper: JsonMapper,
+) {
 
     fun parse(json: String): SiteBlueprint {
-        val root: JsonNode = objectMapper.readTree(json)
+        val root: JsonNode = jsonMapper.readTree(json)
 
         val version = detectVersion(root)
         if (version != V1 && version != V2) error("Unsupported version: $version")
@@ -66,19 +67,19 @@ class ExportedSiteParser {
     }
 
     private fun detectVersion(root: JsonNode): String {
-        return root.get("exportDetails").get("version").asText()
+        return root.get("exportDetails").get("version").asString()
     }
 
     private fun parseSiteProperties(root: JsonNode): SiteProperties {
         val input: JsonNode = root.get("siteProperties")
 
         return SiteProperties(
-            siteId = input["siteId"].asText(),
-            name = input["name"].asText(),
-            description = input["description"].asText(),
-            purpose = input["purpose"]?.asText() ?: input["creator"].asText(),
+            siteId = input["siteId"].asString(),
+            name = input["name"].asString(),
+            description = input["description"].asString(),
+            purpose = input["purpose"]?.asString() ?: input["creator"].asString(),
             ownerUserId = "",
-            startNodeNetworkId = input["startNodeNetworkId"].asText(),
+            startNodeNetworkId = input["startNodeNetworkId"].asString(),
             hackable = false,
             shutdownEnd = null,
             nodesLocked = input["nodesLocked"]?.asBoolean() == true,
@@ -90,26 +91,26 @@ class ExportedSiteParser {
 
         return v1Nodes.map { input ->
             Node(
-                id = input["id"].asText(),
-                siteId = input["siteId"].asText(),
-                type = NodeType.valueOf(input["type"].asText()),
+                id = input["id"].asString(),
+                siteId = input["siteId"].asString(),
+                type = NodeType.valueOf(input["type"].asString()),
                 x = input["x"].asInt(),
                 y = input["y"].asInt(),
                 layers = parseLayer(input.get("layers").asList()),
-                networkId = input["networkId"].asText(),
+                networkId = input["networkId"].asString(),
             )
         }
     }
 
     private fun parseConnections(root: JsonNode): List<Connection> {
         val v1connections: List<JsonNode> = root.get("connections").asList()
-        val siteId = root.get("siteProperties").get("siteId").asText()
+        val siteId = root.get("siteProperties").get("siteId").asString()
         return v1connections.map { input ->
             Connection(
-                id = "import-${input.get("fromId").asText()}-${input.get("toId").asText()}",
+                id = "import-${input.get("fromId").asString()}-${input.get("toId").asString()}",
                 siteId = siteId,
-                fromId = input.get("fromId").asText(),
-                toId = input.get("toId").asText()
+                fromId = input.get("fromId").asString(),
+                toId = input.get("toId").asString()
             )
         }
     }
@@ -120,16 +121,16 @@ class ExportedSiteParser {
     }
 
     private fun mapV1Layer(input: JsonNode): Layer {
-        val typeText = input["type"].asText()
-        val id = input.get("id").asText()
+        val typeText = input["type"].asString()
+        val id = input.get("id").asString()
         val level = input.get("level").asInt()
-        val name = input.get("name").asText()
-        val note = input.get("note").asText()
+        val name = input.get("name").asString()
+        val note = input.get("note").asString()
 
         try {
             return when (val layerType = LayerType.valueOf(typeText)) {
                 LayerType.OS -> mapLayerOs(input, id, level, name, note)
-                LayerType.TEXT -> TextLayer(id = id, level = level, name = name, note = note, text = input.get("text").asText())
+                LayerType.TEXT -> TextLayer(id = id, level = level, name = name, note = note, text = input.get("text").asString())
                 LayerType.CORE -> mapLayerCore(input, id, level, name, note)
                 LayerType.KEYSTORE -> mapLayerKeystore(input, id, level, name, note)
                 LayerType.STATUS_LIGHT -> mapLayerStatusLight(input, id, level, name, note)
@@ -164,7 +165,7 @@ class ExportedSiteParser {
     }
 
     private fun mapLayerOs(input: JsonNode, id: String, level: Int, name: String, note: String): OsLayer {
-        val nodeName = input.get("nodeName").asText()
+        val nodeName = input.get("nodeName").asString()
         val layerId = fixOsLayerId(id)
         return OsLayer(id = layerId, level = level, name = name, note = note, nodeName = nodeName)
     }
@@ -175,7 +176,7 @@ class ExportedSiteParser {
             level = level,
             name = name,
             note = note,
-            iceLayerId = input.get("iceLayerId").asText()
+            iceLayerId = input.get("iceLayerId").asString()
         )
     }
 
@@ -188,13 +189,13 @@ class ExportedSiteParser {
     }
 
     private fun mapLayerStatusLight(input: JsonNode, id: String, level: Int, name: String, note: String): StatusLightLayer {
-        val type = LayerType.valueOf(input.get("type").asText())
+        val type = LayerType.valueOf(input.get("type").asString())
 
         if (input.has("status")) {
             // V12 and earlier: 2-options switch
             val status = input.get("status").asBoolean()
-            val textForRed = input.get("textForRed").asText()
-            val textForGreen = input.get("textForGreen").asText()
+            val textForRed = input.get("textForRed").asString()
+            val textForGreen = input.get("textForGreen").asString()
             val switchLabel = "Switch"
 
             val statusLight = StatusLightLayer(id, type, level, name, switchLabel, textForRed, textForGreen)
@@ -205,15 +206,15 @@ class ExportedSiteParser {
         val optionElement = input.get("options").asList()
         val options = optionElement.map { optionNode ->
             StatusLightOption(
-                text = optionNode.get("text").asText(),
-                color = optionNode.get("color").asText()
+                text = optionNode.get("text").asString(),
+                color = optionNode.get("color").asString()
             )
         }.toMutableList()
 
         return StatusLightLayer(
             type = type,
             id = id, level = level, name = name, note = note,
-            switchLabel = input.get("switchLabel").asText(),
+            switchLabel = input.get("switchLabel").asString(),
             currentOption = input.get("currentOption").asInt(),
             options = options
         )
@@ -222,8 +223,8 @@ class ExportedSiteParser {
     private fun mapLayerTripWire(input: JsonNode, id: String, level: Int, name: String, note: String): TripwireLayer {
         return TripwireLayer(
             id = id, level = level, name = name, note = note,
-            countdown = input.get("countdown").asText(),
-            shutdown = input.get("shutdown").asText(),
+            countdown = input.get("countdown").asString(),
+            shutdown = input.get("shutdown").asString(),
             coreLayerId = input.getAsTextOrNull("coreLayerId"),
             coreSiteId = input.getAsTextOrNull("coreSiteId"),
             coreSiteName = input.getAsTextOrNull("coreSiteName"),
@@ -233,9 +234,9 @@ class ExportedSiteParser {
     }
 
     private fun mapTimerAdjusterLayer(input: JsonNode, id: String, level: Int, name: String, note: String): TimerAdjusterLayer {
-        val amount = input.get("amount")?.asText() ?: input.get("increase").asText() // In initial version the field was called "increase"
-        val adjustmentType = if (input.has("adjustmentType")) { TimerAdjustmentType.valueOf(input.get("adjustmentType").asText()) } else { TimerAdjustmentType.SPEED_UP }
-        val recurring = if (input.has("recurring")) { TimerAdjustmentRecurring.valueOf(input.get("recurring").asText()) } else { TimerAdjustmentRecurring.EVERY_ENTRY }
+        val amount = input.get("amount")?.asString() ?: input.get("increase").asString() // In initial version the field was called "increase"
+        val adjustmentType = if (input.has("adjustmentType")) { TimerAdjustmentType.valueOf(input.get("adjustmentType").asString()) } else { TimerAdjustmentType.SPEED_UP }
+        val recurring = if (input.has("recurring")) { TimerAdjustmentRecurring.valueOf(input.get("recurring").asString()) } else { TimerAdjustmentRecurring.EVERY_ENTRY }
 
         return TimerAdjusterLayer(
             id = id, level = level, name = name, note = note,
@@ -246,8 +247,8 @@ class ExportedSiteParser {
     private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {
         return ScriptInteractionLayer(
             id = id, level = level, name = name, note = note,
-            interactionKey = input.get("interactionKey").asText(),
-            message = input.get("message").asText(),
+            interactionKey = input.get("interactionKey").asString(),
+            message = input.get("message").asString(),
         )
     }
 
@@ -260,7 +261,7 @@ class ExportedSiteParser {
     }
 
     private fun mapIceLayer(input: JsonNode, layerType: LayerType, id: String, level: Int, name: String, note: String): IceLayer {
-        val strength = IceStrength.valueOf(input.get("strength").asText())
+        val strength = IceStrength.valueOf(input.get("strength").asString())
 
         return when (layerType) {
             LayerType.NETWALK_ICE -> NetwalkIceLayer(id, level, name, note, strength, false, null)
@@ -274,8 +275,8 @@ class ExportedSiteParser {
     }
 
     private fun mapPasswordIce(input: JsonNode, id: String, level: Int, name: String, note: String, strength: IceStrength): PasswordIceLayer {
-        val password = input.get("password").asText()
-        val hint = input.get("hint").asText()
+        val password = input.get("password").asString()
+        val hint = input.get("hint").asString()
         return PasswordIceLayer(id, level, name, note, strength, false, password, hint)
     }
 }

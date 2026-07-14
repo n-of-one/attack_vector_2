@@ -31,6 +31,7 @@ import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
 import org.springframework.security.oauth2.jwt.JwtException
+import tools.jackson.databind.json.JsonMapper
 import java.net.InetSocketAddress
 import java.time.Instant
 import java.util.Date
@@ -85,6 +86,7 @@ class OpenIdConnectServiceTest {
             skillService,
             httpClient,
             OpenIdConnectJwtDecoderProvider(configService),
+            JsonMapper.builder().build(),
         )
     }
 

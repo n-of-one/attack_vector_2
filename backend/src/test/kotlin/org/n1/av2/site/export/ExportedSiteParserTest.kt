@@ -8,10 +8,11 @@ import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentRecurring
 import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentType
 import org.n1.av2.site.entity.enums.LayerType
+import tools.jackson.databind.json.JsonMapper
 
 class ExportedSiteParserTest {
 
-    private val parser = ExportedSiteParser()
+    private val parser = ExportedSiteParser(JsonMapper.builder().build())
 
     private fun loadJson(resourceName: String): String {
         return this::class.java.getResource(resourceName)?.readText()
