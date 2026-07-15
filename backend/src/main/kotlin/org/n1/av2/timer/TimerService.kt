@@ -1,6 +1,6 @@
 package org.n1.av2.timer
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
@@ -53,15 +53,15 @@ class TimerService(
                     val durationLeft = Duration.between(timeService.now(), timer.finishAt)
                     if (durationLeft.isPositive) {
                         scheduleShutdownFinish(timer.targetSiteId, durationLeft, timer.finishAt, null)
-                        logger.info("Recreated timer for shutdown-end for ${timer.siteId}, ending in ${durationLeft.toHumanTime()}")
+                        logger.info { "Recreated timer for shutdown-end for ${timer.siteId}, ending in ${durationLeft.toHumanTime()}" }
                     } else {
                         shutdownFinished(timer.targetSiteId, timer.id)
-                        logger.info("Removed timer for shutdown end of ${timer.siteId}")
+                        logger.info { "Removed timer for shutdown end of ${timer.siteId}" }
                     }
                 }
 
                 TimerEffect.SHUTDOWN_START -> {
-                    logger.info("Removed timer for shutdown-start for ${timer.siteId}")
+                    logger.info { "Removed timer for shutdown-start for ${timer.siteId}" }
                     // Do nothing here, these are just removed
                     // The players will trigger them again when crossing the tripwire, nothing better we can do for now.
                 }

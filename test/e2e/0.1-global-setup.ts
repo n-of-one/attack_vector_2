@@ -18,4 +18,18 @@ export default async function globalSetup() {
     await wait(page, 0.1, "don't close the page immediately to allow changes to be sent by browser")
     await browser.close()
     console.log("Finish global setup")
+
+    // TODO: load dev website
+    // TODO: give hacker user scripts skill
+    // TODO: give hacker the BIRD_1 icon
+    // TODO: give angler the scripts skill
+    // TODO: give angler the SHARK icon
+    // TODO: hackers can use dev commands
+    // TODO: hackers can reset sites
+    // TODO: login: /devLogin
+    // TODO: script loading during run: true
+    // TODO: script lockout duration: 00:00:10
+    // TODO: script ram refresh duration: 00:01:00
+
+
 }

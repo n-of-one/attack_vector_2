@@ -1,5 +1,6 @@
 package org.n1.av2.editor
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -16,7 +17,7 @@ const val EXPECT_SUCCESS = true
 
 internal class EditorControllerIT : IntegrationTestBase() {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     @BeforeEach
     fun stubSite() {
@@ -54,7 +55,7 @@ internal class EditorControllerIT : IntegrationTestBase() {
             }
         }
         finally {
-            logger.warn("Testcase ends")
+            logger.warn { "Testcase ends" }
         }
     }
 

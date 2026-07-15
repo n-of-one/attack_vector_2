@@ -3,6 +3,7 @@ package org.n1.av2.platform.db.schema
 import com.mongodb.DuplicateKeyException
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.bson.Document
 import org.n1.av2.platform.db.MigrationStep
 import org.springframework.stereotype.Component
@@ -31,7 +32,7 @@ class UniqueConstraintAdder(
     private val uniqueFieldName: String
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     val collection = db.getCollection(collectionName)
 

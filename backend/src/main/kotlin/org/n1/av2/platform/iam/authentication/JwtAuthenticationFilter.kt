@@ -1,5 +1,6 @@
 package org.n1.av2.platform.iam.authentication
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -21,6 +22,7 @@ class JwtAuthenticationFilter(
     private val currentUserService: CurrentUserService,
     private val connectionIdService: ConnectionIdService,
 ) : OncePerRequestFilter() {
+    private val logger = KotlinLogging.logger {}
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
@@ -44,7 +46,7 @@ class JwtAuthenticationFilter(
                 errorMessage = "No JWT token supplied."
             }
         } catch (exception: Exception) {
-            logger.error("Could not set user authentication in security context: ", exception)
+            logger.error(exception) { "Could not set user authentication in security context: " }
             errorMessage = "Could not set user authentication in security context."
         }
 
@@ -55,7 +57,7 @@ class JwtAuthenticationFilter(
                 response.writer.flush()
                 return
             }
-            logger.warn("Authentication failed: $errorMessage for: ${request.requestURI}")
+            logger.warn { "Authentication failed: $errorMessage for: ${request.requestURI}" }
 
             // Need to set authentication to make AccessDeniedHandler work
             authentication = UserPrincipal.notLoggedIn()

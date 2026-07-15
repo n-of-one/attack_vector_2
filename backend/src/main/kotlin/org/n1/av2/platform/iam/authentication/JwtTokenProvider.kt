@@ -1,5 +1,6 @@
 package org.n1.av2.platform.iam.authentication
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.n1.av2.platform.config.ConfigItem
@@ -15,7 +16,7 @@ class JwtTokenProvider(
     configService: ConfigService,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     private val jwtSecret = configService.get(ConfigItem.SYSTEM_JWT_SECRET)
     private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())

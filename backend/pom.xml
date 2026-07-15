@@ -24,11 +24,11 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<java.version>21</java.version>
-		<kotlin.version>2.3.10</kotlin.version>
-        <kotlin-api.version>2.3</kotlin-api.version>
-		<kotlin-logging>3.0.5</kotlin-logging>
+		<kotlin.version>2.4.10</kotlin.version>
+        <kotlin-api.version>2.4</kotlin-api.version>
+		<kotlin-logging>8.0.4</kotlin-logging>
 		<jsonwebtoken>0.13.0</jsonwebtoken>
-        <mockk.version>1.14.3</mockk.version>
+        <mockk.version>1.14.11</mockk.version>
 	</properties>
 
 	<dependencies>
@@ -83,7 +83,7 @@
             <scope>test</scope>
         </dependency>
 		<dependency>
-			<groupId>io.github.microutils</groupId>
+			<groupId>io.github.oshai</groupId>
 			<artifactId>kotlin-logging-jvm</artifactId>
 			<version>${kotlin-logging}</version>
 		</dependency>
@@ -189,7 +189,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>2.4.0</version>
+                <version>2.7.1</version>
             </plugin>
         </plugins>
 	</build>

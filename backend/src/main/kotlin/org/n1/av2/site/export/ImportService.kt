@@ -1,5 +1,6 @@
 package org.n1.av2.site.export
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.layer.other.core.CoreLayer
@@ -26,7 +27,7 @@ class ImportService(
     private val parser: ExportedSiteParser,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     fun import(json: String, importingUserConnectionId: String) {
         try {
@@ -34,7 +35,7 @@ class ImportService(
             sendResponse("Imported site", siteName, NotyType.NEUTRAL, importingUserConnectionId)
             siteService.sendSitesList()
         } catch (e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e) { e.message }
             sendResponse("Error", e.message ?: "Import failed.", NotyType.ERROR, importingUserConnectionId)
         }
     }

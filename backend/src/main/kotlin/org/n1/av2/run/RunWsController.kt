@@ -1,5 +1,6 @@
 package org.n1.av2.run
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.frontend.model.ReduxEvent
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.platform.engine.UserTaskRunner
@@ -19,7 +20,7 @@ class RunWsController(
     private val hackerStateEntityService: HackerStateEntityService,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     @MessageMapping("/run/sendRunInfosToUser")
     fun scansOfPlayer(userPrincipal: UserPrincipal) {
@@ -67,7 +68,7 @@ class RunWsController(
     @MessageExceptionHandler
     @SendToUser("/reply")
     fun handleException(exception: Exception): ReduxEvent {
-        logger.error(exception.message, exception)
+        logger.error(exception) { exception.message }
         return toServerFatalReduxEvent(exception)
     }
 }

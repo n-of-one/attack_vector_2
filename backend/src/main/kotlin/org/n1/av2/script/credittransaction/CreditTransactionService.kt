@@ -1,5 +1,6 @@
 package org.n1.av2.script.credittransaction
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions.SERVER_RECEIVE_CREDITS_TRANSACTIONS
@@ -33,7 +34,7 @@ class CreditTransactionService(
     private val hackerEntityService: HackerEntityService,
     private val userEntityService: UserEntityService,
 ) {
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     lateinit var userAndHackerService: UserAndHackerService
 
@@ -102,7 +103,7 @@ class CreditTransactionService(
         )
         creditTransactionRepo.save(transaction)
 
-        logger.info("Transfer $amount ⚡ from ${fromUser.name} to ${toUser.name}. Description: $description")
+        logger.info { "Transfer $amount ⚡ from ${fromUser.name} to ${toUser.name}. Description: $description" }
     }
 
     fun gmAdjust(userId: String, amount: Int, description: String) {

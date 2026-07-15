@@ -1,5 +1,6 @@
 package org.n1.av2.platform.iam.login
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -18,7 +19,7 @@ class LoginRestController(
     private val loginService: LoginService,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     class LoginInput(@get:SafeString val name: String, @get:SafeString val password: String)
     class LoginResponse(val success: Boolean, val message: String? = null)
@@ -53,7 +54,7 @@ class LoginRestController(
 
             return LoginResponse(true)
         } catch (exception: Exception) {
-            logger.error("Google login failed", exception)
+            logger.error(exception) { "Google login failed" }
             return LoginResponse(false, exception.message)
         }
     }

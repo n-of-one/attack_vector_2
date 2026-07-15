@@ -1,5 +1,6 @@
 package org.n1.av2.platform.connection
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.frontend.model.ReduxEvent
@@ -29,7 +30,7 @@ class ConnectionService(
 ) {
     lateinit var configService: ConfigService
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     val simulateNonLocalhost = {
         val delay = configService.getAsLong(ConfigItem.DEV_SIMULATE_NON_LOCALHOST_DELAY_MS)
@@ -40,7 +41,7 @@ class ConnectionService(
 
     fun sendToDestination(path: String, actionType: ServerActions, data: Array<*>) {
         simulateNonLocalhost()
-        logger.debug("-> ${path} ${actionType}")
+        logger.debug { "-> ${path} ${actionType}" }
 
         val processedData = processData(data)
         val event = ReduxEvent(actionType, processedData)

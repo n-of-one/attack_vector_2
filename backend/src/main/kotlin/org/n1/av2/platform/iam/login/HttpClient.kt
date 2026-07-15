@@ -1,9 +1,9 @@
 package org.n1.av2.platform.iam.login
 
 import java.io.IOException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.net.HttpURLConnection
@@ -101,7 +101,7 @@ class HttpClient {
                     HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP, 307, 308 -> {
                         val loc = conn.getHeaderField("Location")
                         val target = URI(loc).toURL()
-                        logger.info("redirected to $target")
+                        logger.info { "redirected to $target" }
                         conn.disconnect()
 
                         nbOfRedirects += 1
@@ -119,7 +119,7 @@ class HttpClient {
             return Response(conn.responseCode, responseBody)
 
         } catch (e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e) { e.message }
             if (conn.errorStream != null) {
                 val responseBody = conn.errorStream.bufferedReader().readText()
                 logResponse(conn, responseBody)
@@ -134,20 +134,20 @@ class HttpClient {
 
     private fun logRequest(conn: HttpURLConnection, body: String?) {
         if (!enableLog) return
-        logger.info("Request URL : ${conn.url}")
-        logger.info("Request Method : ${conn.requestMethod}")
-        logger.info("Request Headers : ${conn.requestProperties}")
+        logger.info { "Request URL : ${conn.url}" }
+        logger.info { "Request Method : ${conn.requestMethod}" }
+        logger.info { "Request Headers : ${conn.requestProperties}" }
         if (!body.isNullOrEmpty()) {
-            logger.info("Request Body : $body")
+            logger.info { "Request Body : $body" }
         }
     }
 
     private fun logResponse(conn: HttpURLConnection, body: String?) {
         if (!enableLog) return
-        logger.info("Response Status Code : ${conn.responseCode} ${conn.responseMessage}")
-        logger.info("Response Headers : ${conn.headerFields}")
+        logger.info { "Response Status Code : ${conn.responseCode} ${conn.responseMessage}" }
+        logger.info { "Response Headers : ${conn.headerFields}" }
         if (!body.isNullOrEmpty()) {
-            logger.info("Response Body : $body")
+            logger.info { "Response Body : $body" }
         }
     }
 

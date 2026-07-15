@@ -2,6 +2,7 @@ package org.n1.av2.platform.db.schema
 
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Updates
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.bson.Document
 import org.n1.av2.editor.SiteValidationService
 import org.n1.av2.platform.db.MigrationStep
@@ -68,7 +69,7 @@ class V2UserEntityUpdater(
     private val defaultUserService: DefaultUserService,
 ) {
     private val userEntityCollection = db.getCollection("userEntity")
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     fun updateUserEntities() {
         removeObsoleteUserEntityFields()
@@ -104,7 +105,7 @@ class V2SitePropertiesUpdater(
 ) {
     private val sitePropertiesCollection = db.getCollection("siteProperties")
     private val allSiteIds = sitePropertiesEntityService.findAll().map { it.siteId }
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     fun alterSiteProperties() {
 

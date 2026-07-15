@@ -1,5 +1,6 @@
 package org.n1.av2.integration.stomp
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.await
 import java.util.concurrent.CompletableFuture
@@ -38,7 +39,7 @@ class AvClient(
     private val sessionHandler = MyStompSessionHandler(receivedMessages, name)
     private lateinit var stompSession: StompSession
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     suspend fun connect() {
         val webSocketClient: WebSocketClient = StandardWebSocketClient()
@@ -71,7 +72,7 @@ class AvClient(
 
     suspend fun waitFor(action: ServerActions, contents: String, timeoutMillis: Int = 500): String {
         var waitMillis = 0
-        logger.debug("start waiting for ${action.name} '${contents}'")
+        logger.debug { "start waiting for ${action.name} '${contents}'" }
         do {
             val received = receivedMessages.deleteIfContains(ReceivedMessage(action.name, contents))
             if (received != null) {
@@ -81,7 +82,7 @@ class AvClient(
             waitMillis += 10
 
         } while (waitMillis < timeoutMillis)
-        logger.debug("end waiting for ${action.name} '${contents}'")
+        logger.debug { "end waiting for ${action.name} '${contents}'" }
 
         receivedMessages.logMessage()
         error("'${name}' times out waiting for ${action.name} '${contents}'")

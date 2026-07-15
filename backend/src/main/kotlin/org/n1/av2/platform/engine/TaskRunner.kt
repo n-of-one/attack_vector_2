@@ -1,5 +1,6 @@
 package org.n1.av2.platform.engine
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
@@ -111,7 +112,7 @@ class TaskEngine(
     val currentUserService: CurrentUserService,
 ) : Runnable {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     private val timedTaskRunner = TimedTaskRunner()
     private val queue = LinkedBlockingQueue<Task>()
@@ -160,18 +161,18 @@ class TaskEngine(
             if (exception is FatalException) {
                 val event = ServerFatal(false, exception.message ?: exception.javaClass.name)
                 connectionService.reply(ServerActions.SERVER_ERROR, event)
-                logger.warn("${task.userPrincipal.userEntity.name}: ${exception}")
+                logger.warn { "${task.userPrincipal.userEntity.name}: ${exception}" }
                 return
             }
             if (!currentUserService.isSystemUser) {
                 val event = ServerFatal(true, exception.message ?: exception.javaClass.name)
                 connectionService.reply(ServerActions.SERVER_ERROR, event)
-                logger.info("User: ${task.userPrincipal.userEntity.name} - task triggered exception. Task: ${task.description}", exception)
+                logger.info(exception) { "User: ${task.userPrincipal.userEntity.name} - task triggered exception. Task: ${task.description}" }
             } else {
-                logger.info("SYSTEM - task triggered exception. ", exception)
+                logger.info(exception) { "SYSTEM - task triggered exception. " }
             }
         } catch (error: Throwable) {
-            logger.error("Task triggered error.", error)
+            logger.error(error) { "Task triggered error." }
             val event = ServerFatal(false, error.message ?: error.javaClass.name)
             connectionService.reply(ServerActions.SERVER_ERROR, event)
             return
@@ -185,7 +186,7 @@ class TaskEngine(
         val millis = measureTimeMillis {
             task.action()
         }
-        logger.info("Task took ${millis}ms : ${task.description}")
+        logger.info { "Task took ${millis}ms : ${task.description}" }
     }
 
     @PreDestroy

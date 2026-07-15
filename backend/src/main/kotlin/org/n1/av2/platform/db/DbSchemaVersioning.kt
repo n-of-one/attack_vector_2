@@ -2,6 +2,7 @@ package org.n1.av2.platform.db
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.platform.config.StaticConfig
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
@@ -23,7 +24,7 @@ class DbSchemaVersioning(
     private val staticConfig: StaticConfig,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     // The ContextRefreshedEvent is fairly early in the spring boot startup cycle,just after all beans are ready.
     // We want the database to be updated before other startup processes act, because they will assume the database

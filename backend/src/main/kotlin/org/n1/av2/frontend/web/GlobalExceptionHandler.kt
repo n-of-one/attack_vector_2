@@ -1,7 +1,7 @@
 package org.n1.av2.frontend.web
 
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -23,14 +23,14 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception?): ResponseEntity<String> {
-        logger.error("Unhandled exception", e)
+        logger.error(e) { "Unhandled exception" }
         return ResponseEntity("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @ExceptionHandler(AccessDeniedException::class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<String> {
-        logger.error("Access denied", e)
+        logger.error(e) { "Access denied" }
         // Handle security-related exceptions here
         return ResponseEntity("Access Denied", HttpStatus.FORBIDDEN)
     }
@@ -39,7 +39,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleValidationException(e: MethodArgumentNotValidException): ResponseEntity<String> {
         val message = e.bindingResult.allErrors.map { it.defaultMessage}.joinToString(", ")
-        logger.error("Bad request: $message", e)
+        logger.error(e) { "Bad request: $message" }
         // Handle validation exceptions here
         return ResponseEntity(message, HttpStatus.BAD_REQUEST)
     }
@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(ErrorResponseException::class)
     fun handleException(e: ErrorResponseException): ResponseEntity<String> {
-        logger.error("Error", e)
+        logger.error(e) { "Error" }
 
         // Handle validation exceptions here
         return ResponseEntity(e.body.detail, e.statusCode)

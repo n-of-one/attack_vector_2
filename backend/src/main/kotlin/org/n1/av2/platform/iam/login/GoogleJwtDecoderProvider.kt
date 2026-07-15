@@ -1,5 +1,6 @@
 package org.n1.av2.platform.iam.login
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Component
 class GoogleJwtDecoderProvider(
     private val configService: ConfigService,
 ) {
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     // overridable for tests
     internal var jwksUri: String = "https://www.googleapis.com/oauth2/v3/certs"

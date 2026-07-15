@@ -1,5 +1,6 @@
 package org.n1.av2.platform.connection.ws
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.platform.connection.*
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.iam.user.NOT_LOGGED_IN_USER
@@ -31,7 +32,7 @@ class WebSocketConfig(
     private val connectionIdService: ConnectionIdService,
 ) : WebSocketMessageBrokerConfigurer {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
