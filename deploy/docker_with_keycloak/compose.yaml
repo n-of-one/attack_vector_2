@@ -136,6 +136,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.route-hack.rule=Host(`${ATTACK_VECTOR_HOST}`)"
+      - "traefik.http.services.route-hack.loadbalancer.server.port=8080"
     links:
       - traefik:${KEYCLOAK_HOST}
 
