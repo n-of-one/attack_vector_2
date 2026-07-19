@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size
 import kotlin.reflect.KClass
 
 
-const val LOGIN_REDIRECT_PARAM_PATTERN = "[a-zA-Z0-9_/-]+"
+const val LOGIN_REDIRECT_PARAM_PATTERN = "[a-zA-Z0-9_/-=]+"
 const val LOGIN_REDIRECT_PARAM_MAX_LENGTH = 80 // long enough for: /x/<encoded app path>
 
 private val loginRedirectParamRegex = Regex(LOGIN_REDIRECT_PARAM_PATTERN)
