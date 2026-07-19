@@ -26,7 +26,8 @@ class OpenIdConnectUserInfos(
     val userName: String,
     val type: UserType,
     val characterName: String,
-    val skills: List<SkillType>
+    val skills: List<SkillType>,
+    val useTemplatedSkills: Boolean
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -159,6 +160,9 @@ class OpenIdConnectService(
             hackerEntityService.save(updatedHacker)
         }
 
+        if (openIdConnectUserInfos.useTemplatedSkills) {
+            skillService.createDefaultSkills(user.id)
+        }
         skillService.addSkillsForUser(user, openIdConnectUserInfos.skills)
     }
 
@@ -171,8 +175,9 @@ class OpenIdConnectService(
         val userName = jwt.getClaimAsString("preferred_username") ?: ""
         val type = getUserType(jwt, clientId)
         val skills = mapSkills(jwt, clientId)
+        val useTemplatedSkills = hasRole(jwt, clientId, "USE_TEMPLATE_SKILLS")
 
-        return OpenIdConnectUserInfos(id, userName, type, characterName, skills)
+        return OpenIdConnectUserInfos(id, userName, type, characterName, skills, useTemplatedSkills)
     }
 
     private fun getUserType(jwt: Jwt, clientId: String): UserType {
