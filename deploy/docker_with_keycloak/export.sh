@@ -47,6 +47,8 @@ docker compose up" > ./export/run.sh
 echo 'Creating a update.sh file'
 echo "#!/bin/bash
 
+echo 'Stoping AV2 container'
+docker compose down attack_vector_2
 echo 'Loading AV2 docker image'
 docker load -i av2image.tar
 docker compose up" > ./export/update.sh
