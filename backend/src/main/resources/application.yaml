@@ -1,4 +1,5 @@
 server.port: 8080
+server.tomcat.use-relative-redirects: true
 
 spring.servlet.multipart:
     file-size-threshold: 2KB
