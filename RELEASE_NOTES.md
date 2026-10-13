@@ -1,8 +1,14 @@
+# Release notes AV 2.20.6 (13 October 2026)
+(skipped a few patch versions for testing purposes)
+
+## Bugfixes
+- Login works for Firefox when AV is installed behind a reverse proxy that handles https
+
+
 # Release notes AV 2.20.2 (04 April 2026)
 
 ## Bugfixes
 - Full screen editor no longer redirects to login page
-
 
 
 # Release notes AV 2.20.1 (15 March 2026)
