@@ -93,6 +93,9 @@ export class WebSocketConnection {
 
     onWsConnectError(event: CloseEvent | Frame) {
         if (event instanceof CloseEvent) {
+            if (event.code === 1001) {
+                return // "Going away": page is being unloaded (navigation), not an error
+            }
             console.error("Connect failed, code: " + event.code)
             if (event.code === 1006) {
                 notify({type: "fatal", message: "Failed to establish connection to AV server. It might not be running." })

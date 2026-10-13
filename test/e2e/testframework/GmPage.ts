@@ -22,19 +22,19 @@ export class GmPage {
         await expect(appLocator(this.page), `Verify delete all success noty`).toContainText("runs removed")
     }
 
-    async importSiteIfItDoesNotExist(siteName: string, fileName: string) {
+    async importSiteIfItDoesNotExist(siteName: string, fileName: string, directory: string = path.join(__dirname, "..", "sites")) {
         log(`Load site if it does not yet exist: ${siteName}`)
         await this.av.navigateToMenuItem("Sites")
 
+        // Make sure sites are shown in the browser, before checking if our site needs to be uploaded. Any site will do: the tutorial site is
+        // created by the migrations, so there is always at least one row once the list has been received from the server.
+        await expect(this.page.locator('#sitesTable tbody tr').first(), "Verify the site list has loaded").toBeVisible()
 
-        // make sure sites are shown in the browser, before checking if our site needs to be uploaded.
-        await expect(this.page.getByText("Development")).toBeVisible()
-
-        const siteExists = await this.page.getByText(siteName).isVisible()
+        const siteExists = await this.page.getByText(siteName, {exact: true}).isVisible()
         log(`Site (${siteName}) exists: ${siteExists}`)
 
         if (!siteExists) {
-            await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(path.join(__dirname, "..", "sites", fileName));
+            await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(path.join(directory, fileName));
             await this.page.getByRole('button', { name: 'Upload' }).click();
             await expect(appLocator(this.page), `Verify import success noty`).toContainText(`Imported site: ${siteName}`)
             await this.page.getByText('[close]').click();

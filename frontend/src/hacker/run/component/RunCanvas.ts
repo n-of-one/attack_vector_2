@@ -247,7 +247,7 @@ class RunCanvas {
             if (nodeHacked) {
                 nodeDisplay.nodeData.hacked = true
                 nodeDisplay.updateStatus(status, this.selectedObject)
-                testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", nodeDisplay.schedule!, 2)
+                testSupport.scheduleEmitEvent("nodeHackedAnimationFinished", nodeDisplay.schedule!, NODE_TRANSITION_TICKS)
             } else {
                 nodeDisplay.updateStatus(status, this.selectedObject)
             }

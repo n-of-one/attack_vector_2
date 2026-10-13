@@ -160,8 +160,6 @@ class HtmlController(
             cookie.maxAge = 0
             response.addCookie(cookie)
         }
-
-        response.sendRedirect("/loggedOut")
     }
 
     @GetMapping("/forceError")
