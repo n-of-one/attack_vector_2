@@ -8,10 +8,6 @@ export const LoggedOut = () => {
     Cookies.remove("roles")
     Cookies.remove("userName")
 
-    useEffect(() => {
-        fetch("/localLogout")
-    }, []);
-
     return (
         <div className="container" data-bs-theme="dark">
             <Banner hiddenAdminLogin={true}/>

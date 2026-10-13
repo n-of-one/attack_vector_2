@@ -152,16 +152,6 @@ class HtmlController(
         }
     }
 
-    @GetMapping("/localLogout")
-    fun logout(response: HttpServletResponse) {
-        loginService.getCookieNames().forEach { name ->
-            val cookie = Cookie(name, "")
-            cookie.path = "/"
-            cookie.maxAge = 0
-            response.addCookie(cookie)
-        }
-    }
-
     @GetMapping("/forceError")
     fun forceError(): String {
         throw RuntimeException("intentional problem for test.")
