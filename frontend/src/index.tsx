@@ -18,6 +18,7 @@ import {DevLogin} from "./login/DevLogin";
 import {handleZoom} from "./common/util/ZoomUtil";
 import {EditorTextRoot} from "./editor-text/EditorTextRoot";
 import {decodePath} from "./common/util/PathEncodeUtils";
+import {RedirectToLogin, redirectToLogin} from "./login/RedirectToLogin";
 
 console.log("\nWelcome to _Attack Vector_" +
     "\n" +
@@ -45,7 +46,7 @@ const ReRoute = (): React.JSX.Element => {
             Cookies.remove("jwt")
             Cookies.remove("type")
             Cookies.remove("roles")
-            window.document.location.href = "/redirectToLogin"
+            redirectToLogin()
         }
     }, []);
     return (<></>)
@@ -90,8 +91,7 @@ root.render(
                 <Route path="/devLogin" element={<DevLogin/>}/>
 
                 <Route path="/loggedOut" element={<LoggedOut/>}/>
-                {/*This happens when running in development on port 3000, there is no backend that redirects to the correct login*/}
-                <Route path="/redirectToLogin" element={<DevLogin/>}/>
+                <Route path="/redirectToLogin" element={<RedirectToLogin/>}/>
 
 
                 {/* Larp specific */}

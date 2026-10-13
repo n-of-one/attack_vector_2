@@ -5,6 +5,7 @@ import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "./Generic
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {NAVIGATE_PAGE, Page} from "../menu/pageReducer";
+import {redirectToLogin} from "../../login/RedirectToLogin";
 
 
 export const WS_UNRESTRICTED = "WS_UNRESTRICTED"
@@ -88,7 +89,7 @@ export class WebSocketConnection {
     }
 
     redirectToLogin() {
-        window.location.href = `/redirectToLogin?next=${document.location.pathname}`
+        redirectToLogin(document.location.pathname)
     }
 
     onWsConnectError(event: CloseEvent | Frame) {

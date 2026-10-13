@@ -1,5 +1,6 @@
 import React, {ReactElement} from 'react'
 import userAuthorizations from "./UserAuthorizations";
+import {redirectToLogin} from "../../login/RedirectToLogin";
 
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
 export const RequiresRole = (props: Props) => {
 
     if (!userAuthorizations.authenticated) {
-        window.location.href = `/redirectToLogin?next=${document.location.pathname}`
+        redirectToLogin(document.location.pathname)
         return <></>
     }
 

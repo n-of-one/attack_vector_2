@@ -37,6 +37,13 @@ class LoginRestController(
         }
     }
 
+    class LoginPathResponse(val path: String)
+
+    @GetMapping("/openapi/login/path")
+    fun loginPath(): LoginPathResponse {
+        return LoginPathResponse(configService.get(ConfigItem.LOGIN_PATH))
+    }
+
     class GoogleClientIdResponse(val clientId: String)
 
     @GetMapping("/openapi/google/clientId")
