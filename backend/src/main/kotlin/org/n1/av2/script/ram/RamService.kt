@@ -176,6 +176,19 @@ class RamService(
         return ramRepository.save(ramEntity)
     }
 
+    fun updateRam(userId: String, size: Int) {
+        val ram = ramRepository.findByUserId(userId)
+        if (ram == null) {
+            val enabled = size != 0
+            createRam(userId, size, enabled)
+        }
+        else {
+            if (ram.size != size) {
+                alterRamSize(userId, size)
+            }
+        }
+    }
+
     fun load(userId: String, size: Int, overrideLocked: Boolean) {
         if (size <= 0) return
 

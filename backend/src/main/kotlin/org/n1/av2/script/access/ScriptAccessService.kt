@@ -1,5 +1,6 @@
 package org.n1.av2.script.access
 
+import mu.KotlinLogging
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.*
@@ -38,7 +39,7 @@ class ScriptAccessService(
     private val timeService: TimeService,
     private val userEntityService: UserEntityService,
 ) {
-
+    private val logger = KotlinLogging.logger {}
     lateinit var userAndHackerService: UserAndHackerService
 
     fun findScriptAccessForUser(userId: String): List<ScriptAccess> {
@@ -84,7 +85,9 @@ class ScriptAccessService(
         connectionService.reply(ServerActions.SERVER_RECEIVE_SCRIPT_ACCESS, scriptAccessUis)
     }
 
-    fun addScriptAccess(typeId: String, userId: String, receiveForFree: Int = 0, price: Int? = null) {
+    fun addScriptAccess(typeId: String, userId: String, receiveForFree: Int = 0, price: Int? = null,
+                        notifyFrontend: Boolean = true)
+    {
         validateCanManageAccess()
         validateDoesNotAlreadyHaveAccess(userId, typeId)
         val id = createId("access", scriptAccessRepository::findById)
@@ -99,7 +102,7 @@ class ScriptAccessService(
             lastUsed = timeService.longAgo,
         )
         scriptAccessRepository.save(scriptAccess)
-        sendScriptAccess(userId)
+        if (notifyFrontend) sendScriptAccess(userId)
     }
 
     private fun validateDoesNotAlreadyHaveAccess(userId: String, typeId: String) {
@@ -194,6 +197,29 @@ class ScriptAccessService(
     fun deleteAccessForUser(userId: String) {
         findScriptAccessForUser(userId).forEach { access ->
             deleteAccess(access.id)
+        }
+    }
+
+    fun updateScriptAccessForUser(userId: String, accessInfo: Map<String, Int>) {
+        val existingAccesses = findScriptAccessForUser(userId).map { access ->
+            val type = scriptTypeService.getById(access.typeId)
+            if (accessInfo.containsKey(type.name)) {
+                type.name
+            } else {
+                scriptAccessRepository.deleteById(access.id)
+                null
+            }
+        }.filterNotNull()
+
+        accessInfo.forEach { (scriptName, price) ->
+            if (!existingAccesses.contains(scriptName)) {
+                val type = scriptTypeService.findByName(scriptName)
+                if (type != null) {
+                    addScriptAccess(type.id, userId, 0, price, false)
+                } else {
+                    logger.error("Script not found for name: $scriptName, user id: $userId will not get access to it.")
+                }
+            }
         }
     }
 }

@@ -9,6 +9,12 @@ import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.login.HttpClient
 import org.springframework.stereotype.Service
 
+class FrontierV3HackingSkills(
+    val hacker: Int = 0,
+    val architect: Int = 0,
+    val elite: Int = 0
+)
+
 @Service
 class OrthankService(
     private val configService: ConfigService,
@@ -68,11 +74,6 @@ class OrthankService(
         return playerInfo
     }
 
-    class FrontierV3HackingSkills(
-        val hacker: Int = 0,
-        val architect: Int = 0,
-        val elite: Int = 0
-    )
 
     // Using: https://github.com/eosfrontier/orthanc/tree/master/v2/chars_all
     fun getPlayerSkills(characterId: String): FrontierV3HackingSkills {

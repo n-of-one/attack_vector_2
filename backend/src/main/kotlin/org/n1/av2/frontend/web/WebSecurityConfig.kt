@@ -28,6 +28,7 @@ private val OPEN_PATHS = listOf(
     "/", "/index.html",
     "/css/**", "/img/**", "/resources/**", "/static/**", "/favicon.ico", "/manifest.json", "/asset-manifest.json",
     "/loggedOut", "/redirectToLogin", "/login", "/adminLogin", "/devLogin", "/logout", "/localLogout", "/login-frontier", "/login-oidc",
+    "/favicon.ico",
 
     "/attack_vector_2", "/attack_vector_2/**",
 

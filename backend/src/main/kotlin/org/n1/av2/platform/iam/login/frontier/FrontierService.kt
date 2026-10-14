@@ -3,11 +3,14 @@ package org.n1.av2.platform.iam.login.frontier
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
-import org.n1.av2.hacker.skill.SkillType.*
+import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.user.EXTERNAL_USER_MANAGER
 import org.n1.av2.platform.iam.user.HackerIcon
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
+import org.n1.av2.script.access.ScriptAccessService
+import org.n1.av2.script.ram.RamService
 import org.springframework.stereotype.Service
 
 const val FRONTIER_GM_GROUP = "30"
@@ -42,13 +45,22 @@ class FrontierService(
     private val userEntityService: UserEntityService,
     private val hackerEntityService: HackerEntityService,
     private val skillService: SkillService,
+    private val scriptAccesService: ScriptAccessService,
+    private val currentUserService: CurrentUserService,
+    private val ramService: RamService,
 ) {
 
     fun frontierLogin(frontierInfo: FrontierUserAndCharacterInfo): UserEntity {
-        val user = getOrCreateHackerUser(frontierInfo)
+        try {
+            currentUserService.set(EXTERNAL_USER_MANAGER)
+            val user = getOrCreateHackerUser(frontierInfo)
 
-        updateHackerWithCharacterInfo(user, frontierInfo)
-        return user
+            updateHackerWithCharacterInfo(user, frontierInfo)
+            return user
+        }
+        finally {
+            currentUserService.remove()
+        }
     }
 
 
@@ -72,28 +84,35 @@ class FrontierService(
     fun updateHackerWithCharacterInfo(user: UserEntity, frontierInfo: FrontierUserAndCharacterInfo) {
         if (frontierInfo.isGm) return
 
-        val hacker = hackerEntityService.findForUser(user)
+        updateCharacterName(user, frontierInfo)
+        val v3Skills = orthankService.getPlayerSkills(frontierInfo.characterId!!)
 
+        updateHackerSkillsAndRam(user, v3Skills)
+        updateHackerScripts(user, frontierInfo, v3Skills)
+    }
+
+    private fun updateCharacterName(user: UserEntity, frontierInfo: FrontierUserAndCharacterInfo) {
+        val hacker = hackerEntityService.findForUser(user)
         val updatedHacker = hacker.copy(
             characterName = frontierInfo.characterName!!,
         )
         hackerEntityService.save(updatedHacker)
-
-        val skillTypes = determineFrontierCharacterSkills(frontierInfo)
-        skillService.addSkillsForUser(user, skillTypes)
     }
 
-    private fun determineFrontierCharacterSkills(frontierInfo: FrontierUserAndCharacterInfo): List<SkillType> {
-        val v3Skills = orthankService.getPlayerSkills(frontierInfo.characterId!!)
-        val hackerLevel = v3Skills.hacker
+    private fun updateHackerSkillsAndRam(user: UserEntity, v3Skills:FrontierV3HackingSkills) {
+        val translator = FrontierSkillTranslator(v3Skills)
+        val skillTypes = translator.translateSkills()
+        skillService.updateSkillsForUser(user, skillTypes)
 
-        if (hackerLevel == 0) {
-            return emptyList() // not a hacker, does not get skills
-        }
-        if (hackerLevel == 1 || hackerLevel == 2) {
-            return listOf(SEARCH_SITE, SCAN)
-        }
-        return listOf(SEARCH_SITE, SCAN, CREATE_SITE)
+        val ramSize = skillTypes[SkillType.SCRIPT_RAM]?.toInt() ?: 0
+        ramService.updateRam(user.id, ramSize)
+    }
+
+    private fun updateHackerScripts(user: UserEntity, frontierInfo: FrontierUserAndCharacterInfo, v3Skills:FrontierV3HackingSkills) {
+        val translator = FrontierScriptsAccessTranslator(frontierInfo, v3Skills)
+        val accessInfo = translator.determineAccessInfo()
+
+        scriptAccesService.updateScriptAccessForUser(user.id, accessInfo)
     }
 
 }
