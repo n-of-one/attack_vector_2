@@ -6,9 +6,8 @@
 
 ## Current pre-set
 
-The current setting allow you to run it directly on your computer for testing.
-Keycloak will be available on [auth.localhost](http://auth.localhost) and Attack Vector
-on [hack.localhost](http://hack.localhost)
+The current setting allow you to run it directly on your computer for testing. Keycloak will be available
+on [auth.localhost](http://auth.localhost) and Attack Vector on [hack.localhost](http://hack.localhost)
 
 Keycloak is pre-configured with a realm `larp` and a client `attack_vector`
 
@@ -53,15 +52,17 @@ To enabled https, uncomment the folling section in [compose.yaml](./compose.yaml
 
 ```
 
-Then update the [.env](.env) file with an e-mail and the name your DNS resolver.
-Add the necessary information needed by the resolver.
+Then update the [.env](.env) file with an e-mail and the name your DNS resolver. Add the necessary information needed by
+the resolver.
 
 In the provided exemple, I'm using [dynu](https://www.dynu.com/en-US/), which need a custom ENV variable `DYNU_API_KEY`
-More information [here](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge)
+More
+information [here](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge)
 
 #### Testing
 
-If you want to test your configuration, remplace `--entrypoints.websecure.http.tls.certResolver=letsencrypt` by `--entrypoints.websecure.http.tls.certResolver=letsencrypt-staging`
+If you want to test your configuration, remplace `--entrypoints.websecure.http.tls.certResolver=letsencrypt` by
+`--entrypoints.websecure.http.tls.certResolver=letsencrypt-staging`
 in [compose.yaml](./compose.yaml) to avoid rate limit
 
 ### Configure Keycloak (optional)
@@ -70,9 +71,8 @@ Login as admin to [admin console](http://auth.localhost/admin/master/console/) u
 in [.env](./.env) (KEYCLOAK_ADMIN and KEYCLOAK_ADMIN_PASSWORD)
 
 If you have change the attack vector url (domain or submain) you need to update manually it in the Keycloak
-configuration.
-Click on `Manage realms` then `larp` (or your custom realm name) then `Clients` in the side menu.
-Select `attack_vector` and update the `Valid redirect URIs` and `Web origins` fields with your domain
+configuration. Click on `Manage realms` then `larp` (or your custom realm name) then `Clients` in the side menu. Select
+`attack_vector` and update the `Valid redirect URIs` and `Web origins` fields with your domain
 
 #### Users infos
 
@@ -86,11 +86,22 @@ To modify the user attributes click on `Manage realms` then `larp` (or your cust
 #### Roles
 
 You can define what role new users will automatically have by clicking on `Manage realms`
-then `larp` (or your custom realm name) then `Realm setting` and go to `User registration` tab.
-Click on `Assign role` and select `Client roles`.
-You can now select the role you want to assign as default role (HACKER, SITE_ADMIN, GM)
+then `larp` (or your custom realm name) then `Realm setting` and go to `User registration` tab. Click on `Assign role`
+and select `Client roles`. You can now select the role you want to assign as default role (HACKER, SITE_ADMIN, GM)
 
 For more infos on roles see the [Roles and skills](#roles-and-skills-information) section.
+
+#### Groups
+
+To help manage large number of users you can crate groups in the `Groups` section. A group, has a number user assign to
+it and can provide specific role all members. By default 3 groups as been created.
+
+* gms → give the `GM` role to its members
+* hackers → give the `HACKER` role to its members
+* site_admins → give the `SITE_ADMIN` role to its members
+
+To assign members to a group, click on `Groups` then on the group you want to manage, then members. Click on the
+`Add member` button and selection the users.
 
 ### Configure Attack Vector
 
@@ -104,16 +115,24 @@ For more infos on roles see the [Roles and skills](#roles-and-skills-information
 
 The open-id connect implementation and the Keycloak pre-set have 2 roles configured
 
-By default new user don't have role attributed to them.
-They are **Non-professional hacker**<br>
-They can't start a new hack or use the `scan` command.
-They must be invited to a hack by a hacker.
+By default new user have the `USE_TEMPLATED_SKILLS` role attributed to them.
+
+#### NO ROLE:
+
+If users as no role assigne then, they are **Non-professional hacker**<br>
+They can't start a new hack or use the `scan` command. They must be invited to a hack by a hacker.
+
+### USE_TEMPLATED_SKILLS:
+
+User with this role will receive the same skills as the 'template' user. This role is assigned by default to all new
+user. This role can be mix `HACKER` or `SITE_ADMIN` role, the user will then gain the skills granted by the template
+user in addition to those granted by the `HACKER` or `SITE_ADMIN` role
 
 ### HACKER:
 
 **Professional hacker**<br>
-They can initially access a site and then start a new hack.
-The `scan` command give them an advantage on non-professional hacker.
+They can initially access a site and then start a new hack. The `scan` command give them an advantage on
+non-professional hacker.
 
 They have the following skills :
 
@@ -132,6 +151,13 @@ They have the following skills :
 * CREATE_SITE
 
 ### GM:
+
+The user is a Game Master, it can :
+
+* Create sites to hack.
+* Make ICE puzzles or switches available directly as standalone items.
+* Manage user accounts and skills.
+* Manage scripts.
 
 ### Add a role to a user
 

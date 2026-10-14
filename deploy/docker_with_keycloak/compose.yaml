@@ -4,8 +4,7 @@ services:
   traefik:
     image: traefik:3.7.1
     ports:
-      # uncomment the following block to enabled dashboard for dev purpose
-      #      - '80:80'
+      - '80:80'
       - '443:443'
     env_file:
       - .env
@@ -17,10 +16,10 @@ services:
       - "--providers.docker.exposedByDefault=false"
       - "--providers.file.directory=conf.d"
       - "--log.level=INFO"
+      - "--entrypoints.web.address=:80"
 
     # uncomment the following block to enabled dashboard for dev purpose
     #      - "--api.dashboard=true"
-    #      - "--entrypoints.web.address=:80"
 
     # uncomment the following block to enabled https
     #      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"

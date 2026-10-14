@@ -59,7 +59,12 @@
           "realm": [
             "offline_access",
             "uma_authorization"
-          ]
+          ],
+          "client": {
+            "attack_vector": [
+              "USE_TEMPLATE_SKILLS"
+            ]
+          }
         },
         "clientRole": false,
         "containerId": "35a14b8e-c004-4b74-8438-4e8459e24a12",
@@ -303,6 +308,15 @@
       "broker": [],
       "attack_vector": [
         {
+          "id": "b96bba95-954d-4f2a-bd7d-422a4f1b3ee9",
+          "name": "USE_TEMPLATE_SKILLS",
+          "description": "User with this role will receive the same skills as the 'template' user.\nThis role is assigned by default to all new user.",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "cbfbb03f-3735-4fdb-ae52-9fe859b3f0ea",
+          "attributes": {}
+        },
+        {
           "id": "48d74dd0-aeb2-4756-bee2-8019ee4541b1",
           "name": "SITE_ADMIN",
           "description": "Professional hacker, that can create new site\nThey have the same skills has HACKER but can also create new sites.\n\nThey have the following skills :\n* SEARCH_SITE\n* SCAN\n* CREATE_SITE",
@@ -359,7 +373,50 @@
       ]
     }
   },
-  "groups": [],
+  "groups": [
+    {
+      "id": "3b61fb5a-fd2b-49f1-b67d-02767026ab9d",
+      "name": "gms",
+      "description": "",
+      "path": "/gms",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "attack_vector": [
+          "GM"
+        ]
+      }
+    },
+    {
+      "id": "99e7d8eb-9b2e-4b2d-9b99-31fb304d78a9",
+      "name": "hackers",
+      "description": "",
+      "path": "/hackers",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "attack_vector": [
+          "HACKER"
+        ]
+      }
+    },
+    {
+      "id": "0b48de42-465c-4712-9282-c456d199681b",
+      "name": "site_admins",
+      "description": "",
+      "path": "/site_admins",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "attack_vector": [
+          "SITE_ADMIN"
+        ]
+      }
+    }
+  ],
   "defaultRole": {
     "id": "8d4dedd8-11a3-47b0-92ae-83e4739426a5",
     "name": "default-roles-larp",
