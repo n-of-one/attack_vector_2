@@ -25,7 +25,7 @@ class FrontierSkillTranslator(
         addIfPresent { weaken() }
 
 
-        if (slicerSpecialisation()) {
+        if (eliteSpecialisation()) {
             addIfPresent { eliteLevel(6, STEALTH, "25") }
             addIfPresent { eliteLevel(7, ADJUSTED_SPEED, "10") }
             addIfPresent { eliteLevel(8, UNDO_TRIPWIRE) }
@@ -33,7 +33,7 @@ class FrontierSkillTranslator(
             addIfPresent { eliteLevel(10, JUMP_TO_HACKER) }
         }
 
-        if (ghostSpecialisation()) {
+        if (architectSpecialisation()) {
             addIfPresent { architectLevel(7, ADJUSTED_SPEED, "10") }
 
             // Stealth is primarily for elites.
@@ -55,18 +55,18 @@ class FrontierSkillTranslator(
         if (skills.architect >= level) skillType to value else null
 
     private fun weaken(): Pair<SkillType, String>? {
-        if (skills.hacker < 4) return null
-        if (skills.hacker == 4) return WEAKEN to WEAKEN_SIMPLE
-        return WEAKEN to "$WEAKEN_SIMPLE, $WEAKEN_COMPLEX"
+        if (skills.hacker < 5) return null
+
+        return if (architectSpecialisation()) WEAKEN to "$WEAKEN_SIMPLE, $WEAKEN_COMPLEX"
+        else WEAKEN to WEAKEN_SIMPLE
     }
 
-    fun slicerSpecialisation(): Boolean {
+    fun eliteSpecialisation(): Boolean {
         if (skills.elite < 6) { return false }
-        if (skills.elite > skills.architect) { return true }
-        return false
+        return skills.elite > skills.architect
     }
 
-    fun ghostSpecialisation(): Boolean {
+    fun architectSpecialisation(): Boolean {
         if (skills.architect < 6) { return false }
         if (skills.architect > skills.elite) { return true }
         return skills.architect == skills.elite
@@ -77,20 +77,20 @@ class FrontierSkillTranslator(
 
         val ramFromScripts = 3
         val ramFromDataJack = if (skills.elite >= 7 || skills.architect >= 7) 3 else 0
-        val ramFromSlicer1 = if (skills.architect >= 8) 3 else 0
-        val ramFromSlicer2 = if (skills.architect >= 9) 3 else 0
+        val ramFromSlicer1 = if (architectSpecialisation() && skills.architect >= 8) 3 else 0
+        val ramFromSlicer2 = if (architectSpecialisation() && skills.architect >= 9) 3 else 0
 
-        val totalRam = ramFromScripts + ramFromDataJack + ramFromSlicer1 + ramFromSlicer2
+        val ramFromMemoryBoost = if (skills.architect == 10 && skills.elite >=7 || skills.elite == 10 && skills.architect >= 7) 1 else 0
+
+        val totalRam = ramFromScripts + ramFromDataJack + ramFromSlicer1 + ramFromSlicer2 + ramFromMemoryBoost
         return SCRIPT_RAM to totalRam.toString()
     }
 
     fun scriptIncome(): Pair<SkillType, String>? {
-        if (skills.architect < 6 ) return null
+        if (skills.hacker < 4 ) return null
 
-        // Architect->Ghosts get botnet at level 6, and dual elite/architect also get it.
         val incomeFromBotNet = 100
-
-        val incomeFromSlicer1 = if (ghostSpecialisation()) 100 else 0
+        val incomeFromSlicer1 = if (architectSpecialisation() && skills.architect >= 8) 100 else 0
 
         return SCRIPT_CREDITS to (incomeFromBotNet + incomeFromSlicer1).toString()
     }

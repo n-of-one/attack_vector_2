@@ -1,6 +1,7 @@
 package org.n1.av2.script.access
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.annotation.PostConstruct
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.*
@@ -14,7 +15,6 @@ import org.n1.av2.script.type.ScriptTypeId
 import org.n1.av2.script.type.ScriptTypeService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
-import jakarta.annotation.PostConstruct
 
 @Configuration
 class ScriptAccessServiceInit(
@@ -217,7 +217,7 @@ class ScriptAccessService(
                 if (type != null) {
                     addScriptAccess(type.id, userId, 0, price, false)
                 } else {
-                    logger.error("Script not found for name: $scriptName, user id: $userId will not get access to it.")
+                    logger.error {"Script not found for name: $scriptName, user id: $userId will not get access to it." }
                 }
             }
         }

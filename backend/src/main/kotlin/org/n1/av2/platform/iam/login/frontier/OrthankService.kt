@@ -31,7 +31,7 @@ class OrthankService(
 
     fun getFrontierHackerInfo(cookies: Array<Cookie>): FrontierUserAndCharacterInfo? {
         val userInfo = getUserInfo(cookies)
-        if (userInfo.accountId == "0") {
+        if (userInfo == null || userInfo.accountId == "0") {
             return null
         }
         if (userInfo.gm) {
@@ -50,12 +50,17 @@ class OrthankService(
         )
     }
 
-    private fun getUserInfo(cookies: Array<Cookie>): FrontierUserAndGroupInfo {
+    private fun getUserInfo(cookies: Array<Cookie>): FrontierUserAndGroupInfo? {
         class IdAndGroupResponse(var id: String, var groups: List<String>?) {
             constructor() : this("", emptyList())
         }
 
-        val idAndGroupsText = httpClient.get("https://ic.eosfrontier.space/assets/idandgroups.php", emptyMap(), cookies)
+        val idAndGroupsText = try {
+            httpClient.get("https://ic.eosfrontier.space/assets/idandgroups.php", emptyMap(), cookies)
+        }
+        catch (_: Exception) {
+            return null
+        }
         val idAndGroups = jsonMapper.readValue(idAndGroupsText, IdAndGroupResponse::class.java)
         val gm = idAndGroups.groups?.contains(FRONTIER_GM_GROUP) ?: false
 

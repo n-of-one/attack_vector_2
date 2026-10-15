@@ -158,8 +158,7 @@ class OpenIdConnectService(
             )
             hackerEntityService.save(updatedHacker)
         }
-
-        skillService.addSkillsForUser(user, openIdConnectUserInfos.skills)
+        openIdConnectUserInfos.skills.forEach { skillService.addSkillForUser(user.id, it) }
     }
 
 
