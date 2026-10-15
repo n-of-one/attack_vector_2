@@ -106,7 +106,7 @@ class OpenIdConnectServiceTest {
         assertThat(user.name).isEqualTo("neo")
         assertThat(user.type).isEqualTo(UserType.HACKER)
         verify { hackerEntityService.createHacker(user, HackerIcon.FROG, "The One") }
-        verify { skillService.addSkillsForUser(user, listOf(SkillType.SEARCH_SITE, SkillType.SCAN)) }
+        verify { listOf(SkillType.SEARCH_SITE, SkillType.SCAN).forEach { skillService.addSkillForUser(user.id, it) } }
     }
 
     @Test
@@ -195,6 +195,6 @@ class OpenIdConnectServiceTest {
         every { hackerEntityService.findForUserOrNull(any()) } returns null
         every { hackerEntityService.createHacker(any(), any(), any()) } just Runs
         every { hackerEntityService.findForUser(any()) } returns Hacker("hacker-1", "user-1", HackerIcon.FROG, "The One")
-        every { skillService.addSkillsForUser(any(), any()) } just Runs
+        every { skillService.addSkillForUser(any(), any()) } just Runs
     }
 }
