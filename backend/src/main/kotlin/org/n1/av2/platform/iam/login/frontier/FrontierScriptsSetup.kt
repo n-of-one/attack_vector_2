@@ -7,7 +7,7 @@ enum class FrontierScript(
     MASK("mask", 10),
     MASK_PLUS_PLUS("mask++", 18),
     SITESTAT("sitestat", 20),
-    JMP("jmp", 5),
+    JUMP("jump", 5),
     PREDICT("predict", 8),
     UNCLUSTER("uncluster", 10),
     RESPAWN("respawn", 12),
@@ -35,7 +35,7 @@ class FrontierScriptsAccessTranslator(
         addIfPresent { hackerLevel(3, FrontierScript.MASK) }
         addIfPresent { hackerLevel(3, FrontierScript.MASK_PLUS_PLUS) }
         addIfPresent { hackerLevel(3, FrontierScript.SITESTAT) }
-        addIfPresent { hackerLevel(3, FrontierScript.JMP) }
+        addIfPresent { hackerLevel(3, FrontierScript.JUMP) }
         addIfPresent { hackerLevel(3, FrontierScript.PREDICT) }
         addIfPresent { hackerLevel(3, FrontierScript.UNCLUSTER) }
         addIfPresent { hackerLevel(3, FrontierScript.RESPAWN) }

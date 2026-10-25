@@ -83,17 +83,17 @@ class TimerService(
     private class Durations(val effective: Duration, val stealthAdjustment: Duration, val alertnessAdjustment: Duration)
 
     fun startShutdownTimer(
-        timerSiteId: String, targetSiteId: String, layer: TripwireLayer?, baseTimerDuration: Duration, stealthApplies: Boolean,
+        timerSiteId: String, targetSiteId: String, tripwireLayer: TripwireLayer?, baseTimerDuration: Duration, stealthApplies: Boolean,
         shutdownDuration: Duration, timerSourceMessage: String, timerLabel: TimerLabel?
     ) {
         val durations = calculateEffectiveDuration(baseTimerDuration, stealthApplies, timerSiteId)
         val shutdownAt = timeService.now().plus(durations.effective)
 
-        val timer = timerEntityService.create(layer?.id, currentUserService.userId, shutdownAt, timerSiteId, targetSiteId, TimerEffect.SHUTDOWN_START, shutdownDuration, timerLabel)
+        val timer = timerEntityService.create(tripwireLayer?.id, currentUserService.userId, shutdownAt, timerSiteId, targetSiteId, TimerEffect.SHUTDOWN_START, shutdownDuration, timerLabel)
 
         informClientsOfTimer(ServerActions.SERVER_START_TIMER, timer)
 
-        val identifiers = createTimerIdentifiers(timerSiteId, layer?.id)
+        val identifiers = createTimerIdentifiers(timerSiteId, tripwireLayer?.id)
         systemTaskRunner.queueInSeconds("shutdown start timer", identifiers, durations.effective.seconds) {
             shutdownStart(
                 timerSiteId,

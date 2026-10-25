@@ -50,7 +50,7 @@ export const skillInfoText: Record<HackerSkillType, string> = {
     [HackerSkillType.ADJUSTED_SPEED]: "Speed of the text in the terminal, as well as move and start-attack speed. Default speed is [DEFAULT_SPEED].",
     [HackerSkillType.BYPASS]: "The hacker can ignore the ICE in the entry node.",
     [HackerSkillType.CREATE_SITE]: "The hacker can create their own sites.",
-    [HackerSkillType.JUMP_TO_HACKER]: "The hacker can 'jmp' to a node where another hacker is present. Not blocked by ICE along the way.",
+    [HackerSkillType.JUMP_TO_HACKER]: "The hacker can 'jump' to a node where another hacker is present. Not blocked by ICE along the way.",
     [HackerSkillType.SEARCH_SITE]: "The hacker can search for sites and start a hacking run. Without this skill, the hacker always needs another hacker find " +
     "the site and invite them to the run.",
     [HackerSkillType.SCAN]: "The hacker can use the 'scan' command.",
