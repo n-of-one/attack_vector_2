@@ -2,7 +2,7 @@
 Integration with Keycloak added by Théo Henry. You can use this to run AttackVector with every hacker and GM having a 
 separate login with password.
 
-This allows running AttackVector from Docker and Docker compose. If you want to make changes to the source 
+This also allows running AttackVector from Docker and Docker compose. If you want to make changes to the source 
 code and run it, this also makes that easier.
 
 
