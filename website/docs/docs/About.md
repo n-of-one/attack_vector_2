@@ -7,7 +7,7 @@ Attack Vector 2 is the successor to Attack Vector (1), a system that was used to
 
 In this documentation, Attack Vector 2 will be referred to as Attack Vector.
 
-It was written and is maintained by Erik Visser. Development started in December 2018.
+It was written and is maintained by Erik Visser. Additional development was done by Théo Henry. Development started in December 2018.
 
 
 # Privacy policy

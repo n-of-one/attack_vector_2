@@ -1,3 +1,11 @@
+# Release notes AV 2.21.0 (27 October 2026)
+Integration with Keycloak added by CptZeppo. You can use this to run AttackVector with every hacker and GM having a 
+separate login with password.
+
+Technically this allows running AttackVector from Docker and Docker compose. If you want to make changes to the source 
+code and run it, this  also makes that easier
+
+
 # Release notes AV 2.20.6 (13 October 2026)
 (skipped a few patch versions for testing purposes)
 
