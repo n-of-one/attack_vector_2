@@ -93,9 +93,10 @@ export class HackerPage {
         await this.page.locator('css=.terminalCaret').waitFor()
     }
 
-    async verifyAppText(text: string) {
+    async verifyAppText(text: string, timeoutSeconds?: number) {
         log(`Verify text on page via App locator to contain ${text}`)
-        await expect(appLocator(this.page), `Verify text on page via App locator to contain ${text}`).toContainText(text)
+        const options = timeoutSeconds ? {timeout: timeoutSeconds * 1000} : undefined
+        await expect(appLocator(this.page), `Verify text on page via App locator to contain ${text}`).toContainText(text, options)
     }
 
     async getCodeForScript(scriptName: string): Promise<string> {

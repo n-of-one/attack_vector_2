@@ -1,6 +1,7 @@
 package org.n1.av2.platform.db.schema
 
 import com.mongodb.client.MongoDatabase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.platform.db.MigrationStep
 import org.n1.av2.platform.iam.user.DefaultUserService
 import org.n1.av2.platform.iam.user.HackerIcon
@@ -23,7 +24,7 @@ class V06_ImportDefaultData(
 
     override val version = 6
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     override
     fun migrate(db: MongoDatabase): String {
@@ -35,10 +36,10 @@ class V06_ImportDefaultData(
     fun importDefaultTutorial() {
         val created = tutorialService.importTutorialSite()
         if (created) {
-            logger.info("Imported default tutorial site.")
+            logger.info { "Imported default tutorial site." }
         }
         else {
-            logger.info("There is already a tutorial site, leaving it unchanged.")
+            logger.info { "There is already a tutorial site, leaving it unchanged." }
         }
 
     }
@@ -51,6 +52,6 @@ class V06_ImportDefaultData(
         users.add(defaultUserService.createDefaultHacker("Angler", HackerIcon.SHARK))
 
         val createdCount = users.filterNotNull().size
-        logger.info("Created $createdCount new default hackers.")
+        logger.info { "Created $createdCount new default hackers." }
     }
 }

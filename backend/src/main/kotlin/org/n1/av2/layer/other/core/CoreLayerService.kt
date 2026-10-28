@@ -30,8 +30,8 @@ class CoreLayerService(
             hackingDetails.add("- revealed network")
         }
 
-        val timers = stopTimers(runId, layer)
-        timers.forEach { timer ->
+        val stoppedTimers = stopTimers(runId, layer)
+        stoppedTimers.forEach { timer ->
             if (timer.targetSiteId == timer.siteId) {
                 hackingDetails.add("- stopped timer for this site")
             } else {
@@ -47,7 +47,7 @@ class CoreLayerService(
         connectionService.replyTerminalReceive(hackingDetails)
     }
 
-    private fun stopTimers(runId: String, layer: CoreLayer): List<Timer> {
+    private fun stopTimers(runId: String, coreLayer: CoreLayer): List<Timer> {
         val run = runEntityService.getByRunId(runId)
 
         val timersOfSite = timerEntityService.findBySiteId(run.siteId)
@@ -56,7 +56,10 @@ class CoreLayerService(
                 .flatMap { node ->
                     node.layers
                         .filterIsInstance<TripwireLayer>()
-                        .filter { tripwireLayer -> tripwireLayer.coreLayerId == layer.id }
+                        .filter { tripwireLayer ->
+                            timer.layerId == tripwireLayer.id &&
+                            tripwireLayer.coreLayerId == coreLayer.id
+                        }
                 }
 
             val tripwireLayer = tripwires.firstOrNull() ?: return@mapNotNull null // this timer is not reset by this core

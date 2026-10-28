@@ -1,7 +1,7 @@
 package org.n1.av2.platform.db.schema
 
 import com.mongodb.client.MongoDatabase
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType

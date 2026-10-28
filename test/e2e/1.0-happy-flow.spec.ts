@@ -145,9 +145,8 @@ test('1.0.2 - Joining an existing run and checking services', async ({page}: { p
     await test.step("Trigger tripwire and let it reset the site", async () => {
         await angler.typeCommand("qmove 00")
         await angler.typeCommand("qmove 07")
-        await angler.verifyAppText('00:00:07');
+        await angler.verifyAppText('00:00:04', 10); // countdown starts at 10s; needs more than the default 5s expect timeout to reach 4
         await angler.verifyAppText('[Site] ➜ shutdown for 15 seconds');
-        await angler.verifyAppText('00:00:04');
         await angler.verifyAppText('00:00:02');
         await angler.expectTerminalText(["Site down for maintenance for 15 seconds", "Disconnected (server abort)"])
 

@@ -8,6 +8,6 @@ const isDevelopmentEnvironment = () => {
 export const developmentServer = isDevelopmentEnvironment()
 
 export const toServerUrl = (path: string) => {
-    if (developmentServer) return `http://localhost${path}`
+    if (developmentServer) return `http://localhost:8080${path}`
     return path
 }

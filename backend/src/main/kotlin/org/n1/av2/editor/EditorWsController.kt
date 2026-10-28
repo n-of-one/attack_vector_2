@@ -17,7 +17,7 @@ class EditorWsController(
     }
 
     @MessageMapping("/editor/enter")
-    fun siteFull(siteId: String, userPrincipal: UserPrincipal) {
+    fun enter(siteId: String, userPrincipal: UserPrincipal) {
         editorService.validateAccessToSiteById(siteId, userPrincipal)
         userTaskRunner.runTask("/editor/enter", userPrincipal) { editorService.enter(siteId) }
     }

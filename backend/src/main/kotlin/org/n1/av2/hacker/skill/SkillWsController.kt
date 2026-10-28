@@ -27,7 +27,7 @@ class SkillWsController(
     class DeleteSkillCommand(val skillId: SkillId)
     @MessageMapping("/user/skill/delete")
     fun deleteSkill(command: DeleteSkillCommand, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask("/user/skill/delete", userPrincipal) { skillService.deleteSkill(command.skillId) }
+        userTaskRunner.runTask("/user/skill/delete", userPrincipal) { skillService.deleteSkillAndNotifyUser(command.skillId) }
     }
 
 }

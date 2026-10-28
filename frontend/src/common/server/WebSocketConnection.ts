@@ -5,6 +5,7 @@ import {SERVER_DISCONNECT, SERVER_ERROR, SERVER_USER_CONNECTION} from "./Generic
 import {currentUser} from "../user/CurrentUser"
 import {notify} from "../util/Notification";
 import {NAVIGATE_PAGE, Page} from "../menu/pageReducer";
+import {redirectToLogin} from "../../login/RedirectToLogin";
 
 
 export const WS_UNRESTRICTED = "WS_UNRESTRICTED"
@@ -54,7 +55,7 @@ export class WebSocketConnection {
         const hostName: string = window.location.hostname
         this.developmentServer = (window.location.port === "3000")
         // During development connect directly to backend, websocket proxying does not work with create-react-app.
-        const port = this.developmentServer ? "80" :  window.location.port
+        const port = this.developmentServer ? "8080" :  window.location.port
         const protocol = (window.location.protocol === "http:") ? "ws" : "wss"
         const path = pathByConnectionType[connection]
         return `${protocol}://${hostName}:${port}${path}`
@@ -88,11 +89,14 @@ export class WebSocketConnection {
     }
 
     redirectToLogin() {
-        window.location.href = `/redirectToLogin?next=${document.location.pathname}`
+        redirectToLogin(document.location.pathname)
     }
 
     onWsConnectError(event: CloseEvent | Frame) {
         if (event instanceof CloseEvent) {
+            if (event.code === 1001) {
+                return // "Going away": page is being unloaded (navigation), not an error
+            }
             console.error("Connect failed, code: " + event.code)
             if (event.code === 1006) {
                 notify({type: "fatal", message: "Failed to establish connection to AV server. It might not be running." })

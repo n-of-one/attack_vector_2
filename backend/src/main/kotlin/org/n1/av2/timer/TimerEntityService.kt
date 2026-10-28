@@ -19,18 +19,18 @@ class TimerEntityService(
     }
 
     fun create(
-        layerId: String?, userId: String?, finishAt: ZonedDateTime, siteId: String, targetSiteId: String,
+        tripwireLayerId: String?, userId: String?, finishAt: ZonedDateTime, siteId: String, targetSiteId: String,
         effect: TimerEffect, effectDuration: Duration, label: TimerLabel? = null
     ): Timer {
         val id = createId("timer", repository::findById)
 
         val timer = Timer(
             id = id,
-            layerId = layerId,
+            layerId = tripwireLayerId,
             userId = userId,
             finishAt = finishAt,
-            siteId = siteId, // site that 'runs' the timer, meaning that it can be stopped from that site
-            targetSiteId = targetSiteId, // site that is targeted by the effect of the timer
+            siteId = siteId,
+            targetSiteId = targetSiteId,
             effect = effect,
             effectDuration = effectDuration,
             label = label,

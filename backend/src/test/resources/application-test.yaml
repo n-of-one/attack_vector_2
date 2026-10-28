@@ -1,8 +1,0 @@
-de.flapdoodle.mongodb.embedded.version: 4.4.0
-spring.data.mongodb:
-    username: attackvector2
-    password: attackvector2
-    host: localhost
-    port: 27017
-
-ADMIN_PASSWORD: test

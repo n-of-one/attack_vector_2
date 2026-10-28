@@ -12,6 +12,7 @@ import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 import kotlin.system.measureTimeMillis
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 
 @Service
@@ -23,7 +24,7 @@ class WordSearchService(
     private val configService: ConfigService,
 ) {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     companion object {
         const val CREATION_ATTEMPTS = 50

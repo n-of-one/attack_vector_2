@@ -8,7 +8,7 @@ import org.n1.av2.statistics.IceStatisticsService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Configuration
 class HackerConnectionServiceInit(

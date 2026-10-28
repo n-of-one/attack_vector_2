@@ -1,3 +1,7 @@
+echo --- --- --- ---
+echo Build frontend
+echo --- --- --- ---
+
 rm -rf build
 npm run build
 
@@ -17,10 +21,17 @@ mkdir ../../backend/src/main/resources/static
 cp -r * ../../backend/src/main/resources/static
 
 
-cd ..
+echo --- --- --- --- --- ---
+echo Build docusaurus docs
+echo --- --- --- --- --- ---
 
-echo --- --- ---
+cd ../../website
+npm run build
+mkdir ../backend/src/main/resources/static/attack_vector_2
+cp -r build/* ../backend/src/main/resources/static/attack_vector_2
+
+echo --- --- --- --- --- --- --- --- --- --- ---
 echo Build complete
-echo.
+echo
 echo Version created and installed in Backend
-echo --- --- ---
+echo --- --- --- --- --- --- --- --- --- --- ---

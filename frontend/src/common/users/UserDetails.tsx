@@ -130,9 +130,9 @@ const HackerDetails = ({user}: { user: User }) => {
         />
 
         <div className="row form-group">
-            <label htmlFor="type" className="col-lg-4 control-label text-muted">Icon</label>
+            <label htmlFor="hackerIcon" className="col-lg-4 control-label text-muted">Icon</label>
             <div className="col-lg-4">
-                <DropDownSaveInput id="type" className="form-control"
+                <DropDownSaveInput id="hackerIcon" className="form-control"
                                    selectedValue={user.hacker!!.icon}
                                    save={(value: string) => save(user.id, "hackerIcon", value)}
                                    readonly={false}>

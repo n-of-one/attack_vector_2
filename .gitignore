@@ -27,3 +27,6 @@ backend/.idea/
 /test/playwright-report/
 /test/blob-report/
 /test/playwright/
+
+/data
+/deploy/docker_with_keycloak/data

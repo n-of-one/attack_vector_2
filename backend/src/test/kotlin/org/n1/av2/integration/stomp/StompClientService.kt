@@ -1,33 +1,24 @@
 package org.n1.av2.integration.stomp
 
-import org.n1.av2.integration.service.WebsocketUserService
 import org.n1.av2.platform.connection.UNRESTRICTED_ENDPOINT
-import org.springframework.beans.factory.annotation.Autowired
+import org.n1.av2.platform.iam.login.LoginService
+import org.n1.av2.platform.iam.user.UserEntityService
 import org.springframework.stereotype.Component
 
-
+/**
+ * Connects a STOMP test client through the real login flow: login -> JWT cookie -> websocket handshake.
+ */
 @Component
-class StompClientService {
-
-    @Autowired
-    private lateinit var websocketUserService: WebsocketUserService
+class StompClientService(
+    private val userEntityService: UserEntityService,
+    private val loginService: LoginService,
+) {
 
     var port = 0
 
-    suspend fun createAndConnect(name: String): HackerClient {
-        websocketUserService.createTestUser(name)
-
-        val hacker = connectHacker(name)
-        return hacker
-    }
-
-    private suspend fun connectHacker(userName: String): HackerClient {
-        val client = connectUser(userName)
-        return HackerClient(client, userName)
-    }
-
     suspend fun connectUser(userName: String): AvClient {
-        val (user, cookies) = websocketUserService.login(userName)
+        val user = userEntityService.getByName(userName)
+        val cookies = loginService.login(userName, "", "127.0.0.1")
         val cookie = cookies[0]
         val cookieString = "${cookie.name}=${cookie.value}"
 

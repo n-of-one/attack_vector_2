@@ -2,7 +2,7 @@ package org.n1.av2.platform.db.schema
 
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Updates.unset
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.bson.Document
 import org.n1.av2.platform.db.MigrationStep
 import org.n1.av2.platform.util.createId

@@ -1,6 +1,6 @@
 package org.n1.av2.script.ram
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.platform.config.ConfigItem
@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.util.*
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Configuration
 class RamServiceInitializer(
@@ -174,6 +174,19 @@ class RamService(
         )
 
         return ramRepository.save(ramEntity)
+    }
+
+    fun updateRam(userId: String, size: Int) {
+        val ram = ramRepository.findByUserId(userId)
+        if (ram == null) {
+            val enabled = size != 0
+            createRam(userId, size, enabled)
+        }
+        else {
+            if (ram.size != size) {
+                alterRamSize(userId, size)
+            }
+        }
     }
 
     fun load(userId: String, size: Int, overrideLocked: Boolean) {
@@ -350,7 +363,7 @@ class RamService(
 
         if (sanitizedNextRefresh != ram.nextRefresh) {
             // this is a problem: refresh has not triggered. Just freeing all ram to prevent hacker from being stuck with ram that will never refresh.
-            logger.error("Sanitized nextRefresh for user ${ram.userId} from ${ram.nextRefresh} (it is currently: ${timeService.now()})")
+            logger.error { "Sanitized nextRefresh for user ${ram.userId} from ${ram.nextRefresh} (it is currently: ${timeService.now()})" }
             return sanitize( // recursive call to sanitize other properties as well.
                 ram.copy(
                     free = ram.free + ram.refreshing,
@@ -369,10 +382,10 @@ class RamService(
 
         if (sanitized == ram) return ram
 
-        if (sanitizedLoaded != ram.loaded) logger.error("Sanitized loaded RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedLoaded")
-        if (sanitizeRefreshing != ram.refreshing) logger.error("Sanitized refreshing RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizeRefreshing")
-        if (sanitizedFree != ram.free) logger.error("Sanitized free RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedFree")
-        if (sanitizedLockedUntil != ram.lockedUntil) logger.error("Sanitized locked until for user ${ram.userId} from ${ram.lockedUntil} (it is currently: ${timeService.now()})")
+        if (sanitizedLoaded != ram.loaded) logger.error { "Sanitized loaded RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedLoaded" }
+        if (sanitizeRefreshing != ram.refreshing) logger.error { "Sanitized refreshing RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizeRefreshing" }
+        if (sanitizedFree != ram.free) logger.error { "Sanitized free RAM for user ${ram.userId} from ${ram.loaded} -> $sanitizedFree" }
+        if (sanitizedLockedUntil != ram.lockedUntil) logger.error { "Sanitized locked until for user ${ram.userId} from ${ram.lockedUntil} (it is currently: ${timeService.now()})" }
 
         return sanitized
 

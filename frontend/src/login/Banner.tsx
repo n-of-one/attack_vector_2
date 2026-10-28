@@ -33,7 +33,7 @@ export const Banner = ({hiddenAdminLogin = false, image = false}: Props) => {
         }
     }
 
-    const version = <>2.20.2</>
+    const version = <>2.21.0</>
 
     return (<>
             <div className="row">

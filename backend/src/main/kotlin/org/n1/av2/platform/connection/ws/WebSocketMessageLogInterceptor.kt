@@ -1,6 +1,7 @@
 package org.n1.av2.platform.connection.ws
 
-import mu.KLogger
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.stomp.StompCommand
@@ -11,7 +12,7 @@ import java.security.Principal
 
 class MessageIn : ChannelInterceptor {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*> {
         if (message.headers["stompCommand"] == null) {
@@ -33,7 +34,7 @@ class MessageIn : ChannelInterceptor {
 
 class MessageOut : ChannelInterceptor {
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*>? {
         log(logger, message, "->")
@@ -52,5 +53,5 @@ private fun log(logger: KLogger, message: Message<*>, directionText: String) {
     } else {
         "no name"
     }
-    logger.debug("${directionText} ${user} ${destination} ${payloadString}")
+    logger.debug { "${directionText} ${user} ${destination} ${payloadString}" }
 }

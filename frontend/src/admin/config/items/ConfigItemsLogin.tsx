@@ -12,6 +12,7 @@ export const ConfigItemLoginPath = (props: { value: string }) => {
                 <ul>
                     <li>/devLogin &nbsp; (use during development, one click login without passwords)</li>
                     <li>/login-frontier &nbsp; (used for Frontier Larp SSO)</li>
+                    <li>/login-oidc &nbsp; (used for OpenId Connect SSO)</li>
                 </ul>
                 General advice: do not change this.<br/><br/>
                 This is used to direct login to a page specific to your larp (instead of google login). This must be custom

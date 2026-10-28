@@ -1,19 +1,14 @@
 package org.n1.av2.frontend.web.html
 
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
-import org.n1.av2.platform.config.ConfigItem
-import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.iam.login.LoginService
-import org.springframework.boot.web.servlet.error.ErrorController
+import org.springframework.boot.webmvc.error.ErrorController
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.servlet.view.RedirectView
 import java.io.File
 import java.net.URLDecoder
 
@@ -22,11 +17,9 @@ private const val INDEX = "../static/index.html"
 @Controller
 class HtmlController(
     private val loginService: LoginService,
-    private val configService: ConfigService,
 ) : ErrorController {
 
     private val localRoot = File("local")
-    private val allowedLoginQuery = Regex("^[a-zA-Z0-9/_\\-=]{1,200}$")
 
 
     @GetMapping(
@@ -36,6 +29,7 @@ class HtmlController(
         "/adminLogin",
         "/devLogin",
         "/loggedOut",
+        "/redirectToLogin",
 
         "/hacker", "/hacker/",
 
@@ -70,30 +64,6 @@ class HtmlController(
         val challengeFileName = uri.substringAfterLast("/")
         val path = File("letsencrypt/.well-known/acme-challenge/$challengeFileName").canonicalPath
         return File(path).readText()
-    }
-
-    @GetMapping("/redirectToLogin")
-    fun redirectToLogin(request: HttpServletRequest): RedirectView {
-        val loginPath = configService.get(ConfigItem.LOGIN_PATH)
-
-        val nextPart = validateQueryString(request.queryString)
-
-        return RedirectView(loginPath + nextPart)
-    }
-
-    private fun validateQueryString(queryString: String?): String {
-        if (queryString == null) return ""
-        val queryMap: Map<String, String> = queryString
-            .split("&")
-            .map { keyAndValue: String ->
-                val keyAndValueParts = keyAndValue.split("=")
-                keyAndValueParts[0] to keyAndValueParts[1]
-            }
-            .toMap()
-        val next = queryMap["next"] ?: return ""
-        if (allowedLoginQuery.matches(next)) return "?next=$next"
-
-        error("Invalid redirect: $next")
     }
 
     @GetMapping("/local/**")
@@ -151,18 +121,6 @@ class HtmlController(
             "eot" -> return "font/eot"
             else -> return "application/octet-stream"
         }
-    }
-
-    @GetMapping("/localLogout")
-    fun logout(response: HttpServletResponse) {
-        loginService.getCookieNames().forEach { name ->
-            val cookie = Cookie(name, "")
-            cookie.path = "/"
-            cookie.maxAge = 0
-            response.addCookie(cookie)
-        }
-
-        response.sendRedirect("/loggedOut")
     }
 
     @GetMapping("/forceError")

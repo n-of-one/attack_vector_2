@@ -69,7 +69,7 @@ class SkillService(
     }
 
 
-    fun deleteSkill(skillId: SkillId) {
+    fun deleteSkillAndNotifyUser(skillId: SkillId) {
         val skill = getSkill(skillId)
 
         skillRepo.delete(skill)
@@ -99,15 +99,26 @@ class SkillService(
         }
     }
 
-    fun addSkillsForUser(user: UserEntity, types: List<SkillType>) {
+    fun updateSkillsForUser(user: UserEntity, types: List<SkillType>) {
         types.forEach { type ->
             addSkillForUser(user.id, type)
         }
     }
 
+    fun updateSkillsForUser(user: UserEntity, skills: Map<SkillType, String>) {
+        val currentSkills = findSkillsForUser(user.id)
+        currentSkills.forEach { skill -> skillRepo.deleteById(skill.id)}
+
+        skills.forEach { (type, value) ->
+            addSkillForUser(user.id, type, value)
+        }
+    }
+
+
     fun addSkillForUser(userId: String, type: SkillType, valueInput: String? = null) {
-        val id = createId("skill", skillRepo::findById)
-        val value  = valueInput ?: type.defaultValue
+        val id = skillRepo.findFirstByTypeAndUserId(type, userId)?.id
+            ?: createId("skill", skillRepo::findById)
+        val value = valueInput ?: type.defaultValue
         val skill = Skill(id, userId, type, value)
         skillRepo.save(skill)
     }
@@ -127,5 +138,4 @@ class SkillService(
                 skillRepo.save(updatedSkill)
             }
     }
-
 }

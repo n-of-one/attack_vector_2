@@ -48,7 +48,7 @@ class DefaultUserService(
 
         hackerEntityService.createHacker(user, icon, name)
 
-        skillService.addSkillsForUser(user, listOf(SEARCH_SITE, SCAN))
+        skillService.updateSkillsForUser(user, listOf(SEARCH_SITE, SCAN))
 
         return user
     }

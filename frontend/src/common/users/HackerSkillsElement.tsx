@@ -60,7 +60,7 @@ const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
     const skillValueElement = hasValue ? <SkillValueElement skill={skill}/> : <></>
 
     return <>
-        <div className="row">
+        <div className="row" data-row="hacker-skill" data-skill={skill.type}>
             <div className={"col-lg-5"}>
                 <SkillDeleteElement skill={skill}/> &nbsp;
                 <InfoBadge infoText={infoText}/> {name}
@@ -102,11 +102,11 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
 
     return <>
         <hr/>
-        <div className="row form-group text">
+        <div className="row form-group text" data-row="add-skill">
 
-            <label htmlFor="addEffect" className="col-lg-2 control-label text-muted">Add skill:</label>
+            <label htmlFor="addSkill" className="col-lg-2 control-label text-muted">Add skill:</label>
             <div className="col-lg-8">
-                <select className="form-control" value={chosenSkillOption}
+                <select id="addSkill" className="form-control" value={chosenSkillOption}
                         onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                             setChosenSkillOption(event.target.value)
                         }}>

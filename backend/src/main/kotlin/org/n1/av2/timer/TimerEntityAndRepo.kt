@@ -13,9 +13,9 @@ enum class TimerLabel { TRIPWIRE_SITE_SHUTDOWN, SCRIPT_SITE_SHUTDOWN }
 @Document
 data class Timer(
     @Id val id: String,
-    val layerId: String?,
-    val siteId: String,
-    val targetSiteId: String,
+    val layerId: String?, // layerId of the tripwire that caused the timer
+    val siteId: String, // site that 'runs' the timer, meaning that it can be stopped from that site
+    val targetSiteId: String, // site that is targeted by the effect of the timer
     val userId: String?,
     val finishAt: ZonedDateTime,
     val effect: TimerEffect,

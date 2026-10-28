@@ -48,7 +48,10 @@ enum class ConfigItem(
     LARP_SPECIFIC_FRONTIER_ORTHANK_TOKEN(ADMIN, ""),
     LARP_SPECIFIC_FRONTIER_LOLA_ENABLED(ADMIN, "false", ::validBoolean),
 
-    SYSTEM_JWT_SECRET(NEVER, createJwtSecret())
+    SYSTEM_JWT_SECRET(NEVER, createJwtSecret()),
+
+    LARP_SPECIFIC_OPENID_CONNECT_URL(ADMIN, ""),
+    LARP_SPECIFIC_OPENID_CONNECT_CLIENT_ID(ADMIN, "attack_vector"),
 }
 
 data class ConfigEntry(
@@ -102,13 +105,13 @@ fun validPassword(toValidate: String, configValues: Map<ConfigItem, String>): St
 fun validDuration(toValidate: String, configValues: Map<ConfigItem, String>) = toValidate.validateDuration()
 
 fun loginPathMessage(value: String): String? {
-    if (value != "/login" && value != "/devLogin") {
-        return "Non standard login path. Do not close this window. Use an incognito browser window to check that login works correctly."
-    } else return null
+    return if (value != "/login" && value != "/devLogin") {
+        "Non standard login path. Do not close this window. Use an incognito browser window to check that login works correctly."
+    } else null
 }
 
 @Suppress("unused")
-fun loginPasswordMessage (ignored: String) =
+fun loginPasswordMessage(ignored: String) =
     "Please check that you can login using the new password. Do not close this window, but open an incognito browser window to do this."
 
 fun createJwtSecret(): String {

@@ -1,48 +1,58 @@
 package org.n1.av2.platform.iam.login
 
-import jakarta.servlet.http.Cookie
 import org.hamcrest.Matchers.containsString
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.n1.av2.integration.service.TestUserService
-import org.n1.av2.platform.iam.user.UserType
+import org.mockito.BDDMockito.given
+import org.n1.av2.platform.config.ConfigItem
+import org.n1.av2.platform.config.ConfigService
+import org.n1.av2.platform.connection.ConnectionService
+import org.n1.av2.platform.iam.user.CurrentUserService
+import org.n1.av2.platform.iam.authentication.JwtAuthenticationFilter
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType
-import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@AutoConfigureDataMongo
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-class ApiSiteWsControllerTest(
-) {
+/**
+ * Web slice test: controller wiring, JSON shape and input validation only.
+ * The real filter chain + cookie auth is covered by the websocket integration tests.
+ * (openapi paths are permitAll in production, so filters are disabled here.)
+ */
+@WebMvcTest(LoginRestController::class)
+@AutoConfigureMockMvc(addFilters = false)
+class ApiSiteWsControllerTest {
 
-    @Autowired
+    @MockitoBean
     lateinit var loginService: LoginService
 
-    @Autowired
-    lateinit var testUserService: TestUserService
+    @MockitoBean
+    lateinit var configService: ConfigService
+
+    // Replaces the bean definition: the real filter's constructor pulls in JwtTokenProvider,
+    // which reads config in its constructor.
+    @MockitoBean
+    lateinit var jwtAuthenticationFilter: JwtAuthenticationFilter
+
+    // Needed by ConstraintViolationWsExceptionHandler, a @ControllerAdvice included in the slice.
+    @MockitoBean
+    lateinit var connectionService: ConnectionService
+
+    @MockitoBean
+    lateinit var currentUserService: CurrentUserService
 
     @Autowired
     lateinit var mvc: MockMvc
 
-
-    lateinit var authCookie: Cookie
-
-    @BeforeAll
-    fun setup() {
-        val user = testUserService.createHackerForTest("testGm", UserType.GM)
-        authCookie = loginService.generateJwtCookie(user)
+    @BeforeEach
+    fun stub() {
+        given(configService.get(ConfigItem.LOGIN_GOOGLE_CLIENT_ID)).willReturn("")
     }
 
     @Test
@@ -63,7 +73,6 @@ class ApiSiteWsControllerTest(
             post("/openapi/login/google")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"jwt": "$invalidJwt"}""")
-                .cookie(authCookie)
         )
             .andExpect(status().isBadRequest())
             .andExpect(content().string(containsString("must match \"[\\p")))

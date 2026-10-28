@@ -3,6 +3,7 @@ package org.n1.av2.platform.db.schema
 import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Updates
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.bson.Document
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.larp.frontier.LOLA_USER_NAME
@@ -20,7 +21,7 @@ class V05_HackerSkills() : MigrationStep {
 
     override val version = 5
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     override
     fun migrate(db: MongoDatabase): String {
@@ -41,7 +42,7 @@ class V05_HackerSkills() : MigrationStep {
             hackers.insertMany(hackerDocuments)
         }
 
-        logger.info("Created ${hackerDocuments.size} hacker entities")
+        logger.info { "Created ${hackerDocuments.size} hacker entities" }
     }
 
     private fun findHackerUserEntities(db: MongoDatabase): FindIterable<Document> {
@@ -84,7 +85,7 @@ class V05_HackerSkills() : MigrationStep {
 
         var updatedCount = userEntitiesCollection.updateMany(matchTypeHacker, update).matchedCount
 
-        logger.info("Removed hacker part from ${updatedCount} user entities")
+        logger.info { "Removed hacker part from ${updatedCount} user entities" }
     }
 
     private fun addRolesToUserEntities(db: MongoDatabase) {
@@ -109,7 +110,7 @@ class V05_HackerSkills() : MigrationStep {
             ).matchedCount
         }
 
-        logger.info("Added tags to ${userCount} user entities")
+        logger.info { "Added tags to ${userCount} user entities" }
     }
 
 

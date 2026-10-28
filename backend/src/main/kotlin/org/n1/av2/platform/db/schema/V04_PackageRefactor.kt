@@ -2,6 +2,7 @@ package org.n1.av2.platform.db.schema
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.bson.Document
 import org.n1.av2.editor.SiteEditorState
 import org.n1.av2.layer.app.status_light.StatusLightLayer
@@ -46,7 +47,7 @@ class V04_PackageRefactor : MigrationStep {
 
     override val version = 4
 
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     override
     fun migrate(db: MongoDatabase): String {

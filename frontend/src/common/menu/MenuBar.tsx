@@ -46,7 +46,7 @@ export const MenuBar = () => {
 
     const hackerSites = hackersCanCreateSites ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SITES} label="Sites"/> : <></>
     const hackerScripts = hackerHasScriptsSkill ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.HACKER_SCRIPTS} label="Scripts"/> : <></>
-    const hackerMarket = hackerHasScriptsSkill && hackerHasScriptsCreditsSkill ?
+    const hackerMarket = hackerHasScriptsSkill ?
         <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SCRIPTS_MARKET} label="Market"/> : <></>
     const hackerCredits = hackerHasScriptsCreditsSkill ? <MenuItem requiresRole={ROLE_HACKER} targetPage={Page.SCRIPTS_CREDITS} label="Credits"/> : <></>
 
@@ -79,7 +79,7 @@ export const MenuBar = () => {
                             <ul className="navbar-nav">
                                 <MenuItem requiresRole="ROLE_USER" targetPage={Page.ME} label={"{" + userName + "}"}/>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="/login" onClick={(event) => logout(event)}>ꕻ
+                                    <a className="nav-link" href="#" onClick={(event) => logout(event)}>ꕻ
                                         Logout</a>
                                 </li>
                             </ul>

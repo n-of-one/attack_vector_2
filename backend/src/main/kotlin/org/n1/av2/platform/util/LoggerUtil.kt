@@ -1,6 +1,6 @@
 package org.n1.av2.platform.util
 
-import mu.KLogger
+import io.github.oshai.kotlinlogging.KLogger
 
 val totalsByName = HashMap<String, Long>()
 val countByName = HashMap<String, Int>()
@@ -17,6 +17,6 @@ inline fun <T>logNanoTime(name: String, logger: KLogger, block: () -> T): T {
 
     val average = newTotal / newCount
     val averageFormatted = String.format("%,d", average)
-    logger.debug("${name} : average: ${averageFormatted} ns (over ${newCount}, this: (${time})")
+    logger.debug { "${name} : average: ${averageFormatted} ns (over ${newCount}, this: (${time}" }
     return result
 }

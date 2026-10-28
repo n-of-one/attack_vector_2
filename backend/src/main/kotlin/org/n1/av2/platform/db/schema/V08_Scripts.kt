@@ -3,7 +3,7 @@ package org.n1.av2.platform.db.schema
 import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.n1.av2.platform.db.MigrationStep

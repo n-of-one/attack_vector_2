@@ -1,5 +1,6 @@
 package org.n1.av2.platform.config
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.platform.config.ConfigItemVisibility.ADMIN
 import org.n1.av2.platform.config.ConfigItemVisibility.EVERYONE
 import org.n1.av2.platform.connection.ConnectionService
@@ -10,20 +11,20 @@ import org.n1.av2.platform.util.validateDuration
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.util.*
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Service
 class ConfigService(
     private val repo: ConfigEntryRepo,
     private val connectionService: ConnectionService,
 ) {
-    private val logger = mu.KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     val cache: MutableMap<ConfigItem, String> = EnumMap(ConfigItem::class.java)
 
     @PostConstruct
     fun logEnvironment() {
-        logger.info("Larp: ${get(ConfigItem.LARP_NAME)}")
+        logger.info { "Larp: ${get(ConfigItem.LARP_NAME)}" }
     }
 
     fun initConfigValues() {
@@ -105,7 +106,7 @@ class ConfigService(
 
     fun getAsDuration(item: ConfigItem): Duration {
         val stringValue = get(item)
-        if (stringValue.validateDuration() != null ) error("Duration invalid for config item: $item")
+        if (stringValue.validateDuration() != null) error("Duration invalid for config item: $item")
         return stringValue.toDuration()
     }
 }

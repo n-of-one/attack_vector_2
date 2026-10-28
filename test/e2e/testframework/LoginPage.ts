@@ -9,6 +9,20 @@ export class LoginPage {
         this.page = page
     }
 
+    /**
+     * Logs in via /adminLogin, which is always available, regardless of the LOGIN_PATH configuration.
+     * The other login methods go via /redirectToLogin, which only leads to a usable page when LOGIN_PATH is /devLogin.
+     * Use this to bootstrap a server that was not started in development mode.
+     */
+    async loginAsAdmin() {
+        log(`Logging in as admin using /adminLogin`)
+        await this.page.goto('http://localhost:3000/adminLogin')
+        await this.page.locator('#name').fill("admin")
+        await this.page.locator('#password').fill("") // empty password works as long as LOGIN_PASSWORD is not set
+        await this.page.getByRole('button', {name: 'Sign in'}).click()
+        await this.verifyUsernameVisible("admin")
+    }
+
     async loginUsingLink(username: string,) {
         log(`Logging in by using link: ${username}`)
         await this.page.goto('http://localhost:3000/redirectToLogin')

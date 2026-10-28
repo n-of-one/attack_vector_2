@@ -52,7 +52,14 @@ Start the server with: `./run.sh` or `run.bat`
 
 Update to the latest version with `./upgrade.sh` or `upgrade.bat`
 
-Attack Vector runs on port 80 (windows) or port 443 (linux) by default.
+Attack Vector runs on port 8080 (windows) or port 443 (linux) by default.
+
+
+## Running using docker compose
+Another way to start up Attack Vector is by checking out the source code and  running: `docker compose up -d`.
+AttackVector now runs on port 80. (http://localhost).
+
+If you want to use Keycloak as the login-system, see: [here](deploy/docker_with_keycloak/README.md). 
 
 
 ## First time login as admin
