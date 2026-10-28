@@ -40,6 +40,8 @@ export class JigsawCanvas {
             height: CANVAS_HEIGHT,
             background: 0x181818,
             antialias: true,
+            // Shader media (ShaderAnimation) only provides a WebGL program.
+            preference: 'webgl',
         })
         app.ticker.maxFPS = 30
 
@@ -89,6 +91,11 @@ export class JigsawCanvas {
 
         this.registerEventHandlers()
         this.installVideoLoopFader(media)
+
+        const advanceFrame = media.advanceFrame
+        if (advanceFrame) {
+            this.app.ticker.add(ticker => advanceFrame(this.app.renderer, ticker.deltaMS))
+        }
     }
 
     /**
@@ -249,7 +256,7 @@ export class JigsawCanvas {
         tinyCanvas.height = tinyHeight
         const tinyCtx = tinyCanvas.getContext('2d')!
         try {
-            tinyCtx.drawImage(media.sourceElement as CanvasImageSource,
+            tinyCtx.drawImage(media.snapshot(this.app.renderer),
                 cropOffsetX, cropOffsetY, IMAGE_WIDTH, IMAGE_HEIGHT, 0, 0, tinyWidth, tinyHeight)
         } catch (error) {
             console.warn("Could not snapshot background frame", error)

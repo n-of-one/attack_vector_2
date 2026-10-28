@@ -11,11 +11,12 @@ class JigsawIceController(
     val userTaskRunner: UserTaskRunner,
 ) {
 
-    data class JigsawEnterInput(val iceId: String)
+    /** reset: only honored for the dev test ICE, recreates it. */
+    data class JigsawEnterInput(val iceId: String, val reset: Boolean?)
 
     @MessageMapping("/ice/jigsaw/enter")
     fun enter(command: JigsawEnterInput, userPrincipal: UserPrincipal) {
-        userTaskRunner.runTask("/ice/jigsaw/enter", userPrincipal) { jigsawService.enter(command.iceId) }
+        userTaskRunner.runTask("/ice/jigsaw/enter", userPrincipal) { jigsawService.enter(command.iceId, command.reset == true) }
     }
 
     data class JigsawMovedInput(val iceId: String, val groupId: String, val x: Double, val y: Double)

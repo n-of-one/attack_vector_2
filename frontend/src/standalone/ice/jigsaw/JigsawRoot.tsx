@@ -38,9 +38,12 @@ export class JigsawRoot extends Component<Props> {
             devTools: isDevelopmentServer
         })
 
+        // On /dev/ pages, `?reset` makes the backend recreate the dev test ICE.
+        const reset = window.location.pathname.startsWith("/dev/") && new URLSearchParams(window.location.search).has("reset")
+
         webSocketConnection.create(WS_NETWORK_APP, this.store, () => {
             webSocketConnection.subscribe(`/topic/ice/${props.iceId}`)
-            webSocketConnection.sendObject("/ice/jigsaw/enter", {iceId: ice.id})
+            webSocketConnection.sendObject("/ice/jigsaw/enter", {iceId: ice.id, reset})
         });
 
         jigsawIceManager.init(this.store, props.externalHack);

@@ -181,6 +181,7 @@ class IceStatisticsService(
             LayerType.SWEEPER_ICE -> "sweeper"
             LayerType.TAR_ICE -> "tar"
             LayerType.PASSWORD_ICE -> "password"
+            LayerType.JIGSAW_ICE -> "jigsaw"
             else -> error("Unknown ICE type")
         }
 

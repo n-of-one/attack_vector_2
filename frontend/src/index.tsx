@@ -53,6 +53,12 @@ const ReRoute = (): React.JSX.Element => {
     return (<></>)
 }
 
+/** `/dev/jigsaw?strength=ONYX` picks the puzzle size of the backend's dev test ICE (default AVERAGE). */
+const devJigsawIceId = (): string => {
+    const strength = new URLSearchParams(window.location.search).get("strength")
+    return strength ? `jigsaw-dev-test-${strength}` : "jigsaw-dev-test"
+}
+
 const container = document.getElementById('app') as HTMLDivElement
 const root = createRoot(container)
 
@@ -96,7 +102,7 @@ root.render(
 
 
                 {/* Dev testing */}
-                <Route path="/dev/jigsaw" element={<JigsawRoot iceId="jigsaw-dev-test" externalHack={false}/>}/>
+                <Route path="/dev/jigsaw" element={<JigsawRoot iceId={devJigsawIceId()} externalHack={false}/>}/>
 
                 {/* Larp specific */}
                 <Route path="/larp/frontier/lola" element={<Lola/>}/>

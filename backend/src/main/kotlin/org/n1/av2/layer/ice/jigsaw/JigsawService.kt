@@ -12,12 +12,19 @@ import org.n1.av2.site.entity.enums.IceStrength
 import org.n1.av2.statistics.IceHackState
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
 private const val SNAP_TOLERANCE_PIXELS = 15.0
+
+/**
+ * Dev-only ICE for the /dev/jigsaw route: exists without a site, node or run. Created on enter in DEV_TESTING_MODE,
+ * and recreated once solved. The id is "jigsaw-dev-test" (AVERAGE) or "jigsaw-dev-test-<STRENGTH>".
+ */
+private const val DEV_TEST_ICE_PREFIX = "jigsaw-dev-test"
 
 /**
  * Authoritative server for the Jigsaw ICE. See elegant-knitting-kahn plan doc for the full
@@ -96,8 +103,30 @@ class JigsawService(
         return status
     }
 
-    fun enter(iceId: String) {
+    fun enter(iceId: String, reset: Boolean) {
+        if (isDevTestIce(iceId)) {
+            enterDevTestIce(iceId, reset)
+            return
+        }
         val status = jigsawIceStatusRepo.findById(iceId).getOrElse { error("No Jigsaw ice for ID: $iceId") }
+        replyEnter(status)
+        runService.enterIce(iceId)
+    }
+
+    private fun isDevTestIce(iceId: String) = iceId.startsWith(DEV_TEST_ICE_PREFIX)
+
+    /** No run or statistics bookkeeping: the dev test ICE has no node or layer behind it. */
+    private fun enterDevTestIce(iceId: String, reset: Boolean) {
+        if (!configService.getAsBoolean(ConfigItem.DEV_TESTING_MODE)) error("Jigsaw dev test ICE requires DEV_TESTING_MODE")
+        val existing = jigsawIceStatusRepo.findById(iceId).getOrNull()
+        val status = if (reset || existing == null || existing.hacked) {
+            val strengthName = iceId.removePrefix(DEV_TEST_ICE_PREFIX).removePrefix("-").ifEmpty { IceStrength.AVERAGE.name }
+            createIce(iceId, iceId, IceStrength.valueOf(strengthName))
+        } else existing
+        replyEnter(status)
+    }
+
+    private fun replyEnter(status: JigsawIceStatus) {
         val payload = JigsawEnter(
             hacked = status.hacked,
             strength = status.strength,
@@ -108,7 +137,6 @@ class JigsawService(
             groups = status.groups,
         )
         connectionService.reply(ServerActions.SERVER_JIGSAW_ENTER, payload)
-        runService.enterIce(iceId)
     }
 
     fun resetIceByLayerId(layerId: String) {
@@ -181,6 +209,10 @@ class JigsawService(
         if (groups.size != 1 || groups[0].rotation != 0) return
 
         jigsawIceStatusRepo.save(status.copy(hacked = true))
+        if (isDevTestIce(iceId)) {
+            connectionService.toIce(iceId, ServerActions.SERVER_ICE_HACKED)
+            return
+        }
         hackedUtil.iceHacked(iceId, status.layerId, 4 * SECONDS_IN_TICKS, IceHackState.HACKED)
     }
 

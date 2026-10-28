@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 import {useSelector} from "react-redux"
 import {JigsawRootState} from "../reducer/JigsawRootReducer"
 import {HIDDEN} from "../../common/IceModel"
-import {jigsawIceManager} from "../JigsawIceManager"
+import {jigsawIceManager, MediaPlayback} from "../JigsawIceManager"
 
 const SPEEDS: number[] = [0, 0.25, 0.5, 1]
 const DEFAULT_SPEED = 1
@@ -15,24 +15,24 @@ const formatSpeed = (speed: number): string => {
 
 export const VideoSpeedControls = () => {
     const uiMode = useSelector((state: JigsawRootState) => state.ui.mode)
-    const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null)
+    const [playback, setPlayback] = useState<MediaPlayback | null>(null)
     const [speed, setSpeed] = useState<number>(DEFAULT_SPEED)
 
-    // Once the puzzle becomes visible, poll briefly for the loaded video element.
+    // Once the puzzle becomes visible, poll briefly for the loaded animated media (video or shader).
     useEffect(() => {
         if (uiMode === HIDDEN) return
-        if (videoElement) return
+        if (playback) return
 
-        const found = jigsawIceManager.getVideoElement()
+        const found = jigsawIceManager.getPlayback()
         if (found) {
-            setVideoElement(found)
+            setPlayback(found)
             return
         }
 
         const intervalId = window.setInterval(() => {
-            const element = jigsawIceManager.getVideoElement()
-            if (element) {
-                setVideoElement(element)
+            const loaded = jigsawIceManager.getPlayback()
+            if (loaded) {
+                setPlayback(loaded)
                 window.clearInterval(intervalId)
             }
         }, 200)
@@ -44,21 +44,15 @@ export const VideoSpeedControls = () => {
             window.clearInterval(intervalId)
             window.clearTimeout(timeoutId)
         }
-    }, [uiMode, videoElement])
+    }, [uiMode, playback])
 
     const applySpeed = (newSpeed: number) => {
-        if (!videoElement) return
+        if (!playback) return
         setSpeed(newSpeed)
-        if (newSpeed === 0) {
-            videoElement.pause()
-            return
-        }
-        videoElement.playbackRate = newSpeed
-        void videoElement.play().catch(() => { /* ignore autoplay rejection */
-        })
+        playback.setSpeed(newSpeed)
     }
 
-    if (!videoElement) return null
+    if (!playback) return null
 
     return (
         <div className="btn-group btn-group-sm" role="group" aria-label="Video speed" style={{paddingTop: "4px"}}>

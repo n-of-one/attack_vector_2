@@ -27,6 +27,17 @@ ICE strength determines the number of puzzle pieces via a grid of columns x rows
 - The image is center-cropped to exactly 1376 x 768 from the source.
 - The image is displayed at 80% scale (PUZZLE_SCALE = 0.8), giving a display size of 1100.8 x 614.4 pixels.
 - The image source path is provided by the server in the enter data (e.g. `/img/frontier/ice/jigsaw/green.png`). Videos (`.mp4`) are also supported.
+- Procedural shaders are supported as `shader:<name>` (see `shader/JigsawShaders.ts`: `palette`, `cells`, `warp`, `julia`, `ripples`). They render at
+  exactly 1376 x 768 into a Pixi RenderTexture (in Pixi's own WebGL context) that is used as the shared texture, and respect the speed
+  controls like videos. Rendering in a separate WebGL context and uploading that canvas each frame caused high CPU use and stutter in Firefox.
+- On `/dev/` routes, the query parameter `?media=<source>` overrides the server-chosen media, for experimenting.
+
+## Dev test route
+
+- `/dev/jigsaw` enters the ICE `jigsaw-dev-test`; `?strength=<IceStrength>` enters `jigsaw-dev-test-<STRENGTH>` instead (default AVERAGE).
+- In `DEV_TESTING_MODE` the backend creates this ICE on enter without a site, node or run, and recreates it once it is solved, or when the page
+  is opened with `?reset`. Run and statistics
+  bookkeeping is skipped for it, and solving only broadcasts `SERVER_ICE_HACKED`.
 - The server picks a random source from a per-strength bucket (`JigsawDefaultMedia.kt`) at ICE creation time, so every hacker entering the same ICE sees the
   same media.
 - In testing mode (`DEV_TESTING_MODE`), the creator uses a deterministic RNG seed (0) so puzzles are reproducible.
