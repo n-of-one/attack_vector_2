@@ -30,3 +30,6 @@ backend/.idea/
 
 /data
 /deploy/docker_with_keycloak/data
+
+# Scratch files
+/tmp/

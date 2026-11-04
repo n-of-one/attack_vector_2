@@ -8,3 +8,13 @@ Keep it minimal, don't add any attributes or logic, just make it compile
 3. Go back to the frontend.
 
 When the layer is added to the frontend, you can implement it fully in the backend. Add the attributes and logic where needed to make this layer work.
+
+Places to check. Not all of them are exhaustive `when`s, so the compiler does not point at every one:
+- `NodeEntityService.createLayer` (default layer) and `SiteCloneService.createLayerCopy` (clone constructor)
+- `ThemeService` (default layer name)
+- `ExportedSiteParser` (site import), and add the layer to a test site in `ExportedSiteParserTest` if relevant
+- `CommandHackService` (what happens on `hack`)
+- `CommandMoveService.triggerLayersAtArrive` if the layer reacts to a hacker entering the node
+- Layers that keep status per site (a separate status entity + repository):
+  - reset it in `SiteResetService`
+  - add a `@MockitoBean` for the repository in `IntegrationTestBase`

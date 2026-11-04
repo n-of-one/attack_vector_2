@@ -54,4 +54,5 @@
     <logger name="org" level="INFO" />
     <logger name="com" level="WARN" />
     <logger name="net" level="WARN" />
+    <logger name="io.mockk" level="INFO" />
 </configuration>
