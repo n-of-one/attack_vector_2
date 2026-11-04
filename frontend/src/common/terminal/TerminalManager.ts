@@ -35,6 +35,12 @@ class TerminalManager {
             }
         }
 
+        // Use the browser's paste event instead of navigator.clipboard.readText(): Firefox and Safari show a "Paste" confirmation button for readText()
+        document.onpaste =(event: ClipboardEvent) => {
+            if (this.terminalActive) {
+                this.handlePaste(event)
+            }
+        }
     }
 
     start() {
@@ -45,12 +51,15 @@ class TerminalManager {
         this.terminalActive = false;
     }
 
-    async handleKeyDown(event: KeyboardEvent) {
+    handleKeyDown(event: KeyboardEvent) {
         let {keyCode, key} = event;
-        if (key === "Control" || key === "Alt" || key === "Shift" || (keyCode >= F2_KEY && keyCode <= F12_KEY)) {
-            return // Ignore CTLR, ALT, SHIFT, F2-F12
+        if (key === "Control" || key === "Alt" || key === "Shift" || key === "Meta" || (keyCode >= F2_KEY && keyCode <= F12_KEY)) {
+            return // Ignore CTLR, ALT, SHIFT, META (Cmd on Mac), F2-F12
         }
-        if (event.ctrlKey && key === "c") return // Copy
+        const lowerKey = key.toLowerCase()
+        const ctlrOrMeta = event.ctrlKey || event.metaKey
+        if (ctlrOrMeta && lowerKey === "c") return // Copy
+        if (ctlrOrMeta && lowerKey === "v") return // Paste
 
         const activeElement = document.activeElement
         if (activeElement instanceof HTMLInputElement) {
@@ -60,12 +69,10 @@ class TerminalManager {
         event.preventDefault();
 
         const terminalId = this.store.getState().activeTerminalId;
-        if (event.ctrlKey && key === "l") {
+        if (ctlrOrMeta && lowerKey === "l") {
             this.dispatch({type: TERMINAL_CLEAR, terminalId: terminalId})
             return
         }
-
-        const pastedText = (event.ctrlKey && key === "v") ? await navigator.clipboard.readText() : null
 
         if (keyCode === ENTER_KEY) {
             const terminalState = this.terminalStateById(terminalId)
@@ -76,8 +83,21 @@ class TerminalManager {
                 submit()
             }
         } else {
-            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId, pastedText: pastedText})
+            this.dispatch({type: TERMINAL_KEY_PRESS, key: key, keyCode: keyCode, terminalId: terminalId, pastedText: null})
         }
+    }
+
+    handlePaste(event: ClipboardEvent) {
+        if (document.activeElement instanceof HTMLInputElement) {
+            return
+        } // Ignore if an input field is active
+
+        const pastedText = event.clipboardData?.getData("text/plain")
+        if (!pastedText) return
+        event.preventDefault()
+
+        const terminalId = this.store.getState().activeTerminalId
+        this.dispatch({type: TERMINAL_KEY_PRESS, key: "", keyCode: 0, terminalId: terminalId, pastedText: pastedText})
     }
 
     private terminalStateById(terminalId: string): TerminalState {
