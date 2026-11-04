@@ -23,7 +23,7 @@ features/
       effects.md        ← All 19 script effect types
       marketplace.md    ← Buying, selling, credits, income
     timers.md
-    skills.md           ← All 11 hacker skill types
+    skills.md           ← All 12 hacker skill types
     gm.md
     editor.md
     admin.md
@@ -56,7 +56,7 @@ Each code reference file maps features to their backend (Kotlin) and frontend (T
 | ICE | `ice/*.md` | 6 puzzle types that protect network nodes |
 | Scripts | `scripts/*.md` | Script types, 19 effects, marketplace |
 | Timers | `timers.md` | Tripwire countdowns, timer adjusters, shutdown |
-| Skills | `skills.md` | 11 hacker skill types |
+| Skills | `skills.md` | 12 hacker skill types |
 | GM | `gm.md` | Site management, user management, statistics |
 | Editor | `editor.md` | Visual site topology editor |
 | Admin | `admin.md` | System configuration, monitoring |

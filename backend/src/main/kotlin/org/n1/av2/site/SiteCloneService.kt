@@ -10,6 +10,7 @@ import org.n1.av2.layer.ice.tangle.TangleIceLayer
 import org.n1.av2.layer.ice.tar.TarIceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
@@ -123,6 +124,7 @@ class SiteCloneService(
             is StatusLightLayer -> StatusLightLayer(id, sourceLayer)
             is TripwireLayer -> TripwireLayer(id, sourceLayer)
             is TimerAdjusterLayer -> TimerAdjusterLayer(id, sourceLayer)
+            is DaemonLayer -> DaemonLayer(id, sourceLayer)
             is NetwalkIceLayer -> NetwalkIceLayer(id, sourceLayer)
             is PasswordIceLayer -> PasswordIceLayer(id, sourceLayer)
             is TangleIceLayer -> TangleIceLayer(id, sourceLayer)

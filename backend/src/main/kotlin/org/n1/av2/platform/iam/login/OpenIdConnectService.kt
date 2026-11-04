@@ -163,7 +163,7 @@ class OpenIdConnectService(
         if (openIdConnectUserInfos.useTemplatedSkills) {
             skillService.createDefaultSkills(user.id)
         }
-        openIdConnectUserInfos.skills.forEach { skillService.addSkillForUser(user.id, it) }
+        openIdConnectUserInfos.skills.forEach { skillService.addOrUpdateSkillForUser(user.id, it) }
     }
 
 

@@ -1,3 +1,14 @@
+# Release notes AV 2.22.0 (unreleased)
+
+## Features
+- New layer: Daemon. Shows a text to a hacker that enters the node. Can be set to trigger only for the first hacker, once per hacker, or on every entry.
+- New skill: Trait. A trait of the hacker character with meaning in the game, for example "insider: Former corporate insider". GMs and players can look it up
+  and react to it, and Daemon layers can be set to only trigger for hackers with a specific trait. The hacker only sees the text, not the key.
+
+## Bugfixes
+- Adding a second Weaken skill to a hacker no longer replaces the first one.
+
+
 # Release notes AV 2.21.0 (27 October 2026)
 Integration with Keycloak added by Théo Henry. You can use this to run AttackVector with every hacker and GM having a 
 separate login with password.

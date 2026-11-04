@@ -3,11 +3,11 @@ package org.n1.av2.layer.other.timeradjuster
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.model.TriggerRecurrence
 import org.n1.av2.platform.util.validateDuration
 import org.n1.av2.site.entity.enums.LayerType
 
 enum class TimerAdjustmentType { SPEED_UP, SLOW_DOWN }
-enum class TimerAdjustmentRecurring { FIRST_ENTRY_ONLY, EVERY_ENTRY, EACH_HACKER_ONCE }
 
 class TimerAdjusterLayer(
     id: String,
@@ -17,14 +17,14 @@ class TimerAdjusterLayer(
     note: String,
     var amount: String, // How much the timer is increased.
     var adjustmentType: TimerAdjustmentType,
-    var recurring: TimerAdjustmentRecurring,
+    var recurring: TriggerRecurrence,
 ) : Layer(id, LayerType.TIMER_ADJUSTER, level, name, note) {
 
-    constructor (id: String, level: Int, name: String, note: String, amount: String, adjustmentType: TimerAdjustmentType, recurring: TimerAdjustmentRecurring) :
+    constructor (id: String, level: Int, name: String, note: String, amount: String, adjustmentType: TimerAdjustmentType, recurring: TriggerRecurrence) :
         this(id, LayerType.TIMER_ADJUSTER, level, name, note, amount, adjustmentType, recurring)
 
     constructor(id: String, level: Int, defaultName: String) :
-        this(id, LayerType.TIMER_ADJUSTER, level, defaultName, "", "5:00", TimerAdjustmentType.SPEED_UP, TimerAdjustmentRecurring.FIRST_ENTRY_ONLY)
+        this(id, LayerType.TIMER_ADJUSTER, level, defaultName, "", "5:00", TimerAdjustmentType.SPEED_UP, TriggerRecurrence.FIRST_ENTRY_ONLY)
 
     constructor(id: String, toClone: TimerAdjusterLayer) :
         this(id, LayerType.TIMER_ADJUSTER, toClone.level, toClone.name, toClone.note, toClone.amount, toClone.adjustmentType, toClone.recurring)
@@ -44,7 +44,7 @@ class TimerAdjusterLayer(
         when (key) {
             "AMOUNT" -> this.amount = value
             "ADJUSTMENT_TYPE" -> updateAdjustmentType(TimerAdjustmentType.valueOf(value))
-            "ADJUSTMENT_RECURRING" -> this.recurring = TimerAdjustmentRecurring.valueOf(value)
+            "ADJUSTMENT_RECURRING" -> this.recurring = TriggerRecurrence.valueOf(value)
 
             else -> return super.updateInternal(key, value)
         }

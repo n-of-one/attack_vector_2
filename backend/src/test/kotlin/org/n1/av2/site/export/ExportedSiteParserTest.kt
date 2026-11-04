@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
-import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentRecurring
+import org.n1.av2.layer.model.TriggerRecurrence
 import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentType
 import org.n1.av2.site.entity.enums.LayerType
 import tools.jackson.databind.json.JsonMapper
@@ -66,7 +66,7 @@ class ExportedSiteParserTest {
 
         assertEquals("3:00", layer.amount)
         assertEquals(TimerAdjustmentType.SPEED_UP, layer.adjustmentType)
-        assertEquals(TimerAdjustmentRecurring.EVERY_ENTRY, layer.recurring)
+        assertEquals(TriggerRecurrence.EVERY_ENTRY, layer.recurring)
     }
 
     @Test
@@ -75,7 +75,7 @@ class ExportedSiteParserTest {
 
         assertEquals("5:00", layer.amount)
         assertEquals(TimerAdjustmentType.SLOW_DOWN, layer.adjustmentType)
-        assertEquals(TimerAdjustmentRecurring.EACH_HACKER_ONCE, layer.recurring)
+        assertEquals(TriggerRecurrence.EACH_HACKER_ONCE, layer.recurring)
     }
 
     @Test
@@ -85,7 +85,7 @@ class ExportedSiteParserTest {
         assertEquals(LayerType.TIMER_ADJUSTER, layer.type)
         assertEquals("2:00", layer.amount)
         assertEquals(TimerAdjustmentType.SPEED_UP, layer.adjustmentType)
-        assertEquals(TimerAdjustmentRecurring.EVERY_ENTRY, layer.recurring)
+        assertEquals(TriggerRecurrence.EVERY_ENTRY, layer.recurring)
 
     }
 

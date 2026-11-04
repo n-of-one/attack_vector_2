@@ -76,6 +76,18 @@ This skill increases the time for a site to shutdown when the hacker triggers a 
 
 This skill can also be applied negatively, to decrease the time. A stealth value of -30% will decrease the time from 10 minutes to 7 minutes.
 
+### Trait
+
+Default hacker skill: **no**
+
+A trait is something about the hacker's character that has meaning in the game, for example a background, an implant or a reputation. GMs and players can look up a hacker's traits and react to them in play.
+
+Sites can react to traits as well: the [Daemon](/player/layers/Daemon) layer can be set up to only show its message to hackers with a specific trait. For example, a former employee of a corporation might see a different message when entering the corporation's site.
+
+This skill has two fields: a key and a text. For example key `insider` with text `Former corporate insider`. The key identifies the trait, and can only contain letters, digits, `.`, `-` and `_`. The text is what the hacker sees in their list of skills; the key itself is not shown to them.
+
+You can have this skill more than once, each instance with a different key.
+
 ### Weaken
 
 Default hacker skill: **no**

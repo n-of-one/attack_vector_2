@@ -4,6 +4,7 @@ import {COPY_ICON, PASTE_ICON, SvgIcon} from "./SvgIcon";
 import {
     CODE,
     CORE,
+    DAEMON,
     KEYSTORE,
     LOCK,
     MONEY,
@@ -74,6 +75,7 @@ const iconFamily = (type: string) => {
             return "glyphicon"
         case LOCK:
         case TRIPWIRE:
+        case DAEMON:
         case STATUS_LIGHT:
         case CORE:
         case SCRIPT_CREDITS:

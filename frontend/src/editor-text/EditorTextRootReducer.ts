@@ -62,6 +62,7 @@ const serverUpdateLayer = (update: { nodeId: string, layerId: string, layer: Lay
 const textFromLayer = (layer: LayerDetails): string => {
     switch (layer.type) {
         case LayerType.TEXT:
+        case LayerType.DAEMON:
             return layer.text!!
         case LayerType.SCRIPT_INTERACTION:
             return layer.message!!

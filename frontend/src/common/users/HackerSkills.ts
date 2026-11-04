@@ -10,6 +10,7 @@ export enum HackerSkillType {
     STEALTH = "STEALTH",
     WEAKEN = "WEAKEN",
     UNDO_TRIPWIRE = "UNDO_TRIPWIRE",
+    TRAIT = "TRAIT",
 }
 
 export interface HackerSkill {
@@ -30,6 +31,7 @@ export const skillName: Record<HackerSkillType, string> = {
     [HackerSkillType.STEALTH]: "Stealth",
     [HackerSkillType.WEAKEN]: "Weaken",
     [HackerSkillType.UNDO_TRIPWIRE]: "Rollback",
+    [HackerSkillType.TRAIT]: "Trait",
 }
 
 export const skillHasValue: Record<HackerSkillType, boolean> = {
@@ -44,6 +46,7 @@ export const skillHasValue: Record<HackerSkillType, boolean> = {
     [HackerSkillType.STEALTH]: true,
     [HackerSkillType.WEAKEN]: true,
     [HackerSkillType.UNDO_TRIPWIRE]: false,
+    [HackerSkillType.TRAIT]: true,
 }
 
 export const skillInfoText: Record<HackerSkillType, string> = {
@@ -63,6 +66,9 @@ export const skillInfoText: Record<HackerSkillType, string> = {
     "of this skill can be used once per site.",
     [HackerSkillType.UNDO_TRIPWIRE]: "The hacker can use 'rollback' to retreat from a node they just moved into," +
         " returning to the previous node and undoing any tripwire they triggered in the process.",
+    [HackerSkillType.TRAIT]: "A trait of the hacker character that has meaning in the game, for example a background, an implant or a reputation." +
+        " GMs and players can look it up and react to it, and sites can react to it as well, for example by showing a message when entering" +
+        " a node (Daemon layer). The key identifies the trait, the text is what the hacker sees in their list of skills.",
 }
 
 export const skillCanHaveMultipleInstances: Record<HackerSkillType, boolean> = {
@@ -77,4 +83,15 @@ export const skillCanHaveMultipleInstances: Record<HackerSkillType, boolean> = {
     [HackerSkillType.STEALTH]: false,
     [HackerSkillType.WEAKEN]: true,
     [HackerSkillType.UNDO_TRIPWIRE]: false,
+    [HackerSkillType.TRAIT]: true,
 }
+
+/** The value of a TRAIT skill is "<key>: <text>". The hacker only gets to see the text. */
+export const splitTraitSkillValue = (value: string | undefined): { key: string, text: string } => {
+    if (!value) return {key: '', text: ''}
+    const separatorIndex = value.indexOf(':')
+    if (separatorIndex === -1) return {key: value.trim(), text: ''}
+    return {key: value.substring(0, separatorIndex).trim(), text: value.substring(separatorIndex + 1).trim()}
+}
+
+export const joinTraitSkillValue = (key: string, text: string): string => `${key.trim()}: ${text.trim()}`

@@ -20,6 +20,7 @@ import {LayerDetails, NodeI} from "../../../../../common/sites/SiteModel";
 import {LayerScriptCreditsPanel} from "./type/panel/app/LayerScriptCreditsPanel";
 import {LayerTimerAdjusterPanel} from "./type/panel/app/LayerTimerAdjusterPanel";
 import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
+import {LayerDaemonPanel} from "./type/panel/app/LayerDaemonPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -55,6 +56,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerTripwirePanel node={node} layer={layer}/>
         case LayerType.TIMER_ADJUSTER:
             return <LayerTimerAdjusterPanel node={node} layer={layer}/>
+        case LayerType.DAEMON:
+            return <LayerDaemonPanel node={node} layer={layer}/>
         case LayerType.CORE:
             return <LayerCorePanel node={node} layer={layer}/>
         case LayerType.SCRIPT_INTERACTION:

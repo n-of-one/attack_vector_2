@@ -5,6 +5,7 @@ import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
+import org.n1.av2.layer.other.daemon.DaemonService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreService
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
@@ -55,6 +56,7 @@ class SiteResetService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val iceStatisticsService: IceStatisticsService,
     private val skillService: SkillService,
+    private val daemonService: DaemonService,
 ) {
 
     lateinit var runService: RunService
@@ -86,6 +88,7 @@ class SiteResetService(
 
         timerService.removeTimersForTargetSite(siteId)
         timerAdjusterService.siteReset(siteId)
+        daemonService.siteReset(siteId)
 
         runService.updateRunLinksForResetSite(siteId)
 

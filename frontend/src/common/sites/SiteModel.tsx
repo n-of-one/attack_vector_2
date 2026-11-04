@@ -1,6 +1,7 @@
 import {LayerType} from "../enums/LayerTypes";
 import {NodeScanStatus} from "../enums/NodeStatus";
-import {TimerAdjustmentRecurring, TimerAdjustmentType} from "../model/layer/LayerTimerAdjuster";
+import {TimerAdjustmentType} from "../model/layer/LayerTimerAdjuster";
+import {TriggerRecurrence} from "../model/layer/TriggerRecurrence";
 import {StatusLightOption} from "../../standalone/widget/statusLight/StatusLightReducers";
 
 export const TRANSIT_1 = "transit_1"
@@ -33,7 +34,8 @@ export interface LayerDetails {
     original: LayerDetails | null
 
     nodeName?: string                 // OS layer
-    text?: string                     // Text layer
+    text?: string                     // Text layer & Daemon layer
+    requiredTrait?: string            // Daemon layer
     shutdown?: string                 // Layer Trip wire
     countdown?: string                // Layer Trip wire
     coreLayerId?: string              // Layer Trip wire
@@ -41,7 +43,7 @@ export interface LayerDetails {
 
     amount?: number | string              // Timer adjuster layer & Script Credits layer
     adjustmentType?: TimerAdjustmentType  // Shutdown Accelerator
-    recurring?: TimerAdjustmentRecurring  // Shutdown Accelerator
+    recurring?: TriggerRecurrence         // Timer adjuster & Daemon layer
 
     strength? : "VERY_WEAK" | "WEAK" | "AVERAGE" | "STRONG" | "VERY_STRONG" | "ONYX"
     password? : string  // Password Ice layer

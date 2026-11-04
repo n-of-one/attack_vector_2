@@ -115,8 +115,8 @@ class V07_DevelopmentDefaults(
 
     private fun addScriptSkills(userName: String) {
         val userId = userEntityService.getByName(userName).id
-        skillService.addSkillForUser(userId, SkillType.SCRIPT_CREDITS, "1000")
-        skillService.addSkillForUser(userId, SkillType.SCRIPT_RAM, "100")
+        skillService.addOrUpdateSkillForUser(userId, SkillType.SCRIPT_CREDITS, "1000")
+        skillService.addOrUpdateSkillForUser(userId, SkillType.SCRIPT_RAM, "100")
     }
 
     private fun setDefaultIconForHacker() {

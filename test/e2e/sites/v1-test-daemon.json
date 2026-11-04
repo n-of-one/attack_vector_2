@@ -1,0 +1,187 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-11-04 12:00:00"
+  },
+  "siteProperties" : {
+    "siteId" : "site-da00-4e01",
+    "name" : "test-daemon",
+    "description" : "",
+    "purpose" : "",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : true
+  },
+  "nodes" : [ {
+    "id" : "node-da00-4000",
+    "siteId" : "site-da00-4e01",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-da00-4000:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-da00-4000:layer-d001",
+      "type" : "DAEMON",
+      "level" : 1,
+      "name" : "Daemon",
+      "note" : "",
+      "text" : "daemon-00-start",
+      "requiredTrait" : null,
+      "recurring" : "EVERY_ENTRY"
+    } ],
+    "networkId" : "00",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-da01-4001",
+    "siteId" : "site-da00-4e01",
+    "type" : "TRANSIT_1",
+    "x" : 505,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-da01-4001:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-da01-4001:layer-d001",
+      "type" : "DAEMON",
+      "level" : 1,
+      "name" : "Daemon",
+      "note" : "",
+      "text" : "daemon-01-first-only",
+      "requiredTrait" : null,
+      "recurring" : "FIRST_ENTRY_ONLY"
+    } ],
+    "networkId" : "01",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-da02-4002",
+    "siteId" : "site-da00-4e01",
+    "type" : "TRANSIT_3",
+    "x" : 625,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-da02-4002:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-da02-4002:layer-d001",
+      "type" : "DAEMON",
+      "level" : 1,
+      "name" : "Daemon",
+      "note" : "",
+      "text" : "daemon-02-every",
+      "requiredTrait" : null,
+      "recurring" : "EVERY_ENTRY"
+    } ],
+    "networkId" : "02",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-da03-4003",
+    "siteId" : "site-da00-4e01",
+    "type" : "TRANSIT_4",
+    "x" : 745,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-da03-4003:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-da03-4003:layer-d001",
+      "type" : "DAEMON",
+      "level" : 1,
+      "name" : "Daemon",
+      "note" : "",
+      "text" : "daemon-03-each-once",
+      "requiredTrait" : null,
+      "recurring" : "EACH_HACKER_ONCE"
+    } ],
+    "networkId" : "03",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-da04-4004",
+    "siteId" : "site-da00-4e01",
+    "type" : "DATA_STORE",
+    "x" : 505,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-da04-4004:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-da04-4004:layer-d001",
+      "type" : "DAEMON",
+      "level" : 1,
+      "name" : "Daemon",
+      "note" : "",
+      "text" : "daemon-04-insider",
+      "requiredTrait" : "insider",
+      "recurring" : "EVERY_ENTRY"
+    } ],
+    "networkId" : "04",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-da05-4005",
+    "siteId" : "site-da00-4e01",
+    "type" : "RESOURCE_STORE",
+    "x" : 745,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-da05-4005:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-da05-4005:layer-d001",
+      "type" : "DAEMON",
+      "level" : 1,
+      "name" : "Daemon",
+      "note" : "",
+      "text" : "daemon-05-ghost",
+      "requiredTrait" : "net.ghost",
+      "recurring" : "EVERY_ENTRY"
+    } ],
+    "networkId" : "05",
+    "ice" : false,
+    "hacked" : true
+  } ],
+  "connections" : [ {
+    "fromId" : "node-da00-4000",
+    "toId" : "node-da01-4001"
+  }, {
+    "fromId" : "node-da00-4000",
+    "toId" : "node-da02-4002"
+  }, {
+    "fromId" : "node-da00-4000",
+    "toId" : "node-da03-4003"
+  }, {
+    "fromId" : "node-da00-4000",
+    "toId" : "node-da04-4004"
+  }, {
+    "fromId" : "node-da00-4000",
+    "toId" : "node-da05-4005"
+  } ]
+}

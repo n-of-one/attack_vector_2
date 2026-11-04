@@ -5,6 +5,8 @@ import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.ice.common.IceLayer
+import org.n1.av2.layer.other.daemon.DaemonLayer
+import org.n1.av2.layer.other.daemon.DaemonService
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
@@ -44,6 +46,7 @@ class CommandMoveService(
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
     private val skillService: SkillService,
+    private val daemonService: DaemonService,
 ) {
 
     fun processCommand(arguments: List<String>, hackerState: HackerStateRunning) {
@@ -207,6 +210,7 @@ class CommandMoveService(
             when (layer) {
                 is TripwireLayer -> tripwireLayerService.hackerArrivesNode(siteId, layer, nodeId, runId)
                 is TimerAdjusterLayer -> timerAdjusterService.hackerArrivesNode(siteId, layer, nodeId, runId)
+                is DaemonLayer -> daemonService.hackerArrivesNode(siteId, layer)
                 else -> {} // do nothing
             }
         }

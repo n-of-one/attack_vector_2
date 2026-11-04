@@ -2,6 +2,7 @@ import React from 'react'
 import {useSelector} from "react-redux"
 import {
     CORE,
+    DAEMON,
     KEYSTORE,
     LOCK,
     NETWALK_ICE,
@@ -61,6 +62,7 @@ export const LayersPanel = () => {
                     {regular(TEXT, "white")}
                     {regular(KEYSTORE, "white")}
                     {regular(TRIPWIRE, "white")}
+                    {regular(DAEMON, "white")}
                     {regular(TIMER_ADJUSTER, "white")}
                     {regular(CORE, "white")}
                     {regular(SCRIPT_INTERACTION, "white")}

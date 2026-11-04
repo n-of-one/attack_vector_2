@@ -50,6 +50,7 @@ enum class SkillType(
     SCRIPT_CREDITS("0", ::validatePositiveNumber),
     SCRIPT_RAM("3", ::validatePositiveNumber, noOpNormalization, displayAsIs, ::ramSkillUpdate, ::ramSkillRemoval),
     STEALTH("30", stealthValidation, stealthToFunctional, stealthToDisplay),
+    TRAIT("key: Description shown to the player", ::validateTrait, ::traitToFunctional),
     UNDO_TRIPWIRE(),
     WEAKEN("${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()}, ${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}", ::validateIceTypes),
 }
@@ -101,6 +102,24 @@ val stealthToDisplay = { toNormalize: String ->
 val stealthToFunctional = { input: String ->
     input.removeSuffix("%").removePrefix("+")
 }
+
+val TRAIT_KEY_PATTERN = Regex("[A-Za-z0-9._-]+")
+private const val TRAIT_SEPARATOR = ':'
+
+fun validateTrait(input: String): String? {
+    if (!input.contains(TRAIT_SEPARATOR)) return "Trait skill value must be: <key>: <text shown to player>, for example: insider: Former corporate employee"
+    val key = input.substringBefore(TRAIT_SEPARATOR).trim()
+    val text = input.substringAfter(TRAIT_SEPARATOR).trim()
+    if (!TRAIT_KEY_PATTERN.matches(key)) return "Trait key can only contain letters, digits, '.', '-' and '_', and cannot be empty."
+    if (text.isEmpty()) return "Text shown to the player cannot be empty."
+    return null
+}
+
+fun traitToFunctional(input: String): String {
+    return "${traitKeyOf(input)}${TRAIT_SEPARATOR} ${input.substringAfter(TRAIT_SEPARATOR).trim()}"
+}
+
+fun traitKeyOf(value: String): String = value.substringBefore(TRAIT_SEPARATOR).trim()
 
 fun validateIceTypes(input: String): String? {
     val parts = input.split(",").map { it.trim() }

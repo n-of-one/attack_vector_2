@@ -9,6 +9,8 @@ import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.ice.common.IceService
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.core.CoreLayerService
+import org.n1.av2.layer.other.daemon.DaemonLayer
+import org.n1.av2.layer.other.daemon.DaemonService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreLayerService
 import org.n1.av2.layer.other.os.OsLayer
@@ -45,6 +47,7 @@ class CommandHackService(
     private val scriptInteractionLayerService: ScriptInteractionLayerService,
     private val scriptCreditsLayerService: ScriptCreditsLayerService,
     private val timerAdjusterService: TimerAdjusterService,
+    private val daemonService: DaemonService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
 ) {
@@ -87,6 +90,7 @@ class CommandHackService(
             is ScriptInteractionLayer -> scriptInteractionLayerService.hack()
             is ScriptCreditsLayer -> scriptCreditsLayerService.hack(layer, hackerState)
             is TimerAdjusterLayer -> timerAdjusterService.hack(layer)
+            is DaemonLayer -> daemonService.hack()
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }
     }

@@ -19,6 +19,7 @@ import org.n1.av2.layer.ice.tangle.TangleIceStatusRepo
 import org.n1.av2.layer.ice.tar.TarIceStatusRepo
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceStatusRepo
 import org.n1.av2.layer.other.keystore.IcePasswordRepository
+import org.n1.av2.layer.other.daemon.DaemonStatusRepository
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterStatusRepository
 import org.n1.av2.platform.config.ConfigEntryRepo
 import org.n1.av2.platform.db.DbSchemaVersionRepository
@@ -170,6 +171,9 @@ abstract class IntegrationTestBase {
 
     @MockitoBean
     protected lateinit var timerAdjusterStatusRepository: TimerAdjusterStatusRepository
+
+    @MockitoBean
+    protected lateinit var daemonStatusRepository: DaemonStatusRepository
 
     @MockitoBean
     protected lateinit var iceHackStatisticRepo: IceHackStatisticRepo

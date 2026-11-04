@@ -62,6 +62,7 @@ const forLayer = (layer: LayerDetails | null | undefined): string => {
     if (!layer) return ""
     switch (layer.type) {
         case LayerType.TEXT:
+        case LayerType.DAEMON:
             return layer.text as string
         case LayerType.SCRIPT_INTERACTION:
             return layer.message as string

@@ -49,6 +49,7 @@ Moves the hacker to an adjacent connected node.
 - Triggers some layers on arrival
 	- tripwire
 	- timer adjuster layers
+	- daemon layers
 - Blocked by unhacked ICE in the current node (unless moving backward)
 - BYPASS skill allows moving through ICE at the start node
 

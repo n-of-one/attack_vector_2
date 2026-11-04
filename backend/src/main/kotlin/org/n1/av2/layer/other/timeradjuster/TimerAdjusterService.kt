@@ -1,5 +1,6 @@
 package org.n1.av2.layer.other.timeradjuster
 
+import org.n1.av2.layer.model.TriggerRecurrence
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -30,9 +31,9 @@ class TimerAdjusterService(
         connectionService.replyTerminalReceive(timeAdjustmentText)
 
         val recurringText = when (layer.recurring) {
-            TimerAdjustmentRecurring.FIRST_ENTRY_ONLY -> "- only triggers once"
-            TimerAdjustmentRecurring.EACH_HACKER_ONCE -> "- triggers on the first entry of each hacker"
-            TimerAdjustmentRecurring.EVERY_ENTRY -> "- triggers on every entry of any hacker"
+            TriggerRecurrence.FIRST_ENTRY_ONLY -> "- only triggers once"
+            TriggerRecurrence.EACH_HACKER_ONCE -> "- triggers on the first entry of each hacker"
+            TriggerRecurrence.EVERY_ENTRY -> "- triggers on every entry of any hacker"
         }
         connectionService.replyTerminalReceive(recurringText)
     }
@@ -66,11 +67,7 @@ class TimerAdjusterService(
     }
 
     fun triggersAdjustment(layer: TimerAdjusterLayer, status: TimerAdjusterStatusEntity): Boolean {
-        return when (layer.recurring) {
-            TimerAdjustmentRecurring.FIRST_ENTRY_ONLY -> status.enteredUserIds.isEmpty()
-            TimerAdjustmentRecurring.EVERY_ENTRY -> true
-            TimerAdjustmentRecurring.EACH_HACKER_ONCE -> !status.enteredUserIds.contains(currentUserService.userId)
-        }
+        return layer.recurring.triggers(status.enteredUserIds, currentUserService.userId)
     }
 
     fun adjustTimer(siteId: String, layer: TimerAdjusterLayer) {

@@ -1,6 +1,7 @@
 package org.n1.av2.site.export
 
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.model.TriggerRecurrence
 import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightOption
 import org.n1.av2.layer.ice.common.IceLayer
@@ -11,13 +12,13 @@ import org.n1.av2.layer.ice.tangle.TangleIceLayer
 import org.n1.av2.layer.ice.tar.TarIceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
-import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentRecurring
 import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.util.asList
@@ -137,6 +138,7 @@ class ExportedSiteParser(
                 LayerType.LOCK -> mapLayerStatusLight(input, id, level, name, note)
                 LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
                 LayerType.TIMER_ADJUSTER -> mapTimerAdjusterLayer(input, id, level, name, note)
+                LayerType.DAEMON -> mapDaemonLayer(input, id, level, name, note)
                 LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
                 LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
                 LayerType.NETWALK_ICE,
@@ -236,11 +238,20 @@ class ExportedSiteParser(
     private fun mapTimerAdjusterLayer(input: JsonNode, id: String, level: Int, name: String, note: String): TimerAdjusterLayer {
         val amount = input.get("amount")?.asString() ?: input.get("increase").asString() // In initial version the field was called "increase"
         val adjustmentType = if (input.has("adjustmentType")) { TimerAdjustmentType.valueOf(input.get("adjustmentType").asString()) } else { TimerAdjustmentType.SPEED_UP }
-        val recurring = if (input.has("recurring")) { TimerAdjustmentRecurring.valueOf(input.get("recurring").asString()) } else { TimerAdjustmentRecurring.EVERY_ENTRY }
+        val recurring = if (input.has("recurring")) { TriggerRecurrence.valueOf(input.get("recurring").asString()) } else { TriggerRecurrence.EVERY_ENTRY }
 
         return TimerAdjusterLayer(
             id = id, level = level, name = name, note = note,
             amount = amount, adjustmentType = adjustmentType, recurring = recurring,
+        )
+    }
+
+    private fun mapDaemonLayer(input: JsonNode, id: String, level: Int, name: String, note: String): DaemonLayer {
+        return DaemonLayer(
+            id = id, level = level, name = name, note = note,
+            text = input.get("text").asString(),
+            requiredTrait = input.getAsTextOrNull("requiredTrait")?.trim()?.ifEmpty { null },
+            recurring = TriggerRecurrence.valueOf(input.get("recurring").asString()),
         )
     }
 

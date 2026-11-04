@@ -5,7 +5,7 @@ import React from "react";
 import {InfoBadge} from "../component/ToolTip";
 import {SilentLink} from "../component/SilentLink";
 import {ActionButton} from "../component/ActionButton";
-import {HackerSkill, HackerSkillType, skillCanHaveMultipleInstances, skillHasValue, skillInfoText, skillName} from "./HackerSkills";
+import {HackerSkill, HackerSkillType, skillCanHaveMultipleInstances, skillHasValue, skillInfoText, skillName, joinTraitSkillValue, splitTraitSkillValue} from "./HackerSkills";
 import {useSelector} from "react-redux";
 import {ConfigItem, ConfigRootState, getConfigAsInt} from "../../admin/config/ConfigReducer";
 
@@ -51,13 +51,20 @@ const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
     const name = skillName[skill.type]
 
     if (readonly) {
+        if (skill.type === HackerSkillType.TRAIT) {
+            // The player only sees the description, not the skill name or the key.
+            return <ul>
+                <li className="text-muted">{splitTraitSkillValue(skill.value).text}</li>
+            </ul>
+        }
         const valueDisplay = hasValue ? ` : ${skill.value}` : ""
         return <ul>
             <li className="text-muted"><InfoBadge infoText={infoText}/> {name}{valueDisplay}</li>
         </ul>
     }
 
-    const skillValueElement = hasValue ? <SkillValueElement skill={skill}/> : <></>
+    const skillValueElement = (skill.type === HackerSkillType.TRAIT) ? <TraitSkillValueElement skill={skill}/> :
+        hasValue ? <SkillValueElement skill={skill}/> : <></>
 
     return <>
         <div className="row" data-row="hacker-skill" data-skill={skill.type}>
@@ -80,11 +87,33 @@ const SkillDeleteElement = ({skill}: { skill: HackerSkill }) => {
     return <SilentLink onClick={action} title="Delete"><span className="glyphicon glyphicon-trash"/></SilentLink>
 }
 
+const saveSkillValue = (skill: HackerSkill, value: string) => {
+    const message = {skillId: skill.id, value}
+    webSocketConnection.send("/user/skill/edit", message)
+}
+
+/** The TRAIT skill value is "<key>: <text>". Edit both parts separately, and save them as a single value. */
+const TraitSkillValueElement = ({skill}: { skill: HackerSkill }) => {
+    const {key, text} = splitTraitSkillValue(skill.value)
+
+    return <>
+        <div className={"col-lg-2"} style={{height: "30px"}}>
+            <span style={{position: "relative", top: "-10px"}}>
+                <TextSaveInput className="form-control" name="traitKey" placeholder="key" value={key} style={{height: "28px"}}
+                               save={(newKey: string) => saveSkillValue(skill, joinTraitSkillValue(newKey, text))}/>
+            </span>
+        </div>
+        <div className={"col-lg-4"} style={{height: "30px"}}>
+            <span style={{position: "relative", top: "-10px"}}>
+                <TextSaveInput className="form-control" name="traitText" placeholder="text shown to player" value={text} style={{height: "28px"}}
+                               save={(newText: string) => saveSkillValue(skill, joinTraitSkillValue(key, newText))}/>
+            </span>
+        </div>
+    </>
+}
+
 const SkillValueElement = ({skill}: { skill: HackerSkill }) => {
-    const save = (value: string) => {
-        const message = {skillId: skill.id, value}
-        webSocketConnection.send("/user/skill/edit", message)
-    }
+    const save = (value: string) => saveSkillValue(skill, value)
 
     const skillValueDisplay = skill.value ? skill.value : ""
     return <div className={"col-lg-6"} style={{height: "30px"}}>
@@ -121,6 +150,7 @@ const HackerAddSkillElement = ({user, readonlySkills, skills}: { user: User, rea
                     <SkillOption type={HackerSkillType.SCRIPT_CREDITS} name={"Script credits - allow selling of data and buying scripts"} skills={skills}/>
                     <SkillOption type={HackerSkillType.SCRIPT_RAM} name={"Script RAM - allow usage of scripts"} skills={skills}/>
                     <SkillOption type={HackerSkillType.STEALTH} name={"Stealth - increase tripwire timers"} skills={skills}/>
+                    <SkillOption type={HackerSkillType.TRAIT} name={"Trait - character trait for GMs, players and sites to react to"} skills={skills}/>
                     <SkillOption type={HackerSkillType.WEAKEN} name={"Weaken - reduce ICE strength"} skills={skills}/>
 
                 </select>

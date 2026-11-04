@@ -1,6 +1,7 @@
 import React from "react";
 import {LayerDetails} from "../../../../../common/sites/SiteModel";
-import {TimerAdjustmentRecurring, TimerAdjustmentType} from "../../../../../common/model/layer/LayerTimerAdjuster";
+import {TimerAdjustmentType} from "../../../../../common/model/layer/LayerTimerAdjuster";
+import {TriggerRecurrence} from "../../../../../common/model/layer/TriggerRecurrence";
 
 export const ScanInfoTripwire = ({layer}: {layer: LayerDetails}) => {
     return (
@@ -16,13 +17,13 @@ export const ScanInfoShutdownAccelerator = ({layer}: {layer: LayerDetails}) => {
     )
 }
 
-const recurrence = (recurring: TimerAdjustmentRecurring) => {
+const recurrence = (recurring: TriggerRecurrence) => {
     switch (recurring) {
-        case TimerAdjustmentRecurring.FIRST_ENTRY_ONLY:
+        case TriggerRecurrence.FIRST_ENTRY_ONLY:
             return <> &nbsp; &nbsp; &nbsp; - only triggers once</>
-        case TimerAdjustmentRecurring.EVERY_ENTRY:
+        case TriggerRecurrence.EVERY_ENTRY:
             return <> &nbsp; &nbsp; &nbsp; - triggers on every entry of any hacker</>
-        case TimerAdjustmentRecurring.EACH_HACKER_ONCE:
+        case TriggerRecurrence.EACH_HACKER_ONCE:
             return <> &nbsp; &nbsp; &nbsp; - triggers on the first entry of each hacker</>
         default:
             return <></>

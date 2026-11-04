@@ -12,6 +12,7 @@ class ThemeService {
         LayerType.KEYSTORE -> "Keystore"
         LayerType.TRIPWIRE -> "Tripwire"
         LayerType.TIMER_ADJUSTER -> "Timer accelerator"
+        LayerType.DAEMON -> "Daemon"
         LayerType.CORE -> "Core"
         LayerType.SCRIPT_INTERACTION -> "Process"
         LayerType.SCRIPT_CREDITS -> "Database"

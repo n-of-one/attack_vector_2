@@ -118,6 +118,19 @@ Enables the `jump` command.
 
 ---
 
+# TRAIT
+
+A trait of the hacker character with meaning in the game (background, implant, reputation, ...). GMs and players can look it up and react to it,
+and sites can react to it as well (Daemon layer).
+
+## Capabilities
+- Configurable value: `<key>: <text>`, e.g. "insider: Former corporate insider". The GM edits key and text in two separate inputs; the frontend combines them on save
+- Key: letters, digits, '.', '-' and '_'; matched case-insensitively by Daemon layers
+- The player sees only the text in their skill list, not the skill name or the key
+- Can be added multiple times, each instance with its own key
+
+---
+
 # CREATE_SITE
 
 Allows the hacker to create new sites.

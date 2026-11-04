@@ -16,6 +16,7 @@ const renderLayer = (layer: LayerDetails) => {
         case LayerType.STATUS_LIGHT:
         case LayerType.SCRIPT_INTERACTION:
         case LayerType.SCRIPT_CREDITS:
+        case LayerType.DAEMON:
             return <></>
         case LayerType.TRIPWIRE:
             return <ScanInfoTripwire layer={layer}/>

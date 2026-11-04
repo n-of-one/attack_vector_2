@@ -30,6 +30,7 @@
 - **PasswordIceLayer**: `backend/src/main/kotlin/org/n1/av2/layer/ice/password/PasswordIceLayer.kt`
 - **TripwireLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/tripwire/TripwireLayer.kt`
 - **TimerAdjusterLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/timeradjuster/TimerAdjusterLayer.kt`
+- **DaemonLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/daemon/DaemonLayer.kt` (on-entry logic: `DaemonService.kt`, per-hacker state: `DaemonStatusEntityAndRepo.kt`)
 - **ScriptCreditsLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptCreditsLayer.kt`
 - **ScriptInteractionLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptInteractionLayer.kt`
 
@@ -38,5 +39,6 @@
 - **ICE simple panel**: `frontend/src/editor/component/map/panel/layer/type/panel/ice/LayerSimpleIcePanel.tsx`
 - **ICE TAR panel**: `frontend/src/editor/component/map/panel/layer/type/panel/ice/LayerIceTarPanel.tsx`
 - **Timer adjuster panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerTimerAdjusterPanel.tsx`
+- **Daemon panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerDaemonPanel.tsx`
 - **Script credits panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerScriptCreditsPanel.tsx`
 - **Script interaction panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerScriptInteraction.tsx`
