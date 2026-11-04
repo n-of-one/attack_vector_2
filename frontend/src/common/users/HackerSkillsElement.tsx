@@ -54,7 +54,7 @@ const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
         if (skill.type === HackerSkillType.TRAIT) {
             // The player only sees the description, not the skill name or the key.
             return <ul>
-                <li className="text-muted">{splitTraitSkillValue(skill.value).text}</li>
+                <li className="text-muted"><InfoBadge infoText='A trait of your character.'/> {splitTraitSkillValue(skill.value).text}</li>
             </ul>
         }
         const valueDisplay = hasValue ? ` : ${skill.value}` : ""
@@ -67,15 +67,14 @@ const HackerSkillElement = ({skill, readonly}: HackerSkillElementProps) => {
         hasValue ? <SkillValueElement skill={skill}/> : <></>
 
     return <>
-        <div className="row" data-row="hacker-skill" data-skill={skill.type}>
+        {/* Fixed row height: skills without a value input would otherwise be shorter than those with one (30px), making rows overlap. */}
+        <div className="row" data-row="hacker-skill" data-skill={skill.type} style={{minHeight: "30px"}}>
             <div className={"col-lg-5"}>
                 <SkillDeleteElement skill={skill}/> &nbsp;
                 <InfoBadge infoText={infoText}/> {name}
             </div>
 
             {skillValueElement}
-            <br/>
-            <br/>
         </div>
     </>
 }

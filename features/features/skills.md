@@ -126,7 +126,7 @@ and sites can react to it as well (Daemon layer).
 ## Capabilities
 - Configurable value: `<key>: <text>`, e.g. "insider: Former corporate insider". The GM edits key and text in two separate inputs; the frontend combines them on save
 - Key: letters, digits, '.', '-' and '_'; matched case-insensitively by Daemon layers
-- The player sees only the text in their skill list, not the skill name or the key
+- The player sees only the text in their skill list, not the skill name or the key.
 - Can be added multiple times, each instance with its own key
 
 ---
