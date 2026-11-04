@@ -89,7 +89,7 @@ Requires separate Mongodb.
 AV2 uses trunk based development. The main branch is the latest stable version.
 
 When making changes:
-- In Frontend: run the release.bat script. This will build the React application and copy all relevant files to the backend directory.
+- In Frontend: run the `build.sh` or `build.bat`. This will build the React application and copy all relevant files to the backend directory.
 - Commit & push all changes.
 - Tag the commit with a version tag (e.g. `v2.19.1`) and push the tag. This triggers a GitHub Actions workflow that builds the jar and creates a release.
 

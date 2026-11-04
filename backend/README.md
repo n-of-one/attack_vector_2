@@ -10,7 +10,7 @@ A hacking simulation intended for use in Live Action RolePlaying games.
 
 ## Configuration
 
-The application uses environment properties for basic configuration, all with defaults if you omit them. Implemented in `org.n1.av2.backend.config.ServerConfig`
+The application uses environment properties for basic configuration, all with defaults if you omit them. Implemented in `org.n1.av2.platform.config.StaticConfig`
 
 
 `MONGODB_URI`     The connect URL for Mongo DB. Defaults to: mongodb://attackvector2:attackvector2@localhost/admin?authMechanism=SCRAM-SHA-1
