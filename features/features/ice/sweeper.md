@@ -8,6 +8,7 @@ Sweeper ICE is a minesweeper variant. The hacker must identify all mines in a gr
 - Revealing a mine locks the hacker out of this ICE permanently (other hackers can continue)
 - Revealing a zero-cell cascades to reveal all adjacent empty cells
 - Flagged cells cannot be accidentally revealed
+- Chording: left- or middle-click a revealed number with a matching count of adjacent flags (exploded mines count too) to reveal all its other hidden neighbours; a wrong flag explodes a mine and blocks the hacker
 - Win condition: all non-mine cells revealed
 - Grid size and mine count scale with ICE strength (9x9 with 8 mines at Very Weak up to 32x18 with 120 mines at Onyx)
 - Top-left cell is guaranteed to be empty (safe starting point)

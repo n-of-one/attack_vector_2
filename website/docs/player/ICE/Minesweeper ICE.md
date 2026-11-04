@@ -36,3 +36,10 @@ Minesweeper has some inherent luck, sometimes there is not guaranteed safe move 
 
 ## Speedrunning
 Minesweeper speedrunning is a popular sport, and the world record is under 30 seconds for the expert level. There are common patterns to learn that will greatly speed up the time needed to solve this puzzle.
+
+## Chording
+This is an advanced technique used by speedrunners. It is supported in Attack Vector.
+
+If a revealed number already has that many flags around it, you can left-click (or middle-click) the number to reveal all its other hidden neighbours at once.
+
+If one of the flags is wrong, this reveals a mine and you are blocked, just as if you had clicked the mine yourself. Chording also uses flags placed by other hackers, so only chord on flags you trust.

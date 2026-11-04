@@ -89,9 +89,13 @@ class SweeperIceManager extends GenericIceManager {
         }
     }
 
-    click(x: number, y: number, leftClick: boolean) {
+    click(x: number, y: number, leftClick: boolean, middleClick: boolean) {
         if (this.solved || this.userBlocked) return
         const modifier = this.modifiers[y][x]
+        if (middleClick || (leftClick && modifier === SweeperCellModifier.REVEALED)) {
+            this.chord(x, y)
+            return
+        }
         if (modifier === SweeperCellModifier.REVEALED) {
             return // cannot modify revealed cells
         }
@@ -100,6 +104,34 @@ class SweeperIceManager extends GenericIceManager {
         }
         const action = this.determineAction(leftClick, modifier)
         webSocketConnection.send("/ice/sweeper/interact", {iceId: ice.id, x, y, action})
+    }
+
+    private chord(x: number, y: number) {
+        if (this.modifiers[y][x] !== SweeperCellModifier.REVEALED) return
+        const cellType = this.cells[y][x]
+        if (cellType === SweeperCellType.MINE || cellType === SweeperCellType.EMPTY) return
+
+        const neighbours = this.neighbours(x, y)
+        const knownMines = neighbours.filter(([nx, ny]) => {
+            const modifier = this.modifiers[ny][nx]
+            return modifier === SweeperCellModifier.FLAG ||
+                (modifier === SweeperCellModifier.REVEALED && this.cells[ny][nx] === SweeperCellType.MINE)
+        }).length
+        if (knownMines !== parseInt(cellType)) return
+        if (!neighbours.some(([nx, ny]) => this.modifiers[ny][nx] === SweeperCellModifier.HIDDEN)) return
+
+        webSocketConnection.send('/ice/sweeper/interact', {iceId: ice.id, x, y, action: SweeperModifyAction.CHORD})
+    }
+
+    private neighbours(x: number, y: number): [number, number][] {
+        const result: [number, number][] = []
+        for (let ny = y - 1; ny <= y + 1; ny++) {
+            for (let nx = x - 1; nx <= x + 1; nx++) {
+                const inBounds = ny >= 0 && ny < this.cells.length && nx >= 0 && nx < this.cells[0].length
+                if (inBounds && (nx !== x || ny !== y)) result.push([nx, ny])
+            }
+        }
+        return result
     }
 
     private determineAction(leftClick: boolean, modifier: SweeperCellModifier): SweeperModifyAction {

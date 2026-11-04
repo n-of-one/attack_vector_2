@@ -15,7 +15,7 @@ import org.n1.av2.statistics.IceStatisticsService
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrElse
 
-enum class SweeperModifyAction { REVEAL, FLAG, CLEAR, EXPLODE }
+enum class SweeperModifyAction { REVEAL, FLAG, CLEAR, EXPLODE, CHORD }
 
 /**
  * @see SweeperIceStatus for the data model
@@ -89,13 +89,12 @@ class SweeperService(
         if (sweeper.blockedUserIds.contains(currentUser.userId)) return
         if (sweeper.hacked) return
         if (x < 0 || x >= sweeper.cells[0].length || y < 0 || y >= sweeper.cells.size) error("click out of bounds: $x, $y for iceId: $iceId")
-        if (sweeper.modifiers[y][x] == REVEALED) return // cell already revealed by another player, cannot modify.
 
-        if (action == SweeperModifyAction.REVEAL) {
-            reveal(sweeper, x, y)
-        }
-        else {
-            modify(sweeper, x, y, action)
+        when {
+            action == SweeperModifyAction.CHORD -> chord(sweeper, x, y)
+            sweeper.modifiers[y][x] == REVEALED -> return // cell already revealed by another player, cannot modify.
+            action == SweeperModifyAction.REVEAL -> reveal(sweeper, x, y)
+            else -> modify(sweeper, x, y, action)
         }
 
         if (isCompleted(sweeper)) handleSolved(iceId, sweeper)
@@ -142,10 +141,10 @@ class SweeperService(
 
     private fun reveal(sweeper: SweeperIceStatus, x: Int, y: Int) {
         if (sweeper.modifiers[y][x] != HIDDEN) return // can only reveal hidden cells
-        when (sweeper.cells[y][x]) {
-            NEIGHBOUR_MINES_0 -> revealArea(sweeper, x, y)
-            MINE -> explode(sweeper, x, y, sweeper.id)
-            else -> revealSingle(sweeper, x, y)
+        if (sweeper.cells[y][x] == MINE) {
+            explode(sweeper, x, y, sweeper.id)
+        } else {
+            revealCells(sweeper, listOf(Pair(x, y)))
         }
 
 //        In competitive Minesweeper, the game is completed when all non-mine cells are revealed.
@@ -169,18 +168,35 @@ class SweeperService(
         iceStatisticsService.sweeperLockout(iceId)
     }
 
-    private fun revealSingle(sweeper: SweeperIceStatus, x: Int, y: Int) {
-        saveModification(sweeper, x, y, REVEALED)
-        connectionService.toIce(sweeper.id, ServerActions.SERVER_SWEEPER_MODIFY,
-            SweeperModifyMessage(listOf("$x:$y"), SweeperModifyAction.REVEAL, minesLeft(sweeper))
-        )
+    private fun chord(sweeper: SweeperIceStatus, x: Int, y: Int) {
+        if (sweeper.modifiers[y][x] != REVEALED) return
+        val number = sweeper.cells[y][x].digitToIntOrNull() ?: return // exploded mine
+        if (number == 0) return
+
+        val neighbours = neighbours(sweeper, x, y)
+        val knownMines = neighbours.count { (nx, ny) ->
+            val modifier = sweeper.modifiers[ny][nx]
+            modifier == FLAG || (modifier == REVEALED && sweeper.cells[ny][nx] == MINE)
+        }
+        if (knownMines != number) return
+
+        val targets = neighbours.filter { (nx, ny) -> sweeper.modifiers[ny][nx] == HIDDEN }
+        if (targets.isEmpty()) return
+
+        val mine = targets.firstOrNull { (nx, ny) -> sweeper.cells[ny][nx] == MINE }
+        if (mine != null) {
+            explode(sweeper, mine.first, mine.second, sweeper.id)
+            return
+        }
+        revealCells(sweeper, targets)
     }
 
-    private fun revealArea(sweeper: SweeperIceStatus, x: Int, y: Int) {
-        val here = Pair(x, y)
-        val explored = setOf(here).toMutableSet()
-        val revealedAround: List<Pair<Int, Int>> = exploreAround(sweeper, x, y, explored)
-        val revealed = listOf(here) + revealedAround
+    private fun revealCells(sweeper: SweeperIceStatus, cells: List<Pair<Int, Int>>) {
+        val explored = cells.toMutableSet()
+        val revealedByCascade = cells
+            .filter { (x, y) -> sweeper.cells[y][x] == NEIGHBOUR_MINES_0 }
+            .flatMap { (x, y) -> exploreAround(sweeper, x, y, explored) }
+        val revealed = cells + revealedByCascade
 
         revealed.forEach { (x, y) ->
             sweeper.modifiers[y] = sweeper.modifiers[y].replaceRange(x, x + 1, REVEALED.toString())
@@ -192,26 +208,27 @@ class SweeperService(
         )
     }
 
+    private fun neighbours(sweeper: SweeperIceStatus, x: Int, y: Int): List<Pair<Int, Int>> {
+        return (-1..1).flatMap { dy -> (-1..1).map { dx -> Pair(x + dx, y + dy) } }
+            .filter { (nx, ny) -> (nx != x || ny != y) && nx >= 0 && nx < sweeper.cells[0].length && ny >= 0 && ny < sweeper.cells.size }
+    }
+
     private fun exploreAround(sweeper: SweeperIceStatus, x: Int, y: Int, explored: MutableSet<Pair<Int, Int>>): List<Pair<Int, Int>> {
-        val revealedCells = (-1..1).flatMap { dx ->
-            (-1..1).flatMap { dy ->
-                exploreDirection(sweeper, x+dx, y+dy, explored)
-            }
-        }
-        return revealedCells
+        return neighbours(sweeper, x, y).flatMap { (nx, ny) -> exploreDirection(sweeper, nx, ny, explored) }
     }
 
     private fun exploreDirection(sweeper: SweeperIceStatus, x: Int, y: Int, explored: MutableSet<Pair<Int, Int>>): List<Pair<Int, Int>>{
-        if (x < 0 || x >= sweeper.cells[0].length || y < 0 || y >= sweeper.cells.size) return emptyList() // out of bounds
         if (sweeper.modifiers[y][x] == FLAG) return emptyList() // flagged cell
         if (explored.contains(Pair(x, y))) return emptyList() // already explored
         explored.add(Pair(x, y))
 
+        val here = if (sweeper.modifiers[y][x] == REVEALED) emptyList() else listOf(Pair(x, y)) // keep exploring, but don't send it again
+
         val cell = sweeper.cells[y][x]
-        if (cell != NEIGHBOUR_MINES_0) return listOf(Pair(x, y)) // not an empty cell, reveal it and stop exploring
+        if (cell != NEIGHBOUR_MINES_0) return here // not an empty cell, reveal it and stop exploring
 
         val additionalRevealed = exploreAround(sweeper, x, y, explored)
-        return listOf(Pair(x, y)) + additionalRevealed
+        return here + additionalRevealed
     }
 
 

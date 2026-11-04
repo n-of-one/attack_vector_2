@@ -26,7 +26,8 @@ export enum SweeperModifyAction {
     REVEAL = "REVEAL",
     FLAG = "FLAG",
     CLEAR = "CLEAR",
-    EXPLODE = "EXPLODE"
+    EXPLODE = "EXPLODE",
+    CHORD = "CHORD",
 }
 
 export interface SweeperModifyData  {

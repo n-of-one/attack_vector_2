@@ -90,6 +90,7 @@ class SweeperCanvas {
             height: this.cellSize * this.sizeY + PADDING_TOP * 2,
             backgroundColor: "#222",
             fireRightClick: true,  // <-- enable firing of right click events
+            fireMiddleClick: true, // <-- enable firing of middle click events
             stopContextMenu: true, // <--  prevent context menu from showing
         });
     }
@@ -98,8 +99,10 @@ class SweeperCanvas {
         if (event?.target?.data instanceof SweeperCellDisplay) {
             const cell: SweeperCellDisplay = event.target.data
             const leftClick = event.e.button === 0
+            const middleClick = event.e.button === 1
+            if (middleClick) event.e.preventDefault()
 
-            sweeperIceManager.click(cell.x, cell.y, leftClick)
+            sweeperIceManager.click(cell.x, cell.y, leftClick, middleClick)
         }
     }
 

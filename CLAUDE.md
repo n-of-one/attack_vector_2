@@ -30,6 +30,11 @@ Run all commands from the project root. Never `cd` (not even `cd backend && ...`
 
 - 4-space indent, max line length 160 (see `.editorconfig`). Frontend: no semicolons, single quotes.
 - Kotlin: use imports, not fully-qualified class references.
+- Comments: match the sparse style of the surrounding code. Use a short trailing comment only where the code
+  can't explain itself (a non-obvious edge case, or a line that looks safe to "simplify" but isn't).
+  Doc blocks only rarely. No comments that describe the feature being built, restate the function name,
+  or narrate the change; feature explanations belong in `features/` and `website/docs/`.
+  In tests, a short description of the setup (e.g. a diagram of the test board) is fine.
 
 ## Architecture
 

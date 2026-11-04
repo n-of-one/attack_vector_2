@@ -36,8 +36,10 @@
 ## Sweeper ICE
 - **Backend controller**: `backend/src/main/kotlin/org/n1/av2/layer/ice/sweeper/SweeperIceController.kt`
 - **Backend layer**: `backend/src/main/kotlin/org/n1/av2/layer/ice/sweeper/SweeperIceLayer.kt`
-- **Backend service**: `backend/src/main/kotlin/org/n1/av2/layer/ice/sweeper/SweeperService.kt`
+- **Backend service**: `backend/src/main/kotlin/org/n1/av2/layer/ice/sweeper/SweeperService.kt` (reveal, flag, chord)
+- **Backend test**: `backend/src/test/kotlin/org/n1/av2/layer/ice/sweeper/SweeperServiceTest.kt`
 - **Frontend root**: `frontend/src/standalone/ice/sweeper/SweeperRoot.tsx`
+- **Frontend click handling**: `frontend/src/standalone/ice/sweeper/SweeperIceManager.ts`, `frontend/src/standalone/ice/sweeper/canvas/SweeperCanvas.ts`
 - **Frontend container**: `frontend/src/standalone/ice/sweeper/component/SweeperContainer.tsx`
 - **Frontend home**: `frontend/src/standalone/ice/sweeper/component/SweeperHome.tsx`
 
