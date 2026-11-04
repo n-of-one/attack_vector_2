@@ -1,6 +1,7 @@
 package org.n1.av2.platform.iam.login.frontier
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.Cookie
 import tools.jackson.core.type.TypeReference
 import tools.jackson.databind.json.JsonMapper
@@ -21,6 +22,8 @@ class OrthankService(
     private val httpClient: HttpClient,
     private val jsonMapper: JsonMapper,
 ) {
+
+    private val logger = KotlinLogging.logger {}
 
     class CharacterInfo(
         @JsonProperty("character_name") var characterName: String,
@@ -61,10 +64,16 @@ class OrthankService(
         catch (_: Exception) {
             return null
         }
-        val idAndGroups = jsonMapper.readValue(idAndGroupsText, IdAndGroupResponse::class.java)
-        val gm = idAndGroups.groups?.contains(FRONTIER_GM_GROUP) ?: false
+        logger.info { "Response from idandgrousps: $idAndGroupsText" }
+        try {
+            val idAndGroups = jsonMapper.readValue(idAndGroupsText, IdAndGroupResponse::class.java)
+            val gm = idAndGroups.groups?.contains(FRONTIER_GM_GROUP) ?: false
 
-        return FrontierUserAndGroupInfo(idAndGroups.id, gm)
+            return FrontierUserAndGroupInfo(idAndGroups.id, gm)
+        }
+        catch (_: Exception) {
+            return null
+        }
     }
 
     private fun orthankToken(): String {
