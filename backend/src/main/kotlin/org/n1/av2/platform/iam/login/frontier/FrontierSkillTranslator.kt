@@ -43,6 +43,7 @@ class FrontierSkillTranslator(
 
         addIfPresent { scriptRam() }
         addIfPresent { scriptIncome() }
+        addIfPresent { datajack() }
     }
 
     private fun hackerLevel(level: Int, skillType: SkillType, value: String = "") =
@@ -93,6 +94,13 @@ class FrontierSkillTranslator(
         val incomeFromSlicer1 = if (architectSpecialisation() && skills.architect >= 8) 100 else 0
 
         return SCRIPT_CREDITS to (incomeFromBotNet + incomeFromSlicer1).toString()
+    }
+
+    private fun datajack(): Pair<SkillType, String>? {
+        return if (skills.elite >= 7 || skills.architect >= 7) {
+            TRAIT to "datajack: Datajack implant"
+        }
+        else null
     }
 
 }
