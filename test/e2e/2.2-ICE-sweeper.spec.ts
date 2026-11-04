@@ -1,5 +1,4 @@
 import {test} from "./testframework/fixtures"
-import {TanglePage} from "./testframework/TanglePage";
 import {LoginPage} from "./testframework/LoginPage";
 import {HackerPage, START_ATTACK_QUICK} from "./testframework/HackerPage";
 import {wait} from "./testframework/utils/testUtils";
@@ -88,15 +87,16 @@ test('test', async ({page}) => {
         await wait(page, 1.0, "Wait for sweeper to finish animating a single click") //disable before re-making the screenshot
         await sweeper.checkNameAndScreenshot("2.2-sweeper-after-all-mines-clicked")
 
+        // chord on numbers whose mines are all flagged
+        await sweeper.chord(997, 849)
+        await sweeper.chord(739, 849)
+        await sweeper.chord(825, 677, "middle")
+        await sweeper.chord(653, 333)
+        await sweeper.chord(481, 247)
+        await sweeper.chord(481, 333) // revealed by the previous chord
+        await sweeper.verifyMinesLeft(0)
+
         // not mines
-        await sweeper.leftClickToIndicateNoMine(890, 843)
-        await sweeper.leftClickToIndicateNoMine(810, 847)
-        await sweeper.leftClickToIndicateNoMine(741, 668)
-        await sweeper.leftClickToIndicateNoMine(728, 604)
-        await sweeper.leftClickToIndicateNoMine(586, 421)
-        await sweeper.leftClickToIndicateNoMine(491, 413)
-        await sweeper.leftClickToIndicateNoMine(493, 335)
-        await sweeper.leftClickToIndicateNoMine(401, 412)
         await sweeper.leftClickToIndicateNoMine(423, 509)
         await sweeper.leftClickToIndicateNoMine(463, 512)
 

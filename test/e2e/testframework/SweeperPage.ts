@@ -35,6 +35,12 @@ export class SweeperPage {
         await wait(this.page, 0.2, "wait for sweeper click to render")
     }
 
+    async chord(x: number, y: number, button: "left" | "middle" = "left") {
+        this.log(`Chord with ${button} click (${x}, ${y})`)
+        await this.page.mouse.click(x, y, {button})
+        await wait(this.page, 0.2, "wait for sweeper chord to render")
+    }
+
     async verifyPuzzleSolved() {
         this.log(`Verify puzzle solved`)
         await this.verifyTerminalText("Memory restored")
