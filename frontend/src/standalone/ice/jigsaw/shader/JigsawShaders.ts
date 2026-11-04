@@ -54,9 +54,9 @@ vec2 hash2(vec2 point) {
 }
 
 void main() {
-    const float SCALE = 6.0;                             // Number of cells across the height.
+    const float SCALE = 2.0;                             // Number of cells across the height.
     const float WOBBLE = 0.4;                            // How far cell centers move (0..0.5).
-    const float MOVE_SPEED = 0.3;                        // Speed of the cell movement.
+    const float MOVE_SPEED = 0.03;                       // Speed of the cell movement.
     const float HUE_RANGE = 0.35;                        // Spread of cell hues. 0 makes all cells the same hue.
     const float HUE_OFFSET = 0.5;                        // Base hue.
     const float HUE_SPEED = 0.1;                         // Speed at which all hues shift.
@@ -129,8 +129,8 @@ float fbm(vec2 point) {
 }
 
 void main() {
-    const float SCALE = 3.0;                             // Feature size. Higher gives more, smaller swirls.
-    const float DRIFT_SPEED = 0.05;                      // How fast it flows.
+    const float SCALE = 2.0;                             // Feature size. Higher gives more, smaller swirls.
+    const float DRIFT_SPEED = 0.02;                      // How fast it flows.
     const float WARP_STRENGTH = 4.0;                     // Folding: 1-2 clouds, 4 marbled ink, 6+ chaotic.
     const vec2 SECOND_LAYER_DRIFT = vec2(0.7, -0.5);     // Flow of the second warp layer; differing values make shapes morph.
     const vec3 DEEP_COLOR = vec3(0.02, 0.05, 0.12);      // Darkest areas.

@@ -9,6 +9,12 @@ import {JIGSAW_SHADERS} from "./JigsawShaders";
  */
 const RENDER_RESOLUTION = 26 / 32
 
+/**
+ * How often the shader is re-rendered. The pieces themselves still redraw at the ticker rate (30 fps), so dragging stays
+ * smooth; only the animation inside them updates less often. Set to 30 (or higher) to render every ticker frame.
+ */
+const SHADER_FRAMES_PER_SECOND = 15
+
 const VERTEX_SHADER = `
 attribute vec2 aPosition;
 void main() {
@@ -28,6 +34,7 @@ export class ShaderAnimation {
     private readonly uniforms: UniformGroup
     private seconds = 0
     private speed = 1
+    private millisecondsSinceRender = 0
 
     constructor(name: string) {
         const fragmentSource = JIGSAW_SHADERS[name]
@@ -59,6 +66,13 @@ export class ShaderAnimation {
     advance(renderer: Renderer, deltaMilliseconds: number) {
         if (this.speed === 0) return
         this.seconds += (deltaMilliseconds / 1000) * this.speed
+
+        // Half a tick of tolerance, so ticker jitter doesn't occasionally skip an extra tick (uneven frame pacing).
+        const renderInterval = 1000 / SHADER_FRAMES_PER_SECOND
+        this.millisecondsSinceRender += deltaMilliseconds
+        if (this.millisecondsSinceRender + deltaMilliseconds / 2 < renderInterval) return
+        // Keep the remainder for even pacing, but never build up a backlog after a long pause.
+        this.millisecondsSinceRender = Math.min(this.millisecondsSinceRender - renderInterval, renderInterval)
         this.render(renderer)
     }
 

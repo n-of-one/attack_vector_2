@@ -36,10 +36,10 @@ data class JigsawGrid(val columns: Int, val rows: Int)
 private val GRID_FOR_STRENGTH: Map<IceStrength, JigsawGrid> = mapOf(
     IceStrength.VERY_WEAK to JigsawGrid(5, 3),
     IceStrength.WEAK to JigsawGrid(7, 4),
-    IceStrength.AVERAGE to JigsawGrid(10, 6),
-    IceStrength.STRONG to JigsawGrid(13, 8),
-    IceStrength.VERY_STRONG to JigsawGrid(17, 10),
-    IceStrength.ONYX to JigsawGrid(21, 12),
+    IceStrength.AVERAGE to JigsawGrid(10, 5),
+    IceStrength.STRONG to JigsawGrid(12, 7),
+    IceStrength.VERY_STRONG to JigsawGrid(15, 8),
+    IceStrength.ONYX to JigsawGrid(17, 9),
 )
 
 class JigsawCreation(

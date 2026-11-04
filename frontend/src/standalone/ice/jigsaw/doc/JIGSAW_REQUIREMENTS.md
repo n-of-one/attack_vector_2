@@ -16,10 +16,10 @@ ICE strength determines the number of puzzle pieces via a grid of columns x rows
 |-------------|---------|------|--------|
 | VERY_WEAK   | 5       | 3    | 15     |
 | WEAK        | 7       | 4    | 28     |
-| AVERAGE     | 10      | 6    | 60     |
-| STRONG      | 13      | 8    | 104    |
-| VERY_STRONG | 17      | 10   | 170    |
-| ONYX        | 21      | 12   | 252    |
+| AVERAGE     | 10      | 5    | 50     |
+| STRONG      | 12      | 7    | 84     |
+| VERY_STRONG | 15      | 8    | 120    |
+| ONYX        | 17      | 9    | 153    |
 
 ## Puzzle Image
 
@@ -30,7 +30,8 @@ ICE strength determines the number of puzzle pieces via a grid of columns x rows
 - Procedural shaders are supported as `shader:<name>` (see `shader/JigsawShaders.ts`: `palette`, `cells`, `warp`, `julia`, `ripples`). They render at
   exactly 1376 x 768 into a Pixi RenderTexture (in Pixi's own WebGL context) that is used as the shared texture, and respect the speed
   controls like videos. Rendering in a separate WebGL context and uploading that canvas each frame caused high CPU use and stutter in Firefox.
-- On `/dev/` routes, the query parameter `?media=<source>` overrides the server-chosen media, for experimenting.
+- On `/dev/` routes, the query parameter `?media=<source>` overrides the server-chosen media, for experimenting. The source is either
+  `shader:<name>` or an image/video path relative to `frontend/public/img/frontier/ice/jigsaw` (e.g. `?media=double-lion-ICE-jigsaw.png`).
 
 ## Dev test route
 

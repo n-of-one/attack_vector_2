@@ -29,6 +29,7 @@ export interface LoadedMedia {
 }
 
 const SHADER_PREFIX = "shader:"
+const JIGSAW_MEDIA_PATH = "/img/frontier/ice/jigsaw"
 
 function isVideoUrl(url: string): boolean {
     return /\.(mp4|webm|mov|ogv)(\?|$)/i.test(url)
@@ -103,10 +104,15 @@ async function loadMedia(url: string, loopsCleanly: boolean): Promise<LoadedMedi
     }
 }
 
-/** On /dev/ pages, `?media=shader:warp` (or any image/video path) overrides the server-chosen media, for experimenting. */
+/**
+ * On /dev/ pages, `?media=` overrides the server-chosen media, for experimenting. The value is either a shader
+ * (`?media=shader:warp`) or an image/video path relative to JIGSAW_MEDIA_PATH (`?media=double-lion-ICE-jigsaw.png`).
+ */
 function devMediaOverride(): string | null {
     if (!window.location.pathname.startsWith("/dev/")) return null
-    return new URLSearchParams(window.location.search).get("media")
+    const media = new URLSearchParams(window.location.search).get("media")
+    if (media === null || media.startsWith(SHADER_PREFIX)) return media
+    return `${JIGSAW_MEDIA_PATH}/${media}`
 }
 
 class JigsawIceManager extends GenericIceManager {
