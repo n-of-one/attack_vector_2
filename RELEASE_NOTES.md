@@ -10,7 +10,7 @@
 
 ## Bugfixes
 - Adding a second Weaken skill to a hacker no longer replaces the first one.
-
+- Fixed copy/paste on macOS
 
 # Release notes AV 2.21.0 (27 October 2026)
 Integration with Keycloak added by Théo Henry. You can use this to run AttackVector with every hacker and GM having a 
