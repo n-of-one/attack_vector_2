@@ -10,6 +10,7 @@ import org.n1.av2.layer.ice.tangle.TangleIceLayer
 import org.n1.av2.layer.ice.tar.TarIceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.core.CoreLinkedLayer
 import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
@@ -148,7 +149,7 @@ class SiteCloneService(
         layer: Layer, layersBySourceLayerId: Map<String, Layer>,
         sourceSiteId: String, targetSiteId: String
     ) {
-        if (layer is TripwireLayer && layer.coreLayerId != null) {
+        if (layer is CoreLinkedLayer && layer.coreLayerId != null) {
             val isSameSiteRef = (layer.coreSiteId == null || layer.coreSiteId == sourceSiteId)
             if (isSameSiteRef) {
                 layer.coreLayerId = layersBySourceLayerId[layer.coreLayerId]?.id

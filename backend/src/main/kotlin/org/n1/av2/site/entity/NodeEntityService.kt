@@ -10,6 +10,7 @@ import org.n1.av2.layer.ice.tangle.TangleIceLayer
 import org.n1.av2.layer.ice.tar.TarIceLayer
 import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.core.CoreLinkedLayer
 import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
@@ -296,14 +297,10 @@ class NodeEntityService(
     }
 
 
-    fun findAllTripwiresWithCore(coreLayerId: String): List<Node> {
+    fun findAllNodesLinkedToCore(coreLayerId: String): List<Node> {
         return nodeRepo.findAll()
             .filter { node ->
-                val tripwireLayers =
-                    node.layers
-                        .filterIsInstance<TripwireLayer>()
-                        .filter { tripwireLayer: TripwireLayer -> tripwireLayer.coreLayerId == coreLayerId }
-                tripwireLayers.isNotEmpty()
+                node.layers.filterIsInstance<CoreLinkedLayer>().any { it.coreLayerId == coreLayerId }
             }
     }
 

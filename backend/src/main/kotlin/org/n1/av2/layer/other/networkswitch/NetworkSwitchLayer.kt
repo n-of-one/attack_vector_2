@@ -3,7 +3,12 @@ package org.n1.av2.layer.other.networkswitch
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.core.CoreLinkedLayer
+import org.n1.av2.layer.other.core.updateCoreLink
+import org.n1.av2.site.entity.NodeEntityService.Companion.deriveNodeIdFromLayerId
 import org.n1.av2.site.entity.enums.LayerType
+import kotlin.jvm.optionals.getOrElse
 
 const val ROUTE_NAME_FOR = "ROUTE_NAME_FOR_"
 const val ROUTE_SWITCHED_FOR = "ROUTE_SWITCHED_FOR_"
@@ -17,7 +22,8 @@ data class NetworkSwitchRoute(
 )
 
 /**
- * Lets a hacker choose one of the connections to the nodes in [routes]. The choice is permanent: it survives site resets.
+ * Lets a hacker choose one of the connections to the nodes in [routes]. The choice survives site resets, only hacking the linked core
+ * (or the GM in the editor) unlocks it.
  */
 class NetworkSwitchLayer(
     id: String,
@@ -27,17 +33,25 @@ class NetworkSwitchLayer(
     note: String,
     var routes: MutableList<NetworkSwitchRoute>,
     var chosenNodeId: String?,
-) : Layer(id, LayerType.NETWORK_SWITCH, level, name, note) {
+    override var coreLayerId: String? = null,
+    override var coreSiteId: String? = null,
+    override var coreSiteName: String? = null,
+    override var coreNetworkId: String? = null,
+    override var coreLayerLevel: Int? = null,
+) : Layer(id, LayerType.NETWORK_SWITCH, level, name, note), CoreLinkedLayer {
 
-    constructor(id: String, level: Int, name: String, note: String, routes: MutableList<NetworkSwitchRoute>, chosenNodeId: String?) :
-        this(id, LayerType.NETWORK_SWITCH, level, name, note, routes, chosenNodeId)
+    constructor(id: String, level: Int, name: String, note: String, routes: MutableList<NetworkSwitchRoute>, chosenNodeId: String?,
+                coreLayerId: String? = null, coreSiteId: String? = null,
+                coreSiteName: String? = null, coreNetworkId: String? = null, coreLayerLevel: Int? = null) :
+        this(id, LayerType.NETWORK_SWITCH, level, name, note, routes, chosenNodeId, coreLayerId, coreSiteId, coreSiteName, coreNetworkId, coreLayerLevel)
 
     constructor(id: String, level: Int, defaultName: String) :
         this(id, LayerType.NETWORK_SWITCH, level, defaultName, "", mutableListOf(), null)
 
     // A copy is a new site, so the choice is not copied.
     constructor(id: String, toClone: NetworkSwitchLayer) :
-        this(id, LayerType.NETWORK_SWITCH, toClone.level, toClone.name, toClone.note, toClone.routes.toMutableList(), null)
+        this(id, LayerType.NETWORK_SWITCH, toClone.level, toClone.name, toClone.note, toClone.routes.toMutableList(), null,
+            toClone.coreLayerId, toClone.coreSiteId, toClone.coreSiteName, toClone.coreNetworkId, toClone.coreLayerLevel)
 
     fun routeFor(nodeId: String): NetworkSwitchRoute? = routes.find { it.nodeId == nodeId }
 
@@ -66,11 +80,23 @@ class NetworkSwitchLayer(
         if (duplicateName != null) throw SiteValidationException("Network switch has more than one route named '$duplicateName'.")
     }
 
+    @Suppress("unused")
+    private fun validateCoreLayerId(validationContext: ValidationContext) {
+        val coreLayerId = this.coreLayerId ?: return
+        val node = validationContext.nodeRepo.findById(deriveNodeIdFromLayerId(coreLayerId)).getOrElse {
+            throw SiteValidationException("Network switch connected to core layer that was later removed.")
+        }
+        if (node.layers.none { it.id == coreLayerId && it is CoreLayer }) {
+            throw SiteValidationException("Network switch connected to a layer that is not a core.")
+        }
+    }
+
     override fun validationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
-        return listOf(::validateRouteCount, ::validateRoutes)
+        return listOf(::validateRouteCount, ::validateRoutes, ::validateCoreLayerId)
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
+        if (updateCoreLink(key, value)) return true
         if (key.startsWith(ROUTE_NAME_FOR)) {
             updateRouteName(key.substringAfter(ROUTE_NAME_FOR), value.trim())
             return true

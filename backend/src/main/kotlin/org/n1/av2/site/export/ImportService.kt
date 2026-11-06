@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.layer.other.core.CoreLayer
-import org.n1.av2.layer.other.tripwire.TripwireLayer
+import org.n1.av2.layer.other.core.CoreLinkedLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -52,50 +52,50 @@ class ImportService(
             error("Uploading site that already exists: ${blueprint.siteProperties.name}")
         }
 
-        resolveCrossSiteTripwireReferences(blueprint.nodes, blueprint.siteProperties.siteId)
+        resolveCrossSiteCoreReferences(blueprint.nodes, blueprint.siteProperties.siteId)
         val owner = currentUserService.userEntity
         siteCloneService.cloneSite(blueprint, blueprint.siteProperties.name, owner)
         return blueprint.siteProperties.name
     }
 
-    private fun resolveCrossSiteTripwireReferences(nodes: List<Node>, importedSiteId: String) {
+    private fun resolveCrossSiteCoreReferences(nodes: List<Node>, importedSiteId: String) {
         nodes.forEach { node ->
-            node.layers.filterIsInstance<TripwireLayer>().forEach { tripwire ->
-                if (tripwire.coreSiteName == null) return@forEach
-                val isCrossSite = tripwire.coreSiteId != null && tripwire.coreSiteId != importedSiteId
+            node.layers.filterIsInstance<CoreLinkedLayer>().forEach { linkedLayer ->
+                if (linkedLayer.coreSiteName == null) return@forEach
+                val isCrossSite = linkedLayer.coreSiteId != null && linkedLayer.coreSiteId != importedSiteId
                 if (!isCrossSite) return@forEach
-                resolveCrossSiteReference(tripwire)
+                resolveCrossSiteReference(linkedLayer)
             }
         }
     }
 
-    private fun resolveCrossSiteReference(tripwire: TripwireLayer) {
-        val siteName = tripwire.coreSiteName ?: return
-        val networkId = tripwire.coreNetworkId ?: return
-        val layerLevel = tripwire.coreLayerLevel ?: return
+    private fun resolveCrossSiteReference(linkedLayer: CoreLinkedLayer) {
+        val siteName = linkedLayer.coreSiteName ?: return
+        val networkId = linkedLayer.coreNetworkId ?: return
+        val layerLevel = linkedLayer.coreLayerLevel ?: return
 
         val targetSite = sitePropertiesEntityService.findByName(siteName)
         if (targetSite == null) {
-            tripwire.coreLayerId = null
-            tripwire.coreSiteId = null
+            linkedLayer.coreLayerId = null
+            linkedLayer.coreSiteId = null
             return
         }
 
         val targetNode = nodeEntityService.findByNetworkId(targetSite.siteId, networkId)
         if (targetNode == null) {
-            tripwire.coreLayerId = null
-            tripwire.coreSiteId = null
+            linkedLayer.coreLayerId = null
+            linkedLayer.coreSiteId = null
             return
         }
 
         val targetLayer = targetNode.layers.find { it.level == layerLevel && it is CoreLayer }
         if (targetLayer == null) {
-            tripwire.coreLayerId = null
-            tripwire.coreSiteId = null
+            linkedLayer.coreLayerId = null
+            linkedLayer.coreSiteId = null
             return
         }
 
-        tripwire.coreSiteId = targetSite.siteId
-        tripwire.coreLayerId = targetLayer.id
+        linkedLayer.coreSiteId = targetSite.siteId
+        linkedLayer.coreLayerId = targetLayer.id
     }
 }

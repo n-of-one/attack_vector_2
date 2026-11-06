@@ -42,7 +42,7 @@ Each layer type has configurable properties.
 - **TRIPWIRE**: name, note, countdown duration, shutdown duration, linked core layer, linked core site
 - **TIMER_ADJUSTER**: name, note, adjustment amount, type (SPEED_UP / SLOW_DOWN), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
 - **DAEMON**: name, note, text shown on entry (with fullscreen editor), required trait key (empty = any hacker), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
-- **NETWORK_SWITCH**: name, note, per connected node a checkbox (switched or not) and a route name, locked-to route (GM can undo the choice here)
+- **NETWORK_SWITCH**: name, note, per connected node a checkbox (switched or not) and a route name, locked-to route (GM can undo the choice here), unlock site and unlock core (optional, can be a remote core)
 - **CORE**: name, note, reveal-network flag
 - **STATUS_LIGHT**: name, note, multiple display options (color, label, icon)
 - **LOCK**: same as **STATUS_LIGHT**
@@ -106,4 +106,6 @@ Automatic checks for site integrity.
 - error: network switch route name contains characters other than letters, digits, '.', '-' and '_'
 - error: network switch route leads to a node that is not connected
 - error: network switch has two routes with the same name
+- error: network switch connected to removed core layer
+- error: network switch connected to non-core layer
 

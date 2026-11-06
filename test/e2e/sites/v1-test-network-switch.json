@@ -1,0 +1,156 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-11-06 12:00:00"
+  },
+  "siteProperties" : {
+    "siteId" : "site-5w00-4e01",
+    "name" : "test-network-switch",
+    "description" : "",
+    "purpose" : "",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : true
+  },
+  "nodes" : [ {
+    "id" : "node-5w00-4000",
+    "siteId" : "site-5w00-4e01",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-5w00-4000:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    } ],
+    "networkId" : "00",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w01-4001",
+    "siteId" : "site-5w00-4e01",
+    "type" : "TRANSIT_3",
+    "x" : 625,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-5w01-4001:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-5w01-4001:layer-5001",
+      "type" : "NETWORK_SWITCH",
+      "level" : 1,
+      "name" : "Network switch",
+      "note" : "",
+      "routes" : [ {
+        "name" : "research",
+        "nodeId" : "node-5w02-4002"
+      }, {
+        "name" : "archives",
+        "nodeId" : "node-5w03-4003"
+      } ],
+      "chosenNodeId" : null,
+      "coreLayerId" : "node-5w05-4005:layer-c001",
+      "coreSiteId" : null
+    } ],
+    "networkId" : "01",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w02-4002",
+    "siteId" : "site-5w00-4e01",
+    "type" : "TRANSIT_1",
+    "x" : 505,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-5w02-4002:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "research"
+    } ],
+    "networkId" : "02",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w03-4003",
+    "siteId" : "site-5w00-4e01",
+    "type" : "TRANSIT_1",
+    "x" : 745,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-5w03-4003:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "archives"
+    } ],
+    "networkId" : "03",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w04-4004",
+    "siteId" : "site-5w00-4e01",
+    "type" : "DATA_STORE",
+    "x" : 505,
+    "y" : 192,
+    "layers" : [ {
+      "id" : "node-5w04-4004:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "behind research"
+    } ],
+    "networkId" : "04",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w05-4005",
+    "siteId" : "site-5w00-4e01",
+    "type" : "SYSCON",
+    "x" : 785,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-5w05-4005:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-5w05-4005:layer-c001",
+      "type" : "CORE",
+      "level" : 1,
+      "name" : "Core",
+      "note" : "",
+      "revealNetwork" : false
+    } ],
+    "networkId" : "05",
+    "ice" : false,
+    "hacked" : true
+  } ],
+  "connections" : [ {
+    "fromId" : "node-5w00-4000",
+    "toId" : "node-5w01-4001"
+  }, {
+    "fromId" : "node-5w01-4001",
+    "toId" : "node-5w02-4002"
+  }, {
+    "fromId" : "node-5w01-4001",
+    "toId" : "node-5w03-4003"
+  }, {
+    "fromId" : "node-5w02-4002",
+    "toId" : "node-5w04-4004"
+  }, {
+    "fromId" : "node-5w00-4000",
+    "toId" : "node-5w05-4005"
+  } ]
+}

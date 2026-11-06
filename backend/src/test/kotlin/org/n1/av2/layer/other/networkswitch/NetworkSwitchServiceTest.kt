@@ -12,6 +12,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.n1.av2.layer.other.core.CORE_LAYER_ID
+import org.n1.av2.layer.other.core.CORE_SITE_ID
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.OPEN
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.PENDING
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.SEVERED
@@ -249,5 +251,52 @@ class NetworkSwitchServiceTest {
 
         assertThat(copy.routes).isEqualTo(switchLayer.routes)
         assertThat(copy.chosenNodeId).isNull()
+    }
+
+    @Test
+    fun `copy keeps the core link`() {
+        switchLayer.coreLayerId = "core-node:layer-1"
+        switchLayer.coreSiteId = "other-site"
+
+        val copy = NetworkSwitchLayer("other:layer-1", switchLayer)
+
+        assertThat(copy.coreLayerId).isEqualTo("core-node:layer-1")
+        assertThat(copy.coreSiteId).isEqualTo("other-site")
+    }
+
+    @Test
+    fun `choosing another core site clears the core layer`() {
+        switchLayer.update(CORE_LAYER_ID, "core-node:layer-1")
+        assertThat(switchLayer.coreLayerId).isEqualTo("core-node:layer-1")
+
+        switchLayer.update(CORE_SITE_ID, "other-site")
+
+        assertThat(switchLayer.coreSiteId).isEqualTo("other-site")
+        assertThat(switchLayer.coreLayerId).isNull()
+    }
+
+    @Test
+    fun `hacking the linked core unlocks a locked switch`() {
+        switchLayer.coreLayerId = "core-node:layer-1"
+        switchLayer.chosenNodeId = "n02"
+        every { nodeEntityService.findAllNodesLinkedToCore("core-node:layer-1") } returns listOf(nodes[1])
+
+        val unlocked = networkSwitchService.unlockSwitchesForCore("core-node:layer-1")
+
+        assertThat(switchLayer.chosenNodeId).isNull()
+        assertThat(unlocked.map { it.networkId }).containsExactly("01")
+        verify { nodeEntityService.save(nodes[1]) }
+        verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_CONNECTIONS_UPDATED, any()) }
+    }
+
+    @Test
+    fun `hacking the linked core leaves an unlocked switch alone`() {
+        switchLayer.coreLayerId = "core-node:layer-1"
+        every { nodeEntityService.findAllNodesLinkedToCore("core-node:layer-1") } returns listOf(nodes[1])
+
+        val unlocked = networkSwitchService.unlockSwitchesForCore("core-node:layer-1")
+
+        assertThat(unlocked).isEmpty()
+        verify(exactly = 0) { nodeEntityService.save(any()) }
     }
 }

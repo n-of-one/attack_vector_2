@@ -2,7 +2,7 @@ package org.n1.av2.site.export
 
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.layer.other.core.CoreLayer
-import org.n1.av2.layer.other.tripwire.TripwireLayer
+import org.n1.av2.layer.other.core.CoreLinkedLayer
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.NodeEntityService.Companion.deriveNodeIdFromLayerId
@@ -40,7 +40,7 @@ class V2Exporter(
 ) {
 
     fun toV2(siteFull: SiteFull): SiteExportV2 {
-        populateTripwirePortableReferences(siteFull)
+        populateCorePortableReferences(siteFull)
         return SiteExportV2(
             exportDetails(),
             siteProperties = toV2(siteFull.siteProperties),
@@ -49,43 +49,43 @@ class V2Exporter(
         )
     }
 
-    private fun populateTripwirePortableReferences(siteFull: SiteFull) {
+    private fun populateCorePortableReferences(siteFull: SiteFull) {
         val currentSiteId = siteFull.siteProperties.siteId
         siteFull.nodes.forEach { node ->
-            node.layers.filterIsInstance<TripwireLayer>().forEach { tripwire ->
-                if (tripwire.coreLayerId == null) return@forEach
-                populateTripwireReference(tripwire, currentSiteId, siteFull)
+            node.layers.filterIsInstance<CoreLinkedLayer>().forEach { linkedLayer ->
+                if (linkedLayer.coreLayerId == null) return@forEach
+                populateCoreReference(linkedLayer, currentSiteId, siteFull)
             }
         }
     }
 
-    private fun populateTripwireReference(tripwire: TripwireLayer, currentSiteId: String, siteFull: SiteFull) {
-        val isSameSite = tripwire.coreSiteId == null || tripwire.coreSiteId == currentSiteId
+    private fun populateCoreReference(linkedLayer: CoreLinkedLayer, currentSiteId: String, siteFull: SiteFull) {
+        val isSameSite = linkedLayer.coreSiteId == null || linkedLayer.coreSiteId == currentSiteId
         if (isSameSite) {
-            populateSameSiteTripwireReference(tripwire, siteFull)
+            populateSameSiteCoreReference(linkedLayer, siteFull)
         } else {
-            populateCrossSiteTripwireReference(tripwire)
+            populateCrossSiteCoreReference(linkedLayer)
         }
     }
 
-    private fun populateSameSiteTripwireReference(tripwire: TripwireLayer, siteFull: SiteFull) {
-        val coreNodeId = deriveNodeIdFromLayerId(tripwire.coreLayerId!!)
+    private fun populateSameSiteCoreReference(linkedLayer: CoreLinkedLayer, siteFull: SiteFull) {
+        val coreNodeId = deriveNodeIdFromLayerId(linkedLayer.coreLayerId!!)
         val coreNode = siteFull.nodes.find { it.id == coreNodeId } ?: return
-        val coreLayer = coreNode.layers.find { it.id == tripwire.coreLayerId && it is CoreLayer } ?: return
-        tripwire.coreSiteName = siteFull.siteProperties.name
-        tripwire.coreNetworkId = coreNode.networkId
-        tripwire.coreLayerLevel = coreLayer.level
+        val coreLayer = coreNode.layers.find { it.id == linkedLayer.coreLayerId && it is CoreLayer } ?: return
+        linkedLayer.coreSiteName = siteFull.siteProperties.name
+        linkedLayer.coreNetworkId = coreNode.networkId
+        linkedLayer.coreLayerLevel = coreLayer.level
     }
 
-    private fun populateCrossSiteTripwireReference(tripwire: TripwireLayer) {
+    private fun populateCrossSiteCoreReference(linkedLayer: CoreLinkedLayer) {
         try {
-            val site = sitePropertiesEntityService.getBySiteId(tripwire.coreSiteId!!)
-            val coreNodeId = deriveNodeIdFromLayerId(tripwire.coreLayerId!!)
+            val site = sitePropertiesEntityService.getBySiteId(linkedLayer.coreSiteId!!)
+            val coreNodeId = deriveNodeIdFromLayerId(linkedLayer.coreLayerId!!)
             val coreNode = nodeEntityService.findById(coreNodeId)
-            val coreLayer = coreNode.layers.find { it.id == tripwire.coreLayerId && it is CoreLayer } ?: return
-            tripwire.coreSiteName = site.name
-            tripwire.coreNetworkId = coreNode.networkId
-            tripwire.coreLayerLevel = coreLayer.level
+            val coreLayer = coreNode.layers.find { it.id == linkedLayer.coreLayerId && it is CoreLayer } ?: return
+            linkedLayer.coreSiteName = site.name
+            linkedLayer.coreNetworkId = coreNode.networkId
+            linkedLayer.coreLayerLevel = coreLayer.level
         } catch (_: Exception) {
             // Cross-site reference is broken (site or node was deleted), skip populating portable fields
         }

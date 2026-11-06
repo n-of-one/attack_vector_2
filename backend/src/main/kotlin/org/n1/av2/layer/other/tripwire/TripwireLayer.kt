@@ -5,6 +5,8 @@ import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.core.CoreLinkedLayer
+import org.n1.av2.layer.other.core.updateCoreLink
 import org.n1.av2.platform.util.toDuration
 import org.n1.av2.platform.util.toHumanTime
 import org.n1.av2.platform.util.validateDuration
@@ -20,14 +22,12 @@ class TripwireLayer(
     note: String,
     var countdown: String, // shutdown activates after a duration of $countdown
     var shutdown: String, // shut down lasts for a duration of $shutdown
-    var coreLayerId: String? = null,
-    var coreSiteId: String? = null,
-
-    // These fields are used during export to make the export portable (i.e. not rely on DB id references).
-    var coreSiteName: String? = null,
-    var coreNetworkId: String? = null,
-    var coreLayerLevel: Int? = null,
-) : Layer(id, LayerType.TRIPWIRE, level, name, note) {
+    override var coreLayerId: String? = null,
+    override var coreSiteId: String? = null,
+    override var coreSiteName: String? = null,
+    override var coreNetworkId: String? = null,
+    override var coreLayerLevel: Int? = null,
+) : Layer(id, LayerType.TRIPWIRE, level, name, note), CoreLinkedLayer {
 
     constructor (id: String, level: Int, name: String, note: String, countdown: String, shutdown: String,
                  coreLayerId: String?, coreSiteId: String?,
@@ -82,15 +82,10 @@ class TripwireLayer(
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
+        if (updateCoreLink(key, value)) return true
         when (key) {
             "COUNTDOWN" -> this.countdown = value
             "SHUTDOWN" -> this.shutdown = value
-            "CORE_LAYER_ID" -> this.coreLayerId = if (!value.isEmpty()) value else null
-            "CORE_SITE_ID" -> {
-                this.coreSiteId = value
-                this.coreLayerId = null // site changed, so current core layer is not valid in new site
-            }
-
             else -> return super.updateInternal(key, value)
         }
         return true

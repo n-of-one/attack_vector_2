@@ -267,6 +267,11 @@ class ExportedSiteParser(
             id = id, level = level, name = name, note = note,
             routes = routes,
             chosenNodeId = input.getAsTextOrNull("chosenNodeId"),
+            coreLayerId = input.getAsTextOrNull("coreLayerId"),
+            coreSiteId = input.getAsTextOrNull("coreSiteId"),
+            coreSiteName = input.getAsTextOrNull("coreSiteName"),
+            coreNetworkId = input.getAsTextOrNull("coreNetworkId"),
+            coreLayerLevel = input.getAsIntOrNull("coreLayerLevel"),
         )
     }
 

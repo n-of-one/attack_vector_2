@@ -1,5 +1,6 @@
 package org.n1.av2.layer.other.core
 
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.run.entity.RunEntityService
@@ -20,6 +21,7 @@ class CoreLayerService(
     private val timerEntityService: TimerEntityService,
     private val timerService: TimerService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
+    private val networkSwitchService: NetworkSwitchService,
 ) {
 
     fun hack(layer: CoreLayer, runId: String) {
@@ -37,6 +39,16 @@ class CoreLayerService(
             } else {
                 val siteProperties = sitePropertiesEntityService.getBySiteId(timer.targetSiteId)
                 hackingDetails.add( "- stopped timer for remote site: [info]${siteProperties.name}")
+            }
+        }
+
+        val run = runEntityService.getByRunId(runId)
+        networkSwitchService.unlockSwitchesForCore(layer.id).forEach { unlocked ->
+            if (unlocked.siteId == run.siteId) {
+                hackingDetails.add("- unlocked network switch in node [ok]${unlocked.networkId}")
+            } else {
+                val siteProperties = sitePropertiesEntityService.getBySiteId(unlocked.siteId)
+                hackingDetails.add("- unlocked network switch for remote site: [info]${siteProperties.name}")
             }
         }
 

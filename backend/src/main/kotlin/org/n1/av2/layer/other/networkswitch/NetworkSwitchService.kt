@@ -84,9 +84,8 @@ class NetworkSwitchService(
 
         val chosenRoute = layer.chosenNodeId?.let { layer.routeFor(it) }
         if (chosenRoute != null) {
-            connectionService.replyTerminalReceive(
-                "[warn]Switch locked.[/] Route fixed to [b]${chosenRoute.name}[/] → [ok]${networkIdByNodeId[chosenRoute.nodeId]}[/]."
-            )
+            val lockedLine = "[warn]Switch locked.[/] Route fixed to [b]${chosenRoute.name}[/] → [ok]${networkIdByNodeId[chosenRoute.nodeId]}[/]."
+            connectionService.replyTerminalReceive(listOfNotNull(lockedLine, coreTraceLine(layer, node.siteId)))
             return
         }
 
@@ -108,6 +107,40 @@ class NetworkSwitchService(
         connectionService.toSite(node.siteId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines))
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, "nodeId" to node.id, "layer" to layer)
         sendConnectionStatuses(node.siteId)
+    }
+
+    private fun coreTraceLine(layer: NetworkSwitchLayer, siteId: String): String? {
+        val coreLayerId = layer.coreLayerId ?: return null
+        val coreNode = nodeEntityService.findByLayerId(coreLayerId)
+        if (coreNode.siteId == siteId) return "Lock managed by core in node [ok]${coreNode.networkId}"
+        val siteName = sitePropertiesEntityService.getBySiteId(coreNode.siteId).name
+        return "Lock managed by remote core in node [ok]${coreNode.networkId}[/] in site: [info]${siteName}"
+    }
+
+    class UnlockedSwitch(val siteId: String, val networkId: String)
+
+    /**
+     * Unlocks all locked network switches (in any site) that are linked to this core.
+     */
+    fun unlockSwitchesForCore(coreLayerId: String): List<UnlockedSwitch> {
+        return nodeEntityService.findAllNodesLinkedToCore(coreLayerId).flatMap { node ->
+            val unlockedLayers = node.layers
+                .filterIsInstance<NetworkSwitchLayer>()
+                .filter { it.coreLayerId == coreLayerId && it.chosenNodeId != null }
+            if (unlockedLayers.isEmpty()) return@flatMap emptyList()
+
+            unlockedLayers.forEach { it.chosenNodeId = null }
+            nodeEntityService.save(node)
+
+            val lines = arrayOf("[warn]Topology change[/] switch [ok]${node.networkId}[/] unlocked by core. Routes back in standby.")
+            connectionService.toSite(node.siteId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines))
+            unlockedLayers.forEach { layer ->
+                connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, "nodeId" to node.id, "layer" to layer)
+            }
+            sendConnectionStatuses(node.siteId)
+
+            unlockedLayers.map { UnlockedSwitch(node.siteId, node.networkId) }
+        }
     }
 
     private fun replyChoices(layer: NetworkSwitchLayer, networkIdByNodeId: Map<String, String>, header: String) {

@@ -61,7 +61,7 @@ class SyntaxHighlightingService(
         syntaxInside["/download-script"] = Syntax("t_b t_warn", "t_primary")
         syntaxInside["move"] = Syntax("t_b", "t_ok")
         syntaxInside["view"] = Syntax("t_b")
-        syntaxInside["hack"] = Syntax("t_b", "t_primary")
+        syntaxInside["hack"] = Syntax(listOf("t_b", "t_primary", "t_b"))
         syntaxInside["password"] = Syntax("t_b", "t_primary")
         syntaxInside["run"] = Syntax(listOf("t_b", "t_primary"), "t_b")
 

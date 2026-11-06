@@ -8,6 +8,10 @@ import {AttributeDropdown} from '../../../element/AttributeDropdown'
 import {TextSaveInput, TextSaveType} from '../../../../../../../../common/component/TextSaveInput'
 import {OverlayTrigger, Tooltip} from 'react-bootstrap'
 import {CheckboxSaveInput} from '../../../../../../../../common/component/CheckBoxSaveInput'
+import {createCoreOptions, createSiteOptions} from './CoreLinkOptions'
+import {editorSiteId} from '../../../../../../../EditorRoot'
+import {editorCanvas} from '../../../../../canvas/EditorCanvas'
+import {SELECT_LAYER} from '../../../../../../../reducer/CurrentLayerIdReducer'
 
 interface Props {
     node: NodeI,
@@ -36,6 +40,18 @@ export const LayerNetworkSwitchPanel = ({node, layer}: Props) => {
         ...networkSwitch.routes.map(route => ({value: route.nodeId, text: `${route.name || '(no name)'} → ${networkIdOf(route.nodeId)}`}))
     ]
 
+    const allCores = useSelector((state: EditorState) => state.allCores)
+    const sites = useSelector((state: EditorState) => state.sites)
+    const coreSiteOptions = createSiteOptions(sites, node.siteId, allCores)
+    const coreOptions = createCoreOptions(networkSwitch.coreSiteId, allCores, node.siteId)
+
+    const coreLayerId = networkSwitch.coreLayerId
+    const coreLayer = allCores.find(coreInfo => coreInfo.layerId === coreLayerId)
+    const navigateToCore = (coreLayerId && coreLayer && coreLayer.siteId === editorSiteId) ? () => {
+        editorCanvas.selectNode(coreLayerId.split(':')[0])
+        dispatch({type: SELECT_LAYER, layerId: coreLayerId})
+    } : undefined
+
     return (
         <LayerPanel typeDisplay="Network switch" layerObject={networkSwitch}>
             {neighbourIds.map(neighbourId =>
@@ -46,6 +62,18 @@ export const LayerNetworkSwitchPanel = ({node, layer}: Props) => {
                                save={(value: string) => networkSwitch.saveChosen(value)}
                                tooltipId="NetworkSwitchChosen"
                                tooltipText="The route hackers committed to. A site reset does not unlock the switch, set it back to (not locked) here."/>
+
+            <AttributeDropdown key={key('coreSiteId')} label="Unlock site" value={networkSwitch.coreSiteId || ''} options={coreSiteOptions}
+                               save={(value: string) => networkSwitch.saveCoreSiteId(value)}
+                               tooltipId="NetworkSwitchCoreSite"
+                               tooltipText="The site that contains the core that can unlock this switch. If you choose another site here,
+                               the hackers will have to go to that site to unlock it."/>
+
+            <AttributeDropdown key={key('coreLayerId')} label="Unlock core" value={coreLayerId} options={coreOptions}
+                               save={(value: string) => networkSwitch.saveCoreLayerId(value)}
+                               tooltipId="NetworkSwitchCore"
+                               tooltipText="Hacking this core unlocks the switch, so hackers can choose a route again. Optional."
+                               navigate={navigateToCore}/>
         </LayerPanel>
     )
 }

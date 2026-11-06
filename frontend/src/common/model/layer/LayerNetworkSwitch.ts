@@ -6,12 +6,16 @@ export class LayerNetworkSwitch extends Layer {
 
     routes: NetworkSwitchRoute[]
     chosenNodeId: string | null
+    coreLayerId: string
+    coreSiteId?: string
 
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 
         this.routes = layer.routes ?? []
         this.chosenNodeId = layer.chosenNodeId ?? null
+        this.coreLayerId = layer.coreLayerId ?? ''
+        this.coreSiteId = layer.coreSiteId
     }
 
     nameFor(nodeId: string): string {
@@ -32,5 +36,13 @@ export class LayerNetworkSwitch extends Layer {
 
     saveChosen(nodeId: string) {
         super._save('CHOSEN', nodeId)
+    }
+
+    saveCoreLayerId(value: string) {
+        super._save('CORE_LAYER_ID', value)
+    }
+
+    saveCoreSiteId(value: string) {
+        super._save('CORE_SITE_ID', value)
     }
 }
