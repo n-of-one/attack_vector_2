@@ -68,7 +68,7 @@ export interface LayerDetails {
     stolen?: boolean             // Script Credits layer
 
     routes?: NetworkSwitchRoute[]  // Network switch layer
-    chosenNodeId?: string | null // Network switch layer
+    lockedRouteNodeId?: string | null // Network switch layer
 }
 
 export interface NetworkSwitchRoute {

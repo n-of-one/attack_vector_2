@@ -92,8 +92,14 @@ class EditorService(
 
     fun deleteConnections(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
+        removeNetworkSwitchRoutesWithoutConnection(siteId)
         siteValidationService.validate(siteId)
         sendFullSiteToSite(siteId)
+    }
+
+    private fun removeNetworkSwitchRoutesWithoutConnection(siteId: String) {
+        networkSwitchService.removeRoutesWithoutConnection(siteId)
+        networkSwitchService.sendConnectionStatuses(siteId)
     }
 
     private fun deleteConnectionsInternal(nodeId: String) {
@@ -136,6 +142,8 @@ class EditorService(
     }
 
     fun enter(siteId: String) {
+        removeNetworkSwitchRoutesWithoutConnection(siteId) // repairs sites where a route node was removed before this was done on removal
+        siteValidationService.validate(siteId)
         sendFullSiteToSite(siteId)
         userAndHackerService.sendDetailsOfCurrentUser()
         siteService.sendSitesList()
@@ -151,6 +159,7 @@ class EditorService(
     fun deleteNode(siteId: String, nodeId: String) {
         deleteConnectionsInternal(nodeId)
         nodeEntityService.deleteNode(nodeId)
+        removeNetworkSwitchRoutesWithoutConnection(siteId)
         siteValidationService.validate(siteId)
         sendFullSiteToSite(siteId)
     }

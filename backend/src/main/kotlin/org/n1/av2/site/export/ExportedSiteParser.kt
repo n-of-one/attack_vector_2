@@ -266,7 +266,7 @@ class ExportedSiteParser(
         return NetworkSwitchLayer(
             id = id, level = level, name = name, note = note,
             routes = routes,
-            chosenNodeId = input.getAsTextOrNull("chosenNodeId"),
+            lockedRouteNodeId = input.getAsTextOrNull("lockedRouteNodeId"),
             coreLayerId = input.getAsTextOrNull("coreLayerId"),
             coreSiteId = input.getAsTextOrNull("coreSiteId"),
             coreSiteName = input.getAsTextOrNull("coreSiteName"),

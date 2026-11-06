@@ -35,7 +35,7 @@ export const LayerNetworkSwitchPanel = ({node, layer}: Props) => {
         .map(connection => connection.fromId === node.id ? connection.toId : connection.fromId)
         .sort((a, b) => networkIdOf(a).localeCompare(networkIdOf(b)))
 
-    const chosenOptions = [
+    const lockedRouteOptions = [
         {value: '', text: '(not locked)'},
         ...networkSwitch.routes.map(route => ({value: route.nodeId, text: `${route.name || '(no name)'} → ${networkIdOf(route.nodeId)}`}))
     ]
@@ -58,9 +58,9 @@ export const LayerNetworkSwitchPanel = ({node, layer}: Props) => {
                 <RouteRow key={key('route-' + neighbourId)} networkSwitch={networkSwitch} nodeId={neighbourId} networkId={networkIdOf(neighbourId)}/>
             )}
 
-            <AttributeDropdown key={key('chosen')} label="Locked to" value={networkSwitch.chosenNodeId ?? ''} options={chosenOptions}
-                               save={(value: string) => networkSwitch.saveChosen(value)}
-                               tooltipId="NetworkSwitchChosen"
+            <AttributeDropdown key={key('lockedRoute')} label="Locked to" value={networkSwitch.lockedRouteNodeId ?? ''} options={lockedRouteOptions}
+                               save={(value: string) => networkSwitch.saveLockedRouteNodeId(value)}
+                               tooltipId="NetworkSwitchLockedRoute"
                                tooltipText="The route hackers committed to. A site reset does not unlock the switch, set it back to (not locked) here."/>
 
             <AttributeDropdown key={key('coreSiteId')} label="Unlock site" value={networkSwitch.coreSiteId || ''} options={coreSiteOptions}

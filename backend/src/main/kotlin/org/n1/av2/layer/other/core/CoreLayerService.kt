@@ -25,7 +25,7 @@ class CoreLayerService(
 ) {
 
     fun hack(layer: CoreLayer, runId: String) {
-        var hackingDetails = listOf("Hacked: [pri]${layer.level}[/] ${layer.name}").toMutableList()
+        val hackingDetails = listOf("Hacked: [pri]${layer.level}[/] ${layer.name}").toMutableList()
         if (layer.revealNetwork) {
             val run = runEntityService.getByRunId(runId)
             initiateScanService.quickScan(run)

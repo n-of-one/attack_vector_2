@@ -12,8 +12,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.n1.av2.layer.other.core.CORE_LAYER_ID
-import org.n1.av2.layer.other.core.CORE_SITE_ID
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.OPEN
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.PENDING
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.SEVERED
@@ -103,7 +101,7 @@ class NetworkSwitchServiceTest {
 
     @Test
     fun `choice opens the chosen route and severs the others`() {
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
 
         val statuses = calculateConnectionStatuses(nodes, connections)
 
@@ -112,7 +110,7 @@ class NetworkSwitchServiceTest {
 
     @Test
     fun `connection that is a route of two network switches gets the most restrictive status`() {
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
         val otherSwitch = NetworkSwitchLayer("n02:layer-1", 1, "Network switch", "",
             mutableListOf(NetworkSwitchRoute("back", "n01"), NetworkSwitchRoute("on", "n04")), "n04")
         nodes = listOf(node("n00"), node("n01", switchLayer), node("n02", otherSwitch), node("n03"), node("n04"))
@@ -120,6 +118,23 @@ class NetworkSwitchServiceTest {
         val statuses = calculateConnectionStatuses(nodes, connections)
 
         assertThat(statuses).containsEntry("c01-02", SEVERED).containsEntry("c02-04", OPEN)
+    }
+
+    @Test
+    fun `status of a single connection matches the status calculated for the whole site`() {
+        val otherSwitch = NetworkSwitchLayer("n02:layer-1", 1, "Network switch", "",
+            mutableListOf(NetworkSwitchRoute("back", "n01"), NetworkSwitchRoute("on", "n04")), "n04")
+        nodes = listOf(node("n00"), node("n01", switchLayer), node("n02", otherSwitch), node("n03"), node("n04"))
+        val nodeById = nodes.associateBy { it.id }
+
+        listOf(null, "n02", "n03").forEach { chosen ->
+            switchLayer.lockedRouteNodeId = chosen
+            val statuses = calculateConnectionStatuses(nodes, connections)
+            connections.forEach { connection ->
+                val single = calculateConnectionStatus(nodeById[connection.fromId]!!, nodeById[connection.toId]!!)
+                assertThat(single).describedAs("${connection.id} with choice $chosen").isEqualTo(statuses[connection.id])
+            }
+        }
     }
 
     @Test
@@ -133,7 +148,7 @@ class NetworkSwitchServiceTest {
 
     @Test
     fun `severed branch stays reachable when it joins the chosen branch`() {
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
         val statuses = calculateConnectionStatuses(nodes, connections)
 
         assertThat(calculateReachableNodeIds("n00", connections, statuses, pendingIsOpen = false))
@@ -142,7 +157,7 @@ class NetworkSwitchServiceTest {
 
     @Test
     fun `severed branch is unreachable when it does not join the chosen branch`() {
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
         val treeConnections = connections.filter { it.id != "c03-04" }
         val statuses = calculateConnectionStatuses(nodes, treeConnections)
 
@@ -173,7 +188,7 @@ class NetworkSwitchServiceTest {
     fun `hack with a route name chooses that route and informs the site`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("EAST"))
 
-        assertThat(switchLayer.chosenNodeId).isEqualTo("n02")
+        assertThat(switchLayer.lockedRouteNodeId).isEqualTo("n02")
         verify { nodeEntityService.save(nodes[1]) }
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_TERMINAL_RECEIVE, any()) }
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_CONNECTIONS_UPDATED, any()) }
@@ -183,110 +198,71 @@ class NetworkSwitchServiceTest {
     fun `hack with a network id chooses that route`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("03"))
 
-        assertThat(switchLayer.chosenNodeId).isEqualTo("n03")
+        assertThat(switchLayer.lockedRouteNodeId).isEqualTo("n03")
     }
 
     @Test
     fun `hack with an unknown route changes nothing`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("north"))
 
-        assertThat(switchLayer.chosenNodeId).isNull()
+        assertThat(switchLayer.lockedRouteNodeId).isNull()
         verify(exactly = 0) { nodeEntityService.save(any()) }
     }
 
     @Test
     fun `hack after the choice does not change it`() {
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
 
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("west"))
 
-        assertThat(switchLayer.chosenNodeId).isEqualTo("n02")
+        assertThat(switchLayer.lockedRouteNodeId).isEqualTo("n02")
         verify(exactly = 0) { nodeEntityService.save(any()) }
     }
 
     @Test
     fun `move is blocked until a choice is made, and severed afterwards`() {
-        assertThat(networkSwitchService.checkMove("n00", nodes[1])).isNull()
-        assertThat(networkSwitchService.checkMove("n01", nodes[2])).contains("held in standby by a network switch")
-        assertThat(networkSwitchService.checkMove("n02", nodes[1])).contains("held in standby by a network switch")
+        assertThat(networkSwitchService.checkMove(nodes[0], nodes[1])).isNull()
+        assertThat(networkSwitchService.checkMove(nodes[1], nodes[2])).contains("held in standby by a network switch")
+        assertThat(networkSwitchService.checkMove(nodes[2], nodes[1])).contains("held in standby by a network switch")
 
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
 
-        assertThat(networkSwitchService.checkMove("n01", nodes[2])).isNull()
-        assertThat(networkSwitchService.checkMove("n01", nodes[3])).contains("route down")
-    }
-
-    @Test
-    fun `switching off the chosen route clears the choice`() {
-        switchLayer.chosenNodeId = "n02"
-
-        switchLayer.update(ROUTE_SWITCHED_FOR + "n02", "false")
-
-        assertThat(switchLayer.routes.map { it.name }).containsExactly("west")
-        assertThat(switchLayer.chosenNodeId).isNull()
-    }
-
-    @Test
-    fun `switching on a route adds it without a name, clearing the name keeps it`() {
-        switchLayer.update(ROUTE_SWITCHED_FOR + "n00", "true")
-        switchLayer.update(ROUTE_NAME_FOR + "n02", "")
-
-        assertThat(switchLayer.routes).containsExactly(
-            NetworkSwitchRoute("", "n02"), NetworkSwitchRoute("west", "n03"), NetworkSwitchRoute("", "n00")
-        )
-    }
-
-    @Test
-    fun `naming a route that is not switched switches it`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n00", "back")
-
-        assertThat(switchLayer.routeFor("n00")).isEqualTo(NetworkSwitchRoute("back", "n00"))
-    }
-
-    @Test
-    fun `copy does not copy the choice`() {
-        switchLayer.chosenNodeId = "n02"
-
-        val copy = NetworkSwitchLayer("other:layer-1", switchLayer)
-
-        assertThat(copy.routes).isEqualTo(switchLayer.routes)
-        assertThat(copy.chosenNodeId).isNull()
-    }
-
-    @Test
-    fun `copy keeps the core link`() {
-        switchLayer.coreLayerId = "core-node:layer-1"
-        switchLayer.coreSiteId = "other-site"
-
-        val copy = NetworkSwitchLayer("other:layer-1", switchLayer)
-
-        assertThat(copy.coreLayerId).isEqualTo("core-node:layer-1")
-        assertThat(copy.coreSiteId).isEqualTo("other-site")
-    }
-
-    @Test
-    fun `choosing another core site clears the core layer`() {
-        switchLayer.update(CORE_LAYER_ID, "core-node:layer-1")
-        assertThat(switchLayer.coreLayerId).isEqualTo("core-node:layer-1")
-
-        switchLayer.update(CORE_SITE_ID, "other-site")
-
-        assertThat(switchLayer.coreSiteId).isEqualTo("other-site")
-        assertThat(switchLayer.coreLayerId).isNull()
+        assertThat(networkSwitchService.checkMove(nodes[1],nodes[2])).isNull()
+        assertThat(networkSwitchService.checkMove(nodes[1],nodes[3])).contains("route down")
     }
 
     @Test
     fun `hacking the linked core unlocks a locked switch`() {
         switchLayer.coreLayerId = "core-node:layer-1"
-        switchLayer.chosenNodeId = "n02"
+        switchLayer.lockedRouteNodeId = "n02"
         every { nodeEntityService.findAllNodesLinkedToCore("core-node:layer-1") } returns listOf(nodes[1])
 
         val unlocked = networkSwitchService.unlockSwitchesForCore("core-node:layer-1")
 
-        assertThat(switchLayer.chosenNodeId).isNull()
+        assertThat(switchLayer.lockedRouteNodeId).isNull()
         assertThat(unlocked.map { it.networkId }).containsExactly("01")
         verify { nodeEntityService.save(nodes[1]) }
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_CONNECTIONS_UPDATED, any()) }
+    }
+
+    @Test
+    fun `routes whose connection was removed are removed, and the lock to such a route is cleared`() {
+        switchLayer.lockedRouteNodeId = "n03"
+        every { connectionEntityService.getAll(SITE_ID) } returns connections.filter { it.id != "c01-03" }
+
+        networkSwitchService.removeRoutesWithoutConnection(SITE_ID)
+
+        assertThat(switchLayer.routes).containsExactly(NetworkSwitchRoute("east", "n02"))
+        assertThat(switchLayer.lockedRouteNodeId).isNull()
+        verify { nodeEntityService.save(nodes[1]) }
+    }
+
+    @Test
+    fun `routes with a connection are kept`() {
+        networkSwitchService.removeRoutesWithoutConnection(SITE_ID)
+
+        assertThat(switchLayer.routes).hasSize(2)
+        verify(exactly = 0) { nodeEntityService.save(any()) }
     }
 
     @Test

@@ -54,7 +54,7 @@
         "name" : "archives",
         "nodeId" : "node-5w03-4003"
       } ],
-      "chosenNodeId" : null,
+      "lockedRouteNodeId" : null,
       "coreLayerId" : "node-5w05-4005:layer-c001",
       "coreSiteId" : null
     } ],

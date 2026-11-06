@@ -62,7 +62,7 @@ class CommandMoveService(
         val toNode = nodeEntityService.findByNetworkId(hackerState.siteId, networkId) ?: return reportNodeNotFound(networkId)
 
         if (hackerState.previousNodeId == toNode.id) {
-            // can always go back to previous node, regardless of ice
+            // can always go back to previous node, regardless of ice, unless a network switch just unlocked behind you.
             if (!checkNetworkSwitch(toNode, hackerState)) return
             handleMove(toNode, hackerState, false)
             return
@@ -103,7 +103,8 @@ class CommandMoveService(
 
     private fun checkNetworkSwitch(toNode: Node, hackerState: HackerStateRunning): Boolean {
         requireNotNull(hackerState.currentNodeId)
-        val error = networkSwitchService.checkMove(hackerState.currentNodeId, toNode) ?: return true
+        val currentNode = nodeEntityService.getById(hackerState.currentNodeId)
+        val error = networkSwitchService.checkMove(currentNode, toNode) ?: return true
         connectionService.replyTerminalReceive(error)
         return false
     }

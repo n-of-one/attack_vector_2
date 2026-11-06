@@ -96,7 +96,7 @@ class ExportedSiteParserTest {
         val layer = parseLayer("/export/network-switch.json")[1] as NetworkSwitchLayer
 
         assertEquals(listOf(NetworkSwitchRoute("east", "n2"), NetworkSwitchRoute("west", "n3")), layer.routes)
-        assertEquals("n3", layer.chosenNodeId)
+        assertEquals("n3", layer.lockedRouteNodeId)
     }
 
     @Test

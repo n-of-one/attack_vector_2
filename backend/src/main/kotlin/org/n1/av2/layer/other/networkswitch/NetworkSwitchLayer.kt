@@ -12,7 +12,7 @@ import kotlin.jvm.optionals.getOrElse
 
 const val ROUTE_NAME_FOR = "ROUTE_NAME_FOR_"
 const val ROUTE_SWITCHED_FOR = "ROUTE_SWITCHED_FOR_"
-const val CHOSEN = "CHOSEN"
+const val LOCKED_ROUTE_NODE_ID = "LOCKED_ROUTE_NODE_ID"
 
 val ROUTE_NAME_PATTERN = Regex("^[A-Za-z0-9_.-]+$")
 
@@ -32,7 +32,7 @@ class NetworkSwitchLayer(
     name: String,
     note: String,
     var routes: MutableList<NetworkSwitchRoute>,
-    var chosenNodeId: String?,
+    var lockedRouteNodeId: String?,
     override var coreLayerId: String? = null,
     override var coreSiteId: String? = null,
     override var coreSiteName: String? = null,
@@ -40,10 +40,10 @@ class NetworkSwitchLayer(
     override var coreLayerLevel: Int? = null,
 ) : Layer(id, LayerType.NETWORK_SWITCH, level, name, note), CoreLinkedLayer {
 
-    constructor(id: String, level: Int, name: String, note: String, routes: MutableList<NetworkSwitchRoute>, chosenNodeId: String?,
+    constructor(id: String, level: Int, name: String, note: String, routes: MutableList<NetworkSwitchRoute>, lockedRouteNodeId: String?,
                 coreLayerId: String? = null, coreSiteId: String? = null,
                 coreSiteName: String? = null, coreNetworkId: String? = null, coreLayerLevel: Int? = null) :
-        this(id, LayerType.NETWORK_SWITCH, level, name, note, routes, chosenNodeId, coreLayerId, coreSiteId, coreSiteName, coreNetworkId, coreLayerLevel)
+        this(id, LayerType.NETWORK_SWITCH, level, name, note, routes, lockedRouteNodeId, coreLayerId, coreSiteId, coreSiteName, coreNetworkId, coreLayerLevel)
 
     constructor(id: String, level: Int, defaultName: String) :
         this(id, LayerType.NETWORK_SWITCH, level, defaultName, "", mutableListOf(), null)
@@ -105,10 +105,10 @@ class NetworkSwitchLayer(
             updateRouteSwitched(key.substringAfter(ROUTE_SWITCHED_FOR), value.toBoolean())
             return true
         }
-        if (key == CHOSEN) {
+        if (key == LOCKED_ROUTE_NODE_ID) {
             val nodeId = value.ifBlank { null }
             if (nodeId != null && routeFor(nodeId) == null) error("Not a route of this network switch: $nodeId")
-            chosenNodeId = nodeId
+            lockedRouteNodeId = nodeId
             return true
         }
         return super.updateInternal(key, value)
@@ -131,6 +131,6 @@ class NetworkSwitchLayer(
             return
         }
         routes.removeIf { it.nodeId == nodeId }
-        if (chosenNodeId == nodeId) chosenNodeId = null
+        if (lockedRouteNodeId == nodeId) lockedRouteNodeId = null
     }
 }

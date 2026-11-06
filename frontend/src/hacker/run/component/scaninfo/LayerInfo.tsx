@@ -4,7 +4,6 @@ import {Pad} from "../../../../common/component/Pad"
 import {ScanInfoIce} from "./layer/ScanInfoIce"
 import {ScanInfoShutdownAccelerator, ScanInfoTripwire} from "./layer/ScanInfoTripwire";
 import {ScanInfoCore} from "./layer/ScanInfoCore";
-import {ScanInfoNetworkSwitch} from "./layer/ScanInfoNetworkSwitch";
 import {LayerDetails} from "../../../../common/sites/SiteModel";
 import {assertNever} from "../../../../common/util/Assert";
 
@@ -18,6 +17,7 @@ const renderLayer = (layer: LayerDetails) => {
         case LayerType.SCRIPT_INTERACTION:
         case LayerType.SCRIPT_CREDITS:
         case LayerType.DAEMON:
+        case LayerType.NETWORK_SWITCH:
             return <></>
         case LayerType.TRIPWIRE:
             return <ScanInfoTripwire layer={layer}/>
@@ -25,8 +25,6 @@ const renderLayer = (layer: LayerDetails) => {
             return <ScanInfoShutdownAccelerator layer={layer}/>
         case LayerType.CORE:
             return <ScanInfoCore layer={layer}/>
-        case LayerType.NETWORK_SWITCH:
-            return <ScanInfoNetworkSwitch layer={layer}/>
         case LayerType.PASSWORD_ICE:
             return <ScanInfoIce layer={layer} iceDescription="static password" showStrength={false}/>
         case LayerType.TANGLE_ICE:

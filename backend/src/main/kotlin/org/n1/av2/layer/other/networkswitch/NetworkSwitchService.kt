@@ -24,22 +24,38 @@ enum class ConnectionStatus {
 fun Connection.connects(nodeId1: String, nodeId2: String) =
     (fromId == nodeId1 && toId == nodeId2) || (fromId == nodeId2 && toId == nodeId1)
 
+private fun routeStatus(layer: NetworkSwitchLayer, routeNodeId: String) = when (layer.lockedRouteNodeId) {
+    null -> PENDING
+    routeNodeId -> OPEN
+    else -> SEVERED
+}
+
 fun calculateConnectionStatuses(nodes: List<Node>, connections: List<Connection>): Map<String, ConnectionStatus> {
     val statusById = connections.associate { it.id to OPEN }.toMutableMap()
     nodes.forEach { node ->
         node.layers.filterIsInstance<NetworkSwitchLayer>().forEach { layer ->
             layer.routes.forEach { route ->
                 val connection = connections.find { it.connects(node.id, route.nodeId) } ?: return@forEach
-                val status = when (layer.chosenNodeId) {
-                    null -> PENDING
-                    route.nodeId -> OPEN
-                    else -> SEVERED
-                }
-                statusById[connection.id] = maxOf(statusById[connection.id]!!, status)
+                statusById[connection.id] = maxOf(statusById[connection.id]!!, routeStatus(layer, route.nodeId))
             }
         }
     }
     return statusById
+}
+
+/**
+ * Status of the connection between two neighbouring nodes. Only network switches in these two nodes can affect it.
+ */
+fun calculateConnectionStatus(node1: Node, node2: Node): ConnectionStatus {
+    return maxOf(statusBySwitchesIn(node1, node2.id), statusBySwitchesIn(node2, node1.id))
+}
+
+private fun statusBySwitchesIn(switchNode: Node, otherNodeId: String): ConnectionStatus {
+    return switchNode.layers
+        .filterIsInstance<NetworkSwitchLayer>()
+        .filter { it.routeFor(otherNodeId) != null }
+        .maxOfOrNull { routeStatus(it, otherNodeId) }
+        ?: OPEN
 }
 
 fun calculateReachableNodeIds(
@@ -82,10 +98,10 @@ class NetworkSwitchService(
         val nodes = nodeEntityService.findBySiteId(node.siteId)
         val networkIdByNodeId = nodes.associate { it.id to it.networkId }
 
-        val chosenRoute = layer.chosenNodeId?.let { layer.routeFor(it) }
-        if (chosenRoute != null) {
-            val lockedLine = "[warn]Switch locked.[/] Route fixed to [b]${chosenRoute.name}[/] → [ok]${networkIdByNodeId[chosenRoute.nodeId]}[/]."
-            connectionService.replyTerminalReceive(listOfNotNull(lockedLine, coreTraceLine(layer, node.siteId)))
+        val lockedRoute = layer.lockedRouteNodeId?.let { layer.routeFor(it) }
+        if (lockedRoute != null) {
+            val lockedText = "[warn]Switch locked.[/] Route fixed to [b]${lockedRoute.name}[/] → [ok]${networkIdByNodeId[lockedRoute.nodeId]}[/]."
+            connectionService.replyTerminalReceive(listOfNotNull(lockedText, coreForUnlockingText(layer, node.siteId)))
             return
         }
 
@@ -99,7 +115,7 @@ class NetworkSwitchService(
             ?: layer.routes.find { networkIdByNodeId[it.nodeId].equals(choice, ignoreCase = true) }
             ?: return replyChoices(layer, networkIdByNodeId, "[error]route error[/] no route named [b]${choice}[/]. Routing table:")
 
-        layer.chosenNodeId = route.nodeId
+        layer.lockedRouteNodeId = route.nodeId
         nodeEntityService.save(node)
 
         val severed = layer.routes.filter { it != route }.joinToString(", ") { "[ok]${networkIdByNodeId[it.nodeId]}[/]" }
@@ -109,7 +125,7 @@ class NetworkSwitchService(
         sendConnectionStatuses(node.siteId)
     }
 
-    private fun coreTraceLine(layer: NetworkSwitchLayer, siteId: String): String? {
+    private fun coreForUnlockingText(layer: NetworkSwitchLayer, siteId: String): String? {
         val coreLayerId = layer.coreLayerId ?: return null
         val coreNode = nodeEntityService.findByLayerId(coreLayerId)
         if (coreNode.siteId == siteId) return "Lock managed by core in node [ok]${coreNode.networkId}"
@@ -117,19 +133,37 @@ class NetworkSwitchService(
         return "Lock managed by remote core in node [ok]${coreNode.networkId}[/] in site: [info]${siteName}"
     }
 
-    class UnlockedSwitch(val siteId: String, val networkId: String)
+    /**
+     * Removes routes whose connection no longer exists, for example because the node at the other end was deleted.
+     */
+    fun removeRoutesWithoutConnection(siteId: String) {
+        val connections = connectionEntityService.getAll(siteId)
+        nodeEntityService.findBySiteId(siteId).forEach { node ->
+            var changed = false
+            node.layers.filterIsInstance<NetworkSwitchLayer>().forEach { layer ->
+                val removed = layer.routes.removeIf { route -> connections.none { it.connects(node.id, route.nodeId) } }
+                if (removed) {
+                    changed = true
+                    if (layer.lockedRouteNodeId != null && layer.routeFor(layer.lockedRouteNodeId!!) == null) layer.lockedRouteNodeId = null
+                }
+            }
+            if (changed) nodeEntityService.save(node)
+        }
+    }
+
+    class UnlockedNetworkSwitch(val siteId: String, val networkId: String)
 
     /**
      * Unlocks all locked network switches (in any site) that are linked to this core.
      */
-    fun unlockSwitchesForCore(coreLayerId: String): List<UnlockedSwitch> {
+    fun unlockSwitchesForCore(coreLayerId: String): List<UnlockedNetworkSwitch> {
         return nodeEntityService.findAllNodesLinkedToCore(coreLayerId).flatMap { node ->
             val unlockedLayers = node.layers
                 .filterIsInstance<NetworkSwitchLayer>()
-                .filter { it.coreLayerId == coreLayerId && it.chosenNodeId != null }
+                .filter { it.coreLayerId == coreLayerId && it.lockedRouteNodeId != null }
             if (unlockedLayers.isEmpty()) return@flatMap emptyList()
 
-            unlockedLayers.forEach { it.chosenNodeId = null }
+            unlockedLayers.forEach { it.lockedRouteNodeId = null }
             nodeEntityService.save(node)
 
             val lines = arrayOf("[warn]Topology change[/] switch [ok]${node.networkId}[/] unlocked by core. Routes back in standby.")
@@ -139,7 +173,7 @@ class NetworkSwitchService(
             }
             sendConnectionStatuses(node.siteId)
 
-            unlockedLayers.map { UnlockedSwitch(node.siteId, node.networkId) }
+            unlockedLayers.map { UnlockedNetworkSwitch(node.siteId, node.networkId) }
         }
     }
 
@@ -174,15 +208,11 @@ class NetworkSwitchService(
     }
 
     /**
-     * @return an error message if a network switch blocks moving from [fromNodeId] to its neighbour [toNode], otherwise null.
+     * @return an error message if a network switch blocks moving from [fromNode] to its neighbour [toNode], otherwise null.
      */
-    fun checkMove(fromNodeId: String, toNode: Node): String? {
-        val nodes = nodeEntityService.findBySiteId(toNode.siteId)
-        val connections = connectionEntityService.getAll(toNode.siteId)
-        val connection = connections.find { it.connects(fromNodeId, toNode.id) } ?: return null
-
-        return when (calculateConnectionStatuses(nodes, connections)[connection.id]) {
-            null, OPEN -> null
+    fun checkMove(fromNode: Node, toNode: Node): String? {
+        return when (calculateConnectionStatus(fromNode, toNode)) {
+            OPEN -> null
             SEVERED -> "[error]route down[/] route to [ok]${toNode.networkId}[/] was dropped by a network switch."
             PENDING -> "[warn b]blocked[/] route to [ok]${toNode.networkId}[/] held in standby by a network switch."
         }

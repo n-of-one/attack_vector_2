@@ -5,7 +5,7 @@ import {Dispatch} from 'redux'
 export class LayerNetworkSwitch extends Layer {
 
     routes: NetworkSwitchRoute[]
-    chosenNodeId: string | null
+    lockedRouteNodeId: string | null
     coreLayerId: string
     coreSiteId?: string
 
@@ -13,7 +13,7 @@ export class LayerNetworkSwitch extends Layer {
         super(layer, node, dispatch)
 
         this.routes = layer.routes ?? []
-        this.chosenNodeId = layer.chosenNodeId ?? null
+        this.lockedRouteNodeId = layer.lockedRouteNodeId ?? null
         this.coreLayerId = layer.coreLayerId ?? ''
         this.coreSiteId = layer.coreSiteId
     }
@@ -34,8 +34,8 @@ export class LayerNetworkSwitch extends Layer {
         super._save('ROUTE_SWITCHED_FOR_' + nodeId, switched.toString())
     }
 
-    saveChosen(nodeId: string) {
-        super._save('CHOSEN', nodeId)
+    saveLockedRouteNodeId(nodeId: string) {
+        super._save('LOCKED_ROUTE_NODE_ID', nodeId)
     }
 
     saveCoreLayerId(value: string) {
