@@ -5,19 +5,19 @@ import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
 import org.n1.av2.site.entity.enums.LayerType
 
-const val PATH_LABEL_FOR = "PATH_LABEL_FOR_"
-const val PATH_SWITCHED_FOR = "PATH_SWITCHED_FOR_"
+const val ROUTE_NAME_FOR = "ROUTE_NAME_FOR_"
+const val ROUTE_SWITCHED_FOR = "ROUTE_SWITCHED_FOR_"
 const val CHOSEN = "CHOSEN"
 
-val PATH_LABEL_PATTERN = Regex("^[A-Za-z0-9_.-]+$")
+val ROUTE_NAME_PATTERN = Regex("^[A-Za-z0-9_.-]+$")
 
-data class NetworkSwitchPath(
-    val label: String,
+data class NetworkSwitchRoute(
+    val name: String,
     val nodeId: String,
 )
 
 /**
- * Lets a hacker choose one of the connections to the nodes in [paths]. The choice is permanent: it survives site resets.
+ * Lets a hacker choose one of the connections to the nodes in [routes]. The choice is permanent: it survives site resets.
  */
 class NetworkSwitchLayer(
     id: String,
@@ -25,63 +25,63 @@ class NetworkSwitchLayer(
     level: Int,
     name: String,
     note: String,
-    var paths: MutableList<NetworkSwitchPath>,
+    var routes: MutableList<NetworkSwitchRoute>,
     var chosenNodeId: String?,
 ) : Layer(id, LayerType.NETWORK_SWITCH, level, name, note) {
 
-    constructor(id: String, level: Int, name: String, note: String, paths: MutableList<NetworkSwitchPath>, chosenNodeId: String?) :
-        this(id, LayerType.NETWORK_SWITCH, level, name, note, paths, chosenNodeId)
+    constructor(id: String, level: Int, name: String, note: String, routes: MutableList<NetworkSwitchRoute>, chosenNodeId: String?) :
+        this(id, LayerType.NETWORK_SWITCH, level, name, note, routes, chosenNodeId)
 
     constructor(id: String, level: Int, defaultName: String) :
         this(id, LayerType.NETWORK_SWITCH, level, defaultName, "", mutableListOf(), null)
 
     // A copy is a new site, so the choice is not copied.
     constructor(id: String, toClone: NetworkSwitchLayer) :
-        this(id, LayerType.NETWORK_SWITCH, toClone.level, toClone.name, toClone.note, toClone.paths.toMutableList(), null)
+        this(id, LayerType.NETWORK_SWITCH, toClone.level, toClone.name, toClone.note, toClone.routes.toMutableList(), null)
 
-    fun pathFor(nodeId: String): NetworkSwitchPath? = paths.find { it.nodeId == nodeId }
+    fun routeFor(nodeId: String): NetworkSwitchRoute? = routes.find { it.nodeId == nodeId }
 
     @Suppress("unused")
-    private fun validatePathCount(validationContext: ValidationContext) {
-        if (paths.size < 2) throw SiteValidationException("Network switch needs at least 2 routes.")
+    private fun validateRouteCount(validationContext: ValidationContext) {
+        if (routes.size < 2) throw SiteValidationException("Network switch needs at least 2 routes.")
     }
 
     @Suppress("unused")
-    private fun validatePaths(validationContext: ValidationContext) {
+    private fun validateRoutes(validationContext: ValidationContext) {
         val nodeId = validationContext.node.id
-        paths.forEach { path ->
-            if (path.label.isEmpty()) {
-                val networkId = validationContext.nodes.find { it.id == path.nodeId }?.networkId ?: "?"
+        routes.forEach { route ->
+            if (route.name.isEmpty()) {
+                val networkId = validationContext.nodes.find { it.id == route.nodeId }?.networkId ?: "?"
                 throw SiteValidationException("Network switch route → $networkId needs a route name.")
             }
-            if (!PATH_LABEL_PATTERN.matches(path.label)) {
-                throw SiteValidationException("Network switch route name '${path.label}' can only contain letters, digits, '.', '-' and '_'.")
+            if (!ROUTE_NAME_PATTERN.matches(route.name)) {
+                throw SiteValidationException("Network switch route name '${route.name}' can only contain letters, digits, '.', '-' and '_'.")
             }
             val connected = validationContext.connections.any {
-                (it.fromId == nodeId && it.toId == path.nodeId) || (it.toId == nodeId && it.fromId == path.nodeId)
+                (it.fromId == nodeId && it.toId == route.nodeId) || (it.toId == nodeId && it.fromId == route.nodeId)
             }
-            if (!connected) throw SiteValidationException("Network switch route '${path.label}' leads to a node that is not connected to this node.")
+            if (!connected) throw SiteValidationException("Network switch route '${route.name}' leads to a node that is not connected to this node.")
         }
-        val duplicateLabel = paths.filter { it.label.isNotEmpty() }.groupBy { it.label.lowercase() }.entries.find { it.value.size > 1 }?.key
-        if (duplicateLabel != null) throw SiteValidationException("Network switch has more than one route named '$duplicateLabel'.")
+        val duplicateName = routes.filter { it.name.isNotEmpty() }.groupBy { it.name.lowercase() }.entries.find { it.value.size > 1 }?.key
+        if (duplicateName != null) throw SiteValidationException("Network switch has more than one route named '$duplicateName'.")
     }
 
     override fun validationMethods(): Collection<(validationContext: ValidationContext) -> Unit> {
-        return listOf(::validatePathCount, ::validatePaths)
+        return listOf(::validateRouteCount, ::validateRoutes)
     }
 
     override fun updateInternal(key: String, value: String): Boolean {
-        if (key.startsWith(PATH_LABEL_FOR)) {
-            updatePathLabel(key.substringAfter(PATH_LABEL_FOR), value.trim())
+        if (key.startsWith(ROUTE_NAME_FOR)) {
+            updateRouteName(key.substringAfter(ROUTE_NAME_FOR), value.trim())
             return true
         }
-        if (key.startsWith(PATH_SWITCHED_FOR)) {
-            updatePathSwitched(key.substringAfter(PATH_SWITCHED_FOR), value.toBoolean())
+        if (key.startsWith(ROUTE_SWITCHED_FOR)) {
+            updateRouteSwitched(key.substringAfter(ROUTE_SWITCHED_FOR), value.toBoolean())
             return true
         }
         if (key == CHOSEN) {
             val nodeId = value.ifBlank { null }
-            if (nodeId != null && pathFor(nodeId) == null) error("Not a path of this network switch: $nodeId")
+            if (nodeId != null && routeFor(nodeId) == null) error("Not a route of this network switch: $nodeId")
             chosenNodeId = nodeId
             return true
         }
@@ -89,22 +89,22 @@ class NetworkSwitchLayer(
     }
 
     // Typing a name for a route that is not switched yet also switches it.
-    private fun updatePathLabel(nodeId: String, label: String) {
-        val index = paths.indexOfFirst { it.nodeId == nodeId }
-        val path = NetworkSwitchPath(label, nodeId)
+    private fun updateRouteName(nodeId: String, routeName: String) {
+        val index = routes.indexOfFirst { it.nodeId == nodeId }
+        val route = NetworkSwitchRoute(routeName, nodeId)
         if (index >= 0) {
-            paths[index] = path
-        } else if (label.isNotEmpty()) {
-            paths.add(path)
+            routes[index] = route
+        } else if (routeName.isNotEmpty()) {
+            routes.add(route)
         }
     }
 
-    private fun updatePathSwitched(nodeId: String, switched: Boolean) {
+    private fun updateRouteSwitched(nodeId: String, switched: Boolean) {
         if (switched) {
-            if (pathFor(nodeId) == null) paths.add(NetworkSwitchPath("", nodeId))
+            if (routeFor(nodeId) == null) routes.add(NetworkSwitchRoute("", nodeId))
             return
         }
-        paths.removeIf { it.nodeId == nodeId }
+        routes.removeIf { it.nodeId == nodeId }
         if (chosenNodeId == nodeId) chosenNodeId = null
     }
 }

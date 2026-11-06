@@ -96,8 +96,8 @@ class SiteCloneService(
         layersBySourceLayerId.values.forEach { layer ->
             updateLayersDependingOnOtherLayers(layer, layersBySourceLayerId, sourceSiteId, siteId)
             if (layer is NetworkSwitchLayer) {
-                layer.paths = layer.paths.mapNotNull { path ->
-                    nodesBySourceId[path.nodeId]?.let { path.copy(nodeId = it.id) }
+                layer.routes = layer.routes.mapNotNull { route ->
+                    nodesBySourceId[route.nodeId]?.let { route.copy(nodeId = it.id) }
                 }.toMutableList()
             }
         }

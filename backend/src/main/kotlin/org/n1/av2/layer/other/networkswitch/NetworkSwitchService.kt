@@ -14,11 +14,11 @@ import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.stereotype.Service
 
-// Ordered from least to most restrictive: a connection that is a path of two network switches gets the most restrictive status.
+// Ordered from least to most restrictive: a connection that is a route of two network switches gets the most restrictive status.
 enum class ConnectionStatus {
     OPEN,
     PENDING,  // a network switch has not chosen yet: no moving, but scans and remote scripts pass
-    SEVERED,  // a network switch chose another path: nothing passes, except normal scans
+    SEVERED,  // a network switch chose another route: nothing passes, except normal scans
 }
 
 fun Connection.connects(nodeId1: String, nodeId2: String) =
@@ -28,11 +28,11 @@ fun calculateConnectionStatuses(nodes: List<Node>, connections: List<Connection>
     val statusById = connections.associate { it.id to OPEN }.toMutableMap()
     nodes.forEach { node ->
         node.layers.filterIsInstance<NetworkSwitchLayer>().forEach { layer ->
-            layer.paths.forEach { path ->
-                val connection = connections.find { it.connects(node.id, path.nodeId) } ?: return@forEach
+            layer.routes.forEach { route ->
+                val connection = connections.find { it.connects(node.id, route.nodeId) } ?: return@forEach
                 val status = when (layer.chosenNodeId) {
                     null -> PENDING
-                    path.nodeId -> OPEN
+                    route.nodeId -> OPEN
                     else -> SEVERED
                 }
                 statusById[connection.id] = maxOf(statusById[connection.id]!!, status)
@@ -82,10 +82,10 @@ class NetworkSwitchService(
         val nodes = nodeEntityService.findBySiteId(node.siteId)
         val networkIdByNodeId = nodes.associate { it.id to it.networkId }
 
-        val chosenPath = layer.chosenNodeId?.let { layer.pathFor(it) }
-        if (chosenPath != null) {
+        val chosenRoute = layer.chosenNodeId?.let { layer.routeFor(it) }
+        if (chosenRoute != null) {
             connectionService.replyTerminalReceive(
-                "[warn]Switch locked.[/] Route fixed to [b]${chosenPath.label}[/] → [ok]${networkIdByNodeId[chosenPath.nodeId]}[/]."
+                "[warn]Switch locked.[/] Route fixed to [b]${chosenRoute.name}[/] → [ok]${networkIdByNodeId[chosenRoute.nodeId]}[/]."
             )
             return
         }
@@ -96,23 +96,23 @@ class NetworkSwitchService(
             return
         }
 
-        val path = layer.paths.find { it.label.equals(choice, ignoreCase = true) }
-            ?: layer.paths.find { networkIdByNodeId[it.nodeId].equals(choice, ignoreCase = true) }
+        val route = layer.routes.find { it.name.equals(choice, ignoreCase = true) }
+            ?: layer.routes.find { networkIdByNodeId[it.nodeId].equals(choice, ignoreCase = true) }
             ?: return replyChoices(layer, networkIdByNodeId, "[error]route error[/] no route named [b]${choice}[/]. Routing table:")
 
-        layer.chosenNodeId = path.nodeId
+        layer.chosenNodeId = route.nodeId
         nodeEntityService.save(node)
 
-        val severed = layer.paths.filter { it != path }.joinToString(", ") { "[ok]${networkIdByNodeId[it.nodeId]}[/]" }
-        val lines = arrayOf("[warn]Topology change[/] switch [ok]${node.networkId}[/] locked to [b]${path.label}[/]. Dropped routes: ${severed}")
+        val severed = layer.routes.filter { it != route }.joinToString(", ") { "[ok]${networkIdByNodeId[it.nodeId]}[/]" }
+        val lines = arrayOf("[warn]Topology change[/] switch [ok]${node.networkId}[/] locked to [b]${route.name}[/]. Dropped routes: ${severed}")
         connectionService.toSite(node.siteId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines))
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, "nodeId" to node.id, "layer" to layer)
         sendConnectionStatuses(node.siteId)
     }
 
     private fun replyChoices(layer: NetworkSwitchLayer, networkIdByNodeId: Map<String, String>, header: String) {
-        val choices = layer.paths.map { path ->
-            "  [b]hack [primary]${layer.level}[/] ${path.label}[/]  → [ok]${networkIdByNodeId[path.nodeId]}[/]"
+        val choices = layer.routes.map { route ->
+            "  [b]hack [primary]${layer.level}[/] ${route.name}[/]  → [ok]${networkIdByNodeId[route.nodeId]}[/]"
         }
         val warning = "[warn]warning[/] switch firmware locks after first route commit. Uncommitted routes will be dropped."
         connectionService.replyTerminalReceive(listOf(header) + choices + warning)

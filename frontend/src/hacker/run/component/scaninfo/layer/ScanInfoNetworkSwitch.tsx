@@ -7,11 +7,11 @@ export const ScanInfoNetworkSwitch = ({layer}: { layer: LayerDetails }) => {
     const nodes = useSelector((state: HackerRootState) => state.run.site.nodes)
     const networkIdOf = (nodeId: string) => nodes.find(node => node.id === nodeId)?.networkId ?? '??'
 
-    const paths = layer.paths ?? []
-    const chosen = paths.find(path => path.nodeId === layer.chosenNodeId)
+    const routes = layer.routes ?? []
+    const chosen = routes.find(route => route.nodeId === layer.chosenNodeId)
     if (chosen) {
-        return <> - set to: <span className="text-info">{chosen.label}</span> ({networkIdOf(chosen.nodeId)})</>
+        return <> - set to: <span className="text-info">{chosen.name}</span> ({networkIdOf(chosen.nodeId)})</>
     }
-    const choices = paths.map(path => `${path.label} (${networkIdOf(path.nodeId)})`).join(', ')
+    const choices = routes.map(route => `${route.name} (${networkIdOf(route.nodeId)})`).join(', ')
     return <> - choose: <span className="text-info">{choices}</span></>
 }

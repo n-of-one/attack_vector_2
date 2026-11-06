@@ -15,7 +15,7 @@ import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
-import org.n1.av2.layer.other.networkswitch.NetworkSwitchPath
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchRoute
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
@@ -259,13 +259,13 @@ class ExportedSiteParser(
     }
 
     private fun mapNetworkSwitchLayer(input: JsonNode, id: String, level: Int, name: String, note: String): NetworkSwitchLayer {
-        val paths = input.get("paths").asList().map { pathNode ->
-            NetworkSwitchPath(label = pathNode.get("label").asString(), nodeId = pathNode.get("nodeId").asString())
+        val routes = input.get("routes").asList().map { routeNode ->
+            NetworkSwitchRoute(name = routeNode.get("name").asString(), nodeId = routeNode.get("nodeId").asString())
         }.toMutableList()
 
         return NetworkSwitchLayer(
             id = id, level = level, name = name, note = note,
-            paths = paths,
+            routes = routes,
             chosenNodeId = input.getAsTextOrNull("chosenNodeId"),
         )
     }

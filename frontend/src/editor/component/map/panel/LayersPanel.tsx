@@ -64,11 +64,11 @@ export const LayersPanel = () => {
                     {regular(KEYSTORE, "white")}
                     {regular(TRIPWIRE, "white")}
                     {regular(DAEMON, "white")}
-                    {regular(NETWORK_SWITCH, "white")}
                     {regular(TIMER_ADJUSTER, "white")}
                     {regular(CORE, "white")}
                     {regular(SCRIPT_INTERACTION, "white")}
                     {notForHackers(SCRIPT_CREDITS, "white")}
+                    {regular(NETWORK_SWITCH, "white")}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>

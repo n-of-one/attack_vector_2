@@ -29,7 +29,7 @@ private const val SITE_ID = "site-1"
 private const val SWITCH_LAYER_ID = "n01:layer-1"
 
 /*
- Test site, 00 is the start node, 01 has the network switch with paths east (02) and west (03).
+ Test site, 00 is the start node, 01 has the network switch with routes east (02) and west (03).
  The branches join again at 04.
 
         +-- 02 --+
@@ -69,7 +69,7 @@ class NetworkSwitchServiceTest {
     fun setup() {
         switchLayer = NetworkSwitchLayer(
             SWITCH_LAYER_ID, 1, "Network switch", "",
-            mutableListOf(NetworkSwitchPath("east", "n02"), NetworkSwitchPath("west", "n03")), null
+            mutableListOf(NetworkSwitchRoute("east", "n02"), NetworkSwitchRoute("west", "n03")), null
         )
         nodes = listOf(node("n00"), node("n01", switchLayer), node("n02"), node("n03"), node("n04"))
 
@@ -90,7 +90,7 @@ class NetworkSwitchServiceTest {
     private fun connection(id: String, fromId: String, toId: String) = Connection(id, SITE_ID, fromId, toId)
 
     @Test
-    fun `paths are pending until a choice is made`() {
+    fun `routes are pending until a choice is made`() {
         val statuses = calculateConnectionStatuses(nodes, connections)
 
         assertThat(statuses).containsEntry("c00-01", OPEN)
@@ -100,7 +100,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `choice opens the chosen path and severs the others`() {
+    fun `choice opens the chosen route and severs the others`() {
         switchLayer.chosenNodeId = "n02"
 
         val statuses = calculateConnectionStatuses(nodes, connections)
@@ -109,10 +109,10 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `connection that is a path of two network switches gets the most restrictive status`() {
+    fun `connection that is a route of two network switches gets the most restrictive status`() {
         switchLayer.chosenNodeId = "n02"
         val otherSwitch = NetworkSwitchLayer("n02:layer-1", 1, "Network switch", "",
-            mutableListOf(NetworkSwitchPath("back", "n01"), NetworkSwitchPath("on", "n04")), "n04")
+            mutableListOf(NetworkSwitchRoute("back", "n01"), NetworkSwitchRoute("on", "n04")), "n04")
         nodes = listOf(node("n00"), node("n01", switchLayer), node("n02", otherSwitch), node("n03"), node("n04"))
 
         val statuses = calculateConnectionStatuses(nodes, connections)
@@ -121,7 +121,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `pending paths block moving but not remote scripts`() {
+    fun `pending routes block moving but not remote scripts`() {
         val statuses = calculateConnectionStatuses(nodes, connections)
 
         assertThat(calculateReachableNodeIds("n00", connections, statuses, pendingIsOpen = false)).containsExactlyInAnyOrder("n00", "n01")
@@ -155,7 +155,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `hack without a choice lists the paths`() {
+    fun `hack without a choice lists the routes`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, emptyList())
 
         val lines = slot<List<String>>()
@@ -168,7 +168,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `hack with a label chooses that path and informs the site`() {
+    fun `hack with a route name chooses that route and informs the site`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("EAST"))
 
         assertThat(switchLayer.chosenNodeId).isEqualTo("n02")
@@ -178,14 +178,14 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `hack with a network id chooses that path`() {
+    fun `hack with a network id chooses that route`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("03"))
 
         assertThat(switchLayer.chosenNodeId).isEqualTo("n03")
     }
 
     @Test
-    fun `hack with an unknown path changes nothing`() {
+    fun `hack with an unknown route changes nothing`() {
         networkSwitchService.hack(SWITCH_LAYER_ID, listOf("north"))
 
         assertThat(switchLayer.chosenNodeId).isNull()
@@ -218,27 +218,27 @@ class NetworkSwitchServiceTest {
     fun `switching off the chosen route clears the choice`() {
         switchLayer.chosenNodeId = "n02"
 
-        switchLayer.update(PATH_SWITCHED_FOR + "n02", "false")
+        switchLayer.update(ROUTE_SWITCHED_FOR + "n02", "false")
 
-        assertThat(switchLayer.paths.map { it.label }).containsExactly("west")
+        assertThat(switchLayer.routes.map { it.name }).containsExactly("west")
         assertThat(switchLayer.chosenNodeId).isNull()
     }
 
     @Test
     fun `switching on a route adds it without a name, clearing the name keeps it`() {
-        switchLayer.update(PATH_SWITCHED_FOR + "n00", "true")
-        switchLayer.update(PATH_LABEL_FOR + "n02", "")
+        switchLayer.update(ROUTE_SWITCHED_FOR + "n00", "true")
+        switchLayer.update(ROUTE_NAME_FOR + "n02", "")
 
-        assertThat(switchLayer.paths).containsExactly(
-            NetworkSwitchPath("", "n02"), NetworkSwitchPath("west", "n03"), NetworkSwitchPath("", "n00")
+        assertThat(switchLayer.routes).containsExactly(
+            NetworkSwitchRoute("", "n02"), NetworkSwitchRoute("west", "n03"), NetworkSwitchRoute("", "n00")
         )
     }
 
     @Test
     fun `naming a route that is not switched switches it`() {
-        switchLayer.update(PATH_LABEL_FOR + "n00", "back")
+        switchLayer.update(ROUTE_NAME_FOR + "n00", "back")
 
-        assertThat(switchLayer.pathFor("n00")).isEqualTo(NetworkSwitchPath("back", "n00"))
+        assertThat(switchLayer.routeFor("n00")).isEqualTo(NetworkSwitchRoute("back", "n00"))
     }
 
     @Test
@@ -247,7 +247,7 @@ class NetworkSwitchServiceTest {
 
         val copy = NetworkSwitchLayer("other:layer-1", switchLayer)
 
-        assertThat(copy.paths).isEqualTo(switchLayer.paths)
+        assertThat(copy.routes).isEqualTo(switchLayer.routes)
         assertThat(copy.chosenNodeId).isNull()
     }
 }

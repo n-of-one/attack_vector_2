@@ -5,7 +5,7 @@
     "layers": [
       {"id": "n1:layer-0000", "type": "OS", "level": 0, "name": "OS", "note": "", "nodeName": ""},
       {"id": "n1:layer-0001", "type": "NETWORK_SWITCH", "level": 1, "name": "Network switch", "note": "",
-        "paths": [{"label": "east", "nodeId": "n2"}, {"label": "west", "nodeId": "n3"}], "chosenNodeId": "n3"}
+        "routes": [{"name": "east", "nodeId": "n2"}, {"name": "west", "nodeId": "n3"}], "chosenNodeId": "n3"}
     ]
   }],
   "connections": []

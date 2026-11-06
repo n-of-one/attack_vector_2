@@ -33,13 +33,13 @@ export const LayerNetworkSwitchPanel = ({node, layer}: Props) => {
 
     const chosenOptions = [
         {value: '', text: '(not locked)'},
-        ...networkSwitch.paths.map(path => ({value: path.nodeId, text: `${path.label || '(no name)'} → ${networkIdOf(path.nodeId)}`}))
+        ...networkSwitch.routes.map(route => ({value: route.nodeId, text: `${route.name || '(no name)'} → ${networkIdOf(route.nodeId)}`}))
     ]
 
     return (
         <LayerPanel typeDisplay="Network switch" layerObject={networkSwitch}>
             {neighbourIds.map(neighbourId =>
-                <RouteRow key={key('path-' + neighbourId)} networkSwitch={networkSwitch} nodeId={neighbourId} networkId={networkIdOf(neighbourId)}/>
+                <RouteRow key={key('route-' + neighbourId)} networkSwitch={networkSwitch} nodeId={neighbourId} networkId={networkIdOf(neighbourId)}/>
             )}
 
             <AttributeDropdown key={key('chosen')} label="Locked to" value={networkSwitch.chosenNodeId ?? ''} options={chosenOptions}
@@ -58,13 +58,13 @@ const RouteRow = ({networkSwitch, nodeId, networkId}: { networkSwitch: LayerNetw
             <div className="col-lg-3 layerLabel">Route → {networkId}</div>
             <div className="col-lg-1 noRightPadding">
                 <CheckboxSaveInput id={'route-switched-' + nodeId} className="form-control form-check-input" checked={switched}
-                                   save={(value: boolean) => networkSwitch.savePathSwitched(nodeId, value)}/>
+                                   save={(value: boolean) => networkSwitch.saveRouteSwitched(nodeId, value)}/>
             </div>
             <div className="col-lg-4 noRightPadding">
-                <TextSaveInput className="form-control input-sm" value={networkSwitch.labelFor(nodeId)}
+                <TextSaveInput className="form-control input-sm" value={networkSwitch.nameFor(nodeId)}
                                placeholder={switched ? 'choose route name' : '(not switched)'}
                                type={TextSaveType.TEXT}
-                               save={value => networkSwitch.savePathLabel(nodeId, value)}/>
+                               save={value => networkSwitch.saveRouteName(nodeId, value)}/>
             </div>
             <div className="col-lg-1 layerHelpColumn">
                 <OverlayTrigger

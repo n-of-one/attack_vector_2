@@ -67,12 +67,12 @@ export interface LayerDetails {
 
     stolen?: boolean             // Script Credits layer
 
-    paths?: NetworkSwitchPath[]  // Network switch layer
+    routes?: NetworkSwitchRoute[]  // Network switch layer
     chosenNodeId?: string | null // Network switch layer
 }
 
-export interface NetworkSwitchPath {
-    label: string
+export interface NetworkSwitchRoute {
+    name: string
     nodeId: string
 }
 

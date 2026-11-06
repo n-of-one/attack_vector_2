@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
-import org.n1.av2.layer.other.networkswitch.NetworkSwitchPath
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchRoute
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.model.TriggerRecurrence
@@ -92,10 +92,10 @@ class ExportedSiteParserTest {
     }
 
     @Test
-    fun `mapNetworkSwitchLayer parses paths and choice`() {
+    fun `mapNetworkSwitchLayer parses routes and choice`() {
         val layer = parseLayer("/export/network-switch.json")[1] as NetworkSwitchLayer
 
-        assertEquals(listOf(NetworkSwitchPath("east", "n2"), NetworkSwitchPath("west", "n3")), layer.paths)
+        assertEquals(listOf(NetworkSwitchRoute("east", "n2"), NetworkSwitchRoute("west", "n3")), layer.routes)
         assertEquals("n3", layer.chosenNodeId)
     }
 
