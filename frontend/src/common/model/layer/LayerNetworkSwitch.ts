@@ -18,8 +18,16 @@ export class LayerNetworkSwitch extends Layer {
         return this.paths.find(path => path.nodeId === nodeId)?.label ?? ''
     }
 
+    isSwitched(nodeId: string): boolean {
+        return this.paths.some(path => path.nodeId === nodeId)
+    }
+
     savePathLabel(nodeId: string, label: string) {
         super._save('PATH_LABEL_FOR_' + nodeId, label)
+    }
+
+    savePathSwitched(nodeId: string, switched: boolean) {
+        super._save('PATH_SWITCHED_FOR_' + nodeId, switched.toString())
     }
 
     saveChosen(nodeId: string) {

@@ -22,7 +22,7 @@ class NodeAccessHelper(
             return nodeNotFound(networkId)
         }
         if (!networkSwitchService.isReachable(targetNode.siteId, targetNode.id, pendingIsOpen = true)) {
-            return "Node [ok]$networkId[/] cannot be reached, a network switch has severed the connection."
+            return "Node [ok]$networkId[/] unreachable: route dropped by a network switch."
         }
         return null
     }

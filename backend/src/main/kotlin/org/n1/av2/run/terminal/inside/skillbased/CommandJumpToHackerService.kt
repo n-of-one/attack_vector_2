@@ -71,7 +71,7 @@ class CommandJumpToHackerService(
         }
 
         if (!networkSwitchService.isReachable(hackerState.siteId, targetNodeId, pendingIsOpen = false)) {
-            connectionService.replyTerminalReceive("[error]Cannot jump to ${targetUser.name}, a network switch blocks the way.")
+            connectionService.replyTerminalReceive("[error]Jump aborted:[/] no route to ${targetUser.name}, dropped by a network switch.")
             return
         }
 

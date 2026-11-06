@@ -160,9 +160,10 @@ class NetworkSwitchServiceTest {
 
         val lines = slot<List<String>>()
         verify { connectionService.replyTerminalReceive(capture(lines)) }
-        assertThat(lines.captured).hasSize(3)
+        assertThat(lines.captured).hasSize(4)
         assertThat(lines.captured[1]).contains("east").contains("02")
         assertThat(lines.captured[2]).contains("west").contains("03")
+        assertThat(lines.captured[3]).contains("locks after first route commit")
         verify(exactly = 0) { nodeEntityService.save(any()) }
     }
 
@@ -204,23 +205,40 @@ class NetworkSwitchServiceTest {
     @Test
     fun `move is blocked until a choice is made, and severed afterwards`() {
         assertThat(networkSwitchService.checkMove("n00", nodes[1])).isNull()
-        assertThat(networkSwitchService.checkMove("n01", nodes[2])).contains("choose a path first").contains("hack [primary]1")
-        assertThat(networkSwitchService.checkMove("n02", nodes[1])).contains("other side")
+        assertThat(networkSwitchService.checkMove("n01", nodes[2])).contains("held in standby by a network switch")
+        assertThat(networkSwitchService.checkMove("n02", nodes[1])).contains("held in standby by a network switch")
 
         switchLayer.chosenNodeId = "n02"
 
         assertThat(networkSwitchService.checkMove("n01", nodes[2])).isNull()
-        assertThat(networkSwitchService.checkMove("n01", nodes[3])).contains("severed")
+        assertThat(networkSwitchService.checkMove("n01", nodes[3])).contains("route down")
     }
 
     @Test
-    fun `removing the label of the chosen path clears the choice`() {
+    fun `switching off the chosen route clears the choice`() {
         switchLayer.chosenNodeId = "n02"
 
-        switchLayer.update(PATH_LABEL_FOR + "n02", "")
+        switchLayer.update(PATH_SWITCHED_FOR + "n02", "false")
 
         assertThat(switchLayer.paths.map { it.label }).containsExactly("west")
         assertThat(switchLayer.chosenNodeId).isNull()
+    }
+
+    @Test
+    fun `switching on a route adds it without a name, clearing the name keeps it`() {
+        switchLayer.update(PATH_SWITCHED_FOR + "n00", "true")
+        switchLayer.update(PATH_LABEL_FOR + "n02", "")
+
+        assertThat(switchLayer.paths).containsExactly(
+            NetworkSwitchPath("", "n02"), NetworkSwitchPath("west", "n03"), NetworkSwitchPath("", "n00")
+        )
+    }
+
+    @Test
+    fun `naming a route that is not switched switches it`() {
+        switchLayer.update(PATH_LABEL_FOR + "n00", "back")
+
+        assertThat(switchLayer.pathFor("n00")).isEqualTo(NetworkSwitchPath("back", "n00"))
     }
 
     @Test

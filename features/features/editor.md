@@ -42,7 +42,7 @@ Each layer type has configurable properties.
 - **TRIPWIRE**: name, note, countdown duration, shutdown duration, linked core layer, linked core site
 - **TIMER_ADJUSTER**: name, note, adjustment amount, type (SPEED_UP / SLOW_DOWN), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
 - **DAEMON**: name, note, text shown on entry (with fullscreen editor), required trait key (empty = any hacker), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
-- **NETWORK_SWITCH**: name, note, a path label per connected node (empty = not part of the choice), chosen path (GM can undo the choice here)
+- **NETWORK_SWITCH**: name, note, per connected node a checkbox (switched or not) and a route name, locked-to route (GM can undo the choice here)
 - **CORE**: name, note, reveal-network flag
 - **STATUS_LIGHT**: name, note, multiple display options (color, label, icon)
 - **LOCK**: same as **STATUS_LIGHT**
@@ -101,8 +101,9 @@ Automatic checks for site integrity.
 - info: scriptcredits stolen
 - error: scriptinteraction interaction key empty
 - info: scriptinteraction message empty
-- error: network switch has fewer than 2 paths
-- error: network switch path label contains characters other than letters, digits, '.', '-' and '_'
-- error: network switch path leads to a node that is not connected
-- error: network switch has two paths with the same label
+- error: network switch has fewer than 2 routes
+- error: network switch route is switched but has no route name
+- error: network switch route name contains characters other than letters, digits, '.', '-' and '_'
+- error: network switch route leads to a node that is not connected
+- error: network switch has two routes with the same name
 

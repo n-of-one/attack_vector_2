@@ -85,37 +85,37 @@ class NetworkSwitchService(
         val chosenPath = layer.chosenNodeId?.let { layer.pathFor(it) }
         if (chosenPath != null) {
             connectionService.replyTerminalReceive(
-                "[info]not required[/] Network switch is already set to [b]${chosenPath.label}[/] (to [ok]${networkIdByNodeId[chosenPath.nodeId]}[/])."
+                "[warn]Switch locked.[/] Route fixed to [b]${chosenPath.label}[/] → [ok]${networkIdByNodeId[chosenPath.nodeId]}[/]."
             )
             return
         }
 
         val choice = arguments.firstOrNull()
         if (choice == null) {
-            replyChoices(layer, networkIdByNodeId, "Choose the connection to switch to:", "[warn]warning[/] switch set to auto-lock after choice is made.")
+            replyChoices(layer, networkIdByNodeId, "Routing table:")
             return
         }
 
         val path = layer.paths.find { it.label.equals(choice, ignoreCase = true) }
             ?: layer.paths.find { networkIdByNodeId[it.nodeId].equals(choice, ignoreCase = true) }
-            ?: return replyChoices(layer, networkIdByNodeId, "[error]error[/] unknown path: [b]${choice}[/].")
+            ?: return replyChoices(layer, networkIdByNodeId, "[error]route error[/] no route named [b]${choice}[/]. Routing table:")
 
         layer.chosenNodeId = path.nodeId
         nodeEntityService.save(node)
 
         val severed = layer.paths.filter { it != path }.joinToString(", ") { "[ok]${networkIdByNodeId[it.nodeId]}[/]" }
-        val lines = arrayOf("[warn]Network switch[/] in [ok]${node.networkId}[/] set to [b]${path.label}[/]. Connection severed to: ${severed}")
+        val lines = arrayOf("[warn]Topology change[/] switch [ok]${node.networkId}[/] locked to [b]${path.label}[/]. Dropped routes: ${severed}")
         connectionService.toSite(node.siteId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines))
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, "nodeId" to node.id, "layer" to layer)
         sendConnectionStatuses(node.siteId)
     }
 
-    private fun replyChoices(layer: NetworkSwitchLayer, networkIdByNodeId: Map<String, String>, header: String, suffix: String? = null) {
+    private fun replyChoices(layer: NetworkSwitchLayer, networkIdByNodeId: Map<String, String>, header: String) {
         val choices = layer.paths.map { path ->
-            "  [b]hack [primary]${layer.level}[/] ${path.label}[/] - opens the connection to [ok]${networkIdByNodeId[path.nodeId]}[/]"
+            "  [b]hack [primary]${layer.level}[/] ${path.label}[/]  → [ok]${networkIdByNodeId[path.nodeId]}[/]"
         }
-        val suffixList = suffix?.let { listOf(it) } ?: emptyList()
-        connectionService.replyTerminalReceive(listOf(header) + choices + suffixList)
+        val warning = "[warn]warning[/] switch firmware locks after first route commit. Uncommitted routes will be dropped."
+        connectionService.replyTerminalReceive(listOf(header) + choices + warning)
     }
 
     fun sendConnectionStatuses(siteId: String) {
@@ -150,16 +150,9 @@ class NetworkSwitchService(
 
         return when (calculateConnectionStatuses(nodes, connections)[connection.id]) {
             null, OPEN -> null
-            SEVERED -> "[error]error[/] the connection to [ok]${toNode.networkId}[/] has been severed by a network switch."
-            PENDING -> {
-                val switchLayer = nodes.find { it.id == fromNodeId }?.layers?.filterIsInstance<NetworkSwitchLayer>()
-                    ?.find { it.chosenNodeId == null && it.pathFor(toNode.id) != null }
-                if (switchLayer != null) {
-                    "[warn b]blocked[/] Network switch in current node. Choose a path first: [b]hack [primary]${switchLayer.level}[/]."
-                } else {
-                    "[warn b]blocked[/] the connection to [ok]${toNode.networkId}[/] is held by a network switch on the other side."
-                }
-            }
+            SEVERED -> "[error]route down[/] route to [ok]${toNode.networkId}[/] was dropped by a network switch."
+            PENDING -> "[warn b]blocked[/] route to [ok]${toNode.networkId}[/] held in standby by a network switch."
         }
     }
+
 }
