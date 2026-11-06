@@ -27,7 +27,7 @@ Topology change switch 04 locked to research. Dropped routes: 08
 ```
 
 The choice is made for everyone in the site. The routes that were not chosen are dropped: they are shown greyed out
-with a ✕ on the map, and nobody can move through them anymore.
+with a ⌁ on the map, and nobody can move through them anymore.
 
 A site reset does not undo the choice. A network switch can be linked to a core, possibly in another site: hacking that core
 unlocks the switch, so the routes are back in standby and a new choice can be made. Hacking a locked switch shows which core manages it.

@@ -58,10 +58,10 @@ export class ConnectionDisplay implements Display {
         this.x = (fromDisplay.x + toDisplay.x) / 2
         this.y = (fromDisplay.y + toDisplay.y) / 2
 
-        this.severedIcon = new fabric.Text("✕", {
+        this.severedIcon = new fabric.Text("⌁", {
             fill: STYLE_BY_STATUS.SEVERED.stroke,
             fontFamily: "courier",
-            fontSize: 16,
+            fontSize: 28,
             left: this.x,
             top: this.y,
             opacity: 0,

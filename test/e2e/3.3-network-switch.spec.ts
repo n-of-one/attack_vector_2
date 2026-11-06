@@ -3,6 +3,7 @@ import {test} from "./testframework/fixtures"
 import {LoginPage} from "./testframework/LoginPage";
 import {HackerPage, START_ATTACK_QUICK} from "./testframework/HackerPage";
 import {GmPage} from "./testframework/GmPage";
+import {wait} from "./testframework/utils/testUtils";
 
 const SITE_NAME = "test-network-switch"
 
@@ -70,6 +71,8 @@ test('3.3.2 - Choose a route', async ({page}: { page: Page }) => {
         await hacker.typeCommand("move 01", "Entered node 01", 10)
         await hacker.typeCommand("move 02", "blocked route to 02 held in standby by a network switch.")
         await hacker.typeCommand("move 03", "blocked route to 03 held in standby by a network switch.")
+        await wait(page, 0.5, "wait for move animations to finish")
+        await hacker.verifyScreenshotCanvas("3.3-switch-routes-in-standby")
     })
 
     await test.step("Hacking the switch shows the routing table", async () => {
@@ -79,6 +82,8 @@ test('3.3.2 - Choose a route', async ({page}: { page: Page }) => {
 
     await test.step("Choosing a route opens it and drops the other route", async () => {
         await hacker.typeCommand("hack 1 research", "Topology change switch 01 locked to research. Dropped routes: 03")
+        await wait(page, 2.5, "wait for the connections to change color")
+        await hacker.verifyScreenshotCanvas("3.3-switch-locked-to-research")
         await hacker.typeCommand("move 03", "route down route to 03 was dropped by a network switch.")
         await hacker.typeCommand("move 02", "Entered node 02: research", 10)
         await hacker.typeCommand("move 04", "Entered node 04: behind research", 10)
