@@ -4,6 +4,8 @@
 - New layer: Daemon. Shows a text to a hacker that enters the node. Can be set to trigger only for the first hacker, once per hacker, or on every entry.
 - New skill: Trait. A trait of the hacker character with meaning in the game, for example "insider: Former corporate insider". GMs and players can look it up
   and react to it, and Daemon layers can be set to only trigger for hackers with a specific trait. The hacker only sees the text, not the key.
+- New layer: Network switch. Makes the hacker choose one of two or more connections leaving the node, for example east or west.
+  The choice is permanent: the other connections are severed for everyone, and a site reset does not undo it. Only the GM can, in the editor.
 - Minesweeper ICE supports chording: left- or middle-click a revealed number that has a matching number of flags around it to reveal all its other neighbours.
 
 ## Bugfixes

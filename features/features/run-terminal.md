@@ -52,6 +52,7 @@ Moves the hacker to an adjacent connected node.
 	- daemon layers
 - Blocked by unhacked ICE in the current node (unless moving backward)
 - BYPASS skill allows moving through ICE at the start node
+- Blocked by a network switch: its paths are pending until a hacker chooses one, the paths not chosen are severed (also when moving backward)
 
 ---
 
@@ -62,6 +63,10 @@ Hacks a layer in the current node.
 ## Capabilities
 - ICE layers open an interactive puzzle in a popup window
 - Non-ICE layers (OS, Text, Keystore, Core, Tripwire, etc.) are hacked directly
+- Network switch: `hack <layer>` lists the paths, `hack <layer> <label or network id>` chooses one
+	- the choice is site-wide and permanent, a site reset does not undo it (the GM can, in the editor)
+	- the other paths are severed: moves, jumps and scripts that target a node can no longer reach nodes behind them
+	- normal scans still pass, so the severed branch stays visible
 
 
 ---
@@ -106,6 +111,7 @@ Teleports to another hacker's current node.
 ## Capabilities
 - Requires the JUMP_TO_HACKER skill
 - Teleports instantly without being blocked by ICE
+- Blocked if a network switch has cut the target node off from the start node
 
 ---
 

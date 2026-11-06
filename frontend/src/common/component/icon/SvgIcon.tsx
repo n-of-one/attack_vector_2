@@ -1,5 +1,5 @@
 import React from "react"
-import {CORE, DAEMON, LOCK, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
+import {CORE, DAEMON, LOCK, NETWORK_SWITCH, SCRIPT_CREDITS, STATUS_LIGHT, TRIPWIRE} from "../../enums/LayerTypes";
 import { ReactComponent as CopyIcon } from "./svgIcons/9080754_copy.svg";
 import { ReactComponent as PasteIcon } from "./svgIcons/9080712_plus_clipboard.svg";
 
@@ -30,6 +30,7 @@ const determinePath = (type: string| undefined) => {
         case STATUS_LIGHT: return "/img/editor/tabler/9080499_bulb.svg"
         case TRIPWIRE: return "/img/editor/tabler/9080987_history_history.svg"
         case DAEMON: return "/img/editor/tabler/daemon_clockwise_rotate_play.svg"
+        case NETWORK_SWITCH: return "/img/editor/tabler/9080248_split_arrows.svg"
         case CORE: return "/img/editor/tabler/9080715_cpu.svg"
         case SCRIPT_CREDITS:
             return "/img/editor/tabler/9080253_bolt.svg"

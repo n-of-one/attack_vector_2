@@ -12,6 +12,7 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
@@ -223,6 +224,7 @@ class NodeEntityService(
             LayerType.TRIPWIRE -> TripwireLayer(layerId, level, defaultName)
             LayerType.TIMER_ADJUSTER -> TimerAdjusterLayer(layerId, level, defaultName)
             LayerType.DAEMON -> DaemonLayer(layerId, level, defaultName)
+            LayerType.NETWORK_SWITCH -> NetworkSwitchLayer(layerId, level, defaultName)
             LayerType.CORE -> CoreLayer(layerId, level, defaultName)
             LayerType.SCRIPT_INTERACTION -> ScriptInteractionLayer(layerId, level, defaultName)
             LayerType.SCRIPT_CREDITS -> ScriptCreditsLayer(layerId, level, defaultName)

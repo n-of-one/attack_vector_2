@@ -69,6 +69,7 @@ enum class ServerActions {
     SERVER_PROBE_LAUNCH,
     SERVER_UPDATE_NODE_STATUS,
     SERVER_DISCOVER_NODES,
+    SERVER_CONNECTIONS_UPDATED,         // a network switch changed: new status of all connections in the site
 
     SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
     SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.

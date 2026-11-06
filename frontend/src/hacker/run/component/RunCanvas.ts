@@ -8,7 +8,7 @@ import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {HackerPresence} from "../reducer/HackerPresencesReducer"
-import {Connection} from "../../../editor/reducer/ConnectionsReducer"
+import {Connection, ConnectionStatusById} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
 import {HackerScansNodeAction, MoveArriveAction, MoveStartAction, NodeStatusById, ProbeAction, SiteAndScan} from "../../RunServerActionProcessor";
@@ -32,6 +32,7 @@ class RunCanvas {
 
     nodeDataById: { [key: string]: NodeI } = {}
     connectionDataById: { [key: string]: Connection } = {}
+    connectionStatusById: ConnectionStatusById = {}
     hackers: HackerPresence[] = []
 
 
@@ -106,6 +107,7 @@ class RunCanvas {
         this.hackers = []
 
         this.connectionDataById = {}
+        this.connectionStatusById = {}
         this.startNodeDisplay = null as unknown as NodeDisplay
 
         this.iconSchedule.terminate()
@@ -164,6 +166,7 @@ class RunCanvas {
         })
 
         this.connectionDataById = {}
+        this.connectionStatusById = site.connectionStatusById
         connections.forEach((connectionData) => {
             this.connectionDataById[connectionData.id] = connectionData
         })
@@ -221,9 +224,19 @@ class RunCanvas {
 
 
     private addConnectionDisplay(connection: Connection, fromDisplay: NodeDisplay, toDisplay: NodeDisplay) {
-        const connectionDisplay = new ConnectionDisplay(this.canvas, this.iconSchedule, connection, fromDisplay, toDisplay)
+        const status = this.connectionStatusById[connection.id] ?? "OPEN"
+        const connectionDisplay = new ConnectionDisplay(this.canvas, this.iconSchedule, connection, fromDisplay, toDisplay, status)
         this.connectionDisplays.add(connection.id, connectionDisplay)
         connectionDisplay.appear()
+    }
+
+    updateConnectionStatuses(connectionStatusById: ConnectionStatusById) {
+        if (!this.active) return
+
+        this.connectionStatusById = connectionStatusById
+        Object.entries(connectionStatusById).forEach(([connectionId, status]) => {
+            this.connectionDisplays.getOrNull(connectionId)?.updateStatus(status)
+        })
     }
 
     launchProbe(probeAction: ProbeAction) {

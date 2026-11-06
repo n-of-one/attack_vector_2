@@ -7,6 +7,7 @@ import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.daemon.DaemonService
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
@@ -47,6 +48,7 @@ class CommandMoveService(
     private val devCommandHelper: DevCommandHelper,
     private val skillService: SkillService,
     private val daemonService: DaemonService,
+    private val networkSwitchService: NetworkSwitchService,
 ) {
 
     fun processCommand(arguments: List<String>, hackerState: HackerStateRunning) {
@@ -61,11 +63,13 @@ class CommandMoveService(
 
         if (hackerState.previousNodeId == toNode.id) {
             // can always go back to previous node, regardless of ice
+            if (!checkNetworkSwitch(toNode, hackerState)) return
             handleMove(toNode, hackerState, false)
             return
         }
 
         if (!checkMovePrerequisites(toNode, hackerState, networkId)) return
+        if (!checkNetworkSwitch(toNode, hackerState)) return
 
         requireNotNull(hackerState.currentNodeId)
         val currentNode = nodeEntityService.getById(hackerState.currentNodeId)
@@ -95,6 +99,13 @@ class CommandMoveService(
         connectionEntityService.findConnection(hackerState.currentNodeId, toNode.id) ?: return reportNoPath(networkId)
 
         return true
+    }
+
+    private fun checkNetworkSwitch(toNode: Node, hackerState: HackerStateRunning): Boolean {
+        requireNotNull(hackerState.currentNodeId)
+        val error = networkSwitchService.checkMove(hackerState.currentNodeId, toNode) ?: return true
+        connectionService.replyTerminalReceive(error)
+        return false
     }
 
     private fun reportAtTargetNode(networkId: String): Boolean {

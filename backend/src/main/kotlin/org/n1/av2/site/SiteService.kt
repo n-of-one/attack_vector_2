@@ -5,6 +5,7 @@ import org.n1.av2.editor.SiteEditorStateEntityService
 import org.n1.av2.editor.SiteFull
 import org.n1.av2.editor.SiteValidationService
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.networkswitch.calculateConnectionStatuses
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
@@ -132,7 +133,9 @@ class SiteService(
         val state = siteEditorStateEntityService.getById(siteId)
         val ownerName = userEntityService.getUserName(siteProperties.ownerUserId)
 
-        return SiteFull(siteId, siteProperties, ownerName, nodes, connections, state, startNodeId)
+        val connectionStatusById = calculateConnectionStatuses(nodes, connections)
+
+        return SiteFull(siteId, siteProperties, ownerName, nodes, connections, connectionStatusById, state, startNodeId)
     }
 
     fun findStartNode(nodes: List<Node>): Node? {

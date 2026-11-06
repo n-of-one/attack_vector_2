@@ -2,6 +2,7 @@ package org.n1.av2.script.effect.helper
 
 import org.n1.av2.hacker.hackerstate.HackerStateRepo
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.run.scanning.BlockedPathException
@@ -28,9 +29,13 @@ class JumpEffectHelper(
     private val commandMoveService: CommandMoveService,
     private val currentUserService: CurrentUserService,
     private val hackerStateRepo: HackerStateRepo,
+    private val networkSwitchService: NetworkSwitchService,
 ) {
 
     fun jump(effect: ScriptEffect, siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {
+        if (!networkSwitchService.isReachable(siteId, targetNodeId, pendingIsOpen = false)) {
+            return ScriptExecution("Cannot jump to ${targetDescription}, a network switch blocks the way.")
+        }
         val blockedType = JumpBlockedType.valueOf(effect.value!!)
         return when (blockedType) {
             JumpBlockedType.IGNORE_ICE -> jumpIgnoringIce(currentNodeId, targetNodeId, hackerState, targetDescription)

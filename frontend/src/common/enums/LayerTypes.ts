@@ -7,6 +7,7 @@ export enum LayerType {
     TRIPWIRE = "TRIPWIRE",
     TIMER_ADJUSTER = "TIMER_ADJUSTER",
     DAEMON = "DAEMON",
+    NETWORK_SWITCH = "NETWORK_SWITCH",
     CORE = "CORE",
     SCRIPT_INTERACTION = "SCRIPT_INTERACTION",
     SCRIPT_CREDITS = "SCRIPT_CREDITS",
@@ -51,6 +52,7 @@ export const KEYSTORE = "KEYSTORE"
 export const TRIPWIRE = "TRIPWIRE"
 export const TIMER_ADJUSTER = "TIMER_ADJUSTER"
 export const DAEMON = LayerType.DAEMON.toString()
+export const NETWORK_SWITCH = LayerType.NETWORK_SWITCH.toString()
 
 export const SCRIPT_INTERACTION = LayerType.SCRIPT_INTERACTION.toString()
 export const SCRIPT_CREDITS = LayerType.SCRIPT_CREDITS.toString()

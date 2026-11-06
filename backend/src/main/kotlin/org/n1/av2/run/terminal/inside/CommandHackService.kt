@@ -13,6 +13,8 @@ import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.daemon.DaemonService
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
 import org.n1.av2.layer.other.keystore.KeystoreLayerService
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.os.OsLayerService
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
@@ -48,12 +50,13 @@ class CommandHackService(
     private val scriptCreditsLayerService: ScriptCreditsLayerService,
     private val timerAdjusterService: TimerAdjusterService,
     private val daemonService: DaemonService,
+    private val networkSwitchService: NetworkSwitchService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
 ) {
 
     fun processHackCommand(arguments: List<String>, hackerState: HackerStateRunning) {
-        process(arguments, hackerState, "hack", ::handleHack)
+        process(arguments, hackerState, "hack") { layer, state -> handleHack(layer, state, arguments.drop(1)) }
     }
 
     fun processQuickHack(arguments: List<String>, hackerState: HackerStateRunning) {
@@ -77,8 +80,7 @@ class CommandHackService(
     }
 
 
-    @Suppress("unused")
-    fun handleHack(layer: Layer, hackerState: HackerStateRunning) {
+    fun handleHack(layer: Layer, hackerState: HackerStateRunning, extraArguments: List<String>) {
         when (layer) {
             is OsLayer -> osLayerService.hack(layer)
             is TextLayer -> textLayerService.hack(layer)
@@ -91,6 +93,7 @@ class CommandHackService(
             is ScriptCreditsLayer -> scriptCreditsLayerService.hack(layer, hackerState)
             is TimerAdjusterLayer -> timerAdjusterService.hack(layer)
             is DaemonLayer -> daemonService.hack()
+            is NetworkSwitchLayer -> networkSwitchService.hack(layer.id, extraArguments)
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }
     }

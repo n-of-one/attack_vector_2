@@ -22,6 +22,7 @@ class SiteValidationService(
     private val sitePropertiesRepo: SitePropertiesRepo,
     private val nodeRepo: NodeRepo,
     private val configService: ConfigService,
+    private val connectionEntityService: ConnectionEntityService,
 ) {
 
     fun validate(siteId: String): List<SiteStateMessage> {
@@ -73,7 +74,8 @@ class SiteValidationService(
         if (nodes.isEmpty()) return
 
         val minimumShutdownDuration = configService.getAsDuration(ConfigItem.DEV_MINIMUM_SHUTDOWN_DURATION)
-        val validationContext = ValidationContext(nodes[0], nodes, siteProperties, sitePropertiesRepo, nodeRepo, minimumShutdownDuration)
+        val connections = connectionEntityService.getAll(siteProperties.siteId)
+        val validationContext = ValidationContext(nodes[0], nodes, connections, siteProperties, sitePropertiesRepo, nodeRepo, minimumShutdownDuration)
 
         val networkIds = HashSet<String>()
 

@@ -3,7 +3,7 @@ import {assertNotNullUndef} from "../../../../common/util/Assert"
 import {NodeDisplay, SiteStatus} from "../../../../common/canvas/display/NodeDisplay"
 import {ConnectionDisplay} from "../../../../common/canvas/display/ConnectionDisplay"
 import {Dispatch} from "redux"
-import {Connection} from "../../../reducer/ConnectionsReducer"
+import {Connection, ConnectionStatusById} from "../../../reducer/ConnectionsReducer"
 import {Canvas, IEvent} from "fabric/fabric-impl"
 import {delay} from "../../../../common/util/Util"
 import {sendAddConnection, sendMoveNode} from "../../../server/EditorServerClient"
@@ -20,6 +20,7 @@ export interface LoadSiteData {
     id: string,
     nodes: NodeI[],
     connections: Connection[]
+    connectionStatusById: ConnectionStatusById
     siteProperties: SiteProperties
 }
 
@@ -28,6 +29,7 @@ class EditorCanvas {
     siteId: string = ""
     nodeDisplays = new DisplayCollection<NodeDisplay>("NodeDisplay")
     connections: ConnectionDisplay[] = []
+    connectionStatusById: ConnectionStatusById = {}
     dispatch: Dispatch = null as unknown as Dispatch // lateinit
     nodeSelected: NodeDisplay | null = null
     canvas: fabric.Canvas = null as unknown as Canvas // lateinit
@@ -71,6 +73,8 @@ class EditorCanvas {
         })
 
         this.siteId = loadSiteData.id
+        this.connections = []
+        this.connectionStatusById = loadSiteData.connectionStatusById
 
         const {nodes, connections} = loadSiteData
 
@@ -114,11 +118,19 @@ class EditorCanvas {
         let fromDisplay = this.nodeDisplays.get(connectionData.fromId)
         let toDisplay = this.nodeDisplays.get(connectionData.toId)
 
-        let connectionDisplay = new ConnectionDisplay(this.canvas, null, connectionData, fromDisplay, toDisplay)
+        const status = this.connectionStatusById[connectionData.id] ?? "OPEN"
+        let connectionDisplay = new ConnectionDisplay(this.canvas, null, connectionData, fromDisplay, toDisplay, status)
         connectionDisplay.show()
 
         this.connections.push(connectionDisplay)
         this.render()
+    }
+
+    updateConnectionStatuses(connectionStatusById: ConnectionStatusById) {
+        this.connectionStatusById = connectionStatusById
+        this.connections.forEach(connection => {
+            connection.updateStatus(connectionStatusById[connection.connectionData.id] ?? "OPEN")
+        })
     }
 
     render() {

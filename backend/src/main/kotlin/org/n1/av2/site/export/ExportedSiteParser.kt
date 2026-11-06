@@ -14,6 +14,8 @@ import org.n1.av2.layer.ice.wordsearch.WordSearchIceLayer
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.daemon.DaemonLayer
 import org.n1.av2.layer.other.keystore.KeyStoreLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchPath
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.script.ScriptCreditsLayer
 import org.n1.av2.layer.other.script.ScriptInteractionLayer
@@ -139,6 +141,7 @@ class ExportedSiteParser(
                 LayerType.TRIPWIRE -> mapLayerTripWire(input, id, level, name, note)
                 LayerType.TIMER_ADJUSTER -> mapTimerAdjusterLayer(input, id, level, name, note)
                 LayerType.DAEMON -> mapDaemonLayer(input, id, level, name, note)
+                LayerType.NETWORK_SWITCH -> mapNetworkSwitchLayer(input, id, level, name, note)
                 LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
                 LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
                 LayerType.NETWALK_ICE,
@@ -252,6 +255,18 @@ class ExportedSiteParser(
             text = input.get("text").asString(),
             requiredTrait = input.getAsTextOrNull("requiredTrait")?.trim()?.ifEmpty { null },
             recurring = TriggerRecurrence.valueOf(input.get("recurring").asString()),
+        )
+    }
+
+    private fun mapNetworkSwitchLayer(input: JsonNode, id: String, level: Int, name: String, note: String): NetworkSwitchLayer {
+        val paths = input.get("paths").asList().map { pathNode ->
+            NetworkSwitchPath(label = pathNode.get("label").asString(), nodeId = pathNode.get("nodeId").asString())
+        }.toMutableList()
+
+        return NetworkSwitchLayer(
+            id = id, level = level, name = name, note = note,
+            paths = paths,
+            chosenNodeId = input.getAsTextOrNull("chosenNodeId"),
         )
     }
 

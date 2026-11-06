@@ -9,6 +9,7 @@ import {
     LOCK,
     MONEY,
     NETWALK_ICE,
+    NETWORK_SWITCH,
     OS,
     PASSWORD_ICE,
     SCAN_BLOCK,
@@ -76,6 +77,7 @@ const iconFamily = (type: string) => {
         case LOCK:
         case TRIPWIRE:
         case DAEMON:
+        case NETWORK_SWITCH:
         case STATUS_LIGHT:
         case CORE:
         case SCRIPT_CREDITS:

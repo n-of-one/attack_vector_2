@@ -9,6 +9,8 @@ import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightOption
 import org.n1.av2.layer.app.status_light.StatusLightService
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
@@ -33,6 +35,7 @@ class EditorService(
     private val statusLightService: StatusLightService,
     private val userAndHackerService: UserAndHackerService,
     private val currentUserService: CurrentUserService,
+    private val networkSwitchService: NetworkSwitchService,
 ) {
 
     fun validateAccessToSiteByName(siteName: String, userPrincipal: UserPrincipal) {
@@ -84,6 +87,7 @@ class EditorService(
         val connection = connectionEntityService.createConnection(command)
         siteValidationService.validate(command.siteId)
         connectionService.toSite(command.siteId, ServerActions.SERVER_ADD_CONNECTION, connection)
+        networkSwitchService.sendConnectionStatuses(command.siteId)
     }
 
     fun deleteConnections(siteId: String, nodeId: String) {
@@ -183,6 +187,9 @@ class EditorService(
         nodeEntityService.save(node)
         sendLayerUpdateMessage(command.siteId, command.nodeId, layer)
         siteValidationService.validate(command.siteId)
+        if (layer is NetworkSwitchLayer) {
+            networkSwitchService.sendConnectionStatuses(command.siteId)
+        }
     }
 
     fun addStatusLightOption(command: AddStatusLightOptionCommand) {
@@ -248,11 +255,15 @@ class EditorService(
 
     fun removeLayer(command: RemoveLayerCommand) {
         siteService.verifyRemoveLayer(command.siteId, command.layerId)
+        val networkSwitchRemoved = nodeEntityService.getById(command.nodeId).layers.find { it.id == command.layerId } is NetworkSwitchLayer
         val message = nodeEntityService.removeLayer(command)
 
         if (message != null) {
             connectionService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, message)
             siteValidationService.validate(command.siteId)
+        }
+        if (networkSwitchRemoved) {
+            networkSwitchService.sendConnectionStatuses(command.siteId)
         }
     }
 

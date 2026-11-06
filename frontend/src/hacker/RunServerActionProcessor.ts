@@ -19,6 +19,7 @@ import {terminalManager} from "../common/terminal/TerminalManager";
 import {HIDE_NODE_INFO} from "./run/reducer/InfoNodeIdReducer";
 import {avEncodedUrl} from "../common/util/PathEncodeUtils";
 import {NodeScanType} from "./run/model/NodeScanTypes";
+import {ConnectionStatusById} from "../editor/reducer/ConnectionsReducer";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
@@ -44,6 +45,7 @@ export const SERVER_SITE_SHUTDOWN_START = "SERVER_SITE_SHUTDOWN_START"
 export const SERVER_SITE_SHUTDOWN_FINISH = "SERVER_SITE_SHUTDOWN_FINISH"
 
 export const SERVER_DISCOVER_NODES = "SERVER_DISCOVER_NODES"
+export const SERVER_CONNECTIONS_UPDATED = "SERVER_CONNECTIONS_UPDATED"
 
 
 /** Event to ignore while waiting for the scan full result */
@@ -65,6 +67,7 @@ export const IGNORELIST_WHILE_ENTERING_RUN =
         SERVER_PROBE_LAUNCH,
         SERVER_UPDATE_NODE_STATUS,
         SERVER_DISCOVER_NODES,
+        SERVER_CONNECTIONS_UPDATED,
     ]
 
 export interface SiteAndScan {
@@ -189,6 +192,10 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_DISCOVER_NODES, ({nodeStatusById}: ProbeResultConnections) => {
         runCanvas.discoverNodes(nodeStatusById)
+    })
+
+    webSocketConnection.addAction(SERVER_CONNECTIONS_UPDATED, ({connectionStatusById}: { connectionStatusById: ConnectionStatusById }) => {
+        runCanvas.updateConnectionStatuses(connectionStatusById)
     })
 
     webSocketConnection.addAction(SERVER_PROBE_LAUNCH, (data: ProbeAction) => {

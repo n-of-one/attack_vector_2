@@ -66,6 +66,14 @@ export interface LayerDetails {
     message?: string             // Script Interaction layer
 
     stolen?: boolean             // Script Credits layer
+
+    paths?: NetworkSwitchPath[]  // Network switch layer
+    chosenNodeId?: string | null // Network switch layer
+}
+
+export interface NetworkSwitchPath {
+    label: string
+    nodeId: string
 }
 
 export interface NodeI {

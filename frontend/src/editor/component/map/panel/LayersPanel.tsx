@@ -6,6 +6,7 @@ import {
     KEYSTORE,
     LOCK,
     NETWALK_ICE,
+    NETWORK_SWITCH,
     PASSWORD_ICE,
     SCRIPT_CREDITS,
     SCRIPT_INTERACTION,
@@ -63,6 +64,7 @@ export const LayersPanel = () => {
                     {regular(KEYSTORE, "white")}
                     {regular(TRIPWIRE, "white")}
                     {regular(DAEMON, "white")}
+                    {regular(NETWORK_SWITCH, "white")}
                     {regular(TIMER_ADJUSTER, "white")}
                     {regular(CORE, "white")}
                     {regular(SCRIPT_INTERACTION, "white")}

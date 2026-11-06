@@ -1,7 +1,7 @@
 import {webSocketConnection} from "../../common/server/WebSocketConnection"
 import {NotificationType} from "../../common/util/Notification"
 import {editorCanvas, LoadSiteData} from "../component/map/canvas/EditorCanvas"
-import {Connection} from "../reducer/ConnectionsReducer"
+import {Connection, ConnectionStatusById} from "../reducer/ConnectionsReducer"
 import {NodeI} from "../../common/sites/SiteModel";
 import {MoveNodeI} from "../reducer/EditorNodesReducer";
 import {SiteProperties} from "../reducer/SitePropertiesReducer";
@@ -17,6 +17,7 @@ export const SERVER_UPDATE_LAYER = "SERVER_UPDATE_LAYER"
 export const SERVER_UPDATE_SITE_STATE = "SERVER_UPDATE_SITE_STATE"
 export const SERVER_ADD_LAYER = "SERVER_ADD_LAYER"
 export const SERVER_NODE_UPDATED = "SERVER_NODE_UPDATED"
+export const SERVER_CONNECTIONS_UPDATED = "SERVER_CONNECTIONS_UPDATED"
 
 export const initEditorServerActions = () => {
 
@@ -43,6 +44,10 @@ export const initEditorServerActions = () => {
 
     webSocketConnection.addAction(SERVER_UPDATE_NETWORK_ID, (data: { nodeId: string, networkId: string} ) => {
         editorCanvas.updateNetworkId({nodeId: data.nodeId, value: data.networkId})
+    })
+
+    webSocketConnection.addAction(SERVER_CONNECTIONS_UPDATED, ({connectionStatusById}: { connectionStatusById: ConnectionStatusById }) => {
+        editorCanvas.updateConnectionStatuses(connectionStatusById)
     })
 
 

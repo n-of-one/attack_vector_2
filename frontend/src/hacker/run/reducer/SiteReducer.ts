@@ -1,9 +1,9 @@
 import {findElementById, updateArrayById} from "../../../common/util/Immutable";
 import {SiteProperties, sitePropertiesDefault} from "../../../editor/reducer/SitePropertiesReducer";
-import {Connection} from "../../../editor/reducer/ConnectionsReducer";
+import {Connection, ConnectionStatusById} from "../../../editor/reducer/ConnectionsReducer";
 import {siteStateDefault, SiteStateI} from "../../../editor/reducer/SiteStateReducer";
 import {AnyAction} from "redux";
-import {SERVER_ENTERED_RUN, SERVER_LAYER_CHANGED, SERVER_LAYER_HACKED} from "../../RunServerActionProcessor";
+import {SERVER_CONNECTIONS_UPDATED, SERVER_ENTERED_RUN, SERVER_LAYER_CHANGED, SERVER_LAYER_HACKED} from "../../RunServerActionProcessor";
 import {LayerDetails, NodeI} from "../../../common/sites/SiteModel";
 
 
@@ -12,6 +12,7 @@ export interface Site {
     siteProperties: SiteProperties,
     nodes: NodeI[],
     connections: Connection[],
+    connectionStatusById: ConnectionStatusById,
     state: SiteStateI,
     startNodeId: string,
     nodeStatuses: NodeStatus[],
@@ -38,6 +39,7 @@ const defaultState = {
     siteProperties: sitePropertiesDefault,
     nodes: [],
     connections: [],
+    connectionStatusById: {},
     state: siteStateDefault,
     startNodeId: "",
     nodeStatuses: [],
@@ -52,6 +54,8 @@ export const siteReducer = (state: Site = defaultState, action: AnyAction): Site
             return serverIceHacked(action.data, state);
         case SERVER_LAYER_CHANGED:
             return serverLayerChanged(action.data, state);
+        case SERVER_CONNECTIONS_UPDATED:
+            return {...state, connectionStatusById: action.data.connectionStatusById};
         default:
             return state;
     }

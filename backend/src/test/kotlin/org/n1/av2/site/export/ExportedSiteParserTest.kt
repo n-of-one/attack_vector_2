@@ -3,6 +3,8 @@ package org.n1.av2.site.export
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.n1.av2.layer.app.status_light.StatusLightLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchPath
 import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.model.TriggerRecurrence
@@ -87,6 +89,14 @@ class ExportedSiteParserTest {
         assertEquals(TimerAdjustmentType.SPEED_UP, layer.adjustmentType)
         assertEquals(TriggerRecurrence.EVERY_ENTRY, layer.recurring)
 
+    }
+
+    @Test
+    fun `mapNetworkSwitchLayer parses paths and choice`() {
+        val layer = parseLayer("/export/network-switch.json")[1] as NetworkSwitchLayer
+
+        assertEquals(listOf(NetworkSwitchPath("east", "n2"), NetworkSwitchPath("west", "n3")), layer.paths)
+        assertEquals("n3", layer.chosenNodeId)
     }
 
     @Test

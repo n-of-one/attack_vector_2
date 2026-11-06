@@ -6,6 +6,7 @@ import org.n1.av2.hacker.hackerstate.HackerStateRepo
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.hacker.skill.SkillType
+import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntityService
@@ -26,6 +27,7 @@ class CommandJumpToHackerService(
     private val hackerStateEntityService: HackerStateEntityService,
     private val hackerStateRepo: HackerStateRepo,
     private val currentUserService: CurrentUserService,
+    private val networkSwitchService: NetworkSwitchService,
 ) {
 
     fun processCommand(arguments: List<String>, hackerState: HackerStateRunning) {
@@ -65,6 +67,11 @@ class CommandJumpToHackerService(
 
         if (hackerState.currentNodeId == targetNodeId) {
             connectionService.replyTerminalReceive("[error]You are already at the same node.")
+            return
+        }
+
+        if (!networkSwitchService.isReachable(hackerState.siteId, targetNodeId, pendingIsOpen = false)) {
+            connectionService.replyTerminalReceive("[error]Cannot jump to ${targetUser.name}, a network switch blocks the way.")
             return
         }
 

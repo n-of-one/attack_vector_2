@@ -7,6 +7,12 @@ export interface Connection {
     fromId: string,
     toId: string,
 }
+
+export type ConnectionStatus = "OPEN" | "PENDING" | "SEVERED"
+
+export interface ConnectionStatusById {
+    [connectionId: string]: ConnectionStatus
+}
 export const connectionsReducer = (state: Array<Connection> = [], action: AnyAction) => {
     switch(action.type) {
         case SERVER_SITE_FULL: return action.data.connections

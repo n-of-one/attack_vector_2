@@ -1,5 +1,6 @@
 package org.n1.av2.editor
 
+import org.n1.av2.layer.other.networkswitch.ConnectionStatus
 import org.n1.av2.run.entity.Run
 import org.n1.av2.site.entity.Connection
 import org.n1.av2.site.entity.Node
@@ -13,6 +14,7 @@ data class SiteFull(
     val ownerName: String,
     val nodes: MutableList<Node>,
     val connections: List<Connection>,
+    val connectionStatusById: Map<String, ConnectionStatus>,
     val state: SiteEditorState,
     val startNodeId: String?,
 ) {
