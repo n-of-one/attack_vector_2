@@ -1,11 +1,11 @@
 {
   "exportDetails" : {
     "version" : "v1",
-    "exportTimeStamp" : "2026-11-06 12:00:00"
+    "exportTimeStamp" : "2026-11-07 12:00:00"
   },
   "siteProperties" : {
-    "siteId" : "site-5w00-4e01",
-    "name" : "test-network-switch",
+    "siteId" : "site-5w00-4e02",
+    "name" : "test-network-switches",
     "description" : "",
     "purpose" : "",
     "startNodeNetworkId" : "00",
@@ -13,7 +13,7 @@
   },
   "nodes" : [ {
     "id" : "node-5w00-4000",
-    "siteId" : "site-5w00-4e01",
+    "siteId" : "site-5w00-4e02",
     "type" : "TRANSIT_2",
     "x" : 625,
     "y" : 552,
@@ -30,7 +30,7 @@
     "hacked" : true
   }, {
     "id" : "node-5w01-4001",
-    "siteId" : "site-5w00-4e01",
+    "siteId" : "site-5w00-4e02",
     "type" : "TRANSIT_3",
     "x" : 625,
     "y" : 432,
@@ -63,7 +63,7 @@
     "hacked" : true
   }, {
     "id" : "node-5w02-4002",
-    "siteId" : "site-5w00-4e01",
+    "siteId" : "site-5w00-4e02",
     "type" : "TRANSIT_1",
     "x" : 505,
     "y" : 312,
@@ -80,7 +80,7 @@
     "hacked" : true
   }, {
     "id" : "node-5w03-4003",
-    "siteId" : "site-5w00-4e01",
+    "siteId" : "site-5w00-4e02",
     "type" : "TRANSIT_1",
     "x" : 745,
     "y" : 312,
@@ -97,7 +97,7 @@
     "hacked" : true
   }, {
     "id" : "node-5w04-4004",
-    "siteId" : "site-5w00-4e01",
+    "siteId" : "site-5w00-4e02",
     "type" : "DATA_STORE",
     "x" : 505,
     "y" : 192,
@@ -114,7 +114,7 @@
     "hacked" : true
   }, {
     "id" : "node-5w05-4005",
-    "siteId" : "site-5w00-4e01",
+    "siteId" : "site-5w00-4e02",
     "type" : "SYSCON",
     "x" : 785,
     "y" : 552,
@@ -136,6 +136,90 @@
     "networkId" : "05",
     "ice" : false,
     "hacked" : true
+  }, {
+    "id" : "node-5w06-4006",
+    "siteId" : "site-5w00-4e02",
+    "type" : "TRANSIT_3",
+    "x" : 385,
+    "y" : 552,
+    "layers" : [ {
+      "id" : "node-5w06-4006:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    }, {
+      "id" : "node-5w06-4006:layer-5001",
+      "type" : "NETWORK_SWITCH",
+      "level" : 1,
+      "name" : "Network switch",
+      "note" : "",
+      "routes" : [ {
+        "name" : "vault",
+        "nodeId" : "node-5w07-4007"
+      }, {
+        "name" : "labs",
+        "nodeId" : "node-5w08-4008"
+      } ],
+      "lockedRouteNodeId" : null,
+      "coreLayerId" : "node-5w05-4005:layer-c001",
+      "coreSiteId" : null
+    } ],
+    "networkId" : "06",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w07-4007",
+    "siteId" : "site-5w00-4e02",
+    "type" : "TRANSIT_1",
+    "x" : 265,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-5w07-4007:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "vault"
+    } ],
+    "networkId" : "07",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w08-4008",
+    "siteId" : "site-5w00-4e02",
+    "type" : "TRANSIT_1",
+    "x" : 385,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-5w08-4008:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "labs"
+    } ],
+    "networkId" : "08",
+    "ice" : false,
+    "hacked" : true
+  }, {
+    "id" : "node-5w09-4009",
+    "siteId" : "site-5w00-4e02",
+    "type" : "DATA_STORE",
+    "x" : 385,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-5w09-4009:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "behind labs"
+    } ],
+    "networkId" : "09",
+    "ice" : false,
+    "hacked" : true
   } ],
   "connections" : [ {
     "fromId" : "node-5w00-4000",
@@ -152,5 +236,17 @@
   }, {
     "fromId" : "node-5w00-4000",
     "toId" : "node-5w05-4005"
+  }, {
+    "fromId" : "node-5w00-4000",
+    "toId" : "node-5w06-4006"
+  }, {
+    "fromId" : "node-5w06-4006",
+    "toId" : "node-5w07-4007"
+  }, {
+    "fromId" : "node-5w06-4006",
+    "toId" : "node-5w08-4008"
+  }, {
+    "fromId" : "node-5w08-4008",
+    "toId" : "node-5w09-4009"
   } ]
 }

@@ -5,32 +5,32 @@ import {HackerPage, START_ATTACK_QUICK} from "./testframework/HackerPage";
 import {GmPage} from "./testframework/GmPage";
 import {wait} from "./testframework/utils/testUtils";
 
-const SITE_NAME = "test-network-switch"
+const SITE_NAME = "test-network-switches"
 
 /*
- Test site: 00 is the start node, 01 has the network switch (layer 1) with routes research (02) and archives (03).
- 05 has the core (layer 1) that unlocks the switch.
+ Test site: 00 is the start node, 05 has the core (layer 1) that unlocks both network switches.
+ 01 has a network switch (layer 1) with routes research (02) and archives (03).
+ 06 has a network switch (layer 1) with routes vault (07) and labs (08). It is locked to vault in 3.3.0.
 
-     04
-     |
-     02     03
-       \   /
-        01
-        |
-        00 -- 05
+           09               04
+           |                |
+     07    08               02     03
+       \   |                  \   /
+        \  |                   01
+         \ |                   |
+          06 ---------------- 00 ---- 05
 */
 
 test('3.3.0 - Prepare', async ({page}: { page: Page }) => {
     test.setTimeout(30_000);
     const [login, gm, hacker] = [new LoginPage(page), new GmPage(page), new HackerPage(page)]
 
-    await test.step("Import site and remove old runs", async () => {
+    await test.step("Import site", async () => {
         await login.loginUsingLink("gm")
-        await gm.importSiteIfItDoesNotExist(SITE_NAME, "v1-test-network-switch.json")
-        await gm.deleteAllRuns(SITE_NAME)
+        await gm.importSiteIfItDoesNotExist(SITE_NAME, "v1-test-network-switches.json")
     })
 
-    await test.step("Unlock the switch, in case a previous test run left it locked (a site reset does not unlock it)", async () => {
+    await test.step("Unlock both switches and lock switch 06 to vault, whatever a previous test run left (a site reset does not change switches)", async () => {
         await login.loginUsingLink("hacker")
         await hacker.startNewRun(SITE_NAME)
         await hacker.typeCommand("qs")
@@ -38,35 +38,29 @@ test('3.3.0 - Prepare', async ({page}: { page: Page }) => {
         await hacker.startAttack(START_ATTACK_QUICK)
         await hacker.typeCommand("qmove 05")
         await hacker.typeCommand("hack 1", "Hacked: 1 Core")
+        await hacker.typeCommand("qmove 06")
+        await hacker.typeCommand("hack 1 vault", "Topology change switch 06 locked to vault. Dropped routes: 08")
     })
 
-    await test.step("Remove the run, so the next test starts with an unscanned site", async () => {
+    await test.step("Remove all runs (also those of previous test runs), so the test starts with an unscanned site", async () => {
         await login.loginUsingLink("gm")
         await gm.deleteAllRuns(SITE_NAME)
     })
 })
 
 
-test('3.3.1 - Scan penetrates a network switch that is not locked', async ({page}: { page: Page }) => {
-    test.setTimeout(30_000);
+test('3.3.1 - Network switches', async ({page}: { page: Page }) => {
+    test.setTimeout(90_000);
     const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 
-    await test.step("Regular scan from outside discovers the nodes behind the switch: 01 to 05", async () => {
+    await test.step("Scan passes the pending routes of 01, but stops at the dropped route to 08: 01 to 08 are discovered, 09 is not", async () => {
         await login.loginUsingLink("hacker")
         await hacker.startNewRun(SITE_NAME)
-        await hacker.typeCommand("scan", "New nodes discovered: 5", 10)
+        await hacker.typeCommand("scan", "New nodes discovered: 8", 10)
         await hacker.waitForScanAnimationFinished()
     })
-})
-
-
-test('3.3.2 - Choose a route', async ({page}: { page: Page }) => {
-    test.setTimeout(40_000);
-    const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
 
     await test.step("Routes are in standby until a choice is made", async () => {
-        await login.loginUsingLink("hacker")
-        await hacker.joinExistingRun(SITE_NAME)
         await hacker.startAttack(START_ATTACK_QUICK)
         await hacker.typeCommand("move 01", "Entered node 01", 10)
         await hacker.typeCommand("move 02", "blocked route to 02 held in standby by a network switch.")
@@ -93,19 +87,10 @@ test('3.3.2 - Choose a route', async ({page}: { page: Page }) => {
         await hacker.typeCommand("qmove 01", "Entered node 01")
         await hacker.typeCommand("hack 1", ["Switch locked. Route fixed to research", "Lock managed by core in node 05"])
     })
-})
 
-
-test('3.3.3 - Unlock the network switch via the core', async ({page}: { page: Page }) => {
-    test.setTimeout(40_000);
-    const [login, hacker] = [new LoginPage(page), new HackerPage(page)]
-
-    await test.step("Hacking the core unlocks the switch", async () => {
-        await login.loginUsingLink("hacker")
-        await hacker.joinExistingRun(SITE_NAME)
-        await hacker.startAttack(START_ATTACK_QUICK)
-        await hacker.typeCommand("move 05", "Entered node 05", 10)
-        await hacker.typeCommand("hack 1", ["Hacked: 1 Core", "- unlocked network switch in node 01",
+    await test.step("Hacking the core unlocks both switches", async () => {
+        await hacker.typeCommand("qmove 05", "Entered node 05")
+        await hacker.typeCommand("hack 1", ["Hacked: 1 Core", "- unlocked network switch in node 01", "- unlocked network switch in node 06",
             "Topology change switch 01 unlocked by core. Routes back in standby."])
     })
 
@@ -118,59 +103,9 @@ test('3.3.3 - Unlock the network switch via the core', async ({page}: { page: Pa
         await hacker.typeCommand("move 03", "Entered node 03: archives", 10)
     })
 
-    await test.step("Unlock the switch again, so the next test run starts with an unlocked switch", async () => {
-        await hacker.typeCommand("qmove 05", "Entered node 05")
-        await hacker.typeCommand("hack 1", "- unlocked network switch in node 01")
-    })
-})
-
-
-test('3.3.4 - Scan stops at a dropped route', async ({page}: { page: Page }) => {
-    test.setTimeout(40_000);
-    const [login, gm, hacker] = [new LoginPage(page), new GmPage(page), new HackerPage(page)]
-
-    await test.step("Lock the switch to archives, dropping research (02)", async () => {
-        await login.loginUsingLink("hacker")
-        await hacker.joinExistingRun(SITE_NAME)
-        await hacker.startAttack(START_ATTACK_QUICK)
-        await hacker.typeCommand("qmove 01", "Entered node 01")
-        await hacker.typeCommand("hack 1 archives", "Topology change switch 01 locked to archives. Dropped routes: 02")
-    })
-
-    await test.step("Remove the run, so the next scan starts with an unscanned site", async () => {
-        await login.loginUsingLink("gm")
-        await gm.deleteAllRuns(SITE_NAME)
-    })
-
-    await test.step("Scan discovers 01, 03, 05 and the dropped 02, but not 04 behind it", async () => {
-        await login.loginUsingLink("hacker")
-        await hacker.startNewRun(SITE_NAME)
-        await hacker.typeCommand("scan", "New nodes discovered: 4", 10)
-        await hacker.waitForScanAnimationFinished()
-    })
-
-    await test.step("Unlock and lock to research: the unscanned 02 becomes connectable without a new scan", async () => {
-        await hacker.startAttack(START_ATTACK_QUICK)
-        await hacker.typeCommand("qmove 05", "Entered node 05")
-        await hacker.typeCommand("hack 1", "- unlocked network switch in node 01")
-        await hacker.typeCommand("qmove 01", "Entered node 01")
-        await hacker.typeCommand("hack 1 research", "Topology change switch 01 locked to research. Dropped routes: 03")
-        await hacker.typeCommand("move 02", "Entered node 02: research", 10)
-    })
-
-    await test.step("Unlock the switch again, so the next test run starts with an unlocked switch", async () => {
-        await hacker.typeCommand("qmove 05", "Entered node 05")
-        await hacker.typeCommand("hack 1", "- unlocked network switch in node 01")
-    })
-})
-
-
-test('3.3.5 - Cleanup', async ({page}: { page: Page }) => {
-    test.setTimeout(20_000);
-    const [login, gm] = [new LoginPage(page), new GmPage(page)]
-
-    await test.step("Remove runs", async () => {
-        await login.loginUsingLink("gm")
-        await gm.deleteAllRuns(SITE_NAME)
+    await test.step("08 was only seen by the scan. Locking switch 06 to labs makes it connectable, so it can be entered without a new scan", async () => {
+        await hacker.typeCommand("qmove 06", "Entered node 06")
+        await hacker.typeCommand("hack 1 labs", "Topology change switch 06 locked to labs. Dropped routes: 07")
+        await hacker.typeCommand("move 08", "Entered node 08: labs", 10)
     })
 })
