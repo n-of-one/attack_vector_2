@@ -64,6 +64,7 @@ export class ConnectionDisplay implements Display {
             fontSize: 28,
             left: this.x,
             top: this.y,
+            angle: this.droppedIconAngle(),
             opacity: 0,
             selectable: false,
             hoverCursor: 'default',
@@ -123,7 +124,15 @@ export class ConnectionDisplay implements Display {
 
         this.x = (this.fromDisplay.x + this.toDisplay.x) / 2
         this.y = (this.fromDisplay.y + this.toDisplay.y) / 2
-        this.droppedIcon.set({left: this.x, top: this.y})
+        this.droppedIcon.set({left: this.x, top: this.y, angle: this.droppedIconAngle()})
+    }
+
+    // Perpendicular to the connection, normalized to -90..90 degrees so the icon is never upside down.
+    private droppedIconAngle() {
+        const dx = this.toDisplay.x - this.fromDisplay.x
+        const dy = this.toDisplay.y - this.fromDisplay.y
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90
+        return ((angle + 90) % 180 + 180) % 180 - 90
     }
 
     terminate() {
