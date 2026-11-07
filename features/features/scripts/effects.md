@@ -96,6 +96,7 @@ Teleports the hacker to a different node in the site.
 
 ## Capabilities
 - Configurable block mode: BLOCKED_BY_ICE (default) or NOT_BLOCKED_BY_ICE
+- Blocked by pending or dropped network switch routes
 
 ---
 
@@ -105,6 +106,7 @@ Teleports to another hacker's current node.
 
 ## Capabilities
 - Configurable block mode: BLOCKED_BY_ICE or NOT_BLOCKED_BY_ICE
+- Blocked by pending or dropped network switch routes
 
 ---
 
@@ -115,6 +117,7 @@ Scans nodes beyond an ICE-protected node.
 ## Capabilities
 - Targets a specific node (network ID)
 - Target node must have ICE
+- Blocked by dropped network switch routes (pending routes pass)
 
 ---
 

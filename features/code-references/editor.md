@@ -31,7 +31,7 @@
 - **TripwireLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/tripwire/TripwireLayer.kt`
 - **TimerAdjusterLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/timeradjuster/TimerAdjusterLayer.kt`
 - **DaemonLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/daemon/DaemonLayer.kt` (on-entry logic: `DaemonService.kt`, per-hacker state: `DaemonStatusEntityAndRepo.kt`)
-- **NetworkSwitchLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/networkswitch/NetworkSwitchLayer.kt` (choice, connection status and reachability: `NetworkSwitchService.kt`)
+- **NetworkSwitchLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/networkswitch/NetworkSwitchLayer.kt` (run behaviour: see `layers.md`)
 - **ScriptCreditsLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptCreditsLayer.kt`
 - **ScriptInteractionLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptInteractionLayer.kt`
 

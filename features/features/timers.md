@@ -41,10 +41,11 @@ Modifies active tripwire countdowns when a hacker enters the node.
 Stops tripwire timers when hacked.
 
 ## Capabilities
-- Linked from one or more tripwire layers
+- Linked from one or more tripwire or network switch layers
 - Hacking the core cancels all tripwire timers linked to it
-- Can receive links from tripwires in other sites (cross-site timer control)
-- Cannot be deleted if tripwires in other sites reference it
+- Hacking the core unlocks all network switches linked to it (see `layers.md`)
+- Can receive links from layers in other sites (cross-site control)
+- Cannot be deleted if layers in other sites reference it
 - Optionally reveals the full network map when hacked
 
 ---

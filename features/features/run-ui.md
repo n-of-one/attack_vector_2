@@ -24,7 +24,7 @@ A visual representation of the site's network topology.
 
 ## Capabilities
 - Displays nodes as icons based on their type (transit, data store, passcode store, ICE, etc.)
-- Connections drawn as lines between adjacent nodes
+- Connections drawn as lines between adjacent nodes. Pending network switch routes are highlighted, dropped routes are faded with a severed icon
 - Hacker positions shown as icons on the map (current user highlighted)
 - Undiscovered nodes shown as placeholders
 - Node icons update as they are scanned and hacked
