@@ -5,6 +5,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserAndHackerService
+import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.springframework.context.ApplicationContext
 import java.util.Optional
@@ -77,5 +79,22 @@ class TraitSkillTest {
 
         verify(exactly = 0) { skillRepo.findFirstByTypeAndUserId(any(), any()) }
         verify { skillRepo.save(match { it.type == SkillType.TRAIT && it.userId == "u1" && it.value == SkillType.TRAIT.defaultValue }) }
+    }
+
+    @Test
+    fun `replacing skills for a user keeps multiple traits as separate skills`() {
+        val user = mockk<UserEntity>()
+        every { user.id } returns "u1"
+        every { skillRepo.findByUserId("u1") } returns listOf(Skill("old", "u1", SkillType.SCAN, ""))
+        every { skillRepo.deleteById("old") } just runs
+        every { skillRepo.findById(any()) } returns Optional.empty()
+        val saved = mutableListOf<Skill>()
+        every { skillRepo.save(capture(saved)) } answers { firstArg() }
+
+        skillService.replaceSkillsForUser(user, listOf(SkillType.TRAIT to "datajack: Datajack implant", SkillType.TRAIT to "other: Other trait"))
+
+        verify { skillRepo.deleteById("old") }
+        assertThat(saved.map { it.value }).containsExactly("datajack: Datajack implant", "other: Other trait")
+        assertThat(saved.map { it.id }.distinct()).hasSize(2)
     }
 }

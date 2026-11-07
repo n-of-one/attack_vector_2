@@ -12,6 +12,7 @@ export interface WordSearchPuzzle {
     letterGrid: string[][],
     words: string[],
     solutions: string[][],
+    showDisplayOptions: boolean,
 }
 
 
@@ -20,7 +21,8 @@ const defaultState: WordSearchPuzzle = {
     strength: IceStrength.AVERAGE,
     letterGrid: [[]],
     words: [],
-    solutions: [[]]
+    solutions: [[]],
+    showDisplayOptions: false,
 };
 
 export const wordSearchPuzzleReducer = (state: WordSearchPuzzle = defaultState, action: AnyAction): WordSearchPuzzle => {
@@ -38,5 +40,6 @@ const enter = (action: ServerEnterIceWordSearch) => {
         letterGrid: action.letterGrid,
         words: action.words,
         solutions: action.solutions,
+        showDisplayOptions: action.showDisplayOptions,
     }
 }

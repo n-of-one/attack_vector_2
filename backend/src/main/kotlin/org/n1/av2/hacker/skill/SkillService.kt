@@ -111,12 +111,13 @@ class SkillService(
         }
     }
 
-    fun updateSkillsForUser(user: UserEntity, skills: Map<SkillType, String>) {
+    fun replaceSkillsForUser(user: UserEntity, skills: List<Pair<SkillType, String>>) {
         val currentSkills = findSkillsForUser(user.id)
         currentSkills.forEach { skill -> skillRepo.deleteById(skill.id)}
 
         skills.forEach { (type, value) ->
-            addOrUpdateSkillForUser(user.id, type, value)
+            val id = createId("skill", skillRepo::findById)
+            skillRepo.save(Skill(id, user.id, type, value))
         }
     }
 

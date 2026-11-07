@@ -6,6 +6,7 @@ import {WordSearchPuzzle, wordSearchPuzzleReducer} from "./WordSearchPuzzleReduc
 import {UIState, wordSearchUiStateReducer} from "./WordSearchUiStateReducer";
 import {Page, pageReducer} from "../../../../common/menu/pageReducer";
 import {IceHackers, iceHackersReducer} from "../../common/IceHackersReducer";
+import {WordSearchDisplayOptions, wordSearchDisplayOptionsReducer} from "./WordSearchDisplayOptionsReducer";
 
 
 export interface WordSearchRootState {
@@ -15,6 +16,7 @@ export interface WordSearchRootState {
     puzzle: WordSearchPuzzle,
     uiState: UIState
     displayTerminal: TerminalState,
+    displayOptions: WordSearchDisplayOptions,
 }
 
 const displayTerminalReducer = createTerminalReducer(ICE_DISPLAY_TERMINAL_ID, {readOnly: true, autoScroll: true});
@@ -26,7 +28,8 @@ export const wordSearchRootReducer = combineReducers<WordSearchRootState>(
         state: wordSearchStateReducer,
         puzzle: wordSearchPuzzleReducer,
         uiState: wordSearchUiStateReducer,
-        displayTerminal: displayTerminalReducer
+        displayTerminal: displayTerminalReducer,
+        displayOptions: wordSearchDisplayOptionsReducer,
     }
 )
 

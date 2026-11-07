@@ -17,6 +17,7 @@ export interface ServerEnterIceWordSearch {
     wordIndex: 0,
     hacked: false,
     quickPlaying: boolean
+    showDisplayOptions: boolean
 }
 
 export interface UpdateAction {

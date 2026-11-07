@@ -1,10 +1,12 @@
 package org.n1.av2.layer.ice.wordsearch
 
+import org.n1.av2.hacker.skill.SkillService
 import org.n1.av2.layer.ice.HackedUtil
 import org.n1.av2.platform.config.ConfigItem
 import org.n1.av2.platform.config.ConfigService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.util.createId
 import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.enums.IceStrength
@@ -14,6 +16,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.system.measureTimeMillis
 import io.github.oshai.kotlinlogging.KotlinLogging
 
+const val WORD_SEARCH_DISPLAY_TRAIT = "word-search-display"
 
 @Service
 class WordSearchService(
@@ -22,6 +25,8 @@ class WordSearchService(
     private val hackedUtil: HackedUtil,
     private val runService: RunService,
     private val configService: ConfigService,
+    private val skillService: SkillService,
+    private val currentUserService: CurrentUserService,
 ) {
 
     private val logger = KotlinLogging.logger {}
@@ -78,6 +83,7 @@ class WordSearchService(
         val solutions: List<List<String>>,
         val wordIndex: Int,
         val quickPlaying: Boolean,
+        val showDisplayOptions: Boolean,
     )
 
     fun enter(iceId: String) {
@@ -90,7 +96,8 @@ class WordSearchService(
             iceStatus.correctPositions,
             iceStatus.solutions,
             iceStatus.wordIndex,
-            configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING)
+            configService.getAsBoolean(ConfigItem.DEV_QUICK_PLAYING),
+            skillService.userHasTrait(currentUserService.userId, WORD_SEARCH_DISPLAY_TRAIT),
         )
         connectionService.reply(ServerActions.SERVER_WORD_SEARCH_ENTER, enterWordSearch)
         runService.enterIce(iceId)

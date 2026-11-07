@@ -5,6 +5,7 @@ import {ForceDisconnected} from "../../../../common/component/ForceDisconnected"
 import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 import {IceHackerPresence} from "../../common/IceHackerPresence";
 import {Page} from "../../../../common/menu/pageReducer";
+import {WordSearchDisplayOptionsPanel} from "./WordSearchDisplayOptionsPanel";
 
 
 export const WordSearchContainer = () => {
@@ -19,6 +20,11 @@ export const WordSearchContainer = () => {
                     <div className="row">
                         <div className="col-lg-12">
                             <IceHackerPresence />
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <WordSearchDisplayOptionsPanel />
                         </div>
                     </div>
                     <div className="row">

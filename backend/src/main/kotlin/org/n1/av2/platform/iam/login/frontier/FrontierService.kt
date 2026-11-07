@@ -101,10 +101,10 @@ class FrontierService(
 
     private fun updateHackerSkillsAndRam(user: UserEntity, v3Skills:FrontierV3HackingSkills) {
         val translator = FrontierSkillTranslator(v3Skills)
-        val skillTypes = translator.translateSkills()
-        skillService.updateSkillsForUser(user, skillTypes)
+        val skills = translator.translateSkills()
+        skillService.replaceSkillsForUser(user, skills)
 
-        val ramSize = skillTypes[SkillType.SCRIPT_RAM]?.toInt() ?: 0
+        val ramSize = skills.firstOrNull { it.first == SkillType.SCRIPT_RAM }?.second?.toInt() ?: 0
         ramService.updateRam(user.id, ramSize)
     }
 

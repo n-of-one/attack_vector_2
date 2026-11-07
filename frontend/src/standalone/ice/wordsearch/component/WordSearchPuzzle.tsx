@@ -1,6 +1,8 @@
 import React from 'react'
 import {wordSearchCanvas} from "../canvas/WordSearchCanvas";
 import {LetterGrid} from "./LetterGrid";
+import {useSelector} from "react-redux";
+import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 
 
 const mouseDown = (event: React.MouseEvent<HTMLTableElement>) => {
@@ -16,8 +18,9 @@ const mouseMove = (event: React.MouseEvent<HTMLTableElement>) => {
 }
 
 export const WordSearchPuzzle = () => {
+    const options = useSelector((state: WordSearchRootState) => state.displayOptions)
 
-    return <table
+    return <table className={`wsColor_${options.color} wsFont_${options.fontSize}`}
         onMouseDown={(event) => mouseDown(event)}
         onMouseUp={(event) => mouseUp(event)}
         onMouseMove={(event) => mouseMove(event)}

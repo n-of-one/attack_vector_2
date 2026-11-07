@@ -6,6 +6,8 @@ import {LETTERS_SELECTED} from "../reducer/WordSearchStateReducer";
 import {webSocketConnection} from "../../../../common/server/WebSocketConnection";
 import {ServerEnterIceWordSearch} from "../WordSearchServerActionProcessor";
 import {ice} from "../../../StandaloneGlobals";
+import {WordSearchGridLines, WordSearchNoise} from "../reducer/WordSearchDisplayOptionsReducer";
+import {WordSearchRootState} from "../reducer/WordSearchRootReducer";
 
 const MARGIN_TOP = 5
 const MARGIN_LEFT = 5
@@ -35,6 +37,9 @@ class WordSearchCanvas {
 
     indicatorVisual: WordSearchIndicatorDisplay | null = null
 
+    gridLines: fabric.Line[] = []
+    noiseImage: fabric.Image | null = null
+
     init(puzzleData: ServerEnterIceWordSearch, dispatch: Dispatch, store: Store) {
         this.dispatch = dispatch;
         this.store = store;
@@ -52,6 +57,7 @@ class WordSearchCanvas {
 
         this.canvas.selection = false;
 
+        this.gridLines = []
         // horizontal lines
         for (let y = 0; y < rows + 1; y++) {
             this.drawLine(0, y, columns, y)
@@ -76,9 +82,12 @@ class WordSearchCanvas {
             backgroundColor: "#333333",
         });
 
-        setTimeout(function () {
+        this.noiseImage = null
+        setTimeout(() => {
             fabric.Image.fromURL("/img/frontier/ice/wordSearch/darknoise_4_1552_852-2.png", (img) => {
-                img.set({width: canvas.width, height: canvas.height, originX: 'left', originY: 'top'});
+                const noiseOption = (this.store.getState() as WordSearchRootState).displayOptions.noise
+                img.set({width: canvas.width, height: canvas.height, originX: 'left', originY: 'top', visible: noiseOption === "ON"});
+                this.noiseImage = img
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
             });
         }, 100);
@@ -94,17 +103,31 @@ class WordSearchCanvas {
             MARGIN_LEFT + x2 * this.cellSize,
             MARGIN_TOP + y2 * this.cellSize
         ]
+        const gridLinesOption = (this.store.getState() as WordSearchRootState).displayOptions.gridLines
         const line = new fabric.Line(
             lineData, {
-                stroke: "#000b",
+                ...gridLineStyle(gridLinesOption),
                 strokeWidth: 2,
                 // strokeDashArray: [8, 2],
                 selectable: false,
                 hoverCursor: 'default',
-                opacity: 0.4
             });
 
+        this.gridLines.push(line)
         this.canvas.add(line)
+    }
+
+    setGridLines(option: WordSearchGridLines) {
+        if (this.gridLines.length === 0) return
+        const style = gridLineStyle(option)
+        this.gridLines.forEach(line => line.set(style))
+        this.canvas.renderAll()
+    }
+
+    setNoise(option: WordSearchNoise) {
+        if (!this.noiseImage) return
+        this.noiseImage.set({visible: option === "ON"})
+        this.canvas.renderAll()
     }
 
 
@@ -196,6 +219,17 @@ class WordSearchCanvas {
         const letterX = Math.floor((x - MARGIN_LEFT) / this.cellSize)
         const letterY = Math.floor((y - MARGIN_TOP) / this.cellSize)
         return {x: letterX, y: letterY}
+    }
+}
+
+const gridLineStyle = (option: WordSearchGridLines) => {
+    switch (option) {
+        case "LIGHT":
+            return {stroke: "#444", opacity: 1}
+        case "OFF":
+            return {stroke: "#262626", opacity:0}
+        default:
+            return {stroke: "#000b", opacity: 0.4}
     }
 }
 

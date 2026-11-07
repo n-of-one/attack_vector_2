@@ -2,6 +2,7 @@ package org.n1.av2.platform.iam.login.frontier
 
 import org.n1.av2.hacker.skill.SkillType
 import org.n1.av2.hacker.skill.SkillType.*
+import org.n1.av2.layer.ice.wordsearch.WORD_SEARCH_DISPLAY_TRAIT
 import org.n1.av2.site.entity.enums.LayerType.NETWALK_ICE
 import org.n1.av2.site.entity.enums.LayerType.SWEEPER_ICE
 import org.n1.av2.site.entity.enums.LayerType.TANGLE_ICE
@@ -14,9 +15,9 @@ class FrontierSkillTranslator(
     private val WEAKEN_SIMPLE = "${WORD_SEARCH_ICE.name.substringBefore("_ICE").lowercase()}, ${TANGLE_ICE.name.substringBefore("_ICE").lowercase()}"
     private val WEAKEN_COMPLEX = "${NETWALK_ICE.name.substringBefore("_ICE").lowercase()}, ${SWEEPER_ICE.name.substringBefore("_ICE").lowercase()}"
 
-    fun translateSkills(): Map<SkillType, String> = buildMap {
+    fun translateSkills(): List<Pair<SkillType, String>> = buildList {
         fun addIfPresent( block: () -> Pair<SkillType, String>?) {
-            block()?.let { put(it.first, it.second) }
+            block()?.let { add(it) }
         }
 
         addIfPresent { hackerLevel(1, SEARCH_SITE) }
@@ -44,6 +45,7 @@ class FrontierSkillTranslator(
         addIfPresent { scriptRam() }
         addIfPresent { scriptIncome() }
         addIfPresent { datajack() }
+        add(TRAIT to "$WORD_SEARCH_DISPLAY_TRAIT: Word search display options") // playtest at Frontier, for all hackers
     }
 
     private fun hackerLevel(level: Int, skillType: SkillType, value: String = "") =
