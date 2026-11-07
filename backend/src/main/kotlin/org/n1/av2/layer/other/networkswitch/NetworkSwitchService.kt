@@ -1,11 +1,15 @@
 package org.n1.av2.layer.other.networkswitch
 
+import org.n1.av2.hacker.hackerstate.HackerActivity
+import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.OPEN
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.PENDING
-import org.n1.av2.layer.other.networkswitch.ConnectionStatus.SEVERED
+import org.n1.av2.layer.other.networkswitch.ConnectionStatus.DROPPED
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ConnectionService.TerminalReceive
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.run.RunService
 import org.n1.av2.run.terminal.TERMINAL_MAIN
 import org.n1.av2.site.entity.Connection
 import org.n1.av2.site.entity.ConnectionEntityService
@@ -18,7 +22,7 @@ import org.springframework.stereotype.Service
 enum class ConnectionStatus {
     OPEN,
     PENDING,  // a network switch has not chosen yet: no moving, but scans and remote scripts pass
-    SEVERED,  // a network switch chose another route: nothing passes, except normal scans
+    DROPPED,  // a network switch chose another route: nothing passes, except normal scans
 }
 
 fun Connection.connects(nodeId1: String, nodeId2: String) =
@@ -27,7 +31,7 @@ fun Connection.connects(nodeId1: String, nodeId2: String) =
 private fun routeStatus(layer: NetworkSwitchLayer, routeNodeId: String) = when (layer.lockedRouteNodeId) {
     null -> PENDING
     routeNodeId -> OPEN
-    else -> SEVERED
+    else -> DROPPED
 }
 
 fun calculateConnectionStatuses(nodes: List<Node>, connections: List<Connection>): Map<String, ConnectionStatus> {
@@ -84,12 +88,16 @@ fun calculateReachableNodeIds(
     return reached
 }
 
+private const val CUT_OFF_MESSAGE = "Carrier lost: route to entry node collapsed. Uplink terminated."
+
 @Service
 class NetworkSwitchService(
     private val nodeEntityService: NodeEntityService,
     private val connectionEntityService: ConnectionEntityService,
     private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val connectionService: ConnectionService,
+    private val hackerStateEntityService: HackerStateEntityService,
+    private val runService: RunService,
 ) {
 
     fun hack(layerId: String, arguments: List<String>) {
@@ -117,12 +125,38 @@ class NetworkSwitchService(
 
         layer.lockedRouteNodeId = route.nodeId
         nodeEntityService.save(node)
+        lockChanged(node, layer)
+    }
 
-        val severed = layer.routes.filter { it != route }.joinToString(", ") { "[ok]${networkIdByNodeId[it.nodeId]}[/]" }
-        val lines = arrayOf("[warn]Topology change[/] switch [ok]${node.networkId}[/] locked to [b]${route.name}[/]. Dropped routes: ${severed}")
-        connectionService.toSite(node.siteId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, lines))
+    fun lockChanged(node: Node, layer: NetworkSwitchLayer) {
+        val lockedRoute = layer.lockedRouteNodeId?.let { layer.routeFor(it) }
+        val line = if (lockedRoute != null) {
+            val networkIdByNodeId = nodeEntityService.findBySiteId(node.siteId).associate { it.id to it.networkId }
+            val dropped = layer.routes.filter { it != lockedRoute }.joinToString(", ") { "[ok]${networkIdByNodeId[it.nodeId]}[/]" }
+            "[warn]Topology change[/] switch [ok]${node.networkId}[/] locked to [b]${lockedRoute.name}[/]. Dropped routes: ${dropped}"
+        } else {
+            "[warn]Topology change[/] switch [ok]${node.networkId}[/] unlocked. Routes back in standby."
+        }
+        connectionService.toSite(node.siteId, ServerActions.SERVER_TERMINAL_RECEIVE, TerminalReceive(TERMINAL_MAIN, arrayOf(line)))
         connectionService.toSite(node.siteId, ServerActions.SERVER_LAYER_CHANGED, "nodeId" to node.id, "layer" to layer)
         sendConnectionStatuses(node.siteId)
+        if (lockedRoute == null) return
+
+        disconnectHackersCutOffFromStart(node.siteId)
+        // The node behind the route could only be known as unconnectable, because scans do not go past a dropped route.
+        runService.makeNeighborConnectable(node, lockedRoute.nodeId)
+    }
+
+    fun disconnectHackersCutOffFromStart(siteId: String) {
+        val reachable = reachableNodeIds(siteId, pendingIsOpen = true)
+        if (reachable.isEmpty()) return // no start node
+        hackerStateEntityService.findAllHackersInSite(siteId)
+            .filter { it.activity == HackerActivity.INSIDE && it.currentNodeId !in reachable }
+            .forEach { disconnectCutOff(it) }
+    }
+
+    fun disconnectCutOff(hackerState: HackerState) {
+        runService.hackerDisconnect(hackerState, CUT_OFF_MESSAGE)
     }
 
     private fun coreForUnlockingText(layer: NetworkSwitchLayer, siteId: String): String? {
@@ -198,13 +232,17 @@ class NetworkSwitchService(
      * Reachable from the start node, ignoring ICE. Used for everything that is not a regular move to a neighbouring node.
      */
     fun isReachable(siteId: String, targetNodeId: String, pendingIsOpen: Boolean): Boolean {
+        return reachableNodeIds(siteId, pendingIsOpen).contains(targetNodeId)
+    }
+
+    private fun reachableNodeIds(siteId: String, pendingIsOpen: Boolean): Set<String> {
         val nodes = nodeEntityService.findBySiteId(siteId)
         val connections = connectionEntityService.getAll(siteId)
         val startNetworkId = sitePropertiesEntityService.getBySiteId(siteId).startNodeNetworkId
-        val startNode = nodes.find { it.networkId == startNetworkId } ?: return false
+        val startNode = nodes.find { it.networkId == startNetworkId } ?: return emptySet()
 
         val statusById = calculateConnectionStatuses(nodes, connections)
-        return calculateReachableNodeIds(startNode.id, connections, statusById, pendingIsOpen).contains(targetNodeId)
+        return calculateReachableNodeIds(startNode.id, connections, statusById, pendingIsOpen)
     }
 
     /**
@@ -213,7 +251,7 @@ class NetworkSwitchService(
     fun checkMove(fromNode: Node, toNode: Node): String? {
         return when (calculateConnectionStatus(fromNode, toNode)) {
             OPEN -> null
-            SEVERED -> "[error]route down[/] route to [ok]${toNode.networkId}[/] was dropped by a network switch."
+            DROPPED -> "[error]route down[/] route to [ok]${toNode.networkId}[/] was dropped by a network switch."
             PENDING -> "[warn b]blocked[/] route to [ok]${toNode.networkId}[/] held in standby by a network switch."
         }
     }

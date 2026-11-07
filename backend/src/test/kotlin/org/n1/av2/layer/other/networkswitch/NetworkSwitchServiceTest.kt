@@ -12,11 +12,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.n1.av2.hacker.hackerstate.HackerActivity
+import org.n1.av2.hacker.hackerstate.HackerState
+import org.n1.av2.hacker.hackerstate.HackerStateEntityService
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.OPEN
 import org.n1.av2.layer.other.networkswitch.ConnectionStatus.PENDING
-import org.n1.av2.layer.other.networkswitch.ConnectionStatus.SEVERED
+import org.n1.av2.layer.other.networkswitch.ConnectionStatus.DROPPED
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
+import org.n1.av2.run.RunService
 import org.n1.av2.site.entity.Connection
 import org.n1.av2.site.entity.ConnectionEntityService
 import org.n1.av2.site.entity.Node
@@ -51,6 +55,12 @@ class NetworkSwitchServiceTest {
     @MockK
     lateinit var connectionService: ConnectionService
 
+    @MockK
+    lateinit var hackerStateEntityService: HackerStateEntityService
+
+    @MockK
+    lateinit var runService: RunService
+
     @InjectMockKs
     lateinit var networkSwitchService: NetworkSwitchService
 
@@ -82,7 +92,13 @@ class NetworkSwitchServiceTest {
         every { connectionService.replyTerminalReceive(any<List<String>>()) } just runs
         every { connectionService.replyTerminalReceive(*anyVararg<String>()) } just runs
         every { connectionService.toSite(any(), any(), *anyVararg()) } just runs
+        every { hackerStateEntityService.findAllHackersInSite(SITE_ID) } returns emptyList()
+        every { runService.hackerDisconnect(any(), any()) } just runs
+        every { runService.makeNeighborConnectable(any(), any()) } just runs
     }
+
+    private fun hackerAt(userId: String, nodeId: String, activity: HackerActivity = HackerActivity.INSIDE) =
+        HackerState(userId, "connection", "run-1", SITE_ID, nodeId, null, activity, null, null, null)
 
     private fun node(id: String, vararg layers: NetworkSwitchLayer) =
         Node(id, SITE_ID, NodeType.TRANSIT_2, 0, 0, layers.toMutableList(), id.removePrefix("n"))
@@ -100,12 +116,12 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `choice opens the chosen route and severs the others`() {
+    fun `choice opens the chosen route and drops the others`() {
         switchLayer.lockedRouteNodeId = "n02"
 
         val statuses = calculateConnectionStatuses(nodes, connections)
 
-        assertThat(statuses).containsEntry("c01-02", OPEN).containsEntry("c01-03", SEVERED)
+        assertThat(statuses).containsEntry("c01-02", OPEN).containsEntry("c01-03", DROPPED)
     }
 
     @Test
@@ -117,7 +133,7 @@ class NetworkSwitchServiceTest {
 
         val statuses = calculateConnectionStatuses(nodes, connections)
 
-        assertThat(statuses).containsEntry("c01-02", SEVERED).containsEntry("c02-04", OPEN)
+        assertThat(statuses).containsEntry("c01-02", DROPPED).containsEntry("c02-04", OPEN)
     }
 
     @Test
@@ -147,7 +163,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `severed branch stays reachable when it joins the chosen branch`() {
+    fun `dropped branch stays reachable when it joins the chosen branch`() {
         switchLayer.lockedRouteNodeId = "n02"
         val statuses = calculateConnectionStatuses(nodes, connections)
 
@@ -156,7 +172,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `severed branch is unreachable when it does not join the chosen branch`() {
+    fun `dropped branch is unreachable when it does not join the chosen branch`() {
         switchLayer.lockedRouteNodeId = "n02"
         val treeConnections = connections.filter { it.id != "c03-04" }
         val statuses = calculateConnectionStatuses(nodes, treeConnections)
@@ -192,6 +208,53 @@ class NetworkSwitchServiceTest {
         verify { nodeEntityService.save(nodes[1]) }
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_TERMINAL_RECEIVE, any()) }
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_CONNECTIONS_UPDATED, any()) }
+        verify { runService.makeNeighborConnectable(nodes[1], "n02") }
+    }
+
+    @Test
+    fun `hackers cut off from the start node by the choice are disconnected`() {
+        every { connectionEntityService.getAll(SITE_ID) } returns connections.filter { it.id != "c03-04" }
+        val onChosenBranch = hackerAt("h-east", "n02")
+        val onDroppedBranch = hackerAt("h-west", "n03")
+        val atSwitch = hackerAt("h-switch", "n01")
+        every { hackerStateEntityService.findAllHackersInSite(SITE_ID) } returns listOf(onChosenBranch, onDroppedBranch, atSwitch)
+
+        networkSwitchService.hack(SWITCH_LAYER_ID, listOf("east"))
+
+        verify(exactly = 1) { runService.hackerDisconnect(any(), any()) }
+        verify { runService.hackerDisconnect(onDroppedBranch, any()) }
+    }
+
+    @Test
+    fun `hackers on a dropped branch that joins the chosen branch stay connected`() {
+        every { hackerStateEntityService.findAllHackersInSite(SITE_ID) } returns listOf(hackerAt("h-west", "n03"))
+
+        networkSwitchService.hack(SWITCH_LAYER_ID, listOf("east"))
+
+        verify(exactly = 0) { runService.hackerDisconnect(any(), any()) }
+    }
+
+    @Test
+    fun `lock changed by the GM informs the site like a hack does`() {
+        switchLayer.lockedRouteNodeId = "n03"
+
+        networkSwitchService.lockChanged(nodes[1], switchLayer)
+
+        val receive = slot<ConnectionService.TerminalReceive>()
+        verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_TERMINAL_RECEIVE, capture(receive)) }
+        assertThat(receive.captured.lines.single()).contains("locked to [b]west").contains("Dropped routes: [ok]02")
+        verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_CONNECTIONS_UPDATED, any()) }
+        verify { runService.makeNeighborConnectable(nodes[1], "n03") }
+    }
+
+    @Test
+    fun `unlock by the GM informs the site`() {
+        networkSwitchService.lockChanged(nodes[1], switchLayer)
+
+        val receive = slot<ConnectionService.TerminalReceive>()
+        verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_TERMINAL_RECEIVE, capture(receive)) }
+        assertThat(receive.captured.lines.single()).contains("unlocked. Routes back in standby.")
+        verify(exactly = 0) { runService.makeNeighborConnectable(any(), any()) }
     }
 
     @Test
@@ -220,7 +283,7 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `move is blocked until a choice is made, and severed afterwards`() {
+    fun `move is blocked until a choice is made, and dropped afterwards`() {
         assertThat(networkSwitchService.checkMove(nodes[0], nodes[1])).isNull()
         assertThat(networkSwitchService.checkMove(nodes[1], nodes[2])).contains("held in standby by a network switch")
         assertThat(networkSwitchService.checkMove(nodes[2], nodes[1])).contains("held in standby by a network switch")

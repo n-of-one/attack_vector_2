@@ -32,8 +32,11 @@ class JumpEffectHelper(
     private val networkSwitchService: NetworkSwitchService,
 ) {
 
-    fun jump(effect: ScriptEffect, siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String): ScriptExecution {
-        if (!networkSwitchService.isReachable(siteId, targetNodeId, pendingIsOpen = false)) {
+    fun jump(
+        effect: ScriptEffect, siteId: String, currentNodeId: String, targetNodeId: String, hackerState: HackerStateRunning, targetDescription: String,
+        pendingIsOpen: Boolean,
+    ): ScriptExecution {
+        if (!networkSwitchService.isReachable(siteId, targetNodeId, pendingIsOpen)) {
             return ScriptExecution("[error]Jump aborted:[/] no route to ${targetDescription}, dropped by a network switch.")
         }
         val blockedType = JumpBlockedType.valueOf(effect.value!!)

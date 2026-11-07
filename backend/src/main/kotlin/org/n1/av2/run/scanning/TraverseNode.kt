@@ -13,6 +13,7 @@ data class TraverseNode(
     var visited: Boolean = false,
     var unhackedIce: Boolean,
 ) {
+    val droppedConnections: MutableSet<TraverseNode> = HashSet() // only filled when dropped connections are excluded from connections
     // for unit test
     constructor(name: String) : this(name, name, HashSet(), null, false, false)
 

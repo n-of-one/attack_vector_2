@@ -9,6 +9,7 @@ import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightOption
 import org.n1.av2.layer.app.status_light.StatusLightService
 import org.n1.av2.layer.other.core.CoreLayer
+import org.n1.av2.layer.other.networkswitch.LOCKED_ROUTE_NODE_ID
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
 import org.n1.av2.platform.connection.ConnectionService
@@ -20,6 +21,7 @@ import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.ConnectionEntityService
+import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.n1.av2.site.entity.enums.LayerType
@@ -196,8 +198,19 @@ class EditorService(
         nodeEntityService.save(node)
         sendLayerUpdateMessage(command.siteId, command.nodeId, layer)
         siteValidationService.validate(command.siteId)
-        if (layer is NetworkSwitchLayer) {
+        if (layer is NetworkSwitchLayer) processNetworkSwitchSideEffects(command, node, layer)
+    }
+
+    private fun processNetworkSwitchSideEffects(
+        command: EditLayerDataCommand,
+        node: Node,
+        layer: NetworkSwitchLayer
+    ) {
+        if (command.key == LOCKED_ROUTE_NODE_ID) {
+            networkSwitchService.lockChanged(node, layer)
+        } else {
             networkSwitchService.sendConnectionStatuses(command.siteId)
+            networkSwitchService.disconnectHackersCutOffFromStart(command.siteId)
         }
     }
 

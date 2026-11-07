@@ -1,5 +1,7 @@
 package org.n1.av2.run.scanning
 
+import org.n1.av2.layer.other.networkswitch.ConnectionStatus.DROPPED
+import org.n1.av2.layer.other.networkswitch.calculateConnectionStatuses
 import org.n1.av2.site.entity.ConnectionEntityService
 import org.n1.av2.site.entity.Node
 import org.springframework.stereotype.Service
@@ -12,16 +14,22 @@ class TraverseNodeService(
     val connectionEntityService: ConnectionEntityService
 ) {
 
-    fun createTraverseNodes(siteId: String, nodes: List<Node>): Map<String, TraverseNode> {
+    fun createTraverseNodes(siteId: String, nodes: List<Node>, excludeDropped: Boolean = false): Map<String, TraverseNode> {
         val connections = connectionEntityService.getAll(siteId)
+        val statusById = if (excludeDropped) calculateConnectionStatuses(nodes, connections) else emptyMap()
 
         val traverseNodes = nodes.map { TraverseNode(nodeId = it.id, networkId = it.networkId, unhackedIce = it.unhackedIce) }
         val traverseNodesById = traverseNodes.associate { it.nodeId to it }
         connections.forEach {
             val from = traverseNodesById[it.fromId] ?: throw IllegalStateException("Node ${it.fromId} not found in ${siteId} in ${it.id}")
             val to = traverseNodesById[it.toId] ?: throw IllegalStateException("Node ${it.toId} not found in ${siteId} in ${it.id}")
-            from.connections.add(to)
-            to.connections.add(from)
+            if (statusById[it.id] == DROPPED) {
+                from.droppedConnections.add(to)
+                to.droppedConnections.add(from)
+            } else {
+                from.connections.add(to)
+                to.connections.add(from)
+            }
         }
         return traverseNodesById
     }

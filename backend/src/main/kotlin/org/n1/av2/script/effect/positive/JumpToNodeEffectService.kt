@@ -42,6 +42,6 @@ class JumpToNodeEffectService(
 
         val currentNodeId = hackerState.currentNodeId ?: error("Current node ID not set.")
 
-        return jumpEffectHelper.jump(effect, hackerState.siteId, currentNodeId, targetNode!!.id, hackerState, targetNetworkId)
+        return jumpEffectHelper.jump(effect, hackerState.siteId, currentNodeId, targetNode!!.id, hackerState, targetNetworkId, pendingIsOpen = false)
     }
 }

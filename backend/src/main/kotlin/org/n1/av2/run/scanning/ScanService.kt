@@ -51,7 +51,7 @@ class ScanService(
             connectionService.replyTerminalReceive("Scan blocked by ICE at [ok]${scanNode.networkId}")
         }
 
-        val traverseNodesById = traverseNodeService.createTraverseNodes(run.siteId, nodes)
+        val traverseNodesById = traverseNodeService.createTraverseNodes(run.siteId, nodes, excludeDropped = true)
 
         val discoveries = determineDiscoveries(scanNode.id, run, traverseNodesById, ignoreIceAtScanNode)
 
@@ -94,7 +94,12 @@ class ScanService(
         val discoveredIceNeighbors = (iceNeighbors - scannedNodes.toSet()).filter { run.nodeScanById[it.nodeId]!!.status.rank < UNCONNECTABLE_1.rank }
         val neighborDiscoveries = discoveredIceNeighbors.map { Discovery(it.nodeId, UNCONNECTABLE_1) }
 
-        return (iceDiscoveries + regularDiscoveries + neighborDiscoveries)
+        val droppedNeighbors = scannedNodes.flatMap { it.droppedConnections }.distinct() - scannedNodes.toSet() - discoveredIceNeighbors.toSet()
+        val droppedNeighborDiscoveries = droppedNeighbors
+            .filter { run.nodeScanById[it.nodeId]!!.status.rank < UNCONNECTABLE_1.rank }
+            .map { Discovery(it.nodeId, UNCONNECTABLE_1) }
+
+        return (iceDiscoveries + regularDiscoveries + neighborDiscoveries + droppedNeighborDiscoveries)
     }
 
     fun createInitialNodeScans(siteId: String): MutableMap<String, NodeScan> {

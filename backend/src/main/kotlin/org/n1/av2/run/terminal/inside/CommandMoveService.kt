@@ -175,6 +175,11 @@ class CommandMoveService(
             connectionService.replyTerminalSetLocked(false)
             return
         }
+        if (!networkSwitchService.isReachable(run.siteId, nodeId, pendingIsOpen = true)) {
+            // a network switch dropped the route while the hacker was moving
+            networkSwitchService.disconnectCutOff(hackerState)
+            return
+        }
 
         connectionService.toUser(userId, ServerActions.SERVER_LEAVE_NODE)
 

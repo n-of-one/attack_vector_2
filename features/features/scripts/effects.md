@@ -106,7 +106,7 @@ Teleports to another hacker's current node.
 
 ## Capabilities
 - Configurable block mode: BLOCKED_BY_ICE or NOT_BLOCKED_BY_ICE
-- Blocked by pending or dropped network switch routes
+- Blocked by dropped network switch routes (pending routes pass)
 
 ---
 

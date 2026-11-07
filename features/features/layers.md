@@ -86,5 +86,6 @@ Lets a hacker choose one of the connections (routes) of its node. The routes tha
 
 ## Capabilities
 - `hack <layer> <route>` chooses a route, the choice is site-wide
-- Until a choice is made, all routes are pending and block movement. Dropped routes also block jumps and scripts, but not scans
+- Until a choice is made, all routes are pending and block movement (jumping to a hacker passes). Dropped routes also block jumps, scripts and scans (the node behind is shown, not scanned)
+- Hackers that are cut off from the start node by a dropped route are disconnected
 - Survives a site reset, unlocked by hacking the linked core (can be in another site) or by the GM

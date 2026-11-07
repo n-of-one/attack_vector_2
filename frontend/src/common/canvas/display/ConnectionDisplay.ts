@@ -10,7 +10,7 @@ import {APPEAR_ANIMATION_TICKS} from "./DisplayAnimationConstants";
 const STYLE_BY_STATUS = {
     OPEN: {stroke: "#cccccc", strokeDashArray: [3, 3], opacity: 0.5},
     PENDING: {stroke: "#f0ad4e", strokeDashArray: [3, 3], opacity: 0.9},
-    SEVERED: {stroke: "#777777", strokeDashArray: [1, 6], opacity: 0.4},
+    DROPPED: {stroke: "#777777", strokeDashArray: [1, 6], opacity: 0.4},
 }
 
 export class ConnectionDisplay implements Display {
@@ -18,7 +18,7 @@ export class ConnectionDisplay implements Display {
     canvas: Canvas
     schedule: Schedule | null
     connectionIcon: fabric.Line
-    severedIcon: fabric.Text
+    droppedIcon: fabric.Text
     fromDisplay: NodeDisplay
     toDisplay: NodeDisplay
 
@@ -58,8 +58,8 @@ export class ConnectionDisplay implements Display {
         this.x = (fromDisplay.x + toDisplay.x) / 2
         this.y = (fromDisplay.y + toDisplay.y) / 2
 
-        this.severedIcon = new fabric.Text("⌁", {
-            fill: STYLE_BY_STATUS.SEVERED.stroke,
+        this.droppedIcon = new fabric.Text("⌁", {
+            fill: STYLE_BY_STATUS.DROPPED.stroke,
             fontFamily: "courier",
             fontSize: 28,
             left: this.x,
@@ -68,18 +68,18 @@ export class ConnectionDisplay implements Display {
             selectable: false,
             hoverCursor: 'default',
         })
-        this.canvas.add(this.severedIcon)
+        this.canvas.add(this.droppedIcon)
     }
 
     getAllIcons() {
-        return [this.connectionIcon, this.severedIcon]
+        return [this.connectionIcon, this.droppedIcon]
     }
 
     appear() {
         if (!this.schedule) throw Error("schedule not initialized")
         this.schedule.run(3, () => {
             animate(this.canvas, this.connectionIcon, "opacity", this.lineOpacity(), APPEAR_ANIMATION_TICKS);
-            animate(this.canvas, this.severedIcon, "opacity", this.severedIconOpacity(), APPEAR_ANIMATION_TICKS);
+            animate(this.canvas, this.droppedIcon, "opacity", this.droppedIconOpacity(), APPEAR_ANIMATION_TICKS);
         });
     }
 
@@ -88,21 +88,21 @@ export class ConnectionDisplay implements Display {
         this.status = status
         this.connectionIcon.set({stroke: STYLE_BY_STATUS[status].stroke, strokeDashArray: STYLE_BY_STATUS[status].strokeDashArray})
         animate(this.canvas, this.connectionIcon, "opacity", this.lineOpacity(), APPEAR_ANIMATION_TICKS);
-        animate(this.canvas, this.severedIcon, "opacity", this.severedIconOpacity(), APPEAR_ANIMATION_TICKS);
+        animate(this.canvas, this.droppedIcon, "opacity", this.droppedIconOpacity(), APPEAR_ANIMATION_TICKS);
     }
 
     private lineOpacity() {
         return (this.shownInEditor && this.status === "OPEN") ? 1 : STYLE_BY_STATUS[this.status].opacity
     }
 
-    private severedIconOpacity() {
-        return (this.status === "SEVERED") ? 0.8 : 0
+    private droppedIconOpacity() {
+        return (this.status === "DROPPED") ? 0.8 : 0
     }
 
     show() {
         this.shownInEditor = true
         this.connectionIcon.opacity = this.lineOpacity();
-        this.severedIcon.opacity = this.severedIconOpacity();
+        this.droppedIcon.opacity = this.droppedIconOpacity();
     }
     //
     // moveFrom(newFromDisplay) {
@@ -123,7 +123,7 @@ export class ConnectionDisplay implements Display {
 
         this.x = (this.fromDisplay.x + this.toDisplay.x) / 2
         this.y = (this.fromDisplay.y + this.toDisplay.y) / 2
-        this.severedIcon.set({left: this.x, top: this.y})
+        this.droppedIcon.set({left: this.x, top: this.y})
     }
 
     terminate() {

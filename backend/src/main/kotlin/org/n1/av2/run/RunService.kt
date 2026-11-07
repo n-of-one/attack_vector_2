@@ -251,20 +251,39 @@ class RunService(
                 "nodeHacked" to true
             )
 
-            run.nodeScanById.filterKeys { nodeId -> neighboringNodeIds.contains(nodeId) }
-                .forEach { (neighboringNodeId, nodeScan) ->
-                    if (nodeScan.status == UNDISCOVERED_0 || nodeScan.status == UNCONNECTABLE_1) {
-                        run.updateScanStatus(neighboringNodeId, CONNECTABLE_2)
-                        connectionService.toRun(
-                            run.runId,
-                            ServerActions.SERVER_UPDATE_NODE_STATUS,
-                            "nodeId" to neighboringNodeId,
-                            "newStatus" to CONNECTABLE_2
-                        )
-                    }
-                }
+            makeConnectable(run, neighboringNodeIds)
             runEntityService.save(run)
         }
+    }
+
+    /**
+     * In every run where [node] is scanned, makes its neighbour [neighborNodeId] connectable, so hackers can move there.
+     */
+    fun makeNeighborConnectable(node: Node, neighborNodeId: String) {
+        runEntityService.findAllForSiteId(node.siteId).forEach { run ->
+            val nodeScan = run.nodeScanById[node.id] ?: return@forEach
+            if (!nodeScan.status.isOneOf(ICE_PROTECTED_3, FULLY_SCANNED_4)) return@forEach
+
+            if (makeConnectable(run, listOf(neighborNodeId))) runEntityService.save(run)
+        }
+    }
+
+    private fun makeConnectable(run: Run, nodeIds: Collection<String>): Boolean {
+        var changed = false
+        run.nodeScanById.filterKeys { nodeId -> nodeIds.contains(nodeId) }
+            .forEach { (nodeId, nodeScan) ->
+                if (nodeScan.status == UNDISCOVERED_0 || nodeScan.status == UNCONNECTABLE_1) {
+                    run.updateScanStatus(nodeId, CONNECTABLE_2)
+                    connectionService.toRun(
+                        run.runId,
+                        ServerActions.SERVER_UPDATE_NODE_STATUS,
+                        "nodeId" to nodeId,
+                        "newStatus" to CONNECTABLE_2
+                    )
+                    changed = true
+                }
+            }
+        return changed
     }
 
     fun gmRefreshSite(siteId: String) {

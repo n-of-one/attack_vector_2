@@ -8,7 +8,7 @@ export interface Connection {
     toId: string,
 }
 
-export type ConnectionStatus = "OPEN" | "PENDING" | "SEVERED"
+export type ConnectionStatus = "OPEN" | "PENDING" | "DROPPED"
 
 export interface ConnectionStatusById {
     [connectionId: string]: ConnectionStatus

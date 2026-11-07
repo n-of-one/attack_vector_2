@@ -125,7 +125,47 @@ test('3.3.3 - Unlock the network switch via the core', async ({page}: { page: Pa
 })
 
 
-test('3.3.4 - Cleanup', async ({page}: { page: Page }) => {
+test('3.3.4 - Scan stops at a dropped route', async ({page}: { page: Page }) => {
+    test.setTimeout(40_000);
+    const [login, gm, hacker] = [new LoginPage(page), new GmPage(page), new HackerPage(page)]
+
+    await test.step("Lock the switch to archives, dropping research (02)", async () => {
+        await login.loginUsingLink("hacker")
+        await hacker.joinExistingRun(SITE_NAME)
+        await hacker.startAttack(START_ATTACK_QUICK)
+        await hacker.typeCommand("qmove 01", "Entered node 01")
+        await hacker.typeCommand("hack 1 archives", "Topology change switch 01 locked to archives. Dropped routes: 02")
+    })
+
+    await test.step("Remove the run, so the next scan starts with an unscanned site", async () => {
+        await login.loginUsingLink("gm")
+        await gm.deleteAllRuns(SITE_NAME)
+    })
+
+    await test.step("Scan discovers 01, 03, 05 and the dropped 02, but not 04 behind it", async () => {
+        await login.loginUsingLink("hacker")
+        await hacker.startNewRun(SITE_NAME)
+        await hacker.typeCommand("scan", "New nodes discovered: 4", 10)
+        await hacker.waitForScanAnimationFinished()
+    })
+
+    await test.step("Unlock and lock to research: the unscanned 02 becomes connectable without a new scan", async () => {
+        await hacker.startAttack(START_ATTACK_QUICK)
+        await hacker.typeCommand("qmove 05", "Entered node 05")
+        await hacker.typeCommand("hack 1", "- unlocked network switch in node 01")
+        await hacker.typeCommand("qmove 01", "Entered node 01")
+        await hacker.typeCommand("hack 1 research", "Topology change switch 01 locked to research. Dropped routes: 03")
+        await hacker.typeCommand("move 02", "Entered node 02: research", 10)
+    })
+
+    await test.step("Unlock the switch again, so the next test run starts with an unlocked switch", async () => {
+        await hacker.typeCommand("qmove 05", "Entered node 05")
+        await hacker.typeCommand("hack 1", "- unlocked network switch in node 01")
+    })
+})
+
+
+test('3.3.5 - Cleanup', async ({page}: { page: Page }) => {
     test.setTimeout(20_000);
     const [login, gm] = [new LoginPage(page), new GmPage(page)]
 

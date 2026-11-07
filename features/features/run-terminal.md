@@ -10,7 +10,7 @@ Scans the site from outside, revealing nodes on the network map.
 
 ## Capabilities
 - Requires the SCAN skill
-- Reveals nodes up to but not past ICE-protected nodes
+- Reveals nodes up to but not past ICE-protected nodes and dropped network switch routes
 - works outside and inside
 
 
@@ -108,7 +108,7 @@ Teleports to another hacker's current node.
 ## Capabilities
 - Requires the JUMP_TO_HACKER skill
 - Teleports instantly without being blocked by ICE
-- Blocked by pending or dropped network switch routes
+- Blocked by dropped network switch routes (pending routes pass)
 
 ---
 
