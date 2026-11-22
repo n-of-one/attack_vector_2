@@ -40,7 +40,7 @@
 /*}*/
 
 .iceWsElement_40 {
-    color: #31708f;
+    color: var(--ws-letter-color, #31708f);
     font-size: 18px;
     transition: background-color 0.5s, color 0.5s;
 
@@ -51,7 +51,7 @@
 }
 
 .iceWsElement_30 {
-    color: #31708f;
+    color: var(--ws-letter-color, #31708f);
     font-size: 16px;
     transition: background-color 0.5s, color 0.5s;
 
@@ -67,6 +67,154 @@
     position: relative;
     top: -2px
 }
+
+.wsColor_LIGHT_BLUE {
+    --ws-letter-color: #5bc0de;
+}
+
+.wsColor_AMBER {
+    --ws-letter-color: #ffb000;
+}
+
+.wsFont_19 .iceWsElement_30, .wsFont_22 .iceWsElement_30 {
+    padding: 0;
+    width: 24px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+}
+
+.wsFont_19 .iceWsElement_40, .wsFont_22 .iceWsElement_40 {
+    padding: 0;
+    width: 32px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+}
+
+.wsFont_19 .ws, .wsFont_22 .ws {
+    top: 0;
+}
+
+.wsOptions {
+    margin-top: 16px;
+    width: 260px;
+    background-color: #2b2b2b;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+}
+
+.wsOptionsHeader {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px 10px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-family: inherit;
+    font-size: var(--app-font-size);
+    cursor: pointer;
+}
+
+.wsOptionsHeader:hover {
+    color: #ddd;
+}
+
+.wsOptionsBody {
+    padding: 0 10px 10px 10px;
+}
+
+.wsOptionRow {
+    margin-top: 8px;
+}
+
+.wsOptionRowTitle {
+    color: #888;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.wsOptionTiles {
+    display: flex;
+    gap: 6px;
+}
+
+.wsOptionTile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 76px;
+    padding: 4px 2px 2px 2px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: #888;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.wsOptionTile:hover {
+    border-color: #777;
+    color: #ccc;
+}
+
+.wsOptionTileSelected, .wsOptionTileSelected:hover {
+    border-color: #5bc0de;
+    box-shadow: 0 0 0 1px #5bc0de;
+    color: #ddd;
+}
+
+.wsOptionTilePreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #2e2e2e;
+    border-radius: 2px;
+}
+
+.wsOptionTileCaption {
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+.wsOptionLetter {
+    color: var(--ws-letter-color, #31708f);
+    line-height: 1;
+}
+
+.wsOptionGrid, .wsOptionNoise {
+    width: 36px;
+    height: 36px;
+    border-radius: 2px;
+}
+
+.wsOptionGrid {
+    background-image: linear-gradient(to right, var(--ws-grid-line) 2px, transparent 2px),
+                      linear-gradient(to bottom, var(--ws-grid-line) 2px, transparent 2px);
+    background-size: 12px 12px;
+    background-position: -1px -1px;
+}
+
+.wsOptionGrid_DEFAULT { --ws-grid-line: rgba(0, 0, 0, 0.3); }
+.wsOptionGrid_OFF { --ws-grid-line: transparent; }
+.wsOptionGrid_LIGHT { --ws-grid-line: #444; }
+
+.wsOptionNoise_ON {
+    background: url(/img/frontier/ice/wordSearch/darknoise_4_1552_852-2.png) center;
+}
+
+.wsOptionNoise_OFF {
+    background-color: #333;
+}
+
+.wsFont_19 .iceWsElement_30 { font-size: 19px; }
+.wsFont_22 .iceWsElement_30 { font-size: 22px; }
+.wsFont_19 .iceWsElement_40 { font-size: 21px; }
+.wsFont_22 .iceWsElement_40 { font-size: 24px; }
 
 .wsCORRECT {
     transition: background-color 2s, color 2s;

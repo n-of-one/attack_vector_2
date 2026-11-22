@@ -8,15 +8,19 @@ that individual components work correctly.
 
 
 ## Manual setup
-
-You need to manually start AttackVector (frontend and backend).
+- You need to manually start AttackVector (frontend and backend).
+- The database needs to be compatible. The easiest way to make a compatible database is to start from a clean database.
 
 
 ## Running tests
+Run all tests: `npx playwright test` 
 
-`npx playwright test` 
-or
-`npx playwright test --ui`
+Run tests in the UI: `npx playwright test --ui`
+
+Run a single test to check that the server is running with compatible configuration for the tests:
+
+`npx playwright test --browser=chromium e2e/1.0-happy-flow.spec.ts`
+
 
 
 ## Developing new tests
