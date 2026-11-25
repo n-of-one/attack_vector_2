@@ -352,7 +352,7 @@ class RunService(
 
         connectionService.toRun(run.runId,ServerActions.SERVER_NOTIFICATION,
             NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteName}"))
-        connectionService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
+        connectionService.toRun(run.runId, ServerActions.SERVER_RETURN_HOME)
     }
 
     fun updateRunLinksForResetSite(siteId: String) {
