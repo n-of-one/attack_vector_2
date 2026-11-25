@@ -25,9 +25,11 @@ Layer classes and editor panels are listed in `editor.md`. Hack dispatch per lay
 - **Connection display (map)**: `frontend/src/common/canvas/display/ConnectionDisplay.ts`
 
 ## Uplink Layer / Internal Site
-- **Backend service**: `backend/src/main/kotlin/org/n1/av2/layer/other/uplink/UplinkService.kt` (hack, arrival, return when leaving)
+- **Backend service**: `backend/src/main/kotlin/org/n1/av2/layer/other/uplink/UplinkService.kt` (hack, target run, return when leaving)
+- **Connecting to the ingress node (attack and uplink)**: `backend/src/main/kotlin/org/n1/av2/run/RunIngressService.kt`
 - **Return hook**: `RunService.hackerDisconnect` (`backend/src/main/kotlin/org/n1/av2/run/RunService.kt`)
 - **Entering a site via an uplink (up or down)**: `/run/enterSiteFromUplink` in `RunWsController.kt` → `UplinkService.enterSiteFromUplink`
-- **State**: `uplinkReturns` / `uplinkArrivalNodeId` in `backend/src/main/kotlin/org/n1/av2/hacker/hackerstate/HackerStateEntityAndRepo.kt`, `uplinkRunIds` / `parentRunId` in `backend/src/main/kotlin/org/n1/av2/run/entity/RunEntityAndRepo.kt`
+- **State**: `ingressNodeId` / `uplinkReturns` / `uplinkReturnNodeId` in `backend/src/main/kotlin/org/n1/av2/hacker/hackerstate/HackerStateEntityAndRepo.kt`, `uplinkRunIds` / `parentRunId` in `backend/src/main/kotlin/org/n1/av2/run/entity/RunEntityAndRepo.kt`
+- **Revealing the ingress node and the start node in a run**: `RunService.revealNode`, `RunService.enterRunOutside`
 - **Hiding internal sites**: `RunService.startNewRunAndReply`, `RunService.prepareToEnterRun`, `backend/src/main/kotlin/org/n1/av2/run/runlink/RunLinkService.kt`
 - **Connection sequence and run switch (frontend)**: `frontend/src/hacker/RunServerActionProcessor.ts`

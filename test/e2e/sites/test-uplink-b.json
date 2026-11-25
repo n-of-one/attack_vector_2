@@ -1,0 +1,106 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-11-25 22:21:51"
+  },
+  "siteProperties" : {
+    "siteId" : "site-1941-4516",
+    "name" : "test-uplink-b",
+    "description" : "",
+    "purpose" : "e2e test",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : false,
+    "internal" : true
+  },
+  "nodes" : [ {
+    "id" : "node-47d1-4864",
+    "siteId" : "site-1941-4516",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-47d1-4864:layer-0000",
+      "level" : 0,
+      "name" : "OS",
+      "nodeName" : "entry",
+      "note" : "",
+      "type" : "OS"
+    } ],
+    "networkId" : "00",
+    "hacked" : true,
+    "ice" : false
+  }, {
+    "id" : "node-d168-4d45",
+    "siteId" : "site-1941-4516",
+    "type" : "TRANSIT_2",
+    "x" : 465,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-d168-4d45:layer-0000",
+      "level" : 0,
+      "name" : "OS",
+      "nodeName" : "hallway",
+      "note" : "",
+      "type" : "OS"
+    }, {
+      "hacked" : false,
+      "hint" : "",
+      "ice" : true,
+      "id" : "node-d168-4d45:layer-f7f5",
+      "level" : 1,
+      "name" : "Rahasy",
+      "note" : "",
+      "original" : null,
+      "password" : "test",
+      "strength" : "AVERAGE",
+      "type" : "PASSWORD_ICE"
+    } ],
+    "networkId" : "01",
+    "hacked" : false,
+    "ice" : true
+  }, {
+    "id" : "node-cd79-4a6e",
+    "siteId" : "site-1941-4516",
+    "type" : "DATA_STORE",
+    "x" : 305,
+    "y" : 432,
+    "layers" : [ {
+      "id" : "node-cd79-4a6e:layer-0000",
+      "level" : 0,
+      "name" : "OS",
+      "nodeName" : "vault",
+      "note" : "",
+      "type" : "OS"
+    } ],
+    "networkId" : "03",
+    "hacked" : true,
+    "ice" : false
+  }, {
+    "id" : "node-53d4-4854",
+    "siteId" : "site-1941-4516",
+    "type" : "TRANSIT_3",
+    "x" : 465,
+    "y" : 312,
+    "layers" : [ {
+      "id" : "node-53d4-4854:layer-0000",
+      "level" : 0,
+      "name" : "OS",
+      "nodeName" : "records",
+      "note" : "",
+      "type" : "OS"
+    } ],
+    "networkId" : "02",
+    "hacked" : true,
+    "ice" : false
+  } ],
+  "connections" : [ {
+    "fromId" : "node-47d1-4864",
+    "toId" : "node-d168-4d45"
+  }, {
+    "fromId" : "node-53d4-4854",
+    "toId" : "node-d168-4d45"
+  }, {
+    "fromId" : "node-d168-4d45",
+    "toId" : "node-cd79-4a6e"
+  } ]
+}

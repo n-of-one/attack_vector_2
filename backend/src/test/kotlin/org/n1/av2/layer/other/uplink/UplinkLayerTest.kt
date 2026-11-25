@@ -13,6 +13,7 @@ import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.LayerEditContext
 import org.n1.av2.layer.LayerEditServices
 import org.n1.av2.site.entity.Node
+import org.n1.av2.site.entity.NodeRepo
 import org.n1.av2.site.entity.SiteProperties
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.n1.av2.site.entity.SitePropertiesRepo
@@ -27,6 +28,7 @@ class UplinkLayerTest {
     private lateinit var node: Node
     private lateinit var validationContext: ValidationContext
     private val sitePropertiesRepo = mockk<SitePropertiesRepo>()
+    private val nodeRepo = mockk<NodeRepo>()
     private val sitePropertiesEntityService = mockk<SitePropertiesEntityService>()
     private val siteValidationService = mockk<SiteValidationService>(relaxed = true)
     private val layerEditServices = LayerEditServices(mockk(), sitePropertiesEntityService, siteValidationService, mockk(), mockk())
@@ -42,7 +44,10 @@ class UplinkLayerTest {
         node = Node("n01", SITE_ID, NodeType.TRANSIT_2, 0, 0, mutableListOf(uplink), "01")
         every { sitePropertiesRepo.findBySiteId(any()) } answers { sites.find { it.siteId == firstArg() } }
         every { sitePropertiesEntityService.getBySiteId(any()) } answers { sites.first { it.siteId == firstArg() } }
-        validationContext = ValidationContext(node, listOf(node), emptyList(), sites[0], sitePropertiesRepo, mockk(), Duration.ZERO)
+        every { nodeRepo.findBySiteIdAndNetworkId(any(), any()) } returns null
+        every { nodeRepo.findBySiteIdAndNetworkId("site-external", "05") } returns
+            Node("e05", "site-external", NodeType.TRANSIT_2, 0, 0, mutableListOf(), "05")
+        validationContext = ValidationContext(node, listOf(node), emptyList(), sites[0], sitePropertiesRepo, nodeRepo, Duration.ZERO)
     }
 
     private fun editContext() = LayerEditContext(SITE_ID, node, layerEditServices)
@@ -89,6 +94,28 @@ class UplinkLayerTest {
         update(TARGET_SITE_ID, "site-external")
         assertThat(validationMessages())
             .containsExactly(SiteStateMessageType.INFO to "Uplink target site 'external' is not internal, it can also be reached from outside.")
+    }
+
+    @Test
+    fun `target node in an external site is valid, without info`() {
+        update(TARGET_SITE_ID, "site-external")
+        update(TARGET_NODE_NETWORK_ID, "05")
+        assertThat(validationMessages()).isEmpty()
+    }
+
+    @Test
+    fun `missing target node is an error`() {
+        update(TARGET_SITE_ID, "site-external")
+        update(TARGET_NODE_NETWORK_ID, "06")
+        assertThat(validationMessages()).containsExactly(SiteStateMessageType.ERROR to "Uplink target node '06' does not exist in site 'external'.")
+    }
+
+    @Test
+    fun `blank target node means the start node`() {
+        update(TARGET_NODE_NETWORK_ID, " 05 ")
+        assertThat(uplink.targetNodeNetworkId).isEqualTo("05")
+        update(TARGET_NODE_NETWORK_ID, " ")
+        assertThat(uplink.targetNodeNetworkId).isNull()
     }
 
     @Test

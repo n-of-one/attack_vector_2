@@ -142,16 +142,25 @@ class NetworkSwitchService(
         sendConnectionStatuses(node.siteId)
         if (lockedRoute == null) return
 
-        disconnectHackersCutOffFromStart(node.siteId)
+        disconnectHackersCutOffFromIngress(node.siteId)
         // The node behind the route could only be known as unconnectable, because scans do not go past a dropped route.
         runService.makeNeighborConnectable(node, lockedRoute.nodeId)
     }
 
-    fun disconnectHackersCutOffFromStart(siteId: String) {
-        val reachable = reachableNodeIds(siteId, pendingIsOpen = true)
-        if (reachable.isEmpty()) return // no start node
+    fun disconnectHackersCutOffFromIngress(siteId: String) {
+        val connections = connectionEntityService.getAll(siteId)
+        val nodes = nodeEntityService.findBySiteId(siteId)
+        val statusById = calculateConnectionStatuses(nodes, connections)
+        val reachableByIngressNodeId = mutableMapOf<String, Set<String>>()
+
         hackerStateEntityService.findAllHackersInSite(siteId)
-            .filter { it.activity == HackerActivity.INSIDE && it.currentNodeId !in reachable }
+            .filter { it.activity == HackerActivity.INSIDE && it.ingressNodeId != null }
+            .filter { hackerState ->
+                val reachable = reachableByIngressNodeId.getOrPut(hackerState.ingressNodeId!!) {
+                    calculateReachableNodeIds(hackerState.ingressNodeId, connections, statusById, pendingIsOpen = true)
+                }
+                hackerState.currentNodeId !in reachable
+            }
             .forEach { disconnectCutOff(it) }
     }
 
@@ -229,20 +238,21 @@ class NetworkSwitchService(
     }
 
     /**
-     * Reachable from the start node, ignoring ICE. Used for everything that is not a regular move to a neighbouring node.
+     * Reachable from the hacker's ingress node (where they connected to the site), ignoring ICE.
+     * A hacker outside the site has no ingress node: then reachable from the start node.
+     * Used for everything that is not a regular move to a neighbouring node.
      */
-    fun isReachable(siteId: String, targetNodeId: String, pendingIsOpen: Boolean): Boolean {
-        return reachableNodeIds(siteId, pendingIsOpen).contains(targetNodeId)
+    fun isReachable(siteId: String, ingressNodeId: String?, targetNodeId: String, pendingIsOpen: Boolean): Boolean {
+        val nodes = nodeEntityService.findBySiteId(siteId)
+        val fromNodeId = ingressNodeId ?: startNodeId(siteId, nodes) ?: return false
+        val connections = connectionEntityService.getAll(siteId)
+        val statusById = calculateConnectionStatuses(nodes, connections)
+        return calculateReachableNodeIds(fromNodeId, connections, statusById, pendingIsOpen).contains(targetNodeId)
     }
 
-    private fun reachableNodeIds(siteId: String, pendingIsOpen: Boolean): Set<String> {
-        val nodes = nodeEntityService.findBySiteId(siteId)
-        val connections = connectionEntityService.getAll(siteId)
+    private fun startNodeId(siteId: String, nodes: List<Node>): String? {
         val startNetworkId = sitePropertiesEntityService.getBySiteId(siteId).startNodeNetworkId
-        val startNode = nodes.find { it.networkId == startNetworkId } ?: return emptySet()
-
-        val statusById = calculateConnectionStatuses(nodes, connections)
-        return calculateReachableNodeIds(startNode.id, connections, statusById, pendingIsOpen)
+        return nodes.find { it.networkId == startNetworkId }?.id
     }
 
     /**

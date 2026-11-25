@@ -57,7 +57,7 @@ class CommandScanService(
         requireNotNull(hackerState.currentNodeId)
         val run = runEntityService.getByRunId(hackerState.runId)
         val node = nodeEntityService.findById(hackerState.currentNodeId)
-        initiateScanService.scanFromInside(run, node)
+        initiateScanService.scanFromInside(run, node, hackerState)
     }
 
     private fun checkHasScanSkill(): Boolean {

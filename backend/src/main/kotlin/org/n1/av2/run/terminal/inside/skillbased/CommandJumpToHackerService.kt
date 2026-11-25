@@ -70,7 +70,7 @@ class CommandJumpToHackerService(
             return
         }
 
-        if (!networkSwitchService.isReachable(hackerState.siteId, targetNodeId, pendingIsOpen = true)) {
+        if (!networkSwitchService.isReachable(hackerState.siteId, hackerState.ingressNodeId, targetNodeId, pendingIsOpen = true)) {
             connectionService.replyTerminalReceive("[error]Jump aborted:[/] no route to ${targetUser.name}, dropped by a network switch.")
             return
         }

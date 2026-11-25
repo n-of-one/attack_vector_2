@@ -78,8 +78,7 @@ enum class ServerActions {
     SERVER_HACKER_DC,                   // A hacker disconnects from the site but is still at the site
     SERVER_LEAVE_NODE,                  // Sent to frontend to disconnect any apps the hacker is in (ICE, switch, auth, ...)
 
-    SERVER_HACKER_START_ATTACK,         // A hacker starts the attack (connects to the entry site node)
-    SERVER_HACKER_START_UPLINK,         // A hacker hacks an uplink, the frontend shows the connection sequence
+    SERVER_HACKER_START_ATTACK,         // A hacker connects to the ingress node: attacking from outside, or via an uplink
     SERVER_HACKER_MOVE_START,           // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,          // step two of the move
 

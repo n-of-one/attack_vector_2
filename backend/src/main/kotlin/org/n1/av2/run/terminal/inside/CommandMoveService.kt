@@ -74,7 +74,7 @@ class CommandMoveService(
         requireNotNull(hackerState.currentNodeId)
         val currentNode = nodeEntityService.getById(hackerState.currentNodeId)
         if (hasActiveIce(currentNode)) {
-            if (!bypassingIceAtStartNode(currentNode, hackerState)) {
+            if (!bypassingIceAtIngress(currentNode, hackerState)) {
                 reportProtected()
                 return
             } else {
@@ -125,15 +125,11 @@ class CommandMoveService(
 
     private fun hasActiveIce(currentNode: Node) = currentNode.layers.any { it is IceLayer && !it.hacked }
 
-    private fun bypassingIceAtStartNode(currentNode: Node, hackerState: HackerStateRunning): Boolean {
+    private fun bypassingIceAtIngress(currentNode: Node, hackerState: HackerStateRunning): Boolean {
         val hasBypassSkill = skillService.currentUserHasSkill(SkillType.BYPASS)
         if (!hasBypassSkill) return false
 
-
-        val siteProperties = sitePropertiesEntityService.getBySiteId(hackerState.siteId)
-        val atStartNode = (siteProperties.startNodeNetworkId == currentNode.networkId)
-
-        return atStartNode
+        return currentNode.id == hackerState.ingressNodeId
     }
 
     private fun reportProtected(): Boolean {
@@ -141,17 +137,17 @@ class CommandMoveService(
         return false
     }
 
-    private fun handleMove(toNode: Node, hackerState: HackerStateRunning, bypassingIceAtStartNode: Boolean) {
+    private fun handleMove(toNode: Node, hackerState: HackerStateRunning, bypassingIce: Boolean) {
         connectionService.replyTerminalSetLocked(true)
 
         val timings = timingsService.skillAndConfigAdjusted(timingsService.MOVE_START, hackerState.userId)
 
         @Suppress("unused")
-        class StartMove(val userId: String, val nodeId: String, val bypassingIceAtStartNode: Boolean, val timings: Timings)
+        class StartMove(val userId: String, val nodeId: String, val bypassingIce: Boolean, val timings: Timings)
         connectionService.toRun(
             hackerState.runId, ServerActions.SERVER_HACKER_MOVE_START, StartMove(
                 hackerState.userId, toNode.id,
-                bypassingIceAtStartNode, timings
+                bypassingIce, timings
             )
         )
 
@@ -175,7 +171,7 @@ class CommandMoveService(
             connectionService.replyTerminalSetLocked(false)
             return
         }
-        if (!networkSwitchService.isReachable(run.siteId, nodeId, pendingIsOpen = true)) {
+        if (!networkSwitchService.isReachable(run.siteId, hackerState.ingressNodeId, nodeId, pendingIsOpen = true)) {
             // a network switch dropped the route while the hacker was moving
             networkSwitchService.disconnectCutOff(hackerState)
             return

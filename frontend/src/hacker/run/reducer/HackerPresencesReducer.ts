@@ -14,6 +14,7 @@ export interface HackerPresence {
     userName: string,
     icon: string,
     nodeId?: string,
+    ingressNodeId?: string, // where the hacker connected to the site: absent if they are outside and not connecting
     activity: HackerActivity,
 }
 

@@ -179,6 +179,16 @@ class EditorService(
         siteValidationService.validate(siteId)
         sendFullSiteToSite(siteId)
         context.runAfterSave()
+        validateSitesWithUplinksTo(siteId)
+    }
+
+    // Uplinks in other sites can target a node of this site by network id
+    private fun validateSitesWithUplinksTo(siteId: String) {
+        nodeEntityService.findAllNodesWithUplinkTo(siteId)
+            .map { it.siteId }
+            .distinct()
+            .filter { it != siteId }
+            .forEach { siteValidationService.validate(it) }
     }
 
     fun snap(siteId: String) {
@@ -201,6 +211,7 @@ class EditorService(
         val message = ServerUpdateNetworkId(command.nodeId, changedNode.networkId)
         connectionService.toSite(command.siteId, ServerActions.SERVER_UPDATE_NETWORK_ID, message)
         siteValidationService.validate(command.siteId)
+        validateSitesWithUplinksTo(command.siteId)
     }
 
     data class ServerUpdateLayer(val nodeId: String, val layerId: String, val layer: Layer)

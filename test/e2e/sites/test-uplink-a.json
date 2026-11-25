@@ -47,6 +47,15 @@
       "note" : "",
       "targetSiteId" : "site-uplb-0001",
       "targetSiteName" : "test-uplink-b"
+    }, {
+      "id" : "node-upla-0001:layer-0002",
+      "type" : "UPLINK",
+      "level" : 2,
+      "name" : "Back door",
+      "note" : "",
+      "targetSiteId" : "site-uplb-0001",
+      "targetSiteName" : "test-uplink-b",
+      "targetNodeNetworkId" : "03"
     } ],
     "networkId" : "01"
   } ],

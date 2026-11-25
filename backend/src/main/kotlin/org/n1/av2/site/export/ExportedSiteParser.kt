@@ -288,6 +288,7 @@ class ExportedSiteParser(
         id = id, level = level, name = name, note = note,
         targetSiteId = input.getAsTextOrNull("targetSiteId"),
         targetSiteName = input.getAsTextOrNull("targetSiteName"),
+        targetNodeNetworkId = input.getAsTextOrNull("targetNodeNetworkId"),
     )
 
     private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {

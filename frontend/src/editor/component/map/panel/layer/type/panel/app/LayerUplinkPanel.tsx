@@ -4,6 +4,7 @@ import {LayerPanel} from "../LayerPanel"
 import {LayerDetails, NodeI} from "../../../../../../../../common/sites/SiteModel";
 import {EditorState} from "../../../../../../../EditorRootReducer";
 import {AttributeDropdown} from "../../../element/AttributeDropdown";
+import {TextAttribute} from "../../../element/TextAttribute";
 import {LayerUplink} from "../../../../../../../../common/model/layer/LayerUplink";
 import {SiteInfo} from "../../../../../../../../common/sites/SitesReducer";
 import userAuthorizations, {ROLE_GM} from "../../../../../../../../common/user/UserAuthorizations";
@@ -29,8 +30,13 @@ export const LayerUplinkPanel = ({node, layer}: Props) => {
                                value={layerUplink.targetSiteId}
                                options={options}
                                save={value => layerUplink.saveTargetSiteId(value)}
-                               tooltipId="targetSiteId" tooltipText="Hacking this layer connects the hacker to the start node of this site.
+                               tooltipId="targetSiteId" tooltipText="Hacking this layer connects the hacker to this site.
                                Make the target site internal, so it can only be reached via an uplink."/>
+            <TextAttribute key={key("targetNodeNetworkId")} size="small" label="Target node"
+                           value={layerUplink.targetNodeNetworkId}
+                           save={value => layerUplink.saveTargetNodeNetworkId(value)}
+                           placeholder="start node"
+                           help="Network id of the node in the target site where the hacker arrives. Empty: the start node of the target site."/>
         </LayerPanel>
     )
 }

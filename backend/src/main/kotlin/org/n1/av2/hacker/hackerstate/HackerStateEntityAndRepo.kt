@@ -19,7 +19,7 @@ enum class UplinkActivity {
     NONE,
     CONNECTING, // up
     RETURNING, // down, to the uplink node
-    RETURNING_OUTSIDE, // down, the uplink node cannot be used: outside the site. This happens if the site with the uplink node is resetting
+    RETURNING_OUTSIDE, // down, the uplink node cannot be used: outside the site. For example: the site is resetting, or a network switch cut off the uplink node
 }
 
 @Document
@@ -34,8 +34,9 @@ data class HackerState(
     val iceId: String?, // the ICE a hacker is currently hacking
     val networkedConnectionId: String?,
     val iceConnectTimestamp: ZonedDateTime?,
+    val ingressNodeId: String? = null, // the node where the hacker connected to the site. Network switches cut off hackers that can't be reached from it.
     val uplinkReturns: List<UplinkReturn> = emptyList(), // where to return to when leaving a site entered via an uplink, last is most recent
-    val uplinkArrivalNodeId: String? = null, // set while the browser switches to a run entered via an uplink (up or down)
+    val uplinkReturnNodeId: String? = null, // the uplink node to return to, set while the browser switches back to the run
     val uplinkActivity: UplinkActivity = UplinkActivity.NONE,
 ) {
 
@@ -46,7 +47,7 @@ data class HackerState(
             siteId ?: error("siteId null for ${userId}"),
             currentNodeId,
             previousNodeId, activity, iceId, networkedConnectionId, iceConnectTimestamp,
-            uplinkReturns, uplinkArrivalNodeId, uplinkActivity,
+            ingressNodeId, uplinkReturns, uplinkReturnNodeId, uplinkActivity,
         )
     }
 }
@@ -54,7 +55,8 @@ data class HackerState(
 data class UplinkReturn(
     val runId: String,
     val siteId: String,
-    val nodeId: String,
+    val nodeId: String, // the uplink node
+    val ingressNodeId: String, // the node where the hacker originally connected to this site
 )
 
 /** Convenience class that mimics HackerState but enforces non-null state of all fields that are used in a run */
@@ -69,14 +71,15 @@ class HackerStateRunning(
     val iceId: String?,
     val networkedConnectionId: String?,
     val iceConnectTimestamp: ZonedDateTime?,
+    val ingressNodeId: String?,
     val uplinkReturns: List<UplinkReturn>,
-    val uplinkArrivalNodeId: String?,
+    val uplinkReturnNodeId: String?,
     val uplinkActivity: UplinkActivity,
 ) {
     fun toState(): HackerState {
         return HackerState(
             userId, connectionId, runId, siteId, currentNodeId, previousNodeId,
-            activity, iceId, networkedConnectionId, iceConnectTimestamp, uplinkReturns, uplinkArrivalNodeId, uplinkActivity,
+            activity, iceId, networkedConnectionId, iceConnectTimestamp, ingressNodeId, uplinkReturns, uplinkReturnNodeId, uplinkActivity,
         )
     }
 }

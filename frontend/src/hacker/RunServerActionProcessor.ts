@@ -23,7 +23,6 @@ import {ConnectionStatusById} from "../editor/reducer/ConnectionsReducer";
 import {updateTerminalState} from "../common/menu/MenuItem";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
-export const SERVER_HACKER_START_UPLINK = "SERVER_HACKER_START_UPLINK"
 export const SERVER_RETURN_HOME = "SERVER_RETURN_HOME"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
 export const SERVER_HACKER_MOVE_ARRIVE = "SERVER_HACKER_MOVE_ARRIVE"
@@ -95,16 +94,23 @@ export interface ProbeAction {
     timings: Timings
 }
 
-export interface StartRun {
+interface UplinkConnectInfo {
+    sourceSiteName: string,
+    targetSiteName: string,
+}
+
+interface StartAttack {
     userId: string,
+    nodeId: string, // the ingress node
     quick: boolean,
     timings: Timings,
+    uplink: UplinkConnectInfo | null,
 }
 
 export interface MoveStartAction {
     userId: string,
     nodeId: string,
-    bypassingIceAtStartNode: boolean,
+    bypassingIce: boolean,
     timings: Timings
 }
 
@@ -156,13 +162,6 @@ interface EnterRunData {
 }
 
 const UPLINK_SWITCH_PAUSE_TICKS = 30 // longer than UPLINK_SITE_FADE_OUT_TICKS in RunCanvas
-
-interface StartUplink {
-    userId: string,
-    sourceSiteName: string,
-    targetSiteName: string,
-    timings: Timings,
-}
 
 export const initRunServerActions = (store: Store) => {
 
@@ -239,8 +238,16 @@ export const initRunServerActions = (store: Store) => {
         runCanvas.hackerSwitchSite(data.userId)
     })
 
-    webSocketConnection.addAction(SERVER_HACKER_START_ATTACK, (data: StartRun) => {
-        runCanvas.startAttack(data.userId, data.quick, data.timings)
+    webSocketConnection.addAction(SERVER_HACKER_START_ATTACK, (data: StartAttack) => {
+        if (data.uplink) {
+            startUplink(data, data.uplink)
+        } else {
+            startAttack(data)
+        }
+    })
+
+    const startAttack = (data: StartAttack) => {
+        runCanvas.startAttack(data.userId, data.nodeId, data.quick, data.timings)
         if (data.userId === currentUser.id) {
             // dispatch({type: TERMINAL_LOCK, terminalId: MAIN_TERMINAL_ID})
             const random = (max: number) => Math.floor(Math.random() * max)
@@ -279,10 +286,9 @@ export const initRunServerActions = (store: Store) => {
             }
 
         }
-    })
+    }
 
-
-    webSocketConnection.addAction(SERVER_HACKER_START_UPLINK, (data: StartUplink) => {
+    const startUplink = (data: StartAttack, uplink: UplinkConnectInfo) => {
         const speedSlow = data.timings["slow"]
         const speedMedium = data.timings["medium"]
         const speedFast = data.timings["fast"]
@@ -291,13 +297,13 @@ export const initRunServerActions = (store: Store) => {
         // Let the site render and the hacker icon fade in before the connection line starts, at "Session request".
         // The line animation takes "move" ticks, the hacker display must not wait for the render wait again.
         const lineTimings = {...data.timings, main: data.timings["move"]}
-        delayTicks(carrierWait, () => runCanvas.startAttack(data.userId, false, lineTimings, true))
+        delayTicks(carrierWait, () => runCanvas.startAttack(data.userId, data.nodeId, false, lineTimings, true))
         if (data.userId !== currentUser.id) return
 
         hackerSchedule = new Schedule(null)
 
-        const source = `[info]${data.sourceSiteName}[/]`
-        const target = `[info]${data.targetSiteName}[/]`
+        const source = `[info]${uplink.sourceSiteName}[/]`
+        const target = `[info]${uplink.targetSiteName}[/]`
 
         // "Establishing uplink carrier..." was sent by the server before switching to this site.
         // The lines after the wait take exactly as long as the connection line animation ("move"): 4 x medium + 2 x slow + fast.
@@ -312,7 +318,7 @@ export const initRunServerActions = (store: Store) => {
         echo(0, "")
         echo(0, `Routing through to ${target}.`)
         echo(0, "")
-    })
+    }
 
     webSocketConnection.addAction(SERVER_RETURN_HOME, () => {
         runCanvas.leaveRunIfActive()

@@ -122,5 +122,6 @@ class ExportedSiteParserTest {
         assertEquals(true, blueprint.siteProperties.internal)
         assertEquals("s2", layer.targetSiteId)
         assertEquals("target", layer.targetSiteName)
+        assertEquals("03", layer.targetNodeNetworkId)
     }
 }

@@ -27,7 +27,7 @@ test('3.3.0 - Prepare', async ({page}: { page: Page }) => {
 
     await test.step("Import site", async () => {
         await login.loginUsingLink("gm")
-        await gm.importSiteIfItDoesNotExist(SITE_NAME, "v1-test-network-switches.json")
+        await gm.importSiteIfItDoesNotExist(SITE_NAME, "test-network-switches.json")
     })
 
     await test.step("Unlock both switches and lock switch 06 to vault, whatever a previous test run left (a site reset does not change switches)", async () => {

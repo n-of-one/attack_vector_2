@@ -16,7 +16,7 @@ test('3.1.0 - Prepare', async ({page}: { page: Page }) => {
     await test.step("Prepare run", async () => {
         test.setTimeout(15_000);
         await login.loginUsingLink("gm")
-        await gm.importSiteIfItDoesNotExist(SITE_NAME, "v1-test-timer-adjuster.json")
+        await gm.importSiteIfItDoesNotExist(SITE_NAME, "test-timer-adjuster.json")
 
         await gm.deleteAllRuns(SITE_NAME)
         await login.loginUsingLink("hacker")

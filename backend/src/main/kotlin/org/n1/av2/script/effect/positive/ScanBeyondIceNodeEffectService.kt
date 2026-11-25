@@ -34,11 +34,12 @@ class ScanBeyondIceNodeEffectService(
         val networkId = argumentTokens.firstOrNull() ?: return ScriptExecution("Provide the [ok]network id[/] of the node to scan.")
 
         val targetNode = nodeEntityService.findByNetworkId(hackerState.siteId, networkId)
-        nodeAccessHelper.checkNodeRevealed(targetNode, networkId, hackerState.runId)?.let { return ScriptExecution(it) }
+        nodeAccessHelper.checkNodeRevealed(targetNode, networkId, hackerState)?.let { return ScriptExecution(it) }
 
         return ScriptExecution {
             val run = runEntityService.getByRunId(hackerState.runId)
-            initiateScanService.scanIgnoringIceAtTargetNode(run, null, targetNode!!)
+            val ingressNode = hackerState.ingressNodeId?.let { nodeEntityService.getById(it) } // null when outside: the probe starts at the start node
+            initiateScanService.scanIgnoringIceAtTargetNode(run, ingressNode, targetNode!!)
         }
     }
 

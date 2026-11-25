@@ -72,6 +72,7 @@ export interface LayerDetails {
 
     targetSiteId?: string | null   // Uplink layer
     targetSiteName?: string | null // Uplink layer
+    targetNodeNetworkId?: string | null // Uplink layer
 }
 
 export interface NetworkSwitchRoute {

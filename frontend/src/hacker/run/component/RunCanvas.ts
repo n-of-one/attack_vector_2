@@ -47,7 +47,7 @@ class RunCanvas {
     dispatch: Dispatch = null as unknown as Dispatch // lateinit
     iconSchedule: Schedule = null as unknown as Schedule // lateinit
 
-    startNodeDisplay: NodeDisplay = null as unknown as NodeDisplay // lateinit
+    startNodeId: string = ""
     userId: string = null as unknown as string
     siteId: string | null = null
     runId: string | null = null
@@ -112,7 +112,7 @@ class RunCanvas {
 
         this.connectionDataById = {}
         this.connectionStatusById = {}
-        this.startNodeDisplay = null as unknown as NodeDisplay
+        this.startNodeId = ""
 
         this.iconSchedule.terminate()
         this.iconSchedule = new Schedule(this.dispatch)
@@ -184,7 +184,7 @@ class RunCanvas {
             }
         })
 
-        this.startNodeDisplay = this.nodeDisplays.get(nodes[0].id)
+        this.startNodeId = site.startNodeId
         this.addHackersDisplays()
         if (this.hideYourHackerOnEnter) {
             this.hideYourHackerOnEnter = false
@@ -213,7 +213,8 @@ class RunCanvas {
 
     private addHackerDisplay(hacker: HackerPresence, offset: number) {
         const you = hacker.userId === this.userId
-        const hackerDisplay = new HackerDisplay(this.canvas, this.startNodeDisplay, hacker, offset, you, this.dispatch, this.nodeDisplays)
+        const ingressNodeDisplay = this.nodeDisplays.get(hacker.ingressNodeId ?? this.startNodeId) // hackers outside will connect to the start node
+        const hackerDisplay = new HackerDisplay(this.canvas, ingressNodeDisplay, hacker, offset, you, this.dispatch, this.nodeDisplays)
         this.hackerDisplays.add(hacker.userId, hackerDisplay)
     }
 
@@ -381,7 +382,7 @@ class RunCanvas {
         this.canvasObjectDeSelected()
     }
 
-    startAttack(userId: string, quick: boolean, timings: Timings, viaUplink: boolean = false) {
+    startAttack(userId: string, ingressNodeId: string, quick: boolean, timings: Timings, viaUplink: boolean = false) {
         if (!this.active) return
 
         if (this.userId === userId) {
@@ -394,7 +395,7 @@ class RunCanvas {
                 nodeDisplay.transitionToInside(quick, this.selectedObject)
             })
         }
-        this.hackerDisplays.get(userId).startRun(quick, timings, viaUplink)
+        this.hackerDisplays.get(userId).startRun(quick, timings, this.nodeDisplays.get(ingressNodeId), viaUplink)
 
         const waitTime = quick ? NODE_TRANSITION_TICKS : timings.move
         testSupport.scheduleEmitEvent("startAttackAnimationsFinished", this.iconSchedule, waitTime)
@@ -447,11 +448,11 @@ class RunCanvas {
     }
 
 
-    moveStart({userId, nodeId, timings, bypassingIceAtStartNode}: MoveStartAction) {
+    moveStart({userId, nodeId, timings, bypassingIce}: MoveStartAction) {
         if (!this.active) return
 
         const nodeDisplay = this.nodeDisplays.get(nodeId)
-        this.hackerDisplays.get(userId).moveStart(nodeDisplay, bypassingIceAtStartNode, timings)
+        this.hackerDisplays.get(userId).moveStart(nodeDisplay, bypassingIce, timings)
     }
 
     moveArrive({userId, nodeId, timings}: MoveArriveAction) {

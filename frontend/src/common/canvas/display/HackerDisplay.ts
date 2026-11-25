@@ -45,7 +45,7 @@ export class HackerDisplay implements Display {
 
     hackerData: HackerPresence
     you: boolean // true if this is the display of the player
-    siteStartNodeDisplay: NodeDisplay
+    ingressNodeDisplay: NodeDisplay // where the hacker connects to the site, the start line points to it
     currentNodeDisplay: NodeDisplay | null = null
 
     /// The icon of the hacker inside the site (only when hacking, not when scanning)
@@ -70,7 +70,7 @@ export class HackerDisplay implements Display {
 
     constructor(
         canvas: Canvas,
-        siteStartNodeDisplay: NodeDisplay,
+        ingressNodeDisplay: NodeDisplay,
         hackerData: HackerPresence,
         offset: number,
         you: boolean,
@@ -84,7 +84,7 @@ export class HackerDisplay implements Display {
         this.hackerData = hackerData
 
         this.you = you
-        this.siteStartNodeDisplay = siteStartNodeDisplay
+        this.ingressNodeDisplay = ingressNodeDisplay
 
         this.dispatch = dispatch
         this.nodeDisplays = nodeDisplayById
@@ -180,7 +180,7 @@ export class HackerDisplay implements Display {
             selectable: false,
             hoverCursor: "default"
         })
-        const lineData = calcLine(this, this.siteStartNodeDisplay)
+        const lineData = calcLine(this, this.ingressNodeDisplay)
         this.startLineIcon = new fabric.Line(
             lineData.asArray(), {
                 stroke: "#bb8",
@@ -206,7 +206,7 @@ export class HackerDisplay implements Display {
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME)
             animate(this.canvas, this.labelIcon, "left", newX, APPEAR_TIME)
             animate(this.canvas, this.hackerHider, "left", newX, APPEAR_TIME)
-            const lineData = calcLine(this, this.siteStartNodeDisplay)
+            const lineData = calcLine(this, this.ingressNodeDisplay)
             animate(this.canvas, this.startLineIcon, null, lineData.asCoordinates(), APPEAR_TIME)
         })
     }
@@ -244,7 +244,8 @@ export class HackerDisplay implements Display {
         this.hackerIcon.opacity = 0
     }
 
-    startRun(quick: boolean, timings: Timings, viaUplink: boolean) {
+    startRun(quick: boolean, timings: Timings, ingressNodeDisplay: NodeDisplay, viaUplink: boolean) {
+        this.pointStartLineTo(ingressNodeDisplay)
         if (quick) {
             this.startRunQuick()
         } else {
@@ -252,8 +253,14 @@ export class HackerDisplay implements Display {
         }
     }
 
+    private pointStartLineTo(ingressNodeDisplay: NodeDisplay) {
+        if (ingressNodeDisplay === this.ingressNodeDisplay) return
+        this.ingressNodeDisplay = ingressNodeDisplay
+        this.startLineIcon.set(calcLine(this, ingressNodeDisplay).asCoordinates())
+    }
+
     startRunQuick() {
-        this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.siteStartNodeDisplay)
+        this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 1, this.ingressNodeDisplay)
         this.canvas.add(this.hackerIcon)
         this.canvas.bringToFront(this.hackerIcon)
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 10)
@@ -269,7 +276,7 @@ export class HackerDisplay implements Display {
         this.canvas.add(this.hackerIcon)
         this.canvas.sendToBack(this.hackerIcon)
         this.hackerIcon.opacity = 0
-        this.targetNodeDisplay = this.siteStartNodeDisplay
+        this.targetNodeDisplay = this.ingressNodeDisplay
 
         this.schedule.run(timings.main, () => {
             if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
@@ -281,12 +288,12 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.hackerIdentifierIcon, "opacity", IDENTIFIER_OPACITY_HACKING, 100)
     }
 
-    moveStart(nodeDisplay: NodeDisplay, bypassingIceAtStartNode: boolean, timings: Timings) {
+    moveStart(nodeDisplay: NodeDisplay, bypassingIce: boolean, timings: Timings) {
         this.targetNodeDisplay = nodeDisplay
 
         this.schedule.run(timings.main, () => {
             if (!this.currentNodeDisplay) throw Error("!this.currentNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, bypassingIceAtStartNode, timings.main + 10, this.you)
+            this.moveLineElement = this.animateMoveStepLine(this.currentNodeDisplay, nodeDisplay, bypassingIce, timings.main + 10, this.you)
         })
 
     }
@@ -354,17 +361,17 @@ export class HackerDisplay implements Display {
         animate(this.canvas, this.hackerIcon!, "top", node.y + offsetY, time, easing)
     }
 
-    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, bypassingIceAtStartNode: boolean,
+    animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, bypassingIce: boolean,
                         durationTicks: number, you: boolean, ease: IUtilAminEaseFunction = easeInOutSine, colorOverride?: string): ConnectionVisual {
         const lineData: LinePositions = calcLine(fromNodeDisplay, toNodeDisplay, 0)
         const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
 
         const opacity = (you) ? 1 : 0.5
 
-        const color = colorOverride ?? (bypassingIceAtStartNode ? COLOR_HACKER_LINE_BYPASSING : COLOR_HACKER_LINE)
+        const color = colorOverride ?? (bypassingIce ? COLOR_HACKER_LINE_BYPASSING : COLOR_HACKER_LINE)
         console.log(opacity)
 
-        const lineElement = new ConnectionVisual(lineStart, color, this.canvas, {opacity: opacity}, bypassingIceAtStartNode)
+        const lineElement = new ConnectionVisual(lineStart, color, this.canvas, {opacity: opacity}, bypassingIce)
         lineElement.extendTo(lineData, durationTicks, ease)
 
         return lineElement

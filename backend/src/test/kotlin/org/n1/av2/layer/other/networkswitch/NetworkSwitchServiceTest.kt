@@ -97,8 +97,8 @@ class NetworkSwitchServiceTest {
         every { runService.makeNeighborConnectable(any(), any()) } just runs
     }
 
-    private fun hackerAt(userId: String, nodeId: String, activity: HackerActivity = HackerActivity.INSIDE) =
-        HackerState(userId, "connection", "run-1", SITE_ID, nodeId, null, activity, null, null, null)
+    private fun hackerAt(userId: String, nodeId: String, activity: HackerActivity = HackerActivity.INSIDE, ingressNodeId: String = "n00") =
+        HackerState(userId, "connection", "run-1", SITE_ID, nodeId, null, activity, null, null, null, ingressNodeId = ingressNodeId)
 
     private fun node(id: String, vararg layers: NetworkSwitchLayer) =
         Node(id, SITE_ID, NodeType.TRANSIT_2, 0, 0, layers.toMutableList(), id.removePrefix("n"))
@@ -182,9 +182,15 @@ class NetworkSwitchServiceTest {
     }
 
     @Test
-    fun `isReachable starts at the start node of the site`() {
-        assertThat(networkSwitchService.isReachable(SITE_ID, "n01", pendingIsOpen = false)).isTrue()
-        assertThat(networkSwitchService.isReachable(SITE_ID, "n04", pendingIsOpen = false)).isFalse()
+    fun `isReachable starts at the ingress node of the hacker`() {
+        assertThat(networkSwitchService.isReachable(SITE_ID, "n04", "n02", pendingIsOpen = false)).isTrue()
+        assertThat(networkSwitchService.isReachable(SITE_ID, "n04", "n00", pendingIsOpen = false)).isFalse()
+    }
+
+    @Test
+    fun `isReachable starts at the start node of the site for a hacker without ingress node`() {
+        assertThat(networkSwitchService.isReachable(SITE_ID, null, "n01", pendingIsOpen = false)).isTrue()
+        assertThat(networkSwitchService.isReachable(SITE_ID, null, "n04", pendingIsOpen = false)).isFalse()
     }
 
     @Test
@@ -209,6 +215,22 @@ class NetworkSwitchServiceTest {
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_TERMINAL_RECEIVE, any()) }
         verify { connectionService.toSite(SITE_ID, ServerActions.SERVER_CONNECTIONS_UPDATED, any()) }
         verify { runService.makeNeighborConnectable(nodes[1], "n02") }
+    }
+
+    @Test
+    fun `hackers are cut off when the choice separates them from their own ingress node`() {
+        every { connectionEntityService.getAll(SITE_ID) } returns connections.filter { it.id != "c03-04" }
+        val enteredAtStartOnDroppedBranch = hackerAt("h-west", "n03")
+        val enteredOnDroppedBranch = hackerAt("h-uplink-west", "n03", ingressNodeId = "n03")
+        val enteredOnDroppedBranchNowOnChosen = hackerAt("h-uplink-east", "n02", ingressNodeId = "n03")
+        every { hackerStateEntityService.findAllHackersInSite(SITE_ID) } returns
+            listOf(enteredAtStartOnDroppedBranch, enteredOnDroppedBranch, enteredOnDroppedBranchNowOnChosen)
+
+        networkSwitchService.hack(SWITCH_LAYER_ID, listOf("east"))
+
+        verify(exactly = 2) { runService.hackerDisconnect(any(), any()) }
+        verify { runService.hackerDisconnect(enteredAtStartOnDroppedBranch, any()) }
+        verify { runService.hackerDisconnect(enteredOnDroppedBranchNowOnChosen, any()) }
     }
 
     @Test

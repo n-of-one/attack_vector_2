@@ -26,7 +26,7 @@ Enables the site search input on the hacker home page.
 
 # BYPASS
 
-Allows moving through ICE at the start node.
+Allows moving through ICE at the ingress node: the first node the hacker connected to (the start node, or the target node of an uplink).
 
 ## Capabilities
 - Without this skill, ICE at the entry node blocks all movement

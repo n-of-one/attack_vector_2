@@ -87,23 +87,24 @@ Lets a hacker choose one of the connections (routes) of its node. The routes tha
 ## Capabilities
 - `hack <layer> <route>` chooses a route, the choice is site-wide
 - Until a choice is made, all routes are pending and block movement (jumping to a hacker passes). Dropped routes also block jumps, scripts and scans (the node behind is shown, not scanned)
-- Hackers that are cut off from the start node by a dropped route are disconnected
+- Hackers that are cut off from their ingress node (where they connected: the start node, or the target node of an uplink) by a dropped route are disconnected
 - Survives a site reset, unlocked by hacking the linked core (can be in another site) or by the GM
 
 ---
 
 # Uplink Layer
 
-Connects to another site, usually an internal site that cannot be reached from outside.
+Connects to another site, usually an internal site that cannot be reached from outside, or a back door into a node behind the front door of a normal site.
 
 ## Capabilities
 - `view` shows the target site: `1 Uplink -> <site>`
-- `hack <layer>` immediately switches the hacker to the target site. The connection sequence plays with the attack animation (orange connection line), then the hacker arrives inside the start node (arrival triggers layers like an attack does)
-- Refused when the target site does not exist, is not hackable, has errors or is shut down
-- Each run has one run per target site, so hackers sharing a run also share the run on the target site
+- Optional target node (network id): the ingress node in the target site. Empty: its start node
+- `hack <layer>` switches the hacker to the target site. The connection sequence plays with the attack animation (orange connection line) to the ingress node, then the hacker arrives there (arrival triggers layers and scans like an attack does)
+- Refused when the target site does not exist, is not hackable, has errors or is shut down, or the target node does not exist
+- Each run has one run per target site, so hackers sharing a run also share the run on the target site. The first hacker continues their own run on the target site if they have one, otherwise a new run is created
 - Only the hacker that hacks the uplink moves
-- Leaving the target site by `dc`, site reset, GM refresh or network switch cut-off returns the hacker to the uplink node
-- If returning is impossible (site shut down, uplink or node removed, node cut off), the hacker falls back to the previous uplink in a chain, or outside the first non-internal site, or home
+- Leaving the target site by `dc`, site reset, GM refresh or network switch cut-off returns the hacker to the uplink node, with their original ingress node in that site
+- If returning is impossible (site shut down, uplink or node removed, uplink node cut off from the hacker's original ingress node by a dropped route), the hacker falls back to the previous uplink in a chain, or outside the first non-internal site, or home
 - Leaving the run (home page, reload) leaves the uplink chain
 - Deleting a run also deletes the runs reached via its uplinks, hackers in those runs go home
 

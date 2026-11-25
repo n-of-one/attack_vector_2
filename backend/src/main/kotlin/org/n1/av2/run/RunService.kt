@@ -65,6 +65,7 @@ class RunService(
         val userName: String,
         val icon: HackerIcon,
         val nodeId: String?,
+        val ingressNodeId: String?,
         val activity: HackerActivity,
     )
 
@@ -103,6 +104,13 @@ class RunService(
         return run
     }
 
+    /** The run on this site that the user was most recently linked to, if any. */
+    fun findRunOfUserForSite(userId: String, siteId: String): Run? {
+        val runLinks = runLinkEntityService.findAllByUserId(userId)
+        val runsById = runEntityService.getAll(runLinks).filter { it.siteId == siteId }.associateBy { it.runId }
+        return runLinks.asReversed().firstNotNullOfOrNull { runsById[it.runId] }
+    }
+
     private fun replySiteNotFound(siteName: String) {
         connectionService.replyNotification(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
     }
@@ -133,9 +141,16 @@ class RunService(
     }
 
     fun enterRun(userId: String, runId: String, connectionId: String) {
-        val run = runEntityService.getByRunId(runId)
+        enterRunOutside(userId, runEntityService.getByRunId(runId), connectionId)
+    }
+
+    fun enterRunOutside(userId: String, run: Run, connectionId: String) {
+        // The run may have been explored from an uplink ingress node. From outside, the start node is always known.
+        val startNode = siteService.findStartNode(nodeEntityService.findBySiteId(run.siteId)) ?: error("Start node not found for site ${run.siteId}")
+        revealNode(run, startNode.id)
+
         syntaxHighlightingService.sendForOutside()
-        val hackerState = hackerStateEntityService.enterRunOutside(run.siteId, userId, runId, connectionId)
+        val hackerState = hackerStateEntityService.enterRunOutside(run.siteId, userId, run.runId, connectionId)
         sendEnteredRun(userId, run, hackerState)
     }
 
@@ -168,6 +183,7 @@ class RunService(
             userName = user.name,
             icon = hacker.icon,
             nodeId = state.currentNodeId,
+            ingressNodeId = state.ingressNodeId,
             activity = state.activity
         )
     }
@@ -286,6 +302,11 @@ class RunService(
 
             if (makeConnectable(run, listOf(neighborNodeId))) runEntityService.save(run)
         }
+    }
+
+    /** Makes the node connectable in the run, if it is not yet known. Used for the node where hackers connect to the site. */
+    fun revealNode(run: Run, nodeId: String) {
+        if (makeConnectable(run, listOf(nodeId))) runEntityService.save(run)
     }
 
     private fun makeConnectable(run: Run, nodeIds: Collection<String>): Boolean {

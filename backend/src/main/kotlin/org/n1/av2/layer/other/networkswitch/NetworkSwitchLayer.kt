@@ -106,7 +106,7 @@ class NetworkSwitchLayer(
                 // ROUTE_NAME_FOR can add a route
                 // ROUTE_SWITCHED_FOR changes the current route
                 networkSwitchService.sendConnectionStatuses(context.siteId)
-                networkSwitchService.disconnectHackersCutOffFromStart(context.siteId)
+                networkSwitchService.disconnectHackersCutOffFromIngress(context.siteId)
             }
         }
         return keyFound

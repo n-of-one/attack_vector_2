@@ -38,7 +38,7 @@ class JumpToNodeEffectService(
         scriptEffectHelper.checkInNode(hackerState)?.let { return ScriptExecution(it) }
         val targetNetworkId = argumentTokens.firstOrNull() ?: return ScriptExecution("Provide the [ok]network id[/] of the node to jump to.")
         val targetNode = nodeEntityService.findByNetworkId(hackerState.siteId, targetNetworkId)
-        nodeAccessHelper.checkNodeRevealed(targetNode, targetNetworkId, hackerState.runId)?.let { return ScriptExecution(it) }
+        nodeAccessHelper.checkNodeRevealed(targetNode, targetNetworkId, hackerState)?.let { return ScriptExecution(it) }
 
         val currentNodeId = hackerState.currentNodeId ?: error("Current node ID not set.")
 

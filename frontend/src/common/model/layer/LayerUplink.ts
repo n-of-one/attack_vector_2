@@ -6,15 +6,21 @@ export class LayerUplink extends Layer {
 
     targetSiteId: string
     targetSiteName: string
+    targetNodeNetworkId: string
 
     constructor(layer: LayerDetails, node: NodeI, dispatch: Dispatch) {
         super(layer, node, dispatch)
 
         this.targetSiteId = layer.targetSiteId ?? ""
         this.targetSiteName = layer.targetSiteName ?? this.targetSiteId
+        this.targetNodeNetworkId = layer.targetNodeNetworkId ?? ""
     }
 
     saveTargetSiteId(value: string) {
         super._save("TARGET_SITE_ID", value)
+    }
+
+    saveTargetNodeNetworkId(value: string) {
+        super._save("TARGET_NODE_NETWORK_ID", value)
     }
 }

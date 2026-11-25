@@ -6,9 +6,6 @@ import org.n1.av2.platform.iam.user.SYSTEM_USER
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.TimeService
 import org.n1.av2.run.entity.Run
-import org.n1.av2.run.entity.RunEntityService
-import org.n1.av2.site.entity.NodeEntityService
-import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.security.core.context.SecurityContextHolder
@@ -19,10 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 class HackerStateEntityService(
     private val hackerStateRepo: HackerStateRepo,
     private val currentUserService: CurrentUserService,
-    private val sitePropertiesEntityService: SitePropertiesEntityService,
     private val userEntityService: UserEntityService,
-    private val nodeEntityService: NodeEntityService,
-    private val runEntityService: RunEntityService,
     private val timeService: TimeService,
 ) {
 
@@ -56,37 +50,26 @@ class HackerStateEntityService(
         return newState
     }
 
-    fun startAttack(userId: String, run: Run) {
-        val newState = HackerState(
-            runId = run.runId,
-            connectionId = currentUserService.connectionId,
-            siteId = run.siteId,
-            userId = userId,
+    // The hacker stays outside until the connection sequence ends, see [arriveAtIngress].
+    fun startConnecting(currentState: HackerState, ingressNodeId: String) {
+        val newState = currentState.copy(
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.OUTSIDE,
-            iceId = null,
-            networkedConnectionId = null,
-            iceConnectTimestamp = null,
+            ingressNodeId = ingressNodeId,
+            uplinkActivity = UplinkActivity.NONE,
         )
         hackerStateRepo.save(newState)
     }
 
-    fun startedRun(userId: String, runId: String): String {
-        val run = runEntityService.getByRunId(runId)
-        val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
-        val nodes = nodeEntityService.findBySiteId(run.siteId)
-        val startNode = nodes.find { it.networkId == siteProperties.startNodeNetworkId }!!
-
-
-        val oldState = retrieveForUserId(userId)
-        val newState = oldState.copy(
+    fun arriveAtIngress(currentState: HackerState): HackerState {
+        val newState = currentState.copy(
+            currentNodeId = currentState.ingressNodeId ?: error("Hacker ${currentState.userId} arrives without ingress node"),
+            previousNodeId = null,
             activity = HackerActivity.INSIDE,
-            currentNodeId = startNode.id,
         )
         hackerStateRepo.save(newState)
-
-        return startNode.id
+        return newState
     }
 
     fun arriveAt(state: HackerStateRunning, nodeId: String) {
@@ -119,6 +102,7 @@ class HackerStateEntityService(
             currentNodeId = null,
             previousNodeId = null,
             activity = HackerActivity.OUTSIDE,
+            ingressNodeId = null,
         )
         hackerStateRepo.save(newState)
     }
@@ -132,72 +116,73 @@ class HackerStateEntityService(
             activity = HackerActivity.ONLINE,
             iceId = null,
             networkedConnectionId = null,
+            ingressNodeId = null,
             uplinkReturns = emptyList(),
-            uplinkArrivalNodeId = null,
+            uplinkReturnNodeId = null,
             uplinkActivity = UplinkActivity.NONE,
         )
         hackerStateRepo.save(newState)
     }
 
-    fun prepareUplinkArrival(currentState: HackerState, run: Run, arrivalNodeId: String, uplinkReturns: List<UplinkReturn>, uplinkActivity: UplinkActivity) {
-        val newState = currentState.copy(
-            runId = run.runId,
-            siteId = run.siteId,
-            currentNodeId = null,
-            previousNodeId = null,
-            activity = HackerActivity.OUTSIDE,
-            iceId = null,
-            networkedConnectionId = null,
+    fun prepareUplinkConnect(currentState: HackerState, run: Run, ingressNodeId: String, uplinkReturns: List<UplinkReturn>) {
+        val newState = switchedRunState(currentState, run).copy(
+            ingressNodeId = ingressNodeId,
             uplinkReturns = uplinkReturns,
-            uplinkArrivalNodeId = arrivalNodeId,
-            uplinkActivity = uplinkActivity,
+            uplinkReturnNodeId = null,
+            uplinkActivity = UplinkActivity.CONNECTING,
         )
         hackerStateRepo.save(newState)
     }
 
+    fun prepareUplinkReturn(currentState: HackerState, run: Run, uplinkReturn: UplinkReturn, remainingUplinkReturns: List<UplinkReturn>) {
+        val newState = switchedRunState(currentState, run).copy(
+            ingressNodeId = uplinkReturn.ingressNodeId,
+            uplinkReturns = remainingUplinkReturns,
+            uplinkReturnNodeId = uplinkReturn.nodeId,
+            uplinkActivity = UplinkActivity.RETURNING,
+        )
+        hackerStateRepo.save(newState)
+    }
+
+    private fun switchedRunState(currentState: HackerState, run: Run) = currentState.copy(
+        runId = run.runId,
+        siteId = run.siteId,
+        currentNodeId = null,
+        previousNodeId = null,
+        activity = HackerActivity.OUTSIDE,
+        iceId = null,
+        networkedConnectionId = null,
+    )
+
     fun prepareUplinkReturnOutside(currentState: HackerState, run: Run) {
-        val newState = currentState.copy(
-            runId = run.runId,
-            siteId = run.siteId,
-            currentNodeId = null,
-            previousNodeId = null,
-            activity = HackerActivity.OUTSIDE,
-            iceId = null,
-            networkedConnectionId = null,
+        val newState = switchedRunState(currentState, run).copy(
+            ingressNodeId = null,
             uplinkReturns = emptyList(),
-            uplinkArrivalNodeId = null,
+            uplinkReturnNodeId = null,
             uplinkActivity = UplinkActivity.RETURNING_OUTSIDE,
         )
         hackerStateRepo.save(newState)
     }
 
-    // connecting via uplink. While connecting, the hacker stays outside until the connection sequence ends, see [arriveViaUplink].
-    fun enterRunViaUplinkOutsideWhileConnecting(currentState: HackerState, connectionId: String): HackerState {
+    fun updateConnectionId(currentState: HackerState, connectionId: String): HackerState {
         val newState = currentState.copy(connectionId = connectionId)
         hackerStateRepo.save(newState)
         return newState
     }
 
-    // Entering site straight inside
+    // Entering site straight inside, at the uplink node. The ingress node is the one used when the hacker first connected to this site.
     fun enterRunInsideBackFromUplinkedSite(currentState: HackerState, connectionId: String): HackerState {
-        val newState = arrivedState(currentState).copy(connectionId = connectionId)
+        val newState = currentState.copy(
+            connectionId = connectionId,
+            currentNodeId = currentState.uplinkReturnNodeId ?: error("Hacker ${currentState.userId} returns without uplink node"),
+            previousNodeId = null,
+            activity = HackerActivity.INSIDE,
+            uplinkReturnNodeId = null,
+            uplinkActivity = UplinkActivity.NONE,
+        )
         hackerStateRepo.save(newState)
         return newState
     }
-
-    fun arriveViaUplink(currentState: HackerState): HackerState {
-        val newState = arrivedState(currentState)
-        hackerStateRepo.save(newState)
-        return newState
-    }
-
-    private fun arrivedState(currentState: HackerState) = currentState.copy(
-        currentNodeId = currentState.uplinkArrivalNodeId,
-        previousNodeId = null,
-        activity = HackerActivity.INSIDE,
-        uplinkArrivalNodeId = null,
-        uplinkActivity = UplinkActivity.NONE,
-    )
 
     fun login(userId: String) {
         val newState = HackerState(

@@ -14,7 +14,9 @@ Node service layers:
 
 ## Hacking
 Hacking the uplink uses the connection between the two sites. Your hacking software hides your session inside the
-handshake between the sites, then you arrive in the start node of the other site.
+handshake between the sites, then you arrive in the other site. This is usually its start node, but an uplink can also lead
+to a node deep inside the other site, behind the ICE that protects its front door. From there you scan and explore the site
+as usual, outward from where you arrived.
 
 ```
 ⇋ hack 1
@@ -46,6 +48,7 @@ Session restored at node 01.
 Entered node 01
 ```
 
-If that is not possible, for example because the site you came from was shut down, you end up outside that site.
+If that is not possible, you end up outside that site. For example: the site you came from was shut down, or a network
+switch has dropped the route between the node where you entered that site and the node with the uplink.
 
 Leaving the run (going to the home page) breaks the connection: to go back, you have to go through the uplink again.
