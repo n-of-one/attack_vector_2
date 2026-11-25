@@ -1,6 +1,9 @@
 package org.n1.av2.layer.app.status_light
 
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.LayerEditContext
+import org.n1.av2.layer.NAME
+import org.n1.av2.layer.NOTE
 import org.n1.av2.layer.app.status_light.StatusLightField.CURRENT_OPTION
 import org.n1.av2.layer.app.status_light.StatusLightField.SWITCH_LABEL
 import org.n1.av2.site.entity.enums.LayerType
@@ -40,6 +43,14 @@ class StatusLightLayer(
 
     constructor(id: String, toClone: StatusLightLayer) :
         this(id, LayerType.STATUS_LIGHT, toClone.level, toClone.name, toClone.note, toClone.switchLabel, toClone.currentOption, toClone.options)
+
+    override fun updateInternal(key: String, value: String, context: LayerEditContext): Boolean {
+        val keyFound = super.updateInternal(key, value, context)
+        if (key != NAME && key != NOTE) {
+            context.afterSave { context.services.statusLightService.sendUpdate(this) }
+        }
+        return keyFound
+    }
 
     override fun updateInternal(key: String, value: String): Boolean {
 

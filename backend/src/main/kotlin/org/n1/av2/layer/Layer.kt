@@ -35,9 +35,18 @@ abstract class Layer(
         return methods
     }
 
-    fun update(key: String, value: String) {
-        val keyFound = updateInternal(key, value)
+    fun update(key: String, value: String, context: LayerEditContext) {
+        val keyFound = updateInternal(key, value, context)
         if (!keyFound) error("Unknown key: ${key} for service type: ${type}")
+    }
+
+    // Override this variant for edits with side effects.
+    open fun updateInternal(key: String, value: String, context: LayerEditContext): Boolean {
+        return updateInternal(key, value)
+    }
+
+    // Called before the layer is removed, also when its node is deleted. Throw a ValidationException to prevent the removal.
+    open fun onRemove(context: LayerEditContext) {
     }
 
     open fun updateInternal(key: String, value: String): Boolean {

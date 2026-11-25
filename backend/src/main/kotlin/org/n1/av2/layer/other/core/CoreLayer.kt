@@ -1,6 +1,8 @@
 package org.n1.av2.layer.other.core
 
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.LayerEditContext
+import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.entity.enums.LayerType
 
 class CoreLayer(
@@ -20,6 +22,14 @@ class CoreLayer(
 
     constructor(id: String, toClone: CoreLayer) :
             this(id, LayerType.CORE, toClone.level, toClone.name, toClone.note, toClone.revealNetwork)
+
+    override fun onRemove(context: LayerEditContext) {
+        val coreUsage = context.services.siteService.coreUsage(id) { context.nodeDeleted && it.id == context.node.id }
+        if (coreUsage != null) {
+            throw ValidationException("Cannot delete core '$name'. It is used to reset tripwire(s) or network switch(es) in: $coreUsage. Remove the link to this core first.")
+        }
+        context.afterSave { context.services.siteService.sendAllCores() }
+    }
 
     override fun updateInternal(key: String, value: String): Boolean {
         when(key) {

@@ -13,19 +13,12 @@ import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
-import org.n1.av2.site.CoreLayerRemovalType.DELETE_SITE_REMOVAL
-import org.n1.av2.site.CoreLayerRemovalType.INTERNAL_REMOVAL
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.entity.enums.NodeType
 import org.n1.av2.site.export.SiteBlueprint
 import org.springframework.stereotype.Service
 import java.time.Duration
 
-
-enum class CoreLayerRemovalType {
-    INTERNAL_REMOVAL,
-    DELETE_SITE_REMOVAL
-}
 
 @Service
 class SiteService(
@@ -168,7 +161,7 @@ class SiteService(
         // Cannot remove site that has a core that is linked to tripwires or network switches in other sites
         val coreLayers = nodeEntityService.findAllCores(siteId)
         coreLayers.forEach { coreLayer ->
-            val coreUsage = verifyRemoveCoreLayer(siteId, coreLayer.id, DELETE_SITE_REMOVAL) ?: return@forEach
+            val coreUsage = coreUsage(coreLayer.id) { it.siteId == siteId } ?: return@forEach
             throw ValidationException("Cannot delete site. It contains nodes with cores that are configured to reset tripwires or network switches in other sites: $coreUsage. Remove the link from the tripwire(s) or network switch(es) to the core(s) on this site first.")
         }
 
@@ -210,27 +203,16 @@ class SiteService(
         sendSitesList()
     }
 
-    fun verifyRemoveLayer(siteId: String, layerId: String) {
-        val layer = nodeEntityService.findLayer(layerId)
-        if (layer !is CoreLayer) {
-            return
-        }
-
-        val coreUsage = verifyRemoveCoreLayer(siteId, layerId, INTERNAL_REMOVAL) ?: return
-        throw ValidationException("Cannot delete this core. It is used to reset tripwire(s) or network switch(es) in: $coreUsage. Remove the link to this core first.")
-    }
-
-    fun verifyRemoveCoreLayer(siteId: String, layerId: String, type: CoreLayerRemovalType): String? {
-        val nodesLinkedToThisCore = nodeEntityService.findAllNodesLinkedToCore(layerId)
-
+    /** The nodes with tripwires or network switches linked to this core, excluding those that are removed along with it. Null if none. */
+    fun coreUsage(coreLayerId: String, removedAlongWithCore: (Node) -> Boolean = { false }): String? {
+        val nodesLinkedToThisCore = nodeEntityService.findAllNodesLinkedToCore(coreLayerId).filterNot(removedAlongWithCore)
         if (nodesLinkedToThisCore.isEmpty()) return null
-        if (type == DELETE_SITE_REMOVAL && nodesLinkedToThisCore.all { node -> node.siteId == siteId }) return null
 
         return nodesLinkedToThisCore
             .distinct()
             .joinToString(", ") { node ->
                 val siteName = sitePropertiesEntityService.getBySiteId(node.siteId).name
-                "site:$siteName-node:${node.networkId}"
+                "$siteName:${node.networkId}"
             }
     }
 

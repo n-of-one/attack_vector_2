@@ -246,9 +246,9 @@ class NodeEntityService(
         return StatusLightLayer(layerId, type, level, defaultName, switchLabel, textForOption1, textForOption2)
     }
 
-    data class LayersUpdated(val node: Node, val layerId: String?)
+    data class NodeOrLayerUpdated(val node: Node, val layerId: String?)
 
-    fun removeLayer(command: RemoveLayerCommand): LayersUpdated? {
+    fun removeLayer(command: RemoveLayerCommand): NodeOrLayerUpdated? {
         val node = getById(command.nodeId)
         val toRemove = node.layers.firstOrNull { it.id == command.layerId } ?: return null
         node.layers.remove(toRemove)
@@ -256,10 +256,10 @@ class NodeEntityService(
         node.layers.forEachIndexed { level, layer -> layer.level = level }
         nodeRepo.save(node)
         val newFocusLayer = node.layers[toRemove.level - 1]
-        return LayersUpdated(node, newFocusLayer.id)
+        return NodeOrLayerUpdated(node, newFocusLayer.id)
     }
 
-    fun swapLayers(command: SwapLayerCommand): LayersUpdated? {
+    fun swapLayers(command: SwapLayerCommand): NodeOrLayerUpdated? {
         val node = getById(command.nodeId)
         val fromLayer = node.layers.find { it.id == command.fromId } ?: return null
         val toLayer = node.layers.find { it.id == command.toId } ?: return null
@@ -272,7 +272,7 @@ class NodeEntityService(
 
         nodeRepo.save(node)
 
-        return LayersUpdated(node, null)
+        return NodeOrLayerUpdated(node, null)
     }
 
     fun deleteAllForSite(siteId: String) {

@@ -4,6 +4,7 @@ import org.n1.av2.editor.SiteStateMessageType
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.LayerEditContext
 import org.n1.av2.site.entity.enums.LayerType
 
 const val TARGET_SITE_ID = "TARGET_SITE_ID"
@@ -15,7 +16,7 @@ class UplinkLayer(
     name: String,
     note: String,
     var targetSiteId: String?,
-    var targetSiteName: String?, // kept in sync by the editor, so the hacker view and export need no lookup
+    var targetSiteName: String?, // kept in sync on edit and site rename, so the hacker view and export need no lookup
 ) : Layer(id, LayerType.UPLINK, level, name, note) {
 
     constructor(id: String, level: Int, name: String, note: String, targetSiteId: String?, targetSiteName: String?) :
@@ -42,12 +43,26 @@ class UplinkLayer(
         return listOf(::validateTarget)
     }
 
-    override fun updateInternal(key: String, value: String): Boolean {
-        if (key == TARGET_SITE_ID) {
-            targetSiteId = value.ifBlank { null }
-            targetSiteName = null // set by the editor service
-            return true
+    override fun updateInternal(key: String, value: String, context: LayerEditContext): Boolean {
+        if (key != TARGET_SITE_ID) return super.updateInternal(key, value, context)
+
+        val previousTargetSiteId = targetSiteId
+        targetSiteId = value.ifBlank { null }
+        targetSiteName = targetSiteId?.let { context.services.sitePropertiesEntityService.getBySiteId(it).name }
+        validateTargetsAfterSave(listOfNotNull(previousTargetSiteId, targetSiteId), context)
+        return true
+    }
+
+    override fun onRemove(context: LayerEditContext) {
+        validateTargetsAfterSave(listOfNotNull(targetSiteId), context)
+    }
+
+    // An internal site is only valid while an uplink connects to it.
+    private fun validateTargetsAfterSave(siteIds: List<String>, context: LayerEditContext) {
+        context.afterSave {
+            siteIds.distinct()
+                .filter { it != context.siteId } // the editor validates the edited site itself
+                .forEach { context.services.siteValidationService.validate(it) }
         }
-        return super.updateInternal(key, value)
     }
 }

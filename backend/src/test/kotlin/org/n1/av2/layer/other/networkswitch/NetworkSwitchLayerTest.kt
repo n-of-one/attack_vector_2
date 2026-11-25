@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.LayerEditContext
 import org.n1.av2.layer.other.core.CORE_LAYER_ID
 import org.n1.av2.layer.other.core.CORE_SITE_ID
 import org.n1.av2.layer.other.core.CoreLayer
@@ -32,6 +33,7 @@ class NetworkSwitchLayerTest {
 
     private lateinit var switchLayer: NetworkSwitchLayer
     private lateinit var validationContext: ValidationContext
+    private lateinit var editContext: LayerEditContext
     private val nodeRepo = mockk<NodeRepo>()
 
     @BeforeEach
@@ -54,7 +56,10 @@ class NetworkSwitchLayerTest {
 
         val siteProperties = SiteProperties(siteId = SITE_ID, name = "test", ownerUserId = "owner")
         validationContext = ValidationContext(switchNode, nodes, connections, siteProperties, mockk(), nodeRepo, Duration.ZERO)
+        editContext = LayerEditContext(SITE_ID, switchNode, mockk(relaxed = true))
     }
+
+    private fun update(key: String, value: String) = switchLayer.update(key, value, editContext)
 
     private fun node(id: String, vararg layers: Layer) =
         Node(id, SITE_ID, NodeType.TRANSIT_2, 0, 0, layers.toMutableList(), id.removePrefix("n"))
@@ -84,22 +89,22 @@ class NetworkSwitchLayerTest {
 
     @Test
     fun `switched route without a name is an error that shows the network id`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n03", "")
+        update(ROUTE_NAME_FOR + "n03", "")
 
         assertThat(validationErrors()).containsExactly("Network switch route → 03 needs a route name.")
     }
 
     @Test
     fun `two routes without a name are not reported as a duplicate name`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n02", "")
-        switchLayer.update(ROUTE_NAME_FOR + "n03", "")
+        update(ROUTE_NAME_FOR + "n02", "")
+        update(ROUTE_NAME_FOR + "n03", "")
 
         assertThat(validationErrors()).containsExactly("Network switch route → 02 needs a route name.")
     }
 
     @Test
     fun `route name can only contain letters, digits and some punctuation`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n02", "north east")
+        update(ROUTE_NAME_FOR + "n02", "north east")
 
         assertThat(validationErrors()).containsExactly(
             "Network switch route name 'north east' can only contain letters, digits, '.', '-' and '_'."
@@ -108,49 +113,49 @@ class NetworkSwitchLayerTest {
 
     @Test
     fun `route name with allowed punctuation is valid`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n02", "R-2.north_east")
+        update(ROUTE_NAME_FOR + "n02", "R-2.north_east")
 
         assertThat(validationErrors()).isEmpty()
     }
 
     @Test
     fun `route to a node that is not connected is an error`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n04", "far")
+        update(ROUTE_NAME_FOR + "n04", "far")
 
         assertThat(validationErrors()).containsExactly("Network switch route 'far' leads to a node that is not connected to this node.")
     }
 
     @Test
     fun `route names must be unique, ignoring case`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n03", "East")
+        update(ROUTE_NAME_FOR + "n03", "East")
 
         assertThat(validationErrors()).containsExactly("Network switch has more than one route named 'east'.")
     }
 
     @Test
     fun `link to an existing core is valid`() {
-        switchLayer.update(CORE_LAYER_ID, CORE_LAYER)
+        update(CORE_LAYER_ID, CORE_LAYER)
 
         assertThat(validationErrors()).isEmpty()
     }
 
     @Test
     fun `link to a core in a removed node is an error`() {
-        switchLayer.update(CORE_LAYER_ID, "n99:layer-1")
+        update(CORE_LAYER_ID, "n99:layer-1")
 
         assertThat(validationErrors()).containsExactly("Network switch connected to core layer that was later removed.")
     }
 
     @Test
     fun `link to a layer that is not a core is an error`() {
-        switchLayer.update(CORE_LAYER_ID, TEXT_LAYER)
+        update(CORE_LAYER_ID, TEXT_LAYER)
 
         assertThat(validationErrors()).containsExactly("Network switch connected to a layer that is not a core.")
     }
 
     @Test
     fun `link to a core layer that was removed from an existing node is an error`() {
-        switchLayer.update(CORE_LAYER_ID, "n05:layer-9")
+        update(CORE_LAYER_ID, "n05:layer-9")
 
         assertThat(validationErrors()).containsExactly("Network switch connected to a layer that is not a core.")
     }
@@ -159,7 +164,7 @@ class NetworkSwitchLayerTest {
     fun `switching off the chosen route clears the choice`() {
         switchLayer.lockedRouteNodeId = "n02"
 
-        switchLayer.update(ROUTE_SWITCHED_FOR + "n02", "false")
+        update(ROUTE_SWITCHED_FOR + "n02", "false")
 
         assertThat(switchLayer.routes.map { it.name }).containsExactly("west")
         assertThat(switchLayer.lockedRouteNodeId).isNull()
@@ -167,8 +172,8 @@ class NetworkSwitchLayerTest {
 
     @Test
     fun `switching on a route adds it without a name, clearing the name keeps it`() {
-        switchLayer.update(ROUTE_SWITCHED_FOR + "n00", "true")
-        switchLayer.update(ROUTE_NAME_FOR + "n02", "")
+        update(ROUTE_SWITCHED_FOR + "n00", "true")
+        update(ROUTE_NAME_FOR + "n02", "")
 
         assertThat(switchLayer.routes).containsExactly(
             NetworkSwitchRoute("", "n02"), NetworkSwitchRoute("west", "n03"), NetworkSwitchRoute("", "n00")
@@ -177,7 +182,7 @@ class NetworkSwitchLayerTest {
 
     @Test
     fun `naming a route that is not switched switches it`() {
-        switchLayer.update(ROUTE_NAME_FOR + "n00", "back")
+        update(ROUTE_NAME_FOR + "n00", "back")
 
         assertThat(switchLayer.routeFor("n00")).isEqualTo(NetworkSwitchRoute("back", "n00"))
     }
@@ -205,10 +210,10 @@ class NetworkSwitchLayerTest {
 
     @Test
     fun `choosing another core site clears the core layer`() {
-        switchLayer.update(CORE_LAYER_ID, "core-node:layer-1")
+        update(CORE_LAYER_ID, "core-node:layer-1")
         assertThat(switchLayer.coreLayerId).isEqualTo("core-node:layer-1")
 
-        switchLayer.update(CORE_SITE_ID, "other-site")
+        update(CORE_SITE_ID, "other-site")
 
         assertThat(switchLayer.coreSiteId).isEqualTo("other-site")
         assertThat(switchLayer.coreLayerId).isNull()

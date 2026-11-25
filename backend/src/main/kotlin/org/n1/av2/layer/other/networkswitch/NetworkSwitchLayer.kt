@@ -3,6 +3,7 @@ package org.n1.av2.layer.other.networkswitch
 import org.n1.av2.editor.SiteValidationException
 import org.n1.av2.editor.ValidationContext
 import org.n1.av2.layer.Layer
+import org.n1.av2.layer.LayerEditContext
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.core.CoreLinkedLayer
 import org.n1.av2.layer.other.core.updateCoreLink
@@ -95,6 +96,26 @@ class NetworkSwitchLayer(
         return listOf(::validateRouteCount, ::validateRoutes, ::validateCoreLayerId)
     }
 
+    override fun updateInternal(key: String, value: String, context: LayerEditContext): Boolean {
+        val keyFound = super.updateInternal(key, value, context)
+        val networkSwitchService = context.services.networkSwitchService
+        context.afterSave {
+            if (key == LOCKED_ROUTE_NODE_ID) {
+                networkSwitchService.lockChanged(context.node, this)
+            } else {
+                // ROUTE_NAME_FOR can add a route
+                // ROUTE_SWITCHED_FOR changes the current route
+                networkSwitchService.sendConnectionStatuses(context.siteId)
+                networkSwitchService.disconnectHackersCutOffFromStart(context.siteId)
+            }
+        }
+        return keyFound
+    }
+
+    override fun onRemove(context: LayerEditContext) {
+        context.afterSave { context.services.networkSwitchService.sendConnectionStatuses(context.siteId) }
+    }
+
     override fun updateInternal(key: String, value: String): Boolean {
         if (updateCoreLink(key, value)) return true
         if (key.startsWith(ROUTE_NAME_FOR)) {
@@ -114,7 +135,7 @@ class NetworkSwitchLayer(
         return super.updateInternal(key, value)
     }
 
-    // Typing a name for a route that is not switched yet also switches it.
+    // Typing a name for a route that is not switched yet also adds it to the switched routes
     private fun updateRouteName(nodeId: String, routeName: String) {
         val index = routes.indexOfFirst { it.nodeId == nodeId }
         val route = NetworkSwitchRoute(routeName, nodeId)

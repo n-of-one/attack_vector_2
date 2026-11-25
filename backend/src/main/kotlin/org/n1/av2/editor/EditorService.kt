@@ -3,16 +3,13 @@ package org.n1.av2.editor
 import org.n1.av2.editor.EditorWsController.AddStatusLightOptionCommand
 import org.n1.av2.editor.EditorWsController.DeleteStatusLightOptionCommand
 import org.n1.av2.layer.Layer
-import org.n1.av2.layer.NAME
-import org.n1.av2.layer.NOTE
+import org.n1.av2.layer.LayerEditContext
+import org.n1.av2.layer.LayerEditServices
 import org.n1.av2.layer.app.status_light.StatusLightLayer
 import org.n1.av2.layer.app.status_light.StatusLightOption
 import org.n1.av2.layer.app.status_light.StatusLightService
 import org.n1.av2.layer.other.core.CoreLayer
-import org.n1.av2.layer.other.networkswitch.LOCKED_ROUTE_NODE_ID
-import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
-import org.n1.av2.layer.other.uplink.TARGET_SITE_ID
 import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
@@ -23,7 +20,6 @@ import org.n1.av2.platform.iam.user.UserType
 import org.n1.av2.platform.inputvalidation.ValidationException
 import org.n1.av2.site.SiteService
 import org.n1.av2.site.entity.ConnectionEntityService
-import org.n1.av2.site.entity.Node
 import org.n1.av2.site.entity.NodeEntityService
 import org.n1.av2.site.entity.SitePropertiesEntityService
 import org.n1.av2.site.entity.enums.LayerType
@@ -40,6 +36,7 @@ class EditorService(
     private val userAndHackerService: UserAndHackerService,
     private val currentUserService: CurrentUserService,
     private val networkSwitchService: NetworkSwitchService,
+    private val layerEditServices: LayerEditServices,
 ) {
 
     fun validateAccessToSiteByName(siteName: String, userPrincipal: UserPrincipal) {
@@ -172,11 +169,16 @@ class EditorService(
 
 
     fun deleteNode(siteId: String, nodeId: String) {
+        val node = nodeEntityService.getById(nodeId)
+        val context = LayerEditContext(siteId, node, layerEditServices, nodeDeleted = true)
+        node.layers.forEach { it.onRemove(context) }
+
         deleteConnectionsInternal(nodeId)
         nodeEntityService.deleteNode(nodeId)
         removeNetworkSwitchRoutesWithoutConnection(siteId)
         siteValidationService.validate(siteId)
         sendFullSiteToSite(siteId)
+        context.runAfterSave()
     }
 
     fun snap(siteId: String) {
@@ -206,28 +208,12 @@ class EditorService(
     fun editLayerData(command: EditLayerDataCommand) {
         val node = nodeEntityService.getById(command.nodeId)
         val layer = node.layers.find { it.id == command.layerId } ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
-        layer.update(command.key, command.value)
-        if (layer is UplinkLayer && command.key == TARGET_SITE_ID) {
-            layer.targetSiteName = layer.targetSiteId?.let { sitePropertiesEntityService.getBySiteId(it).name }
-        }
-        processUpdateToApp(layer, command.key)
+        val context = LayerEditContext(command.siteId, node, layerEditServices)
+        layer.update(command.key, command.value, context)
         nodeEntityService.save(node)
         sendLayerUpdateMessage(command.siteId, command.nodeId, layer)
         siteValidationService.validate(command.siteId)
-        if (layer is NetworkSwitchLayer) processNetworkSwitchSideEffects(command, node, layer)
-    }
-
-    private fun processNetworkSwitchSideEffects(
-        command: EditLayerDataCommand,
-        node: Node,
-        layer: NetworkSwitchLayer
-    ) {
-        if (command.key == LOCKED_ROUTE_NODE_ID) {
-            networkSwitchService.lockChanged(node, layer)
-        } else {
-            networkSwitchService.sendConnectionStatuses(command.siteId)
-            networkSwitchService.disconnectHackersCutOffFromStart(command.siteId)
-        }
+        context.runAfterSave()
     }
 
     fun addStatusLightOption(command: AddStatusLightOptionCommand) {
@@ -264,13 +250,6 @@ class EditorService(
     }
 
 
-    private fun processUpdateToApp(layer: Layer, key: String) {
-        if (layer is StatusLightLayer && (key != NAME && key != NOTE)) {
-            statusLightService.sendUpdate(layer)
-        }
-    }
-
-
     data class LayerAdded(val nodeId: String, val layer: Layer)
 
     fun addLayer(command: AddLayerCommand): Layer {
@@ -292,23 +271,21 @@ class EditorService(
     }
 
     fun removeLayer(command: RemoveLayerCommand) {
-        siteService.verifyRemoveLayer(command.siteId, command.layerId)
-        val networkSwitchRemoved = nodeEntityService.getById(command.nodeId).layers.find { it.id == command.layerId } is NetworkSwitchLayer
-        val message = nodeEntityService.removeLayer(command)
+        val node = nodeEntityService.getById(command.nodeId)
+        val layer = node.layers.find { it.id == command.layerId } ?: return
+        val context = LayerEditContext(command.siteId, node, layerEditServices)
+        layer.onRemove(context)
 
-        if (message != null) {
-            connectionService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, message)
-            siteValidationService.validate(command.siteId)
-        }
-        if (networkSwitchRemoved) {
-            networkSwitchService.sendConnectionStatuses(command.siteId)
-        }
+        val layerUpdated = nodeEntityService.removeLayer(command) ?: return
+        connectionService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, layerUpdated)
+        siteValidationService.validate(command.siteId)
+        context.runAfterSave()
     }
 
     fun swapLayers(command: SwapLayerCommand) {
-        val message = nodeEntityService.swapLayers(command)
-        if (message != null) {
-            connectionService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, message)
+        val nodeUpdated = nodeEntityService.swapLayers(command)
+        if (nodeUpdated != null) {
+            connectionService.toSite(command.siteId, ServerActions.SERVER_NODE_UPDATED, nodeUpdated)
         }
     }
 
