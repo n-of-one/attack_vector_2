@@ -4,7 +4,7 @@ import {Schedule} from "./Schedule";
 export class TestSupport {
 
     enabled: boolean = false
-    eventFired: string | null = null
+    eventsFired = new Set<string>()
 
     constructor() {
         this.enabled = (globalThis as any).__ENABLE_TEST_SUPPORT__ === true
@@ -38,16 +38,16 @@ export class TestSupport {
         schedule.run(0, () => {
             this.log(`Firing event: ${eventName}`)
             window.dispatchEvent(new CustomEvent(eventName));
-            this.eventFired = eventName
+            this.eventsFired.add(eventName)
         })
 
-        this.eventFired = null
+        this.eventsFired.delete(eventName) // only forget this event: another one may have fired that Playwright has yet to wait for
     }
 
     // Called by Playwright.
     waitForEvent(eventName: string): Promise<void> {
-        if (this.eventFired === eventName) {
-            this.eventFired = null
+        if (this.eventsFired.has(eventName)) {
+            this.eventsFired.delete(eventName)
             this.logFromPlaywright(`eventFired before we could wait for it: ${eventName} `)
             return Promise.resolve()
         }
@@ -55,7 +55,7 @@ export class TestSupport {
         return new Promise<void>(resolve => {
             const handler = (_event: Event) => {
                 this.logFromPlaywright(`Received event: ${eventName} `)
-                this.eventFired = null;
+                this.eventsFired.delete(eventName)
                 resolve();
             };
 

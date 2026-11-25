@@ -16,6 +16,7 @@ enum class LayerType(
     TIMER_ADJUSTER,
     DAEMON,
     NETWORK_SWITCH,
+    UPLINK,
     LOCK,
     STATUS_LIGHT,
     CORE,

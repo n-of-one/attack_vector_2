@@ -1,0 +1,57 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-11-22 12:00:00"
+  },
+  "siteProperties" : {
+    "siteId" : "site-uplb-0001",
+    "name" : "test-uplink-b",
+    "description" : "",
+    "purpose" : "e2e test",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : false,
+    "internal" : true
+  },
+  "nodes" : [ {
+    "id" : "node-uplb-0000",
+    "siteId" : "site-uplb-0001",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 600,
+    "layers" : [ {
+      "id" : "node-uplb-0000:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "internal gateway"
+    } ],
+    "networkId" : "00"
+  }, {
+    "id" : "node-uplb-0001",
+    "siteId" : "site-uplb-0001",
+    "type" : "DATA_STORE",
+    "x" : 625,
+    "y" : 400,
+    "layers" : [ {
+      "id" : "node-uplb-0001:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "internal records"
+    }, {
+      "id" : "node-uplb-0001:layer-0001",
+      "type" : "TEXT",
+      "level" : 1,
+      "name" : "Database",
+      "note" : "",
+      "text" : "Internal records"
+    } ],
+    "networkId" : "01"
+  } ],
+  "connections" : [ {
+    "fromId" : "node-uplb-0000",
+    "toId" : "node-uplb-0001"
+  } ]
+}

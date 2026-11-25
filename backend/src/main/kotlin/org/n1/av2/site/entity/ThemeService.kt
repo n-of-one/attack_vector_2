@@ -14,6 +14,7 @@ class ThemeService {
         LayerType.TIMER_ADJUSTER -> "Timer accelerator"
         LayerType.DAEMON -> "Daemon"
         LayerType.NETWORK_SWITCH -> "Network switch"
+        LayerType.UPLINK -> "Uplink"
         LayerType.CORE -> "Core"
         LayerType.SCRIPT_INTERACTION -> "Process"
         LayerType.SCRIPT_CREDITS -> "Database"

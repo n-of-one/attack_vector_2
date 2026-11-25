@@ -22,27 +22,51 @@ export class GmPage {
         await expect(appLocator(this.page), `Verify delete all success noty`).toContainText("runs removed")
     }
 
-    async importSiteIfItDoesNotExist(siteName: string, fileName: string, directory: string = path.join(__dirname, "..", "sites")) {
-        log(`Load site if it does not yet exist: ${siteName}`)
+    async deleteSiteIfItExists(siteName: string) {
+        log(`Delete site if it exists: ${siteName}`)
+        if (!await this.siteExists(siteName)) return
+
+        confirmDialog(this.page, `Confirm that you want to delete site ${siteName}.`)
+        await this.page.getByRole('row').filter({hasText: siteName}).getByTitle("Delete site").click()
+        await expect(this.page.getByText(siteName, {exact: true}), `Verify site ${siteName} is deleted`).toHaveCount(0)
+    }
+
+    private async siteExists(siteName: string): Promise<boolean> {
         await this.av.navigateToMenuItem("Sites")
 
-        // Make sure sites are shown in the browser, before checking if our site needs to be uploaded. Any site will do: the tutorial site is
+        // Make sure sites are shown in the browser, before checking if our site exists. Any site will do: the tutorial site is
         // created by the migrations, so there is always at least one row once the list has been received from the server.
         await expect(this.page.locator('#sitesTable tbody tr').first(), "Verify the site list has loaded").toBeVisible()
 
         const siteExists = await this.page.getByText(siteName, {exact: true}).isVisible()
         log(`Site (${siteName}) exists: ${siteExists}`)
+        return siteExists
+    }
+
+    async importSiteIfItDoesNotExist(siteName: string, fileName: string, directory: string = path.join(__dirname, "..", "sites")) {
+        log(`Load site if it does not yet exist: ${siteName}`)
+        const siteExists = await this.siteExists(siteName)
 
         if (!siteExists) {
-            await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(path.join(directory, fileName));
-            await this.page.getByRole('button', { name: 'Upload' }).click();
-            await expect(appLocator(this.page), `Verify import success noty`).toContainText(`Imported site: ${siteName}`)
-            await this.page.getByText('[close]').click();
-
-            // make site hackable
-            const siteHackableCheckboxLocator = this.page.locator(`role=cell[name="${siteName}"]  >> role=checkbox`)
-            await siteHackableCheckboxLocator.click();
-            await expect(siteHackableCheckboxLocator).toBeChecked()
+            await this.importSite(siteName, fileName, directory)
+            await this.makeSiteHackable(siteName)
         }
+    }
+
+    async importSite(siteName: string, fileName: string, directory: string = path.join(__dirname, "..", "sites")) {
+        log(`Import site: ${siteName}`)
+        await this.av.navigateToMenuItem("Sites")
+        await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(path.join(directory, fileName));
+        await this.page.getByRole('button', { name: 'Upload' }).click();
+        await expect(appLocator(this.page), `Verify import success noty`).toContainText(`Imported site: ${siteName}`)
+        await this.page.getByRole('status').filter({hasText: `Imported site: ${siteName}`}).getByTestId('closeNotification').click();
+    }
+
+    async makeSiteHackable(siteName: string) {
+        log(`Make site hackable: ${siteName}`)
+        await this.av.navigateToMenuItem("Sites")
+        const siteHackableCheckboxLocator = this.page.locator(`role=cell[name="${siteName}"]  >> role=checkbox`)
+        await siteHackableCheckboxLocator.click();
+        await expect(siteHackableCheckboxLocator).toBeChecked()
     }
 }

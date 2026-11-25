@@ -12,6 +12,8 @@ import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.networkswitch.LOCKED_ROUTE_NODE_ID
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchLayer
 import org.n1.av2.layer.other.networkswitch.NetworkSwitchService
+import org.n1.av2.layer.other.uplink.TARGET_SITE_ID
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.UserPrincipal
@@ -121,12 +123,16 @@ class EditorService(
 
         try {
             when (command.field) {
-                SitePropertyField.NAME -> sitePropertiesEntityService.updateName(properties, value)
+                SitePropertyField.NAME -> {
+                    sitePropertiesEntityService.updateName(properties, value)
+                    renameUplinkTargets(properties.siteId, properties.name)
+                }
                 SitePropertyField.DESCRIPTION -> properties.description = value
                 SitePropertyField.PURPOSE -> properties.purpose = value
                 SitePropertyField.START_NODE -> properties.startNodeNetworkId = value
                 SitePropertyField.HACKABLE -> properties.hackable = value.toBoolean()
                 SitePropertyField.NODES_LOCKED -> properties.nodesLocked = value.toBoolean()
+                SitePropertyField.INTERNAL -> properties.internal = value.toBoolean()
             }
 
             sitePropertiesEntityService.save(properties)
@@ -134,6 +140,13 @@ class EditorService(
         } catch (validationException: ValidationException) {
             connectionService.toSite(properties.siteId, ServerActions.SERVER_UPDATE_SITE_DATA, properties)
             throw validationException
+        }
+    }
+
+    private fun renameUplinkTargets(siteId: String, name: String) {
+        nodeEntityService.findAllNodesWithUplinkTo(siteId).forEach { node ->
+            node.layers.filterIsInstance<UplinkLayer>().filter { it.targetSiteId == siteId }.forEach { it.targetSiteName = name }
+            nodeEntityService.save(node)
         }
     }
 
@@ -194,6 +207,9 @@ class EditorService(
         val node = nodeEntityService.getById(command.nodeId)
         val layer = node.layers.find { it.id == command.layerId } ?: error("Layer not found: ${command.layerId} for ${command.nodeId}")
         layer.update(command.key, command.value)
+        if (layer is UplinkLayer && command.key == TARGET_SITE_ID) {
+            layer.targetSiteName = layer.targetSiteId?.let { sitePropertiesEntityService.getBySiteId(it).name }
+        }
         processUpdateToApp(layer, command.key)
         nodeEntityService.save(node)
         sendLayerUpdateMessage(command.siteId, command.nodeId, layer)

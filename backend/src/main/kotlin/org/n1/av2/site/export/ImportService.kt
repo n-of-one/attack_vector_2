@@ -5,6 +5,7 @@ import org.n1.av2.frontend.model.NotyMessage
 import org.n1.av2.frontend.model.NotyType
 import org.n1.av2.layer.other.core.CoreLayer
 import org.n1.av2.layer.other.core.CoreLinkedLayer
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.iam.user.CurrentUserService
@@ -53,6 +54,7 @@ class ImportService(
         }
 
         resolveCrossSiteCoreReferences(blueprint.nodes, blueprint.siteProperties.siteId)
+        resolveUplinkTargets(blueprint.nodes)
         val owner = currentUserService.userEntity
         siteCloneService.cloneSite(blueprint, blueprint.siteProperties.name, owner)
         return blueprint.siteProperties.name
@@ -66,6 +68,13 @@ class ImportService(
                 if (!isCrossSite) return@forEach
                 resolveCrossSiteReference(linkedLayer)
             }
+        }
+    }
+
+    private fun resolveUplinkTargets(nodes: List<Node>) {
+        nodes.flatMap { it.layers }.filterIsInstance<UplinkLayer>().forEach { uplink ->
+            val target = uplink.targetSiteName?.let { sitePropertiesEntityService.findByName(it) }
+            uplink.targetSiteId = target?.siteId // keep the name when not found, so the validation error can mention it
         }
     }
 

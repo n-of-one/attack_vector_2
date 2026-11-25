@@ -14,6 +14,7 @@ export const COLOR_PROBE_LINE = "#285ba0";
 export const COLOR_PATROLLER_LINE = "#A42433";
 export const COLOR_HACKER_LINE = "#d6c540";
 export const COLOR_HACKER_LINE_BYPASSING = "#d66d40";
+export const COLOR_HACKER_LINE_UPLINK = "#ff9900";
 
 
 export const TICKS_HACKER_MOVE_MAIN = 16;

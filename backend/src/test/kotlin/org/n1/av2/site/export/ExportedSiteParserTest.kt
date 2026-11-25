@@ -9,6 +9,7 @@ import org.n1.av2.layer.other.os.OsLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.model.TriggerRecurrence
 import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentType
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.site.entity.enums.LayerType
 import tools.jackson.databind.json.JsonMapper
 
@@ -104,5 +105,22 @@ class ExportedSiteParserTest {
         val blueprint = parser.parse(loadJson("/export/site-purpose-creator-fallback.json"))
 
         assertEquals("gm", blueprint.siteProperties.purpose)
+    }
+
+    @Test
+    fun `internal defaults to false`() {
+        val blueprint = parser.parse(loadJson("/export/network-switch.json"))
+
+        assertEquals(false, blueprint.siteProperties.internal)
+    }
+
+    @Test
+    fun `parses internal site with uplink`() {
+        val blueprint = parser.parse(loadJson("/export/uplink.json"))
+        val layer = blueprint.nodes[0].layers[1] as UplinkLayer
+
+        assertEquals(true, blueprint.siteProperties.internal)
+        assertEquals("s2", layer.targetSiteId)
+        assertEquals("target", layer.targetSiteName)
     }
 }

@@ -20,6 +20,7 @@ import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.util.createId
 import org.n1.av2.platform.util.createLayerId
 import org.n1.av2.site.entity.enums.LayerType
@@ -226,6 +227,7 @@ class NodeEntityService(
             LayerType.TIMER_ADJUSTER -> TimerAdjusterLayer(layerId, level, defaultName)
             LayerType.DAEMON -> DaemonLayer(layerId, level, defaultName)
             LayerType.NETWORK_SWITCH -> NetworkSwitchLayer(layerId, level, defaultName)
+            LayerType.UPLINK -> UplinkLayer(layerId, level, defaultName)
             LayerType.CORE -> CoreLayer(layerId, level, defaultName)
             LayerType.SCRIPT_INTERACTION -> ScriptInteractionLayer(layerId, level, defaultName)
             LayerType.SCRIPT_CREDITS -> ScriptCreditsLayer(layerId, level, defaultName)
@@ -301,6 +303,13 @@ class NodeEntityService(
         return nodeRepo.findAll()
             .filter { node ->
                 node.layers.filterIsInstance<CoreLinkedLayer>().any { it.coreLayerId == coreLayerId }
+            }
+    }
+
+    fun findAllNodesWithUplinkTo(targetSiteId: String): List<Node> {
+        return nodeRepo.findAll()
+            .filter { node ->
+                node.layers.filterIsInstance<UplinkLayer>().any { it.targetSiteId == targetSiteId }
             }
     }
 

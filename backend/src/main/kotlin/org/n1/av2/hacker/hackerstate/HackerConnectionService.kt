@@ -34,7 +34,7 @@ class HackerConnectionService(
     fun browserConnectHackerMain(userPrincipal: UserPrincipal) {
         val hackerState = hackerStateEntityService.retrieveForUserId(userPrincipal.userId)
         if (hackerState.activity.inRun) {
-            runService.leaveSite(hackerState, false)
+            runService.leaveSite(hackerState, false, viaUplink = false)
         }
         hackerStateEntityService.login(userPrincipal.userId)
         sendConnectionEventToAllBrowsers(userPrincipal)
@@ -68,7 +68,7 @@ class HackerConnectionService(
         hackerStateEntityService.goOffline(userPrincipal)
 
         if (hackerState.activity.inRun) {
-            runService.leaveSite(hackerState, false)
+            runService.leaveSite(hackerState, false, viaUplink = false)
         }
     }
 

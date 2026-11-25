@@ -19,6 +19,8 @@ const renderLayer = (layer: LayerDetails) => {
         case LayerType.DAEMON:
         case LayerType.NETWORK_SWITCH:
             return <></>
+        case LayerType.UPLINK:
+            return <> -&gt; <span className="text-info">{layer.targetSiteName ?? "?"}</span></>
         case LayerType.TRIPWIRE:
             return <ScanInfoTripwire layer={layer}/>
         case LayerType.TIMER_ADJUSTER:

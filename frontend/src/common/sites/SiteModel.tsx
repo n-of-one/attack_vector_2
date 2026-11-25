@@ -69,6 +69,9 @@ export interface LayerDetails {
 
     routes?: NetworkSwitchRoute[]  // Network switch layer
     lockedRouteNodeId?: string | null // Network switch layer
+
+    targetSiteId?: string | null   // Uplink layer
+    targetSiteName?: string | null // Uplink layer
 }
 
 export interface NetworkSwitchRoute {

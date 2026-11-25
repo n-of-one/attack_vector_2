@@ -57,6 +57,14 @@ export const SiteProperties = () => {
                                                    save={(value: boolean) => save("NODES_LOCKED", value)} />
                             </div>
                     </div>
+                    <div className="row form-group">
+                            <label htmlFor="internal" className="col-lg-5 control-label text-muted"
+                                   title="Only reachable through an Uplink in another site">Internal</label>
+                            <div className="col-lg-1">
+                                <CheckboxSaveInput id="internal" className="form-control form-check-input" checked={siteProperties.internal}
+                                                   save={(value: boolean) => save("INTERNAL", value)} />
+                            </div>
+                    </div>
                </div>
             </div>
     </span>

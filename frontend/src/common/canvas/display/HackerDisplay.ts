@@ -4,6 +4,7 @@ import {Schedule} from "../../util/Schedule"
 import {
     COLOR_HACKER_LINE,
     COLOR_HACKER_LINE_BYPASSING,
+    COLOR_HACKER_LINE_UPLINK,
     IDENTIFICATION_SCALE_LARGE,
     IDENTIFICATION_SCALE_NORMAL,
     IMAGE_SIZE,
@@ -238,11 +239,16 @@ export class HackerDisplay implements Display {
         })
     }
 
-    startRun(quick: boolean, timings: Timings) {
+    hideHackerIcon() {
+        if (!this.hackerIcon) return
+        this.hackerIcon.opacity = 0
+    }
+
+    startRun(quick: boolean, timings: Timings, viaUplink: boolean) {
         if (quick) {
             this.startRunQuick()
         } else {
-            this.startRunSlow(timings)
+            this.startRunSlow(timings, viaUplink)
         }
     }
 
@@ -258,7 +264,7 @@ export class HackerDisplay implements Display {
 
     }
 
-    startRunSlow(timings: Timings) {
+    startRunSlow(timings: Timings, viaUplink: boolean) {
         this.hackerIcon = this.createHackerIcon(SCALE_NORMAL, 0, this)
         this.canvas.add(this.hackerIcon)
         this.canvas.sendToBack(this.hackerIcon)
@@ -267,7 +273,8 @@ export class HackerDisplay implements Display {
 
         this.schedule.run(timings.main, () => {
             if (!this.targetNodeDisplay) throw Error("!this.targetNodeDisplay")
-            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, false, timings.move, this.you, easeOutSine)
+            const color = viaUplink ? COLOR_HACKER_LINE_UPLINK : undefined
+            this.moveLineElement = this.animateMoveStepLine(this, this.targetNodeDisplay, false, timings.move, this.you, easeOutSine, color)
         })
         animate(this.canvas, this.startLineIcon, "opacity", LINE_OPACITY_HACKING, 200)
         animate(this.canvas, this.labelIcon, "opacity", LINE_OPACITY_HACKING, 100)
@@ -285,6 +292,12 @@ export class HackerDisplay implements Display {
     }
 
     moveArrive(nodeDisplay: NodeDisplay, timings: Timings) {
+        if (nodeDisplay === this.currentNodeDisplay && !this.moveLineElement) {
+            // returned via an uplink, already displayed at this node (hidden when it is your hacker)
+            animate(this.canvas, this.hackerIcon!, 'opacity', 1, APPEAR_TIME)
+            return
+        }
+
         this.schedule.run(0, () => {
             this.moveLineElement?.disappear(10)
         })
@@ -342,13 +355,13 @@ export class HackerDisplay implements Display {
     }
 
     animateMoveStepLine(fromNodeDisplay: Display, toNodeDisplay: Display, bypassingIceAtStartNode: boolean,
-                        durationTicks: number, you: boolean, ease: IUtilAminEaseFunction = easeInOutSine): ConnectionVisual {
+                        durationTicks: number, you: boolean, ease: IUtilAminEaseFunction = easeInOutSine, colorOverride?: string): ConnectionVisual {
         const lineData: LinePositions = calcLine(fromNodeDisplay, toNodeDisplay, 0)
         const lineStart = new LinePositions(lineData.line[0], lineData.line[1], lineData.line[0], lineData.line[1])
 
         const opacity = (you) ? 1 : 0.5
 
-        const color = bypassingIceAtStartNode ? COLOR_HACKER_LINE_BYPASSING : COLOR_HACKER_LINE
+        const color = colorOverride ?? (bypassingIceAtStartNode ? COLOR_HACKER_LINE_BYPASSING : COLOR_HACKER_LINE)
         console.log(opacity)
 
         const lineElement = new ConnectionVisual(lineStart, color, this.canvas, {opacity: opacity}, bypassingIceAtStartNode)

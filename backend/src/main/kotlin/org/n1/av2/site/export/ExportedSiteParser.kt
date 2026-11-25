@@ -23,6 +23,7 @@ import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjustmentType
 import org.n1.av2.layer.other.tripwire.TripwireLayer
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.util.asList
 import org.n1.av2.site.entity.Connection
 import org.n1.av2.site.entity.Node
@@ -86,6 +87,7 @@ class ExportedSiteParser(
             hackable = false,
             shutdownEnd = null,
             nodesLocked = input["nodesLocked"]?.asBoolean() == true,
+            internal = input["internal"]?.asBoolean() == true,
         )
     }
 
@@ -142,6 +144,7 @@ class ExportedSiteParser(
                 LayerType.TIMER_ADJUSTER -> mapTimerAdjusterLayer(input, id, level, name, note)
                 LayerType.DAEMON -> mapDaemonLayer(input, id, level, name, note)
                 LayerType.NETWORK_SWITCH -> mapNetworkSwitchLayer(input, id, level, name, note)
+                LayerType.UPLINK -> mapUplinkLayer(id, level, name, note, input)
                 LayerType.SCRIPT_INTERACTION -> mapLayerScriptInteraction(input, id, level, name, note)
                 LayerType.SCRIPT_CREDITS -> mapLayerScriptCredits(input, id, level, name, note)
                 LayerType.NETWALK_ICE,
@@ -274,6 +277,18 @@ class ExportedSiteParser(
             coreLayerLevel = input.getAsIntOrNull("coreLayerLevel"),
         )
     }
+
+    private fun mapUplinkLayer(
+        id: String,
+        level: Int,
+        name: String,
+        note: String,
+        input: JsonNode
+    ): UplinkLayer = UplinkLayer(
+        id = id, level = level, name = name, note = note,
+        targetSiteId = input.getAsTextOrNull("targetSiteId"),
+        targetSiteName = input.getAsTextOrNull("targetSiteName"),
+    )
 
     private fun mapLayerScriptInteraction(input: JsonNode, id: String, level: Int, name: String, note: String): ScriptInteractionLayer {
         return ScriptInteractionLayer(

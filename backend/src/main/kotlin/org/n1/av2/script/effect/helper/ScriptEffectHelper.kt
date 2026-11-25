@@ -45,7 +45,7 @@ class ScriptEffectHelper(
         val layerInput = argumentTokens.firstOrNull() ?: return RunOnLayerResult("Provide the [primary]layer[/] to use this script on.")
         val layerNumber = layerInput.toIntOrNull() ?: return RunOnLayerResult("Provide the [primary]layer[/] to use this script on, this must be a number.")
         val node = nodeEntityService.getById(hackerState.currentNodeId)
-        val layer = node.layers.find { it.level == layerNumber.toInt() } ?: return RunOnLayerResult("Layer not found.")
+        val layer = node.layers.find { it.level == layerNumber } ?: return RunOnLayerResult("Layer not found.")
         return RunOnLayerResult(layer, node, null)
     }
 

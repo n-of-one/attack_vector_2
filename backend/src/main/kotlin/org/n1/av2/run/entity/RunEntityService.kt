@@ -13,17 +13,26 @@ class RunEntityService(
         return runRepo.findByRunId(runId) ?: error("${runId} not found")
     }
 
-    fun create(siteId: String, nodeScanById: MutableMap<String, NodeScan>, initiatorId: String): Run {
+    fun findByRunId(runId: String): Run? {
+        return runRepo.findByRunId(runId)
+    }
+
+    fun create(siteId: String, nodeScanById: MutableMap<String, NodeScan>, initiatorId: String, parentRunId: String? = null): Run {
         val runId =  createId("run") { candidate: String -> runRepo.findByRunId(candidate) }
 
         val run = Run(
             runId = runId,
             siteId = siteId,
             nodeScanById = nodeScanById,
-            initiatorId = initiatorId
+            initiatorId = initiatorId,
+            parentRunId = parentRunId,
         )
         runRepo.save(run)
         return run
+    }
+
+    fun findChildRuns(parentRunId: String): List<Run> {
+        return runRepo.findByParentRunId(parentRunId)
     }
 
     fun save(run: Run) {

@@ -3,6 +3,7 @@ package org.n1.av2.run
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.n1.av2.frontend.model.ReduxEvent
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
+import org.n1.av2.layer.other.uplink.UplinkService
 import org.n1.av2.platform.engine.UserTaskRunner
 import org.n1.av2.platform.iam.UserPrincipal
 import org.n1.av2.platform.util.toServerFatalReduxEvent
@@ -18,6 +19,7 @@ class RunWsController(
     private val runLinkService: RunLinkService,
     private val runService: RunService,
     private val hackerStateEntityService: HackerStateEntityService,
+    private val uplinkService: UplinkService,
 ) {
 
     private val logger = KotlinLogging.logger {}
@@ -47,11 +49,18 @@ class RunWsController(
         userTaskRunner.runTask("/run/enterRun", userPrincipal) { runService.enterRun(userPrincipal.userId, runId, userPrincipal.connectionId) }
     }
 
+    @MessageMapping("/run/enterSiteFromUplink")
+    fun enterSiteFromUplink(runId: String, userPrincipal: UserPrincipal) {
+        userTaskRunner.runTask("/run/enterSiteFromUplink", userPrincipal) {
+            uplinkService.enterSiteFromUplink(userPrincipal.userId, runId, userPrincipal.connectionId)
+        }
+    }
+
     @MessageMapping("/run/leaveSite")
     fun leaveScan(runId: String, userPrincipal: UserPrincipal) {
         userTaskRunner.runTask("/run/leaveSite", userPrincipal) {
             val state = hackerStateEntityService.retrieveForCurrentUser()
-            runService.leaveSite(state, true)
+            runService.leaveSite(state, true, viaUplink = false)
         }
     }
 

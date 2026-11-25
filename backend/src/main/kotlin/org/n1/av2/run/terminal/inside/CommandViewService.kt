@@ -3,6 +3,7 @@ package org.n1.av2.run.terminal.inside
 import org.n1.av2.hacker.hackerstate.HackerStateRunning
 import org.n1.av2.layer.ice.common.IceLayer
 import org.n1.av2.layer.other.os.OsLayer
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.site.entity.NodeEntityService
@@ -38,6 +39,9 @@ class CommandViewService(
             val iceSuffix = if (layer is IceLayer) " ICE" else ""
             if (blocked) {
                 lines.add("[pri]${layer.level}[/] unknown (shielded by ICE)")
+            }
+            else if (layer is UplinkLayer) {
+                lines.add("[pri]${layer.level}[/] ${layer.name} -> [info]${layer.targetSiteName ?: "?"}")
             }
             else {
                 lines.add("[pri]${layer.level}[/] ${layer.name}${iceSuffix}${hacked}")

@@ -15,6 +15,13 @@ enum class HackerActivity(val inRun: Boolean) {
     INSIDE(true),    // hacker has entered the site, has an avatar inside
 }
 
+enum class UplinkActivity {
+    NONE,
+    CONNECTING, // up
+    RETURNING, // down, to the uplink node
+    RETURNING_OUTSIDE, // down, the uplink node cannot be used: outside the site. This happens if the site with the uplink node is resetting
+}
+
 @Document
 data class HackerState(
     @Id val userId: String,
@@ -27,6 +34,9 @@ data class HackerState(
     val iceId: String?, // the ICE a hacker is currently hacking
     val networkedConnectionId: String?,
     val iceConnectTimestamp: ZonedDateTime?,
+    val uplinkReturns: List<UplinkReturn> = emptyList(), // where to return to when leaving a site entered via an uplink, last is most recent
+    val uplinkArrivalNodeId: String? = null, // set while the browser switches to a run entered via an uplink (up or down)
+    val uplinkActivity: UplinkActivity = UplinkActivity.NONE,
 ) {
 
     fun toRunState(): HackerStateRunning {
@@ -36,10 +46,16 @@ data class HackerState(
             siteId ?: error("siteId null for ${userId}"),
             currentNodeId,
             previousNodeId, activity, iceId, networkedConnectionId, iceConnectTimestamp,
-
+            uplinkReturns, uplinkArrivalNodeId, uplinkActivity,
         )
     }
 }
+
+data class UplinkReturn(
+    val runId: String,
+    val siteId: String,
+    val nodeId: String,
+)
 
 /** Convenience class that mimics HackerState but enforces non-null state of all fields that are used in a run */
 class HackerStateRunning(
@@ -53,11 +69,14 @@ class HackerStateRunning(
     val iceId: String?,
     val networkedConnectionId: String?,
     val iceConnectTimestamp: ZonedDateTime?,
+    val uplinkReturns: List<UplinkReturn>,
+    val uplinkArrivalNodeId: String?,
+    val uplinkActivity: UplinkActivity,
 ) {
     fun toState(): HackerState {
         return HackerState(
             userId, connectionId, runId, siteId, currentNodeId, previousNodeId,
-            activity, iceId, networkedConnectionId, iceConnectTimestamp
+            activity, iceId, networkedConnectionId, iceConnectTimestamp, uplinkReturns, uplinkArrivalNodeId, uplinkActivity,
         )
     }
 }

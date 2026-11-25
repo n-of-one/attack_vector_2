@@ -29,6 +29,15 @@ class TimingsService(
     var START_ATTACK_SLOW = Timings("main" to 180, "fast" to 10, "medium" to 20, "slow" to 30, "move" to 135)
     var START_ATTACK_FAST = Timings("main" to 0)
 
+    // Establish is the time between hacking the uplink and switching to the target site.
+    // Wait lets the target site render and the hacker icon fade in before the connection line starts.
+    // The time for move is the duration of the connection line animation, the messages shown during it take exactly as long. See: RunServerActionProcessor.ts
+    // The value for "main" is wait + move.
+    var START_UPLINK = Timings("establish" to 20, "main" to 200, "fast" to 10, "medium" to 20, "slow" to 30, "wait" to 50, "move" to 150)
+
+    // Time for the site to render when returning from a site entered via an uplink, before the hacker appears.
+    var UPLINK_RETURN = Timings("main" to 40)
+
     // used for unit tests and local development
     fun minimize() {
         MOVE_START = Timings("main" to 10)
@@ -39,6 +48,8 @@ class TimingsService(
 
         START_ATTACK_FAST = Timings("main" to 1)
         START_ATTACK_SLOW = Timings("main" to 1)
+        START_UPLINK = Timings("establish" to 1, "main" to 1)
+        UPLINK_RETURN = Timings("main" to 1)
     }
 
     fun skillAndConfigAdjusted(timings: Timings, userId: String): Timings {

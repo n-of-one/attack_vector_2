@@ -20,8 +20,11 @@ import {HIDE_NODE_INFO} from "./run/reducer/InfoNodeIdReducer";
 import {avEncodedUrl} from "../common/util/PathEncodeUtils";
 import {NodeScanType} from "./run/model/NodeScanTypes";
 import {ConnectionStatusById} from "../editor/reducer/ConnectionsReducer";
+import {updateTerminalState} from "../common/menu/MenuItem";
 
 export const SERVER_HACKER_START_ATTACK = "SERVER_HACKER_START_ATTACK"
+export const SERVER_HACKER_START_UPLINK = "SERVER_HACKER_START_UPLINK"
+export const SERVER_RETURN_HOME = "SERVER_RETURN_HOME"
 export const SERVER_HACKER_MOVE_START = "SERVER_HACKER_MOVE_START"
 export const SERVER_HACKER_MOVE_ARRIVE = "SERVER_HACKER_MOVE_ARRIVE"
 export const SERVER_HACKER_SCANS_NODE = "SERVER_HACKER_SCANS_NODE"
@@ -35,6 +38,7 @@ export const SERVER_SITE_DISCOVERED = "SERVER_SITE_DISCOVERED"
 export const SERVER_REDIRECT_HACK_ICE = "SERVER_REDIRECT_HACK_ICE"
 export const SERVER_HACKER_ENTER_SITE = "SERVER_HACKER_ENTER_SITE"
 export const SERVER_HACKER_LEAVE_SITE = "SERVER_HACKER_LEAVE_SITE"
+export const SERVER_HACKER_SWITCH_SITE = "SERVER_HACKER_SWITCH_SITE"
 
 export const SERVER_PROBE_LAUNCH = "SERVER_PROBE_LAUNCH"
 
@@ -63,6 +67,7 @@ export const IGNORELIST_WHILE_ENTERING_RUN =
 
         SERVER_HACKER_ENTER_SITE,
         SERVER_HACKER_LEAVE_SITE,
+        SERVER_HACKER_SWITCH_SITE,
 
         SERVER_PROBE_LAUNCH,
         SERVER_UPDATE_NODE_STATUS,
@@ -143,9 +148,20 @@ interface RedirectConnectApp {
     type: string
 }
 
-interface RunAndSite {
+interface EnterRunData {
     runId: string,
-    siteId: string
+    siteId: string,
+    viaUplink?: boolean, // switching runs via an uplink: keep the terminal, enter via /run/enterSiteFromUplink
+    uplinkReturn?: boolean, // returning from a site entered via an uplink
+}
+
+const UPLINK_SWITCH_PAUSE_TICKS = 30 // longer than UPLINK_SITE_FADE_OUT_TICKS in RunCanvas
+
+interface StartUplink {
+    userId: string,
+    sourceSiteName: string,
+    targetSiteName: string,
+    timings: Timings,
 }
 
 export const initRunServerActions = (store: Store) => {
@@ -167,19 +183,28 @@ export const initRunServerActions = (store: Store) => {
         prepareToEnterRun(runId)
     })
 
-    webSocketConnection.addAction(SERVER_ENTERING_RUN, (data: RunAndSite) => {
+    webSocketConnection.addAction(SERVER_ENTERING_RUN, (data: EnterRunData) => {
 
+        runCanvas.leaveRunIfActive()
         webSocketConnection.waitFor(SERVER_ENTERED_RUN, IGNORELIST_WHILE_ENTERING_RUN)
         webSocketConnection.subscribeForRun(data.runId, data.siteId)
         dispatch({type: HIDE_NODE_INFO})
-        dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
-        dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: "[b]🜁 Verdant OS 🜃"})
-        dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: ""})
+        if (!data.viaUplink) {
+            dispatch({type: TERMINAL_CLEAR, terminalId: "main"})
+            dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: "[b]🜁 Verdant OS 🜃"})
+            dispatch({type: TERMINAL_RECEIVE, terminalId: "main", data: ""})
+        }
         const currentPage = store.getState().currentPage
         dispatch({type: NAVIGATE_PAGE, to: Page.RUN, from: currentPage})
         terminalManager.start()
 
-        webSocketConnection.send("/run/enterRun", data.runId)
+        if (data.viaUplink) {
+            // the site that was left fades out, after a pause the next site appears
+            runCanvas.hideYourHackerOnEnter = !!data.uplinkReturn // fades in at the uplink node when the session is restored
+            delayTicks(UPLINK_SWITCH_PAUSE_TICKS, () => webSocketConnection.send("/run/enterSiteFromUplink", data.runId))
+        } else {
+            webSocketConnection.send("/run/enterRun", data.runId)
+        }
     })
 
     webSocketConnection.addAction(SERVER_ENTERED_RUN, (data: SiteAndScan) => {
@@ -208,6 +233,10 @@ export const initRunServerActions = (store: Store) => {
 
     webSocketConnection.addAction(SERVER_HACKER_LEAVE_SITE, (data: any) => {
         runCanvas.hackerLeave(data.userId)
+    })
+
+    webSocketConnection.addAction(SERVER_HACKER_SWITCH_SITE, (data: any) => {
+        runCanvas.hackerSwitchSite(data.userId)
     })
 
     webSocketConnection.addAction(SERVER_HACKER_START_ATTACK, (data: StartRun) => {
@@ -252,6 +281,44 @@ export const initRunServerActions = (store: Store) => {
         }
     })
 
+
+    webSocketConnection.addAction(SERVER_HACKER_START_UPLINK, (data: StartUplink) => {
+        const speedSlow = data.timings["slow"]
+        const speedMedium = data.timings["medium"]
+        const speedFast = data.timings["fast"]
+        const carrierWait = data.timings["wait"] ?? 0
+
+        // Let the site render and the hacker icon fade in before the connection line starts, at "Session request".
+        // The line animation takes "move" ticks, the hacker display must not wait for the render wait again.
+        const lineTimings = {...data.timings, main: data.timings["move"]}
+        delayTicks(carrierWait, () => runCanvas.startAttack(data.userId, false, lineTimings, true))
+        if (data.userId !== currentUser.id) return
+
+        hackerSchedule = new Schedule(null)
+
+        const source = `[info]${data.sourceSiteName}[/]`
+        const target = `[info]${data.targetSiteName}[/]`
+
+        // "Establishing uplink carrier..." was sent by the server before switching to this site.
+        // The lines after the wait take exactly as long as the connection line animation ("move"): 4 x medium + 2 x slow + fast.
+        echo(carrierWait, "Carrier established, health [ok]100%")
+        echo(speedMedium, `- Session request ${source} → ${target}`)
+        echo(speedMedium, "  - [ok]ok[/] Handshake intercepted")
+        echo(speedMedium, "  - [ok]ok[/] Persona v2.3 injected into session")
+        echo(speedMedium, `  - [ok]ok[/] Origin rewritten to system daemon`)
+        echo(speedSlow, `  - [ok]ok[/] Credentials relayed by uplink`)
+        echo(speedSlow, `  - [ok]ok[/] Trust negotiation accepted by site`)
+        echo(speedFast, "- Uplink session [info]established")
+        echo(0, "")
+        echo(0, `Routing through to ${target}.`)
+        echo(0, "")
+    })
+
+    webSocketConnection.addAction(SERVER_RETURN_HOME, () => {
+        runCanvas.leaveRunIfActive()
+        updateTerminalState(Page.HACKER_HOME)
+        dispatch({type: NAVIGATE_PAGE, to: Page.HACKER_HOME, from: store.getState().currentPage})
+    })
 
     interface DisconnectAction { userId: string }
     webSocketConnection.addAction(SERVER_HACKER_DC, (action: DisconnectAction ) => {

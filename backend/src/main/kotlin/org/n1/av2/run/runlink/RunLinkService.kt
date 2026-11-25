@@ -35,11 +35,21 @@ class RunLinkService(
     fun sendRunInfosToUser(userId: String) {
         val runLinks = runLinkEntityService.findAllByUserId(userId)
         val runs = runEntityService.getAll(runLinks)
-        val scanItems = runs.map(::createRunInfo)
+        val scanItems = runs
+            .filter { !isInternalSiteRun(it) } // only reachable via an uplink
+            .map(::createRunInfo)
         connectionService.toUser(userId, SERVER_UPDATE_USER_RUNS, scanItems)
     }
 
+    private fun isInternalSiteRun(run: Run): Boolean {
+        return sitePropertiesEntityService.getBySiteId(run.siteId).internal
+    }
+
     fun shareRun(runId: String, userEntity: UserEntity, sendFeedback: Boolean) {
+        if (isInternalSiteRun(runEntityService.getByRunId(runId))) {
+            if (sendFeedback) connectionService.replyTerminalReceive("[error]Error[/] failed to share run, no direct route to site.")
+            return
+        }
         if (runLinkEntityService.hasUserRunLink(userEntity, runId)) {
             if (sendFeedback) connectionService.replyTerminalReceive("[info]${userEntity.name}[/] already has this run.")
             return
@@ -74,6 +84,7 @@ class RunLinkService(
     }
 
     fun sendUpdatedRunInfoToHackers(run: Run) {
+        if (isInternalSiteRun(run)) return
         val runInfo = createRunInfo(run)
         runLinkEntityService.getUserIdsOfRun(run.runId).forEach {userId ->
             connectionService.toUser(userId, SERVER_UPDATE_RUN_INFO, runInfo)

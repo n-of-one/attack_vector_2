@@ -55,6 +55,7 @@ enum class ServerActions {
     SERVER_ENTERING_RUN,            // Step 1 of entering a run: frontend can subscribe to topics and wait for SERVER_ENTERED_RUN
     SERVER_ENTERED_RUN,             // Step 2 of entering a run: frontend can now start processing messages for this run
     SERVER_RUN_TIMER,               // Optional resending of timer info for a site (at request of client)
+    SERVER_RETURN_HOME,             // Command to the hacker to leave any run and move to the home page
 
     SERVER_RESET_ICE,               // Sent to ICE when site is reset and hacking stops. Also triggered by RotateIceEffectService
 
@@ -73,10 +74,12 @@ enum class ServerActions {
 
     SERVER_HACKER_ENTER_SITE,           // A hacker enters a site, at scan range  (notify other hackers about this)
     SERVER_HACKER_LEAVE_SITE,           // A hacker leaves a site, for example when browser disconnects or moves to home screen.
+    SERVER_HACKER_SWITCH_SITE,          // A hacker leaves a site to enter another site via an uplink (up or down).
     SERVER_HACKER_DC,                   // A hacker disconnects from the site but is still at the site
     SERVER_LEAVE_NODE,                  // Sent to frontend to disconnect any apps the hacker is in (ICE, switch, auth, ...)
 
     SERVER_HACKER_START_ATTACK,         // A hacker starts the attack (connects to the entry site node)
+    SERVER_HACKER_START_UPLINK,         // A hacker hacks an uplink, the frontend shows the connection sequence
     SERVER_HACKER_MOVE_START,           // step one of the move
     SERVER_HACKER_MOVE_ARRIVE,          // step two of the move
 

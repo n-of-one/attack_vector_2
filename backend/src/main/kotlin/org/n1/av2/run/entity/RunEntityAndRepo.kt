@@ -12,7 +12,9 @@ data class Run(
     @Id val runId: String,
     val initiatorId: String,
     @Indexed val siteId: String,
-    val nodeScanById: MutableMap<String, NodeScan>
+    val nodeScanById: MutableMap<String, NodeScan>,
+    val uplinkRunIds: MutableMap<String, String> = mutableMapOf(), // target siteId -> run on that site, shared by all hackers in this run
+    @Indexed val parentRunId: String? = null, // the run whose uplink created this run
 ) {
 
     fun updateScanStatus(nodeId: String, status: NodeScanStatus) {
@@ -41,6 +43,7 @@ interface RunRepo : CrudRepository<Run, String> {
     fun findByRunIdIn(runIds: List<String>): List<Run>
     fun findBySiteId(siteId: String): List<Run>
     fun findByRunId(runId: String): Run?
+    fun findByParentRunId(parentRunId: String): List<Run>
 }
 
 

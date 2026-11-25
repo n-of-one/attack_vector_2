@@ -11,6 +11,7 @@ export interface SiteInfo {
     ok: boolean,
     mine: boolean,
     gmSite: boolean,
+    internal: boolean,
 }
 
 export const sitesReducer = (state: Array<SiteInfo> = [], action: AnyAction) => {

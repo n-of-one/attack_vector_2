@@ -19,7 +19,7 @@ Run tests in the UI: `npx playwright test --ui`
 
 Run a single test to check that the server is running with compatible configuration for the tests:
 
-`npx playwright test --browser=chromium e2e/1.0-happy-flow.spec.ts`
+`npx playwright test --project=chromium e2e/1.0-happy-flow.spec.ts`
 
 
 

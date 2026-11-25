@@ -1,0 +1,57 @@
+{
+  "exportDetails" : {
+    "version" : "v1",
+    "exportTimeStamp" : "2026-11-22 12:00:00"
+  },
+  "siteProperties" : {
+    "siteId" : "site-upla-0001",
+    "name" : "test-uplink-a",
+    "description" : "",
+    "purpose" : "e2e test",
+    "startNodeNetworkId" : "00",
+    "nodesLocked" : false
+  },
+  "nodes" : [ {
+    "id" : "node-upla-0000",
+    "siteId" : "site-upla-0001",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 600,
+    "layers" : [ {
+      "id" : "node-upla-0000:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : ""
+    } ],
+    "networkId" : "00"
+  }, {
+    "id" : "node-upla-0001",
+    "siteId" : "site-upla-0001",
+    "type" : "TRANSIT_2",
+    "x" : 625,
+    "y" : 400,
+    "layers" : [ {
+      "id" : "node-upla-0001:layer-0000",
+      "type" : "OS",
+      "level" : 0,
+      "name" : "OS",
+      "note" : "",
+      "nodeName" : "gateway"
+    }, {
+      "id" : "node-upla-0001:layer-0001",
+      "type" : "UPLINK",
+      "level" : 1,
+      "name" : "Uplink",
+      "note" : "",
+      "targetSiteId" : "site-uplb-0001",
+      "targetSiteName" : "test-uplink-b"
+    } ],
+    "networkId" : "01"
+  } ],
+  "connections" : [ {
+    "fromId" : "node-upla-0000",
+    "toId" : "node-upla-0001"
+  } ]
+}

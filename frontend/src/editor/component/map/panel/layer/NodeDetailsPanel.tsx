@@ -22,6 +22,7 @@ import {LayerTimerAdjusterPanel} from "./type/panel/app/LayerTimerAdjusterPanel"
 import {LayerTripwirePanel} from "./type/panel/app/LayerTripwirePanel";
 import {LayerDaemonPanel} from "./type/panel/app/LayerDaemonPanel";
 import {LayerNetworkSwitchPanel} from "./type/panel/app/LayerNetworkSwitchPanel";
+import {LayerUplinkPanel} from "./type/panel/app/LayerUplinkPanel";
 
 /* eslint jsx-a11y/anchor-is-valid: 0*/
 
@@ -61,6 +62,8 @@ const renderLayer = (node: NodeI, layer: LayerDetails) => {
             return <LayerDaemonPanel node={node} layer={layer}/>
         case LayerType.NETWORK_SWITCH:
             return <LayerNetworkSwitchPanel node={node} layer={layer}/>
+        case LayerType.UPLINK:
+            return <LayerUplinkPanel node={node} layer={layer}/>
         case LayerType.CORE:
             return <LayerCorePanel node={node} layer={layer}/>
         case LayerType.SCRIPT_INTERACTION:

@@ -89,3 +89,31 @@ Lets a hacker choose one of the connections (routes) of its node. The routes tha
 - Until a choice is made, all routes are pending and block movement (jumping to a hacker passes). Dropped routes also block jumps, scripts and scans (the node behind is shown, not scanned)
 - Hackers that are cut off from the start node by a dropped route are disconnected
 - Survives a site reset, unlocked by hacking the linked core (can be in another site) or by the GM
+
+---
+
+# Uplink Layer
+
+Connects to another site, usually an internal site that cannot be reached from outside.
+
+## Capabilities
+- `view` shows the target site: `1 Uplink -> <site>`
+- `hack <layer>` immediately switches the hacker to the target site. The connection sequence plays with the attack animation (orange connection line), then the hacker arrives inside the start node (arrival triggers layers like an attack does)
+- Refused when the target site does not exist, is not hackable, has errors or is shut down
+- Each run has one run per target site, so hackers sharing a run also share the run on the target site
+- Only the hacker that hacks the uplink moves
+- Leaving the target site by `dc`, site reset, GM refresh or network switch cut-off returns the hacker to the uplink node
+- If returning is impossible (site shut down, uplink or node removed, node cut off), the hacker falls back to the previous uplink in a chain, or outside the first non-internal site, or home
+- Leaving the run (home page, reload) leaves the uplink chain
+- Deleting a run also deletes the runs reached via its uplinks, hackers in those runs go home
+
+---
+
+# Internal Site
+
+A site property: the site can only be reached via an Uplink in another site.
+
+## Capabilities
+- Starting a run from the home page shows "Site not found"
+- Runs on internal sites are not listed on the home page and cannot be entered from a run link
+- `/share` is refused for runs on internal sites

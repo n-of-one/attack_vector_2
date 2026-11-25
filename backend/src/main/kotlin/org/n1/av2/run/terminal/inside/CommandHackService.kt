@@ -27,6 +27,8 @@ import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterService
 import org.n1.av2.layer.other.tripwire.TripwireLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayerService
+import org.n1.av2.layer.other.uplink.UplinkLayer
+import org.n1.av2.layer.other.uplink.UplinkService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.run.terminal.generic.DevCommandHelper
@@ -51,6 +53,7 @@ class CommandHackService(
     private val timerAdjusterService: TimerAdjusterService,
     private val daemonService: DaemonService,
     private val networkSwitchService: NetworkSwitchService,
+    private val uplinkService: UplinkService,
     private val insideTerminalHelper: InsideTerminalHelper,
     private val devCommandHelper: DevCommandHelper,
 ) {
@@ -94,6 +97,7 @@ class CommandHackService(
             is TimerAdjusterLayer -> timerAdjusterService.hack(layer)
             is DaemonLayer -> daemonService.hack()
             is NetworkSwitchLayer -> networkSwitchService.hack(layer.id, extraArguments)
+            is UplinkLayer -> uplinkService.hack(layer, hackerState)
             else -> connectionService.replyTerminalReceive("Layer type not supported yet: ${layer.type} ${layer.javaClass.name}").also { error("Non implemented layer type: ${layer.type}") }
         }
     }

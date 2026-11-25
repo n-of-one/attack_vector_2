@@ -24,6 +24,7 @@ import {
     TRACER,
     TRIPWIRE,
     TIMER_ADJUSTER,
+    UPLINK,
     WORD_SEARCH_ICE
 } from "../../enums/LayerTypes";
 
@@ -78,6 +79,7 @@ const iconFamily = (type: string) => {
         case TRIPWIRE:
         case DAEMON:
         case NETWORK_SWITCH:
+        case UPLINK:
         case STATUS_LIGHT:
         case CORE:
         case SCRIPT_CREDITS:

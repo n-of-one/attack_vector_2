@@ -38,7 +38,7 @@ class HackerStateEntityService(
         }
     }
 
-    fun enterRun(siteId: String, userId: String, runId: String, connectionId: String): HackerState {
+    fun enterRunOutside(siteId: String, userId: String, runId: String, connectionId: String): HackerState {
 
         val newState = HackerState(
             userId = userId,
@@ -132,9 +132,72 @@ class HackerStateEntityService(
             activity = HackerActivity.ONLINE,
             iceId = null,
             networkedConnectionId = null,
+            uplinkReturns = emptyList(),
+            uplinkArrivalNodeId = null,
+            uplinkActivity = UplinkActivity.NONE,
         )
         hackerStateRepo.save(newState)
     }
+
+    fun prepareUplinkArrival(currentState: HackerState, run: Run, arrivalNodeId: String, uplinkReturns: List<UplinkReturn>, uplinkActivity: UplinkActivity) {
+        val newState = currentState.copy(
+            runId = run.runId,
+            siteId = run.siteId,
+            currentNodeId = null,
+            previousNodeId = null,
+            activity = HackerActivity.OUTSIDE,
+            iceId = null,
+            networkedConnectionId = null,
+            uplinkReturns = uplinkReturns,
+            uplinkArrivalNodeId = arrivalNodeId,
+            uplinkActivity = uplinkActivity,
+        )
+        hackerStateRepo.save(newState)
+    }
+
+    fun prepareUplinkReturnOutside(currentState: HackerState, run: Run) {
+        val newState = currentState.copy(
+            runId = run.runId,
+            siteId = run.siteId,
+            currentNodeId = null,
+            previousNodeId = null,
+            activity = HackerActivity.OUTSIDE,
+            iceId = null,
+            networkedConnectionId = null,
+            uplinkReturns = emptyList(),
+            uplinkArrivalNodeId = null,
+            uplinkActivity = UplinkActivity.RETURNING_OUTSIDE,
+        )
+        hackerStateRepo.save(newState)
+    }
+
+    // connecting via uplink. While connecting, the hacker stays outside until the connection sequence ends, see [arriveViaUplink].
+    fun enterRunViaUplinkOutsideWhileConnecting(currentState: HackerState, connectionId: String): HackerState {
+        val newState = currentState.copy(connectionId = connectionId)
+        hackerStateRepo.save(newState)
+        return newState
+    }
+
+    // Entering site straight inside
+    fun enterRunInsideBackFromUplinkedSite(currentState: HackerState, connectionId: String): HackerState {
+        val newState = arrivedState(currentState).copy(connectionId = connectionId)
+        hackerStateRepo.save(newState)
+        return newState
+    }
+
+    fun arriveViaUplink(currentState: HackerState): HackerState {
+        val newState = arrivedState(currentState)
+        hackerStateRepo.save(newState)
+        return newState
+    }
+
+    private fun arrivedState(currentState: HackerState) = currentState.copy(
+        currentNodeId = currentState.uplinkArrivalNodeId,
+        previousNodeId = null,
+        activity = HackerActivity.INSIDE,
+        uplinkArrivalNodeId = null,
+        uplinkActivity = UplinkActivity.NONE,
+    )
 
     fun login(userId: String) {
         val newState = HackerState(

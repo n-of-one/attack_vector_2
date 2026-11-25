@@ -32,6 +32,7 @@
 - **TimerAdjusterLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/timeradjuster/TimerAdjusterLayer.kt`
 - **DaemonLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/daemon/DaemonLayer.kt` (on-entry logic: `DaemonService.kt`, per-hacker state: `DaemonStatusEntityAndRepo.kt`)
 - **NetworkSwitchLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/networkswitch/NetworkSwitchLayer.kt` (run behaviour: see `layers.md`)
+- **UplinkLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/uplink/UplinkLayer.kt` (run behaviour: see `layers.md`); internal site check in `SiteValidationService.kt`
 - **ScriptCreditsLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptCreditsLayer.kt`
 - **ScriptInteractionLayer**: `backend/src/main/kotlin/org/n1/av2/layer/other/script/ScriptInteractionLayer.kt`
 
@@ -42,6 +43,7 @@
 - **Timer adjuster panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerTimerAdjusterPanel.tsx`
 - **Daemon panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerDaemonPanel.tsx`
 - **Network switch panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerNetworkSwitchPanel.tsx`
+- **Uplink panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerUplinkPanel.tsx`
 - **Core link (tripwire, network switch)**: backend `backend/src/main/kotlin/org/n1/av2/layer/other/core/CoreLinkedLayer.kt`, site/core dropdowns `frontend/src/editor/component/map/panel/layer/type/panel/app/CoreLinkOptions.ts`
 - **Script credits panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerScriptCreditsPanel.tsx`
 - **Script interaction panel**: `frontend/src/editor/component/map/panel/layer/type/panel/app/LayerScriptInteraction.tsx`

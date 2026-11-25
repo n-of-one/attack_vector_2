@@ -58,6 +58,7 @@ enum class SitePropertyField {
     START_NODE,
     HACKABLE,
     NODES_LOCKED,
+    INTERNAL,
 }
 
 data class EditNetworkIdCommand(

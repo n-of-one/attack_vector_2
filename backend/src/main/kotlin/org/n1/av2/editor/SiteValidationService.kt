@@ -48,6 +48,14 @@ class SiteValidationService(
         validate(messages) { validateSiteName(siteProperties)}
         validate(messages) { validateStartNode(siteProperties, nodes) }
         validate(messages) { validateSiteCreator(siteProperties) }
+        validate(messages) { validateInternalSiteReachable(siteProperties) }
+    }
+
+    private fun validateInternalSiteReachable(siteProperties: SiteProperties) {
+        if (!siteProperties.internal) return
+        if (nodeEntityService.findAllNodesWithUplinkTo(siteProperties.siteId).isEmpty()) {
+            throw SiteValidationException("Internal site, but no Uplink in another site connects to it.", SiteStateMessageType.ERROR)
+        }
     }
 
     private fun validateSiteName(siteProperties: SiteProperties) {

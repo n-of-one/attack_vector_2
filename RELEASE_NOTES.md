@@ -1,3 +1,9 @@
+# Release notes AV 2.23.0 (22 November 2026)
+
+## Features
+- New layer: Uplink. Hacking it connects the hacker to the start node of another site. When disconnected from that site, the hacker returns to the node with the uplink.
+- New site property: Internal. An internal site cannot be reached from outside, only via an Uplink in another site.
+
 # Release notes AV 2.22.0 (7 November 2026)
 
 ## Features

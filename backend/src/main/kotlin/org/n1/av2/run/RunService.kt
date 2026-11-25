@@ -7,12 +7,14 @@ import org.n1.av2.hacker.hacker.HackerEntityService
 import org.n1.av2.hacker.hackerstate.HackerActivity
 import org.n1.av2.hacker.hackerstate.HackerState
 import org.n1.av2.hacker.hackerstate.HackerStateEntityService
+import org.n1.av2.layer.other.uplink.UplinkService
 import org.n1.av2.platform.connection.ConnectionService
 import org.n1.av2.platform.connection.ServerActions
 import org.n1.av2.platform.engine.CalledBySystem
 import org.n1.av2.platform.engine.TaskEngine
 import org.n1.av2.platform.iam.user.CurrentUserService
 import org.n1.av2.platform.iam.user.HackerIcon
+import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.platform.iam.user.UserEntityService
 import org.n1.av2.platform.util.isOneOf
 import org.n1.av2.run.entity.NodeScanStatus
@@ -33,6 +35,7 @@ import org.n1.av2.statistics.IceStatisticsService
 import org.n1.av2.timer.TimerEntityService
 import org.n1.av2.timer.TimerInfo
 import org.n1.av2.timer.TimerService
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
@@ -54,6 +57,7 @@ class RunService(
     private val hackerEntityService: HackerEntityService,
     private val timerService: TimerService,
     private val statisticsService: IceStatisticsService,
+    @Lazy private val uplinkService: UplinkService,
 ) {
 
     class HackerPresence(
@@ -69,8 +73,8 @@ class RunService(
 
     fun startNewRunAndReply(siteName: String): Run? {
         val siteProperties = sitePropertiesEntityService.findByName(siteName)
-        if (siteProperties == null) {
-            connectionService.replyNotification(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
+        if (siteProperties == null || siteProperties.internal) {
+            replySiteNotFound(siteName)
             return null
         }
         if (!siteProperties.hackable) {
@@ -92,16 +96,24 @@ class RunService(
         return run
     }
 
-    fun startNewRun(siteProperties: SiteProperties): Run {
+    fun startNewRun(siteProperties: SiteProperties, user: UserEntity = currentUserService.userEntity, parentRunId: String? = null): Run {
         val nodeScanById = scanService.createInitialNodeScans(siteProperties.siteId)
-        val run = runEntityService.create(siteProperties.siteId, nodeScanById, currentUserService.userId)
-        runLinkEntityService.createRunLink(run.runId, currentUserService.userEntity)
+        val run = runEntityService.create(siteProperties.siteId, nodeScanById, user.id, parentRunId)
+        runLinkEntityService.createRunLink(run.runId, user)
         return run
+    }
+
+    private fun replySiteNotFound(siteName: String) {
+        connectionService.replyNotification(NotyMessage(NotyType.NEUTRAL, "Error", "Site '${siteName}' not found"))
     }
 
     fun prepareToEnterRun(runId: String) {
         val run = runEntityService.getByRunId(runId)
         val siteProperties = sitePropertiesEntityService.getBySiteId(run.siteId)
+        if (siteProperties.internal) {
+            replySiteNotFound(siteProperties.name) // only reachable via an uplink, that bypasses this method
+            return
+        }
         if (!siteProperties.hackable) {
             replyNotHackable(siteProperties)
             return
@@ -122,15 +134,18 @@ class RunService(
 
     fun enterRun(userId: String, runId: String, connectionId: String) {
         val run = runEntityService.getByRunId(runId)
-        val thisHackerState = hackerStateEntityService.enterRun(run.siteId, userId, runId, connectionId)
-
         syntaxHighlightingService.sendForOutside()
-        connectionService.toRun(runId, ServerActions.SERVER_HACKER_ENTER_SITE, toPresence(thisHackerState))
+        val hackerState = hackerStateEntityService.enterRunOutside(run.siteId, userId, runId, connectionId)
+        sendEnteredRun(userId, run, hackerState)
+    }
+
+    fun sendEnteredRun(userId: String, run: Run, hackerState: HackerState) {
+        connectionService.toRun(run.runId, ServerActions.SERVER_HACKER_ENTER_SITE, toPresence(hackerState))
 
         val siteFull = siteService.getSiteFull(run.siteId)
         siteFull.sortNodeByDistance(run)
 
-        val hackerPresences = getPresenceInRun(runId)
+        val hackerPresences = getPresenceInRun(run.runId)
 
         val timers = timerService.findForEnterSite(run.siteId, userId)
 
@@ -160,6 +175,10 @@ class RunService(
     @CalledBySystem
     fun hackerDisconnect(hackerState: HackerState, message: String) {
         taskEngine.removeForUser(hackerState.userId)
+        if (hackerState.uplinkReturns.isNotEmpty()) {
+            uplinkService.returnFromUplink(hackerState, message)
+            return
+        }
 
         connectionService.toRun(hackerState.runId!!, ServerActions.SERVER_HACKER_DC, "userId" to hackerState.userId)
         connectionService.toUser(hackerState.userId, ServerActions.SERVER_LEAVE_NODE) // closes any open ICE or app tabs.
@@ -179,14 +198,15 @@ class RunService(
     }
 
 
-    fun leaveSite(hackerState: HackerState, updateHackerState: Boolean) {
+    fun leaveSite(hackerState: HackerState, updateHackerState: Boolean, viaUplink: Boolean) {
         val runId = hackerState.runId ?: return // if somehow the user was already disconnected for another reason
 
         taskEngine.removeForUser(hackerState.userId)
 
         @Suppress("unused")
         class HackerLeaveNotification(val userId: String)
-        connectionService.toRun(runId, ServerActions.SERVER_HACKER_LEAVE_SITE, HackerLeaveNotification(hackerState.userId))
+        val action = if (viaUplink) ServerActions.SERVER_HACKER_SWITCH_SITE else ServerActions.SERVER_HACKER_LEAVE_SITE
+        connectionService.toRun(runId, action, HackerLeaveNotification(hackerState.userId))
 
         connectionService.toUser(hackerState.userId, ServerActions.SERVER_LEAVE_NODE) // closes any open ICE or app tabs.
 
@@ -314,6 +334,11 @@ class RunService(
     }
 
     private fun deleteRun(run: Run, siteName: String) {
+        runEntityService.findChildRuns(run.runId).forEach { childRun ->
+            val childSiteName = sitePropertiesEntityService.findBySiteId(childRun.siteId)?.name ?: "?"
+            deleteRun(childRun, childSiteName)
+        }
+
         runLinkEntityService.deleteAllForRun(run)
         runEntityService.delete(run)
 
@@ -322,16 +347,12 @@ class RunService(
                 runLinkService.sendRunInfosToUser(hackerState.userId)
                 hackerStateEntityService.leaveSite(hackerState)
                 taskEngine.removeForUser(hackerState.userId)
+                if (run.parentRunId != null) connectionService.toUser(hackerState.userId, ServerActions.SERVER_RETURN_HOME)
             }
 
-        connectionService.toRun(
-            run.runId,
-            ServerActions.SERVER_NOTIFICATION,
-            NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteName}")
-        )
-
-        // FIXME: properly inform browser that they need to move to home screen
-//            stompService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
+        connectionService.toRun(run.runId,ServerActions.SERVER_NOTIFICATION,
+            NotyMessage(NotyType.ERROR, "Error", "Lost network connection to site: ${siteName}"))
+        connectionService.toRun(run.runId, ServerActions.SERVER_HACKER_DC, "-")
     }
 
     fun updateRunLinksForResetSite(siteId: String) {

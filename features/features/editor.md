@@ -42,6 +42,7 @@ Each layer type has configurable properties.
 - **TRIPWIRE**: name, note, countdown duration, shutdown duration, linked core layer, linked core site
 - **TIMER_ADJUSTER**: name, note, adjustment amount, type (SPEED_UP / SLOW_DOWN), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
 - **DAEMON**: name, note, text shown on entry (with fullscreen editor), required trait key (empty = any hacker), recurrence (FIRST_ENTRY_ONLY / EVERY_ENTRY / EACH_HACKER_ONCE)
+- **UPLINK**: name, note, target site (sites that are not internal are marked)
 - **NETWORK_SWITCH**: name, note, per connected node a checkbox (switched or not) and a route name, locked-to route (GM can undo the choice here), unlock site and unlock core (optional, can be a remote core)
 - **CORE**: name, note, reveal-network flag
 - **STATUS_LIGHT**: name, note, multiple display options (color, label, icon)
@@ -68,7 +69,10 @@ Global settings for the site.
 - Description
 - Start node network ID
 - Nodes locked toggle
+- Internal toggle: only reachable via an Uplink in another site
 - Hackable (not shown or editable in editor)
+- A site cannot be deleted while Uplinks in other sites target it
+- Renaming a site updates the Uplinks that target it
 
 ---
 
@@ -108,4 +112,9 @@ Automatic checks for site integrity.
 - error: network switch has two routes with the same name
 - error: network switch connected to removed core layer
 - error: network switch connected to non-core layer
+- error: uplink has no target site
+- error: uplink target site does not exist
+- error: uplink targets its own site
+- info: uplink target site is not internal
+- info: internal site, but no uplink connects to it
 

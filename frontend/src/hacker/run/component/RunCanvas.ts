@@ -7,7 +7,7 @@ import {ProbeDisplay} from "../../../common/canvas/display/ProbeDisplay"
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "../../../common/canvas/CanvasConst"
 import {Dispatch} from "redux"
 import {Canvas, IEvent} from "fabric/fabric-impl"
-import {HackerPresence} from "../reducer/HackerPresencesReducer"
+import {HackerActivity, HackerPresence} from "../reducer/HackerPresencesReducer"
 import {Connection, ConnectionStatusById} from "../../../editor/reducer/ConnectionsReducer"
 import {ConnectionDisplay} from "../../../common/canvas/display/ConnectionDisplay";
 import {DisplayCollection} from "../../../common/canvas/display/util/DisplayCollection";
@@ -20,10 +20,13 @@ import {DISPLAY_NODE_INFO, HIDE_NODE_INFO} from "../reducer/InfoNodeIdReducer";
 import {LayerDetails, NodeI} from "../../../common/sites/SiteModel";
 import {APPEAR_ANIMATION_TICKS, NODE_TRANSITION_TICKS} from "../../../common/canvas/display/DisplayAnimationConstants";
 import {testSupport} from "../../../common/util/TestSupport";
+import {animate} from "../../../common/canvas/CanvasUtils";
 
 
 /// Probe displays need a unique ID, but this ID only exists in the browser.
 let probeDisplayIdSequence = 0
+
+const UPLINK_SITE_FADE_OUT_TICKS = 20
 
 /// This class renders the sit map on the JFabric Canvas
 class RunCanvas {
@@ -53,6 +56,7 @@ class RunCanvas {
     selectedObject: fabric.Image | null = null
     hacking = false
     shutdown = false
+    hideYourHackerOnEnter = false // returning from a site entered via an uplink, your hacker fades in when the session is restored
 
 
     init(userId: string, dispatch: Dispatch) {
@@ -144,6 +148,7 @@ class RunCanvas {
 
         this.nodeDataById = {}
         this.sortAndAddHackers(hackers)
+        this.hacking = hackers.find(hacker => hacker.userId === this.userId)?.activity === HackerActivity.INSIDE // entered via an uplink
 
         /* Similarly the layer status is added to each layer. */
         const layerById: { [key: string]: LayerDetails } = {}
@@ -181,6 +186,10 @@ class RunCanvas {
 
         this.startNodeDisplay = this.nodeDisplays.get(nodes[0].id)
         this.addHackersDisplays()
+        if (this.hideYourHackerOnEnter) {
+            this.hideYourHackerOnEnter = false
+            this.hackerDisplays.get(this.userId).hideHackerIcon()
+        }
 
         testSupport.scheduleEmitEvent("enterSiteAnimationsFinished", this.iconSchedule, APPEAR_ANIMATION_TICKS)
         this.active = true
@@ -329,6 +338,10 @@ class RunCanvas {
             this.hackers.push(newHacker)
         }
         this.repositionHackers(newHacker.userId)
+        if (newHacker.activity === HackerActivity.INSIDE) {
+            // returned via an uplink, appears when the session is restored (SERVER_HACKER_MOVE_ARRIVE)
+            this.hackerDisplays.get(newHacker.userId).hideHackerIcon()
+        }
     }
 
 
@@ -368,7 +381,7 @@ class RunCanvas {
         this.canvasObjectDeSelected()
     }
 
-    startAttack(userId: string, quick: boolean, timings: Timings) {
+    startAttack(userId: string, quick: boolean, timings: Timings, viaUplink: boolean = false) {
         if (!this.active) return
 
         if (this.userId === userId) {
@@ -381,26 +394,50 @@ class RunCanvas {
                 nodeDisplay.transitionToInside(quick, this.selectedObject)
             })
         }
-        this.hackerDisplays.get(userId).startRun(quick, timings)
+        this.hackerDisplays.get(userId).startRun(quick, timings, viaUplink)
 
         const waitTime = quick ? NODE_TRANSITION_TICKS : timings.move
         testSupport.scheduleEmitEvent("startAttackAnimationsFinished", this.iconSchedule, waitTime)
 
     }
 
-    // Called as a consequence of SERVER_HACKER_LEAVE_SCAN, which is a consequence of MenuItem calling: /run/leaveRun
+    // Called as a consequence of SERVER_HACKER_LEAVE_SITE, which is a consequence of MenuItem calling: /run/leaveRun
     hackerLeave(leavingHackerUserId: string) {
         if (!this.active) return
 
         if (leavingHackerUserId === this.userId) {
+            this.leaveRunIfActive()
+            return
+        }
+        this.removeOtherHacker(leavingHackerUserId)
+    }
+
+    // Called as a consequence of SERVER_HACKER_SWITCH_SITE: a hacker goes up or down an uplink
+    hackerSwitchSite(switchingHackerUserId: string) {
+        if (!this.active) return
+
+        if (switchingHackerUserId === this.userId) {
+            // the whole site fades out, the next site's enterSite clears it
+            this.canvas.getObjects().forEach(canvasObject => animate(this.canvas, canvasObject, "opacity", 0, UPLINK_SITE_FADE_OUT_TICKS))
             webSocketConnection.unsubscribeForRun(this.runId, this.siteId)
-            this.clearState()
             this.active = false
             return
         }
+        this.removeOtherHacker(switchingHackerUserId)
+    }
+
+    private removeOtherHacker(leavingHackerUserId: string) {
         this.removeHackerDisplay(leavingHackerUserId)
         this.hackers = this.hackers.filter(element => element.userId !== leavingHackerUserId)
         this.repositionHackers(leavingHackerUserId)
+    }
+
+    leaveRunIfActive() {
+        if (!this.active) return
+
+        webSocketConnection.unsubscribeForRun(this.runId, this.siteId)
+        this.clearState()
+        this.active = false
     }
 
     private removeHackerDisplay(leavingHackerUserId: string) {

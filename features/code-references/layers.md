@@ -23,3 +23,11 @@ Layer classes and editor panels are listed in `editor.md`. Hack dispatch per lay
 - **Jump / script checks**: `backend/src/main/kotlin/org/n1/av2/run/terminal/inside/skillbased/CommandJumpToHackerService.kt`, `backend/src/main/kotlin/org/n1/av2/script/effect/helper/JumpEffectHelper.kt`, `backend/src/main/kotlin/org/n1/av2/script/effect/helper/NodeAccessHelper.kt`
 - **Core unlock**: `backend/src/main/kotlin/org/n1/av2/layer/other/core/CoreLayerService.kt`
 - **Connection display (map)**: `frontend/src/common/canvas/display/ConnectionDisplay.ts`
+
+## Uplink Layer / Internal Site
+- **Backend service**: `backend/src/main/kotlin/org/n1/av2/layer/other/uplink/UplinkService.kt` (hack, arrival, return when leaving)
+- **Return hook**: `RunService.hackerDisconnect` (`backend/src/main/kotlin/org/n1/av2/run/RunService.kt`)
+- **Entering a site via an uplink (up or down)**: `/run/enterSiteFromUplink` in `RunWsController.kt` → `UplinkService.enterSiteFromUplink`
+- **State**: `uplinkReturns` / `uplinkArrivalNodeId` in `backend/src/main/kotlin/org/n1/av2/hacker/hackerstate/HackerStateEntityAndRepo.kt`, `uplinkRunIds` / `parentRunId` in `backend/src/main/kotlin/org/n1/av2/run/entity/RunEntityAndRepo.kt`
+- **Hiding internal sites**: `RunService.startNewRunAndReply`, `RunService.prepareToEnterRun`, `backend/src/main/kotlin/org/n1/av2/run/runlink/RunLinkService.kt`
+- **Connection sequence and run switch (frontend)**: `frontend/src/hacker/RunServerActionProcessor.ts`

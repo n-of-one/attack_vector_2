@@ -50,7 +50,8 @@ class SiteService(
         val ok: Boolean,
         val mine: Boolean,
         val ownerName: String,
-        val gmSite: Boolean
+        val gmSite: Boolean,
+        val internal: Boolean,
     )
 
     fun getSitesList(): List<SiteListItem> {
@@ -70,7 +71,8 @@ class SiteService(
                     ok = it.siteStructureOk,
                     mine = mine,
                     ownerName = owner,
-                    gmSite = userEntityService.isGmOrSystem(it.ownerUserId)
+                    gmSite = userEntityService.isGmOrSystem(it.ownerUserId),
+                    internal = it.internal,
                 )
             }
     }
@@ -168,6 +170,15 @@ class SiteService(
         coreLayers.forEach { coreLayer ->
             val coreUsage = verifyRemoveCoreLayer(siteId, coreLayer.id, DELETE_SITE_REMOVAL) ?: return@forEach
             throw ValidationException("Cannot delete site. It contains nodes with cores that are configured to reset tripwires or network switches in other sites: $coreUsage. Remove the link from the tripwire(s) or network switch(es) to the core(s) on this site first.")
+        }
+
+        val uplinkNodes = nodeEntityService.findAllNodesWithUplinkTo(siteId).filter { it.siteId != siteId }
+        if (uplinkNodes.isNotEmpty()) {
+            val uplinkUsage = uplinkNodes.joinToString(", ") { node ->
+                val siteName = sitePropertiesEntityService.getBySiteId(node.siteId).name
+                "site:$siteName-node:${node.networkId}"
+            }
+            throw ValidationException("Cannot delete site. Uplinks in other sites connect to it: $uplinkUsage. Remove or change these Uplinks first.")
         }
     }
 

@@ -16,6 +16,7 @@ import {
     TAR_ICE,
     TEXT, TIMER_ADJUSTER,
     TRIPWIRE,
+    UPLINK,
     WORD_SEARCH_ICE
 } from "../../../../common/enums/LayerTypes"
 import {EditorState} from "../../../EditorRootReducer"
@@ -69,6 +70,7 @@ export const LayersPanel = () => {
                     {regular(SCRIPT_INTERACTION, "white")}
                     {notForHackers(SCRIPT_CREDITS, "white")}
                     {regular(NETWORK_SWITCH, "white")}
+                    {regular(UPLINK, "white")}
                 </div>
                 <div className="btn-height-spacer"/>
                 <div>

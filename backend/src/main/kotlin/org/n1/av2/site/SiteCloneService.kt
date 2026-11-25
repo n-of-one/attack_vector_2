@@ -20,6 +20,7 @@ import org.n1.av2.layer.other.script.ScriptInteractionLayer
 import org.n1.av2.layer.other.text.TextLayer
 import org.n1.av2.layer.other.timeradjuster.TimerAdjusterLayer
 import org.n1.av2.layer.other.tripwire.TripwireLayer
+import org.n1.av2.layer.other.uplink.UplinkLayer
 import org.n1.av2.platform.iam.user.UserEntity
 import org.n1.av2.site.entity.*
 import org.n1.av2.site.export.SiteBlueprint
@@ -43,7 +44,16 @@ class SiteCloneService(
         val nodesBySourceId = cloneNodes(source.nodes, siteId, source.siteProperties.siteId)
         cloneConnections(source.connections, siteId, nodesBySourceId)
         createEditorState(siteId)
+        validateUplinkTargets(nodesBySourceId.values, siteId)
         return siteId
+    }
+
+    private fun validateUplinkTargets(nodes: Collection<Node>, siteId: String) {
+        nodes.flatMap { it.layers }.filterIsInstance<UplinkLayer>()
+            .mapNotNull { it.targetSiteId }
+            .filter { it != siteId }
+            .distinct()
+            .forEach { siteValidationService.validate(it) }
     }
 
     private fun createEditorState(siteId: String): List<SiteStateMessage> {
@@ -62,6 +72,7 @@ class SiteCloneService(
             ownerUserId = owner.id,
             hackable = false,
             nodesLocked = source.nodesLocked,
+            internal = source.internal,
         )
         sitePropertiesEntityService.save(siteProperties)
         return siteId
@@ -133,6 +144,7 @@ class SiteCloneService(
             is TimerAdjusterLayer -> TimerAdjusterLayer(id, sourceLayer)
             is DaemonLayer -> DaemonLayer(id, sourceLayer)
             is NetworkSwitchLayer -> NetworkSwitchLayer(id, sourceLayer)
+            is UplinkLayer -> UplinkLayer(id, sourceLayer)
             is NetwalkIceLayer -> NetwalkIceLayer(id, sourceLayer)
             is PasswordIceLayer -> PasswordIceLayer(id, sourceLayer)
             is TangleIceLayer -> TangleIceLayer(id, sourceLayer)
